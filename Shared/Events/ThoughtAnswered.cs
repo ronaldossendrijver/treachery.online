@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public class ThoughtAnswered : GameEvent
     {
-        public int _cardId;
+        #region Construction
 
         public ThoughtAnswered(Game game) : base(game)
         {
@@ -20,19 +20,22 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int _cardId;
+
         [JsonIgnore]
         public TreacheryCard Card
         {
-            get
-            {
-                return TreacheryCardManager.Get(_cardId);
-            }
-            set
-            {
-                _cardId = TreacheryCardManager.GetId(value);
-            }
+            get => TreacheryCardManager.Get(_cardId);
+            set => _cardId = TreacheryCardManager.GetId(value);
         }
 
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -43,9 +46,35 @@ namespace Treachery.Shared
             return null;
         }
 
+        public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
+        {
+            if (p.TreacheryCards.Contains(g.CurrentThought.Card))
+            {
+                return new TreacheryCard[] { g.CurrentThought.Card };
+            }
+            else
+            {
+                return p.TreacheryCards;
+            }
+        }
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            if (Card == null)
+            {
+                Log(Initiator, " don't own any cards");
+            }
+            else
+            {
+                LogTo(Game.CurrentThought.Initiator, "In response, ", Initiator, " show you: ", Card);
+                Game.RegisterKnown(Game.CurrentThought.Initiator, Card);
+            }
+
+            Game.Enter(Phase.BattlePhase);
         }
 
         public override Message GetMessage()
@@ -61,16 +90,6 @@ namespace Treachery.Shared
 
         }
 
-        public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
-        {
-            if (p.TreacheryCards.Contains(g.CurrentThought.Card))
-            {
-                return new TreacheryCard[] { g.CurrentThought.Card };
-            }
-            else
-            {
-                return p.TreacheryCards;
-            }
-        }
+        #endregion Execution
     }
 }

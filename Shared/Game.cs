@@ -191,19 +191,6 @@ namespace Treachery.Shared
         internal Phase PhaseBeforeDiscardingTraitor { get; set; }
         internal Faction FactionThatMustDiscardTraitor { get; set; }
         internal int NumberOfTraitorsToDiscard { get; set; }
-        public void HandleEvent(TraitorDiscarded e)
-        {
-            Log(e);
-            TraitorDeck.Items.Add(e.Traitor);
-            e.Player.Traitors.Remove(e.Traitor);
-            NumberOfTraitorsToDiscard--;
-
-            if (NumberOfTraitorsToDiscard == 0)
-            {
-                CurrentPhase = PhaseBeforeDiscardingTraitor;
-            }
-
-        }
 
         #endregion EventHandling
 
@@ -926,7 +913,7 @@ namespace Treachery.Shared
             return result;
         }
 
-        private bool EveryoneActedOrPassed => HasActedOrPassed.Count == Players.Count;
+        internal bool EveryoneActedOrPassed => HasActedOrPassed.Count == Players.Count;
 
         public bool AssistedNotekeepingEnabled(Player p) => Applicable(Rule.AssistedNotekeeping) || p.Is(Faction.Green) && Applicable(Rule.AssistedNotekeepingForGreen);
 

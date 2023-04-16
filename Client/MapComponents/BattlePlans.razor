@@ -20,8 +20,8 @@
         (Game.CurrentPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentPrescience.Initiator) == Game.DefenderBattleAction.Player ||
          Game.CurrentGreenNexus != null && Game.CurrentBattle.OpponentOf(Game.CurrentGreenNexus.Initiator) == Game.DefenderBattleAction.Player);
 
-    bool AggressorCallsTraitor = Game.AggressorTraitorAction != null && Game.AggressorTraitorAction.TreacherySucceeded(Game);
-    bool DefenderCallsTraitor = Game.DefenderTraitorAction != null && Game.DefenderTraitorAction.TreacherySucceeded(Game);
+    bool AggressorCallsTraitor = Game.AggressorTraitorAction != null && Game.AggressorTraitorAction.Succeeded;
+    bool DefenderCallsTraitor = Game.DefenderTraitorAction != null && Game.DefenderTraitorAction.Succeeded;
 
     bool AggressorWasFacedanced = Game.Version > 150 && Game.CurrentPhase == Phase.Facedancing && Game.CurrentBattle.Aggressor == Game.BattleWinner;
     bool DefenderWasFacedanced = Game.Version > 150 && Game.CurrentPhase == Phase.Facedancing && Game.CurrentBattle.Defender == Game.BattleWinner;

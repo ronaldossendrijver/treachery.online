@@ -6,15 +6,30 @@ namespace Treachery.Shared
 {
     public class WhiteRevealedNoField : GameEvent
     {
+        #region Construction
+
         public WhiteRevealedNoField(Game g) : base(g) { }
 
         public WhiteRevealedNoField()
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
+        }
+
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Game.RevealCurrentNoField(Player);
         }
 
         public override Message GetMessage()
@@ -22,9 +37,6 @@ namespace Treachery.Shared
             return Message.Express(Initiator, " reveal a ", FactionSpecialForce.White);
         }
 
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
+        #endregion Execution
     }
 }

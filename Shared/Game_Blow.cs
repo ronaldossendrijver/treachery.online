@@ -41,15 +41,7 @@ namespace Treachery.Shared
 
         }
 
-        private bool ThumperUsed { get; set; } = false;
-        public void HandleEvent(ThumperPlayed e)
-        {
-            Discard(GetPlayer(e.Initiator), TreacheryCardType.Thumper);
-            Log(e);
-            Stone(Milestone.Thumper);
-            ThumperUsed = true;
-            EnterBlowA();
-        }
+        internal bool ThumperUsed { get; set; } = false;
 
         #endregion BeginningOfSpiceBlow
 

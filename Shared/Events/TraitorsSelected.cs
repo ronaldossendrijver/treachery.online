@@ -3,12 +3,13 @@
  */
 
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace Treachery.Shared
 {
     public class TraitorsSelected : GameEvent
     {
-        public int _traitorId;
+        #region Construction
 
         public TraitorsSelected(Game game) : base(game)
         {
@@ -18,8 +19,22 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int _traitorId;
+
         [JsonIgnore]
-        public IHero SelectedTraitor { get { return LeaderManager.HeroLookup.Find(_traitorId); } set { _traitorId = LeaderManager.HeroLookup.GetId(value); } }
+        public IHero SelectedTraitor
+        {
+            get => LeaderManager.HeroLookup.Find(_traitorId);
+            set => _traitorId = LeaderManager.HeroLookup.GetId(value);
+        }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -27,14 +42,36 @@ namespace Treachery.Shared
             return null;
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            var toRemove = Player.Traitors.Where(l => !l.Equals(SelectedTraitor)).ToList();
+
+            foreach (var l in toRemove)
+            {
+                Game.TraitorDeck.Items.Add(l);
+                Player.Traitors.Remove(l);
+                Player.DiscardedTraitors.Add(l);
+                Player.KnownNonTraitors.Add(l);
+            }
+
+            Game.HasActedOrPassed.Add(Initiator);
+            Log();
+
+            if (Game.EveryoneActedOrPassed)
+            {
+                Game.AssignFaceDancers();
+            }
         }
 
         public override Message GetMessage()
         {
             return Message.Express(Initiator, " pick their traitor");
         }
+
+        #endregion Execution
     }
 }

@@ -20,10 +20,10 @@ namespace Treachery.Shared
         public Dictionary<Faction, IBid> Bids { get; private set; } = new Dictionary<Faction, IBid>();
 
         internal bool GreySwappedCardOnBid { get; set; }
-        private bool RegularBiddingIsDone { get; set; }
+        internal bool RegularBiddingIsDone { get; set; }
         internal bool BiddingRoundWasStarted { get; set; }
-        private bool WhiteAuctionShouldStillHappen { get; set; }
-        private int NumberOfCardsOnAuction { get; set; }
+        internal bool WhiteAuctionShouldStillHappen { get; set; }
+        internal int NumberOfCardsOnAuction { get; set; }
         internal TriggeredBureaucracy BiddingTriggeredBureaucracy { get; set; }
         internal TreacheryCard CardSoldOnBlackMarket { get; set; }
         internal IEnumerable<Player> PlayersThatCanBid => Players.Where(p => p.HasRoomForCards);
@@ -64,26 +64,6 @@ namespace Treachery.Shared
 
         #region BlackMarket
 
-        public void HandleEvent(WhiteAnnouncesBlackMarket e)
-        {
-            Log(e);
-
-            if (!e.Passed)
-            {
-                Enter(Phase.BlackMarketBidding);
-                e.Player.TreacheryCards.Remove(e.Card);
-                CardsOnAuction.PutOnTop(e.Card);
-                RegisterKnown(e.Initiator, e.Card);
-                Bids.Clear();
-                CurrentBid = null;
-                StartBidSequenceAndAuctionType(e.AuctionType, e.Player, e.Direction);
-            }
-            else
-            {
-                EnterWhiteBidding();
-            }
-        }
-
         public Faction FactionThatMayReplaceBoughtCard { get; internal set; }
         public bool ReplacingBoughtCardUsingNexus { get; internal set; } = false;
 
@@ -117,102 +97,13 @@ namespace Treachery.Shared
             }
         }
 
-        public bool WhiteOccupierSpecifiedCard { get; private set; }
-
-        public void HandleEvent(WhiteAnnouncesAuction e)
-        {
-            WhiteOccupierSpecifiedCard = false;
-            Log(e);
-
-            int threshold = Version > 150 ? 0 : 1;
-            if (Version > 150)
-            {
-                NumberOfCardsOnAuction--;
-            }
-
-            if (!e.First && NumberOfCardsOnAuction > threshold)
-            {
-                WhiteAuctionShouldStillHappen = true;
-            }
-
-            if (NumberOfCardsOnAuction == threshold)
-            {
-                RegularBiddingIsDone = true;
-            }
-
-            Enter(e.First || NumberOfCardsOnAuction == threshold, Phase.WhiteSpecifyingAuction, StartRegularBidding);
-        }
-
-        public void HandleEvent(WhiteSpecifiesAuction e)
-        {
-            if (!WhiteOccupierSpecifiedCard)
-            {
-                WhiteAuctionShouldStillHappen = false;
-                CardsOnAuction.PutOnTop(e.Card);
-                WhiteCache.Remove(e.Card);
-                RegisterKnown(e.Card);
-
-                var occupierOfWhiteHomeworld = OccupierOf(World.White);
-                if (occupierOfWhiteHomeworld == null)
-                {
-                    Log(e);
-                    StartBidSequenceAndAuctionType(e.AuctionType, e.Player, e.Direction);
-                    StartBiddingRound();
-                }
-                else
-                {
-                    Log(e.Initiator, " put ", e.Card, " on auction");
-                    WhiteOccupierSpecifiedCard = true;
-                }
-            }
-            else
-            {
-                string directionText = "";
-                if (e.AuctionType == AuctionType.WhiteOnceAround)
-                {
-                    if (e.Direction == 1)
-                    {
-                        directionText = " (counter-clockwise)";
-                    }
-                    else
-                    {
-                        directionText = " (clockwise)";
-                    }
-                }
-
-                Log(e.Initiator, " put select a ", e.AuctionType, " auction", directionText);
-
-                StartBidSequenceAndAuctionType(e.AuctionType, e.Player, e.Direction);
-                StartBiddingRound();
-            }
-        }
-
-        public void HandleEvent(WhiteKeepsUnsoldCard e)
-        {
-            Log(e);
-            var card = CardsOnAuction.Draw();
-            RegisterWonCardAsKnown(card);
-
-            if (!e.Passed)
-            {
-                e.Player.TreacheryCards.Add(card);
-                LogTo(e.Initiator, "You get: ", card);
-                FinishBid(e.Player, card, Version < 152);
-            }
-            else
-            {
-                RemovedTreacheryCards.Add(card);
-                FinishBid(null, card, Version < 152);
-            }
-        }
-
-        
+        public bool WhiteOccupierSpecifiedCard { get; internal set; }
 
         #endregion
 
         #region Generic
 
-        private void StartRegularBidding()
+        internal void StartRegularBidding()
         {
             RegularBiddingIsDone = true;
             int numberOfCardsToDraw = NumberOfCardsOnAuction;
@@ -618,7 +509,7 @@ namespace Treachery.Shared
 
         private AuctionType BlackMarketAuctionType { get; set; }
 
-        private void StartBidSequenceAndAuctionType(AuctionType auctionType, Player whitePlayer = null, int direction = 1)
+        internal void StartBidSequenceAndAuctionType(AuctionType auctionType, Player whitePlayer = null, int direction = 1)
         {
             switch (auctionType)
             {

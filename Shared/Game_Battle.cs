@@ -79,55 +79,10 @@ namespace Treachery.Shared
         #region VoiceAndPrescience
 
         public Voice CurrentVoice { get; internal set; } = null;
-        public void HandleEvent(Voice e)
-        {
-            CurrentVoice = e;
-
-            if (!IsPlaying(Faction.Blue))
-            {
-                PlayNexusCard(e.Player, "Secret Ally", " to use Voice");
-            }
-
-            if (CurrentBattle != null)
-            {
-                var opponent = CurrentBattle.OpponentOf(e.Player);
-
-                if (opponent != null)
-                {
-                    RevokePlanIfNeeded(opponent.Faction);
-                }
-            }
-
-            Log(e);
-            Stone(Milestone.Voice);
-        }
 
         public Prescience CurrentPrescience { get; internal set; } = null;
 
         public Thought CurrentThought { get; internal set; }
-        public void HandleEvent(Thought e)
-        {
-            CurrentThought = e;
-            var opponent = CurrentBattle.OpponentOf(e.Initiator).Faction;
-            Log(e.Initiator, " use their ", LeaderSkill.Thinker, " skill to ask ", opponent, " if they have a ", e.Card);
-            Stone(Milestone.Prescience);
-            Enter(Phase.Thought);
-        }
-
-        public void HandleEvent(ThoughtAnswered e)
-        {
-            if (e.Card == null)
-            {
-                Log(e.Initiator, " don't own any cards");
-            }
-            else
-            {
-                LogTo(CurrentThought.Initiator, "In response, ", e.Initiator, " show you a ", e.Card);
-                RegisterKnown(CurrentThought.Initiator, e.Card);
-            }
-
-            Enter(Phase.BattlePhase);
-        }
 
         #endregion
 
@@ -176,45 +131,6 @@ namespace Treachery.Shared
 
         #region Treachery
 
-        public void HandleEvent(TreacheryCalled e)
-        {
-            if (AggressorBattleAction.By(e.Initiator) || e.By(Faction.Black) && AreAllies(AggressorBattleAction.Initiator, Faction.Black))
-            {
-                AggressorTraitorAction = e;
-                if (e.TraitorCalled)
-                {
-                    Log(e);
-                    Stone(Milestone.TreacheryCalled);
-                    e.Player.RevealedTraitors.Add(DefenderBattleAction.Hero);
-                }
-            }
-
-            if (DefenderBattleAction.By(e.Initiator) || e.By(Faction.Black) && AreAllies(DefenderBattleAction.Initiator, Faction.Black))
-            {
-                DefenderTraitorAction = e;
-                if (e.TraitorCalled)
-                {
-                    Log(e);
-                    Stone(Milestone.TreacheryCalled);
-                    e.Player.RevealedTraitors.Add(AggressorBattleAction.Hero);
-                }
-            }
-
-            if (AggressorTraitorAction != null && DefenderTraitorAction != null)
-            {
-                var treachery = CurrentBattle.TreacheryOf(Faction.Black);
-
-                if (Applicable(Rule.NexusCards) && treachery != null && treachery.Initiator == Faction.Black && treachery.TraitorCalled)
-                {
-                    Enter(Phase.CancellingTraitor);
-                }
-                else
-                {
-                    HandleRevealedBattlePlans();
-                }
-            }
-        }
-
 
 
         #endregion
@@ -260,13 +176,13 @@ namespace Treachery.Shared
 
         private void DiscardOneTimeCardsUsedInBattle(TreacheryCalled aggressorCall, TreacheryCalled defenderCall)
         {
-            bool aggressorKeepsCards = aggressorCall.TreacherySucceeded(this) && !defenderCall.TreacherySucceeded(this);
+            bool aggressorKeepsCards = aggressorCall.Succeeded && !defenderCall.Succeeded;
             if (!aggressorKeepsCards)
             {
                 DiscardOneTimeCards(AggressorBattleAction);
             }
 
-            bool defenderKeepsCards = defenderCall.TreacherySucceeded(this) && !aggressorCall.TreacherySucceeded(this);
+            bool defenderKeepsCards = defenderCall.Succeeded && !aggressorCall.Succeeded;
             if (!defenderKeepsCards)
             {
                 DiscardOneTimeCards(DefenderBattleAction);
@@ -277,7 +193,7 @@ namespace Treachery.Shared
         {
             BattleOutcome = DetermineBattleOutcome(agg, def, b.Territory);
 
-            bool lasgunShield = !aggtrt.TreacherySucceeded(this) && !deftrt.TreacherySucceeded(this) && (agg.HasLaser || def.HasLaser) && (agg.HasShield || def.HasShield);
+            bool lasgunShield = !aggtrt.Succeeded && !deftrt.Succeeded && (agg.HasLaser || def.HasLaser) && (agg.HasShield || def.HasShield);
 
             ActivateSmuggler(aggtrt, deftrt, BattleOutcome, lasgunShield);
 
@@ -287,7 +203,7 @@ namespace Treachery.Shared
             var aggressor = GetPlayer(agg.Initiator);
             var defender = GetPlayer(def.Initiator);
 
-            if (aggtrt.TreacherySucceeded(this) || deftrt.TreacherySucceeded(this))
+            if (aggtrt.Succeeded || deftrt.Succeeded)
             {
                 TraitorCalled(b, agg, def, deftrt, aggressor, defender, agg.Hero, def.Hero);
             }
@@ -331,8 +247,8 @@ namespace Treachery.Shared
 
         private void ActivateSmuggler(TreacheryCalled aggtrt, TreacheryCalled deftrt, BattleOutcome outcome, bool lasgunShield)
         {
-            bool aggHeroSurvives = !deftrt.TreacherySucceeded(this) && (aggtrt.TreacherySucceeded(this) || !lasgunShield && !outcome.AggHeroKilled);
-            bool defHeroSurvives = !aggtrt.TreacherySucceeded(this) && (deftrt.TreacherySucceeded(this) || !lasgunShield && !outcome.DefHeroKilled);
+            bool aggHeroSurvives = !deftrt.Succeeded && (aggtrt.Succeeded || !lasgunShield && !outcome.AggHeroKilled);
+            bool defHeroSurvives = !aggtrt.Succeeded && (deftrt.Succeeded || !lasgunShield && !outcome.DefHeroKilled);
 
             if (aggHeroSurvives)
             {
@@ -590,7 +506,7 @@ namespace Treachery.Shared
                 var brown = GetPlayer(Faction.Brown);
                 if (brown != null && CurrentBattle.IsAggressorOrDefender(brown))
                 {
-                    return CurrentBattle.TreacheryOfOpponent(brown).TreacherySucceeded(this);
+                    return CurrentBattle.TreacheryOfOpponent(brown).Succeeded;
                 }
                 return false;
             }
@@ -1064,16 +980,16 @@ namespace Treachery.Shared
 
         private void TraitorCalled(BattleInitiated b, Battle agg, Battle def, TreacheryCalled deftrt, Player aggressor, Player defender, IHero aggLeader, IHero defLeader)
         {
-            if (AggressorTraitorAction.TreacherySucceeded(this) && deftrt.TreacherySucceeded(this))
+            if (AggressorTraitorAction.Succeeded && deftrt.Succeeded)
             {
                 TwoTraitorsCalled(agg, def, aggressor, defender, b.Territory, aggLeader, defLeader);
             }
             else
             {
-                var winner = AggressorTraitorAction.TreacherySucceeded(this) ? aggressor : defender;
-                var loser = AggressorTraitorAction.TreacherySucceeded(this) ? defender : aggressor;
-                var loserGambit = AggressorTraitorAction.TreacherySucceeded(this) ? def : agg;
-                var winnerGambit = AggressorTraitorAction.TreacherySucceeded(this) ? agg : def;
+                var winner = AggressorTraitorAction.Succeeded ? aggressor : defender;
+                var loser = AggressorTraitorAction.Succeeded ? defender : aggressor;
+                var loserGambit = AggressorTraitorAction.Succeeded ? def : agg;
+                var winnerGambit = AggressorTraitorAction.Succeeded ? agg : def;
                 OneTraitorCalled(b.Territory, winner, loser, loserGambit, winnerGambit);
             }
         }
@@ -1285,12 +1201,12 @@ namespace Treachery.Shared
                 
         internal void FinishBattle()
         {
-            if (AggressorBattleAction.Hero == Vidal && WhenToSetAsideVidal == VidalMoment.AfterUsedInBattle && !(AggressorTraitorAction.TreacherySucceeded(this) && !DefenderTraitorAction.TreacherySucceeded(this)))
+            if (AggressorBattleAction.Hero == Vidal && WhenToSetAsideVidal == VidalMoment.AfterUsedInBattle && !(AggressorTraitorAction.Succeeded && !DefenderTraitorAction.Succeeded))
             {
                 SetAsideVidal();
             }
 
-            if (DefenderBattleAction.Hero == Vidal && WhenToSetAsideVidal == VidalMoment.AfterUsedInBattle && !(DefenderTraitorAction.TreacherySucceeded(this) && !AggressorTraitorAction.TreacherySucceeded(this)))
+            if (DefenderBattleAction.Hero == Vidal && WhenToSetAsideVidal == VidalMoment.AfterUsedInBattle && !(DefenderTraitorAction.Succeeded && !AggressorTraitorAction.Succeeded))
             {
                 SetAsideVidal();
             }

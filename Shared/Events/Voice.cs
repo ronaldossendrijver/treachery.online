@@ -4,14 +4,13 @@
 
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Treachery.Shared
 {
     public class Voice : GameEvent
     {
-        public bool Must { get; set; }
-
-        public TreacheryCardType Type { get; set; }
+        #region Construction
 
         public Voice(Game game) : base(game)
         {
@@ -21,14 +20,28 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public bool Must { get; set; }
+
+        [JsonIgnore]
+        public bool MayNot => !Must;
+
+
+        public TreacheryCardType Type { get; set; }
+
+        #endregion Properties
+
+        #region Validation
+
         public override Message Validate()
         {
-            return null;
-        }
+            if (!MayUseVoice(Game, Player)) return Message.Express("You cannot use Voice");
+            if (!ValidTypes(Game).Contains(Type)) return Message.Express("Invalid use of Voice");
 
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
+            return null;
         }
 
         public static IEnumerable<TreacheryCardType> ValidTypes(Game g)
@@ -99,28 +112,6 @@ namespace Treachery.Shared
             return false;
         }
 
-
-        public override Message GetMessage()
-        {
-            if (Must)
-            {
-                return Message.Express(Initiator, " use Voice to force the use of ", Type);
-            }
-            else
-            {
-                return Message.Express(Initiator, " use Voice to deny the use of ", Type);
-            }
-        }
-
-        [JsonIgnore]
-        public bool MayNot
-        {
-            get
-            {
-                return !Must;
-            }
-        }
-
         public static bool IsVoicedBy(Game g, bool asWeapon, bool must, TreacheryCardType cardType, TreacheryCardType voicedType)
         {
             if (cardType == voicedType)
@@ -170,5 +161,46 @@ namespace Treachery.Shared
 
             return false;
         }
+
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Game.CurrentVoice = this;
+
+            if (!IsPlaying(Faction.Blue))
+            {
+                Game.PlayNexusCard(Player, "Secret Ally", " to use Voice");
+            }
+
+            if (Game.CurrentBattle != null)
+            {
+                var opponent = Game.CurrentBattle.OpponentOf(Player);
+
+                if (opponent != null)
+                {
+                    Game.RevokePlanIfNeeded(opponent.Faction);
+                }
+            }
+
+            Log();
+            Game.Stone(Milestone.Voice);
+        }
+
+        public override Message GetMessage()
+        {
+            if (Must)
+            {
+                return Message.Express(Initiator, " use Voice to force the use of ", Type);
+            }
+            else
+            {
+                return Message.Express(Initiator, " use Voice to deny the use of ", Type);
+            }
+        }
+
+        #endregion Execution
     }
 }

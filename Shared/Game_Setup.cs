@@ -214,29 +214,7 @@ namespace Treachery.Shared
             Enter(Players.Any(p => !(p.Is(Faction.Black) || p.Is(Faction.Purple))), Phase.SelectingTraitors, AssignFaceDancers);
         }
 
-        public void HandleEvent(TraitorsSelected e)
-        {
-            var initiator = GetPlayer(e.Initiator);
-            var toRemove = initiator.Traitors.Where(l => !l.Equals(e.SelectedTraitor)).ToList();
-
-            foreach (var l in toRemove)
-            {
-                TraitorDeck.Items.Add(l);
-                initiator.Traitors.Remove(l);
-                initiator.DiscardedTraitors.Add(l);
-                initiator.KnownNonTraitors.Add(l);
-            }
-
-            HasActedOrPassed.Add(e.Initiator);
-            Log(e);
-
-            if (EveryoneActedOrPassed)
-            {
-                AssignFaceDancers();
-            }
-        }
-
-        private void AssignFaceDancers()
+        internal void AssignFaceDancers()
         {
             var purple = GetPlayer(Faction.Purple);
             if (purple != null)

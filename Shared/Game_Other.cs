@@ -12,11 +12,6 @@ namespace Treachery.Shared
     {
         public List<Faction> ResourceAuditedFactions { get; private set; } = new();
 
-        public void HandleEvent(WhiteRevealedNoField e)
-        {
-            RevealCurrentNoField(e.Player);
-        }
-
         internal void RevealCurrentNoField(Player player, Location inLocation = null)
         {
             if (player != null && player.Faction == Faction.White)

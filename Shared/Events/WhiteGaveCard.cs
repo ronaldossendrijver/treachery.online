@@ -10,6 +10,8 @@ namespace Treachery.Shared
 {
     public class WhiteGaveCard : GameEvent
     {
+        #region Construction
+
         public WhiteGaveCard(Game game) : base(game)
         {
         }
@@ -18,20 +20,22 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public int _cardId = -1;
 
         [JsonIgnore]
         public TreacheryCard Card
         {
-            get
-            {
-                return TreacheryCardManager.Lookup.Find(_cardId);
-            }
-            set
-            {
-                _cardId = TreacheryCardManager.Lookup.GetId(value);
-            }
+            get => TreacheryCardManager.Lookup.Find(_cardId);
+            set => _cardId = TreacheryCardManager.Lookup.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -43,14 +47,32 @@ namespace Treachery.Shared
             return p.TreacheryCards.Where(c => c.Rules.Contains(Rule.WhiteTreacheryCards));
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            var target = Player.AlliedPlayer;
+
+            Player.TreacheryCards.Remove(Card);
+            Game.RegisterKnown(Player, Card);
+            target.TreacheryCards.Add(Card);
+
+            foreach (var p in Game.Players.Where(p => p != Player && p != target))
+            {
+                Game.UnregisterKnown(p, Player.TreacheryCards);
+                Game.UnregisterKnown(p, target.TreacheryCards);
+            }
+
+            Log();
         }
 
         public override Message GetMessage()
         {
             return Message.Express(Initiator, " give a card to their ally");
         }
+
+        #endregion Execution
     }
 }

@@ -147,26 +147,6 @@ namespace Treachery.Shared
 
         #endregion
 
-        #region WhiteCardTrading
-        public void HandleEvent(WhiteGaveCard e)
-        {
-            var initiator = GetPlayer(e.Initiator);
-            var target = initiator.AlliedPlayer;
-
-            initiator.TreacheryCards.Remove(e.Card);
-            RegisterKnown(initiator, e.Card);
-            target.TreacheryCards.Add(e.Card);
-
-            foreach (var p in Players.Where(p => p != initiator && p != target))
-            {
-                UnregisterKnown(p, initiator.TreacheryCards);
-                UnregisterKnown(p, target.TreacheryCards);
-            }
-
-            Log(e);
-        }
-
-        #endregion
 
         #region Support
 
@@ -176,7 +156,7 @@ namespace Treachery.Shared
             dict.Add(key, value);
         }
 
-        private bool AreAllies(Faction a, Faction b)
+        internal bool AreAllies(Faction a, Faction b)
         {
             var player = GetPlayer(a);
             if (player != null)

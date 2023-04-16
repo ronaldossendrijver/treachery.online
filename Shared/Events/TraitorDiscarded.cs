@@ -3,12 +3,14 @@
  */
 
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Treachery.Shared
 {
     public class TraitorDiscarded : GameEvent
     {
-        public int _traitorId;
+        #region Construction
 
         public TraitorDiscarded(Game game) : base(game)
         {
@@ -18,36 +20,54 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int _traitorId;
+
         [JsonIgnore]
         public IHero Traitor
         {
-            get
-            {
-                return LeaderManager.HeroLookup.Find(_traitorId);
-            }
-
-            set
-            {
-                _traitorId = LeaderManager.HeroLookup.GetId(value);
-            }
+            get => LeaderManager.HeroLookup.Find(_traitorId);
+            set => _traitorId = LeaderManager.HeroLookup.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
-            if (Traitor == null) return Message.Express("Choose a traitor to discard");
-            if (!Player.Traitors.Contains(Traitor)) return Message.Express("Invalid traitor");
+            if (!ValidTraitors(Player).Contains(Traitor)) return Message.Express("Invalid traitor");
 
             return null;
         }
 
+        public static IEnumerable<IHero> ValidTraitors(Player p) => p.Traitors;
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log();
+            Game.TraitorDeck.Items.Add(Traitor);
+            Player.Traitors.Remove(Traitor);
+            Game.NumberOfTraitorsToDiscard--;
+
+            if (Game.NumberOfTraitorsToDiscard == 0)
+            {
+                Game.Enter(Game.PhaseBeforeDiscardingTraitor);
+            }
         }
 
         public override Message GetMessage()
         {
             return Message.Express(Initiator, " shuffle a traitor into the Traitor deck");
         }
+
+        #endregion Execution
     }
 }

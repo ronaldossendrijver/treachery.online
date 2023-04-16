@@ -11,7 +11,7 @@
     <Header>Select a traitor to discard</Header>
     <Body>
 
-        <SelectFromImageComponent Game="Game" @bind-Value="hero" Values=Player.Traitors Required="true" ImageWidth="80"/>
+        <SelectFromImageComponent Game="Game" @bind-Value="hero" Values=@TraitorDiscarded.ValidTraitors(Player) Required="true" ImageWidth="80" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Discard {0}", hero)" ConfirmError=@Validation />
 

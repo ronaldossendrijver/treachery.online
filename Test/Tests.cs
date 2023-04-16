@@ -730,7 +730,7 @@ namespace Treachery.Test
                     statistics.BattlingFactions.Count(game.CurrentBattle.Aggressor);
                     statistics.BattlingFactions.Count(game.CurrentBattle.Defender);
                 }
-                else if (latest is TreacheryCalled traitorcalled && traitorcalled.TreacherySucceeded(game))
+                else if (latest is TreacheryCalled traitorcalled && traitorcalled.Succeeded)
                 {
                     statistics.TraitoredLeaders.Count(Skin.Current.Describe(game.CurrentBattle.PlanOfOpponent(traitorcalled.Player).Hero));
                 }

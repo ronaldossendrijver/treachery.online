@@ -8,12 +8,9 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class WhiteAnnouncesBlackMarket : GameEvent
+    public class WhiteAnnouncesBlackMarket : PassableGameEvent
     {
-        public int _cardId;
-        public bool Passed;
-        public AuctionType AuctionType;
-        public int Direction;
+        #region Construction
 
         public WhiteAnnouncesBlackMarket(Game game) : base(game)
         {
@@ -23,18 +20,26 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int _cardId;
+
         [JsonIgnore]
         public TreacheryCard Card
         {
-            get
-            {
-                return TreacheryCardManager.Get(_cardId);
-            }
-            set
-            {
-                _cardId = TreacheryCardManager.GetId(value);
-            }
+            get => TreacheryCardManager.Get(_cardId);
+            set => _cardId = TreacheryCardManager.GetId(value);
         }
+
+        public AuctionType AuctionType { get; set; }
+
+        public int Direction { get; set; }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -46,9 +51,33 @@ namespace Treachery.Shared
             return null;
         }
 
+        public static IEnumerable<TreacheryCard> ValidCards(Player p)
+        {
+            return p.TreacheryCards;
+        }
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log();
+
+            if (!Passed)
+            {
+                Game.Enter(Phase.BlackMarketBidding);
+                Player.TreacheryCards.Remove(Card);
+                Game.CardsOnAuction.PutOnTop(Card);
+                Game.RegisterKnown(Initiator, Card);
+                Game.Bids.Clear();
+                Game.CurrentBid = null;
+                Game.StartBidSequenceAndAuctionType(AuctionType, Player, Direction);
+            }
+            else
+            {
+                Game.EnterWhiteBidding();
+            }
         }
 
         public override Message GetMessage()
@@ -76,9 +105,6 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<TreacheryCard> ValidCards(Player p)
-        {
-            return p.TreacheryCards;
-        }
+        #endregion Execution
     }
 }

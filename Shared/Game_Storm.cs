@@ -120,14 +120,7 @@ namespace Treachery.Shared
         }
 
         
-        public bool CurrentTestingStationUsed { get; private set; }
-        public void HandleEvent(TestingStationUsed e)
-        {
-            Log(e);
-            Stone(Milestone.WeatherControlled);
-            CurrentTestingStationUsed = true;
-            NextStormMoves += e.ValueAdded;
-        }
+        public bool CurrentTestingStationUsed { get; internal set; }
 
         
 
