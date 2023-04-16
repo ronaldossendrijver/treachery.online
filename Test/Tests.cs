@@ -27,7 +27,10 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-		
+		    if (e is YellowRidesMonster ride && ride.To.IsStronghold)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "ride");
+            }
 		}
 
         private readonly List<string> WrittenCases = new();

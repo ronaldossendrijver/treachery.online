@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public class YellowSentMonster : GameEvent
     {
-        public int _territoryId;
+        #region Construction
 
         public YellowSentMonster(Game game) : base(game)
         {
@@ -20,8 +20,22 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int _territoryId;
+
         [JsonIgnore]
-        public Territory Territory { get { return Game.Map.TerritoryLookup.Find(_territoryId); } set { _territoryId = Game.Map.TerritoryLookup.GetId(value); } }
+        public Territory Territory
+        {
+            get => Game.Map.TerritoryLookup.Find(_territoryId);
+            set => _territoryId = Game.Map.TerritoryLookup.GetId(value);
+        }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -31,9 +45,24 @@ namespace Treachery.Shared
             return null;
         }
 
+        public static IEnumerable<Territory> ValidTargets(Game g)
+        {
+            return g.Map.Territories(false).Where(t => !t.IsProtectedFromWorm);
+        }
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log();
+            var monster = new MonsterAppearence(Territory, false);
+            Game.Monsters.Add(monster);
+            Game.PerformMonster(monster);
+            Game.Enter(Game.CurrentPhase == Phase.YellowSendingMonsterA, Phase.BlowA, Phase.BlowB);
+            Game.DrawResourceCard();
+            Game.LetFactionsDiscardSurplusCards();
         }
 
         public override Message GetMessage()
@@ -41,9 +70,6 @@ namespace Treachery.Shared
             return Message.Express(Initiator, " send ", Concept.Monster, " to ", Territory);
         }
 
-        public static IEnumerable<Territory> ValidTargets(Game g)
-        {
-            return g.Map.Territories(false).Where(t => !t.IsProtectedFromWorm);
-        }
+        #endregion Execution
     }
 }

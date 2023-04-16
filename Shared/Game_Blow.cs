@@ -65,7 +65,7 @@ namespace Treachery.Shared
 
         private bool NexusVoteMustHappen { get; set; } = false;
 
-        private void DrawResourceCard()
+        internal void DrawResourceCard()
         {
             ResourceCard drawn = null;
             while (ThumperUsed || !(drawn = DrawAndDiscardResourceCard(CurrentDiscardPile)).IsSpiceBlow)
@@ -357,7 +357,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void PerformMonster(MonsterAppearence m)
+        internal void PerformMonster(MonsterAppearence m)
         {
             foreach (var l in m.Territory.Locations)
             {
@@ -421,79 +421,6 @@ namespace Treachery.Shared
 
 
         #region WormSendingAndRiding
-
-        public void HandleEvent(YellowSentMonster e)
-        {
-            Log(e);
-            var m = new MonsterAppearence(e.Territory, false);
-            Monsters.Add(m);
-            PerformMonster(m);
-            Enter(CurrentPhase == Phase.YellowSendingMonsterA, Phase.BlowA, Phase.BlowB);
-            DrawResourceCard();
-            LetFactionsDiscardSurplusCards();
-        }
-
-        public void HandleEvent(YellowRidesMonster e)
-        {
-            var toRide = YellowRidesMonster.ToRide(this);
-
-            if (Version <= 150)
-            {
-                Monsters.RemoveAt(0);
-            }
-            else
-            {
-                Monsters.Remove(toRide);
-            }
-
-            if (!e.Passed)
-            {
-                if (e.ForceLocations.Keys.Any(l => l.Territory != toRide.Territory))
-                {
-                    PlayNexusCard(e.Player, "cunning", "to ride from any territory on the planet");
-                }
-
-                var initiator = GetPlayer(e.Initiator);
-                LastShipmentOrMovement = e;
-                int totalNumberOfForces = 0;
-                int totalNumberOfSpecialForces = 0;
-                foreach (var fl in e.ForceLocations)
-                {
-                    var from = fl.Key;
-                    initiator.MoveForces(from, e.To, fl.Value.AmountOfForces);
-                    initiator.MoveSpecialForces(from, e.To, fl.Value.AmountOfSpecialForces);
-                    totalNumberOfForces += fl.Value.AmountOfForces;
-                    totalNumberOfSpecialForces += fl.Value.AmountOfSpecialForces;
-                    Log(
-                        MessagePart.ExpressIf(fl.Value.AmountOfForces > 0, fl.Value.AmountOfForces, initiator.Force),
-                        MessagePart.ExpressIf(fl.Value.AmountOfSpecialForces > 0, fl.Value.AmountOfSpecialForces, initiator.SpecialForce),
-                        " ride from ",
-                        from,
-                        " to ",
-                        e.To);
-                }
-
-                if (e.ForcesFromReserves > 0 || e.SpecialForcesFromReserves > 0)
-                {
-                    if (e.ForcesFromReserves > 0) initiator.ShipForces(e.To, e.ForcesFromReserves);
-                    if (e.SpecialForcesFromReserves > 0) initiator.ShipSpecialForces(e.To, e.SpecialForcesFromReserves);
-                    Log(
-                        MessagePart.ExpressIf(e.ForcesFromReserves > 0, e.ForcesFromReserves, initiator.Force),
-                        MessagePart.ExpressIf(e.SpecialForcesFromReserves > 0, e.SpecialForcesFromReserves, initiator.SpecialForce),
-                        " ride from their reserves to ",
-                        e.To);
-                }
-
-                FlipBeneGesseritWhenAloneOrWithPinkAlly();
-                CheckIntrusion(e);
-            }
-            else
-            {
-                Log(e.Initiator, " pass a ride on ", Concept.Monster);
-            }
-
-            DetermineNextShipmentAndMoveSubPhase();
-        }
 
         private void EndWormRideDuringPhase(Phase phase)
         {

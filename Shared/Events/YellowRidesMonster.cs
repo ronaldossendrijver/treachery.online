@@ -11,6 +11,8 @@ namespace Treachery.Shared
 {
     public class YellowRidesMonster : PlacementEvent
     {
+        #region Construction
+
         public YellowRidesMonster(Game game) : base(game)
         {
         }
@@ -19,14 +21,26 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public int ForcesFromReserves { get; set; }
 
         public int SpecialForcesFromReserves { get; set; }
+
+        [JsonIgnore]
+        public override int TotalAmountOfForcesAddedToLocation => base.TotalAmountOfForcesAddedToLocation + ForcesFromReserves + SpecialForcesFromReserves;
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
             if (Passed) return null;
 
+            if (TotalAmountOfForcesAddedToLocation == 0) return Message.Express("No forces selected");
             if (To == null) return Message.Express("Target location not selected");
             if (!ValidTargets(Game, Player).Contains(To)) return Message.Express("Invalid target location");
 
@@ -43,31 +57,6 @@ namespace Treachery.Shared
                 SpecialForcesFromReserves > MaxForcesFromReserves(Game, Player, true)) return Message.Express("You can't ride with that many reserves");
 
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            if (Passed)
-            {
-                return Message.Express(Initiator, " don't ride");
-            }
-            else
-            {
-                var from = ForceLocations.Keys.FirstOrDefault()?.Territory;
-                if (from != null)
-                {
-                    return Message.Express(Initiator, " ride from ", from, " to ", To);
-                }
-                else
-                {
-                    return Message.Express(Initiator, " ride from reserves to ", To);
-                }
-            }
         }
 
         public static bool IsApplicable(Game g) => ToRide(g) != null;
@@ -146,7 +135,92 @@ namespace Treachery.Shared
                     (!p.HasAlly || l == g.Map.PolarSink || !p.AlliedPlayer.Occupies(l)));
         }
 
-        [JsonIgnore]
-        public override int TotalAmountOfForcesAddedToLocation => base.TotalAmountOfForcesAddedToLocation + ForcesFromReserves + SpecialForcesFromReserves;
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            var toRide = ToRide(Game);
+
+            if (Game.Version <= 150)
+            {
+                Game.Monsters.RemoveAt(0);
+            }
+            else
+            {
+                Game.Monsters.Remove(toRide);
+            }
+
+            if (!Passed)
+            {
+                if (ForceLocations.Keys.Any(l => l.Territory != toRide.Territory))
+                {
+                    Game.PlayNexusCard(Player, "cunning", "to ride from any territory on the planet");
+                }
+
+                var initiator = GetPlayer(Initiator);
+                Game.LastShipmentOrMovement = this;
+                int totalNumberOfForces = 0;
+                int totalNumberOfSpecialForces = 0;
+                foreach (var fl in ForceLocations)
+                {
+                    var from = fl.Key;
+                    initiator.MoveForces(from, To, fl.Value.AmountOfForces);
+                    initiator.MoveSpecialForces(from, To, fl.Value.AmountOfSpecialForces);
+                    totalNumberOfForces += fl.Value.AmountOfForces;
+                    totalNumberOfSpecialForces += fl.Value.AmountOfSpecialForces;
+                    Log(
+                        MessagePart.ExpressIf(fl.Value.AmountOfForces > 0, fl.Value.AmountOfForces, initiator.Force),
+                        MessagePart.ExpressIf(fl.Value.AmountOfSpecialForces > 0, fl.Value.AmountOfSpecialForces, initiator.SpecialForce),
+                        " ride from ",
+                        from,
+                        " to ",
+                        To);
+                }
+
+                if (ForcesFromReserves > 0 || SpecialForcesFromReserves > 0)
+                {
+                    if (ForcesFromReserves > 0) initiator.ShipForces(To, ForcesFromReserves);
+                    if (SpecialForcesFromReserves > 0) initiator.ShipSpecialForces(To, SpecialForcesFromReserves);
+                    Log(
+                        MessagePart.ExpressIf(ForcesFromReserves > 0, ForcesFromReserves, initiator.Force),
+                        MessagePart.ExpressIf(SpecialForcesFromReserves > 0, SpecialForcesFromReserves, initiator.SpecialForce),
+                        " ride from their reserves to ",
+                        To);
+                }
+
+                Game.FlipBeneGesseritWhenAloneOrWithPinkAlly();
+                Game.CheckIntrusion(this);
+            }
+            else
+            {
+                Log(Initiator, " pass a ride on ", Concept.Monster);
+            }
+
+            Game.DetermineNextShipmentAndMoveSubPhase();
+        }
+
+        public override Message GetMessage()
+        {
+            if (Passed)
+            {
+                return Message.Express(Initiator, " don't ride");
+            }
+            else
+            {
+                var from = ForceLocations.Keys.FirstOrDefault()?.Territory;
+                if (from != null)
+                {
+                    return Message.Express(Initiator, " ride from ", from, " to ", To);
+                }
+                else
+                {
+                    return Message.Express(Initiator, " ride from reserves to ", To);
+                }
+            }
+        }
+
+        #endregion Execution
     }
 }

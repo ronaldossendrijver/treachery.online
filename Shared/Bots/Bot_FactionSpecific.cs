@@ -258,7 +258,7 @@ namespace Treachery.Shared
             Location target = null;
             var validLocations = YellowRidesMonster.ValidTargets(Game, this).ToList();
             var battalionsToMove = YellowRidesMonster.ValidSources(Game).ToDictionary(l => l, l => BattalionIn(l));
-            int forcesFromReserves = 0;
+            int forcesFromReserves = Math.Min(YellowRidesMonster.MaxForcesFromReserves(Game, this, false), 4);
             int specialForcesFromReserves = Math.Min(YellowRidesMonster.MaxForcesFromReserves(Game, this, true), 2);
 
             if (validLocations.Contains(Game.Map.TueksSietch) && VacantAndSafeFromStorm(Game.Map.TueksSietch)) target = Game.Map.TueksSietch;
@@ -279,9 +279,6 @@ namespace Treachery.Shared
             */
             if (target == null)
             {
-                forcesFromReserves = Math.Min(YellowRidesMonster.MaxForcesFromReserves(Game, this, false), 4);
-                specialForcesFromReserves = Math.Min(YellowRidesMonster.MaxForcesFromReserves(Game, this, true), 2);
-
                 var strength = battalionsToMove.Sum(forcesAtLocation => forcesAtLocation.Value.AmountOfForces + forcesAtLocation.Value.AmountOfSpecialForces * 2) + forcesFromReserves + specialForcesFromReserves * 2;
 
                 if (target == null) target = validLocations.Where(l => Game.ResourcesOnPlanet.ContainsKey(l) && TotalMaxDialOfOpponents(l.Territory) < strength).HighestOrDefault(l => Game.ResourcesOnPlanet[l]);
@@ -290,7 +287,14 @@ namespace Treachery.Shared
 
             if (target == null) target = Game.Map.PolarSink;
 
-            return new YellowRidesMonster(Game) { Initiator = Faction, Passed = false, ForceLocations = new Dictionary<Location, Battalion>(battalionsToMove), To = target, ForcesFromReserves = forcesFromReserves, SpecialForcesFromReserves = specialForcesFromReserves };
+            if (target != null && battalionsToMove.Values.Sum(b => b.TotalAmountOfForces) + forcesFromReserves + specialForcesFromReserves > 0)
+            {
+                return new YellowRidesMonster(Game) { Initiator = Faction, Passed = false, ForceLocations = new Dictionary<Location, Battalion>(battalionsToMove), To = target, ForcesFromReserves = forcesFromReserves, SpecialForcesFromReserves = specialForcesFromReserves };
+            }
+            else
+            {
+                return new YellowRidesMonster(Game) { Initiator = Faction, Passed = true };
+            }
         }
 
         #endregion Yellow
