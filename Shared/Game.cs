@@ -63,8 +63,19 @@ namespace Treachery.Shared
         public Deck<LeaderSkill> SkillDeck { get; private set; }
         public Deck<Faction> NexusCardDeck { get; internal set; }
         public List<Faction> NexusDiscardPile { get; private set; } = new();
-        public Dictionary<Player, Dictionary<MainPhase, TimeSpan>> Timers { get; private set; } = new();
+        public Dictionary<Homeworld, Faction> HomeworldOccupation { get; private set; } = new();
+        public Dictionary<Player, Timer<MainPhase>> Timers { get; private set; } = new();
         internal Random Random { get; set; }
+
+        internal Phase PhaseBeforeDiscarding { get; set; }
+        public List<Faction> FactionsThatMustDiscard { get; internal set; } = new();
+
+        internal Phase PhaseBeforeDiscardingTraitor { get; set; }
+        internal Faction FactionThatMustDiscardTraitor { get; set; }
+        internal int NumberOfTraitorsToDiscard { get; set; }
+
+        public List<Payment> RecentlyPaid { get; private set; } = new();
+        internal List<Payment> StoredRecentlyPaid { get; set; } = new();
 
         #endregion GameState
 
@@ -102,34 +113,6 @@ namespace Treachery.Shared
 
         #region EventHandling
 
-        public List<Payment> RecentlyPaid { get; private set; } = new();
-
-        public void SetRecentPayment(int amount, Faction by, Faction to, GameEvent reason)
-        {
-            if (amount > 0)
-            {
-                RecentlyPaid.Add(new Payment(amount, by, to, reason));
-            }
-        }
-
-        public void SetRecentPayment(int amount, Faction by, GameEvent reason)
-        {
-            SetRecentPayment(amount, by, Faction.None, reason);
-        }
-
-        public bool HasRecentPaymentFor(Type t) => RecentlyPaid.Any(p => p.Reason != null && p.Reason.GetType() == t);
-
-        public bool HasReceivedPaymentFor(Faction receiver, Type t) => RecentlyPaid.Any(p => p.To == receiver && p.Reason != null && p.Reason.GetType() == t);
-
-        public int RecentlyPaidTotalAmount => RecentlyPaid.Sum(p => p.Amount);
-
-        internal List<Payment> StoredRecentlyPaid { get; set; } = new();
-        public void ClearRecentPayments()
-        {
-            StoredRecentlyPaid = RecentlyPaid;
-            RecentlyPaid = new();
-        }
-
         public void PerformPreEventTasks(GameEvent e)
         {
             UpdateTimers(e);
@@ -165,37 +148,6 @@ namespace Treachery.Shared
             return result;
         }
 
-        public GameEvent LatestEvent(Type eventType) => History.LastOrDefault(e => e.GetType() == eventType);
-
-        public GameEvent LatestEvent(params Type[] eventType)
-        {
-            for (int i = History.Count - 1; i >= 0; i--)
-            {
-                if (eventType.Any(t => t == History[i].GetType()))
-                {
-
-                    return History[i];
-                }
-            }
-
-            return null;
-        }
-
-        public GameEvent LatestEvent() => History.Count > 0 ? History[^1] : null;
-
-        public int EventCount => History.Count;
-
-        internal Phase PhaseBeforeDiscarding { get; set; }
-        public List<Faction> FactionsThatMustDiscard { get; internal set; } = new();
-
-        internal Phase PhaseBeforeDiscardingTraitor { get; set; }
-        internal Faction FactionThatMustDiscardTraitor { get; set; }
-        internal int NumberOfTraitorsToDiscard { get; set; }
-
-        #endregion EventHandling
-
-        #region Timers
-
         private void UpdateTimers(GameEvent e)
         {
             if (e.Time != default && History.Count > 0 && InTimedPhase && e.Player != null)
@@ -207,67 +159,20 @@ namespace Treachery.Shared
                 else previousEvent = FindMostRecentEvent();
 
                 var elapsedTime = e.Time.Subtract(previousEvent.Time);
-
                 if (elapsedTime.TotalHours < 1)
                 {
-                    Timers[e.Player][CurrentMainPhase] += e.Time.Subtract(previousEvent.Time);
+                    if (!Timers.TryGetValue(e.Player, out Timer<MainPhase> timer))
+                    {
+                        timer = new Timer<MainPhase>();
+                        Timers.Add(e.Player, timer);
+                    }
+
+                    timer.Add(CurrentMainPhase, elapsedTime);
                 }
             }
         }
 
-        private GameEvent FindMostRecentEvent(params Type[] types)
-        {
-            if (types.Length == 0) return History[^1];
-
-            for (int i = History.Count - 1; i >= 0; i--)
-            {
-                if (types.Contains(History[i].GetType()))
-                {
-                    return History[i];
-                }
-            }
-
-            return null;
-        }
-
-        public TimeSpan Duration => History.Count > 0 ? History[^1].Time.Subtract(History[0].Time) : TimeSpan.Zero;
-
-        public TimeSpan TimeSpent(Player player, MainPhase phase)
-        {
-            if (Timers.TryGetValue(player, out Dictionary<MainPhase, TimeSpan> timersIfPlayer) && timersIfPlayer.TryGetValue(phase, out TimeSpan value))
-            {
-                return value;
-            }
-            else
-            {
-                return TimeSpan.Zero;
-            }
-        }
-
-        public DateTime Started
-        {
-            get
-            {
-                if (History.Count > 0)
-                {
-                    return History[0].Time;
-                }
-                else
-                {
-                    return default;
-                }
-            }
-        }
-
-        private bool InTimedPhase =>
-            CurrentPhase == Phase.Bidding ||
-            CurrentPhase == Phase.OrangeShip ||
-            CurrentPhase == Phase.OrangeMove ||
-            CurrentPhase == Phase.NonOrangeShip ||
-            CurrentPhase == Phase.NonOrangeMove ||
-            CurrentPhase == Phase.BattlePhase;
-
-        #endregion
+        #endregion EventHandling
 
         #region PhaseTransitions
 
@@ -350,93 +255,6 @@ namespace Treachery.Shared
             }
         }
 
-        internal void Enter(bool condition1, Action actionIf1True, bool condition2, Phase phaseIf2True, Action methodOtherwise)
-        {
-            if (condition1)
-            {
-                actionIf1True();
-            }
-            else if (condition2)
-            {
-                Enter(phaseIf2True);
-            }
-            else
-            {
-                methodOtherwise();
-            }
-        }
-
-        internal void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Phase phaseIf3True, Action methodOtherwise)
-        {
-            if (condition1)
-            {
-                Enter(phaseIf1True);
-            }
-            else if (condition2)
-            {
-                Enter(phaseIf2True);
-            }
-            else if (condition3)
-            {
-                Enter(phaseIf3True);
-            }
-            else
-            {
-                methodOtherwise();
-            }
-        }
-
-        internal void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Phase phaseIf3True)
-        {
-            if (condition1)
-            {
-                Enter(phaseIf1True);
-            }
-            else if (condition2)
-            {
-                Enter(phaseIf2True);
-            }
-            else if (condition3)
-            {
-                Enter(phaseIf3True);
-            }
-        }
-
-        internal void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Action methodIf3True, Action methodOtherwise)
-        {
-            if (condition1)
-            {
-                Enter(phaseIf1True);
-            }
-            else if (condition2)
-            {
-                Enter(phaseIf2True);
-            }
-            else if (condition3)
-            {
-                methodIf3True();
-            }
-            else
-            {
-                methodOtherwise();
-            }
-        }
-
-        internal void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, Action methodOtherwise)
-        {
-            if (condition1)
-            {
-                Enter(phaseIf1True);
-            }
-            else if (condition2)
-            {
-                Enter(phaseIf2True);
-            }
-            else
-            {
-                methodOtherwise();
-            }
-        }
 
         internal void Enter(bool condition1, Phase phaseIf1True, bool condition2, Action methodIf2True, Action methodOtherwise)
         {
@@ -485,6 +303,63 @@ namespace Treachery.Shared
                 Enter(phaseOtherwise);
             }
         }
+
+        internal void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Phase phaseIf3True)
+        {
+            if (condition1)
+            {
+                Enter(phaseIf1True);
+            }
+            else if (condition2)
+            {
+                Enter(phaseIf2True);
+            }
+            else if (condition3)
+            {
+                Enter(phaseIf3True);
+            }
+        }
+
+        internal void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Action methodIf3True, Action methodOtherwise)
+        {
+            if (condition1)
+            {
+                Enter(phaseIf1True);
+            }
+            else if (condition2)
+            {
+                Enter(phaseIf2True);
+            }
+            else if (condition3)
+            {
+                methodIf3True();
+            }
+            else
+            {
+                methodOtherwise();
+            }
+        }
+
+        internal void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Phase phaseIf3True, Action methodOtherwise)
+        {
+            if (condition1)
+            {
+                Enter(phaseIf1True);
+            }
+            else if (condition2)
+            {
+                Enter(phaseIf2True);
+            }
+            else if (condition3)
+            {
+                Enter(phaseIf3True);
+            }
+            else
+            {
+                methodOtherwise();
+            }
+        }
+
 
         #endregion
 
@@ -972,7 +847,7 @@ namespace Treachery.Shared
                 (p.Faction == Faction.Green || (p.Ally == Faction.Green && GreenSharesPrescience) || HasDeal(p.Faction, DealType.ShareBiddingPrescience)));
         }
 
-        public Dictionary<Homeworld, Faction> HomeworldOccupation { get; private set; } = new();
+        
         
 
         public void DetermineOccupationAtStartOrEndOfTurn()
@@ -1147,14 +1022,6 @@ namespace Treachery.Shared
             }
         }
 
-        public Player OwnerOf(IHero hero) => Players.FirstOrDefault(p => p.Leaders.Contains(hero));
-
-        public Player OwnerOf(TreacheryCard karmaCard) => karmaCard != null ? Players.FirstOrDefault(p => p.TreacheryCards.Contains(karmaCard)) : null;
-
-        public Player OwnerOf(TreacheryCardType cardType) => Players.FirstOrDefault(p => p.TreacheryCards.Any(c => c.Type == cardType));
-
-        public Player OwnerOf(Location stronghold) => StrongholdOwnership.TryGetValue(stronghold, out Faction value) ? GetPlayer(value) : null;
-
         public static Message TryLoad(GameState state, bool performValidation, bool isHost, out Game result)
         {
             try
@@ -1220,5 +1087,117 @@ namespace Treachery.Shared
         }
 
         #endregion SupportMethods
+
+        #region Payments
+
+        public void SetRecentPayment(int amount, Faction by, Faction to, GameEvent reason)
+        {
+            if (amount > 0)
+            {
+                RecentlyPaid.Add(new Payment(amount, by, to, reason));
+            }
+        }
+
+        public void SetRecentPayment(int amount, Faction by, GameEvent reason)
+        {
+            SetRecentPayment(amount, by, Faction.None, reason);
+        }
+
+        public void ClearRecentPayments()
+        {
+            StoredRecentlyPaid = RecentlyPaid;
+            RecentlyPaid = new();
+        }
+
+        #endregion Payments
+
+        #region Information
+
+        public Player OwnerOf(IHero hero) => Players.FirstOrDefault(p => p.Leaders.Contains(hero));
+
+        public Player OwnerOf(TreacheryCard karmaCard) => karmaCard != null ? Players.FirstOrDefault(p => p.TreacheryCards.Contains(karmaCard)) : null;
+
+        public Player OwnerOf(TreacheryCardType cardType) => Players.FirstOrDefault(p => p.TreacheryCards.Any(c => c.Type == cardType));
+
+        public Player OwnerOf(Location stronghold) => StrongholdOwnership.TryGetValue(stronghold, out Faction value) ? GetPlayer(value) : null;
+
+        public bool HasRecentPaymentFor(Type t) => RecentlyPaid.Any(p => p.Reason != null && p.Reason.GetType() == t);
+
+        public bool HasReceivedPaymentFor(Faction receiver, Type t) => RecentlyPaid.Any(p => p.To == receiver && p.Reason != null && p.Reason.GetType() == t);
+
+        public int RecentlyPaidTotalAmount => RecentlyPaid.Sum(p => p.Amount);
+
+        public GameEvent LatestEvent(Type eventType) => History.LastOrDefault(e => e.GetType() == eventType);
+
+        public GameEvent LatestEvent(params Type[] eventType)
+        {
+            for (int i = History.Count - 1; i >= 0; i--)
+            {
+                if (eventType.Any(t => t == History[i].GetType()))
+                {
+                    return History[i];
+                }
+            }
+
+            return null;
+        }
+
+        public GameEvent LatestEvent() => History.Count > 0 ? History[^1] : null;
+
+        public int EventCount => History.Count;
+
+        private GameEvent FindMostRecentEvent(params Type[] types)
+        {
+            if (types.Length == 0) return History[^1];
+
+            for (int i = History.Count - 1; i >= 0; i--)
+            {
+                if (types.Contains(History[i].GetType()))
+                {
+                    return History[i];
+                }
+            }
+
+            return null;
+        }
+
+        public TimeSpan Duration => History.Count > 0 ? History[^1].Time.Subtract(History[0].Time) : TimeSpan.Zero;
+
+        public TimeSpan TimeSpent(Player player, MainPhase phase)
+        {
+            if (Timers.TryGetValue(player, out var timer))
+            {
+                return timer.TimeSpent(phase);
+            }
+            else
+            {
+                return TimeSpan.Zero;
+            }
+        }
+
+        public DateTime Started
+        {
+            get
+            {
+                if (History.Count > 0)
+                {
+                    return History[0].Time;
+                }
+                else
+                {
+                    return default;
+                }
+            }
+        }
+
+        private bool InTimedPhase =>
+            CurrentPhase == Phase.Bidding ||
+            CurrentPhase == Phase.OrangeShip ||
+            CurrentPhase == Phase.OrangeMove ||
+            CurrentPhase == Phase.NonOrangeShip ||
+            CurrentPhase == Phase.NonOrangeMove ||
+            CurrentPhase == Phase.BattlePhase;
+
+        #endregion Information
     }
 }

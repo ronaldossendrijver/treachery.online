@@ -282,7 +282,6 @@ namespace Treachery.Shared
 
             FillEmptySeatsWithBots();
             RemoveClaimedFactions();
-            InitializeTimers();
 
             Game.Enter(Game.Applicable(Rule.PlayersChooseFactions), Phase.SelectingFactions, Game.AssignFactionsAndEnterFactionTrade);
         }
@@ -303,20 +302,6 @@ namespace Treachery.Shared
         {
             Game.NexusCardDeck = new Deck<Faction>(AvailableFactions(), Game.Random);
             Game.NexusCardDeck.Shuffle();
-        }
-
-        private void InitializeTimers()
-        {
-            foreach (var player in Game.Players)
-            {
-                var playerTimers = new Dictionary<MainPhase, TimeSpan>();
-                foreach (var mainphase in Enumerations.GetValuesExceptDefault(typeof(MainPhase), MainPhase.None))
-                {
-                    playerTimers.Add(mainphase, TimeSpan.Zero);
-                }
-
-                Game.Timers.Add(player, playerTimers);
-            }
         }
 
         private void RemoveClaimedFactions()
