@@ -134,13 +134,19 @@ namespace Treachery.Shared
                 Log(Game.AggressorBattleAction.GetBattlePlanMessage());
                 Log(Game.DefenderBattleAction.GetBattlePlanMessage());
 
-                Game.RegisterKnownCards(Game.AggressorBattleAction);
-                Game.RegisterKnownCards(Game.DefenderBattleAction);
+                RegisterKnownCards(Game.AggressorBattleAction);
+                RegisterKnownCards(Game.DefenderBattleAction);
 
                 PassPurpleTraitorAction();
 
                 Game.Enter(Game.AggressorBattleAction.HasRockMelter || Game.DefenderBattleAction.HasRockMelter, Phase.MeltingRock, Phase.CallTraitorOrPass);
             }
+        }
+
+        private void RegisterKnownCards(Battle battle)
+        {
+            Game.RegisterKnown(battle.Weapon);
+            Game.RegisterKnown(battle.Defense);
         }
 
         private void PassPurpleTraitorAction()
@@ -405,7 +411,7 @@ namespace Treachery.Shared
         
         public static int MaxResources(Game g, Player p, int forces, int specialForces) => Math.Min(p.Resources, Math.Max(0, forces + specialForces - CostReduction(g, p)));
 
-        public static int MaxAllyResources(Game g, Player p, int forces, int specialForces) => Math.Min(g.SpiceYourAllyCanPay(p), Math.Max(0, forces + specialForces - CostReduction(g, p)));
+        public static int MaxAllyResources(Game g, Player p, int forces, int specialForces) => Math.Min(g.ResourcesYourAllyCanPay(p), Math.Max(0, forces + specialForces - CostReduction(g, p)));
 
         public static int MaxForces(Game g, Player p, bool specialForces)
         {

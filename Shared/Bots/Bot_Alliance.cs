@@ -112,7 +112,7 @@ namespace Treachery.Shared
                 bool boolPermissionsNeedUpdate = BoolPermissionsNeedUpdate(permission);
                 bool specialPermissionsNeedUpdate = SpecialPermissionsNeedUpdate(permission);
 
-                if (boolPermissionsNeedUpdate || specialPermissionsNeedUpdate || Game.GetPermittedUseOfAllySpice(Ally) != allowedResources || Game.GetPermittedUseOfAllyKarma(Ally) != allowedKarmaCard)
+                if (boolPermissionsNeedUpdate || specialPermissionsNeedUpdate || Game.GetPermittedUseOfAllyResources(Ally) != allowedResources || Game.GetPermittedUseOfAllyKarma(Ally) != allowedKarmaCard)
                 {
                     LogInfo("Updating permissions, allowing use of {0} spice and Karama: {1}", allowedResources, allowedKarmaCard);
                     return permission;

@@ -10,6 +10,12 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
+        public bool CanJoinCurrentBattle(IHero hero)
+        {
+            var currentTerritory = CurrentTerritory(hero);
+            return currentTerritory == null || currentTerritory == CurrentBattle?.Territory;
+        }
+
         internal void KillHero(IHero h)
         {
             if (h is Leader || h is Messiah)

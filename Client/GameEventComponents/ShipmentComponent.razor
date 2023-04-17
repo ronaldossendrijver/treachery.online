@@ -171,10 +171,10 @@
             smuggledSpecialForceAmount = 0;
         }
 
-        @if (Player.Ally != Faction.None && Cost > 0 && Game.SpiceYourAllyCanPay(Player) > 0)
+        @if (Player.Ally != Faction.None && Cost > 0 && Game.ResourcesYourAllyCanPay(Player) > 0)
         {
             <div class="mt-1">
-                <SelectResourcesFromFactionComponent @bind-Value="shipmentAllyContributionAmount" Min="0" Max="Game.SpiceYourAllyCanPay(Player)" Faction="Player.Ally" Title=@Skin.Current.Format("{0} paid by your ally", Concept.Resource) />
+                <SelectResourcesFromFactionComponent @bind-Value="shipmentAllyContributionAmount" Min="0" Max="Game.ResourcesYourAllyCanPay(Player)" Faction="Player.Ally" Title=@Skin.Current.Format("{0} paid by your ally", Concept.Resource) />
             </div>
         }
         else

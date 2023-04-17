@@ -84,19 +84,19 @@
 
             case Faction.Orange:
                 <CheckboxComponent @bind-Value="guildAllyMayShipAsGuild" OnChanged=SetEdited>
-                    Allow shipment at @Skin.Current.Describe(Faction.Orange) rates and site-to-site (currently: <strong>@(Game.AllyMayShipAsOrange ? "yes" : "no")</strong>)
+                    Allow shipment at @Skin.Current.Describe(Faction.Orange) rates and site-to-site (currently: <strong>@(Game.OrangeAllowsShippingDiscount ? "yes" : "no")</strong>)
                 </CheckboxComponent>
                 break;
 
             case Faction.Purple:
                 <CheckboxComponent @bind-Value="purpleAllyMyReviveAsPurple" OnChanged=SetEdited>
-                    Allow revival at @Skin.Current.Describe(Faction.Purple) rates (currently: <strong>@(Game.AllyMayReviveAsPurple ? "yes" : "no")</strong>)
+                    Allow revival at @Skin.Current.Describe(Faction.Purple) rates (currently: <strong>@(Game.PurpleAllowsRevivalDiscount ? "yes" : "no")</strong>)
                 </CheckboxComponent>
                 break;
 
             case Faction.Grey:
                 <CheckboxComponent @bind-Value="greyAllyMayReplace" OnChanged=SetEdited>
-                    Allow replacing treachery cards they win (currently: <strong>@(Game.AllyMayReplaceCards ? "yes" : "no")</strong>)
+                    Allow replacing treachery cards they win (currently: <strong>@(Game.GreyAllowsReplacingCards ? "yes" : "no")</strong>)
                 </CheckboxComponent>
                 break;
 
@@ -189,21 +189,21 @@
 
         if (!edited)
         {
-            spice = Game.GetPermittedUseOfAllySpice(Player.Ally);
+            spice = Game.GetPermittedUseOfAllyResources(Player.Ally);
             karmaCard = Game.GetPermittedUseOfAllyKarma(Player.Ally);
 
             switch (Faction)
             {
                 case Faction.Purple:
-                    purpleAllyMyReviveAsPurple = Game.AllyMayReviveAsPurple;
+                    purpleAllyMyReviveAsPurple = Game.PurpleAllowsRevivalDiscount;
                     break;
 
                 case Faction.Grey:
-                    greyAllyMayReplace = Game.AllyMayReplaceCards;
+                    greyAllyMayReplace = Game.GreyAllowsReplacingCards;
                     break;
 
                 case Faction.Orange:
-                    guildAllyMayShipAsGuild = Game.AllyMayShipAsOrange;
+                    guildAllyMayShipAsGuild = Game.OrangeAllowsShippingDiscount;
                     break;
 
                 case Faction.Red:
@@ -260,21 +260,21 @@
     {
         get
         {
-            if (spice != Game.GetPermittedUseOfAllySpice(Player.Ally)) return true;
+            if (spice != Game.GetPermittedUseOfAllyResources(Player.Ally)) return true;
             if (karmaCard != Game.GetPermittedUseOfAllyKarma(Player.Ally)) return true;
 
             switch (Faction)
             {
                 case Faction.Purple:
-                    if (purpleAllyMyReviveAsPurple != Game.AllyMayReviveAsPurple) return true;
+                    if (purpleAllyMyReviveAsPurple != Game.PurpleAllowsRevivalDiscount) return true;
                     break;
 
                 case Faction.Grey:
-                    if (greyAllyMayReplace != Game.AllyMayReplaceCards) return true;
+                    if (greyAllyMayReplace != Game.GreyAllowsReplacingCards) return true;
                     break;
 
                 case Faction.Orange:
-                    if (guildAllyMayShipAsGuild != Game.AllyMayShipAsOrange) return true;
+                    if (guildAllyMayShipAsGuild != Game.OrangeAllowsShippingDiscount) return true;
                     break;
 
                 case Faction.Red:
@@ -344,7 +344,7 @@
     private string WillingToPayLabel =>
         string.Format("How much are you willing to pay for their {0}bids and shipments (currently: {1})? {2}",
             Faction == Faction.Brown ? "battles, " : "",
-            Game.GetPermittedUseOfAllySpice(Player.Ally),
+            Game.GetPermittedUseOfAllyResources(Player.Ally),
             Faction == Faction.Red ? "Payments for bids flow back to you." : "");
 }
 

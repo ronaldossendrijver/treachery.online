@@ -170,7 +170,7 @@ namespace Treachery.Shared
         {
             get
             {
-                return Ally != Faction.None ? Game.GetPermittedUseOfAllySpice(Faction) : 0;
+                return Ally != Faction.None ? Game.GetPermittedUseOfAllyResources(Faction) : 0;
             }
         }
 

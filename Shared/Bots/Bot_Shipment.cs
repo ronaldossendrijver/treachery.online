@@ -806,7 +806,7 @@ namespace Treachery.Shared
 
         protected virtual void UseAllyResources(Shipment shipment)
         {
-            shipment.AllyContributionAmount = Math.Min(shipment.DetermineCostToInitiator(Game), Game.SpiceYourAllyCanPay(this));
+            shipment.AllyContributionAmount = Math.Min(shipment.DetermineCostToInitiator(Game), Game.ResourcesYourAllyCanPay(this));
         }
 
         class Attack

@@ -144,5 +144,17 @@ namespace Treachery.Shared
 
             return source.OrderBy(x => _random.Next()).Take(n);
         }
+
+        public static void Set<KeyType, ValueType>(this IDictionary<KeyType, ValueType> source, KeyType key, ValueType value)
+        {
+            if (source.ContainsKey(key))
+            {
+                source[key] = value;
+            }
+            else
+            {
+                source.Add(key, value);
+            }
+        }
     }
 }

@@ -348,7 +348,7 @@ namespace Treachery.Shared
 
         public static int ValidMaxAllyAmount(Game g, Player p)
         {
-            return g.SpiceYourAllyCanPay(p);
+            return g.ResourcesYourAllyCanPay(p);
         }
 
         public static IEnumerable<SequenceElement> PlayersToBid(Game g)

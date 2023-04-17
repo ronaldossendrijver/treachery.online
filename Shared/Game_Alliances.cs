@@ -10,9 +10,36 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
+        #region BrownCardTrading
+
+        public CardTraded CurrentCardTradeOffer { get; internal set; }
+        internal Phase PhaseBeforeCardTrade { get; set; }
+        internal int LastTurnCardWasTraded { get; set; } = -1;
+
+        #endregion
+
         #region Nexus
 
-        public readonly IList<AllianceOffered> CurrentAllianceOffers = new List<AllianceOffered>();
+        internal List<AllianceOffered> CurrentAllianceOffers { get; } = new();
+        internal bool NexusHasOccured { get; set; } = false;
+
+        internal Dictionary<Faction, int> PermittedUseOfAllySpice { get; } = new();
+        internal Dictionary<Faction, int> PermittedUseOfRedSpice { get; set; } = new();
+        internal Dictionary<Faction, TreacheryCard> PermittedUseOfAllyKarma { get; } = new();
+
+        public bool GreenSharesPrescience { get; internal set; } = false;
+        public bool YellowWillProtectFromMonster { get; internal set; } = false;
+        public bool YellowAllowsThreeFreeRevivals { get; internal set; } = false;
+        public bool YellowSharesPrescience { get; internal set; } = false;
+        public bool YellowRefundsBattleDial { get; internal set; } = false;
+        public int RedWillPayForExtraRevival { get; internal set; } = 0;
+        public bool OrangeAllowsShippingDiscount { get; internal set; } = false;
+        public bool BlueAllowsUseOfVoice { get; internal set; } = false;
+        public bool GreyAllowsReplacingCards { get; internal set; } = false;
+        public bool PurpleAllowsRevivalDiscount { get; internal set; } = false;
+        public bool WhiteAllowsUseOfNoField { get; internal set; } = false;
+        public bool CyanAllowsKeepingCards { get; internal set; } = false;
+        public bool PinkSharesAmbassadors { get; internal set; } = false;
 
         internal void MakeAlliance(Faction a, Faction b)
         {
@@ -40,7 +67,7 @@ namespace Treachery.Shared
             {
                 if (f == Faction.Orange || initiator.Ally == Faction.Orange)
                 {
-                    AllyMayShipAsOrange = false;
+                    OrangeAllowsShippingDiscount = false;
                 }
 
                 if (f == Faction.Red || initiator.Ally == Faction.Red)
@@ -69,107 +96,44 @@ namespace Treachery.Shared
             currentAlly.Ally = Faction.None;
         }
 
-        private void SetPermissions(Faction f, bool enabled)
+        internal void DecreasePermittedUseOfAllySpice(Faction f, int amount)
+        {
+            if (PermittedUseOfAllySpice.ContainsKey(f))
+            {
+                var newValue = PermittedUseOfAllySpice[f] - amount;
+                PermittedUseOfAllySpice[f] = Math.Max(0, newValue);
+            }
+        }
+
+        private void SetPermissions(Faction f, bool permission)
         {
             switch (f)
             {
-                case Faction.Orange: AllyMayShipAsOrange = enabled; break;
-                case Faction.Purple: AllyMayReviveAsPurple = enabled; break;
-                case Faction.Grey: AllyMayReplaceCards = enabled; break;
-                case Faction.Blue: BlueAllowsUseOfVoice = enabled; break;
-                case Faction.Red: RedWillPayForExtraRevival = enabled ? 3 : 0; break;
-                case Faction.White: WhiteAllowsUseOfNoField = enabled; break;
+                case Faction.Green: GreenSharesPrescience = permission; break;
                 case Faction.Yellow:
-                    YellowWillProtectFromMonster = enabled;
-                    YellowAllowsThreeFreeRevivals = enabled;
-                    YellowSharesPrescience = enabled;
-                    YellowRefundsBattleDial = enabled;
+                    YellowWillProtectFromMonster = permission;
+                    YellowAllowsThreeFreeRevivals = permission;
+                    YellowSharesPrescience = permission;
+                    YellowRefundsBattleDial = permission;
                     break;
-                case Faction.Green: GreenSharesPrescience = enabled; break;
-                case Faction.Cyan: CyanAllowsKeepingCards = enabled; break;
-                case Faction.Pink: PinkSharesAmbassadors = enabled; break;
+                case Faction.Red: RedWillPayForExtraRevival = permission ? 3 : 0; break;
+                case Faction.Orange: OrangeAllowsShippingDiscount = permission; break;
+                case Faction.Blue: BlueAllowsUseOfVoice = permission; break;
+                case Faction.Grey: GreyAllowsReplacingCards = permission; break;
+                case Faction.Purple: PurpleAllowsRevivalDiscount = permission; break;
+                case Faction.White: WhiteAllowsUseOfNoField = permission; break;
+                case Faction.Cyan: CyanAllowsKeepingCards = permission; break;
+                case Faction.Pink: PinkSharesAmbassadors = permission; break;
             }
         }
+                       
+        #endregion Nexus
 
-        private bool NexusHasOccured { get; set; } = false;
+        #region Information
 
-        internal void EndNexus()
-        {
-            NexusHasOccured = true;
-            CurrentAllianceOffers.Clear();
+        internal bool AreAllies(Faction a, Faction b) => GetPlayer(a)?.Ally == b;
 
-            if (YellowRidesMonster.IsApplicable(this))
-            {
-                Enter(CurrentPhase == Phase.AllianceA, Phase.YellowRidingMonsterA, Phase.YellowRidingMonsterB);
-            }
-            else
-            {
-                if (CurrentPhase == Phase.AllianceA)
-                {
-                    Enter(Applicable(Rule.IncreasedResourceFlow), EnterBlowB, StartNexusCardPhase);
-                }
-                else if (CurrentPhase == Phase.AllianceB)
-                {
-                    StartNexusCardPhase();
-                }
-            }
-        }
-
-        #endregion
-
-        #region Permissions
-
-        public bool AllyMayShipAsOrange { get; internal set; } = false;
-        public bool AllyMayReviveAsPurple { get; internal set; } = false;
-        public bool AllyMayReplaceCards { get; internal set; } = false;
-        public bool BlueAllowsUseOfVoice { get; internal set; } = false;
-        public int RedWillPayForExtraRevival { get; internal set; } = 0;
-        public bool WhiteAllowsUseOfNoField { get; internal set; } = false;
-        public bool YellowWillProtectFromMonster { get; internal set; } = false;
-        public bool YellowAllowsThreeFreeRevivals { get; internal set; } = false;
-        public bool YellowSharesPrescience { get; internal set; } = false;
-        public bool YellowRefundsBattleDial { get; internal set; } = false;
-        public bool GreenSharesPrescience { get; internal set; } = false;
-        public bool CyanAllowsKeepingCards { get; internal set; } = false;
-        public bool PinkSharesAmbassadors { get; internal set; } = false;
-
-        internal Dictionary<Faction, int> PermittedUseOfAllySpice { get; } = new();
-        internal Dictionary<Faction, int> PermittedUseOfRedSpice { get; set; } = new();
-        internal Dictionary<Faction, TreacheryCard> PermittedUseOfAllyKarma { get; } = new();
-
-        #endregion
-
-        #region BrownCardTrading
-
-        public CardTraded CurrentCardTradeOffer { get; internal set; } = null;
-        internal Phase PhaseBeforeCardTrade { get; set; } = Phase.None;
-        internal int LastTurnCardWasTraded { get; set; } = -1;
-
-        #endregion
-
-
-        #region Support
-
-        internal static void Set<KeyType, ValueType>(IDictionary<KeyType, ValueType> dict, KeyType key, ValueType value)
-        {
-            dict.Remove(key);
-            dict.Add(key, value);
-        }
-
-        internal bool AreAllies(Faction a, Faction b)
-        {
-            var player = GetPlayer(a);
-            if (player != null)
-            {
-                return player.Ally == b;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public int SpiceYourAllyCanPay(Player p)
+        public int ResourcesYourAllyCanPay(Player p)
         {
             if (PermittedUseOfAllySpice.TryGetValue(p.Faction, out int value))
             {
@@ -209,7 +173,7 @@ namespace Treachery.Shared
             }
         }
 
-        public int GetPermittedUseOfAllySpice(Faction f)
+        public int GetPermittedUseOfAllyResources(Faction f)
         {
             var ally = GetPlayer(f).AlliedPlayer;
 
@@ -223,15 +187,6 @@ namespace Treachery.Shared
             }
         }
 
-        internal void DecreasePermittedUseOfAllySpice(Faction f, int amount)
-        {
-            if (PermittedUseOfAllySpice.ContainsKey(f))
-            {
-                var newValue = PermittedUseOfAllySpice[f] - amount;
-                PermittedUseOfAllySpice[f] = Math.Max(0, newValue);
-            }
-        }
-
-        #endregion
+        #endregion Information
     }
 }

@@ -13,6 +13,7 @@ namespace Treachery.Shared
         #region State
 
         public PlayerSequence BattleSequence { get; internal set; }
+        public BattleInitiated BattleAboutToStart { get; internal set; }
         public BattleInitiated CurrentBattle { get; internal set; }
         public Battle AggressorBattleAction { get; internal set; }
         public TreacheryCalled AggressorTraitorAction { get; internal set; }
@@ -21,29 +22,34 @@ namespace Treachery.Shared
         public BattleOutcome BattleOutcome { get; internal set; }
         public Faction BattleWinner { get; internal set; }
         public Faction BattleLoser { get; internal set; }
-        public int GreySpecialForceLossesToTake { get; internal set; }
-
         internal int NrOfBattlesFought { get; set; } = 0;
-        internal TriggeredBureaucracy BattleTriggeredBureaucracy { get; set; }
-
-        #endregion State
-
-        #region BeginningOfBattlePhase
-
-        
-
-        #endregion
-
-        #region BattleInitiation
-
-        public BattleInitiated BattleAboutToStart { get; internal set; }
 
         public Faction CurrentPinkOrAllyFighter { get; internal set; }
         public int CurrentPinkBattleContribution { get; internal set; }
 
-        
+        public Voice CurrentVoice { get; internal set; } = null;
+        public Prescience CurrentPrescience { get; internal set; } = null;
+        public Thought CurrentThought { get; internal set; }
 
-        
+        public PortableAntidoteUsed CurrentPortableAntidoteUsed { get; internal set; }
+        internal bool PoisonToothCancelled { get; set; } = false;
+        internal RockWasMelted CurrentRockWasMelted { get; set; }
+
+        public List<IHero> TraitorsDeciphererCanLookAt { get; } = new();
+        public bool DeciphererMayReplaceTraitor { get; private set; } = false;
+        public bool LoserMayTryToAssassinate { get; internal set; } = false;
+        public bool BattleWinnerMayChooseToDiscard { get; internal set; } = true;
+        internal bool SecretAllyAllowsKeepingCardsAfterLosingBattle { get; set; } = false;
+        public List<TreacheryCard> CardsToBeDiscardedByLoserAfterBattle { get; } = new();
+        public Diplomacy CurrentDiplomacy { get; internal set; }
+        public List<TreacheryCard> AuditedCards { get; } = new();
+        public Leader BlackVictim { get; internal set; }
+        public int GreySpecialForceLossesToTake { get; internal set; }
+        internal TriggeredBureaucracy BattleTriggeredBureaucracy { get; set; }
+
+        #endregion State
+
+        #region BattleInitiation
 
         internal void InitiateBattle()
         {
@@ -73,65 +79,6 @@ namespace Treachery.Shared
                 Log(p.Faction, " have no leaders available for this battle");
             }
         }
-
-        #endregion
-
-        #region VoiceAndPrescience
-
-        public Voice CurrentVoice { get; internal set; } = null;
-
-        public Prescience CurrentPrescience { get; internal set; } = null;
-
-        public Thought CurrentThought { get; internal set; }
-
-        #endregion
-
-        #region BattlePlan
-
-        public void HandleEvent(ResidualPlayed e)
-        {
-            Discard(e.Player, TreacheryCardType.Residual);
-
-            var opponent = CurrentBattle.OpponentOf(e.Initiator);
-            var leadersToKill = new Deck<IHero>(opponent.Leaders.Where(l => LeaderState[l].Alive && CanJoinCurrentBattle(l)), Random);
-            leadersToKill.Shuffle();
-
-            if (!leadersToKill.IsEmpty)
-            {
-                var toKill = leadersToKill.Draw();
-                var opponentPlan = CurrentBattle.PlanOf(opponent);
-                if (opponentPlan != null && opponentPlan.Hero == toKill)
-                {
-                    RevokePlan(opponentPlan);
-                }
-
-                KillHero(toKill);
-                Log(TreacheryCardType.Residual, " kills ", toKill);
-            }
-            else
-            {
-                Log(opponent.Faction, " have no available leaders to kill");
-            }
-        }
-
-
-        public PortableAntidoteUsed CurrentPortableAntidoteUsed { get; internal set; }
-
-        internal bool PoisonToothCancelled { get; set; } = false;
-
-        internal RockWasMelted CurrentRockWasMelted { get; set; }
-
-        internal void RegisterKnownCards(Battle battle)
-        {
-            RegisterKnown(battle.Weapon);
-            RegisterKnown(battle.Defense);
-        }
-
-        #endregion
-
-        #region Treachery
-
-
 
         #endregion
 
@@ -219,6 +166,35 @@ namespace Treachery.Shared
             }
 
             DetermineIfCapturedLeadersMustBeReleased();
+        }
+
+        internal bool BlackMustDecideToCapture => Version >= 116 && BattleWinner == Faction.Black && Applicable(Rule.BlackCapturesOrKillsLeaders) && !Prevented(FactionAdvantage.BlackCaptureLeader);
+
+        private void CaptureLeaderIfApplicable()
+        {
+            if (Version < 116 && BattleWinner == Faction.Black && Applicable(Rule.BlackCapturesOrKillsLeaders))
+            {
+                if (!Prevented(FactionAdvantage.BlackCaptureLeader))
+                {
+                    CaptureLeader();
+                }
+                else
+                {
+                    LogPreventionByKarma(FactionAdvantage.BlackCaptureLeader);
+                }
+            }
+        }
+
+        internal void CaptureLeader()
+        {
+            if (AggressorBattleAction.By(BattleWinner))
+            {
+                SelectVictimOfBlackWinner(AggressorBattleAction, DefenderBattleAction);
+            }
+            else
+            {
+                SelectVictimOfBlackWinner(DefenderBattleAction, AggressorBattleAction);
+            }
         }
 
         private void HandleReinforcements(Battle plan)
@@ -334,9 +310,6 @@ namespace Treachery.Shared
             }
         }
 
-        public List<IHero> TraitorsDeciphererCanLookAt { get; private set; } = new List<IHero>();
-        public bool DeciphererMayReplaceTraitor { get; private set; } = false;
-
         private void ActivateDeciphererIfApplicable(Battle plan)
         {
             bool playerIsSkilled = SkilledAs(plan.Player, LeaderSkill.Decipherer);
@@ -426,8 +399,6 @@ namespace Treachery.Shared
             }
         }
 
-
-
         private void PrepareAudit()
         {
             var auditableCards = new Deck<TreacheryCard>(AuditCancelled.GetCardsThatMayBeAudited(this), Random);
@@ -435,7 +406,7 @@ namespace Treachery.Shared
             if (auditableCards.Items.Count > 0)
             {
                 var nrOfAuditedCards = AuditCancelled.GetNumberOfCardsThatMayBeAudited(this);
-                AuditedCards = new List<TreacheryCard>();
+                AuditedCards.Clear();
                 auditableCards.Shuffle();
                 for (int i = 0; i < nrOfAuditedCards; i++)
                 {
@@ -512,13 +483,11 @@ namespace Treachery.Shared
             }
         }
 
-        internal bool BlackMustDecideToCapture => Version >= 116 && BattleWinner == Faction.Black && Applicable(Rule.BlackCapturesOrKillsLeaders) && !Prevented(FactionAdvantage.BlackCaptureLeader);
+        
 
         #endregion
 
         #region BattleOutcome
-
-        public bool LoserMayTryToAssassinate { get; internal set; } = false;
 
         public void HandleBattleOutcome(Battle agg, Battle def, Territory territory)
         {
@@ -1171,11 +1140,7 @@ namespace Treachery.Shared
 
             return false;
         }
-
-
         
-
-        public Leader BlackVictim { get; internal set; }
         private void SelectVictimOfBlackWinner(Battle harkonnenAction, Battle victimAction)
         {
             var harkonnen = GetPlayer(harkonnenAction.Initiator);
@@ -1240,7 +1205,6 @@ namespace Treachery.Shared
             }
         }
 
-
         private void AllowPreventedBattleFactionAdvantages()
         {
             Allow(FactionAdvantage.GreenUseMessiah);
@@ -1256,37 +1220,51 @@ namespace Treachery.Shared
             Allow(FactionAdvantage.BrownReceiveForcePayment);
         }
 
-        
-
-        
-
         #endregion
 
-        #region FaceDancing
-                
+        #region PostBattle
 
-        public IHero WinnerHero
+        private void LoseCards(Battle plan, bool mayChooseToKeepOne)
         {
-            get
+            if (!(plan.Player.Ally == Faction.Cyan && CyanAllowsKeepingCards) && plan.Player.Nexus == Faction.Cyan && NexusPlayed.CanUseSecretAlly(this, plan.Player))
             {
-                if (BattleWinner != Faction.None)
-                {
-                    var winnerGambit = BattleWinner == AggressorBattleAction.Initiator ? AggressorBattleAction : DefenderBattleAction;
-                    return winnerGambit.Hero;
-                }
+                SecretAllyAllowsKeepingCardsAfterLosingBattle = true;
+            }
 
-                return null;
+            if (mayChooseToKeepOne)
+            {
+                if (plan.Weapon != null) CardsToBeDiscardedByLoserAfterBattle.Add(plan.Weapon);
+                if (plan.Defense != null) CardsToBeDiscardedByLoserAfterBattle.Add(plan.Defense);
+            }
+            else
+            {
+                Discard(plan.Weapon);
+                Discard(plan.Defense);
             }
         }
 
         #endregion
 
-        #region PostBattle
+        #region Information
 
-        public Diplomacy CurrentDiplomacy { get; internal set; }
-        
+        public Player NextPlayerToBattle
+        {
+            get
+            {
+                for (int i = 0; i < Players.Count; i++)
+                {
+                    var playerToCheck = BattleSequence.CurrentPlayer;
+                    if (Battle.BattlesToBeFought(this, playerToCheck).Any())
+                    {
+                        return playerToCheck;
+                    }
 
-        public IList<TreacheryCard> AuditedCards { get; private set; }
+                    BattleSequence.NextPlayer();
+                }
+
+                return null;
+            }
+        }
 
         public Player Auditee
         {
@@ -1308,85 +1286,18 @@ namespace Treachery.Shared
             }
         }
 
-        private void CaptureLeaderIfApplicable()
-        {
-            if (Version < 116 && BattleWinner == Faction.Black && Applicable(Rule.BlackCapturesOrKillsLeaders))
-            {
-                if (!Prevented(FactionAdvantage.BlackCaptureLeader))
-                {
-                    CaptureLeader();
-                }
-                else
-                {
-                    LogPreventionByKarma(FactionAdvantage.BlackCaptureLeader);
-                }
-            }
-        }
-
-        internal void CaptureLeader()
-        {
-            if (AggressorBattleAction.By(BattleWinner))
-            {
-                SelectVictimOfBlackWinner(AggressorBattleAction, DefenderBattleAction);
-            }
-            else
-            {
-                SelectVictimOfBlackWinner(DefenderBattleAction, AggressorBattleAction);
-            }
-        }
-
-        
-
-        #endregion
-
-        #region Support
-
-        public Player NextPlayerToBattle
+        public IHero WinnerHero
         {
             get
             {
-                for (int i = 0; i < Players.Count; i++)
+                if (BattleWinner != Faction.None)
                 {
-                    var playerToCheck = BattleSequence.CurrentPlayer;
-                    if (Battle.BattlesToBeFought(this, playerToCheck).Any())
-                    {
-                        return playerToCheck;
-                    }
-
-                    BattleSequence.NextPlayer();
+                    var winnerGambit = BattleWinner == AggressorBattleAction.Initiator ? AggressorBattleAction : DefenderBattleAction;
+                    return winnerGambit.Hero;
                 }
 
                 return null;
             }
-        }
-
-
-        internal bool SecretAllyAllowsKeepingCardsAfterLosingBattle { get; set; } = false;
-        public List<TreacheryCard> CardsToBeDiscardedByLoserAfterBattle { get; private set; } = new();
-
-        private void LoseCards(Battle plan, bool mayChooseToKeepOne)
-        {
-            if (!(plan.Player.Ally == Faction.Cyan && CyanAllowsKeepingCards) && plan.Player.Nexus == Faction.Cyan && NexusPlayed.CanUseSecretAlly(this, plan.Player))
-            {
-                SecretAllyAllowsKeepingCardsAfterLosingBattle = true;
-            }
-
-            if (mayChooseToKeepOne)
-            {
-                if (plan.Weapon != null) CardsToBeDiscardedByLoserAfterBattle.Add(plan.Weapon);
-                if (plan.Defense != null) CardsToBeDiscardedByLoserAfterBattle.Add(plan.Defense);
-            }
-            else
-            {
-                Discard(plan.Weapon);
-                Discard(plan.Defense);
-            }
-        }
-
-        public bool CanJoinCurrentBattle(IHero hero)
-        {
-            var currentTerritory = CurrentTerritory(hero);
-            return currentTerritory == null || currentTerritory == CurrentBattle?.Territory;
         }
 
         public Battle WinnerBattleAction
@@ -1400,8 +1311,6 @@ namespace Treachery.Shared
             }
         }
 
-        public bool BattleWinnerMayChooseToDiscard { get; set; } = true;
-
-        #endregion
+        #endregion Information
     }
 }

@@ -142,7 +142,7 @@ namespace Treachery.Shared
 
             if (winner != null)
             {
-                if (winner.Ally == Faction.Grey && Game.AllyMayReplaceCards)
+                if (winner.Ally == Faction.Grey && Game.GreyAllowsReplacingCards)
                 {
                     if (!Game.Prevented(FactionAdvantage.GreyAllyDiscardingCard))
                     {
@@ -214,7 +214,7 @@ namespace Treachery.Shared
 
         public static int ValidMaxAmount(Player p) => p.Resources;
 
-        public static int ValidMaxAllyAmount(Game g, Player p) => g.SpiceYourAllyCanPay(p);
+        public static int ValidMaxAllyAmount(Game g, Player p) => g.ResourcesYourAllyCanPay(p);
 
         public static IEnumerable<SequenceElement> PlayersToBid(Game g)
         {

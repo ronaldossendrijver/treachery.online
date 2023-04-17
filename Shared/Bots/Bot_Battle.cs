@@ -216,7 +216,7 @@ namespace Treachery.Shared
 
             LogInfo("AGAINST {0} in {1}, WITH {2} + {3} as WEAP + {4} as DEF, I need a force dial of {5}", opponent, Game.CurrentBattle.Territory, hero, weapon, defense, dialNeeded);
 
-            int resourcesFromAlly = Ally == Faction.Brown ? Game.SpiceYourAllyCanPay(this) : 0;
+            int resourcesFromAlly = Ally == Faction.Brown ? Game.ResourcesYourAllyCanPay(this) : 0;
             int resourcesForBattle = Resources + resourcesFromAlly;
 
             var dialShortage = DetermineDialShortageForBattle(

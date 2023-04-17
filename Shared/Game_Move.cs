@@ -69,7 +69,7 @@ namespace Treachery.Shared
         public bool MayShipCrossPlanet(Player p)
         {
             return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) ||
-                   p.Ally == Faction.Orange && AllyMayShipAsOrange ||
+                   p.Ally == Faction.Orange && OrangeAllowsShippingDiscount ||
                    p.Initiated(CurrentOrangeNexus) ||
                    HasShipmentPermission(p, ShipmentPermission.Cross);
         }
@@ -84,7 +84,7 @@ namespace Treachery.Shared
         public bool MayShipWithDiscount(Player p)
         {
             return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeShipmentsDiscount) ||
-                   p.Ally == Faction.Orange && AllyMayShipAsOrange && !Prevented(FactionAdvantage.OrangeShipmentsDiscountAlly) ||
+                   p.Ally == Faction.Orange && OrangeAllowsShippingDiscount && !Prevented(FactionAdvantage.OrangeShipmentsDiscountAlly) ||
                    p.Initiated(CurrentOrangeNexus);
         }
 

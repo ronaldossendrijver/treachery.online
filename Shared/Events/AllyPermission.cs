@@ -67,15 +67,15 @@ namespace Treachery.Shared
             switch (Initiator)
             {
                 case Faction.Orange:
-                    Game.AllyMayShipAsOrange = AllyMayShipAsOrange;
+                    Game.OrangeAllowsShippingDiscount = AllyMayShipAsOrange;
                     break;
 
                 case Faction.Purple:
-                    Game.AllyMayReviveAsPurple = AllyMayReviveAsPurple;
+                    Game.PurpleAllowsRevivalDiscount = AllyMayReviveAsPurple;
                     break;
 
                 case Faction.Grey:
-                    Game.AllyMayReplaceCards = AllyMayReplaceCards;
+                    Game.GreyAllowsReplacingCards = AllyMayReplaceCards;
                     break;
 
                 case Faction.Red:
@@ -111,8 +111,8 @@ namespace Treachery.Shared
 
             }
 
-            Game.Set(Game.PermittedUseOfAllySpice, ally, PermittedResources);
-            Game.Set(Game.PermittedUseOfAllyKarma, ally, PermittedKarmaCard);
+            Game.PermittedUseOfAllySpice.Set(ally, PermittedResources);
+            Game.PermittedUseOfAllyKarma.Set(ally, PermittedKarmaCard);
         }
 
         public override Message GetMessage()

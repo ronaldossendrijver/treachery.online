@@ -17,7 +17,7 @@ namespace Treachery.Shared
         public AuctionType CurrentAuctionType { get; private set; }
         public int CardNumber { get; private set; }
         public IBid CurrentBid { get; internal set; }
-        public Dictionary<Faction, IBid> Bids { get; private set; } = new Dictionary<Faction, IBid>();
+        public Dictionary<Faction, IBid> Bids { get; } = new();
 
         internal bool GreySwappedCardOnBid { get; set; }
         internal bool RegularBiddingIsDone { get; set; }
@@ -26,7 +26,13 @@ namespace Treachery.Shared
         internal int NumberOfCardsOnAuction { get; set; }
         internal TriggeredBureaucracy BiddingTriggeredBureaucracy { get; set; }
         internal TreacheryCard CardSoldOnBlackMarket { get; set; }
-        internal IEnumerable<Player> PlayersThatCanBid => Players.Where(p => p.HasRoomForCards);
+        public Faction FactionThatMayReplaceBoughtCard { get; internal set; }
+        public bool ReplacingBoughtCardUsingNexus { get; internal set; } = false;
+
+        public int KarmaHandSwapNumberOfCards { get; internal set; }
+        public Faction KarmaHandSwapTarget { get; internal set; }
+        internal Phase KarmaHandSwapPausedPhase { get; set; }
+
 
         #endregion
 
@@ -59,17 +65,6 @@ namespace Treachery.Shared
                 Phase.BlackMarketAnnouncement,
                 EnterWhiteBidding);
         }
-
-        #endregion
-
-        #region BlackMarket
-
-        public Faction FactionThatMayReplaceBoughtCard { get; internal set; }
-        public bool ReplacingBoughtCardUsingNexus { get; internal set; } = false;
-
-        
-
-        internal bool NexusAllowsReplacingBoughtCards(Player p) => (p.Nexus == Faction.Grey || p.Nexus == Faction.White) && NexusPlayed.CanUseSecretAlly(this, p);
 
         #endregion
 
@@ -137,14 +132,7 @@ namespace Treachery.Shared
             Enter(IsPlaying(Faction.Grey) && !Prevented(FactionAdvantage.GreySelectingCardsOnAuction), Phase.GreyRemovingCardFromBid, StartBiddingRound);
         }
 
-        internal bool GreyMaySwapCardOnBid
-        {
-            get
-            {
-                var grey = GetPlayer(Faction.Grey);
-                return grey != null && grey.TreacheryCards.Count > 0 && Applicable(Rule.GreySwappingCardOnBid) && !GreySwappedCardOnBid;
-            }
-        }
+        
 
         internal void StartBiddingRound()
         {
@@ -155,22 +143,7 @@ namespace Treachery.Shared
             Bids.Clear();
             CardNumber = 1;
         }
-
-        public IEnumerable<TreacheryCard> CardsOwnedBy(Player p)
-        {
-            var cardSetAside = GetCardSetAsideForBid(p);
-            if (cardSetAside == null)
-            {
-                return p.TreacheryCards;
-            }
-            else
-            {
-                var result = p.TreacheryCards.ToList();
-                result.Add(cardSetAside);
-                return result;
-            }
-        }
-
+        
         public TreacheryCard GetCardSetAsideForBid(Player p)
         {
             if (CardUsedForKarmaBid != null && CardUsedForKarmaBid.Item1 == p)
@@ -403,7 +376,7 @@ namespace Treachery.Shared
 
             if (mightReplace && winner != null)
             {
-                if (winner.Ally == Faction.Grey && AllyMayReplaceCards)
+                if (winner.Ally == Faction.Grey && GreyAllowsReplacingCards)
                 {
                     if (!Prevented(FactionAdvantage.GreyAllyDiscardingCard))
                     {
@@ -571,18 +544,6 @@ namespace Treachery.Shared
 
         #endregion
 
-        #region OtherBiddingEvents
-
-        public int KarmaHandSwapNumberOfCards { get; internal set; }
-        public Faction KarmaHandSwapTarget { get; internal set; }
-        internal Phase KarmaHandSwapPausedPhase { get; set; }
-
-        public bool HasBidToPay(Player p) => CurrentPhase == Phase.Bidding && CurrentBid != null &&
-            (CurrentBid.Initiator == p.Faction || CurrentBid.Initiator == p.Ally && CurrentBid.AllyContributionAmount > 0);
-
-
-        #endregion
-
         #region EndOfBidding
 
         internal void EndBiddingPhase()
@@ -601,5 +562,32 @@ namespace Treachery.Shared
         }
 
         #endregion
+
+        #region Information
+
+        internal IEnumerable<Player> PlayersThatCanBid => Players.Where(p => p.HasRoomForCards);
+
+        internal bool NexusAllowsReplacingBoughtCards(Player p) => (p.Nexus == Faction.Grey || p.Nexus == Faction.White) && NexusPlayed.CanUseSecretAlly(this, p);
+        
+        public bool HasBidToPay(Player p) => CurrentPhase == Phase.Bidding && CurrentBid != null &&
+            (CurrentBid.Initiator == p.Faction || CurrentBid.Initiator == p.Ally && CurrentBid.AllyContributionAmount > 0);
+
+        internal bool GreyMaySwapCardOnBid => GetPlayer(Faction.Grey)?.TreacheryCards.Count > 0 && Applicable(Rule.GreySwappingCardOnBid) && !GreySwappedCardOnBid;
+        public IEnumerable<TreacheryCard> CardsPlayableBy(Player p)
+        {
+            var cardSetAside = GetCardSetAsideForBid(p);
+            if (cardSetAside == null)
+            {
+                return p.TreacheryCards;
+            }
+            else
+            {
+                var result = p.TreacheryCards.ToList();
+                result.Add(cardSetAside);
+                return result;
+            }
+        }
+
+        #endregion Information
     }
 }

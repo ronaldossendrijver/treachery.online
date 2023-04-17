@@ -180,7 +180,7 @@
 
         if (!IsSilentAuction)
         {
-            int allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllySpice(Faction);
+            int allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllyResources(Faction);
             int playerResources = Player.Resources;
             int bidToDo = Game.CurrentBid != null ? Game.CurrentBid.TotalAmount + 1 : 1;
             allyContributionAmount = Math.Min(bidToDo, allyResources);

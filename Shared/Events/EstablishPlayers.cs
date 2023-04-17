@@ -259,9 +259,9 @@ namespace Treachery.Shared
             CreateTerrorTokens();
             Game.UnassignedAmbassadors = new Deck<Ambassador>(AvailableFactions().Where(f => f != Faction.Cyan).Select(f => Game.AmbassadorOf(f)), Game.Random);
 
-            Game.AllyMayShipAsOrange = true;
-            Game.AllyMayReviveAsPurple = true;
-            Game.AllyMayReplaceCards = true;
+            Game.OrangeAllowsShippingDiscount = true;
+            Game.PurpleAllowsRevivalDiscount = true;
+            Game.GreyAllowsReplacingCards = true;
             Game.RedWillPayForExtraRevival = 0;
             Game.YellowWillProtectFromMonster = true;
             Game.YellowAllowsThreeFreeRevivals = true;

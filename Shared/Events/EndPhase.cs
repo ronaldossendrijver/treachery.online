@@ -67,7 +67,7 @@ namespace Treachery.Shared
 
                 case Phase.AllianceA:
                 case Phase.AllianceB:
-                    Game.EndNexus();
+                    EndNexus();
                     break;
 
                 case Phase.BlowReport:
@@ -383,6 +383,28 @@ namespace Treachery.Shared
             else
             {
                 Game.Enter(Phase.BeginningOfCollection);
+            }
+        }
+
+        private void EndNexus()
+        {
+            Game.NexusHasOccured = true;
+            Game.CurrentAllianceOffers.Clear();
+
+            if (YellowRidesMonster.IsApplicable(Game))
+            {
+                Game.Enter(Game.CurrentPhase == Phase.AllianceA, Phase.YellowRidingMonsterA, Phase.YellowRidingMonsterB);
+            }
+            else
+            {
+                if (Game.CurrentPhase == Phase.AllianceA)
+                {
+                    Game.Enter(Game.Applicable(Rule.IncreasedResourceFlow), Game.EnterBlowB, Game.StartNexusCardPhase);
+                }
+                else if (Game.CurrentPhase == Phase.AllianceB)
+                {
+                    Game.StartNexusCardPhase();
+                }
             }
         }
 

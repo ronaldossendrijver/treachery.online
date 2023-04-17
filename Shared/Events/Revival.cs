@@ -354,7 +354,7 @@ namespace Treachery.Shared
         public static bool MayReviveWithDiscount(Game g, Player p)
         {
             return (p.Is(Faction.Purple) && !g.Prevented(FactionAdvantage.PurpleRevivalDiscount)) ||
-                   (p.Ally == Faction.Purple && g.AllyMayReviveAsPurple && !g.Prevented(FactionAdvantage.PurpleRevivalDiscountAlly));
+                   (p.Ally == Faction.Purple && g.PurpleAllowsRevivalDiscount && !g.Prevented(FactionAdvantage.PurpleRevivalDiscountAlly));
         }
 
 

@@ -135,7 +135,7 @@ namespace Treachery.Shared
                 int redContribution = Math.Min(spiceLeftToPay, Game.SpiceForBidsRedCanPay(Faction));
                 spiceLeftToPay -= redContribution;
 
-                int allyContribution = Math.Min(spiceLeftToPay, Game.SpiceYourAllyCanPay(this));
+                int allyContribution = Math.Min(spiceLeftToPay, Game.ResourcesYourAllyCanPay(this));
                 spiceLeftToPay -= allyContribution;
 
                 return new Bid(Game) { Initiator = Faction, Amount = spiceLeftToPay, AllyContributionAmount = allyContribution, RedContributionAmount = redContribution, KarmaBid = false, KarmaCard = null, Passed = false, UsesRedSecretAlly = useRedSecretAlly };
