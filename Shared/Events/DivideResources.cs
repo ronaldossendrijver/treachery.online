@@ -53,7 +53,7 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.CurrentDivideResources = this;
+            Game.CurrentDivisionProposal = this;
 
             if (Passed)
             {

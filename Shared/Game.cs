@@ -1182,11 +1182,6 @@ namespace Treachery.Shared
             }
         }
 
-        private void Log(GameEvent e)
-        {
-            CurrentReport.Express(e);
-        }
-
         private void Log(params object[] expression)
         {
             CurrentReport.Express(expression);
@@ -1210,6 +1205,18 @@ namespace Treachery.Shared
         internal void Stone(Milestone m)
         {
             RecentMilestones.Add(m);
+        }
+
+        private void SetAsideVidal()
+        {
+            if (IsAlive(Vidal) && PlayerToSetAsideVidal.Leaders.Contains(Vidal))
+            {
+                PlayerToSetAsideVidal.Leaders.Remove(Vidal);
+                Log(Vidal, " is set aside");
+            }
+
+            PlayerToSetAsideVidal = null;
+            WhenToSetAsideVidal = VidalMoment.None;
         }
 
         #endregion SupportMethods

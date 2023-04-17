@@ -9,11 +9,19 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        #region Mentat
+        #region State
 
-        public List<Player> Winners { get; private set; } = new List<Player>();
+        internal bool ExtortionToBeReturned { get; set; }
+        public Dictionary<Location, Faction> StrongholdOwnership { get; private set; } = new();
+        public bool CyanHasPlantedTerror { get; internal set; } = false;
+        public List<Player> Winners { get; } = new(); 
+        public WinMethod WinMethod { get; set; }
 
-        internal void EnterMentatPhase()
+        #endregion State
+
+        #region Contemplate
+
+        internal void EnterContemplatePhase()
         {
             foreach (var player in Players)
             {
@@ -39,7 +47,31 @@ namespace Treachery.Shared
             Enter(Version >= 103, EnterMentatPause, ContinueMentatPhase);
         }
 
-        internal bool ExtortionToBeReturned { get; set; } = false;
+        private void HandleEconomics()
+        {
+            switch (EconomicsStatus)
+            {
+                case BrownEconomicsStatus.Double:
+                    EconomicsStatus = BrownEconomicsStatus.CancelFlipped;
+                    Log(Faction.Brown, " The Economics Token flips to Cancel.");
+                    Stone(Milestone.Economics);
+                    break;
+
+                case BrownEconomicsStatus.Cancel:
+                    EconomicsStatus = BrownEconomicsStatus.DoubleFlipped;
+                    Log(Faction.Brown, " The Economics Token flips to Double.");
+                    Stone(Milestone.Economics);
+                    break;
+
+                case BrownEconomicsStatus.DoubleFlipped:
+                case BrownEconomicsStatus.CancelFlipped:
+                    EconomicsStatus = BrownEconomicsStatus.RemovedFromGame;
+                    Log(Faction.Brown, " The Economics Token has been removed from the game.");
+                    Stone(Milestone.Economics);
+                    break;
+            }
+        }
+
         private void EnterMentatPause()
         {
             DetermineIfCyanDrawsNewTraitor();
@@ -53,7 +85,7 @@ namespace Treachery.Shared
                 Log(Faction.Black, " drew a new traitor after having been betrayed");
             }
 
-            Enter(ExtortionToBeReturned, Phase.Extortion, EndMentatPause);
+            Enter(ExtortionToBeReturned, Phase.Extortion, EndContemplatePause);
         }
 
         private void DetermineIfCyanDrawsNewTraitor()
@@ -73,8 +105,7 @@ namespace Treachery.Shared
             }
         }
 
-
-        internal void EndMentatPause()
+        internal void EndContemplatePause()
         {
             if (ExtortionToBeReturned)
             {
@@ -129,18 +160,6 @@ namespace Treachery.Shared
             MainPhaseEnd();
         }
 
-        private void SetAsideVidal()
-        {
-            if (IsAlive(Vidal) && PlayerToSetAsideVidal.Leaders.Contains(Vidal))
-            {
-                PlayerToSetAsideVidal.Leaders.Remove(Vidal);
-                Log(Vidal, " is set aside");
-            }
-
-            PlayerToSetAsideVidal = null;
-            WhenToSetAsideVidal = VidalMoment.None;
-        }
-
         internal void AddBribesToPlayerResources()
         {
             foreach (var p in Players)
@@ -154,12 +173,6 @@ namespace Treachery.Shared
             }
         }
 
-        #endregion
-
-        #region StrongholdOwnership
-
-        public Dictionary<Location, Faction> StrongholdOwnership { get; private set; } = new Dictionary<Location, Faction>();
-
         private void DetermineStrongholdOwnership()
         {
             if (Applicable(Rule.StrongholdBonus))
@@ -171,23 +184,6 @@ namespace Treachery.Shared
                 DetermineStrongholdOwnership(Map.TueksSietch);
                 DetermineStrongholdOwnership(Map.HiddenMobileStronghold);
             }
-        }
-
-        public StrongholdAdvantage ChosenHMSAdvantage { get; internal set; } = StrongholdAdvantage.None;
-
-        public bool HasStrongholdAdvantage(Faction f, StrongholdAdvantage advantage, Territory battleTerritory)
-        {
-            if (battleTerritory == Map.HiddenMobileStronghold.Territory && OwnsStronghold(f, Map.HiddenMobileStronghold) && ChosenHMSAdvantage == advantage)
-            {
-                return true;
-            }
-
-            return battleTerritory.Advantage == advantage && battleTerritory.Locations.Any(l => OwnsStronghold(f, l));
-        }
-
-        public bool OwnsStronghold(Faction f, Location stronghold)
-        {
-            return StrongholdOwnership.TryGetValue(stronghold, out Faction owner) && owner == f;
         }
 
         private void DetermineStrongholdOwnership(Location location)
@@ -217,11 +213,9 @@ namespace Treachery.Shared
             }
         }
 
-        #endregion
+        #endregion Contemplate
 
-        #region ChecingForVictories
-
-        public WinMethod WinMethod { get; set; }
+        #region Victory
 
         private void CheckFinalTurnWin()
         {
@@ -250,11 +244,6 @@ namespace Treachery.Shared
                 Winners.Clear();
                 Winners.Add(benegesserit);
             }
-        }
-
-        public bool IsSpecialStronghold(Territory t)
-        {
-            return t == Map.ShieldWall && Applicable(Rule.SSW) && NumberOfMonsters >= 4;
         }
 
         private void CheckNormalWin()
@@ -440,63 +429,32 @@ namespace Treachery.Shared
             }
         }
 
-        #endregion
+        #endregion Victory
 
-        #region MentatEvents
+        #region Information
 
-        private void HandleEconomics()
+        public bool HasStrongholdAdvantage(Faction f, StrongholdAdvantage advantage, Territory battleTerritory)
         {
-            switch (EconomicsStatus)
+            if (battleTerritory == Map.HiddenMobileStronghold.Territory && OwnsStronghold(f, Map.HiddenMobileStronghold) && ChosenHMSAdvantage == advantage)
             {
-                case BrownEconomicsStatus.Double:
-                    EconomicsStatus = BrownEconomicsStatus.CancelFlipped;
-                    Log(Faction.Brown, " The Economics Token flips to Cancel.");
-                    Stone(Milestone.Economics);
-                    break;
-
-                case BrownEconomicsStatus.Cancel:
-                    EconomicsStatus = BrownEconomicsStatus.DoubleFlipped;
-                    Log(Faction.Brown, " The Economics Token flips to Double.");
-                    Stone(Milestone.Economics);
-                    break;
-
-                case BrownEconomicsStatus.DoubleFlipped:
-                case BrownEconomicsStatus.CancelFlipped:
-                    EconomicsStatus = BrownEconomicsStatus.RemovedFromGame;
-                    Log(Faction.Brown, " The Economics Token has been removed from the game.");
-                    Stone(Milestone.Economics);
-                    break;
+                return true;
             }
 
-
+            return battleTerritory.Advantage == advantage && battleTerritory.Locations.Any(l => OwnsStronghold(f, l));
         }
 
-        public void HandleEvent(FaceDancerReplaced e)
+        public bool OwnsStronghold(Faction f, Location stronghold)
         {
-            if (!e.Passed)
-            {
-                var player = GetPlayer(e.Initiator);
-                player.FaceDancers.Remove(e.SelectedDancer);
-                TraitorDeck.PutOnTop(e.SelectedDancer);
-                TraitorDeck.Shuffle();
-                Stone(Milestone.Shuffled);
-                var leader = TraitorDeck.Draw();
-                player.FaceDancers.Add(leader);
-                if (!player.KnownNonTraitors.Contains(leader)) player.KnownNonTraitors.Add(leader);
-            }
-
-            Log(e);
-            Enter(Phase.TurnConcluded);
+            return StrongholdOwnership.TryGetValue(stronghold, out Faction owner) && owner == f;
         }
 
-        #endregion
-
-        #region Terror
-
-        public bool CyanHasPlantedTerror { get; internal set; } = false;
+        public bool IsSpecialStronghold(Territory t)
+        {
+            return t == Map.ShieldWall && Applicable(Rule.SSW) && NumberOfMonsters >= 4;
+        }
 
         public IEnumerable<TerrorType> TerrorIn(Territory t) => TerrorOnPlanet.Where(kvp => kvp.Value == t).Select(kvp => kvp.Key);
 
-        #endregion
+        #endregion Information
     }
 }

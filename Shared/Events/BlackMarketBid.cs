@@ -37,6 +37,12 @@ namespace Treachery.Shared
         [JsonIgnore]
         public int TotalAmount => Amount + AllyContributionAmount + RedContributionAmount;
 
+        [JsonIgnore]
+        public bool UsingKarmaToRemoveBidLimit => false;
+
+        [JsonIgnore]
+        public TreacheryCard KarmaCard => null;
+
         #endregion Properties
 
         #region Execution

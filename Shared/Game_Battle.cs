@@ -30,6 +30,7 @@ namespace Treachery.Shared
         public Voice CurrentVoice { get; internal set; } = null;
         public Prescience CurrentPrescience { get; internal set; } = null;
         public Thought CurrentThought { get; internal set; }
+        public StrongholdAdvantage ChosenHMSAdvantage { get; internal set; }
 
         public PortableAntidoteUsed CurrentPortableAntidoteUsed { get; internal set; }
         internal bool PoisonToothCancelled { get; set; } = false;

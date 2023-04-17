@@ -38,7 +38,7 @@ namespace Treachery.Shared
 
         public int PermittedResources { get; set; }
 
-        public int _permittedKarmaCardId { get; set; }
+        public int _permittedKarmaCardId;
 
         [JsonIgnore]
         public TreacheryCard PermittedKarmaCard

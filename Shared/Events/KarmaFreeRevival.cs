@@ -107,7 +107,7 @@ namespace Treachery.Shared
             var p = Player;
             if (Hero != null)
             {
-                if (!Game.LeaderState[Hero].IsFaceDownDead)
+                if (!Game.IsFaceDownDead(Hero))
                 {
                     return Message.Express("Using ", TreacheryCardType.Karma, ", ", Initiator, " revive ", Hero);
                 }

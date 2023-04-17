@@ -31,9 +31,6 @@ namespace Treachery.Shared
 
         public int RedContributionAmount { get; set; }
 
-        [JsonIgnore]
-        public int TotalAmount => Amount + AllyContributionAmount + RedContributionAmount;
-
         public bool UsesRedSecretAlly { get; set; }
 
         public int _karmaCardId = -1;
@@ -44,6 +41,9 @@ namespace Treachery.Shared
             get => TreacheryCardManager.Lookup.Find(_karmaCardId);
             set => _karmaCardId = TreacheryCardManager.GetId(value);
         }
+
+        [JsonIgnore]
+        public int TotalAmount => Amount + AllyContributionAmount + RedContributionAmount;
 
         /// <summary>
         /// This indicates Karma was used to remove the bid amount limit
@@ -65,12 +65,7 @@ namespace Treachery.Shared
             if (!Passed)
             {
                 ReturnKarmaCardUsedForBid();
-
-                if (UsingKarmaToRemoveBidLimit)
-                {
-                    SetAsideKarmaCardUsedForBid();
-                }
-
+                SetAsideKarmaCardUsedForBid();
                 Game.CurrentBid = this;
                 Game.Stone(Milestone.Bid);
             }
@@ -173,19 +168,18 @@ namespace Treachery.Shared
 
         private void ReturnKarmaCardUsedForBid()
         {
-            if (Game.CardUsedForKarmaBid != null)
+            if (Game.CurrentBid != null && Game.CurrentBid.UsingKarmaToRemoveBidLimit)
             {
-                Game.CardUsedForKarmaBid.Item1.TreacheryCards.Add(Game.CardUsedForKarmaBid.Item2);
-                Game.CardUsedForKarmaBid = null;
+                Game.CurrentBid.Player.TreacheryCards.Add(Game.CurrentBid.KarmaCard);
             }
         }
 
         private void SetAsideKarmaCardUsedForBid()
         {
-            var initiator = GetPlayer(Initiator);
-            var karmaCard = KarmaCard;
-            Game.CardUsedForKarmaBid = new Tuple<Player, TreacheryCard>(initiator, karmaCard);
-            initiator.TreacheryCards.Remove(karmaCard);
+            if (UsingKarmaToRemoveBidLimit)
+            {
+                Player.TreacheryCards.Remove(KarmaCard);
+            }
         }
 
         private void EveryonePassedBid()

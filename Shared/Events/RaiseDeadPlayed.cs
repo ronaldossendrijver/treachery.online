@@ -101,14 +101,56 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.Stone(Milestone.RaiseDead);
+            Log();
+            Game.Discard(Player, TreacheryCardType.RaiseDead);
+
+            var purple = GetPlayer(Faction.Purple);
+            if (purple != null)
+            {
+                purple.Resources += 1;
+                Log(Faction.Purple, " get ", Payment.Of(1), " for revival by ", TreacheryCardType.RaiseDead);
+            }
+
+            if (Hero != null)
+            {
+                if (Initiator != Hero.Faction && Hero is Leader)
+                {
+                    Game.Revive(Player, Hero as Leader);
+                }
+                else
+                {
+                    Game.Revive(Player, Hero);
+                }
+
+                if (AssignSkill)
+                {
+                    Game.PrepareSkillAssignmentToRevivedLeader(Player, Hero as Leader);
+                }
+            }
+            else
+            {
+                Player.ReviveForces(AmountOfForces);
+                Player.ReviveSpecialForces(AmountOfSpecialForces);
+
+                if (AmountOfSpecialForces > 0)
+                {
+                    Game.FactionsThatRevivedSpecialForcesThisTurn.Add(Initiator);
+                }
+            }
+
+            if (Location != null && Initiator == Faction.Yellow)
+            {
+                Player.ShipSpecialForces(Location, 1);
+                Log(Initiator, " place ", FactionSpecialForce.Yellow, " in ", Location);
+            }
         }
 
         public override Message GetMessage()
         {
             if (Hero != null)
             {
-                if (!Game.LeaderState[Hero].IsFaceDownDead)
+                if (!Game.IsFaceDownDead(Hero))
                 {
                     return Message.Express("Using ", TreacheryCardType.RaiseDead, ", ", Initiator, " revive ", Hero);
                 }

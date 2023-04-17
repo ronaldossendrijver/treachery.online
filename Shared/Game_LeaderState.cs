@@ -35,6 +35,19 @@ namespace Treachery.Shared
             }
         }
 
+        internal void Revive(Player initiator, IHero h)
+        {
+            LeaderState[h].Revive();
+            LeaderState[h].CurrentTerritory = null;
+
+            var currentOwner = OwnerOf(h);
+            if (currentOwner != null && h is Leader l && (Version >= 154 || initiator.Faction == Faction.Purple && h.Faction != Faction.Purple))
+            {
+                currentOwner.Leaders.Remove(l);
+                initiator.Leaders.Add(l);
+            }
+        }
+
         private void DetermineIfKilledGholaReturnsToOriginalFaction(IHero l)
         {
             var purple = GetPlayer(Faction.Purple);
@@ -58,20 +71,19 @@ namespace Treachery.Shared
             }
         }
 
-        public bool IsAlive(IHero l)
+        public bool IsAlive(IHero l) => LeaderState[l].Alive;
+
+        public bool IsFaceDownDead(IHero l) => LeaderState[l].IsFaceDownDead;
+
+        public int DeathCount(IHero h) => LeaderState[h].DeathCounter;
+
+        public bool CanFightIn(IHero h, Territory t)
         {
-            return LeaderState[l].Alive;
+            var territory = LeaderState[h].CurrentTerritory;
+            return territory == null || territory == t;
         }
 
-        public bool IsFaceDownDead(IHero l)
-        {
-            return LeaderState[l].IsFaceDownDead;
-        }
-
-        public bool SkilledAs(IHero leader, LeaderSkill skill)
-        {
-            return Skill(leader) == skill;
-        }
+        public bool SkilledAs(IHero leader, LeaderSkill skill) => Skill(leader) == skill;
 
         public bool SkilledAs(Player p, LeaderSkill skill)
         {

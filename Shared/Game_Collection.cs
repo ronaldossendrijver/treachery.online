@@ -10,11 +10,19 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
+        #region State
+
         internal int ResourcesCollectedByYellow { get; set; }
         internal int ResourcesCollectedByBlackFromDesertOrHomeworld { get; set; }
         public IList<DiscoveryToken> PendingDiscoveries { get; set; }
+        public List<ResourcesToBeDivided> CollectedResourcesToBeDivided { get; } = new();
+        public DivideResources CurrentDivisionProposal { get; internal set; }
+        public Faction OwnerOfFlightDiscovery { get; internal set; }
+        public List<DiscoveredLocation> JustRevealedDiscoveryStrongholds { get; } = new();
 
-        
+        #endregion State
+
+        #region Construction
 
         internal void StartCollection()
         {
@@ -23,21 +31,19 @@ namespace Treachery.Shared
             Enter(CollectedResourcesToBeDivided.Any(), Phase.DividingCollectedResources, EndCollectionMainPhase);
         }
 
-        public DivideResources CurrentDivideResources { get; internal set; }
-
         internal void DivideResourcesFromCollection(bool divisionWasAgreed)
         {
             var toBeDivided = DivideResources.GetResourcesToBeDivided(this);
 
-            int gainedByFirstFaction = DivideResources.GainedByFirstFaction(toBeDivided, divisionWasAgreed, CurrentDivideResources.PortionToFirstPlayer);
-            int gainedByOtherFaction = DivideResources.GainedByOtherFaction(toBeDivided, divisionWasAgreed, CurrentDivideResources.PortionToFirstPlayer);
+            int gainedByFirstFaction = DivideResources.GainedByFirstFaction(toBeDivided, divisionWasAgreed, CurrentDivisionProposal.PortionToFirstPlayer);
+            int gainedByOtherFaction = DivideResources.GainedByOtherFaction(toBeDivided, divisionWasAgreed, CurrentDivisionProposal.PortionToFirstPlayer);
 
             Collect(toBeDivided.FirstFaction, toBeDivided.Territory, gainedByFirstFaction);
             Collect(toBeDivided.OtherFaction, toBeDivided.Territory, gainedByOtherFaction);
 
             CollectedResourcesToBeDivided.Remove(toBeDivided);
 
-            CurrentDivideResources = null;
+            CurrentDivisionProposal = null;
         }
 
         private void Collect(Faction faction, Territory from, int amount)
@@ -46,25 +52,6 @@ namespace Treachery.Shared
             GetPlayer(faction).Resources += amount;
             if (faction == Faction.Yellow) ResourcesCollectedByYellow += amount;
             if (faction == Faction.Black && !from.IsStronghold && !from.IsProtectedFromWorm) ResourcesCollectedByBlackFromDesertOrHomeworld += amount;
-        }
-
-        public Faction OwnerOfFlightDiscovery { get; internal set; }
-        public List<DiscoveredLocation> JustRevealedDiscoveryStrongholds { get; internal set; } = new();
-
-        internal void EndCollectionMainPhase()
-        {
-            int receivedAmountByYellow = ResourcesCollectedByYellow;
-            ModifyIncomeBasedOnThresholdOrOccupation(GetPlayer(Faction.Yellow), ref receivedAmountByYellow);
-
-            var black = GetPlayer(Faction.Black);
-            if (ResourcesCollectedByBlackFromDesertOrHomeworld != 0 && black.HasHighThreshold())
-            {
-                black.Resources += 2;
-                Log(Faction.Black, " get ", Payment.Of(2), " extra as they collected from desert or homeworld");
-            }
-
-            MainPhaseEnd();
-            Enter(Version >= 103, Phase.CollectionReport, EnterMentatPhase);
         }
 
         internal void ModifyIncomeBasedOnThresholdOrOccupation(Player from, ref int receivedAmount)
@@ -91,10 +78,10 @@ namespace Treachery.Shared
             {
                 foreach (var player in Players)
                 {
-                    GetResourcesFromStronghold(Map.Arrakeen, player, 2);
-                    GetResourcesFromStronghold(Map.Carthag, player, 2);
-                    GetResourcesFromStronghold(Map.TueksSietch, player, 1);
-                    GetResourcesFromStronghold(Map.Cistern, player, 2);
+                    CollectResourcesFromStronghold(Map.Arrakeen, player, 2);
+                    CollectResourcesFromStronghold(Map.Carthag, player, 2);
+                    CollectResourcesFromStronghold(Map.TueksSietch, player, 1);
+                    CollectResourcesFromStronghold(Map.Cistern, player, 2);
                 }
             }
 
@@ -109,7 +96,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void GetResourcesFromStronghold(Location stronghold, Player player, int amount)
+        private void CollectResourcesFromStronghold(Location stronghold, Player player, int amount)
         {
             if (player.Controls(this, stronghold, Applicable(Rule.ContestedStongholdsCountAsOccupied)) &&
                 !(player.Is(Faction.Pink) && Prevented(FactionAdvantage.PinkCollection) && player.HasAlly && !player.AlliedPlayer.Controls(this, stronghold, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
@@ -117,8 +104,7 @@ namespace Treachery.Shared
                 Collect(player.Faction, stronghold.Territory, amount);
             }
         }
-
-        public List<ResourcesToBeDivided> CollectedResourcesToBeDivided { get; private set; } = new();
+        
         private void CollectResourcesFromTerritories()
         {
             var thief = Players.FirstOrDefault(p => p.Occupies(Map.ProcessingStation));
@@ -182,9 +168,32 @@ namespace Treachery.Shared
             }
         }
 
+        internal void EndCollectionMainPhase()
+        {
+            int receivedAmountByYellow = ResourcesCollectedByYellow;
+            ModifyIncomeBasedOnThresholdOrOccupation(GetPlayer(Faction.Yellow), ref receivedAmountByYellow);
+
+            var black = GetPlayer(Faction.Black);
+            if (ResourcesCollectedByBlackFromDesertOrHomeworld != 0 && black.HasHighThreshold())
+            {
+                black.Resources += 2;
+                Log(Faction.Black, " get ", Payment.Of(2), " extra as they collected from desert or homeworld");
+            }
+
+            MainPhaseEnd();
+            Enter(Version >= 103, Phase.CollectionReport, EnterContemplatePhase);
+        }
+
+
+        #endregion Construction
+
+        #region Information
+
         public int ResourceCollectionRate(Player p)
         {
-            return (p.Controls(this, Map.Arrakeen, Applicable(Rule.ContestedStongholdsCountAsOccupied)) || p.Controls(this, Map.Carthag, Applicable(Rule.ContestedStongholdsCountAsOccupied))) ? 3 : 2;
+            return p.Controls(this, Map.Arrakeen, Applicable(Rule.ContestedStongholdsCountAsOccupied)) || p.Controls(this, Map.Carthag, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 3 : 2;
         }
+
+        #endregion Information
     }
 }

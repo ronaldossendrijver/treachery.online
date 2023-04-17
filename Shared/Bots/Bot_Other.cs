@@ -94,8 +94,8 @@ namespace Treachery.Shared
         {
             var tbd = DivideResources.GetResourcesToBeDivided(Game);
 
-            var iGetWhenAgreed = DivideResources.GainedByOtherFaction(tbd, true, Game.CurrentDivideResources.PortionToFirstPlayer);
-            var iGetWhenDenied = DivideResources.GainedByOtherFaction(tbd, false, Game.CurrentDivideResources.PortionToFirstPlayer);
+            var iGetWhenAgreed = DivideResources.GainedByOtherFaction(tbd, true, Game.CurrentDivisionProposal.PortionToFirstPlayer);
+            var iGetWhenDenied = DivideResources.GainedByOtherFaction(tbd, false, Game.CurrentDivisionProposal.PortionToFirstPlayer);
 
             var accepted = iGetWhenAgreed >= iGetWhenDenied || Resources >= AlliedPlayer.Resources;
 

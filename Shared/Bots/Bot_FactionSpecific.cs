@@ -82,7 +82,7 @@ namespace Treachery.Shared
                 }
             }
 
-            if (toBeRemoved == null) toBeRemoved = Game.CardsOnAuction.Items.FirstOrDefault();
+            toBeRemoved ??= Game.CardsOnAuction.Items.FirstOrDefault();
 
             bool putOnTop = CardQuality(toBeRemoved, this) <= 2 && Ally == Faction.None || CardQuality(toBeRemoved, this) >= 4 && Ally != Faction.None;
 
@@ -121,16 +121,14 @@ namespace Treachery.Shared
                 card = cards.FirstOrDefault(c => c.IsProjectileWeapon);
             }
 
-            if (card == null) card = cards.FirstOrDefault(c => c.Type == TreacheryCardType.WeirdingWay);
-            if (card == null) card = cards.FirstOrDefault(c => c.Type == TreacheryCardType.Chemistry);
-            if (card == null) card = cards.FirstOrDefault(c => c.IsProjectileWeapon);
-            if (card == null) card = cards.FirstOrDefault(c => c.IsPoisonWeapon);
-            if (card == null) card = cards.FirstOrDefault(c => c.IsProjectileDefense);
-            if (card == null) card = cards.FirstOrDefault(c => c.IsPoisonDefense);
-
-            if (card == null) card = cards.FirstOrDefault(c => c.Type != TreacheryCardType.Useless);
-
-            if (card == null) card = cards.FirstOrDefault();
+            card ??= cards.FirstOrDefault(c => c.Type == TreacheryCardType.WeirdingWay);
+            card ??= card = cards.FirstOrDefault(c => c.Type == TreacheryCardType.Chemistry);
+            card ??= card = cards.FirstOrDefault(c => c.IsProjectileWeapon);
+            card ??= card = cards.FirstOrDefault(c => c.IsPoisonWeapon);
+            card ??= card = cards.FirstOrDefault(c => c.IsProjectileDefense);
+            card ??= card = cards.FirstOrDefault(c => c.IsPoisonDefense);
+            card ??= card = cards.FirstOrDefault(c => c.Type != TreacheryCardType.Useless);
+            card ??= card = cards.FirstOrDefault();
 
             return new GreySelectedStartingCard(Game) { Initiator = Faction, Card = card };
         }
@@ -266,26 +264,17 @@ namespace Treachery.Shared
             if (target == null && validLocations.Contains(Game.Map.Arrakeen) && VacantAndSafeFromStorm(Game.Map.Arrakeen)) target = Game.Map.Arrakeen;
             if (target == null && validLocations.Contains(Game.Map.HabbanyaSietch) && VacantAndSafeFromStorm(Game.Map.HabbanyaSietch)) target = Game.Map.HabbanyaSietch;
 
-            /*
-            if (target == null && Game.LatestSpiceCardA != null && validLocations.Contains(Game.LatestSpiceCardA.Location) && Game.ResourcesOnPlanet.ContainsKey(Game.LatestSpiceCardA.Location) && VacantAndSafeFromStorm(Game.LatestSpiceCardA.Location)) target = Game.LatestSpiceCardA.Location;
-            if (target == null && Game.LatestSpiceCardB != null && validLocations.Contains(Game.LatestSpiceCardB.Location) && Game.ResourcesOnPlanet.ContainsKey(Game.LatestSpiceCardB.Location) && VacantAndSafeFromStorm(Game.LatestSpiceCardB.Location)) target = Game.LatestSpiceCardB.Location;
-            */
+            target ??= Game.ResourcesOnPlanet.Where(l => validLocations.Contains(l.Key) && VacantAndSafeFromStorm(l.Key)).HighestOrDefault(r => r.Value).Key;
 
-            if (target == null) target = Game.ResourcesOnPlanet.Where(l => validLocations.Contains(l.Key) && VacantAndSafeFromStorm(l.Key)).HighestOrDefault(r => r.Value).Key;
-
-            /*
-            if (target == null && Game.LatestSpiceCardA != null && validLocations.Contains(Game.LatestSpiceCardA.Location) && Game.ResourcesOnPlanet.ContainsKey(Game.LatestSpiceCardA.Location) && TotalMaxDialOfOpponents(Game.LatestSpiceCardA.Location.Territory) < strength) target = Game.LatestSpiceCardA.Location;
-            if (target == null && Game.LatestSpiceCardB != null && validLocations.Contains(Game.LatestSpiceCardB.Location) && Game.ResourcesOnPlanet.ContainsKey(Game.LatestSpiceCardB.Location) && TotalMaxDialOfOpponents(Game.LatestSpiceCardB.Location.Territory) < strength) target = Game.LatestSpiceCardB.Location;
-            */
             if (target == null)
             {
                 var strength = battalionsToMove.Sum(forcesAtLocation => forcesAtLocation.Value.AmountOfForces + forcesAtLocation.Value.AmountOfSpecialForces * 2) + forcesFromReserves + specialForcesFromReserves * 2;
 
-                if (target == null) target = validLocations.Where(l => Game.ResourcesOnPlanet.ContainsKey(l) && TotalMaxDialOfOpponents(l.Territory) < strength).HighestOrDefault(l => Game.ResourcesOnPlanet[l]);
-                if (target == null) target = validLocations.Where(l => l != Game.Map.SietchTabr && l.IsStronghold && TotalMaxDialOfOpponents(l.Territory) < strength).LowestOrDefault(l => TotalMaxDialOfOpponents(l.Territory));
+                target ??= validLocations.Where(l => Game.ResourcesOnPlanet.ContainsKey(l) && TotalMaxDialOfOpponents(l.Territory) < strength).HighestOrDefault(l => Game.ResourcesOnPlanet[l]);
+                target ??= validLocations.Where(l => l != Game.Map.SietchTabr && l.IsStronghold && TotalMaxDialOfOpponents(l.Territory) < strength).LowestOrDefault(l => TotalMaxDialOfOpponents(l.Territory));
             }
 
-            if (target == null) target = Game.Map.PolarSink;
+            target ??= Game.Map.PolarSink;
 
             if (target != null && battalionsToMove.Values.Sum(b => b.TotalAmountOfForces) + forcesFromReserves + specialForcesFromReserves > 0)
             {
@@ -485,9 +474,9 @@ namespace Treachery.Shared
 
             var weapons = Weapons(null, null, null).Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth);
             result.weaponToUse = weapons.FirstOrDefault(w => w.Type == TreacheryCardType.ProjectileAndPoison); //use poisonblade if available
-            if (result.weaponToUse == null) result.weaponToUse = weapons.FirstOrDefault(w => w.Type == TreacheryCardType.Laser); //use lasgun if available
-            if (result.weaponToUse == null) result.weaponToUse = weapons.FirstOrDefault(w => Game.KnownCards(this).Contains(w)); //use a known weapon if available
-            if (result.weaponToUse == null) result.weaponToUse = weapons.FirstOrDefault(); //use any weapon
+            result.weaponToUse ??= weapons.FirstOrDefault(w => w.Type == TreacheryCardType.Laser); //use lasgun if available
+            result.weaponToUse ??= weapons.FirstOrDefault(w => Game.KnownCards(this).Contains(w)); //use a known weapon if available
+            result.weaponToUse ??= weapons.FirstOrDefault(); //use any weapon
 
             TreacheryCardType type = TreacheryCardType.None;
             bool must = false;
@@ -875,7 +864,7 @@ namespace Treachery.Shared
             int fromReserves = Math.Min(ForcesInReserve, toPlace);
 
             var targetLocation = FaceDanced.ValidTargetLocations(Game).FirstOrDefault(l => Game.ResourcesOnPlanet.ContainsKey(l));
-            if (targetLocation == null) targetLocation = FaceDanced.ValidTargetLocations(Game).FirstOrDefault();
+            targetLocation ??= FaceDanced.ValidTargetLocations(Game).FirstOrDefault();
 
             var targetLocations = new Dictionary<Location, Battalion>
             {
@@ -891,7 +880,7 @@ namespace Treachery.Shared
         {
             var replacable = FaceDancers.Where(f => !RevealedDancers.Contains(f)).OrderBy(f => f.Value);
             var toReplace = replacable.FirstOrDefault(f => Leaders.Contains(f) || (Ally != Faction.None && AlliedPlayer.Leaders.Contains(f)));
-            if (toReplace == null) toReplace = replacable.FirstOrDefault(f => f is Leader && !Game.LeaderState[f].Alive);
+            toReplace ??= replacable.FirstOrDefault(f => f is Leader && !Game.IsAlive(f));
 
             if (toReplace != null)
             {
@@ -903,7 +892,7 @@ namespace Treachery.Shared
             }
         }
 
-        private readonly Dictionary<IHero, int> priceSetEarlier = new Dictionary<IHero, int>();
+        private readonly Dictionary<IHero, int> priceSetEarlier = new();
         private int turnWhenRevivalWasRequested = -1;
 
         protected virtual RequestPurpleRevival DetermineRequestPurpleRevival()
@@ -1103,7 +1092,7 @@ namespace Treachery.Shared
 
             var stronghold = TerrorPlanted.ValidStrongholds(Game, this).FirstOrDefault(t => AnyForcesIn(t) > 0);
             if (stronghold == null && HasAlly) stronghold = TerrorPlanted.ValidStrongholds(Game, this).FirstOrDefault(t => AlliedPlayer.AnyForcesIn(t) > 0);
-            if (stronghold == null) stronghold = TerrorPlanted.ValidStrongholds(Game, this).FirstOrDefault(t => !Game.AnyForcesIn(t));
+            stronghold ??= TerrorPlanted.ValidStrongholds(Game, this).FirstOrDefault(t => !Game.AnyForcesIn(t));
 
             if (stronghold == null)
             {
@@ -1153,8 +1142,8 @@ namespace Treachery.Shared
                 if (stronghold == null && HasAlly) stronghold = AmbassadorPlaced.ValidStrongholds(Game, this).Where(s => AlliedPlayer.AnyForcesIn(s) > 0).RandomOrDefault();
                 bool avoidEntering = stronghold != null;
 
-                if (stronghold == null) stronghold = AmbassadorPlaced.ValidStrongholds(Game, this).Where(s => Vacant(s)).RandomOrDefault();
-                if (stronghold == null) stronghold = AmbassadorPlaced.ValidStrongholds(Game, this).RandomOrDefault();
+                stronghold ??= AmbassadorPlaced.ValidStrongholds(Game, this).Where(s => Vacant(s)).RandomOrDefault();
+                stronghold ??= AmbassadorPlaced.ValidStrongholds(Game, this).RandomOrDefault();
 
                 Ambassador ambassador = Ambassador.None;
                 var availableAmbassadors = AmbassadorPlaced.ValidAmbassadors(this).ToList();
@@ -1232,7 +1221,7 @@ namespace Treachery.Shared
                     if (target == null && validLocations.Contains(Game.Map.Carthag) && VacantAndSafeFromStorm(Game.Map.Carthag)) target = Game.Map.Carthag;
                     if (target == null && validLocations.Contains(Game.Map.Arrakeen) && VacantAndSafeFromStorm(Game.Map.Arrakeen)) target = Game.Map.Arrakeen;
                     if (target == null && validLocations.Contains(Game.Map.HabbanyaSietch) && VacantAndSafeFromStorm(Game.Map.HabbanyaSietch)) target = Game.Map.HabbanyaSietch;
-                    if (target == null) target = Game.ResourcesOnPlanet.Where(l => validLocations.Contains(l.Key) && VacantAndSafeFromStorm(l.Key)).HighestOrDefault(r => r.Value).Key;
+                    target ??= Game.ResourcesOnPlanet.Where(l => validLocations.Contains(l.Key) && VacantAndSafeFromStorm(l.Key)).HighestOrDefault(r => r.Value).Key;
 
                     if (target != null)
                     {
@@ -1297,7 +1286,7 @@ namespace Treachery.Shared
                 case Ambassador.Purple:
 
                     var heroToRevive = AmbassadorActivated.ValidPurpleHeroes(Game, this).Where(l => SafeOrKnownTraitorLeaders.Contains(l)).HighestOrDefault(l => l.Value);
-                    if (heroToRevive == null) heroToRevive = AmbassadorActivated.ValidPurpleHeroes(Game, this).HighestOrDefault(l => l.Value);
+                    heroToRevive ??= AmbassadorActivated.ValidPurpleHeroes(Game, this).HighestOrDefault(l => l.Value);
 
                     if (heroToRevive != null && (ForcesInReserve > 3 || Battle.ValidBattleHeroes(Game, this).Count() <= 1))
                     {

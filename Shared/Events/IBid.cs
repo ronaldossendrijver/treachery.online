@@ -16,6 +16,9 @@ namespace Treachery.Shared
         public Player Player { get; }
         public bool Passed { get; }
 
+        public bool UsingKarmaToRemoveBidLimit { get; }
+        public TreacheryCard KarmaCard { get; }
+
         public Message GetMessage();
     }
 }

@@ -155,11 +155,11 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.CollectionReport:
-                    Game.EnterMentatPhase();
+                    Game.EnterContemplatePhase();
                     break;
 
                 case Phase.Extortion:
-                    Game.EndMentatPause();
+                    Game.EndContemplatePause();
                     break;
 
                 case Phase.Contemplate:

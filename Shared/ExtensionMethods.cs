@@ -30,7 +30,7 @@ namespace Treachery.Shared
                 return default;
             }
 
-            List<T> toSelectFrom = new List<T>();
+            List<T> toSelectFrom = new();
             int i = 0;
             foreach (var item in source.OrderByDescending(selector))
             {
@@ -54,7 +54,7 @@ namespace Treachery.Shared
                 return default;
             }
 
-            List<T> toSelectFrom = new List<T>();
+            List<T> toSelectFrom = new();
             int i = 0;
             foreach (var item in source.OrderBy(selector))
             {

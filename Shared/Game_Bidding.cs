@@ -2,7 +2,6 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,21 +17,27 @@ namespace Treachery.Shared
         public int CardNumber { get; private set; }
         public IBid CurrentBid { get; internal set; }
         public Dictionary<Faction, IBid> Bids { get; } = new();
-
-        internal bool GreySwappedCardOnBid { get; set; }
-        internal bool RegularBiddingIsDone { get; set; }
+        public TreacheryCard CardJustWon { get; internal set; }
+        public IBid WinningBid { get; internal set; }
         internal bool BiddingRoundWasStarted { get; set; }
-        internal bool WhiteAuctionShouldStillHappen { get; set; }
+        internal bool RegularBiddingIsDone { get; set; }
+        public TreacheryCard CardThatMustBeKeptOrGivenToAlly { get; internal set; }
         internal int NumberOfCardsOnAuction { get; set; }
         internal TriggeredBureaucracy BiddingTriggeredBureaucracy { get; set; }
-        internal TreacheryCard CardSoldOnBlackMarket { get; set; }
+        internal bool GreySwappedCardOnBid { get; set; }
+
         public Faction FactionThatMayReplaceBoughtCard { get; internal set; }
-        public bool ReplacingBoughtCardUsingNexus { get; internal set; } = false;
+        public bool ReplacingBoughtCardUsingNexus { get; internal set; }
 
         public int KarmaHandSwapNumberOfCards { get; internal set; }
         public Faction KarmaHandSwapTarget { get; internal set; }
         internal Phase KarmaHandSwapPausedPhase { get; set; }
 
+        private AuctionType BlackMarketAuctionType { get; set; }
+        internal TreacheryCard CardSoldOnBlackMarket { get; set; }
+        internal bool WhiteAuctionShouldStillHappen { get; set; }
+        public bool WhiteBiddingJustFinished { get; private set; }
+        public bool WhiteOccupierSpecifiedCard { get; internal set; }
 
         #endregion
 
@@ -66,10 +71,6 @@ namespace Treachery.Shared
                 EnterWhiteBidding);
         }
 
-        #endregion
-
-        #region WhiteBidding
-
         internal void EnterWhiteBidding()
         {
             NumberOfCardsOnAuction = PlayersThatCanBid.Count();
@@ -92,11 +93,9 @@ namespace Treachery.Shared
             }
         }
 
-        public bool WhiteOccupierSpecifiedCard { get; internal set; }
+        #endregion BeginningOfBidding
 
-        #endregion
-
-        #region Generic
+        #region Bidding
 
         internal void StartRegularBidding()
         {
@@ -132,8 +131,6 @@ namespace Treachery.Shared
             Enter(IsPlaying(Faction.Grey) && !Prevented(FactionAdvantage.GreySelectingCardsOnAuction), Phase.GreyRemovingCardFromBid, StartBiddingRound);
         }
 
-        
-
         internal void StartBiddingRound()
         {
             BiddingRoundWasStarted = true;
@@ -143,22 +140,7 @@ namespace Treachery.Shared
             Bids.Clear();
             CardNumber = 1;
         }
-        
-        public TreacheryCard GetCardSetAsideForBid(Player p)
-        {
-            if (CardUsedForKarmaBid != null && CardUsedForKarmaBid.Item1 == p)
-            {
-                return CardUsedForKarmaBid.Item2;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        internal Tuple<Player, TreacheryCard> CardUsedForKarmaBid { get; set; } = null;
-       
-
+                
         internal void LogBid(Player initiator, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, MessagePart receiverIncome)
         {
             int bidTotalAmount = bidAmount + bidAllyContributionAmount + bidRedContributionAmount;
@@ -175,8 +157,6 @@ namespace Treachery.Shared
                     "(", Payment.Of(bidAllyContributionAmount, initiator.Ally), MessagePart.ExpressIf(bidRedContributionAmount > 0, " and ", Payment.Of(bidRedContributionAmount, Faction.Red)), ") "),
                 receiverIncome);
         }
-
-        
 
         internal TreacheryCard WinByHighestBid(Player winner, IBid bid, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, Faction paymentReceiver, Deck<TreacheryCard> toDrawFrom, bool usesRedSecretAlly)
         {
@@ -209,8 +189,6 @@ namespace Treachery.Shared
                 RegisterKnown(p, card);
             }
         }
-
-        
 
         internal void SkipPlayersThatCantBid(PlayerSequence sequence)
         {
@@ -264,7 +242,6 @@ namespace Treachery.Shared
                         BiddingTriggeredBureaucracy = new TriggeredBureaucracy() { PaymentFrom = initiator.Faction, PaymentTo = paymentReceiver };
                     }
 
-
                     SetRecentPayment(receiverProfit, initiator.Faction, receiver.Faction, (GameEvent)bid);
                 }
             }
@@ -274,8 +251,6 @@ namespace Treachery.Shared
                 ActivateBanker(initiator);
             }
         }
-
-        public TreacheryCard CardThatMustBeKeptOrGivenToAlly { get; internal set; }
 
         internal void GivePlayerExtraCardIfApplicable(Player winner)
         {
@@ -357,10 +332,6 @@ namespace Treachery.Shared
             }
         }
 
-        public TreacheryCard CardJustWon { get; internal set; }
-
-        public IBid WinningBid { get; internal set; }
-
         internal void FinishBid(Player winner, TreacheryCard card, bool mightReplace)
         {
             CardJustWon = card;
@@ -411,8 +382,6 @@ namespace Treachery.Shared
                 BiddingTriggeredBureaucracy = null;
             }
         }
-
-        public bool WhiteBiddingJustFinished { get; private set; }
 
         internal void DetermineNextStepAfterCardWasSold()
         {
@@ -478,10 +447,6 @@ namespace Treachery.Shared
             Enter(Phase.Bidding);
         }
 
-        public int NumberOfCardsOnRegularAuction => CardNumber + CardsOnAuction.Items.Count - 1;
-
-        private AuctionType BlackMarketAuctionType { get; set; }
-
         internal void StartBidSequenceAndAuctionType(AuctionType auctionType, Player whitePlayer = null, int direction = 1)
         {
             switch (auctionType)
@@ -542,7 +507,7 @@ namespace Treachery.Shared
             return null;
         }
 
-        #endregion
+        #endregion Bidding
 
         #region EndOfBidding
 
@@ -565,6 +530,8 @@ namespace Treachery.Shared
 
         #region Information
 
+        public int NumberOfCardsOnRegularAuction => CardNumber + CardsOnAuction.Items.Count - 1;
+
         internal IEnumerable<Player> PlayersThatCanBid => Players.Where(p => p.HasRoomForCards);
 
         internal bool NexusAllowsReplacingBoughtCards(Player p) => (p.Nexus == Faction.Grey || p.Nexus == Faction.White) && NexusPlayed.CanUseSecretAlly(this, p);
@@ -573,7 +540,8 @@ namespace Treachery.Shared
             (CurrentBid.Initiator == p.Faction || CurrentBid.Initiator == p.Ally && CurrentBid.AllyContributionAmount > 0);
 
         internal bool GreyMaySwapCardOnBid => GetPlayer(Faction.Grey)?.TreacheryCards.Count > 0 && Applicable(Rule.GreySwappingCardOnBid) && !GreySwappedCardOnBid;
-        public IEnumerable<TreacheryCard> CardsPlayableBy(Player p)
+
+        public IEnumerable<TreacheryCard> CardsOwnedBy(Player p)
         {
             var cardSetAside = GetCardSetAsideForBid(p);
             if (cardSetAside == null)
@@ -587,6 +555,8 @@ namespace Treachery.Shared
                 return result;
             }
         }
+
+        public TreacheryCard GetCardSetAsideForBid(Player p) => CurrentBid?.Player == p && CurrentBid.UsingKarmaToRemoveBidLimit ? CurrentBid.KarmaCard : null;
 
         #endregion Information
     }

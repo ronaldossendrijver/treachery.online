@@ -11,21 +11,33 @@ namespace Treachery.Shared
     {
         #region State
 
-        public List<MonsterAppearence> Monsters { get; private set; } = new();
-        private readonly List<ResourceCard> ignoredMonsters = new();
-        private ResourceCard ignoredSandtrout = null;
-        internal List<NexusVoted> NexusVotes { get; set; } = new();
+        public ResourceCard LatestSpiceCardA { get; private set; } = null;
+        public ResourceCard LatestSpiceCardB { get; private set; } = null;
+
+        private List<ResourceCard> IgnoredMonsters { get; } = new();
+        public List<MonsterAppearence> Monsters { get; } = new();
+        public int NumberOfMonsters { get; internal set; }
+
+        internal List<NexusVoted> NexusVotes { get; } = new();
+        internal bool ThumperUsed { get; set; }
+
+        private ResourceCard IgnoredSandtrout { get; set; }
+        public ResourceCard SandTrout { get; private set; } = null;
+        private bool SandTroutDoublesResources { get; set; } = false;
+
+        public List<Faction> FactionsThatMayDrawNexusCard { get; private set; }
+        public List<Faction> FactionsThatDrewNexusCard { get; } = new();
 
         #endregion State
 
-        #region BeginningOfSpiceBlow
+        #region BeginningOfResourceBlow
 
         internal void EnterSpiceBlowPhase()
         {
             MainPhaseStart(MainPhase.Blow);
             MonsterAppearedInTerritoryWithoutForces = false;
-            ignoredMonsters.Clear();
-            ignoredSandtrout = null;
+            IgnoredMonsters.Clear();
+            IgnoredSandtrout = null;
             HasActedOrPassed.Clear();
 
             var sequenceToDetermineFirstPlayer = new PlayerSequence(this);
@@ -41,21 +53,9 @@ namespace Treachery.Shared
 
         }
 
-        internal bool ThumperUsed { get; set; } = false;
+        #endregion BeginningOfResourceBlow
 
-        #endregion BeginningOfSpiceBlow
-
-        #region ExecuteResourceBlow
-
-        public int NumberOfMonsters { get; internal set; } = 0;
-
-        public ResourceCard SandTrout { get; private set; } = null;
-
-        public bool SandTroutOccured => SandTrout != null;
-
-        private bool SandTroutDoublesResources { get; set; } = false;
-
-        private bool NexusVoteMustHappen { get; set; } = false;
+        #region ResourceBlow
 
         internal void DrawResourceCard()
         {
@@ -75,19 +75,10 @@ namespace Treachery.Shared
                 else if (drawn != null && (drawn.IsShaiHulud || drawn.IsGreatMaker) && CurrentTurn == 1)
                 {
                     Log(drawn.IsShaiHulud ? Concept.Monster : Concept.GreatMonster, " on turn 1 was ignored");
-                    ignoredMonsters.Add(CurrentDiscardPile.Draw());
+                    IgnoredMonsters.Add(CurrentDiscardPile.Draw());
                 }
                 else if (ThumperUsed && Version > 150 || drawn.IsShaiHulud || drawn.IsGreatMaker)
                 {
-                    if (!ThumperUsed && drawn.IsGreatMaker && Monsters.Count == 0)
-                    {
-                        NexusVoteMustHappen = true;
-                    }
-                    else
-                    {
-                        NexusVoteMustHappen = false;
-                    }
-
                     if (!ThumperUsed)
                     {
                         if (drawn.IsShaiHulud)
@@ -138,7 +129,7 @@ namespace Treachery.Shared
                     else
                     {
                         Log(Concept.BabyMonster, " on turn 1 was ignored");
-                        ignoredSandtrout = CurrentDiscardPile.Draw();
+                        IgnoredSandtrout = CurrentDiscardPile.Draw();
                     }
                 }
 
@@ -267,7 +258,7 @@ namespace Treachery.Shared
             Enter(Applicable(Rule.ExpansionTreacheryCardsExceptPBandSSandAmal), CurrentPhase == Phase.BlowA ? Phase.HarvesterA : Phase.HarvesterB, MoveToNextPhaseAfterResourceBlow);
         }
 
-        private MessagePart SandtroutMessage(bool SandTroutDoublesResources) => MessagePart.ExpressIf(SandTroutDoublesResources, ", doubled by ", Concept.BabyMonster);
+        private static MessagePart SandtroutMessage(bool SandTroutDoublesResources) => MessagePart.ExpressIf(SandTroutDoublesResources, ", doubled by ", Concept.BabyMonster);
 
         internal void MoveToNextPhaseAfterResourceBlow()
         {
@@ -390,7 +381,6 @@ namespace Treachery.Shared
         internal void EnterBlowA()
         {
             Monsters.Clear();
-            NexusVoteMustHappen = false;
             Enter(Phase.BlowA);
             LogIf(Applicable(Rule.IncreasedResourceFlow), "*** Spice Blow A ***");
             DrawResourceCard();
@@ -400,19 +390,11 @@ namespace Treachery.Shared
         internal void EnterBlowB()
         {
             Monsters.Clear();
-            NexusVoteMustHappen = false;
             Enter(Phase.BlowB);
             Log("*** Spice Blow B ***");
             DrawResourceCard();
             LetFactionsDiscardSurplusCards();
         }
-
-        #endregion
-
-
-
-
-        #region WormSendingAndRiding
 
         private void EndWormRideDuringPhase(Phase phase)
         {
@@ -435,10 +417,9 @@ namespace Treachery.Shared
             }
         }
 
-        #endregion
+        #endregion ResourceBlow
 
-
-        #region EndOfSpiceBlow
+        #region EndOfResourceBlow
 
         internal void StartNexusCardPhase()
         {
@@ -452,18 +433,14 @@ namespace Treachery.Shared
             }
         }
 
-        public List<Faction> FactionsThatMayDrawNexusCard { get; private set; }
-        public List<Faction> FactionsThatDrewNexusCard { get; private set; }
 
         private void EnterNexusCardPhase()
         {
             NexusHasOccured = false;
             FactionsThatMayDrawNexusCard = Players.Where(p => !p.HasAlly).Select(p => p.Faction).ToList();
-            FactionsThatDrewNexusCard = new();
+            FactionsThatDrewNexusCard.Clear();
             Enter(Phase.NexusCards);
         }
-
-        
 
         internal void DiscardNexusCard(Player p)
         {
@@ -487,21 +464,21 @@ namespace Treachery.Shared
 
         private void ReshuffleIgnoredMonsters()
         {
-            if (ignoredMonsters.Count > 0 || ignoredSandtrout != null)
+            if (IgnoredMonsters.Count > 0 || IgnoredSandtrout != null)
             {
-                if (ignoredMonsters.Count > 0)
+                if (IgnoredMonsters.Count > 0)
                 {
-                    Log(ignoredMonsters.Count, " ignored ", Concept.Monster, " cards were shuffled back into the ", Concept.Resource, " deck");
-                    foreach (var c in ignoredMonsters)
+                    Log(IgnoredMonsters.Count, " ignored ", Concept.Monster, " cards were shuffled back into the ", Concept.Resource, " deck");
+                    foreach (var c in IgnoredMonsters)
                     {
                         ResourceCardDeck.Items.Add(c);
                     }
                 }
 
-                if (ignoredSandtrout != null)
+                if (IgnoredSandtrout != null)
                 {
                     Log(Concept.BabyMonster, " card was shuffled back into the ", Concept.Resource, " deck");
-                    ResourceCardDeck.Items.Add(ignoredSandtrout);
+                    ResourceCardDeck.Items.Add(IgnoredSandtrout);
                 }
 
                 ResourceCardDeck.Shuffle();
@@ -509,11 +486,13 @@ namespace Treachery.Shared
             }
         }
 
-        #endregion
+        #endregion EndOfResourceBlow
 
-        #region Support
+        #region Information
 
-        private string Natural(int count)
+        public bool SandTroutOccured => SandTrout != null;
+
+        private static string Natural(int count)
         {
             return count switch
             {
@@ -532,9 +511,6 @@ namespace Treachery.Shared
         }
 
         private Deck<ResourceCard> CurrentDiscardPile => (CurrentPhase == Phase.BlowA) ? ResourceCardDiscardPileA : ResourceCardDiscardPileB;
-
-        public ResourceCard LatestSpiceCardA { get; private set; } = null;
-        public ResourceCard LatestSpiceCardB { get; private set; } = null;
 
         private ResourceCard PreviousBlowCard
         {
@@ -571,6 +547,6 @@ namespace Treachery.Shared
             }
         }
 
-        #endregion
+        #endregion Information
     }
 }

@@ -256,7 +256,7 @@ namespace Treachery.Shared
             if (Hero != null && !ValidBattleHeroes(Game, p).Contains(Hero)) return Message.Express("Invalid leader");
             if (Weapon != null && Weapon == Defense) return Message.Express("Can't use the same card as weapon and defense");
             if (Hero == null && (Weapon != null || Defense != null)) return Message.Express("Can't use treachery cards without a leader");
-            if (Hero != null && Hero is Leader && Game.LeaderState[Hero as Leader].CurrentTerritory != null && Game.LeaderState[Hero as Leader].CurrentTerritory != Game.CurrentBattle.Territory) return Message.Express("Selected leader already fought in another territory");
+            if (Hero != null && Hero is Leader && !Game.CanFightIn(Hero, Game.CurrentBattle.Territory)) return Message.Express("Selected leader already fought in another territory");
             if (Hero == null && Messiah) return Message.Express("Can't use ", Concept.Messiah, " without a leader");
             if (Messiah && !MessiahMayBeUsedInBattle(Game, p)) return Message.Express(Concept.Messiah, " is not available");
             if (Weapon == null && Defense != null && Defense.Type == TreacheryCardType.WeirdingWay) return Message.Express("You can't use ", TreacheryCardType.WeirdingWay, " as defense without using a weapon");
@@ -502,7 +502,7 @@ namespace Treachery.Shared
             }
             else
             {
-                result.AddRange(p.Leaders.Where(l => g.LeaderState[l].Alive && g.CanJoinCurrentBattle(l)));
+                result.AddRange(p.Leaders.Where(l => g.IsAlive(l) && g.CanJoinCurrentBattle(l)));
                 if (!mayNotUseCheapHero)
                 {
                     result.AddRange(CheapHeroes(p));

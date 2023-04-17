@@ -12,17 +12,9 @@ namespace Treachery.Shared
 
         internal bool ResourceTechTokenIncome { get; set; }
 
-        #endregion
-
-        #region BeginningOfCharity
-
-        
-
-        #endregion
+        #endregion State
 
         #region Charity
-
-        
 
         public void ReceiveTechIncome(TechToken token)
         {
@@ -83,14 +75,6 @@ namespace Treachery.Shared
             }
         }
 
-        
-
-        #endregion
-
-        #region EndOfCharity
-
-        
-
-        #endregion
+        #endregion Charity
     }
 }

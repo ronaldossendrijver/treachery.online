@@ -216,7 +216,7 @@ namespace Treachery.Shared
             {
                 result.AddRange(NormallyRevivableHeroes(g, p));
             }
-            else if (p.Leaders.Count(l => g.LeaderState[l].Alive) < 5)
+            else if (p.Leaders.Count(l => g.IsAlive(l)) < 5)
             {
                 result.AddRange(UnrestrictedRevivableHeroes(g, p));
             }
@@ -226,10 +226,10 @@ namespace Treachery.Shared
                 var purple = g.GetPlayer(Faction.Purple);
                 var gholas = purple != null ? purple.Leaders.Where(l => l.Faction == p.Faction) : Array.Empty<Leader>();
 
-                return g.KilledHeroes(p).Union(gholas).Where(h => g.IsAllowedEarlyRevival(h));
+                return g.KilledHeroes(p).Union(gholas).Where(h => IsAllowedEarlyRevival(g, h));
             }
 
-            int livingLeaders = p.Leaders.Count(l => g.LeaderState[l].Alive);
+            int livingLeaders = p.Leaders.Count(l => g.IsAlive(l));
             if (g.Version >= 139)
             {
                 livingLeaders += g.Players.Where(player => player != p).SelectMany(player => player.Leaders.Where(l => l.Faction == p.Faction)).Count();
@@ -248,6 +248,8 @@ namespace Treachery.Shared
             return result;
         }
 
+        public static bool IsAllowedEarlyRevival(Game g, IHero h) => g.EarlyRevivalsOffers.TryGetValue(h, out int value) && value < int.MaxValue;
+
         public static IEnumerable<IHero> NormallyRevivableHeroes(Game g, Player p)
         {
             var result = new List<IHero>();
@@ -256,11 +258,11 @@ namespace Treachery.Shared
             {
                 if (p.Leaders.Any())
                 {
-                    int lowestDeathCount = p.Leaders.Min(l => g.LeaderState[l].DeathCounter);
+                    int lowestDeathCount = p.Leaders.Min(l => g.DeathCount(l));
 
-                    result.AddRange(p.Leaders.Where(l => g.LeaderState[l].DeathCounter == lowestDeathCount && !g.LeaderState[l].Alive));
+                    result.AddRange(p.Leaders.Where(l => g.DeathCount(l) == lowestDeathCount && !g.IsAlive(l)));
 
-                    if (p.Is(Faction.Green) && !g.IsAlive(LeaderManager.Messiah) && g.LeaderState[LeaderManager.Messiah].DeathCounter == lowestDeathCount)
+                    if (p.Is(Faction.Green) && !g.IsAlive(LeaderManager.Messiah) && g.DeathCount(LeaderManager.Messiah) == lowestDeathCount)
                     {
                         result.Add(LeaderManager.Messiah);
                     }
@@ -288,15 +290,15 @@ namespace Treachery.Shared
 
         }
 
-        private static bool AtLeastFiveLeadersHaveDiedOnce(Game g, Player p) => p.Leaders.Count(l => g.LeaderState[l].DeathCounter > 0) >= 5;
+        private static bool AtLeastFiveLeadersHaveDiedOnce(Game g, Player p) => p.Leaders.Count(l => g.DeathCount(l) > 0) >= 5;
 
-        private static bool AllAvailableLeadersHaveDiedOnce(Game g, Player p) => p.Leaders.All(l => g.LeaderState[l].DeathCounter > 0);
+        private static bool AllAvailableLeadersHaveDiedOnce(Game g, Player p) => p.Leaders.All(l => g.DeathCount(l) > 0);
 
         public static IEnumerable<IHero> UnrestrictedRevivableHeroes(Game g, Player p)
         {
             var result = new List<IHero>();
 
-            result.AddRange(p.Leaders.Where(l => !g.LeaderState[l].Alive && l.HeroType != HeroType.Auditor));
+            result.AddRange(p.Leaders.Where(l => !g.IsAlive(l) && l.HeroType != HeroType.Auditor));
 
             if (p.Is(Faction.Green) && !g.IsAlive(LeaderManager.Messiah))
             {

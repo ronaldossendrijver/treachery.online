@@ -36,7 +36,20 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            if (!Passed)
+            {
+                var player = GetPlayer(Initiator);
+                player.FaceDancers.Remove(SelectedDancer);
+                Game.TraitorDeck.PutOnTop(SelectedDancer);
+                Game.TraitorDeck.Shuffle();
+                Game.Stone(Milestone.Shuffled);
+                var leader = Game.TraitorDeck.Draw();
+                player.FaceDancers.Add(leader);
+                if (!player.KnownNonTraitors.Contains(leader)) player.KnownNonTraitors.Add(leader);
+            }
+
+            Log();
+            Game.Enter(Phase.TurnConcluded);
         }
 
         public override Message GetMessage()

@@ -10,9 +10,9 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public List<DealOffered> DealOffers { get; private set; } = new List<DealOffered>();
+        public List<DealOffered> DealOffers { get; } = new();
 
-        public List<Deal> Deals { get; internal set; } = new();
+        public List<Deal> Deals { get; } = new();
 
         internal void StartDeal(Deal deal)
         {
@@ -36,10 +36,5 @@ namespace Treachery.Shared
         }
 
         public bool IsGhola(IHero l) => l.Faction != Faction.Purple && IsPlaying(Faction.Purple) && GetPlayer(Faction.Purple).Leaders.Contains(l);
-
-        internal RecruitsPlayed CurrentRecruitsPlayed { get; set; }
-
-
-        
     }
 }

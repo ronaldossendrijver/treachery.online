@@ -42,7 +42,7 @@ namespace Treachery.Shared
             Game.Discard(Player, TreacheryCardType.Residual);
 
             var opponent = Game.CurrentBattle.OpponentOf(Initiator);
-            var leadersToKill = new Deck<IHero>(opponent.Leaders.Where(l => Game.LeaderState[l].Alive && Game.CanJoinCurrentBattle(l)), Game.Random);
+            var leadersToKill = new Deck<IHero>(opponent.Leaders.Where(l => Game.IsAlive(l) && Game.CanJoinCurrentBattle(l)), Game.Random);
             leadersToKill.Shuffle();
 
             if (!leadersToKill.IsEmpty)

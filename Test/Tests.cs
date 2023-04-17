@@ -258,7 +258,6 @@ namespace Treachery.Test
             //Console.WriteLine("");
 
             //Expansion, advanced game:
-            int expansionLevel = 3;
             var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
             var allFactions = new List<Faction> { Faction.White, Faction.Brown, Faction.Grey, Faction.Green, Faction.Orange, Faction.Red, Faction.Blue, Faction.Yellow, Faction.Purple, Faction.Black };
@@ -296,7 +295,7 @@ namespace Treachery.Test
                                 p.Battle_DialShortageThresholdForThrowing = Battle_DialShortageThresholdForThrowing;
 
                                 var pDict = new Dictionary<Faction, BotParameters>() { { toTest, p } };
-                                DetermineWins(Environment.ProcessorCount * 3, expansionLevel, rulesAsArray, nrOfPlayers, nrOfTurns, pDict, toTest, out int wins, out int spice, out int points, out int forcesOnPlanet);
+                                DetermineWins(Environment.ProcessorCount * 3, rulesAsArray, nrOfPlayers, nrOfTurns, pDict, toTest, out int wins, out int spice, out int points, out int forcesOnPlanet);
 
                                 File.AppendAllLines("results.csv", new string[] { string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
                                                         battle_MimimumChanceToAssumeEnemyHeroSurvives, battle_MimimumChanceToAssumeMyLeaderSurvives, Battle_MaxStrengthOfDialledForces, Battle_DialShortageThresholdForThrowing,
@@ -308,7 +307,7 @@ namespace Treachery.Test
             }
         }
 
-        private void DetermineWins(int nrOfGames, int expansionLevel, Rule[] rules, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, Faction f,
+        private void DetermineWins(int nrOfGames, Rule[] rules, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, Faction f,
             out int wins, out int spice, out int points, out int forcesOnPlanet)
         {
             int countWins = 0;
@@ -323,7 +322,7 @@ namespace Treachery.Test
             Parallel.For(0, nrOfGames, po,
                 i =>
                 {
-                    var game = LetBotsPlay(expansionLevel, rules, nrOfPlayers, nrOfTurns, p, false, false, null, 30, f);
+                    var game = LetBotsPlay(rules, nrOfPlayers, nrOfTurns, p, false, false, null, 30, f);
                     var playerToCheck = game.Players.Single(p => p.Faction == f);
                     if (game.Winners.Contains(playerToCheck)) countWins++;
                     countSpice += playerToCheck.Resources;
@@ -356,7 +355,6 @@ namespace Treachery.Test
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
             //Expansion, advanced game, all expansions, all factions:
-            int expansionLevel = 3;
             var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
             rules.Add(Rule.AssistedNotekeeping);
@@ -365,12 +363,15 @@ namespace Treachery.Test
             var rulesAsArray = rules.ToArray();
             var wincounter = new ObjectCounter<Faction>();
 
-            ParallelOptions po = new();
-            po.MaxDegreeOfParallelism = Environment.ProcessorCount;
+            ParallelOptions po = new()
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount
+            };
+
             Parallel.For(0, nrOfGames, po,
                    index =>
                    {
-                       PlayGameAndRecordResults(expansionLevel, nrOfPlayers, nrOfTurns, rulesAsArray, wincounter, statistics, timeout);
+                       PlayGameAndRecordResults(nrOfPlayers, nrOfTurns, rulesAsArray, wincounter, statistics, timeout);
                    });
 
             foreach (var f in wincounter.Counted.OrderByDescending(f => wincounter.CountOf(f)))
@@ -378,22 +379,19 @@ namespace Treachery.Test
                 Console.WriteLine(Skin.Current.Format("{0}: {1} ({2}%)", f, wincounter.CountOf(f), (100f * wincounter.CountOf(f) / nrOfGames)));
             }
 
-            if (statistics != null)
-            {
-                statistics.Output(Skin.Current);
-            }
+            statistics?.Output(Skin.Current);
         }
 
-        private void PlayGameAndRecordResults(int expansionLevel, int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> wincounter, Statistics statistics, int timeout)
+        private void PlayGameAndRecordResults(int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> wincounter, Statistics statistics, int timeout)
         {
-            var game = LetBotsPlay(expansionLevel, rulesAsArray, nrOfPlayers, nrOfTurns, null, false, true, statistics, timeout);
+            var game = LetBotsPlay(rulesAsArray, nrOfPlayers, nrOfTurns, null, false, true, statistics, timeout);
 
             Console.WriteLine("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
                 string.Join(",", game.Winners.Select(p => DetermineName(p))),
                 Skin.Current.Describe(game.WinMethod),
                 game.CurrentTurn,
                 game.History.Count,
-                Skin.Current.Join(game.LeaderState.Where(l => !l.Value.Alive).Select(l => l.Key)),
+                Skin.Current.Join(LeaderManager.Leaders.Where(l => !game.IsAlive(l))),
                 game.Players.Sum(p => p.ForcesKilled + p.SpecialForcesKilled),
                 Skin.Current.Join(game.Players.SelectMany(p => p.TreacheryCards)),
                 game.Players.Sum(p => p.Resources),
@@ -407,7 +405,7 @@ namespace Treachery.Test
 
         private readonly List<TimedTest> timedTests = new();
         private readonly List<Game> failedGames = new();
-        private Game LetBotsPlay(int expansionLevel, Rule[] rules, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests, Statistics statistics, int timeout, Faction mustPlay = Faction.None)
+        private Game LetBotsPlay(Rule[] rules, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests, Statistics statistics, int timeout, Faction mustPlay = Faction.None)
         {
             BattleOutcome previousBattleOutcome = null;
 
@@ -433,8 +431,16 @@ namespace Treachery.Test
 
             try
             {
-                var start = new EstablishPlayers(game) { ApplicableRules = rules.ToArray(), FactionsInPlay = factions, MaximumTurns = nrOfTurns, MaximumNumberOfPlayers = nrOfPlayers, Players = Array.Empty<string>(), Seed = new Random().Next() };
-                start.Time = DateTime.Now;
+                var start = new EstablishPlayers(game)
+                {
+                    ApplicableRules = rules.ToArray(),
+                    FactionsInPlay = factions,
+                    MaximumTurns = nrOfTurns,
+                    MaximumNumberOfPlayers = nrOfPlayers,
+                    Players = Array.Empty<string>(),
+                    Seed = new Random().Next(),
+                    Time = DateTime.Now
+                };
                 start.Execute(false, true);
 
                 if (p != null)
@@ -605,8 +611,10 @@ namespace Treachery.Test
                 Console.WriteLine("Re-playing all savegame files in {0}...", Directory.GetCurrentDirectory());
 
                 int gamesTested = 0;
-                ParallelOptions po = new();
-                po.MaxDegreeOfParallelism = Environment.ProcessorCount;
+                ParallelOptions po = new()
+                {
+                    MaxDegreeOfParallelism = Environment.ProcessorCount
+                };
                 Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, f =>
                 {
                     gamesTested++;
@@ -621,10 +629,7 @@ namespace Treachery.Test
                 throw;
             }
 
-            if (statistics != null)
-            {
-                statistics.Output(Skin.Current);
-            }
+            statistics?.Output(Skin.Current);
         }
 
         private void ReplayGame(string fileData, Statistics statistics)
@@ -685,7 +690,7 @@ namespace Treachery.Test
             }
         }
 
-        private void GatherStatistics(Statistics statistics, Game game, ref BattleOutcome previousBattleOutcome)
+        private static void GatherStatistics(Statistics statistics, Game game, ref BattleOutcome previousBattleOutcome)
         {
             lock (statistics)
             {
@@ -817,7 +822,7 @@ namespace Treachery.Test
                     bribes = p.Bribes,
                     forcesinreserve = p.ForcesInReserve,
                     specialforcesinreserve = p.SpecialForcesInReserve,
-                    totaldeathcount = p.Leaders.Sum(l => game.LeaderState[l].DeathCounter),
+                    totaldeathcount = p.Leaders.Sum(l => game.DeathCount(l)),
                     cardcount = p.TreacheryCards.Count,
                     cardtypes = p.TreacheryCards.Sum(c => (int)c.Type),
                     traitors = p.Traitors.Sum(t => t.Id),
@@ -864,7 +869,7 @@ namespace Treachery.Test
 
 
         //[TestMethod]
-        public void ApplyTransforms()
+        public static void ApplyTransforms()
         {
             string filename = "e:\\svg2\\faction10force.svg";
 
@@ -958,7 +963,7 @@ namespace Treachery.Test
                 text.Y.Clear();
                 text.Y.Add(new SvgUnit(transformedPoint.Y));
 
-                float rotation = Rotation(transforms, 1);
+                float rotation = Rotation(transforms);
 
                 if (Math.Abs(rotation) > 0.005)
                 {
@@ -1012,7 +1017,7 @@ namespace Treachery.Test
             return new PointF() { X = (float)Math.Round(thePoints[0].X, digits), Y = (float)Math.Round(thePoints[0].Y, digits) };
         }
 
-        private static float Rotation(IEnumerable<SvgTransformCollection> transforms, int digits)
+        private static float Rotation(IEnumerable<SvgTransformCollection> transforms)
         {
             if (OperatingSystem.IsWindows())
             {
