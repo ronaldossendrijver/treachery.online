@@ -83,7 +83,6 @@ namespace Treachery.Shared
 
         public Game() : this(LatestVersion)
         {
-
         }
 
         public Game(int version)
@@ -141,9 +140,8 @@ namespace Treachery.Shared
             var result = new Game(Version);
             for (int i = 0; i < untilEventNr; i++)
             {
-                var clone = History[i].Clone();
-                clone.Game = result;
-                clone.ExecuteWithoutValidation();
+                History[i].Game = result;
+                History[i].ExecuteWithoutValidation();
             }
             return result;
         }
@@ -328,11 +326,6 @@ namespace Treachery.Shared
 
         #region CardKnowledge
 
-        public IEnumerable<TreacheryCard> KnownCards(Faction f)
-        {
-            return KnownCards(GetPlayer(f));
-        }
-
         public IEnumerable<TreacheryCard> KnownCards(Player p)
         {
             var result = new List<TreacheryCard>(p.TreacheryCards);
@@ -397,14 +390,6 @@ namespace Treachery.Shared
         #endregion
 
         #region Forces
-
-        public bool IsInStorm(Location l) => l.Sector == SectorInStorm;
-
-        public bool IsInStorm(Territory t) => t.Locations.Any(l => IsInStorm(l));
-
-        public bool IsOccupied(Location l) => Players.Any(p => p.Occupies(l));
-
-        public bool IsOccupied(Territory t) => Players.Any(p => p.Occupies(t));
 
         public Dictionary<Location, List<Battalion>> Forces(bool includeHomeworlds = false)
         {
@@ -884,49 +869,17 @@ namespace Treachery.Shared
             }
         }
 
-        public bool Occupies(Faction f, World w)
+        private void SetAsideVidal()
         {
-            if (f != Faction.None)
+            if (IsAlive(Vidal) && PlayerToSetAsideVidal.Leaders.Contains(Vidal))
             {
-                var hwOccupation = HomeworldOccupation.Keys.FirstOrDefault(hw => hw.World == w);
-                if (hwOccupation != null)
-                {
-                    return HomeworldOccupation[hwOccupation] == f;
-                }
+                PlayerToSetAsideVidal.Leaders.Remove(Vidal);
+                Log(Vidal, " is set aside");
             }
 
-            return false;
+            PlayerToSetAsideVidal = null;
+            WhenToSetAsideVidal = VidalMoment.None;
         }
-
-        public bool Occupies(Faction f, Homeworld w) => f != Faction.None && HomeworldOccupation.TryGetValue(w, out Faction value) && value == f;
-
-        public Player OccupierOf(Homeworld w) => HomeworldOccupation.TryGetValue(w, out Faction value) ? GetPlayer(value) : null;
-
-        public Player OccupierOf(World w)
-        {
-            var hwOccupation = HomeworldOccupation.Keys.FirstOrDefault(hw => hw.World == w);
-            if (hwOccupation != null)
-            {
-                return GetPlayer(HomeworldOccupation[hwOccupation]);
-            }
-
-            return null;
-        }
-
-        public HomeworldStatus GetStatusOf(Homeworld w)
-        {
-            var player = Players.FirstOrDefault(p => p.IsNative(w));
-
-            if (player != null)
-            {
-                var occupier = OccupierOf(w.World);
-                return new HomeworldStatus(player.HasHighThreshold(w.World), occupier != null ? occupier.Faction : Faction.None);
-            }
-
-            return null;
-        }
-
-        public int NumberOfHumanPlayers => Players.Count(p => !p.IsBot);
 
         internal TreacheryCard Discard(Faction faction, TreacheryCardType cardType) => Discard(GetPlayer(faction), cardType);
 
@@ -1025,8 +978,6 @@ namespace Treachery.Shared
             }
         }
 
-        internal static bool HaveForcesOnEachOthersHomeworld(Player a, Player b) => a.ForcesInLocations.Keys.Any(l => b.Homeworlds.Contains(l)) || b.ForcesInLocations.Keys.Any(l => a.Homeworlds.Contains(l));
-
         private void LogTo(Faction faction, params object[] expression)
         {
             CurrentReport.ExpressTo(faction, expression);
@@ -1035,18 +986,6 @@ namespace Treachery.Shared
         internal void Stone(Milestone m)
         {
             RecentMilestones.Add(m);
-        }
-
-        private void SetAsideVidal()
-        {
-            if (IsAlive(Vidal) && PlayerToSetAsideVidal.Leaders.Contains(Vidal))
-            {
-                PlayerToSetAsideVidal.Leaders.Remove(Vidal);
-                Log(Vidal, " is set aside");
-            }
-
-            PlayerToSetAsideVidal = null;
-            WhenToSetAsideVidal = VidalMoment.None;
         }
 
         #endregion SupportMethods
@@ -1076,6 +1015,56 @@ namespace Treachery.Shared
 
         #region Information
 
+        public bool Occupies(Faction f, World w)
+        {
+            if (f != Faction.None)
+            {
+                var hwOccupation = HomeworldOccupation.Keys.FirstOrDefault(hw => hw.World == w);
+                if (hwOccupation != null)
+                {
+                    return HomeworldOccupation[hwOccupation] == f;
+                }
+            }
+
+            return false;
+        }
+
+        public Player OccupierOf(Homeworld w) => HomeworldOccupation.TryGetValue(w, out Faction value) ? GetPlayer(value) : null;
+
+        public Player OccupierOf(World w)
+        {
+            var hwOccupation = HomeworldOccupation.Keys.FirstOrDefault(hw => hw.World == w);
+            if (hwOccupation != null)
+            {
+                return GetPlayer(HomeworldOccupation[hwOccupation]);
+            }
+
+            return null;
+        }
+
+        public HomeworldStatus GetStatusOf(Homeworld w)
+        {
+            var player = Players.FirstOrDefault(p => p.IsNative(w));
+
+            if (player != null)
+            {
+                var occupier = OccupierOf(w.World);
+                return new HomeworldStatus(player.HasHighThreshold(w.World), occupier != null ? occupier.Faction : Faction.None);
+            }
+
+            return null;
+        }
+
+        public int NumberOfHumanPlayers => Players.Count(p => !p.IsBot);
+
+        public bool IsInStorm(Location l) => l.Sector == SectorInStorm;
+
+        public bool IsInStorm(Territory t) => t.Locations.Any(l => IsInStorm(l));
+
+        public bool IsOccupied(Location l) => Players.Any(p => p.Occupies(l));
+
+        public bool IsOccupied(Territory t) => Players.Any(p => p.Occupies(t));
+
         public Player OwnerOf(IHero hero) => Players.FirstOrDefault(p => p.Leaders.Contains(hero));
 
         public Player OwnerOf(TreacheryCard karmaCard) => karmaCard != null ? Players.FirstOrDefault(p => p.TreacheryCards.Contains(karmaCard)) : null;
@@ -1086,30 +1075,15 @@ namespace Treachery.Shared
 
         public bool HasRecentPaymentFor(Type t) => RecentlyPaid.Any(p => p.Reason != null && p.Reason.GetType() == t);
 
-        public bool HasReceivedPaymentFor(Faction receiver, Type t) => RecentlyPaid.Any(p => p.To == receiver && p.Reason != null && p.Reason.GetType() == t);
-
         public int RecentlyPaidTotalAmount => RecentlyPaid.Sum(p => p.Amount);
 
         public GameEvent LatestEvent(Type eventType) => History.LastOrDefault(e => e.GetType() == eventType);
-
-        public GameEvent LatestEvent(params Type[] eventType)
-        {
-            for (int i = History.Count - 1; i >= 0; i--)
-            {
-                if (eventType.Any(t => t == History[i].GetType()))
-                {
-                    return History[i];
-                }
-            }
-
-            return null;
-        }
 
         public GameEvent LatestEvent() => History.Count > 0 ? History[^1] : null;
 
         public int EventCount => History.Count;
 
-        private GameEvent FindMostRecentEvent(params Type[] types)
+        public GameEvent FindMostRecentEvent(params Type[] types)
         {
             if (types.Length == 0) return History[^1];
 

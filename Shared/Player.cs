@@ -725,6 +725,8 @@ namespace Treachery.Shared
 
         public bool IsNative(Homeworld hw) => Homeworlds.Contains(hw);
 
+        public bool HaveForcesOnEachOthersHomeworlds(Player other) => ForcesInLocations.Keys.Any(l => other.Homeworlds.Contains(l)) || other.ForcesInLocations.Keys.Any(l => Homeworlds.Contains(l));
+
         public int GetHomeworldBattleContributionAndLasgunShieldLimit(Territory whereBattleHappens)
         {
             if (!whereBattleHappens.IsHomeworld || !IsNative(whereBattleHappens)) return 0;

@@ -84,7 +84,7 @@ namespace Treachery.Shared
             var victim = g.GetPlayer(GetVictim(g));
             var cyan = g.GetPlayer(Faction.Cyan);
 
-            return !g.AllianceByTerrorWasOffered && !g.Prevented(FactionAdvantage.CyanEnemyOfEnemy) && !victim.Is(Faction.Pink) && !Game.HaveForcesOnEachOthersHomeworld(cyan, victim);
+            return !g.AllianceByTerrorWasOffered && !g.Prevented(FactionAdvantage.CyanEnemyOfEnemy) && !victim.Is(Faction.Pink) && !cyan.HaveForcesOnEachOthersHomeworlds(victim);
         }
 
         public static Territory GetTerritory(Game g) => g.LastTerrorTrigger?.Territory;

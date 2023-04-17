@@ -316,22 +316,22 @@ namespace Treachery.Client
                 Phase.NonOrangeShip when game.ShipmentAndMoveSequence.CurrentFaction == Faction.Yellow => Status(game,
                     Express("Please decide to rally forces or pass."),
                     Express(Faction.Yellow, " are thinking about rallying forces..."),
-                    Faction.Yellow, game.LatestEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
+                    Faction.Yellow, game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
 
                 Phase.NonOrangeShip when game.ShipmentAndMoveSequence.CurrentFaction != Faction.Yellow => Status(
                     Express("Please decide to ship forces or pass."),
                     Express(game.ShipmentAndMoveSequence.CurrentFaction, " are thinking about shipping forces..."),
-                    game.ShipmentAndMoveSequence.CurrentPlayer, game.LatestEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
+                    game.ShipmentAndMoveSequence.CurrentPlayer, game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
 
                 Phase.OrangeShip when game.OrangeMayDelay => Status(game,
                     Express("Please decide to ship now or delay your turn and let other factions go first."),
                     Express(Faction.Orange, " are deciding about taking their turn now..."),
-                    Faction.Orange, game.LatestEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
+                    Faction.Orange, game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
 
                 Phase.OrangeShip when !game.OrangeMayDelay => Status(game,
                     Express("Please decide to ship forces or pass."),
                     Express(Faction.Orange, " are thinking about shipping forces..."),
-                    Faction.Orange, game.LatestEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
+                    Faction.Orange, game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
 
                 Phase.BlueAccompaniesNonOrangeShip or Phase.BlueAccompaniesOrangeShip => Status(game,
                     Express("Do you wish to accompany the latest shipment?"),
@@ -386,12 +386,12 @@ namespace Treachery.Client
                 Phase.NonOrangeMove => Status(
                     Express("Please decide to move forces or pass."),
                     Express(game.ShipmentAndMoveSequence.CurrentFaction, " are thinking about about moving forces."),
-                    game.ShipmentAndMoveSequence.CurrentPlayer, game.LatestEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
+                    game.ShipmentAndMoveSequence.CurrentPlayer, game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
 
                 Phase.OrangeMove => Status(game,
                     Express("Please decide to move forces or pass."),
                     Express(Faction.Orange, " are thinking about about moving forces."),
-                    Faction.Orange, game.LatestEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
+                    Faction.Orange, game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
 
                 /* Battle */
 
