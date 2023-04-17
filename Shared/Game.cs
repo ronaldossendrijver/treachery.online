@@ -262,13 +262,9 @@ namespace Treachery.Shared
             {
                 Enter(phaseIf1True);
             }
-            else if (condition2)
-            {
-                methodIf2True();
-            }
             else
             {
-                methodOtherwise();
+                Enter(condition2, methodIf2True, methodOtherwise);
             }
         }
 
@@ -278,13 +274,9 @@ namespace Treachery.Shared
             {
                 Enter(phaseIf1True);
             }
-            else if (condition2)
+            else 
             {
-                Enter(phaseIf2True);
-            }
-            else
-            {
-                Enter(phaseOtherwise);
+                Enter(condition2, phaseIf2True, phaseOtherwise);
             }
         }
 
@@ -294,29 +286,9 @@ namespace Treachery.Shared
             {
                 methodIf1True();
             }
-            else if (condition2)
+            else 
             {
-                Enter(phaseIf2True);
-            }
-            else
-            {
-                Enter(phaseOtherwise);
-            }
-        }
-
-        internal void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Phase phaseIf3True)
-        {
-            if (condition1)
-            {
-                Enter(phaseIf1True);
-            }
-            else if (condition2)
-            {
-                Enter(phaseIf2True);
-            }
-            else if (condition3)
-            {
-                Enter(phaseIf3True);
+                Enter(condition2, phaseIf2True, phaseOtherwise);
             }
         }
 
@@ -330,13 +302,9 @@ namespace Treachery.Shared
             {
                 Enter(phaseIf2True);
             }
-            else if (condition3)
-            {
-                methodIf3True();
-            }
             else
             {
-                methodOtherwise();
+                Enter(condition3, methodIf3True, methodOtherwise);
             }
         }
 
@@ -350,16 +318,11 @@ namespace Treachery.Shared
             {
                 Enter(phaseIf2True);
             }
-            else if (condition3)
-            {
-                Enter(phaseIf3True);
-            }
             else
             {
-                methodOtherwise();
+                Enter(condition3, phaseIf3True, methodOtherwise);
             }
         }
-
 
         #endregion
 

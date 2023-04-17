@@ -39,16 +39,17 @@ namespace Treachery.Shared
                 Game.ChosenDestinationsWithAllies.Add(To.Territory);
             }
 
-            Game.CheckIntrusion(this);
-
-            Game.PausedPhase = Game.CurrentPhase;
-            Game.Enter(Game.LastBlueIntrusion != null, Phase.BlueIntrudedByCaravan, Game.LastTerrorTrigger != null, Phase.TerrorTriggeredByCaravan, Game.LastAmbassadorTrigger != null, Phase.AmbassadorTriggeredByCaravan);
-
             Game.CurrentFlightUsed = null;
             Game.CurrentFlightDiscoveryUsed = null;
 
             if (!Game.Applicable(Rule.FullPhaseKarma)) Game.Allow(FactionAdvantage.YellowExtraMove);
             if (!Game.Applicable(Rule.FullPhaseKarma)) Game.Allow(FactionAdvantage.GreyCyborgExtraMove);
+
+            if (Game.CheckIntrusion(this))
+            {
+                Game.PausedPhase = Game.CurrentPhase;
+                Game.Enter(Game.LastBlueIntrusion != null, Phase.BlueIntrudedByCaravan, Game.LastTerrorTrigger != null, Phase.TerrorTriggeredByCaravan, Phase.AmbassadorTriggeredByCaravan);
+            }
         }
 
         public override Message GetMessage()

@@ -92,11 +92,12 @@ namespace Treachery.Shared
 
         internal bool BlueMayAccompany { get; set; } = false;
 
-        internal void CheckIntrusion(ILocationEvent e)
+        internal bool CheckIntrusion(ILocationEvent e)
         {
             CheckBlueIntrusion(e, e.Initiator, e.To.Territory);
             CheckAmbassadorTriggered(e);
             CheckTerrorTriggered(e);
+            return Intrusions.Count > 0;
         }
 
         public bool IsOccupiedByFactionOrTheirAlly(World world, Player p)
