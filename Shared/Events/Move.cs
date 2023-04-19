@@ -41,9 +41,9 @@ namespace Treachery.Shared
         {
             Game.StormLossesToTake.Clear();
 
-            Game.MayPerformExtraMove = (Game.CurrentFlightUsed != null && Game.CurrentFlightUsed.Initiator == Initiator && Game.CurrentFlightUsed.ExtraMove);
+            Game.CurrentPlayerMayPerformExtraMove = (Game.CurrentFlightUsed != null && Game.CurrentFlightUsed.Initiator == Initiator && Game.CurrentFlightUsed.ExtraMove);
 
-            if (!Game.MayPerformExtraMove && !Game.InOrangeCunningShipment)
+            if (!Game.CurrentPlayerMayPerformExtraMove && !Game.InOrangeCunningShipment)
             {
                 Game.HasActedOrPassed.Add(Initiator);
 

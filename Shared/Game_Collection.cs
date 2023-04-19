@@ -87,7 +87,7 @@ namespace Treachery.Shared
 
             foreach (var homeworld in Map.Homeworlds)
             {
-                var occupier = OccupierOf(homeworld);
+                var occupier = OccupierOf(homeworld.World);
                 if (occupier != null)
                 {
                     Collect(occupier.Faction, homeworld.Territory, homeworld.ResourceAmount);

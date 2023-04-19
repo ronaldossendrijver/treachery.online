@@ -33,7 +33,7 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.Discard(Initiator, TreacheryCardType.Amal);
+            Game.Discard(Player, TreacheryCardType.Amal);
             Log();
 
             foreach (var p in Game.Players)

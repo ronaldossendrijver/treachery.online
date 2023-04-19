@@ -47,7 +47,7 @@ namespace Treachery.Shared
 
             if (Game.CheckIntrusion(this))
             {
-                Game.PausedPhase = Game.CurrentPhase;
+                Game.PhaseBeforeCaravanCausedIntrusion = Game.CurrentPhase;
                 Game.Enter(Game.LastBlueIntrusion != null, Phase.BlueIntrudedByCaravan, Game.LastTerrorTrigger != null, Phase.TerrorTriggeredByCaravan, Phase.AmbassadorTriggeredByCaravan);
             }
         }

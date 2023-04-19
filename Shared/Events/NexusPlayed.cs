@@ -435,7 +435,7 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Pink:
-                    var pinksAlly = Game.GetAlliedPlayer(Faction.Pink);
+                    var pinksAlly = Game.GetPlayer(Faction.Pink).AlliedPlayer;
                     pinksAlly.ForcesToReserves(PinkTerritory);
                     Game.PlayNexusCard(Player, "return all ", pinksAlly.Faction, " forces in ", PinkTerritory, " to reserves");
                     Game.FlipBeneGesseritWhenAloneOrWithPinkAlly();

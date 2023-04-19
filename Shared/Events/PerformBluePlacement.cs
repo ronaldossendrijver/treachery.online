@@ -66,7 +66,7 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            if (Game.IsOccupied(Target))
+            if (Game.Version <= 154 && Game.IsOccupied(Target) || Game.Version > 154 && Game.IsOccupied(Target.Territory))
             {
                 Player.ShipAdvisors(Target, 1);
             }

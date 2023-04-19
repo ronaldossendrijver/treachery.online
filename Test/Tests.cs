@@ -27,10 +27,12 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-		    if (e is YellowRidesMonster ride && ride.To.IsStronghold)
+            /*
+		    if (e is Battle b && b.Player.Ally == Faction.Brown && b.Player.AlliedPlayer.Resources > 10)
             {
-                WriteSavegameIfApplicable(g, e.Player, "ride");
+                WriteSavegameIfApplicable(g, e.Player, "battle");
             }
+            */
 		}
 
         private readonly List<string> WrittenCases = new();
@@ -346,7 +348,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 100;
+            int nrOfGames = 1000;
             int nrOfTurns = 10;
             int nrOfPlayers = 7;
 

@@ -10,14 +10,20 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
+        #region Settings
+
         public const int LowestSupportedVersion = 100;
-        public const int LatestVersion = 154;
+        public const int LatestVersion = 155;
 
         public const int ExpansionLevel = 3;
         public bool BotInfologging = true;
 
+        #endregion Settings
+
         #region GameState
+
         public int Seed { get; internal set; } = -1;
+        internal Random Random { get; set; }
         public int MaximumNumberOfTurns { get; internal set; }
         public int MaximumNumberOfPlayers { get; internal set; }
         public string Name { get; internal set; }
@@ -33,49 +39,45 @@ namespace Treachery.Shared
         public MainPhase CurrentMainPhase { get; internal set; } = MainPhase.Started;
         public MainPhaseMoment CurrentMoment { get; private set; } = MainPhaseMoment.None;
         public Phase CurrentPhase { get; private set; } = Phase.None;
-        public List<Faction> HasActedOrPassed { get; private set; } = new();
+        public List<Faction> HasActedOrPassed { get; } = new();
         public List<Player> Players { get; private set; } = new();
         public Report CurrentReport { get; internal set; }
         public Deck<TreacheryCard> TreacheryDeck { get; internal set; }
         public Deck<TreacheryCard> TreacheryDiscardPile { get; internal set; }
         public List<TreacheryCard> RemovedTreacheryCards { get; internal set; } = new();
-        public List<TreacheryCard> WhiteCache { get; internal set; } = new();
         public Deck<ResourceCard> ResourceCardDeck { get; internal set; }
         public Deck<ResourceCard> ResourceCardDiscardPileA { get; internal set; }
         public Deck<ResourceCard> ResourceCardDiscardPileB { get; internal set; }
         public int SectorInStorm { get; internal set; } = -1;
         public int NextStormMoves { get; internal set; } = -1;
         public bool ShieldWallDestroyed { get; internal set; } = false;
-        public Territory AtomicsAftermath { get; internal set; } = null;
+        public Dictionary<Location, int> ResourcesOnPlanet { get; } = new();
+        public Dictionary<Player, Timer<MainPhase>> Timers { get; } = new();
+
+        public Dictionary<TreacheryCard, Faction> RecentlyDiscarded { get; } = new();
+        internal Phase PhaseBeforeDiscarding { get; set; }
+        public List<Faction> FactionsThatMustDiscard { get; internal set; } = new();
+        public List<Payment> RecentlyPaid { get; private set; } = new();
+        internal List<Payment> StoredRecentlyPaid { get; private set; } = new();
+
+        public Deck<LeaderSkill> SkillDeck { get; private set; }
+        public List<TreacheryCard> WhiteCache { get; internal set; } = new();
         public BrownEconomicsStatus EconomicsStatus { get; internal set; } = BrownEconomicsStatus.None;
-        public Dictionary<Location, int> ResourcesOnPlanet { get; private set; } = new();
+
         public Dictionary<TerrorType, Territory> TerrorOnPlanet { get; private set; } = new();
         public Deck<Ambassador> UnassignedAmbassadors { get; internal set; }
-
-        public List<Ambassador> AmbassadorsSetAside { get; private set; } = new();
-
+        public Territory AtomicsAftermath { get; internal set; } = null;
+        public List<Ambassador> AmbassadorsSetAside { get; } = new();
         public Deck<DiscoveryToken> YellowDiscoveryTokens { get; set; }
         public Deck<DiscoveryToken> OrangeDiscoveryTokens { get; set; }
         public Dictionary<Location, Discovery> DiscoveriesOnPlanet { get; private set; } = new();
-
         public Dictionary<Territory, Ambassador> AmbassadorsOnPlanet { get; private set; } = new();
-        public Dictionary<IHero, LeaderState> LeaderState { get; private set; } = new();
-        public Deck<LeaderSkill> SkillDeck { get; private set; }
         public Deck<Faction> NexusCardDeck { get; internal set; }
         public List<Faction> NexusDiscardPile { get; private set; } = new();
         public Dictionary<Homeworld, Faction> HomeworldOccupation { get; private set; } = new();
-        public Dictionary<Player, Timer<MainPhase>> Timers { get; private set; } = new();
-        internal Random Random { get; set; }
-
-        internal Phase PhaseBeforeDiscarding { get; set; }
-        public List<Faction> FactionsThatMustDiscard { get; internal set; } = new();
-
         internal Phase PhaseBeforeDiscardingTraitor { get; set; }
         internal Faction FactionThatMustDiscardTraitor { get; set; }
         internal int NumberOfTraitorsToDiscard { get; set; }
-
-        public List<Payment> RecentlyPaid { get; private set; } = new();
-        internal List<Payment> StoredRecentlyPaid { get; set; } = new();
 
         #endregion GameState
 
@@ -168,6 +170,65 @@ namespace Treachery.Shared
                     timer.Add(CurrentMainPhase, elapsedTime);
                 }
             }
+        }
+
+        public TimeSpan Duration => History.Count > 0 ? History[^1].Time.Subtract(History[0].Time) : TimeSpan.Zero;
+
+        public TimeSpan TimeSpent(Player player, MainPhase phase)
+        {
+            if (Timers.TryGetValue(player, out var timer))
+            {
+                return timer.TimeSpent(phase);
+            }
+            else
+            {
+                return TimeSpan.Zero;
+            }
+        }
+
+        public DateTime Started
+        {
+            get
+            {
+                if (History.Count > 0)
+                {
+                    return History[0].Time;
+                }
+                else
+                {
+                    return default;
+                }
+            }
+        }
+
+        private bool InTimedPhase =>
+            CurrentPhase == Phase.Bidding ||
+            CurrentPhase == Phase.OrangeShip ||
+            CurrentPhase == Phase.OrangeMove ||
+            CurrentPhase == Phase.NonOrangeShip ||
+            CurrentPhase == Phase.NonOrangeMove ||
+            CurrentPhase == Phase.BattlePhase;
+
+
+        public GameEvent LatestEvent(Type eventType) => History.LastOrDefault(e => e.GetType() == eventType);
+
+        public GameEvent LatestEvent() => History.Count > 0 ? History[^1] : null;
+
+        public int EventCount => History.Count;
+
+        public GameEvent FindMostRecentEvent(params Type[] types)
+        {
+            if (types.Length == 0) return History[^1];
+
+            for (int i = History.Count - 1; i >= 0; i--)
+            {
+                if (types.Contains(History[i].GetType()))
+                {
+                    return History[i];
+                }
+            }
+
+            return null;
         }
 
         #endregion EventHandling
@@ -389,7 +450,7 @@ namespace Treachery.Shared
 
         #endregion
 
-        #region Forces
+        #region ForceInformation
 
         public Dictionary<Location, List<Battalion>> Forces(bool includeHomeworlds = false)
         {
@@ -473,17 +534,6 @@ namespace Treachery.Shared
             return result;
         }
 
-        public IEnumerable<Battalion> BattalionsIn(Territory t)
-        {
-            var result = new List<Battalion>();
-            foreach (var l in t.Locations)
-            {
-                result.AddRange(BattalionsIn(l));
-            }
-
-            return result;
-        }
-
         public Dictionary<Location, List<Battalion>> OccupyingForcesOnPlanet
         {
             get
@@ -507,6 +557,433 @@ namespace Treachery.Shared
             }
         }
 
+        #endregion ForceInformation
+
+        #region Resources
+
+        internal void ChangeResourcesOnPlanet(Location location, int amount)
+        {
+            if (ResourcesOnPlanet.ContainsKey(location))
+            {
+                if (ResourcesOnPlanet[location] + amount == 0)
+                {
+                    ResourcesOnPlanet.Remove(location);
+                }
+                else
+                {
+                    ResourcesOnPlanet[location] = ResourcesOnPlanet[location] + amount;
+                }
+            }
+            else if (amount != 0)
+            {
+                ResourcesOnPlanet.Add(location, amount);
+            }
+        }
+
+        private int RemoveResources(Location location)
+        {
+            int result = 0;
+            if (ResourcesOnPlanet.ContainsKey(location))
+            {
+                result = ResourcesOnPlanet[location];
+                ResourcesOnPlanet.Remove(location);
+            }
+
+            return result;
+        }
+
+        private int RemoveResources(Territory territory)
+        {
+            int result = 0;
+            foreach (var l in territory.Locations)
+            {
+                result += RemoveResources(l);
+            }
+
+            return result;
+        }
+
+        #endregion Resources
+
+        #region PlayersAndFactions
+
+        public bool IsPlaying(Faction faction) => Players.Any(p => p.Faction == faction);
+
+        public Player GetPlayer(string name)
+        {
+            return Players.FirstOrDefault(p => p.Name == name);
+        }
+
+        public Player GetPlayer(Faction? f)
+        {
+            return Players.FirstOrDefault(p => p.Faction == f);
+        }
+
+        public Faction GetAlly(Faction f)
+        {
+            var player = GetPlayer(f);
+            return player != null ? player.Ally : Faction.None;
+        }
+
+        public IEnumerable<Faction> PlayersOtherThan(Player p)
+        {
+            return Players.Where(x => x.Faction != p.Faction).Select(x => x.Faction);
+        }
+
+        #endregion
+
+        #region Support
+
+        internal void FlipBeneGesseritWhenAloneOrWithPinkAlly()
+        {
+            var bg = GetPlayer(Faction.Blue);
+            if (bg != null)
+            {
+                var pink = GetPlayer(Faction.Pink);
+                var territoriesWhereAdvisorsAreAloneOrWithPink = Map.Territories(true).Where(t => bg.SpecialForcesIn(t) > 0 &&
+                    (!Players.Any(p => p.Faction != Faction.Blue && p.AnyForcesIn(t) > 0) || bg.Ally == Faction.Pink && pink.AnyForcesIn(t) > 0));
+
+                foreach (var t in territoriesWhereAdvisorsAreAloneOrWithPink)
+                {
+                    bg.FlipForces(t, false);
+                    Log(Faction.Blue, " are alone and flip to ", FactionForce.Blue, " in ", t);
+                }
+            }
+        }
+
+        private void AllowAllPreventedFactionAdvantages(IEnumerable<FactionAdvantage> exceptions)
+        {
+            foreach (var adv in Enumerations.GetValuesExceptDefault(typeof(FactionAdvantage), FactionAdvantage.None))
+            {
+                if (exceptions == null || !exceptions.Contains(adv))
+                {
+                    Allow(adv);
+                }
+            }
+        }
+
+        private void DetermineOccupationAtStartOrEndOfTurn()
+        {
+            var currentOccupierOfPinkHomeworld = OccupierOf(World.Pink);
+            var updatedOccupation = new Dictionary<Homeworld, Faction>();
+
+            foreach (var hw in Map.Homeworlds)
+            {
+                foreach (var player in Players)
+                {
+                    if (player.Controls(this, hw, false) && !player.IsNative(hw))
+                    {
+                        updatedOccupation.Add(hw, player.Faction);
+
+                        if (!Occupies(player.Faction, hw.World))
+                        {
+                            Log(player.Faction, " now occupy ", hw);
+                        }
+                    }
+                }
+            }
+
+            foreach (var kvp in HomeworldOccupation)
+            {
+                if (!updatedOccupation.Contains(kvp))
+                {
+                    Log(kvp.Value, " no longer occupies ", kvp.Key);
+                }
+            }
+
+            HomeworldOccupation = updatedOccupation;
+
+            CheckIfShipmentPermissionsShouldBeRevoked();
+            CheckIfOccupierTakesVidal(currentOccupierOfPinkHomeworld);
+            LetFactionsDiscardSurplusCards();
+        }
+
+        internal void CheckIfShipmentPermissionsShouldBeRevoked()
+        {
+            if (!HasHighThreshold(Faction.Orange) && ShipmentPermissions.Any())
+            {
+                ShipmentPermissions.Clear();
+                Log("Only ", Faction.Orange, " can ship cross/from planet now");
+            }
+        }
+
+        internal void LetFactionsDiscardSurplusCards()
+        {
+            FactionsThatMustDiscard.AddRange(Players.Where(p => p.HandSizeExceeded).Select(p => p.Faction));
+            if (FactionsThatMustDiscard.Any())
+            {
+                PhaseBeforeDiscarding = CurrentPhase;
+                Enter(Phase.Discarding);
+            }
+        }
+
+        internal void CheckIfOccupierTakesVidal(Player previousOccupierOfPinkHomeworld)
+        {
+            var occupierOfPinkHomeworld = OccupierOf(World.Pink);
+            if (occupierOfPinkHomeworld != null)
+            {
+                if (!occupierOfPinkHomeworld.Leaders.Contains(Vidal))
+                {
+                    TakeVidal(occupierOfPinkHomeworld, VidalMoment.WhilePinkWorldIsOccupied);
+                }
+            }
+            else
+            {
+                previousOccupierOfPinkHomeworld?.Leaders.Remove(Vidal);
+            }
+        }
+
+        private void SetAsideVidal()
+        {
+            if (IsAlive(Vidal) && PlayerToSetAsideVidal.Leaders.Contains(Vidal))
+            {
+                PlayerToSetAsideVidal.Leaders.Remove(Vidal);
+                Log(Vidal, " is set aside");
+            }
+
+            PlayerToSetAsideVidal = null;
+            WhenToSetAsideVidal = VidalMoment.None;
+        }
+                
+        internal TreacheryCard Discard(Player player, TreacheryCardType cardType)
+        {
+            TreacheryCard card = null;
+            if (cardType == TreacheryCardType.Karma && player.Is(Faction.Blue))
+            {
+                card = player.TreacheryCards.First(x => x.Type == TreacheryCardType.Karma || x.Type == TreacheryCardType.Useless);
+            }
+            else
+            {
+                card = player.TreacheryCards.First(x => x.Type == cardType);
+            }
+
+            if (card != null)
+            {
+                Discard(player, card);
+            }
+            else
+            {
+                Log(cardType, " card not found");
+            }
+
+            return card;
+        }
+
+        internal void Discard(TreacheryCard card)
+        {
+            var player = Players.SingleOrDefault(p => p.TreacheryCards.Contains(card));
+            Discard(player, card);
+            RegisterKnown(card);
+        }
+
+        internal void Discard(Player player, TreacheryCard card)
+        {
+            if (player != null && card != null)
+            {
+                Log(player.Faction, " discard ", card);
+                player.TreacheryCards.Remove(card);
+                TreacheryDiscardPile.PutOnTop(card);
+                RegisterKnown(card);
+                RecentlyDiscarded.Add(card, player.Faction);
+                Stone(Milestone.Discard);
+
+                if (card.Type == TreacheryCardType.Poison || card.Type == TreacheryCardType.ProjectileAndPoison || card.Type == TreacheryCardType.PoisonTooth)
+                {
+                    var pink = GetPlayer(Faction.Pink);
+                    if (pink != null && pink.HasHighThreshold())
+                    {
+                        Log(Faction.Pink, " get ", Payment.Of(3), " from the discarded ", card);
+                        pink.Resources += 3;
+                    }
+                }
+            }
+        }
+
+        #endregion SupportMethods
+
+        #region TechnicalSupport
+
+        public static Message TryLoad(GameState state, bool performValidation, bool isHost, out Game result)
+        {
+            try
+            {
+                result = new Game(state.Version);
+
+                int nr = 0;
+                foreach (var e in state.Events)
+                {
+                    e.Game = result;
+                    var message = e.Execute(performValidation, isHost);
+                    if (message != null)
+                    {
+                        return Message.Express(e.GetType().Name, "(", nr, "):", message); ;
+                    }
+                    nr++;
+                }
+
+                return null;
+            }
+            catch (Exception e)
+            {
+                result = null;
+                return Message.Express(e.Message);
+            }
+        }
+
+        private void Log(params object[] expression)
+        {
+            CurrentReport.Express(expression);
+        }
+
+        private void LogIf(bool condition, params object[] expression)
+        {
+            if (condition)
+            {
+                CurrentReport.Express(expression);
+            }
+        }
+
+        private void LogTo(Faction faction, params object[] expression)
+        {
+            CurrentReport.ExpressTo(faction, expression);
+        }
+
+        internal void Stone(Milestone m)
+        {
+            RecentMilestones.Add(m);
+        }
+
+        public Game Clone()
+        {
+            var result = (Game)MemberwiseClone();
+
+            result.Players = Utilities.CloneList(Players);
+            result.LeaderState = Utilities.CloneObjectDictionary(LeaderState);
+            result.SecretsRemainHidden = new List<Faction>(SecretsRemainHidden);
+            result.PreventedAdvantages = new List<FactionAdvantage>(PreventedAdvantages);
+            result.AmbassadorsOnPlanet = Utilities.CloneEnumDictionary(AmbassadorsOnPlanet);
+            result.TerrorOnPlanet = Utilities.CloneObjectDictionary(TerrorOnPlanet);
+            result.StrongholdOwnership = Utilities.CloneEnumDictionary(StrongholdOwnership);
+
+            return result;
+        }
+
+        #endregion TechnicalSupport
+
+        #region Payments
+
+        public void SetRecentPayment(int amount, Faction by, Faction to, GameEvent reason)
+        {
+            if (amount > 0)
+            {
+                RecentlyPaid.Add(new Payment(amount, by, to, reason));
+            }
+        }
+
+        public void SetRecentPayment(int amount, Faction by, GameEvent reason)
+        {
+            SetRecentPayment(amount, by, Faction.None, reason);
+        }
+
+        public void ClearRecentPayments()
+        {
+            StoredRecentlyPaid = RecentlyPaid;
+            RecentlyPaid = new();
+        }
+
+        public bool HasRecentPaymentFor(Type t) => RecentlyPaid.Any(p => p.Reason != null && p.Reason.GetType() == t);
+
+        public int RecentlyPaidTotalAmount => RecentlyPaid.Sum(p => p.Amount);
+
+
+        #endregion Payments
+
+        #region Information
+
+        public bool Occupies(Faction f, World w)
+        {
+            if (f != Faction.None)
+            {
+                var hwOccupation = HomeworldOccupation.Keys.FirstOrDefault(hw => hw.World == w);
+                if (hwOccupation != null)
+                {
+                    return HomeworldOccupation[hwOccupation] == f;
+                }
+            }
+
+            return false;
+        }
+
+        public Player OccupierOf(World w)
+        {
+            var hwOccupation = HomeworldOccupation.Keys.FirstOrDefault(hw => hw.World == w);
+            if (hwOccupation != null)
+            {
+                return GetPlayer(HomeworldOccupation[hwOccupation]);
+            }
+
+            return null;
+        }
+
+        public HomeworldStatus GetStatusOf(Homeworld w)
+        {
+            var player = Players.FirstOrDefault(p => p.IsNative(w));
+
+            if (player != null)
+            {
+                var occupier = OccupierOf(w.World);
+                return new HomeworldStatus(player.HasHighThreshold(w.World), occupier != null ? occupier.Faction : Faction.None);
+            }
+
+            return null;
+        }
+
+        public bool IsInStorm(Location l) => l.Sector == SectorInStorm;
+
+        public bool IsInStorm(Territory t) => t.Locations.Any(l => IsInStorm(l));
+
+        public bool IsOccupied(Location l) => Players.Any(p => p.Occupies(l));
+
+        public bool IsOccupied(Territory t) => Players.Any(p => p.Occupies(t));
+
+        public bool IsOccupiedByFactionOrTheirAlly(World world, Player p)
+        {
+            var occupier = OccupierOf(world);
+            return occupier != null && (occupier == p || occupier.Ally == p.Faction);
+        }
+
+        public bool IsOccupiedByFactionOrTheirAlly(World world, Faction f)
+        {
+            var occupier = OccupierOf(world);
+            return occupier != null && (occupier.Is(f) || occupier.Ally == f);
+        }
+
+        public bool ContainsConflictingAlly(Player initiator, Location to)
+        {
+            if (initiator.Ally == Faction.None || to == Map.PolarSink || initiator.Faction == Faction.Pink || initiator.Ally == Faction.Pink || to == null) return false;
+
+            var ally = initiator.AlliedPlayer;
+
+            if (initiator.Ally == Faction.Blue && Applicable(Rule.AdvisorsDontConflictWithAlly))
+            {
+                return ally.ForcesIn(to.Territory) > 0;
+            }
+            else
+            {
+                return ally.AnyForcesIn(to.Territory) > 0;
+            }
+        }
+
+        public Player OwnerOf(IHero hero) => Players.FirstOrDefault(p => p.Leaders.Contains(hero));
+
+        public Player OwnerOf(TreacheryCard karmaCard) => karmaCard != null ? Players.FirstOrDefault(p => p.TreacheryCards.Contains(karmaCard)) : null;
+
+        public Player OwnerOf(TreacheryCardType cardType) => Players.FirstOrDefault(p => p.TreacheryCards.Any(c => c.Type == cardType));
+
+        public Player OwnerOf(Location stronghold) => StrongholdOwnership.TryGetValue(stronghold, out Faction value) ? GetPlayer(value) : null;
+
+        public int NumberOfHumanPlayers => Players.Count(p => !p.IsBot);
+                
         public int NrOfOccupantsExcludingPlayer(Location l, Player p)
         {
             Faction pinkOrPinkAllyToExclude = Faction.None;
@@ -598,105 +1075,6 @@ namespace Treachery.Shared
             return Map.Locations(true).Where(l => l.Sector != SectorInStorm && p.AnyForcesIn(l) > 0);
         }
 
-        internal void FlipBeneGesseritWhenAloneOrWithPinkAlly()
-        {
-            var bg = GetPlayer(Faction.Blue);
-            if (bg != null)
-            {
-                var pink = GetPlayer(Faction.Pink);
-                var territoriesWhereAdvisorsAreAloneOrWithPink = Map.Territories(true).Where(t => bg.SpecialForcesIn(t) > 0 &&
-                    (!Players.Any(p => p.Faction != Faction.Blue && p.AnyForcesIn(t) > 0) || bg.Ally == Faction.Pink && pink.AnyForcesIn(t) > 0));
-
-                foreach (var t in territoriesWhereAdvisorsAreAloneOrWithPink)
-                {
-                    bg.FlipForces(t, false);
-                    Log(Faction.Blue, " are alone and flip to ", FactionForce.Blue, " in ", t);
-                }
-            }
-        }
-
-        #endregion
-
-        #region Resources
-
-        internal void ChangeResourcesOnPlanet(Location location, int amount)
-        {
-            if (ResourcesOnPlanet.ContainsKey(location))
-            {
-                if (ResourcesOnPlanet[location] + amount == 0)
-                {
-                    ResourcesOnPlanet.Remove(location);
-                }
-                else
-                {
-                    ResourcesOnPlanet[location] = ResourcesOnPlanet[location] + amount;
-                }
-            }
-            else if (amount != 0)
-            {
-                ResourcesOnPlanet.Add(location, amount);
-            }
-        }
-
-        private int RemoveResources(Location location)
-        {
-            int result = 0;
-            if (ResourcesOnPlanet.ContainsKey(location))
-            {
-                result = ResourcesOnPlanet[location];
-                ResourcesOnPlanet.Remove(location);
-            }
-
-            return result;
-        }
-
-        private int RemoveResources(Territory territory)
-        {
-            int result = 0;
-            foreach (var l in territory.Locations)
-            {
-                result += RemoveResources(l);
-            }
-
-            return result;
-        }
-
-        #endregion
-
-        #region PlayersAndFactions
-
-        public bool IsPlaying(Faction faction) => Players.Any(p => p.Faction == faction);
-
-        public Player GetPlayer(string name)
-        {
-            return Players.FirstOrDefault(p => p.Name == name);
-        }
-
-        public Player GetPlayer(Faction? f)
-        {
-            return Players.FirstOrDefault(p => p.Faction == f);
-        }
-
-        public Faction GetAlly(Faction f)
-        {
-            var player = GetPlayer(f);
-            return player != null ? player.Ally : Faction.None;
-        }
-
-        public Player GetAlliedPlayer(Faction f)
-        {
-            return GetPlayer(f)?.AlliedPlayer;
-        }
-
-        public IEnumerable<Faction> PlayersOtherThan(Player p)
-        {
-            return Players.Where(x => x.Faction != p.Faction).Select(x => x.Faction);
-        }
-
-        #endregion
-
-        #region SupportMethods
-
         public bool IsNotFull(Player p, Location l)
         {
             return
@@ -707,43 +1085,9 @@ namespace Treachery.Shared
                 NrOfOccupantsExcludingPlayer(l, p) < 2;
         }
 
-
-
-        private void AllowAllPreventedFactionAdvantages(IEnumerable<FactionAdvantage> exceptions)
-        {
-            foreach (var adv in Enumerations.GetValuesExceptDefault(typeof(FactionAdvantage), FactionAdvantage.None))
-            {
-                if (exceptions == null || !exceptions.Contains(adv))
-                {
-                    Allow(adv);
-                }
-            }
-        }
-
-        public Game Clone()
-        {
-            var result = (Game)MemberwiseClone();
-            
-            result.Players = Utilities.CloneList(Players);
-            result.LeaderState = Utilities.CloneObjectDictionary(LeaderState);
-            result.SecretsRemainHidden = new List<Faction>(SecretsRemainHidden);
-            result.PreventedAdvantages = new List<FactionAdvantage>(PreventedAdvantages);
-            result.AmbassadorsOnPlanet = Utilities.CloneEnumDictionary(AmbassadorsOnPlanet);
-            result.TerrorOnPlanet = Utilities.CloneObjectDictionary(TerrorOnPlanet);
-            result.StrongholdOwnership = Utilities.CloneEnumDictionary(StrongholdOwnership);
-
-
-            return result;
-        }
-
         internal bool EveryoneActedOrPassed => HasActedOrPassed.Count == Players.Count;
 
         public bool AssistedNotekeepingEnabled(Player p) => Applicable(Rule.AssistedNotekeeping) || p.Is(Faction.Green) && Applicable(Rule.AssistedNotekeepingForGreen);
-
-        public bool HasRoomForLeaders(Player p) =>
-            p.Leaders.Count(l => IsAlive(l)) -
-            (p.Is(Faction.Black) ? p.Leaders.Count(l => l.Faction != Faction.Black) : 0)
-            < 5;
 
         public bool HasStormPrescience(Player p)
         {
@@ -771,6 +1115,7 @@ namespace Treachery.Shared
             var player = GetPlayer(f);
             return player != null && player.HasLowThreshold();
         }
+
         public bool HasResourceDeckPrescience(Player p)
         {
             return
@@ -794,346 +1139,6 @@ namespace Treachery.Shared
                 !Prevented(FactionAdvantage.GreenBiddingPrescience) &&
                 (p.Faction == Faction.Green || (p.Ally == Faction.Green && GreenSharesPrescience) || HasDeal(p.Faction, DealType.ShareBiddingPrescience)));
         }
-
-        
-        
-
-        public void DetermineOccupationAtStartOrEndOfTurn()
-        {
-            var currentOccupierOfPinkHomeworld = OccupierOf(World.Pink);
-            var updatedOccupation = new Dictionary<Homeworld, Faction>();
-
-            foreach (var hw in Map.Homeworlds)
-            {
-                foreach (var player in Players)
-                {
-                    if (player.Controls(this, hw, false) && !player.IsNative(hw))
-                    {
-                        updatedOccupation.Add(hw, player.Faction);
-
-                        if (!Occupies(player.Faction, hw.World))
-                        {
-                            Log(player.Faction, " now occupy ", hw);
-                        }
-                    }
-                }
-            }
-
-            foreach (var kvp in HomeworldOccupation)
-            {
-                if (!updatedOccupation.Contains(kvp))
-                {
-                    Log(kvp.Value, " no longer occupies ", kvp.Key);
-                }
-            }
-
-            HomeworldOccupation = updatedOccupation;
-
-            CheckIfShipmentPermissionsShouldBeRevoked();
-            CheckIfOccupierTakesVidal(currentOccupierOfPinkHomeworld);
-            LetFactionsDiscardSurplusCards();
-        }
-
-        internal void CheckIfShipmentPermissionsShouldBeRevoked()
-        {
-            if (!HasHighThreshold(Faction.Orange) && ShipmentPermissions.Any())
-            {
-                ShipmentPermissions.Clear();
-                Log("Only ", Faction.Orange, " can ship cross/from planet now");
-            }
-        }
-
-        internal void LetFactionsDiscardSurplusCards()
-        {
-            FactionsThatMustDiscard.AddRange(Players.Where(p => p.HandSizeExceeded).Select(p => p.Faction));
-            if (FactionsThatMustDiscard.Any())
-            {
-                PhaseBeforeDiscarding = CurrentPhase;
-                Enter(Phase.Discarding);
-            }
-        }
-
-        internal void CheckIfOccupierTakesVidal(Player previousOccupierOfPinkHomeworld)
-        {
-            var occupierOfPinkHomeworld = OccupierOf(World.Pink);
-            if (occupierOfPinkHomeworld != null)
-            {
-                if (!occupierOfPinkHomeworld.Leaders.Contains(Vidal))
-                {
-                    TakeVidal(occupierOfPinkHomeworld, VidalMoment.WhilePinkWorldIsOccupied);
-                }
-            }
-            else
-            {
-                previousOccupierOfPinkHomeworld?.Leaders.Remove(Vidal);
-            }
-        }
-
-        private void SetAsideVidal()
-        {
-            if (IsAlive(Vidal) && PlayerToSetAsideVidal.Leaders.Contains(Vidal))
-            {
-                PlayerToSetAsideVidal.Leaders.Remove(Vidal);
-                Log(Vidal, " is set aside");
-            }
-
-            PlayerToSetAsideVidal = null;
-            WhenToSetAsideVidal = VidalMoment.None;
-        }
-
-        internal TreacheryCard Discard(Faction faction, TreacheryCardType cardType) => Discard(GetPlayer(faction), cardType);
-
-        internal TreacheryCard Discard(Player player, TreacheryCardType cardType)
-        {
-            TreacheryCard card = null;
-            if (cardType == TreacheryCardType.Karma && player.Is(Faction.Blue))
-            {
-                card = player.TreacheryCards.First(x => x.Type == TreacheryCardType.Karma || x.Type == TreacheryCardType.Useless);
-            }
-            else
-            {
-                card = player.TreacheryCards.First(x => x.Type == cardType);
-            }
-
-            if (card != null)
-            {
-                Discard(player, card);
-            }
-            else
-            {
-                Log(cardType, " card not found");
-            }
-
-            return card;
-        }
-
-        internal void Discard(TreacheryCard card)
-        {
-            var player = Players.SingleOrDefault(p => p.TreacheryCards.Contains(card));
-            Discard(player, card);
-            RegisterKnown(card);
-        }
-
-        public Dictionary<TreacheryCard, Faction> RecentlyDiscarded { get; private set; } = new Dictionary<TreacheryCard, Faction>();
-        internal void Discard(Player player, TreacheryCard card)
-        {
-            if (player != null && card != null)
-            {
-                Log(player.Faction, " discard ", card);
-                player.TreacheryCards.Remove(card);
-                TreacheryDiscardPile.PutOnTop(card);
-                RegisterKnown(card);
-                RecentlyDiscarded.Add(card, player.Faction);
-                Stone(Milestone.Discard);
-
-                if (card.Type == TreacheryCardType.Poison || card.Type == TreacheryCardType.ProjectileAndPoison || card.Type == TreacheryCardType.PoisonTooth)
-                {
-                    var pink = GetPlayer(Faction.Pink);
-                    if (pink != null && pink.HasHighThreshold())
-                    {
-                        Log(Faction.Pink, " get ", Payment.Of(3), " from the discarded ", card);
-                        pink.Resources += 3;
-                    }
-                }
-            }
-        }
-
-        public static Message TryLoad(GameState state, bool performValidation, bool isHost, out Game result)
-        {
-            try
-            {
-                result = new Game(state.Version);
-
-                int nr = 0;
-                foreach (var e in state.Events)
-                {
-                    e.Game = result;
-                    var message = e.Execute(performValidation, isHost);
-                    if (message != null)
-                    {
-                        return Message.Express(e.GetType().Name, "(", nr, "):", message); ;
-                    }
-                    nr++;
-                }
-
-                return null;
-            }
-            catch (Exception e)
-            {
-                result = null;
-                return Message.Express(e.Message);
-            }
-        }
-
-        private void Log(params object[] expression)
-        {
-            CurrentReport.Express(expression);
-        }
-
-        private void LogIf(bool condition, params object[] expression)
-        {
-            if (condition)
-            {
-                CurrentReport.Express(expression);
-            }
-        }
-
-        private void LogTo(Faction faction, params object[] expression)
-        {
-            CurrentReport.ExpressTo(faction, expression);
-        }
-
-        internal void Stone(Milestone m)
-        {
-            RecentMilestones.Add(m);
-        }
-
-        #endregion SupportMethods
-
-        #region Payments
-
-        public void SetRecentPayment(int amount, Faction by, Faction to, GameEvent reason)
-        {
-            if (amount > 0)
-            {
-                RecentlyPaid.Add(new Payment(amount, by, to, reason));
-            }
-        }
-
-        public void SetRecentPayment(int amount, Faction by, GameEvent reason)
-        {
-            SetRecentPayment(amount, by, Faction.None, reason);
-        }
-
-        public void ClearRecentPayments()
-        {
-            StoredRecentlyPaid = RecentlyPaid;
-            RecentlyPaid = new();
-        }
-
-        #endregion Payments
-
-        #region Information
-
-        public bool Occupies(Faction f, World w)
-        {
-            if (f != Faction.None)
-            {
-                var hwOccupation = HomeworldOccupation.Keys.FirstOrDefault(hw => hw.World == w);
-                if (hwOccupation != null)
-                {
-                    return HomeworldOccupation[hwOccupation] == f;
-                }
-            }
-
-            return false;
-        }
-
-        public Player OccupierOf(Homeworld w) => HomeworldOccupation.TryGetValue(w, out Faction value) ? GetPlayer(value) : null;
-
-        public Player OccupierOf(World w)
-        {
-            var hwOccupation = HomeworldOccupation.Keys.FirstOrDefault(hw => hw.World == w);
-            if (hwOccupation != null)
-            {
-                return GetPlayer(HomeworldOccupation[hwOccupation]);
-            }
-
-            return null;
-        }
-
-        public HomeworldStatus GetStatusOf(Homeworld w)
-        {
-            var player = Players.FirstOrDefault(p => p.IsNative(w));
-
-            if (player != null)
-            {
-                var occupier = OccupierOf(w.World);
-                return new HomeworldStatus(player.HasHighThreshold(w.World), occupier != null ? occupier.Faction : Faction.None);
-            }
-
-            return null;
-        }
-
-        public int NumberOfHumanPlayers => Players.Count(p => !p.IsBot);
-
-        public bool IsInStorm(Location l) => l.Sector == SectorInStorm;
-
-        public bool IsInStorm(Territory t) => t.Locations.Any(l => IsInStorm(l));
-
-        public bool IsOccupied(Location l) => Players.Any(p => p.Occupies(l));
-
-        public bool IsOccupied(Territory t) => Players.Any(p => p.Occupies(t));
-
-        public Player OwnerOf(IHero hero) => Players.FirstOrDefault(p => p.Leaders.Contains(hero));
-
-        public Player OwnerOf(TreacheryCard karmaCard) => karmaCard != null ? Players.FirstOrDefault(p => p.TreacheryCards.Contains(karmaCard)) : null;
-
-        public Player OwnerOf(TreacheryCardType cardType) => Players.FirstOrDefault(p => p.TreacheryCards.Any(c => c.Type == cardType));
-
-        public Player OwnerOf(Location stronghold) => StrongholdOwnership.TryGetValue(stronghold, out Faction value) ? GetPlayer(value) : null;
-
-        public bool HasRecentPaymentFor(Type t) => RecentlyPaid.Any(p => p.Reason != null && p.Reason.GetType() == t);
-
-        public int RecentlyPaidTotalAmount => RecentlyPaid.Sum(p => p.Amount);
-
-        public GameEvent LatestEvent(Type eventType) => History.LastOrDefault(e => e.GetType() == eventType);
-
-        public GameEvent LatestEvent() => History.Count > 0 ? History[^1] : null;
-
-        public int EventCount => History.Count;
-
-        public GameEvent FindMostRecentEvent(params Type[] types)
-        {
-            if (types.Length == 0) return History[^1];
-
-            for (int i = History.Count - 1; i >= 0; i--)
-            {
-                if (types.Contains(History[i].GetType()))
-                {
-                    return History[i];
-                }
-            }
-
-            return null;
-        }
-
-        public TimeSpan Duration => History.Count > 0 ? History[^1].Time.Subtract(History[0].Time) : TimeSpan.Zero;
-
-        public TimeSpan TimeSpent(Player player, MainPhase phase)
-        {
-            if (Timers.TryGetValue(player, out var timer))
-            {
-                return timer.TimeSpent(phase);
-            }
-            else
-            {
-                return TimeSpan.Zero;
-            }
-        }
-
-        public DateTime Started
-        {
-            get
-            {
-                if (History.Count > 0)
-                {
-                    return History[0].Time;
-                }
-                else
-                {
-                    return default;
-                }
-            }
-        }
-
-        private bool InTimedPhase =>
-            CurrentPhase == Phase.Bidding ||
-            CurrentPhase == Phase.OrangeShip ||
-            CurrentPhase == Phase.OrangeMove ||
-            CurrentPhase == Phase.NonOrangeShip ||
-            CurrentPhase == Phase.NonOrangeMove ||
-            CurrentPhase == Phase.BattlePhase;
 
         #endregion Information
     }

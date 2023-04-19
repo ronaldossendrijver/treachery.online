@@ -10,26 +10,38 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public ILocationEvent LastShipmentOrMovement { get; internal set; }
-
-        private Queue<Intrusion> Intrusions { get; } = new();
-
-        public Intrusion LastBlueIntrusion => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.BlueIntrusion ? Intrusions.Peek() : null;
-        public Intrusion LastTerrorTrigger => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.Terror ? Intrusions.Peek() : null;
-        public Intrusion LastAmbassadorTrigger => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.Ambassador ? Intrusions.Peek() : null;
+        #region State
 
         public PlayerSequence ShipmentAndMoveSequence { get; internal set; }
+        public ILocationEvent LastShipmentOrMovement { get; internal set; }
+        private Queue<Intrusion> Intrusions { get; } = new();
         public bool ShipsTechTokenIncome { get; internal set; }
-        public List<IPlacement> RecentMoves { get; internal set; } = new();
+        public List<IPlacement> RecentMoves { get; } = new();
         public int CurrentNoFieldValue { get; internal set; } = -1;
         public int LatestRevealedNoFieldValue { get; internal set; } = -1;
-
-        public Dictionary<Faction, ShipmentPermission> ShipmentPermissions { get; private set; } = new();
-
+        public Dictionary<Faction, ShipmentPermission> ShipmentPermissions { get; } = new();
         internal List<Faction> FactionsWithOrnithoptersAtStartOfMovement { get; set; }
-
         internal bool BeginningOfShipmentAndMovePhase { get; set; }
-                
+        internal KarmaShipmentPrevention CurrentKarmaShipmentPrevention { get; set; }
+        internal List<Territory> ChosenDestinationsWithAllies { get; } = new();
+        internal bool CurrentPlayerMayPerformExtraMove { get; set; }
+        internal bool BlueMayAccompany { get; set; }
+        internal Phase PhaseBeforeCaravanCausedIntrusion { get; set; }
+        internal FlightUsed CurrentFlightUsed { get; set; }
+        internal FlightDiscoveryUsed CurrentFlightDiscoveryUsed { get; set; }
+        internal AmbassadorActivated CurrentAmbassadorActivated { get; set; }
+        public Faction AllianceByAmbassadorOfferedTo { get; internal set; }
+        internal Phase PausedAmbassadorPhase { get; set; }
+        private Player PlayerToSetAsideVidal { get; set; }
+        private VidalMoment WhenToSetAsideVidal { get; set; }
+        internal Phase PausedTerrorPhase { get; set; }
+        public bool AllianceByTerrorWasOffered { get; internal set; } = false;
+        public Faction AllianceByTerrorOfferedTo { get; internal set; }
+        public bool InOrangeCunningShipment { get; internal set; }
+        public List<Territory> CurrentBlockedTerritories { get; } = new();
+        internal bool BrownHasExtraMove { get; set; } = false;
+
+        #endregion State
 
         internal void StartShipAndMoveSequence()
         {
@@ -40,152 +52,6 @@ namespace Treachery.Shared
 
             Enter(JuiceForcesFirstPlayer && CurrentJuice.Initiator != Faction.Orange, Phase.NonOrangeShip, IsPlaying(Faction.Orange) && OrangeMayShipOutOfTurnOrder, Phase.OrangeShip, Phase.NonOrangeShip);
         }
-
-        internal bool OccupiesArrakeenOrCarthag(Player p)
-        {
-            return p.Occupies(Map.Arrakeen) || p.Occupies(Map.Carthag);
-        }
-
-        internal readonly List<Territory> ChosenDestinationsWithAllies = new();
-
-        public bool ContainsConflictingAlly(Player initiator, Location to)
-        {
-            if (initiator.Ally == Faction.None || to == Map.PolarSink || initiator.Faction == Faction.Pink || initiator.Ally == Faction.Pink || to == null) return false;
-
-            var ally = initiator.AlliedPlayer;
-
-            if (initiator.Ally == Faction.Blue && Applicable(Rule.AdvisorsDontConflictWithAlly))
-            {
-                return ally.ForcesIn(to.Territory) > 0;
-            }
-            else
-            {
-                return ally.AnyForcesIn(to.Territory) > 0;
-            }
-        }
-
-        
-
-        public bool MayShipCrossPlanet(Player p)
-        {
-            return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) ||
-                   p.Ally == Faction.Orange && OrangeAllowsShippingDiscount ||
-                   p.Initiated(CurrentOrangeNexus) ||
-                   HasShipmentPermission(p, ShipmentPermission.Cross);
-        }
-
-        public bool MayShipToReserves(Player p)
-        {
-            return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) ||
-                   p.Initiated(CurrentOrangeNexus) ||
-                   HasShipmentPermission(p, ShipmentPermission.ToHomeworld);
-        }
-
-        public bool MayShipWithDiscount(Player p)
-        {
-            return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeShipmentsDiscount) ||
-                   p.Ally == Faction.Orange && OrangeAllowsShippingDiscount && !Prevented(FactionAdvantage.OrangeShipmentsDiscountAlly) ||
-                   p.Initiated(CurrentOrangeNexus);
-        }
-
-        internal bool MayPerformExtraMove { get; set; }
-
-        internal bool BlueMayAccompany { get; set; } = false;
-
-        internal bool CheckIntrusion(ILocationEvent e)
-        {
-            CheckBlueIntrusion(e, e.Initiator, e.To.Territory);
-            CheckAmbassadorTriggered(e);
-            CheckTerrorTriggered(e);
-            return Intrusions.Count > 0;
-        }
-
-        public bool IsOccupiedByFactionOrTheirAlly(World world, Player p)
-        {
-            var occupier = OccupierOf(world);
-            return occupier != null && (occupier == p || occupier.Ally == p.Faction);
-        }
-
-        public bool IsOccupiedByFactionOrTheirAlly(World world, Faction f)
-        {
-            var occupier = OccupierOf(world);
-            return occupier != null && (occupier.Is(f) || occupier.Ally == f);
-        }
-
-        private void CheckBlueIntrusion(ILocationEvent e, Faction initiator, Territory territory)
-        {
-            var bgPlayer = GetPlayer(Faction.Blue);
-            if (bgPlayer != null &&
-                territory != Map.PolarSink.Territory &&
-                !territory.IsHomeworld &&
-                Applicable(Rule.BlueAdvisors) &&
-                initiator != bgPlayer.Ally &&
-                initiator != Faction.Blue &&
-                bgPlayer.ForcesIn(territory) > 0)
-            {
-                if (Prevented(FactionAdvantage.BlueIntrusion))
-                {
-                    LogPreventionByKarma(FactionAdvantage.BlueIntrusion);
-                    if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlueIntrusion);
-                }
-                else
-                {
-                    QueueIntrusion(e, IntrusionType.BlueIntrusion);
-                }
-            }
-        }
-
-        private void CheckAmbassadorTriggered(ILocationEvent e)
-        {
-            var pinkPlayer = GetPlayer(Faction.Pink);
-            if (pinkPlayer != null &&
-                e.Initiator != Faction.Pink &&
-                e.Initiator != pinkPlayer.Ally &&
-                AmbassadorIn(e.To.Territory) != Ambassador.None &&
-                AmbassadorIn(e.To.Territory) != AmbassadorOf(e.Initiator))
-            {
-                QueueIntrusion(e, IntrusionType.Ambassador);
-            }
-        }
-
-        internal Ambassador AmbassadorOf(Faction faction) => (Ambassador)((int)faction);
-
-        private void CheckTerrorTriggered(ILocationEvent e)
-        {
-            var cyanPlayer = GetPlayer(Faction.Cyan);
-            if (cyanPlayer != null &&
-                (e.TotalAmountOfForcesAddedToLocation >= 3 || !cyanPlayer.HasLowThreshold()) &&
-                e.Initiator != Faction.Cyan &&
-                e.Initiator != cyanPlayer.Ally &&
-                !IsOccupiedByFactionOrTheirAlly(World.Cyan, e.Initiator) &&
-                TerrorIn(e.To.Territory).Any())
-            {
-                QueueIntrusion(e, IntrusionType.Terror);
-            }
-        }
-
-        private void QueueIntrusion(ILocationEvent e, IntrusionType type)
-        {
-            Intrusions.Enqueue(new Intrusion(e, type));
-        }
-
-        public Intrusion LatestIntrusion { get; private set; }
-
-        internal void DequeueIntrusion(IntrusionType type)
-        {
-            if (Intrusions.Count == 0)
-            {
-                throw new ArgumentException($"No intrusions to dequeue");
-            }
-            else if (Intrusions.Peek().Type != type)
-            {
-                throw new ArgumentException($"Wrong intrusion type: actual:{type} vs expected:{Intrusions.Peek().Type}");
-            }
-
-            LatestIntrusion = Intrusions.Dequeue();
-        }
-
-        internal Phase PausedPhase { get; set; }
 
         internal void PerformMoveFromLocations(Player initiator, Dictionary<Location, Battalion> forceLocations, ILocationEvent evt, bool asAdvisors, bool byCaravan)
         {
@@ -288,11 +154,7 @@ namespace Treachery.Shared
             totalNumberOfForces += battalion.AmountOfForces;
             totalNumberOfSpecialForces += battalion.AmountOfSpecialForces;
         }
-
-        internal FlightUsed CurrentFlightUsed { get; set; }
-
-        internal FlightDiscoveryUsed CurrentFlightDiscoveryUsed { get; set; }
-
+                
         private bool MustMoveThroughStorm(Player initiator, Location from, Location to, Battalion moved)
         {
             if (from == null || to == null) return false;
@@ -318,16 +180,8 @@ namespace Treachery.Shared
                 MessagePart.ExpressIf(initiator.Is(Faction.Blue) && Applicable(Rule.BlueAdvisors), " as ", asAdvisors ? (object)initiator.SpecialForce : initiator.Force));
         }
 
-        private MessagePart CaravanMessage(bool byCaravan) => MessagePart.ExpressIf(byCaravan, "By ", TreacheryCardType.Caravan, ", ");
+        private static MessagePart CaravanMessage(bool byCaravan) => MessagePart.ExpressIf(byCaravan, "By ", TreacheryCardType.Caravan, ", ");
 
-        internal AmbassadorActivated CurrentAmbassadorActivated { get; set; }
-        public Faction AllianceByAmbassadorOfferedTo { get; internal set; }
-        internal Phase PausedAmbassadorPhase { get; set; }
-
-        
-
-        private Player PlayerToSetAsideVidal { get; set; }
-        private VidalMoment WhenToSetAsideVidal { get; set; }
         internal void TakeVidal(Player p, VidalMoment whenToSetAside)
         {
             var vidal = Vidal;
@@ -353,11 +207,7 @@ namespace Treachery.Shared
 
             SetInFrontOfShield(vidal, false);
         }
-
-        internal Phase PausedTerrorPhase { get; set; }
-        public bool AllianceByTerrorWasOffered { get; internal set; } = false;
-        public Faction AllianceByTerrorOfferedTo { get; internal set; }
-
+                
         internal void LetPlayerDiscardTreacheryCardOfChoice(Faction f)
         {
             PhaseBeforeDiscarding = CurrentPhase;
@@ -519,7 +369,7 @@ namespace Treachery.Shared
                 case Phase.BlueIntrudedByCaravan:
                 case Phase.TerrorTriggeredByCaravan:
                 case Phase.AmbassadorTriggeredByCaravan:
-                    Enter(PausedPhase);
+                    Enter(PhaseBeforeCaravanCausedIntrusion);
                     break;
             }
         }
@@ -794,9 +644,9 @@ namespace Treachery.Shared
 
         private void DetermineNextSubPhaseAfterNonOrangeMove()
         {
-            if (MayPerformExtraMove)
+            if (CurrentPlayerMayPerformExtraMove)
             {
-                MayPerformExtraMove = false;
+                CurrentPlayerMayPerformExtraMove = false;
                 Enter(Phase.NonOrangeMove);
             }
             else
@@ -808,16 +658,11 @@ namespace Treachery.Shared
             }
         }
 
-        public bool OrangeMayDelay => OrangeMayShipOutOfTurnOrder && Players.Count - HasActedOrPassed.Count > (JuiceForcesLastPlayer && !HasActedOrPassed.Contains(CurrentJuice.Initiator) ? 2 : 1);
-
-        internal bool OrangeMayShipOutOfTurnOrder => Applicable(Rule.OrangeDetermineShipment) && (Version < 113 || !Prevented(FactionAdvantage.OrangeDetermineMoveMoment));
-
-        public bool InOrangeCunningShipment { get; internal set; }
         private void DetermineNextSubPhaseAfterOrangeShipAndMove()
         {
-            if (MayPerformExtraMove)
+            if (CurrentPlayerMayPerformExtraMove)
             {
-                MayPerformExtraMove = false;
+                CurrentPlayerMayPerformExtraMove = false;
                 Enter(Phase.OrangeMove);
             }
             else if (!InOrangeCunningShipment && CurrentOrangeNexus != null && CurrentOrangeNexus.Initiator == Faction.Orange)
@@ -842,8 +687,6 @@ namespace Treachery.Shared
             CurrentBlueNexus = null;
         }
 
-        public Leader Vidal => LeaderState.Keys.FirstOrDefault(h => h.HeroType == HeroType.Vidal) as Leader;
-
         private void CheckIfCyanGainsVidal()
         {
             var cyan = GetPlayer(Faction.Cyan);
@@ -865,21 +708,6 @@ namespace Treachery.Shared
             }
         }
 
-        public bool VidalIsAlive => Vidal != null && IsAlive(Vidal);
-
-        public bool VidalIsCapturedOrGhola
-        {
-            get
-            {
-                var playerWithVidal = Players.FirstOrDefault(p => p.Leaders.Any(l => l.HeroType == HeroType.Vidal));
-                return playerWithVidal != null && (CapturedLeaders.Keys.Any(h => h.HeroType == HeroType.Vidal) || playerWithVidal.Is(Faction.Purple));
-            }
-        }
-
-        public List<Territory> CurrentBlockedTerritories { get; private set; } = new List<Territory>();
-
-        internal bool BrownHasExtraMove { get; set; } = false;
-
         private void ReceiveShipsTechIncome()
         {
             if (ShipsTechTokenIncome)
@@ -894,13 +722,143 @@ namespace Treachery.Shared
             }
         }
 
+        #region Intrusions
+
+        internal bool CheckIntrusion(ILocationEvent e)
+        {
+            CheckBlueIntrusion(e, e.Initiator, e.To.Territory);
+            CheckAmbassadorTriggered(e);
+            CheckTerrorTriggered(e);
+            return Intrusions.Count > 0;
+        }
+
+        private void CheckBlueIntrusion(ILocationEvent e, Faction initiator, Territory territory)
+        {
+            var bgPlayer = GetPlayer(Faction.Blue);
+            if (bgPlayer != null &&
+                territory != Map.PolarSink.Territory &&
+                !territory.IsHomeworld &&
+                Applicable(Rule.BlueAdvisors) &&
+                initiator != bgPlayer.Ally &&
+                initiator != Faction.Blue &&
+                bgPlayer.ForcesIn(territory) > 0)
+            {
+                if (Prevented(FactionAdvantage.BlueIntrusion))
+                {
+                    LogPreventionByKarma(FactionAdvantage.BlueIntrusion);
+                    if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlueIntrusion);
+                }
+                else
+                {
+                    QueueIntrusion(e, IntrusionType.BlueIntrusion);
+                }
+            }
+        }
+
+        private void CheckAmbassadorTriggered(ILocationEvent e)
+        {
+            var pinkPlayer = GetPlayer(Faction.Pink);
+            if (pinkPlayer != null &&
+                e.Initiator != Faction.Pink &&
+                e.Initiator != pinkPlayer.Ally &&
+                AmbassadorIn(e.To.Territory) != Ambassador.None &&
+                AmbassadorIn(e.To.Territory) != AmbassadorOf(e.Initiator))
+            {
+                QueueIntrusion(e, IntrusionType.Ambassador);
+            }
+        }
+
+        private void CheckTerrorTriggered(ILocationEvent e)
+        {
+            var cyanPlayer = GetPlayer(Faction.Cyan);
+            if (cyanPlayer != null &&
+                (e.TotalAmountOfForcesAddedToLocation >= 3 || !cyanPlayer.HasLowThreshold()) &&
+                e.Initiator != Faction.Cyan &&
+                e.Initiator != cyanPlayer.Ally &&
+                !IsOccupiedByFactionOrTheirAlly(World.Cyan, e.Initiator) &&
+                TerrorIn(e.To.Territory).Any())
+            {
+                QueueIntrusion(e, IntrusionType.Terror);
+            }
+        }
+
+        private void QueueIntrusion(ILocationEvent e, IntrusionType type)
+        {
+            Intrusions.Enqueue(new Intrusion(e, type));
+        }
+
+        internal void DequeueIntrusion(IntrusionType type)
+        {
+            if (Intrusions.Count == 0)
+            {
+                throw new ArgumentException($"No intrusions to dequeue");
+            }
+            else if (Intrusions.Peek().Type != type)
+            {
+                throw new ArgumentException($"Wrong intrusion type: actual:{type} vs expected:{Intrusions.Peek().Type}");
+            }
+
+            Intrusions.Dequeue();
+        }
+
+        #endregion Intrusions
+
+
+        #region Information
+
+        public Leader Vidal => LeaderState.Keys.FirstOrDefault(h => h.HeroType == HeroType.Vidal) as Leader;
+        public bool VidalIsAlive => Vidal != null && IsAlive(Vidal);
+
+        public bool VidalIsCapturedOrGhola
+        {
+            get
+            {
+                var playerWithVidal = Players.FirstOrDefault(p => p.Leaders.Any(l => l.HeroType == HeroType.Vidal));
+                return playerWithVidal != null && (CapturedLeaders.Keys.Any(h => h.HeroType == HeroType.Vidal) || playerWithVidal.Is(Faction.Purple));
+            }
+        }
+
+
         public bool PreventedFromShipping(Faction f) => CurrentKarmaShipmentPrevention != null && CurrentKarmaShipmentPrevention.Target == f;
 
-        internal KarmaShipmentPrevention CurrentKarmaShipmentPrevention { get; set; }
+        public bool HasShipmentPermission(Player p, ShipmentPermission permission) => ShipmentPermissions.TryGetValue(p.Faction, out var permissions) && (permissions & permission) == permission;
 
-        public bool HasShipmentPermission(Player p, ShipmentPermission permission)
+        public Intrusion LastBlueIntrusion => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.BlueIntrusion ? Intrusions.Peek() : null;
+
+        public Intrusion LastTerrorTrigger => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.Terror ? Intrusions.Peek() : null;
+
+        public Intrusion LastAmbassadorTrigger => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.Ambassador ? Intrusions.Peek() : null;
+
+        internal bool OccupiesArrakeenOrCarthag(Player p) => p.Occupies(Map.Arrakeen) || p.Occupies(Map.Carthag);
+
+        public bool MayShipCrossPlanet(Player p)
         {
-            return ShipmentPermissions.TryGetValue(p.Faction, out var permissions) && (permissions & permission) == permission;
+            return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) ||
+                   p.Ally == Faction.Orange && OrangeAllowsShippingDiscount ||
+                   p.Initiated(CurrentOrangeNexus) ||
+                   HasShipmentPermission(p, ShipmentPermission.Cross);
         }
+
+        public bool MayShipToReserves(Player p)
+        {
+            return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) ||
+                   p.Initiated(CurrentOrangeNexus) ||
+                   HasShipmentPermission(p, ShipmentPermission.ToHomeworld);
+        }
+
+        public bool MayShipWithDiscount(Player p)
+        {
+            return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeShipmentsDiscount) ||
+                   p.Ally == Faction.Orange && OrangeAllowsShippingDiscount && !Prevented(FactionAdvantage.OrangeShipmentsDiscountAlly) ||
+                   p.Initiated(CurrentOrangeNexus);
+        }
+
+        internal static Ambassador AmbassadorOf(Faction faction) => (Ambassador)((int)faction);
+
+        public bool OrangeMayDelay => OrangeMayShipOutOfTurnOrder && Players.Count - HasActedOrPassed.Count > (JuiceForcesLastPlayer && !HasActedOrPassed.Contains(CurrentJuice.Initiator) ? 2 : 1);
+
+        internal bool OrangeMayShipOutOfTurnOrder => Applicable(Rule.OrangeDetermineShipment) && (Version < 113 || !Prevented(FactionAdvantage.OrangeDetermineMoveMoment));
+
+        #endregion Information
     }
 }

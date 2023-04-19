@@ -10,6 +10,8 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
+        public Dictionary<IHero, LeaderState> LeaderState { get; private set; } = new();
+
         public bool CanJoinCurrentBattle(IHero hero)
         {
             var currentTerritory = CurrentTerritory(hero);
