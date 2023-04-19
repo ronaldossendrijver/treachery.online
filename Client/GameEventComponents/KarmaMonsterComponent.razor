@@ -28,7 +28,7 @@
 
     private Territory target;
 
-    protected override KarmaMonster ConfirmedResult => new KarmaMonster(Game) { Initiator = Faction, Territory = target };
+    protected override KarmaMonster ConfirmedResult => new KarmaMonster(Game, Faction) { Territory = target };
 
     public override void Dispose()
     {

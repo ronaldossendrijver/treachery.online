@@ -38,7 +38,7 @@
         }
     }
 
-    protected override RedBidSupport ConfirmedResult => new RedBidSupport(Game) { Initiator = Faction, Amounts = amounts };
+    protected override RedBidSupport ConfirmedResult => new RedBidSupport(Game, Faction) { Amounts = amounts };
 
     private IEnumerable<Faction> ValidTargets => Game.PlayersOtherThan(Player).Where(f => f != Player.Ally);
 }

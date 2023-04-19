@@ -44,7 +44,7 @@
         SetIfValid<Territory, Territory>(ref territory, BrownMovePrevention.ValidTerritories(Player), l.Territory);
     }
 
-    protected override BrownMovePrevention ConfirmedResult => new BrownMovePrevention(Game) { Initiator = Faction, Territory = territory };
+    protected override BrownMovePrevention ConfirmedResult => new BrownMovePrevention(Game, Faction) { Territory = territory };
 
     public override void Dispose()
     {

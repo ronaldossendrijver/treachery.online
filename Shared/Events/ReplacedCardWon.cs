@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public ReplacedCardWon(Game game) : base(game)
+        public ReplacedCardWon(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

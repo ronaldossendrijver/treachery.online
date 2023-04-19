@@ -27,5 +27,5 @@
 
     private Faction target;
 
-    protected override KarmaShipmentPrevention ConfirmedResult => new KarmaShipmentPrevention(Game) { Initiator = Faction, Target = target };
+    protected override KarmaShipmentPrevention ConfirmedResult => new KarmaShipmentPrevention(Game, Faction) { Target = target };
 }

@@ -52,7 +52,7 @@
     private TreacheryCard card;
     private bool fromBank;
 
-    protected override Donated ConfirmedResult => new Donated(Game) { Initiator = Faction, Target = target, Resources = resources, Card = card, FromBank = fromBank };
+    protected override Donated ConfirmedResult => new Donated(Game, Faction) { Target = target, Resources = resources, Card = card, FromBank = fromBank };
 
     private IEnumerable<Faction> Targets
     {

@@ -41,7 +41,7 @@
     private int resources;
     private Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
 
-    protected override PerformSetup ConfirmedResult => new PerformSetup(Game) { Initiator = Faction, Passed = false, Resources = resources, ForceLocations = forces };
+    protected override PerformSetup ConfirmedResult => new PerformSetup(Game, Faction) { Passed = false, Resources = resources, ForceLocations = forces };
 
     protected override void OnParametersSet()
     {

@@ -16,14 +16,14 @@ namespace Treachery.Shared
 
             if (Game.InOrangeCunningShipment)
             {
-                return new Move(Game) { Initiator = Faction, Passed = true };
+                return new Move(Game, Faction) { Passed = true };
             }
 
             var moved = DetermineMovedBatallion(true);
 
             if (moved == null)
             {
-                return new Move(Game) { Initiator = Faction, Passed = true };
+                return new Move(Game, Faction) { Passed = true };
             }
 
             var forces = new Dictionary<Location, Battalion>
@@ -32,7 +32,7 @@ namespace Treachery.Shared
             };
 
             bool asAdvisors = Faction == Faction.Blue && SpecialForcesIn(moved.To.Territory) > 0;
-            var result = new Move(Game) { Initiator = Faction, Passed = false, To = moved.To, ForceLocations = forces, AsAdvisors = asAdvisors };
+            var result = new Move(Game, Faction) { Passed = false, To = moved.To, ForceLocations = forces, AsAdvisors = asAdvisors };
 
             var validationError = result.Validate();
             if (validationError != null)
@@ -68,7 +68,7 @@ namespace Treachery.Shared
             };
 
             bool asAdvisors = Faction == Faction.Blue && SpecialForcesIn(moved.To.Territory) > 0;
-            var result = new Caravan(Game) { Initiator = Faction, Passed = false, To = moved.To, ForceLocations = forces, AsAdvisors = asAdvisors };
+            var result = new Caravan(Game, Faction) { Passed = false, To = moved.To, ForceLocations = forces, AsAdvisors = asAdvisors };
 
             decidedShipmentAction = ShipmentDecision.None;
 
@@ -288,7 +288,7 @@ namespace Treachery.Shared
 
             if (ForcesOnPlanet.Count(kvp => !kvp.Key.IsStronghold) > 1 && ForcesOnPlanet.Where(kvp => !kvp.Key.IsStronghold).Sum(lwf => lwf.Value.TotalAmountOfForces) > 3)
             {
-                return new FlightUsed(Game) { Initiator = Faction, MoveThreeTerritories = false };
+                return new FlightUsed(Game, Faction) { MoveThreeTerritories = false };
             }
             else
             {
@@ -307,7 +307,7 @@ namespace Treachery.Shared
                 BiggestBattalionInSpicelessNonStrongholdLocationOnRock.Key != null
                 ))
             {
-                return new FlightDiscoveryUsed(Game) { Initiator = Faction };
+                return new FlightDiscoveryUsed(Game, Faction);
             }
             else
             {

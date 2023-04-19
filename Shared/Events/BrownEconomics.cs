@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public BrownEconomics(Game game) : base(game)
+        public BrownEconomics(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

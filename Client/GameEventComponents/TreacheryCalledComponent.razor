@@ -28,7 +28,7 @@
 
     protected override bool IsUrgent => true;
 
-    protected override TreacheryCalled ConfirmedResult => new TreacheryCalled(Game) { Initiator = Faction, TraitorCalled = true };
+    protected override TreacheryCalled ConfirmedResult => new TreacheryCalled(Game, Faction) { TraitorCalled = true };
 
-    protected override TreacheryCalled PassedResult => new TreacheryCalled(Game) { Initiator = Faction, TraitorCalled = false };
+    protected override TreacheryCalled PassedResult => new TreacheryCalled(Game, Faction) { TraitorCalled = false };
 }

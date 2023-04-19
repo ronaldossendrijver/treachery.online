@@ -69,9 +69,9 @@
 
     protected override Faction IsFactionSpecific => Faction.Orange;
 
-    protected override SetShipmentPermission ConfirmedResult => new SetShipmentPermission(Game) { Initiator = Faction, Factions = targets.ToArray(), Permission = GetPermissions() };
+    protected override SetShipmentPermission ConfirmedResult => new SetShipmentPermission(Game, Faction) { Factions = targets.ToArray(), Permission = GetPermissions() };
 
-    private async Task Revoke(Faction f) => await Request(new SetShipmentPermission(Game) { Initiator = Faction, Factions = new Faction[] {f}, Permission = ShipmentPermission.None });
+    private async Task Revoke(Faction f) => await Request(new SetShipmentPermission(Game, Faction) { Factions = new Faction[] {f}, Permission = ShipmentPermission.None });
 
     private ShipmentPermission GetPermissions()
     {

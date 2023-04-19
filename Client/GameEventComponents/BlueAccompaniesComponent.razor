@@ -53,9 +53,9 @@
         h.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override BlueAccompanies ConfirmedResult => new BlueAccompanies(Game) { Initiator = Faction, Location = target, Accompanies = true, ExtraAdvisor = addExtraAdvisor };
+    protected override BlueAccompanies ConfirmedResult => new BlueAccompanies(Game, Faction) { Location = target, Accompanies = true, ExtraAdvisor = addExtraAdvisor };
 
-    protected override BlueAccompanies PassedResult => new BlueAccompanies(Game) { Initiator = Faction, Accompanies = false };
+    protected override BlueAccompanies PassedResult => new BlueAccompanies(Game, Faction) { Accompanies = false };
 
     private void HandleLocationSelected(object sender, Location l)
     {

@@ -13,7 +13,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public AmbassadorActivated(Game game) : base(game)
+        public AmbassadorActivated(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

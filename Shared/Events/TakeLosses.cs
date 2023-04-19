@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public TakeLosses(Game game) : base(game)
+        public TakeLosses(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

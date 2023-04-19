@@ -29,7 +29,7 @@
 
     private Location target;
 
-    protected override PerformCyanSetup ConfirmedResult => new PerformCyanSetup(Game) { Initiator = Faction, Target = target };
+    protected override PerformCyanSetup ConfirmedResult => new PerformCyanSetup(Game, Faction) { Target = target };
 
     protected override void OnAfterRender(bool firstRender)
     {

@@ -73,7 +73,7 @@
     private object questionParameterA;
     private object questionParameterB;
 
-    protected override ClairVoyancePlayed ConfirmedResult => new ClairVoyancePlayed(Game) { Initiator = Faction, Target = target, Question = question, Parameter1 = questionParameterA, Parameter2 = questionParameterB };
+    protected override ClairVoyancePlayed ConfirmedResult => new ClairVoyancePlayed(Game, Faction) { Target = target, Question = question, Parameter1 = questionParameterA, Parameter2 = questionParameterB };
 
     private IEnumerable<float> ValidDials
     {

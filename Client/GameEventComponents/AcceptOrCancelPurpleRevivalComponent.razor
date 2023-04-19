@@ -66,13 +66,13 @@
     private IHero offerHero;
     private int price;
 
-    protected override AcceptOrCancelPurpleRevival ConfirmedResult => new AcceptOrCancelPurpleRevival(Game) { Initiator = Faction, Cancel = false, Hero = offerHero, Price = price };
+    protected override AcceptOrCancelPurpleRevival ConfirmedResult => new AcceptOrCancelPurpleRevival(Game, Faction) { Cancel = false, Hero = offerHero, Price = price };
 
-    protected override AcceptOrCancelPurpleRevival PassedResult => new AcceptOrCancelPurpleRevival(Game) { Initiator = Faction, Cancel = false, Hero = null };
+    protected override AcceptOrCancelPurpleRevival PassedResult => new AcceptOrCancelPurpleRevival(Game, Faction) { Cancel = false, Hero = null };
 
-    protected override AcceptOrCancelPurpleRevival OtherResult => new AcceptOrCancelPurpleRevival(Game) { Initiator = Faction, Cancel = false, Hero = offerHero, Price = int.MaxValue };
+    protected override AcceptOrCancelPurpleRevival OtherResult => new AcceptOrCancelPurpleRevival(Game, Faction) { Cancel = false, Hero = offerHero, Price = int.MaxValue };
 
-    private async Task Cancel(IHero hero) => await Request(new AcceptOrCancelPurpleRevival(Game) { Initiator = Faction, Cancel = true, Hero = hero });
+    private async Task Cancel(IHero hero) => await Request(new AcceptOrCancelPurpleRevival(Game, Faction) { Cancel = true, Hero = hero });
 
     private IEnumerable<IHero> CurrentRevivalOfferValues => Game.EarlyRevivalsOffers.Select(kvp => kvp.Key);
 

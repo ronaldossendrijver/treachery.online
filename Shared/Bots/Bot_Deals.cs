@@ -138,9 +138,8 @@ namespace Treachery.Shared
             if (Faction != Faction.Black && Faction != Faction.Purple &&
                 !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.TellDiscardedTraitors))
             {
-                return new DealOffered(Game)
+                return new DealOffered(Game, Faction)
                 {
-                    Initiator = Faction,
                     Cancel = false,
                     Type = DealType.TellDiscardedTraitors,
                     EndPhase = Phase.TurnConcluded,
@@ -160,9 +159,8 @@ namespace Treachery.Shared
                 Game.HasResourceDeckPrescience(this) &&
                 !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.ShareResourceDeckPrescience && deal.EndPhase == Phase.TurnConcluded))
             {
-                return new DealOffered(Game)
+                return new DealOffered(Game, Faction)
                 {
-                    Initiator = Faction,
                     Cancel = false,
                     Type = DealType.ShareResourceDeckPrescience,
                     EndPhase = Phase.TurnConcluded,
@@ -182,9 +180,8 @@ namespace Treachery.Shared
                 Game.HasStormPrescience(this) &&
                 !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.ShareStormPrescience && deal.EndPhase == Phase.TurnConcluded))
             {
-                return new DealOffered(Game)
+                return new DealOffered(Game, Faction)
                 {
-                    Initiator = Faction,
                     Cancel = false,
                     Type = DealType.ShareStormPrescience,
                     EndPhase = Phase.TurnConcluded,
@@ -204,9 +201,8 @@ namespace Treachery.Shared
                 Game.CurrentMainPhase == MainPhase.Charity &&
                 !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.ShareBiddingPrescience && deal.EndPhase == Phase.BiddingReport && deal.To.Length == 1 && deal.To[0] == Faction.Yellow))
             {
-                return new DealOffered(Game)
+                return new DealOffered(Game, Faction)
                 {
-                    Initiator = Faction,
                     Cancel = false,
                     Type = DealType.ShareBiddingPrescience,
                     EndPhase = Phase.BiddingReport,
@@ -227,9 +223,8 @@ namespace Treachery.Shared
                 !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.ShareBiddingPrescience && deal.EndPhase == Phase.BiddingReport && !(deal.To.Length == 1 && deal.To[0] == Faction.Yellow)))
             {
                 int nrOfCards = Game.Players.Count(p => p.TreacheryCards.Count() < p.MaximumNumberOfCards);
-                return new DealOffered(Game)
+                return new DealOffered(Game, Faction)
                 {
-                    Initiator = Faction,
                     Cancel = false,
                     Type = DealType.ShareBiddingPrescience,
                     EndPhase = Phase.BiddingReport,
@@ -249,9 +244,8 @@ namespace Treachery.Shared
                 Game.HasBiddingPrescience(this) &&
                 !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.ShareBiddingPrescience && deal.EndPhase == Phase.Bidding))
             {
-                return new DealOffered(Game)
+                return new DealOffered(Game, Faction)
                 {
-                    Initiator = Faction,
                     Cancel = false,
                     Type = DealType.ShareBiddingPrescience,
                     EndPhase = Phase.Bidding,

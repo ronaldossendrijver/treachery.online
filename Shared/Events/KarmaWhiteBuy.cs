@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public KarmaWhiteBuy(Game game) : base(game)
+        public KarmaWhiteBuy(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

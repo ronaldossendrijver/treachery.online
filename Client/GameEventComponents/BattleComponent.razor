@@ -311,9 +311,8 @@
         {
             Battle.DetermineForces(Game, Player, forces, specialForces, resources, out int forcesFull, out int forcesHalf, out int specialForcesFull, out int specialForcesHalf);
 
-            var result = new Battle(Game)
+            var result = new Battle(Game, Faction)
             {
-                Initiator = Faction,
                 Defense = defense,
                 Forces = forcesFull,
                 ForcesAtHalfStrength = forcesHalf,

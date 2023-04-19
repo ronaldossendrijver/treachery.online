@@ -40,7 +40,7 @@
     private AuctionType auctionType = AuctionType.BlackMarketNormal;
     private int direction = 1;
 
-    protected override WhiteAnnouncesBlackMarket ConfirmedResult => new WhiteAnnouncesBlackMarket(Game) { Initiator = Faction, Card = card, AuctionType = auctionType, Direction = direction };
+    protected override WhiteAnnouncesBlackMarket ConfirmedResult => new WhiteAnnouncesBlackMarket(Game, Faction) { Card = card, AuctionType = auctionType, Direction = direction };
 
-    protected override WhiteAnnouncesBlackMarket PassedResult => new WhiteAnnouncesBlackMarket(Game) { Initiator = Faction, Passed = true };
+    protected override WhiteAnnouncesBlackMarket PassedResult => new WhiteAnnouncesBlackMarket(Game, Faction) { Passed = true };
 }

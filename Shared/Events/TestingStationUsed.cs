@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public TestingStationUsed(Game game) : base(game)
+        public TestingStationUsed(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         public IList<Type> GetApplicableEvents(Player player, bool isHost)
         {
-            List<Type> result = new List<Type>();
+            List<Type> result = new();
 
             if (player != null && (CurrentPhase == Phase.SelectingFactions || player.Faction != Faction.None))
             {

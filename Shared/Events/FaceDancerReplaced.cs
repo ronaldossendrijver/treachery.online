@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         public int dancerId;
 
-        public FaceDancerReplaced(Game game) : base(game)
+        public FaceDancerReplaced(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

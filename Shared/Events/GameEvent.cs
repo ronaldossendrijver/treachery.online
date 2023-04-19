@@ -15,7 +15,9 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Treachery.Shared
 {
@@ -25,12 +27,16 @@ namespace Treachery.Shared
 
         public GameEvent()
         {
-            Game = null;
         }
 
-        public GameEvent(Game game)
+        public GameEvent(Game game, Faction initiator)
         {
-            Game = game;
+            Initialize(game, initiator);
+        }
+
+        public GameEvent(Game game, string playername)
+        {
+            Initialize(game, playername);
         }
 
         #endregion Construction
@@ -44,10 +50,10 @@ namespace Treachery.Shared
         public DateTime Time { get; set; }
 
         [JsonIgnore]
-        public Game Game;
+        public Game Game { get; private set; }
 
         [JsonIgnore]
-        public virtual Player Player => Game.GetPlayer(Initiator);
+        public Player Player { get; private set; }
 
         #endregion Properties
 
@@ -71,6 +77,24 @@ namespace Treachery.Shared
         #endregion Validation
 
         #region Execution
+
+        public void Initialize(Game game, Faction initiator)
+        {
+            Game = game;
+            Initiator = initiator;
+            Player = game.GetPlayer(initiator);
+        }
+
+        public void Initialize(Game game, string playername)
+        {
+            Game = game;
+            Player = game.GetPlayer(playername);
+        }
+
+        public void Initialize(Game game)
+        {
+            Initialize(game, Initiator);
+        }
 
         public virtual void ExecuteWithoutValidation()
         {
@@ -150,19 +174,13 @@ namespace Treachery.Shared
 
         public GameEvent Clone() => (GameEvent)MemberwiseClone();
 
-        protected void Log() => Game.CurrentReport.Express(this);
+        protected void Log() => Game.CurrentReport.Express(GetMessage());
 
-        protected void Log(params object[] expression) => Game.CurrentReport.Express(expression);
+        protected void Log(params object[] expression) => Game.Log(expression);
 
-        protected void LogIf(bool condition, params object[] expression)
-        {
-            if (condition)
-            {
-                Game.CurrentReport.Express(expression);
-            }
-        }
+        protected void LogIf(bool condition, params object[] expression) => Game.LogIf(condition, expression);
 
-        protected void LogTo(Faction faction, params object[] expression) => Game.CurrentReport.ExpressTo(faction, expression);
+        protected void LogTo(Faction faction, params object[] expression) => Game.LogTo(faction, expression);
 
         protected Player GetPlayer(Faction f) => Game.GetPlayer(f);
 

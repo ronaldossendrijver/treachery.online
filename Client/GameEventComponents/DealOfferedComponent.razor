@@ -52,7 +52,7 @@
         StateHasChanged();
     }
 
-    protected override DealOffered ConfirmedResult => new DealOffered(Game) { Initiator = Faction, To = to.Count >= Game.Players.Count - 1 ? Array.Empty<Faction>() : to.ToArray(), Price = price, Benefit = benefit, Type = type, Text = text, EndPhase = until };
+    protected override DealOffered ConfirmedResult => new DealOffered(Game, Faction) { To = to.Count >= Game.Players.Count - 1 ? Array.Empty<Faction>() : to.ToArray(), Price = price, Benefit = benefit, Type = type, Text = text, EndPhase = until };
 
     private async Task ConfirmOffer()
     {

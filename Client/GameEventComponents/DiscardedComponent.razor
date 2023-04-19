@@ -25,5 +25,5 @@
 
     private TreacheryCard card;
 
-    protected override Discarded ConfirmedResult => new Discarded(Game) { Initiator = Faction, Card = card };
+    protected override Discarded ConfirmedResult => new Discarded(Game, Faction) { Card = card };
 }

@@ -244,9 +244,8 @@
             int direction = (shipmentType == SHIPMENT_BACK ? -1 : 1);
             var from = (shipmentType == SHIPMENT_SITETOSITE ? shipmentFrom : null);
 
-            return new Shipment(Game)
+            return new Shipment(Game, Faction)
             {
-                Initiator = Faction,
                 ForceAmount = direction * shipmentForceAmount,
                 SpecialForceAmount = direction * shipmentSpecialForceAmount,
                 SmuggledAmount = smuggledForceAmount,
@@ -262,7 +261,7 @@
         }
     }
 
-    protected override Shipment PassedResult => new Shipment(Game) { Initiator = Faction, Passed = true };
+    protected override Shipment PassedResult => new Shipment(Game, Faction) { Passed = true };
 
     protected override void OnAfterRender(bool firstRender)
     {

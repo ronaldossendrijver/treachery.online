@@ -23,5 +23,5 @@
 
     private StrongholdAdvantage advantage;
 
-    protected override HMSAdvantageChosen ConfirmedResult => new HMSAdvantageChosen(Game) { Initiator = Faction, Advantage = advantage };
+    protected override HMSAdvantageChosen ConfirmedResult => new HMSAdvantageChosen(Game, Faction) { Advantage = advantage };
 }

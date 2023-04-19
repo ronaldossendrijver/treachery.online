@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public BattleClaimed(Game game) : base(game)
+        public BattleClaimed(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

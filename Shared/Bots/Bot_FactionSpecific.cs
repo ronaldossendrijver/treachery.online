@@ -17,12 +17,12 @@ namespace Treachery.Shared
             if (Game.CurrentPhase == Phase.BeginningOfShipAndMove)
             {
                 var toDeny = Game.ShipmentPermissions.Keys.Where(f => IsWinningOpponent(f));
-                if (toDeny.Any()) return new SetShipmentPermission(Game) { Initiator = Faction, Factions = toDeny.ToArray(), Permission = ShipmentPermission.None };
+                if (toDeny.Any()) return new SetShipmentPermission(Game, Faction) { Factions = toDeny.ToArray(), Permission = ShipmentPermission.None };
 
                 var discountPermission = Resources > 10 || WinningOpponentsIWishToAttack(99, true).Any() ? ShipmentPermission.OrangeRate : ShipmentPermission.None;
                 var permission = ShipmentPermission.Cross | ShipmentPermission.ToHomeworld | discountPermission;
                 var toAllow = SetShipmentPermission.ValidTargets(Game, this).Where(f => !IsWinningOpponent(f) && (!Game.ShipmentPermissions.TryGetValue(f, out var currentpermission) || currentpermission != permission));
-                if (toAllow.Any()) return new SetShipmentPermission(Game) { Initiator = Faction, Factions = toAllow.ToArray(), Permission = permission };
+                if (toAllow.Any()) return new SetShipmentPermission(Game, Faction) { Factions = toAllow.ToArray(), Permission = permission };
             }
 
             return null;
@@ -40,7 +40,7 @@ namespace Treachery.Shared
 
                 if (CardQuality(worstCard, null) <= 1)
                 {
-                    return new RedDiscarded(Game) { Initiator = Faction, Card = worstCard };
+                    return new RedDiscarded(Game, Faction) { Card = worstCard };
                 }
             }
 
@@ -54,7 +54,7 @@ namespace Treachery.Shared
         protected virtual ReplacedCardWon DetermineReplacedCardWon()
         {
             var replace = Game.CardJustWon != null && CardQuality(Game.CardJustWon, this) <= 2;
-            return new ReplacedCardWon(Game) { Initiator = Faction, Passed = !replace };
+            return new ReplacedCardWon(Game, Faction) { Passed = !replace };
         }
 
         protected GreyRemovedCardFromAuction DetermineGreyRemovedCardFromAuction()
@@ -86,7 +86,7 @@ namespace Treachery.Shared
 
             bool putOnTop = CardQuality(toBeRemoved, this) <= 2 && Ally == Faction.None || CardQuality(toBeRemoved, this) >= 4 && Ally != Faction.None;
 
-            return new GreyRemovedCardFromAuction(Game) { Initiator = Faction, Card = toBeRemoved, PutOnTop = putOnTop };
+            return new GreyRemovedCardFromAuction(Game, Faction) { Card = toBeRemoved, PutOnTop = putOnTop };
         }
 
         protected GreySwappedCardOnBid DetermineGreySwappedCardOnBid()
@@ -95,11 +95,11 @@ namespace Treachery.Shared
 
             if (card != null && CardQuality(card, this) <= 2)
             {
-                return new GreySwappedCardOnBid(Game) { Initiator = Faction, Passed = false, Card = card };
+                return new GreySwappedCardOnBid(Game, Faction) { Passed = false, Card = card };
             }
             else
             {
-                return new GreySwappedCardOnBid(Game) { Initiator = Faction, Passed = true };
+                return new GreySwappedCardOnBid(Game, Faction) { Passed = true };
             }
         }
 
@@ -130,7 +130,7 @@ namespace Treachery.Shared
             card ??= card = cards.FirstOrDefault(c => c.Type != TreacheryCardType.Useless);
             card ??= card = cards.FirstOrDefault();
 
-            return new GreySelectedStartingCard(Game) { Initiator = Faction, Card = card };
+            return new GreySelectedStartingCard(Game, Faction) { Card = card };
         }
 
         protected PerformHmsMovement DeterminePerformHmsMovement()
@@ -140,7 +140,7 @@ namespace Treachery.Shared
             var richestAdjacentSpiceLocation = PerformHmsMovement.ValidLocations(Game).Where(l => l != currentLocation && ResourcesIn(l) > 0).HighestOrDefault(l => ResourcesIn(l));
             if (richestAdjacentSpiceLocation != null)
             {
-                return new PerformHmsMovement(Game) { Initiator = Faction, Passed = false, Target = richestAdjacentSpiceLocation };
+                return new PerformHmsMovement(Game, Faction) { Passed = false, Target = richestAdjacentSpiceLocation };
             }
 
             var reachableFromCurrentLocation = Game.Map.FindNeighbours(currentLocation, Game.HmsMovesLeft, false, Faction, Game, false);
@@ -152,12 +152,12 @@ namespace Treachery.Shared
 
                 if (nextStepTowardsSpice != null)
                 {
-                    return new PerformHmsMovement(Game) { Initiator = Faction, Passed = false, Target = nextStepTowardsSpice };
+                    return new PerformHmsMovement(Game, Faction) { Passed = false, Target = nextStepTowardsSpice };
                 }
                 else
                 {
                     nextStepTowardsSpice = PerformHmsMovement.ValidLocations(Game).Where(l => WithinDistance(l, richestReachableSpiceLocation, 2)).FirstOrDefault();
-                    return new PerformHmsMovement(Game) { Initiator = Faction, Passed = false, Target = nextStepTowardsSpice };
+                    return new PerformHmsMovement(Game, Faction) { Passed = false, Target = nextStepTowardsSpice };
                 }
             }
 
@@ -177,23 +177,23 @@ namespace Treachery.Shared
                 var nextStepTowardsAlternative = PerformHmsMovement.ValidLocations(Game).FirstOrDefault(l => l == alternativeLocation);
                 if (nextStepTowardsAlternative != null)
                 {
-                    return new PerformHmsMovement(Game) { Initiator = Faction, Passed = false, Target = nextStepTowardsAlternative };
+                    return new PerformHmsMovement(Game, Faction) { Passed = false, Target = nextStepTowardsAlternative };
                 }
 
                 nextStepTowardsAlternative = PerformHmsMovement.ValidLocations(Game).Where(l => WithinDistance(l, alternativeLocation, 1)).FirstOrDefault();
                 if (nextStepTowardsAlternative != null)
                 {
-                    return new PerformHmsMovement(Game) { Initiator = Faction, Passed = false, Target = nextStepTowardsAlternative };
+                    return new PerformHmsMovement(Game, Faction) { Passed = false, Target = nextStepTowardsAlternative };
                 }
 
                 nextStepTowardsAlternative = PerformHmsMovement.ValidLocations(Game).Where(l => WithinDistance(l, alternativeLocation, 2)).FirstOrDefault();
                 if (nextStepTowardsAlternative != null)
                 {
-                    return new PerformHmsMovement(Game) { Initiator = Faction, Passed = false, Target = nextStepTowardsAlternative };
+                    return new PerformHmsMovement(Game, Faction) { Passed = false, Target = nextStepTowardsAlternative };
                 }
             }
 
-            return new PerformHmsMovement(Game) { Initiator = Faction, Passed = true };
+            return new PerformHmsMovement(Game, Faction) { Passed = true };
         }
 
         protected PerformHmsPlacement DeterminePerformHmsPlacement()
@@ -202,16 +202,16 @@ namespace Treachery.Shared
             {
                 if (Game.BattalionsIn(Game.Map.Arrakeen).Sum(b => b.TotalAmountOfForces) == 0 || Game.BattalionsIn(Game.Map.Carthag).Sum(b => b.TotalAmountOfForces) == 0)
                 {
-                    return new PerformHmsPlacement(Game) { Initiator = Faction, Target = PerformHmsPlacement.ValidLocations(Game, this).First(l => l.Territory == Game.Map.ImperialBasin) };
+                    return new PerformHmsPlacement(Game, Faction) { Target = PerformHmsPlacement.ValidLocations(Game, this).First(l => l.Territory == Game.Map.ImperialBasin) };
                 }
                 else
                 {
-                    return new PerformHmsPlacement(Game) { Initiator = Faction, Target = Game.Map.PolarSink };
+                    return new PerformHmsPlacement(Game, Faction) { Target = Game.Map.PolarSink };
                 }
             }
             else
             {
-                return new PerformHmsPlacement(Game) { Initiator = Faction, Target = Game.Map.ShieldWall.Locations.First() };
+                return new PerformHmsPlacement(Game, Faction) { Target = Game.Map.ShieldWall.Locations.First() };
             }
         }
 
@@ -224,7 +224,7 @@ namespace Treachery.Shared
             int normalForces = Math.Min(TakeLosses.LossesToTake(Game).Amount, TakeLosses.ValidMaxForceAmount(Game, this));
             int specialForces = TakeLosses.LossesToTake(Game).Amount - normalForces;
             bool useUseless = TakeLosses.CanPreventLosses(Game, this);
-            return new TakeLosses(Game) { Initiator = Faction, ForceAmount = normalForces, SpecialForceAmount = specialForces, UseUselessCard = useUseless };
+            return new TakeLosses(Game, Faction) { ForceAmount = normalForces, SpecialForceAmount = specialForces, UseUselessCard = useUseless };
         }
 
         protected PerformYellowSetup DeterminePerformYellowSetup()
@@ -242,13 +242,13 @@ namespace Treachery.Shared
                 forceLocations.Add(Game.Map.FalseWallWest.MiddleLocation, new Battalion() { Faction = Faction, AmountOfForces = forcesLeft - amountOfSpecialForces, AmountOfSpecialForces = amountOfSpecialForces });
             }
 
-            return new PerformYellowSetup(Game) { Initiator = Faction, ForceLocations = forceLocations };
+            return new PerformYellowSetup(Game, Faction) { ForceLocations = forceLocations };
         }
 
         protected YellowSentMonster DetermineYellowSentMonster()
         {
             var target = YellowSentMonster.ValidTargets(Game).HighestOrDefault(t => TotalMaxDialOfOpponents(t) + 2 * AnyForcesIn(t));
-            return new YellowSentMonster(Game) { Initiator = Faction, Territory = target };
+            return new YellowSentMonster(Game, Faction) { Territory = target };
         }
 
         protected YellowRidesMonster DetermineYellowRidesMonster()
@@ -278,11 +278,11 @@ namespace Treachery.Shared
 
             if (target != null && battalionsToMove.Values.Sum(b => b.TotalAmountOfForces) + forcesFromReserves + specialForcesFromReserves > 0)
             {
-                return new YellowRidesMonster(Game) { Initiator = Faction, Passed = false, ForceLocations = new Dictionary<Location, Battalion>(battalionsToMove), To = target, ForcesFromReserves = forcesFromReserves, SpecialForcesFromReserves = specialForcesFromReserves };
+                return new YellowRidesMonster(Game, Faction) { Passed = false, ForceLocations = new Dictionary<Location, Battalion>(battalionsToMove), To = target, ForcesFromReserves = forcesFromReserves, SpecialForcesFromReserves = specialForcesFromReserves };
             }
             else
             {
-                return new YellowRidesMonster(Game) { Initiator = Faction, Passed = true };
+                return new YellowRidesMonster(Game, Faction) { Passed = true };
             }
         }
 
@@ -298,7 +298,7 @@ namespace Treachery.Shared
             else if (AnyForcesIn(Game.Map.HabbanyaSietch) == 0) target = Game.Map.HabbanyaSietch;
             else target = Game.Map.Carthag;
 
-            return new PerformBluePlacement(Game) { Initiator = Faction, Target = target };
+            return new PerformBluePlacement(Game, Faction) { Target = target };
         }
 
         private BlueFlip DetermineBlueFlip()
@@ -307,11 +307,11 @@ namespace Treachery.Shared
 
             if (IWantToBeFightersIn(territory))
             {
-                return new BlueFlip(Game) { Initiator = Faction, AsAdvisors = false };
+                return new BlueFlip(Game, Faction) { AsAdvisors = false };
             }
             else
             {
-                return new BlueFlip(Game) { Initiator = Faction, AsAdvisors = true };
+                return new BlueFlip(Game, Faction) { AsAdvisors = true };
             }
         }
 
@@ -351,7 +351,7 @@ namespace Treachery.Shared
 
                 if (territory != null)
                 {
-                    return new BlueBattleAnnouncement(Game) { Initiator = Faction, Territory = territory };
+                    return new BlueBattleAnnouncement(Game, Faction) { Territory = territory };
                 }
             }
 
@@ -398,7 +398,7 @@ namespace Treachery.Shared
                     AnyForcesIn(target) < 8 &&
                     (!LastTurn && AnyForcesIn(target) > 0 || !HasAlly && ForcesInLocations.Count(kvp => IsStronghold(kvp.Key)) <= 3))
                 {
-                    return new BlueAccompanies(Game) { Initiator = Faction, Location = target, Accompanies = true, ExtraAdvisor = false };
+                    return new BlueAccompanies(Game, Faction) { Location = target, Accompanies = true, ExtraAdvisor = false };
                 }
 
                 if (BlueAccompanies.ValidTargets(Game, this).Contains(Game.Map.PolarSink) &&
@@ -406,11 +406,11 @@ namespace Treachery.Shared
                     !(LastTurn && Game.HasActedOrPassed.Contains(Faction)) &&
                     AnyForcesIn(Game.Map.PolarSink) < 8)
                 {
-                    return new BlueAccompanies(Game) { Initiator = Faction, Location = Game.Map.PolarSink, Accompanies = true, ExtraAdvisor = BlueAccompanies.MaySendExtraAdvisor(Game, this, Game.Map.PolarSink) };
+                    return new BlueAccompanies(Game, Faction) { Location = Game.Map.PolarSink, Accompanies = true, ExtraAdvisor = BlueAccompanies.MaySendExtraAdvisor(Game, this, Game.Map.PolarSink) };
                 }
             }
 
-            return new BlueAccompanies(Game) { Initiator = Faction, Location = null, Accompanies = false };
+            return new BlueAccompanies(Game, Faction) { Location = null, Accompanies = false };
         }
 
         private BluePrediction DetermineBluePrediction()
@@ -430,7 +430,7 @@ namespace Treachery.Shared
                 else turn = 2 + D(1, Game.MaximumNumberOfTurns - 2);
             }
 
-            return new BluePrediction(Game) { Initiator = Faction, ToWin = faction, Turn = turn };
+            return new BluePrediction(Game, Faction) { ToWin = faction, Turn = turn };
         }
 
         private VoicePlan voicePlan = null;
@@ -463,7 +463,7 @@ namespace Treachery.Shared
             {
                 result.weaponToUse = null;
                 result.defenseToUse = null;
-                result.voice = new Voice(Game) { Initiator = Faction, Must = true, Type = TreacheryCardType.Laser };
+                result.voice = new Voice(Game, Faction) { Must = true, Type = TreacheryCardType.Laser };
                 result.opponentHeroWillCertainlyBeZero = true;
                 result.playerHeroWillCertainlySurvive = true;
             }
@@ -728,7 +728,7 @@ namespace Treachery.Shared
                 LogInfo("Remaining category: {0} {1}", must ? "must use" : "may not use", type);
             }
 
-            var voice = new Voice(Game) { Initiator = player.Faction, Must = must, Type = type };
+            var voice = new Voice(Game, player.Faction) { Must = must, Type = type };
             result.voice = voice;
 
             return result;
@@ -754,7 +754,7 @@ namespace Treachery.Shared
             if (Game.CurrentBattle.IsAggressorOrDefender(this))
             {
                 var existingAspect = Game.CurrentPrescience != null ? Game.CurrentPrescience.Aspect : PrescienceAspect.None;
-                return new Prescience(Game) { Initiator = Faction, Aspect = BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent), existingAspect, Game.CurrentBattle.Territory) };
+                return new Prescience(Game, Faction) { Aspect = BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent), existingAspect, Game.CurrentBattle.Territory) };
             }
 
             return null;
@@ -821,7 +821,7 @@ namespace Treachery.Shared
             var targets = SetIncreasedRevivalLimits.ValidTargets(Game, this).ToArray();
             if (Game.FactionsWithIncreasedRevivalLimits.Length != targets.Length)
             {
-                return new SetIncreasedRevivalLimits(Game) { Initiator = Faction, Factions = targets };
+                return new SetIncreasedRevivalLimits(Game, Faction) { Factions = targets };
             }
             else
             {
@@ -838,13 +838,13 @@ namespace Treachery.Shared
 
                 if ((FaceDanced.MaximumNumberOfForces(Game, this) > 0 || facedancedHeroIsLivingLeader) && Game.BattleWinner != Ally)
                 {
-                    var result = new FaceDancerRevealed(Game) { Initiator = Faction, Passed = false };
+                    var result = new FaceDancerRevealed(Game, Faction) { Passed = false };
                     LogInfo(result.GetMessage());
                     return result;
                 }
             }
 
-            return new FaceDancerRevealed(Game) { Initiator = Faction, Passed = true };
+            return new FaceDancerRevealed(Game, Faction) { Passed = true };
         }
 
         protected virtual FaceDanced DetermineFaceDanced()
@@ -871,7 +871,7 @@ namespace Treachery.Shared
                 { targetLocation, new Battalion() { AmountOfForces = forcesFromPlanet.Sum(kvp => kvp.Value.AmountOfForces) + fromReserves, AmountOfSpecialForces = forcesFromPlanet.Sum(kvp => kvp.Value.AmountOfSpecialForces) } }
             };
 
-            var result = new FaceDanced(Game) { Initiator = Faction, ForceLocations = forcesFromPlanet, ForcesFromReserve = fromReserves, TargetForceLocations = targetLocations };
+            var result = new FaceDanced(Game, Faction) { ForceLocations = forcesFromPlanet, ForcesFromReserve = fromReserves, TargetForceLocations = targetLocations };
             LogInfo(result.GetMessage());
             return result;
         }
@@ -884,11 +884,11 @@ namespace Treachery.Shared
 
             if (toReplace != null)
             {
-                return new FaceDancerReplaced(Game) { Initiator = Faction, Passed = false, SelectedDancer = toReplace };
+                return new FaceDancerReplaced(Game, Faction) { Passed = false, SelectedDancer = toReplace };
             }
             else
             {
-                return new FaceDancerReplaced(Game) { Initiator = Faction, Passed = true };
+                return new FaceDancerReplaced(Game, Faction) { Passed = true };
             }
         }
 
@@ -917,7 +917,7 @@ namespace Treachery.Shared
             if (toRevive != null)
             {
                 turnWhenRevivalWasRequested = Game.CurrentTurn;
-                return new RequestPurpleRevival(Game) { Initiator = Faction, Hero = toRevive };
+                return new RequestPurpleRevival(Game, Faction) { Hero = toRevive };
             }
 
             return null;
@@ -953,7 +953,7 @@ namespace Treachery.Shared
                     priceSetEarlier.Add(hero, price);
                 }
 
-                return new AcceptOrCancelPurpleRevival(Game) { Initiator = Faction, Hero = hero, Price = price, Cancel = false };
+                return new AcceptOrCancelPurpleRevival(Game, Faction) { Hero = hero, Price = price, Cancel = false };
             }
 
             return null;
@@ -971,7 +971,7 @@ namespace Treachery.Shared
 
                 if (opponent.TreacheryCards.Any(tc => !KnownCards.Contains(tc)) && ResourcesAudited.ValidFactions(Game, this).Contains(opponent.Faction))
                 {
-                    return new ResourcesAudited(Game) { Initiator = Faction, Target = opponent.Faction };
+                    return new ResourcesAudited(Game, Faction) { Target = opponent.Faction };
                 }
             }
 
@@ -983,12 +983,12 @@ namespace Treachery.Shared
             if (ResourcesIncludingAllyContribution >= 14 &&
                 Game.Players.Where(p => p.Faction != Ally).Count(p => p.Resources < 2 || Game.Applicable(Rule.BlueAutoCharity) && p.Faction == Faction.Blue) >= 2)
             {
-                return new BrownEconomics(Game) { Initiator = Faction, Status = BrownEconomicsStatus.Cancel };
+                return new BrownEconomics(Game, Faction) { Status = BrownEconomicsStatus.Cancel };
             }
             else if (ResourcesIncludingAllyContribution <= 8 &&
                 Game.Players.Where(p => p.Faction != Ally).Count(p => p.Resources < 2 || Game.Applicable(Rule.BlueAutoCharity) && p.Faction == Faction.Blue) <= 2)
             {
-                return new BrownEconomics(Game) { Initiator = Faction, Status = BrownEconomicsStatus.Double };
+                return new BrownEconomics(Game, Faction) { Status = BrownEconomicsStatus.Double };
             }
 
             return null;
@@ -1033,7 +1033,7 @@ namespace Treachery.Shared
 
             if (opponentWithOneBattaltionInStronghold != null)
             {
-                return new BrownRemoveForce(Game) { Initiator = Faction, Location = stronghold, Target = opponentWithOneBattaltionInStronghold.Faction, SpecialForce = opponentWithOneBattaltionInStronghold.SpecialForcesIn(stronghold) > 0 };
+                return new BrownRemoveForce(Game, Faction) { Location = stronghold, Target = opponentWithOneBattaltionInStronghold.Faction, SpecialForce = opponentWithOneBattaltionInStronghold.SpecialForcesIn(stronghold) > 0 };
             }
 
             return null;
@@ -1082,7 +1082,7 @@ namespace Treachery.Shared
                 target = PerformCyanSetup.ValidLocations(Game).FirstOrDefault(l => l.IsProtectedFromStorm);
             }
 
-            return new PerformCyanSetup(Game) { Initiator = Faction, Target = target };
+            return new PerformCyanSetup(Game, Faction) { Target = target };
         }
 
         protected virtual TerrorPlanted DetermineTerrorPlanted()
@@ -1096,11 +1096,11 @@ namespace Treachery.Shared
 
             if (stronghold == null)
             {
-                return new TerrorPlanted(Game) { Initiator = Faction, Passed = true };
+                return new TerrorPlanted(Game, Faction) { Passed = true };
             }
             else
             {
-                return new TerrorPlanted(Game) { Initiator = Faction, Type = type, Stronghold = stronghold };
+                return new TerrorPlanted(Game, Faction) { Type = type, Stronghold = stronghold };
             }
         }
 
@@ -1111,7 +1111,7 @@ namespace Treachery.Shared
 
             if (!validTokens.Any())
             {
-                return new TerrorRevealed(Game) { Initiator = Faction, Passed = true };
+                return new TerrorRevealed(Game, Faction) { Passed = true };
             }
 
             var type = TerrorRevealed.GetTypes(Game).Where(t => t != TerrorType.SneakAttack || TerrorRevealed.ValidSneakAttackTargets(Game, this).Any()).RandomOrDefault();
@@ -1122,11 +1122,11 @@ namespace Treachery.Shared
 
             if (offerAlliance)
             {
-                return new TerrorRevealed(Game) { Initiator = Faction, AllianceOffered = offerAlliance };
+                return new TerrorRevealed(Game, Faction) { AllianceOffered = offerAlliance };
             }
             else
             {
-                return new TerrorRevealed(Game) { Initiator = Faction, Type = type, RobberyTakesCard = false, CardToGiveInSabotage = cardInSabotage, ForcesInSneakAttack = TerrorRevealed.MaxAmountOfForcesInSneakAttack(this), SneakAttackTo = TerrorRevealed.ValidSneakAttackTargets(Game, this).FirstOrDefault() };
+                return new TerrorRevealed(Game, Faction) { Type = type, RobberyTakesCard = false, CardToGiveInSabotage = cardInSabotage, ForcesInSneakAttack = TerrorRevealed.MaxAmountOfForcesInSneakAttack(this), SneakAttackTo = TerrorRevealed.ValidSneakAttackTargets(Game, this).FirstOrDefault() };
             }
         }
 
@@ -1163,7 +1163,7 @@ namespace Treachery.Shared
                 if (ambassador == Ambassador.None && availableAmbassadors.Contains(Ambassador.Pink) && !HasAlly) ambassador = Ambassador.Pink;
                 if (ambassador == Ambassador.None) ambassador = AmbassadorPlaced.ValidAmbassadors(this).RandomOrDefault();
 
-                return new AmbassadorPlaced(Game) { Initiator = Faction, Ambassador = ambassador, Stronghold = stronghold };
+                return new AmbassadorPlaced(Game, Faction) { Ambassador = ambassador, Stronghold = stronghold };
             }
             else
             {
@@ -1192,7 +1192,7 @@ namespace Treachery.Shared
                     var toDiscard = AmbassadorActivated.GetValidBrownCards(this).Where(c => CardQuality(c, this) < 2);
                     if (toDiscard.Any())
                     {
-                        return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedAmbassador = blueSelectedAmbassador, BrownCards = toDiscard };
+                        return new AmbassadorActivated(Game, Faction) { BlueSelectedAmbassador = blueSelectedAmbassador, BrownCards = toDiscard };
                     }
                     else
                     {
@@ -1206,7 +1206,7 @@ namespace Treachery.Shared
 
                     if (offerAlliance || takeVidal || offerVidal)
                     {
-                        return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedAmbassador = blueSelectedAmbassador, PinkOfferAlliance = offerAlliance, PinkTakeVidal = takeVidal, PinkGiveVidalToAlly = offerVidal };
+                        return new AmbassadorActivated(Game, Faction) { BlueSelectedAmbassador = blueSelectedAmbassador, PinkOfferAlliance = offerAlliance, PinkTakeVidal = takeVidal, PinkGiveVidalToAlly = offerVidal };
                     }
                     else
                     {
@@ -1233,7 +1233,7 @@ namespace Treachery.Shared
                                 { toMove.From, toMove.Batallion }
                             };
 
-                            return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedAmbassador = blueSelectedAmbassador, YellowOrOrangeTo = target, YellowForceLocations = forcesToMove };
+                            return new AmbassadorActivated(Game, Faction) { BlueSelectedAmbassador = blueSelectedAmbassador, YellowOrOrangeTo = target, YellowForceLocations = forcesToMove };
                         }
                     }
 
@@ -1243,7 +1243,7 @@ namespace Treachery.Shared
                     var toReplace = AmbassadorActivated.GetValidGreyCards(this).FirstOrDefault(c => CardQuality(c, this) < 2);
                     if (toReplace != null)
                     {
-                        return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedAmbassador = blueSelectedAmbassador, GreyCard = toReplace };
+                        return new AmbassadorActivated(Game, Faction) { BlueSelectedAmbassador = blueSelectedAmbassador, GreyCard = toReplace };
                     }
                     else
                     {
@@ -1253,7 +1253,7 @@ namespace Treachery.Shared
                 case Ambassador.White:
                     if (Resources > 3 && HasRoomForCards)
                     {
-                        return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedAmbassador = blueSelectedAmbassador };
+                        return new AmbassadorActivated(Game, Faction) { BlueSelectedAmbassador = blueSelectedAmbassador };
                     }
                     else
                     {
@@ -1276,7 +1276,7 @@ namespace Treachery.Shared
 
                     if (attack != null)
                     {
-                        return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedAmbassador = blueSelectedAmbassador, YellowOrOrangeTo = attack.Location, OrangeForceAmount = AmbassadorActivated.ValidOrangeMaxForces(this) };
+                        return new AmbassadorActivated(Game, Faction) { BlueSelectedAmbassador = blueSelectedAmbassador, YellowOrOrangeTo = attack.Location, OrangeForceAmount = AmbassadorActivated.ValidOrangeMaxForces(this) };
                     }
                     else
                     {
@@ -1290,11 +1290,11 @@ namespace Treachery.Shared
 
                     if (heroToRevive != null && (ForcesInReserve > 3 || Battle.ValidBattleHeroes(Game, this).Count() <= 1))
                     {
-                        return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedAmbassador = blueSelectedAmbassador, PurpleHero = heroToRevive, PurpleAssignSkill = Revival.MayAssignSkill(Game, this, heroToRevive) };
+                        return new AmbassadorActivated(Game, Faction) { BlueSelectedAmbassador = blueSelectedAmbassador, PurpleHero = heroToRevive, PurpleAssignSkill = Revival.MayAssignSkill(Game, this, heroToRevive) };
                     }
                     else if (AmbassadorActivated.ValidPurpleMaxAmount(this) >= 3)
                     {
-                        return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedAmbassador = blueSelectedAmbassador, PurpleAmountOfForces = AmbassadorActivated.ValidPurpleMaxAmount(this) };
+                        return new AmbassadorActivated(Game, Faction) { BlueSelectedAmbassador = blueSelectedAmbassador, PurpleAmountOfForces = AmbassadorActivated.ValidPurpleMaxAmount(this) };
                     }
                     else
                     {
@@ -1302,12 +1302,12 @@ namespace Treachery.Shared
                     }
 
                 default:
-                    return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedAmbassador = blueSelectedAmbassador, };
+                    return new AmbassadorActivated(Game, Faction) { BlueSelectedAmbassador = blueSelectedAmbassador, };
 
             }
         }
 
-        private AmbassadorActivated PassAmbassadorActivated() => AmbassadorActivated.MayPass(this) ? new AmbassadorActivated(Game) { Initiator = Faction, Passed = true } : null;
+        private AmbassadorActivated PassAmbassadorActivated() => AmbassadorActivated.MayPass(this) ? new AmbassadorActivated(Game, Faction) { Passed = true } : null;
 
         #endregion
 
@@ -1319,11 +1319,11 @@ namespace Treachery.Shared
             var card = TreacheryCards.FirstOrDefault(c => CardQuality(c, this) < 3);
             if (card != null)
             {
-                return new WhiteAnnouncesBlackMarket(Game) { Initiator = Faction, Passed = false, Card = card, AuctionType = D(1, 2) > 1 ? AuctionType.BlackMarketSilent : AuctionType.BlackMarketOnceAround, Direction = D(1, 2) > 1 ? 1 : -1 };
+                return new WhiteAnnouncesBlackMarket(Game, Faction) { Passed = false, Card = card, AuctionType = D(1, 2) > 1 ? AuctionType.BlackMarketSilent : AuctionType.BlackMarketOnceAround, Direction = D(1, 2) > 1 ? 1 : -1 };
             }
             else
             {
-                return new WhiteAnnouncesBlackMarket(Game) { Initiator = Faction, Passed = true };
+                return new WhiteAnnouncesBlackMarket(Game, Faction) { Passed = true };
             }
         }
 
@@ -1334,7 +1334,7 @@ namespace Treachery.Shared
                 var locationWithNoField = ForcesOnPlanet.FirstOrDefault(b => b.Value.AmountOfSpecialForces > 0).Key;
                 if (locationWithNoField != null && Game.ResourcesOnPlanet.ContainsKey(locationWithNoField) && !OccupiedByOpponent(locationWithNoField.Territory))
                 {
-                    return new WhiteRevealedNoField(Game) { Initiator = Faction };
+                    return new WhiteRevealedNoField(Game, Faction);
                 }
             }
 
@@ -1343,19 +1343,19 @@ namespace Treachery.Shared
 
         protected virtual WhiteAnnouncesAuction DetermineWhiteAnnouncesAuction()
         {
-            return new WhiteAnnouncesAuction(Game) { Initiator = Faction, First = D(1, 2) > 1 };
+            return new WhiteAnnouncesAuction(Game, Faction) { First = D(1, 2) > 1 };
         }
 
         protected virtual WhiteSpecifiesAuction DetermineWhiteSpecifiesAuction()
         {
             var toAuction = new Deck<TreacheryCard>(Game.WhiteCache, random);
             toAuction.Shuffle();
-            return new WhiteSpecifiesAuction(Game) { Initiator = Faction, Card = !toAuction.IsEmpty ? toAuction.Draw() : null, AuctionType = D(1, 2) > 1 ? AuctionType.WhiteSilent : AuctionType.WhiteOnceAround, Direction = D(1, 2) > 1 ? 1 : -1 };
+            return new WhiteSpecifiesAuction(Game, Faction) { Card = !toAuction.IsEmpty ? toAuction.Draw() : null, AuctionType = D(1, 2) > 1 ? AuctionType.WhiteSilent : AuctionType.WhiteOnceAround, Direction = D(1, 2) > 1 ? 1 : -1 };
         }
 
         protected virtual WhiteKeepsUnsoldCard DetermineWhiteKeepsUnsoldCard()
         {
-            return new WhiteKeepsUnsoldCard(Game) { Initiator = Faction, Passed = false };
+            return new WhiteKeepsUnsoldCard(Game, Faction) { Passed = false };
         }
 
         #endregion White
@@ -1364,7 +1364,7 @@ namespace Treachery.Shared
 
         private Captured DetermineCaptured()
         {
-            return new Captured(Game) { Initiator = Faction, Passed = false };
+            return new Captured(Game, Faction) { Passed = false };
         }
 
         #endregion

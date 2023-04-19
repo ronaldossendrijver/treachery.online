@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public KarmaShipmentPrevention(Game game) : base(game)
+        public KarmaShipmentPrevention(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

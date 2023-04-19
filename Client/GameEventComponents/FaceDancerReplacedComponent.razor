@@ -25,9 +25,9 @@
 
     private IHero dancer;
 
-    protected override FaceDancerReplaced ConfirmedResult => new FaceDancerReplaced(Game) { Initiator = Faction, Passed = false, SelectedDancer = dancer };
+    protected override FaceDancerReplaced ConfirmedResult => new FaceDancerReplaced(Game, Faction) { Passed = false, SelectedDancer = dancer };
 
-    protected override FaceDancerReplaced PassedResult => new FaceDancerReplaced(Game) { Initiator = Faction, Passed = true };
+    protected override FaceDancerReplaced PassedResult => new FaceDancerReplaced(Game, Faction) { Passed = true };
 
     private string ConfirmLabel => dancer != null ? "Replace " + Name(dancer) : "Replace";
 }

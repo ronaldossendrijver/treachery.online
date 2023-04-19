@@ -12,12 +12,6 @@ namespace Treachery.Shared
     {
         public Dictionary<IHero, LeaderState> LeaderState { get; private set; } = new();
 
-        public bool CanJoinCurrentBattle(IHero hero)
-        {
-            var currentTerritory = CurrentTerritory(hero);
-            return currentTerritory == null || currentTerritory == CurrentBattle?.Territory;
-        }
-
         internal void KillHero(IHero h)
         {
             if (h is Leader || h is Messiah)
@@ -87,30 +81,15 @@ namespace Treachery.Shared
 
         public bool SkilledAs(IHero leader, LeaderSkill skill) => Skill(leader) == skill;
 
-        public bool SkilledAs(Player p, LeaderSkill skill)
-        {
-            return p.Leaders.Any(l => Skill(l) == skill && IsInFrontOfShield(l));
-        }
+        public bool SkilledAs(Player p, LeaderSkill skill) => p.Leaders.Any(l => Skill(l) == skill && IsInFrontOfShield(l));
 
-        public bool IsSkilled(IHero l)
-        {
-            return Skill(l) != LeaderSkill.None;
-        }
+        public bool IsSkilled(IHero l) => Skill(l) != LeaderSkill.None;
 
-        public Player PlayerSkilledAs(LeaderSkill skill)
-        {
-            return Players.FirstOrDefault(p => SkilledAs(p, skill));
-        }
+        public Player PlayerSkilledAs(LeaderSkill skill) => Players.FirstOrDefault(p => SkilledAs(p, skill));
 
-        public IEnumerable<Leader> GetSkilledLeaders(Player player)
-        {
-            return player.Leaders.Where(l => IsSkilled(l));
-        }
+        public IEnumerable<Leader> GetSkilledLeaders(Player player) => player.Leaders.Where(l => IsSkilled(l));
 
-        public LeaderSkill GetSkill(Player p)
-        {
-            return Skill(GetSkilledLeaders(p).FirstOrDefault(l => IsInFrontOfShield(l)));
-        }
+        public LeaderSkill GetSkill(Player p) => Skill(GetSkilledLeaders(p).FirstOrDefault(l => IsInFrontOfShield(l)));
 
         public LeaderSkill Skill(IHero l)
         {
@@ -124,10 +103,7 @@ namespace Treachery.Shared
             }
         }
 
-        internal void SetSkill(Leader l, LeaderSkill skill)
-        {
-            LeaderState[l].Skill = skill;
-        }
+        internal void SetSkill(Leader l, LeaderSkill skill) => LeaderState[l].Skill = skill;
 
         internal void SetInFrontOfShield(Leader l, bool value)
         {
@@ -137,22 +113,9 @@ namespace Treachery.Shared
             }
         }
 
-        public bool IsInFrontOfShield(IHero l)
-        {
-            return l != null && LeaderState.ContainsKey(l) && LeaderState[l].InFrontOfShield;
-        }
+        public bool IsInFrontOfShield(IHero l) => l != null && LeaderState.ContainsKey(l) && LeaderState[l].InFrontOfShield;
 
         public bool MessiahIsAlive => IsAlive(LeaderManager.Messiah);
-
-        public Territory CurrentTerritory(IHero l)
-        {
-            return LeaderState[l].CurrentTerritory;
-        }
-
-        public bool IsFaceUp(IHero l)
-        {
-            return !LeaderState[l].IsFaceDownDead;
-        }
 
         private bool HasSomethingToRevive(Player player)
         {
@@ -180,14 +143,6 @@ namespace Treachery.Shared
             }
 
             return result;
-        }
-
-        internal void CallHeroesHome()
-        {
-            foreach (var ls in LeaderState)
-            {
-                ls.Value.CurrentTerritory = null;
-            }
         }
     }
 }

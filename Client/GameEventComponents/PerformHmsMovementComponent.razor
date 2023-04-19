@@ -42,9 +42,9 @@
         h.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override PerformHmsMovement ConfirmedResult => new PerformHmsMovement(Game) { Initiator = Faction, Passed = false, Target = target };
+    protected override PerformHmsMovement ConfirmedResult => new PerformHmsMovement(Game, Faction) { Passed = false, Target = target };
 
-    protected override PerformHmsMovement PassedResult => new PerformHmsMovement(Game) { Initiator = Faction, Passed = true };
+    protected override PerformHmsMovement PassedResult => new PerformHmsMovement(Game, Faction) { Passed = true };
 
     private void HandleLocationSelected(object sender, Location l)
     {

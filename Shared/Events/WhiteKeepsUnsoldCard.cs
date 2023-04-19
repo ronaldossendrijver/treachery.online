@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public WhiteKeepsUnsoldCard(Game game) : base(game)
+        public WhiteKeepsUnsoldCard(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

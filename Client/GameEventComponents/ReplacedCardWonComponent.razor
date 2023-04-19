@@ -21,7 +21,7 @@
 
     protected override bool IsUrgent => false;
 
-    protected override ReplacedCardWon ConfirmedResult => new ReplacedCardWon(Game) { Initiator = Faction, Passed = false };
+    protected override ReplacedCardWon ConfirmedResult => new ReplacedCardWon(Game, Faction) { Passed = false };
 
-    protected override ReplacedCardWon PassedResult => new ReplacedCardWon(Game) { Initiator = Faction, Passed = true };
+    protected override ReplacedCardWon PassedResult => new ReplacedCardWon(Game, Faction) { Passed = true };
 }

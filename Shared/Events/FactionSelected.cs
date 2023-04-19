@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public FactionSelected(Game game) : base(game)
+        public FactionSelected(Game game, string playername) : base(game, playername)
         {
         }
 
@@ -25,9 +25,6 @@ namespace Treachery.Shared
         #region Properties
 
         public string InitiatorPlayerName { get; set; }
-
-        [JsonIgnore]
-        public override Player Player => Game.GetPlayer(InitiatorPlayerName);
 
         public Faction Faction { get; set; }
 

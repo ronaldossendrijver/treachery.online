@@ -24,5 +24,5 @@
 
     private int amount;
         
-    protected override StormDialled ConfirmedResult => new StormDialled(Game) { Initiator = Faction, Amount = amount };
+    protected override StormDialled ConfirmedResult => new StormDialled(Game, Faction) { Amount = amount };
 }

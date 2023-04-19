@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public PoisonToothCancelled(Game game) : base(game)
+        public PoisonToothCancelled(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

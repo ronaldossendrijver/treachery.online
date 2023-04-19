@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public ResourcesAudited(Game game) : base(game)
+        public ResourcesAudited(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

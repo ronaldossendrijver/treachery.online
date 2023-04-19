@@ -17,7 +17,7 @@
         for (int i = 0; i < Game.History.Count; i++)
         {
             var evt = Game.History[i].Clone();
-            evt.Game = replayBase;
+            evt.Initialize(replayBase);
             evt.Execute(false, true);
 
             var replay = replayBase.Clone();

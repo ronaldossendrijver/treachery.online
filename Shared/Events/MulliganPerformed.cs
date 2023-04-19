@@ -10,7 +10,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public MulliganPerformed(Game game) : base(game)
+        public MulliganPerformed(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

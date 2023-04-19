@@ -10,7 +10,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public RedDiscarded(Game game) : base(game)
+        public RedDiscarded(Game game, Faction initiator) : base(game, initiator)
         {
         }
 
@@ -38,7 +38,7 @@ namespace Treachery.Shared
         public override Message Validate()
         {
             if (Card == null) return Message.Express("Choose a card to discard");
-            if (!Player.TreacheryCards.Contains(Card)) return Message.Express("Invalid card");
+            if (!Player.Has(Card)) return Message.Express("Invalid card");
 
             return null;
         }

@@ -148,7 +148,7 @@
     {
         get
         {
-            return new EstablishPlayers(Game)
+            return new EstablishPlayers(Game, Faction.None)
             {
                 GameName = string.Format("{0}'s Game", h.PlayerName),
                 Seed = new Random().Next(),

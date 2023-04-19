@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public JuicePlayed(Game game) : base(game)
+        public JuicePlayed(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

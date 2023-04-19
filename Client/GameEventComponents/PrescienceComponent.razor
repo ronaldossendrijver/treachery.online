@@ -32,5 +32,5 @@
 
     private PrescienceAspect aspect;
 
-    protected override Prescience ConfirmedResult => new Prescience(Game) { Initiator = Faction, Aspect = aspect };
+    protected override Prescience ConfirmedResult => new Prescience(Game, Faction) { Aspect = aspect };
 }

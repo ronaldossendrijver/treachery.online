@@ -46,5 +46,5 @@
     private AuctionType auctionType = AuctionType.WhiteOnceAround;
     private int direction = 1;
 
-    protected override WhiteSpecifiesAuction ConfirmedResult => new WhiteSpecifiesAuction(Game) { Initiator = Faction, Card = card, AuctionType = auctionType, Direction = direction };
+    protected override WhiteSpecifiesAuction ConfirmedResult => new WhiteSpecifiesAuction(Game, Faction) { Card = card, AuctionType = auctionType, Direction = direction };
 }

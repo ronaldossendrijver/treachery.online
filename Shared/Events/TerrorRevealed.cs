@@ -13,7 +13,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public TerrorRevealed(Game game) : base(game)
+        public TerrorRevealed(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

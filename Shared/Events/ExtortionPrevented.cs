@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public ExtortionPrevented(Game game) : base(game)
+        public ExtortionPrevented(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

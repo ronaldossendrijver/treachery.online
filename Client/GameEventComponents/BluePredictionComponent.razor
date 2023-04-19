@@ -29,5 +29,5 @@
     private int turn;
     private Faction toWin;
 
-    protected override BluePrediction ConfirmedResult => new BluePrediction(Game) { Initiator = Faction, ToWin = toWin, Turn = turn };
+    protected override BluePrediction ConfirmedResult => new BluePrediction(Game, Faction) { ToWin = toWin, Turn = turn };
 }

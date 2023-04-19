@@ -62,7 +62,7 @@ namespace Treachery.Shared
             if (decidedShipment == null)
             {
                 decidedShipmentAction = ShipmentDecision.None;
-                decidedShipment = new Shipment(Game) { Initiator = Faction, Passed = true };
+                decidedShipment = new Shipment(Game, Faction) { Passed = true };
             }
 
             return decidedShipment;
@@ -726,9 +726,8 @@ namespace Treachery.Shared
                 }
             }
 
-            result = new Shipment(Game)
+            result = new Shipment(Game, Faction)
             {
-                Initiator = Faction,
                 ForceAmount = nrOfForces - nrOfSmuggledForces,
                 SpecialForceAmount = nrOfSpecialForces - nrOfSmuggledSpecialForces,
                 SmuggledAmount = nrOfSmuggledForces,
@@ -903,9 +902,8 @@ namespace Treachery.Shared
 
         private void DoZeroNoFieldShipment(ShipmentDecision action, Location location)
         {
-            var shipment = new Shipment(Game)
+            var shipment = new Shipment(Game, Faction)
             {
-                Initiator = Faction,
                 ForceAmount = 0,
                 SpecialForceAmount = 1,
                 Passed = false,

@@ -22,7 +22,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.White;
 
-    protected override WhiteKeepsUnsoldCard ConfirmedResult => new WhiteKeepsUnsoldCard(Game) { Initiator = Faction, Passed = false };
+    protected override WhiteKeepsUnsoldCard ConfirmedResult => new WhiteKeepsUnsoldCard(Game, Faction) { Passed = false };
 
-    protected override WhiteKeepsUnsoldCard PassedResult => new WhiteKeepsUnsoldCard(Game) { Initiator = Faction, Passed = true };
+    protected override WhiteKeepsUnsoldCard PassedResult => new WhiteKeepsUnsoldCard(Game, Faction) { Passed = true };
 }

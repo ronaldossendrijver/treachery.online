@@ -8,7 +8,7 @@ namespace Treachery.Shared
 {
     public class Caravan : PlacementEvent
     {
-        public Caravan(Game game) : base(game)
+        public Caravan(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

@@ -29,7 +29,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Purple;
 
-    protected override FaceDancerRevealed ConfirmedResult => new FaceDancerRevealed(Game) { Initiator = Faction, Passed = false };
+    protected override FaceDancerRevealed ConfirmedResult => new FaceDancerRevealed(Game, Faction) { Passed = false };
 
-    protected override FaceDancerRevealed PassedResult => new FaceDancerRevealed(Game) { Initiator = Faction, Passed = true };
+    protected override FaceDancerRevealed PassedResult => new FaceDancerRevealed(Game, Faction) { Passed = true };
 }

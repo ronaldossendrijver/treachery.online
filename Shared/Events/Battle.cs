@@ -13,7 +13,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public Battle(Game game) : base(game)
+        public Battle(Game game, Faction initiator) : base(game, initiator)
         {
         }
 
@@ -153,11 +153,11 @@ namespace Treachery.Shared
         {
             if (Game.CurrentBattle.Aggressor == Faction.Purple && (GetPlayer(Faction.Purple).Ally != Faction.Black || Game.Prevented(FactionAdvantage.BlackCallTraitorForAlly)))
             {
-                Game.AggressorTraitorAction = new TreacheryCalled(Game) { Initiator = Faction.Purple, TraitorCalled = false };
+                Game.AggressorTraitorAction = new TreacheryCalled(Game, Faction.Purple) { TraitorCalled = false };
             }
             else if (Game.CurrentBattle.Defender == Faction.Purple && (GetPlayer(Faction.Purple).Ally != Faction.Black || Game.Prevented(FactionAdvantage.BlackCallTraitorForAlly)))
             {
-                Game.DefenderTraitorAction = new TreacheryCalled(Game) { Initiator = Faction.Purple, TraitorCalled = false };
+                Game.DefenderTraitorAction = new TreacheryCalled(Game, Faction.Purple) { TraitorCalled = false };
             }
         }
 

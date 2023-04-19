@@ -77,7 +77,7 @@
 
     private int _karmaDecision = LoserConcluded.KARMA_NO;
 
-    protected override LoserConcluded ConfirmedResult => new LoserConcluded(Game) { Initiator = Faction, KeptCard = _cardToKeep, Assassinate = _assassinate, KarmaForcedKeptCardDecision = _karmaDecision, ForcedKeptOrDiscardedCards = _cardsToForceKeepOrDiscard };
+    protected override LoserConcluded ConfirmedResult => new LoserConcluded(Game, Faction) { KeptCard = _cardToKeep, Assassinate = _assassinate, KarmaForcedKeptCardDecision = _karmaDecision, ForcedKeptOrDiscardedCards = _cardsToForceKeepOrDiscard };
 
     private IEnumerable<int> DecisionValues => new int[] { LoserConcluded.KARMA_NO, LoserConcluded.KARMA_KEEP, LoserConcluded.KARMA_DISCARD };
 

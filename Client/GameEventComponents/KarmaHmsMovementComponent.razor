@@ -44,9 +44,9 @@
         h.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override KarmaHmsMovement ConfirmedResult => new KarmaHmsMovement(Game) { Initiator = Faction, Passed = false, Target = target };
+    protected override KarmaHmsMovement ConfirmedResult => new KarmaHmsMovement(Game, Faction) { Passed = false, Target = target };
 
-    protected override KarmaHmsMovement PassedResult => new KarmaHmsMovement(Game) { Initiator = Faction, Passed = true };
+    protected override KarmaHmsMovement PassedResult => new KarmaHmsMovement(Game, Faction) { Passed = true };
 
     private void HandleLocationSelected(object sender, Location l)
     {

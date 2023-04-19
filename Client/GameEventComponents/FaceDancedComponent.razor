@@ -78,10 +78,10 @@ else {
     private int forcesFromReserve;
 
     protected override FaceDanced ConfirmedResult => Game.Version > 150 ?
-        new FaceDanced(Game) { Initiator = Faction, ForceLocations = forces, ForcesFromReserve = forcesFromReserve, TargetForceLocations = targetForces } :
-        new FaceDanced(Game) { Initiator = Faction, FaceDancerCalled = true, ForceLocations = forces, ForcesFromReserve = forcesFromReserve, TargetForceLocations = targetForces };
+        new FaceDanced(Game, Faction) { ForceLocations = forces, ForcesFromReserve = forcesFromReserve, TargetForceLocations = targetForces } :
+        new FaceDanced(Game, Faction) { FaceDancerCalled = true, ForceLocations = forces, ForcesFromReserve = forcesFromReserve, TargetForceLocations = targetForces };
 
-    protected override FaceDanced PassedResult => new FaceDanced(Game) { Initiator = Faction, FaceDancerCalled = false };
+    protected override FaceDanced PassedResult => new FaceDanced(Game, Faction) { FaceDancerCalled = false };
 
     protected override void OnAfterRender(bool firstRender)
     {

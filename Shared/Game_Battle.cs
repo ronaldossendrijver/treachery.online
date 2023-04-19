@@ -1312,6 +1312,12 @@ namespace Treachery.Shared
             }
         }
 
+        public bool CanJoinCurrentBattle(IHero hero)
+        {
+            var currentTerritory = LeaderState[hero].CurrentTerritory;
+            return currentTerritory == null || currentTerritory == CurrentBattle?.Territory;
+        }
+
         #endregion Information
     }
 }

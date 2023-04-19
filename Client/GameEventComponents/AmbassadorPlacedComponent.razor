@@ -45,7 +45,7 @@
         }
     }
 
-    protected override AmbassadorPlaced ConfirmedResult => new AmbassadorPlaced(Game) { Initiator = Faction, Ambassador = _ambassador, Stronghold = _stronghold };
+    protected override AmbassadorPlaced ConfirmedResult => new AmbassadorPlaced(Game, Faction) { Ambassador = _ambassador, Stronghold = _stronghold };
 
     private void HandleLocationSelected(object sender, Location l)
     {

@@ -13,7 +13,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public WhiteSpecifiesAuction(Game game) : base(game)
+        public WhiteSpecifiesAuction(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

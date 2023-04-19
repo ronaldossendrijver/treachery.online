@@ -13,7 +13,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public Shipment(Game game) : base(game)
+        public Shipment(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

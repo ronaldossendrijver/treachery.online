@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public PlayerReplaced(Game game) : base(game)
+        public PlayerReplaced(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

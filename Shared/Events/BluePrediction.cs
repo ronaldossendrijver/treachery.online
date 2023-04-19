@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public BluePrediction(Game game) : base(game)
+        public BluePrediction(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

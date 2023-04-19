@@ -23,5 +23,5 @@
 
     private TreacheryCard card;
 
-    protected override ThoughtAnswered ConfirmedResult => new ThoughtAnswered(Game) { Initiator = Faction, Card = card };
+    protected override ThoughtAnswered ConfirmedResult => new ThoughtAnswered(Game, Faction) { Card = card };
 }

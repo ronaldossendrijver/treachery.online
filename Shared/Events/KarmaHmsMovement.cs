@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public KarmaHmsMovement(Game game) : base(game)
+        public KarmaHmsMovement(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

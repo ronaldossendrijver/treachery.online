@@ -244,7 +244,7 @@ namespace Treachery.Test
 
                     foreach (var e in state.Events)
                     {
-                        e.Game = game;
+                        e.Initialize(game);
                         e.Execute(true, true);
                         testcase.Testvalues.Add(DetermineTestvalues(game));
                     }
@@ -433,7 +433,7 @@ namespace Treachery.Test
 
             try
             {
-                var start = new EstablishPlayers(game)
+                var start = new EstablishPlayers(game, Faction.None)
                 {
                     ApplicableRules = rules.ToArray(),
                     FactionsInPlay = factions,
@@ -651,7 +651,7 @@ namespace Treachery.Test
 
             foreach (var evt in state.Events)
             {
-                evt.Game = game;
+                evt.Initialize(game);
                 var previousPhase = game.CurrentPhase;
 
                 var result = evt.Execute(true, true);

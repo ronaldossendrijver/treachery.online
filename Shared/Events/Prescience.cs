@@ -10,7 +10,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public Prescience(Game game) : base(game)
+        public Prescience(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public RockWasMelted(Game game) : base(game)
+        public RockWasMelted(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

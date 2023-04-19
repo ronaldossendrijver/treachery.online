@@ -13,7 +13,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public RaiseDeadPlayed(Game game) : base(game)
+        public RaiseDeadPlayed(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

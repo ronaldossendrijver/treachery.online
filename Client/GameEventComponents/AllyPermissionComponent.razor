@@ -315,9 +315,8 @@
 
     protected override AllyPermission ConfirmedResult =>
 
-        new AllyPermission(Game)
+        new AllyPermission(Game, Faction)
         {
-            Initiator = Faction,
             RedWillPayForExtraRevival = emperorWillPayForExtraRevival,
             YellowAllowsThreeFreeRevivals = fremenAllowsThreeFreeRevivals,
             YellowWillProtectFromMonster = fremenWillProtectFromShaiHulud,

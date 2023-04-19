@@ -25,5 +25,5 @@
 
     private IHero hero;
 
-    protected override TraitorDiscarded ConfirmedResult => new TraitorDiscarded(Game) { Initiator = Faction, Traitor = hero };
+    protected override TraitorDiscarded ConfirmedResult => new TraitorDiscarded(Game, Faction) { Traitor = hero };
 }

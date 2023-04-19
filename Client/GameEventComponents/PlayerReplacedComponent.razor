@@ -23,7 +23,7 @@
 
     private Faction toReplace;
 
-    protected override PlayerReplaced ConfirmedResult => new PlayerReplaced(Game) { Initiator = Faction, ToReplace = toReplace };
+    protected override PlayerReplaced ConfirmedResult => new PlayerReplaced(Game, Faction) { ToReplace = toReplace };
 
     private string ConfirmLabel => Game.GetPlayer(toReplace) != null && Game.GetPlayer(toReplace).IsBot ? "Replace by a human" : "Replace by a bot";
 }

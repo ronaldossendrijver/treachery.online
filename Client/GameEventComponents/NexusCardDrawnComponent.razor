@@ -28,7 +28,7 @@
 
     protected override bool IsUrgent => true;
 
-    protected override NexusCardDrawn ConfirmedResult => new NexusCardDrawn(Game) { Initiator = Faction, Passed = false };
+    protected override NexusCardDrawn ConfirmedResult => new NexusCardDrawn(Game, Faction) { Passed = false };
 
-    protected override NexusCardDrawn PassedResult => new NexusCardDrawn(Game) { Initiator = Faction, Passed = true };
+    protected override NexusCardDrawn PassedResult => new NexusCardDrawn(Game, Faction) { Passed = true };
 }

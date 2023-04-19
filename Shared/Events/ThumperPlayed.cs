@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public ThumperPlayed(Game game) : base(game)
+        public ThumperPlayed(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

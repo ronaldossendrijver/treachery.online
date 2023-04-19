@@ -163,7 +163,7 @@ namespace Treachery.Shared
         {
             var ally = Players.SingleOrDefault(p => p.Ally == f);
 
-            if (PermittedUseOfAllyKarma.TryGetValue(f, out TreacheryCard value) && ally != null && ally.TreacheryCards.Contains(value))
+            if (PermittedUseOfAllyKarma.TryGetValue(f, out TreacheryCard value) && ally != null && ally.Has(value))
             {
                 return PermittedUseOfAllyKarma[f];
             }

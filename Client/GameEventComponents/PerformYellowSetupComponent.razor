@@ -37,7 +37,7 @@
 
     private Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
 
-    protected override PerformYellowSetup ConfirmedResult => new PerformYellowSetup(Game) { Initiator = Faction, ForceLocations = forces };
+    protected override PerformYellowSetup ConfirmedResult => new PerformYellowSetup(Game, Faction) { ForceLocations = forces };
 
     protected override void OnAfterRender(bool firstRender)
     {

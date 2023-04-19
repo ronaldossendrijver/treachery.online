@@ -110,7 +110,7 @@ namespace Treachery.Shared
 
         #region Construction
 
-        public BattleConcluded(Game game) : base(game)
+        public BattleConcluded(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

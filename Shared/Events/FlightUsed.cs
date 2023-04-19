@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public FlightUsed(Game game) : base(game)
+        public FlightUsed(Game game, Faction initiator) : base(game, initiator)
         {
         }
         

@@ -15,7 +15,7 @@ namespace Treachery.Shared
             var territory = Game.BattleAboutToStart.Territory;
             var opponent = Game.GetPlayer(Game.BattleAboutToStart.Target);
             bool iWillFight = GetDialNeeded(AlliedPlayer, territory, opponent, false) > GetDialNeeded(this, territory, opponent, false);
-            return new BattleClaimed(Game) { Initiator = Faction, Passed = !iWillFight };
+            return new BattleClaimed(Game, Faction) { Passed = !iWillFight };
         }
 
         protected virtual SwitchedSkilledLeader DetermineSwitchedSkilledLeader()
@@ -24,7 +24,7 @@ namespace Treachery.Shared
 
             if (leaderToSwitch != null)
             {
-                return new SwitchedSkilledLeader(Game) { Initiator = Faction };
+                return new SwitchedSkilledLeader(Game, Faction);
             }
 
             return null;
@@ -72,9 +72,8 @@ namespace Treachery.Shared
         {
             var battle = Battle.BattlesToBeFought(Game, this).OrderBy(b => MaxDial(Game.GetPlayer(b.Faction), b.Territory, this) - MaxDial(this, b.Territory, Game.GetPlayer(b.Faction))).FirstOrDefault();
 
-            return new BattleInitiated(Game)
+            return new BattleInitiated(Game, Faction)
             {
-                Initiator = Faction,
                 Target = battle.Faction,
                 Territory = battle.Territory
             };
@@ -88,18 +87,18 @@ namespace Treachery.Shared
             }
             else
             {
-                return new TreacheryCalled(Game) { Initiator = Faction, TraitorCalled = TreacheryCalled.MayCallTreachery(Game, this) };
+                return new TreacheryCalled(Game, Faction) { TraitorCalled = TreacheryCalled.MayCallTreachery(Game, this) };
             }
         }
 
         protected virtual AuditCancelled DetermineAuditCancelled()
         {
-            return new AuditCancelled(Game) { Initiator = Faction, Cancelled = false };
+            return new AuditCancelled(Game, Faction) { Cancelled = false };
         }
 
         protected virtual Audited DetermineAudited()
         {
-            return new Audited(Game) { Initiator = Faction };
+            return new Audited(Game, Faction);
         }
 
         protected virtual BattleConcluded DetermineBattleConcluded()
@@ -112,7 +111,7 @@ namespace Treachery.Shared
             if (BattleConcluded.MayChooseToDiscardCards(Game))
             {
                 if (myBattleplan.Weapon != null &&
-                    TreacheryCards.Contains(myBattleplan.Weapon) &&
+                    Has(myBattleplan.Weapon) &&
                     myBattleplan.Weapon.Type == TreacheryCardType.Useless &&
                     Faction != Faction.Brown &&
                     !Game.SkilledAs(this, LeaderSkill.Warmaster) &&
@@ -122,7 +121,7 @@ namespace Treachery.Shared
                 }
 
                 if (myBattleplan.Defense != null &&
-                    TreacheryCards.Contains(myBattleplan.Defense) &&
+                    Has(myBattleplan.Defense) &&
                     myBattleplan.Defense.Type == TreacheryCardType.Useless &&
                     Faction != Faction.Brown &&
                     !Game.SkilledAs(this, LeaderSkill.Warmaster) &&
@@ -153,9 +152,8 @@ namespace Treachery.Shared
 
             if (toReplace == null) newTraitor = null;
 
-            return new BattleConcluded(Game)
+            return new BattleConcluded(Game, Faction)
             {
-                Initiator = Faction,
                 DiscardedCards = discarded,
                 StolenToken = opponent.TechTokens.FirstOrDefault(),
                 Kill = kill,
@@ -259,9 +257,8 @@ namespace Treachery.Shared
                 LogInfo("Leader: {0}, Weapon: {1}, Defense: {2}, Forces: {3} (supp) {4} (non-supp) {5} (spec supp) {6} (spec non-supp)", hero, weapon, defense, forcesAtFullStrength, forcesAtHalfStrength, specialForcesAtFullStrength, specialForcesAtHalfStrength);
 
                 int cost = Battle.Cost(Game, this, forcesAtFullStrength, specialForcesAtFullStrength);
-                return new Battle(Game)
+                return new Battle(Game, Faction)
                 {
-                    Initiator = Faction,
                     Hero = hero,
                     Messiah = messiah,
                     Forces = forcesAtFullStrength,
@@ -345,9 +342,8 @@ namespace Treachery.Shared
                 int strongholdFreeForces = Game.HasStrongholdAdvantage(Faction, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory) ? 2 : 0;
                 int specialAtFull = harassAndWithdraw != null ? 0 : Math.Min(strongholdFreeForces, Battle.MaxForces(Game, this, true));
                 int normalAtFull = harassAndWithdraw != null ? 0 : Math.Min(strongholdFreeForces - specialAtFull, Battle.MaxForces(Game, this, false));
-                return new Battle(Game)
+                return new Battle(Game, Faction)
                 {
-                    Initiator = Faction,
                     Hero = lowestAvailableHero,
                     Forces = normalAtFull,
                     ForcesAtHalfStrength = Battle.MaxForces(Game, this, false) - normalAtFull,
@@ -361,9 +357,8 @@ namespace Treachery.Shared
             }
             else
             {
-                return new Battle(Game)
+                return new Battle(Game, Faction)
                 {
-                    Initiator = Faction,
                     Hero = lowestAvailableHero,
                     Forces = Battle.MaxForces(Game, this, false),
                     ForcesAtHalfStrength = 0,
@@ -1170,12 +1165,12 @@ namespace Treachery.Shared
         {
             var outcome = Game.DetermineBattleOutcome(Game.AggressorBattleAction, Game.DefenderBattleAction, Game.CurrentBattle.Territory);
             LogInfo(outcome.GetMessage());
-            return new RockWasMelted(Game) { Initiator = Faction, Kill = outcome.Winner == this };
+            return new RockWasMelted(Game, Faction) { Kill = outcome.Winner == this };
         }
 
         protected ResidualPlayed DetermineResidualPlayed()
         {
-            return new ResidualPlayed(Game) { Initiator = Faction };
+            return new ResidualPlayed(Game, Faction);
         }
 
         protected PortableAntidoteUsed DeterminePortableAntidoteUsed()
@@ -1187,7 +1182,7 @@ namespace Treachery.Shared
 
             if (opponentPlan.Weapon != null && opponentPlan.Weapon.CounteredBy(defense, myPlan.Weapon))
             {
-                return new PortableAntidoteUsed(Game) { Initiator = Faction };
+                return new PortableAntidoteUsed(Game, Faction);
             }
 
             return null;
@@ -1201,7 +1196,7 @@ namespace Treachery.Shared
                 var unknownWeapons = CardsUnknownToMe.Where(c => c.IsWeapon).OrderByDescending(c => CardQuality(c, opponent));
                 if (unknownWeapons.Any())
                 {
-                    return new Thought(Game) { Initiator = Faction, Card = unknownWeapons.First() };
+                    return new Thought(Game, Faction) { Card = unknownWeapons.First() };
                 }
             }
 
@@ -1210,7 +1205,7 @@ namespace Treachery.Shared
 
         protected ThoughtAnswered DetermineThoughtAnswered()
         {
-            return new ThoughtAnswered(Game) { Initiator = Faction, Card = ThoughtAnswered.ValidCards(Game, this).LowestOrDefault(c => CardQuality(c, this)) };
+            return new ThoughtAnswered(Game, Faction) { Card = ThoughtAnswered.ValidCards(Game, this).LowestOrDefault(c => CardQuality(c, this)) };
         }
 
         protected HMSAdvantageChosen DetermineHMSAdvantageChosen()
@@ -1226,7 +1221,7 @@ namespace Treachery.Shared
             if (adv == StrongholdAdvantage.None) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault(a => a == StrongholdAdvantage.WinTies);
             if (adv == StrongholdAdvantage.None) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault();
 
-            return new HMSAdvantageChosen(Game) { Initiator = Faction, Advantage = adv };
+            return new HMSAdvantageChosen(Game, Faction) { Advantage = adv };
         }
 
         protected Retreat DetermineRetreat()
@@ -1240,7 +1235,7 @@ namespace Treachery.Shared
 
             if (forcesToRetreat > 0 || specialForcesToRetreat > 0)
             {
-                return new Retreat(Game) { Initiator = Faction, Location = to, Forces = forcesToRetreat, SpecialForces = specialForcesToRetreat };
+                return new Retreat(Game, Faction) { Location = to, Forces = forcesToRetreat, SpecialForces = specialForcesToRetreat };
             }
 
             return null;
@@ -1249,7 +1244,7 @@ namespace Treachery.Shared
         protected LoserConcluded DetermineLoserConcluded()
         {
             var toKeep = LoserConcluded.CardsLoserMayKeep(Game).Where(c => CardQuality(c, this) > 2).OrderByDescending(c => CardQuality(c, this)).FirstOrDefault();
-            return new LoserConcluded(Game) { Initiator = Faction, KeptCard = toKeep, Assassinate = LoserConcluded.CanAssassinate(Game, this) };
+            return new LoserConcluded(Game, Faction) { KeptCard = toKeep, Assassinate = LoserConcluded.CanAssassinate(Game, this) };
         }
 
     }

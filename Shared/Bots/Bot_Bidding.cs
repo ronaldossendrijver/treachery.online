@@ -122,7 +122,7 @@ namespace Treachery.Shared
 
         private Bid PassedBid()
         {
-            return new Bid(Game) { Initiator = Faction, Passed = true };
+            return new Bid(Game, Faction) { Passed = true };
         }
 
         protected virtual Bid CreateBidUsingAllyAndRedSpice(int amount, int spiceToKeep, TreacheryCard karmaCard)
@@ -138,11 +138,11 @@ namespace Treachery.Shared
                 int allyContribution = Math.Min(spiceLeftToPay, Game.ResourcesYourAllyCanPay(this));
                 spiceLeftToPay -= allyContribution;
 
-                return new Bid(Game) { Initiator = Faction, Amount = spiceLeftToPay, AllyContributionAmount = allyContribution, RedContributionAmount = redContribution, KarmaBid = false, KarmaCard = null, Passed = false, UsesRedSecretAlly = useRedSecretAlly };
+                return new Bid(Game, Faction) { Amount = spiceLeftToPay, AllyContributionAmount = allyContribution, RedContributionAmount = redContribution, KarmaBid = false, KarmaCard = null, Passed = false, UsesRedSecretAlly = useRedSecretAlly };
             }
             else
             {
-                return new Bid(Game) { Initiator = Faction, Amount = amount, KarmaBid = false, KarmaCard = karmaCard, Passed = false };
+                return new Bid(Game, Faction) { Amount = amount, KarmaBid = false, KarmaCard = karmaCard, Passed = false };
             }
         }
 
@@ -173,7 +173,7 @@ namespace Treachery.Shared
         protected virtual BlackMarketBid DetermineBlackMarketBid()
         {
             var bid = DetermineBid();
-            return new BlackMarketBid(Game) { Initiator = Faction, Amount = bid.Amount, AllyContributionAmount = bid.AllyContributionAmount, RedContributionAmount = bid.RedContributionAmount, Passed = bid.Passed };
+            return new BlackMarketBid(Game, Faction) { Amount = bid.Amount, AllyContributionAmount = bid.AllyContributionAmount, RedContributionAmount = bid.RedContributionAmount, Passed = bid.Passed };
         }
     }
 }

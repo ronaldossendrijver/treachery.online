@@ -29,7 +29,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Black;
 
-    protected override MulliganPerformed ConfirmedResult => new MulliganPerformed(Game) { Initiator = Faction, Passed = false };
+    protected override MulliganPerformed ConfirmedResult => new MulliganPerformed(Game, Faction) { Passed = false };
 
-    protected override MulliganPerformed PassedResult => new MulliganPerformed(Game) { Initiator = Faction, Passed = true };
+    protected override MulliganPerformed PassedResult => new MulliganPerformed(Game, Faction) { Passed = true };
 }

@@ -30,5 +30,5 @@
         BackgroundImage = GetImage(TreacheryCardType.SearchDiscarded);
     }
 
-    protected override DiscardedSearched ConfirmedResult => new DiscardedSearched(Game) { Initiator = Faction, Card = card };
+    protected override DiscardedSearched ConfirmedResult => new DiscardedSearched(Game, Faction) { Card = card };
 }

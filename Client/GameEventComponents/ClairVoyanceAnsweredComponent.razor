@@ -23,9 +23,9 @@
 
     protected override bool IsUrgent => true;
 
-    protected override ClairVoyanceAnswered ConfirmedResult => new ClairVoyanceAnswered(Game) { Initiator = Faction, Answer = ClairVoyanceAnswer.Yes };
+    protected override ClairVoyanceAnswered ConfirmedResult => new ClairVoyanceAnswered(Game, Faction) { Answer = ClairVoyanceAnswer.Yes };
 
-    protected override ClairVoyanceAnswered PassedResult => new ClairVoyanceAnswered(Game) { Initiator = Faction, Answer = ClairVoyanceAnswer.No };
+    protected override ClairVoyanceAnswered PassedResult => new ClairVoyanceAnswered(Game, Faction) { Answer = ClairVoyanceAnswer.No };
 
-    protected override ClairVoyanceAnswered OtherResult => new ClairVoyanceAnswered(Game) { Initiator = Faction, Answer = ClairVoyanceAnswer.Unknown };
+    protected override ClairVoyanceAnswered OtherResult => new ClairVoyanceAnswered(Game, Faction) { Answer = ClairVoyanceAnswer.Unknown };
 }

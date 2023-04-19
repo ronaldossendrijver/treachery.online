@@ -13,7 +13,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public YellowRidesMonster(Game game) : base(game)
+        public YellowRidesMonster(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

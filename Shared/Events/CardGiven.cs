@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public CardGiven(Game game) : base(game)
+        public CardGiven(Game game, Faction initiator) : base(game, initiator)
         {
         }
 
@@ -25,7 +25,7 @@ namespace Treachery.Shared
             return null;
         }
 
-        public static bool IsApplicable(Game game, Player p) => p.TreacheryCards.Contains(game.CardThatMustBeKeptOrGivenToAlly);
+        public static bool IsApplicable(Game game, Player p) => p.Has(game.CardThatMustBeKeptOrGivenToAlly);
 
         #endregion Validation
 

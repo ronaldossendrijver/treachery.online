@@ -330,7 +330,7 @@ namespace Treachery.Client
         {
             try
             {
-                e.Game = gameAtHost;
+                e.Initialize(gameAtHost);
                 e.Time = DateTime.Now;
                 var result = e.Execute(true, true);
                 if (result == null)

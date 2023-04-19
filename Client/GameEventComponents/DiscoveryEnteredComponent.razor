@@ -38,7 +38,7 @@
 
     private DiscoveredLocation toLocation;
 
-    override protected DiscoveryEntered ConfirmedResult => new DiscoveryEntered(Game) { Initiator = Faction, ForceLocations = forces, To = toLocation, Passed = false };
+    override protected DiscoveryEntered ConfirmedResult => new DiscoveryEntered(Game, Faction) { ForceLocations = forces, To = toLocation, Passed = false };
 
-    override protected DiscoveryEntered PassedResult => new DiscoveryEntered(Game) { Initiator = Faction, Passed = true };
+    override protected DiscoveryEntered PassedResult => new DiscoveryEntered(Game, Faction) { Passed = true };
 }

@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public CardTraded(Game game) : base(game)
+        public CardTraded(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

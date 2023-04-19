@@ -20,7 +20,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.White;
 
-    protected override WhiteAnnouncesAuction ConfirmedResult => new WhiteAnnouncesAuction(Game) { Initiator = Faction, First = true };
+    protected override WhiteAnnouncesAuction ConfirmedResult => new WhiteAnnouncesAuction(Game, Faction) { First = true };
 
-    protected override WhiteAnnouncesAuction OtherResult => new WhiteAnnouncesAuction(Game) { Initiator = Faction, First = false };
+    protected override WhiteAnnouncesAuction OtherResult => new WhiteAnnouncesAuction(Game, Faction) { First = false };
 }

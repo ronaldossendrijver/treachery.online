@@ -32,5 +32,5 @@
     private TreacheryCard card;
     private TreacheryCard returnCard;
 
-    protected override CardTraded ConfirmedResult => new CardTraded(Game) { Initiator = Faction, Target = Player.Ally, Card = card, RequestedCard = returnCard };
+    protected override CardTraded ConfirmedResult => new CardTraded(Game, Faction) { Target = Player.Ally, Card = card, RequestedCard = returnCard };
 }

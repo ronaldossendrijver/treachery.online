@@ -28,5 +28,5 @@
         BackgroundImage = GetImage(TreacheryCardType.Juice);
     }
 
-    protected override JuicePlayed ConfirmedResult => new JuicePlayed(Game) { Initiator = Faction, Type = type };
+    protected override JuicePlayed ConfirmedResult => new JuicePlayed(Game, Faction) { Type = type };
 }

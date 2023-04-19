@@ -28,5 +28,5 @@
         BackgroundImage = GetImage(TreacheryCardType.TakeDiscarded);
     }
 
-    protected override DiscardedTaken ConfirmedResult => new DiscardedTaken(Game) { Initiator = Faction, Card = card };
+    protected override DiscardedTaken ConfirmedResult => new DiscardedTaken(Game, Faction) { Card = card };
 }

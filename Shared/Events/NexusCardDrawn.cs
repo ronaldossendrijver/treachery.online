@@ -10,7 +10,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public NexusCardDrawn(Game game) : base(game)
+        public NexusCardDrawn(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

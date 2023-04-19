@@ -23,7 +23,7 @@
 
     private TreacheryCard card;
 
-    protected override GreySwappedCardOnBid ConfirmedResult => new GreySwappedCardOnBid(Game) { Initiator = Faction, Passed = false, Card = card };
+    protected override GreySwappedCardOnBid ConfirmedResult => new GreySwappedCardOnBid(Game, Faction) { Passed = false, Card = card };
 
-    protected override GreySwappedCardOnBid PassedResult => new GreySwappedCardOnBid(Game) { Initiator = Faction, Passed = true };
+    protected override GreySwappedCardOnBid PassedResult => new GreySwappedCardOnBid(Game, Faction) { Passed = true };
 }

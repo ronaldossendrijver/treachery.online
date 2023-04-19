@@ -239,8 +239,7 @@
         h.OnLocationSelectedWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
     }
 
-    protected override AmbassadorActivated ConfirmedResult => new AmbassadorActivated(Game) { 
-        Initiator = Faction, 
+    protected override AmbassadorActivated ConfirmedResult => new AmbassadorActivated(Game, Faction) { 
         BlueSelectedAmbassador = _actualAmbassador,  
         BrownCards = _brownCards,
         PinkOfferAlliance = _pinkOfferAlliance, PinkGiveVidalToAlly = _pinkGiveVidal, PinkTakeVidal = _pinkTakeVidal,
@@ -252,7 +251,7 @@
 
     };
 
-    protected override AmbassadorActivated PassedResult => new AmbassadorActivated(Game) { Initiator = Faction, Passed = true };
+    protected override AmbassadorActivated PassedResult => new AmbassadorActivated(Game, Faction) { Passed = true };
 
     private void HandleLocationSelected(object sender, Location l)
     {

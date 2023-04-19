@@ -109,8 +109,8 @@
         h.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override RaiseDeadPlayed ConfirmedResult => new RaiseDeadPlayed(Game) { 
-        Initiator = Faction, 
+    protected override RaiseDeadPlayed ConfirmedResult => new RaiseDeadPlayed(Game, Faction)
+    {
         AmountOfForces = amountOfForces, 
         AmountOfSpecialForces = amountOfSpecialForces, 
         Hero = hero, 

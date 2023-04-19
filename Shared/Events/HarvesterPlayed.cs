@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public HarvesterPlayed(Game game) : base(game)
+        public HarvesterPlayed(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

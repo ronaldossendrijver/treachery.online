@@ -12,9 +12,9 @@
 
 @code {
 
-    protected override BlackMarketBid ConfirmedResult => new BlackMarketBid(Game) { Initiator = Faction, Passed = false, Amount = amount, AllyContributionAmount = allyContributionAmount, RedContributionAmount = redContributionAmount };
+    protected override BlackMarketBid ConfirmedResult => new BlackMarketBid(Game, Faction) { Passed = false, Amount = amount, AllyContributionAmount = allyContributionAmount, RedContributionAmount = redContributionAmount };
 
-    protected override BlackMarketBid PassedResult => new BlackMarketBid(Game) { Initiator = Faction, Passed = true };
+    protected override BlackMarketBid PassedResult => new BlackMarketBid(Game, Faction) { Passed = true };
 
     protected override bool ShowRepeatAutoPass => false;
 

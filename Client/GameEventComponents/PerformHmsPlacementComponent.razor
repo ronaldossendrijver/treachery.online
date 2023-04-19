@@ -40,7 +40,7 @@
         h.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override PerformHmsPlacement ConfirmedResult => new PerformHmsPlacement(Game) { Initiator = Faction, Target = target };
+    protected override PerformHmsPlacement ConfirmedResult => new PerformHmsPlacement(Game, Faction) { Target = target };
 
     private void HandleLocationSelected(object sender, Location l)
     {

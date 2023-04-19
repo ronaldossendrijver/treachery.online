@@ -24,5 +24,5 @@
 
     private IHero traitor;
 
-    protected override TraitorsSelected ConfirmedResult => new TraitorsSelected(Game) { Initiator = Faction, SelectedTraitor = traitor };
+    protected override TraitorsSelected ConfirmedResult => new TraitorsSelected(Game, Faction) { SelectedTraitor = traitor };
 }

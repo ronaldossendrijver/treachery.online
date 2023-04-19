@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public WhiteRevealedNoField(Game g) : base(g) { }
+        public WhiteRevealedNoField(Game game, Faction initiator) : base(game, initiator) { }
 
         public WhiteRevealedNoField()
         {

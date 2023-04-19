@@ -22,5 +22,5 @@
 
     private int nrOfSectors;
 
-    protected override StormSpellPlayed ConfirmedResult => new StormSpellPlayed(Game) { Initiator = Faction, MoveAmount = nrOfSectors };
+    protected override StormSpellPlayed ConfirmedResult => new StormSpellPlayed(Game, Faction) { MoveAmount = nrOfSectors };
 }

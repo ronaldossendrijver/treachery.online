@@ -57,9 +57,17 @@
     [Parameter]
     public string DismissLabel { get; set; } = "Dismiss";
 
-    protected override GameEventType ConfirmedResult => new GameEventType() { Game = Game, Initiator = Faction, Passed = false };
+    protected override GameEventType ConfirmedResult => CreateEvent(false);
 
-    protected override GameEventType PassedResult => new GameEventType() { Game = Game, Initiator = Faction, Passed = true };
+    protected override GameEventType PassedResult => CreateEvent(true);
+
+    protected GameEventType CreateEvent(bool passed)
+    {
+        var result = new GameEventType();
+        result.Initialize(Game, Faction);
+        result.Passed = passed;
+        return result;
+    }
 
     private void Dismiss()
     {

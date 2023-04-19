@@ -43,7 +43,7 @@
 
     private int amountToFirstFaction;
 
-    protected override DivideResources ConfirmedResult => new DivideResources(Game) { Initiator = Faction, PortionToFirstPlayer = amountToFirstFaction };
+    protected override DivideResources ConfirmedResult => new DivideResources(Game, Faction) { PortionToFirstPlayer = amountToFirstFaction };
 
-    protected override DivideResources PassedResult => new DivideResources(Game) { Initiator = Faction, Passed = true };
+    protected override DivideResources PassedResult => new DivideResources(Game, Faction) { Passed = true };
 }

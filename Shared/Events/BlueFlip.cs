@@ -10,7 +10,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public BlueFlip(Game game) : base(game)
+        public BlueFlip(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

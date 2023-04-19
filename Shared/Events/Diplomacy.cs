@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public Diplomacy(Game game) : base(game)
+        public Diplomacy(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

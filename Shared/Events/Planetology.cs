@@ -10,7 +10,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public Planetology(Game game) : base(game)
+        public Planetology(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

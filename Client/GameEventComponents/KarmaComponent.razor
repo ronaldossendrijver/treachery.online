@@ -28,7 +28,7 @@
     private TreacheryCard card;
     private FactionAdvantage prevented;
 
-    protected override Karma ConfirmedResult => new Karma(Game) { Initiator = Faction, Card = card, Prevented = prevented };
+    protected override Karma ConfirmedResult => new Karma(Game, Faction) { Card = card, Prevented = prevented };
 
     private string InfoMessage => "Prevention of an advantages with a * cannot be done automatically and must be done verbally between players. This might require an undo-action by the host after the action you want to prevent has occured.";
 }

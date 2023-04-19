@@ -10,7 +10,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public PerformYellowSetup(Game game) : base(game)
+        public PerformYellowSetup(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

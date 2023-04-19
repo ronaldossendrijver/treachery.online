@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public GreySwappedCardOnBid(Game game) : base(game)
+        public GreySwappedCardOnBid(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

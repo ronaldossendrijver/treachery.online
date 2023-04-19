@@ -14,7 +14,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public NexusPlayed(Game game) : base(game)
+        public NexusPlayed(Game game, Faction initiator) : base(game, initiator)
         {
         }
 
@@ -427,7 +427,7 @@ namespace Treachery.Shared
                         Game.PlayNexusCard(Player, "let ", Faction.White, " lose the payment of ", Payment.Of(amountReceived), " they just received");
                         white.Resources -= amountReceived;
                     }
-                    else if (white.TreacheryCards.Contains(Game.CardJustWon))
+                    else if (white.Has(Game.CardJustWon))
                     {
                         Game.PlayNexusCard(Player, "force ", Faction.White, " to discard the card they just won");
                         Game.Discard(white, Game.CardJustWon);

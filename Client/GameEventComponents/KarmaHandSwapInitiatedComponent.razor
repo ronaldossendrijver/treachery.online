@@ -27,5 +27,5 @@
 
     private Faction target;
 
-    protected override KarmaHandSwapInitiated ConfirmedResult => new KarmaHandSwapInitiated(Game) { Initiator = Faction, Target = target };
+    protected override KarmaHandSwapInitiated ConfirmedResult => new KarmaHandSwapInitiated(Game, Faction) { Target = target };
 }

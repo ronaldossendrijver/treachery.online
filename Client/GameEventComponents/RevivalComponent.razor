@@ -162,8 +162,8 @@
         h.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override Revival ConfirmedResult => new Revival(Game) { 
-        Initiator = Faction, 
+    protected override Revival ConfirmedResult => new Revival(Game, Faction)
+    {
         AmountOfForces = amountOfForces, 
         AmountOfSpecialForces = amountOfSpecialForces, 
         ExtraForcesPaidByRed = forcesPaidByRed, 

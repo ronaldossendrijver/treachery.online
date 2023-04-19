@@ -10,7 +10,17 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        #region AwaitingPlayers
+        #region State
+
+        public List<FactionTradeOffered> CurrentTradeOffers { get; } = new();
+        internal Phase PhaseBeforeSkillAssignment { get; set; }
+        public Faction NextFactionToPerformCustomSetup => Players.Select(p => p.Faction).Where(f => !HasActedOrPassed.Contains(f)).FirstOrDefault();
+        public Deck<TreacheryCard> StartingTreacheryCards { get; private set; }
+        private TreacheryCard ExtraStartingCardForBlack { get; set; }
+
+        #endregion State
+
+        #region Setup
 
         private void EnterPhaseAwaitingPlayers()
         {
@@ -18,20 +28,6 @@ namespace Treachery.Shared
             CurrentTurn = 0;
             Enter(Phase.AwaitingPlayers);
         }
-
-        public List<Faction> FactionsInPlay { get; internal set; }
-
-        
-
-        public List<TerrorType> UnplacedTerrorTokens { get; internal set; } = new();
-        
-
-        
-
-        
-
-        
-
 
         internal void AssignFactionsAndEnterFactionTrade()
         {
@@ -70,23 +66,12 @@ namespace Treachery.Shared
                 throw new ArgumentException("Number of players cannot exceed number of positions at the table.");
             }
         }
-        #endregion
-
-        #region TradingFactions
-        public readonly IList<FactionTradeOffered> CurrentTradeOffers = new List<FactionTradeOffered>();
 
         internal void EnterPhaseTradingFactions()
         {
             CurrentTradeOffers.Clear();
             Enter(Phase.TradingFactions);
         }
-
-
-        #endregion TradingFactions
-
-        #region SettingUp
-
-        
 
         internal void EnterSetupPhase()
         {
@@ -118,10 +103,6 @@ namespace Treachery.Shared
             Enter(IsPlaying(Faction.Blue), Phase.BluePredicting, TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, DealTraitors);
         }
 
-        internal bool TreacheryCardsBeforeTraitors => Version >= 121 && Applicable(Rule.LeaderSkills);
-
-        internal Deck<IHero> TraitorDeck { get; set; }
-
         internal void DealTraitors()
         {
             Stone(Milestone.Shuffled);
@@ -146,29 +127,6 @@ namespace Treachery.Shared
             }
         }
 
-        public IEnumerable<IHero> TraitorsInPlay
-        {
-            get
-            {
-                var result = new List<IHero>();
-
-                var factionsInPlay = Players.Select(p => p.Faction);
-                result.AddRange(LeaderManager.Leaders.Where(l =>
-                    factionsInPlay.Contains(l.Faction) &&
-                    l.HeroType != HeroType.Vidal &&
-                    (Version <= 140 || l.HeroType != HeroType.Auditor || Applicable(Rule.BrownAuditor))
-                    ));
-
-                if (Applicable(Rule.CheapHeroTraitor))
-                {
-                    result.Add(TreacheryCardManager.GetCardsInPlay(this).First(c => c.Type == TreacheryCardType.Mercenary));
-                }
-
-                return result;
-            }
-        }
-
-        public Leader PinkLoyalLeader { get; private set; }
         private Deck<IHero> CreateAndShuffleTraitorDeck(Random random)
         {
             var result = new Deck<IHero>(TraitorsInPlay, random);
@@ -194,8 +152,6 @@ namespace Treachery.Shared
                 black.Traitors.Add(TraitorDeck.Draw());
             }
         }
-
-        
 
         internal void EnterSelectTraitors()
         {
@@ -255,8 +211,6 @@ namespace Treachery.Shared
                 Enter(TreacheryCardsBeforeTraitors, DealTraitors, SetupSpiceAndForces);
             }
         }
-
-        internal Phase PhaseBeforeSkillAssignment { get; set; }
 
         internal void SetupSpiceAndForces()
         {
@@ -417,12 +371,6 @@ namespace Treachery.Shared
             }
         }
 
-        public Faction NextFactionToPerformCustomSetup => Players.Select(p => p.Faction).Where(f => !HasActedOrPassed.Contains(f)).FirstOrDefault();
-
-        public Deck<TreacheryCard> StartingTreacheryCards { get; private set; }
-
-        private TreacheryCard ExtraStartingCardForBlack = null;
-
         internal void DealStartingTreacheryCards()
         {
             StartingTreacheryCards = new Deck<TreacheryCard>(Random);
@@ -457,6 +405,8 @@ namespace Treachery.Shared
             Enter(TreacheryCardsBeforeTraitors, AssignLeaderSkills, EnterStormPhase);
         }
 
-        #endregion SettingUp
+        internal bool TreacheryCardsBeforeTraitors => Version >= 121 && Applicable(Rule.LeaderSkills);
+
+        #endregion Setup
     }
 }

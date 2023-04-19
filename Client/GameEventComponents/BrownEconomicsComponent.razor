@@ -25,5 +25,5 @@
 
     private BrownEconomicsStatus status = BrownEconomicsStatus.Double;
 
-    protected override BrownEconomics ConfirmedResult => new BrownEconomics(Game) { Initiator = Faction, Status = status };
+    protected override BrownEconomics ConfirmedResult => new BrownEconomics(Game, Faction) { Status = status };
 }

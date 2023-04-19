@@ -27,7 +27,7 @@
 
     public Territory target;
 
-    protected override YellowSentMonster ConfirmedResult => new YellowSentMonster(Game) { Initiator = Faction, Territory = target };
+    protected override YellowSentMonster ConfirmedResult => new YellowSentMonster(Game, Faction) { Territory = target };
 
     protected override void OnAfterRender(bool firstRender)
     {

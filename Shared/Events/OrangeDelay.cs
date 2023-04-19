@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public OrangeDelay(Game game) : base(game)
+        public OrangeDelay(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

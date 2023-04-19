@@ -34,7 +34,7 @@
     private bool mustUse = true;
     private TreacheryCardType type;
 
-    protected override Voice ConfirmedResult => new Voice(Game) { Initiator = Faction, Must = mustUse, Type = type };
+    protected override Voice ConfirmedResult => new Voice(Game, Faction) { Must = mustUse, Type = type };
 
     private IEnumerable<TreacheryCardType> ValidTypes => Voice.ValidTypes(Game).OrderBy(t => Name(t));
 }

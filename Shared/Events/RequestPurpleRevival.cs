@@ -13,7 +13,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public RequestPurpleRevival(Game game) : base(game)
+        public RequestPurpleRevival(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

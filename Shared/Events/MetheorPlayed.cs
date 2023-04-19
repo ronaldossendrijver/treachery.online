@@ -10,7 +10,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public MetheorPlayed(Game game) : base(game)
+        public MetheorPlayed(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

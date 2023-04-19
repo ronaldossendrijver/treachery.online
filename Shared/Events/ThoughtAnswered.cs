@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public ThoughtAnswered(Game game) : base(game)
+        public ThoughtAnswered(Game game, Faction initiator) : base(game, initiator)
         {
         }
 
@@ -48,7 +48,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
         {
-            if (p.TreacheryCards.Contains(g.CurrentThought.Card))
+            if (p.Has(g.CurrentThought.Card))
             {
                 return new TreacheryCard[] { g.CurrentThought.Card };
             }

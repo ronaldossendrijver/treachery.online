@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public DiscardedSearched(Game game) : base(game)
+        public DiscardedSearched(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

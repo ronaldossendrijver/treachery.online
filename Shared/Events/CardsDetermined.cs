@@ -13,7 +13,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public CardsDetermined(Game game) : base(game)
+        public CardsDetermined(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

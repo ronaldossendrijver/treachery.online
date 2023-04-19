@@ -22,7 +22,7 @@
         BackgroundImage = GetImage(TreacheryCardType.Flight);
     }
 
-    protected override FlightUsed ConfirmedResult => new FlightUsed(Game) { Initiator = Faction, MoveThreeTerritories = true };
+    protected override FlightUsed ConfirmedResult => new FlightUsed(Game, Faction) { MoveThreeTerritories = true };
 
-    protected override FlightUsed OtherResult => new FlightUsed(Game) { Initiator = Faction, MoveThreeTerritories = false };
+    protected override FlightUsed OtherResult => new FlightUsed(Game, Faction) { MoveThreeTerritories = false };
 }

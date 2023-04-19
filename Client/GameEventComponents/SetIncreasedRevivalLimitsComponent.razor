@@ -30,5 +30,5 @@
         factions.AddRange(Game.FactionsWithIncreasedRevivalLimits);
     }
 
-    protected override SetIncreasedRevivalLimits ConfirmedResult => new SetIncreasedRevivalLimits(Game) { Initiator = Faction, Factions = factions.ToArray() };
+    protected override SetIncreasedRevivalLimits ConfirmedResult => new SetIncreasedRevivalLimits(Game, Faction) { Factions = factions.ToArray() };
 }

@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public WhiteGaveCard(Game game) : base(game)
+        public WhiteGaveCard(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

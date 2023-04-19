@@ -15,19 +15,19 @@ namespace Treachery.Shared
         {
             var cyan = Game.GetPlayer(Faction.Cyan);
             var accept = !HasAlly || PlayerStanding(cyan) > 0.75f * PlayerStanding(AlliedPlayer);
-            return new AllianceByTerror(Game) { Initiator = Faction, Passed = !accept };
+            return new AllianceByTerror(Game, Faction) { Passed = !accept };
         }
 
         protected virtual AllianceByAmbassador DetermineAllianceByAmbassador()
         {
             var pink = Game.GetPlayer(Faction.Pink);
             var accept = !HasAlly || PlayerStanding(pink) > 0.75f * PlayerStanding(AlliedPlayer);
-            return new AllianceByAmbassador(Game) { Initiator = Faction, Passed = !accept };
+            return new AllianceByAmbassador(Game, Faction) { Passed = !accept };
         }
 
         protected NexusVoted DetermineNexusVoted()
         {
-            return new NexusVoted(Game) { Initiator = Faction, Passed = false };
+            return new NexusVoted(Game, Faction) { Passed = false };
         }
 
         protected virtual AllianceOffered DetermineAllianceOffered()
@@ -43,7 +43,7 @@ namespace Treachery.Shared
 
             if (offer != null)
             {
-                return new AllianceOffered(Game) { Initiator = Faction, Target = offer.Initiator };
+                return new AllianceOffered(Game, Faction) { Target = offer.Initiator };
             }
             else if (
                 nrOfPlayers > 2 &&
@@ -55,7 +55,7 @@ namespace Treachery.Shared
 
                 if (mostInterestingOpponentBotWithoutAlly != null)
                 {
-                    return new AllianceOffered(Game) { Initiator = Faction, Target = mostInterestingOpponentBotWithoutAlly.Faction };
+                    return new AllianceOffered(Game, Faction) { Target = mostInterestingOpponentBotWithoutAlly.Faction };
                 }
             }
 
@@ -77,7 +77,7 @@ namespace Treachery.Shared
 
             if (offer != null && PlayerStanding(offer.Player) > PlayerStanding(AlliedPlayer))
             {
-                return new AllianceBroken(Game) { Initiator = Faction };
+                return new AllianceBroken(Game, Faction);
             }
 
             return null;
@@ -92,11 +92,11 @@ namespace Treachery.Shared
                     Faction == Faction.Blue && Nexus == Faction.Blue && !Game.Applicable(Rule.BlueAdvisors) ||
                     Faction == Faction.Grey && Nexus == Faction.Grey && !Game.Applicable(Rule.AdvancedCombat))
                 {
-                    return new NexusCardDrawn(Game) { Initiator = Faction, Passed = false };
+                    return new NexusCardDrawn(Game, Faction) { Passed = false };
                 }
             }
 
-            return new NexusCardDrawn(Game) { Initiator = Faction, Passed = true };
+            return new NexusCardDrawn(Game, Faction) { Passed = true };
         }
 
         protected virtual AllyPermission DetermineAlliancePermissions()
@@ -108,7 +108,7 @@ namespace Treachery.Shared
 
                 var allowedResources = DetermineAllowedResources();
                 var allowedKarmaCard = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
-                var permission = new AllyPermission(Game) { Initiator = Faction, PermittedResources = allowedResources, PermittedKarmaCard = allowedKarmaCard };
+                var permission = new AllyPermission(Game, Faction) { PermittedResources = allowedResources, PermittedKarmaCard = allowedKarmaCard };
                 bool boolPermissionsNeedUpdate = BoolPermissionsNeedUpdate(permission);
                 bool specialPermissionsNeedUpdate = SpecialPermissionsNeedUpdate(permission);
 
@@ -270,11 +270,11 @@ namespace Treachery.Shared
 
                 if (Game.CurrentCardTradeOffer.RequestedCard != null)
                 {
-                    result = new CardTraded(Game) { Initiator = Faction, Target = Game.CurrentCardTradeOffer.Initiator, Card = Game.CurrentCardTradeOffer.RequestedCard, RequestedCard = null };
+                    result = new CardTraded(Game, Faction) { Target = Game.CurrentCardTradeOffer.Initiator, Card = Game.CurrentCardTradeOffer.RequestedCard, RequestedCard = null };
                 }
                 else
                 {
-                    result = new CardTraded(Game) { Initiator = Faction, Target = Game.CurrentCardTradeOffer.Initiator, Card = TreacheryCards.OrderBy(c => CardQuality(c, this)).FirstOrDefault(), RequestedCard = null };
+                    result = new CardTraded(Game, Faction) { Target = Game.CurrentCardTradeOffer.Initiator, Card = TreacheryCards.OrderBy(c => CardQuality(c, this)).FirstOrDefault(), RequestedCard = null };
                 }
 
                 return result;

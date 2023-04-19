@@ -25,5 +25,5 @@
 
     private List<TreacheryCard> selectedCards = new List<TreacheryCard>();
 
-    protected override KarmaBrownDiscard ConfirmedResult => new KarmaBrownDiscard(Game) { Initiator = Faction, Cards = selectedCards };
+    protected override KarmaBrownDiscard ConfirmedResult => new KarmaBrownDiscard(Game, Faction) { Cards = selectedCards };
 }

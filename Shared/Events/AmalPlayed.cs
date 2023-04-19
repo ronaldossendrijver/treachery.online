@@ -10,7 +10,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public AmalPlayed(Game game) : base(game)
+        public AmalPlayed(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

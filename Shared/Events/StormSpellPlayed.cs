@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public StormSpellPlayed(Game game) : base(game)
+        public StormSpellPlayed(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

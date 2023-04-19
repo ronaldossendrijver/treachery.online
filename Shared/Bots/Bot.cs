@@ -196,7 +196,7 @@ namespace Treachery.Shared
             return null;
         }
 
-        private EndPhase DetermineEndPhase() => new(Game) { Initiator = Faction };
+        private EndPhase DetermineEndPhase() => new(Game, Faction);
 
         private bool Do<T>(Func<T> method, ref GameEvent action, IEnumerable<Type> allowedActions) where T : GameEvent
         {

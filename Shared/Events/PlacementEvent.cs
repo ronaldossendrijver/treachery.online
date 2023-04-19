@@ -13,7 +13,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        protected PlacementEvent(Game game) : base(game)
+        protected PlacementEvent(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

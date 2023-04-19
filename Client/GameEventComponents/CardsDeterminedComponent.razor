@@ -41,5 +41,5 @@
         selectedWhiteCards = new List<TreacheryCard>(Game.WhiteCache);
     }
 
-    protected override CardsDetermined ConfirmedResult => new CardsDetermined(Game) { Initiator = Faction, TreacheryCards = selectedTreacheryCards, WhiteCards = selectedWhiteCards };
+    protected override CardsDetermined ConfirmedResult => new CardsDetermined(Game, Faction) { TreacheryCards = selectedTreacheryCards, WhiteCards = selectedWhiteCards };
 }

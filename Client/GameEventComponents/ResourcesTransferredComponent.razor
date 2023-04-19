@@ -25,5 +25,5 @@
 
     private int resources;
 
-    protected override ResourcesTransferred ConfirmedResult => new ResourcesTransferred(Game) { Initiator = Faction, Resources = resources };
+    protected override ResourcesTransferred ConfirmedResult => new ResourcesTransferred(Game, Faction) { Resources = resources };
 }

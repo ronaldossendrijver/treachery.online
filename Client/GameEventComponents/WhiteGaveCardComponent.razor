@@ -25,5 +25,5 @@
 
     private TreacheryCard card;
 
-    protected override WhiteGaveCard ConfirmedResult => new WhiteGaveCard(Game) { Initiator = Faction, Card = card };
+    protected override WhiteGaveCard ConfirmedResult => new WhiteGaveCard(Game, Faction) { Card = card };
 }

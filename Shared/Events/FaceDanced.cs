@@ -13,7 +13,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public FaceDanced(Game game) : base(game)
+        public FaceDanced(Game game, Faction initiator) : base(game, initiator)
         {
         }
 
@@ -142,7 +142,7 @@ namespace Treachery.Shared
                     Player.RevealedDancers.Add(facedancer);
                 }
 
-                if (!Player.HasUnrevealedFaceDancers)
+                if (!Player.UnrevealedFaceDancers.Any())
                 {
                     ReplaceFacedancers();
                 }

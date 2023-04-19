@@ -63,7 +63,14 @@
     [Parameter]
     public new Faction IsFactionSpecific { get; set; }
 
-    protected override GameEventType ConfirmedResult => new GameEventType() { Game = Game, Initiator = Faction };
+    protected override GameEventType ConfirmedResult => CreateEvent();
+
+    protected GameEventType CreateEvent()
+    {
+        var result = new GameEventType();
+        result.Initialize(Game, Faction);
+        return result;
+    }
 
     protected override void OnInitialized()
     {

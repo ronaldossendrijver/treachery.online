@@ -28,7 +28,7 @@
     private LeaderSkill skill;
     private IHero leader;
 
-    protected override SkillAssigned ConfirmedResult => new SkillAssigned(Game) { Initiator = Faction, Passed = false, Leader = leader as Leader, Skill = skill };
+    protected override SkillAssigned ConfirmedResult => new SkillAssigned(Game, Faction) { Passed = false, Leader = leader as Leader, Skill = skill };
 
-    protected override SkillAssigned PassedResult => new SkillAssigned(Game) { Initiator = Faction, Passed = true };
+    protected override SkillAssigned PassedResult => new SkillAssigned(Game, Faction) { Passed = true };
 }

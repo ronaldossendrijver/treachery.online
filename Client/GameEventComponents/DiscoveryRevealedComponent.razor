@@ -37,7 +37,7 @@
 
     private Location _location;
 
-    protected override DiscoveryRevealed ConfirmedResult => new DiscoveryRevealed(Game) { Initiator = Faction, Location = _location };
+    protected override DiscoveryRevealed ConfirmedResult => new DiscoveryRevealed(Game, Faction) { Location = _location };
 
-    protected override DiscoveryRevealed PassedResult => new DiscoveryRevealed(Game) { Initiator = Faction, Passed = true };
+    protected override DiscoveryRevealed PassedResult => new DiscoveryRevealed(Game, Faction) { Passed = true };
 }

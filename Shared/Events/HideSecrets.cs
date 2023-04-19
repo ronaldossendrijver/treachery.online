@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public HideSecrets(Game game) : base(game)
+        public HideSecrets(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

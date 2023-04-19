@@ -195,7 +195,7 @@
         Game.CurrentPhase == Phase.ClaimingCharity && _previousPhase != Phase.ClaimingCharity ||
         Game.CurrentTurn > 1 && Game.CurrentPhase == Phase.Resurrection && _previousPhase != Phase.Resurrection;
 
-    protected override EndPhase ConfirmedResult => new EndPhase(Game) { Initiator = Faction };
+    protected override EndPhase ConfirmedResult => new EndPhase(Game, Faction) {  };
 
     private IEnumerable<SequenceElement> ToBid
     {

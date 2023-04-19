@@ -22,7 +22,7 @@
 
     private TreacheryCard card;
 
-    protected override KarmaWhiteBuy ConfirmedResult => new KarmaWhiteBuy(Game) { Initiator = Faction, Card = card };
+    protected override KarmaWhiteBuy ConfirmedResult => new KarmaWhiteBuy(Game, Faction) { Card = card };
 
     private string InfoMessage => "Prevention of an advantages with a * cannot be done automatically and must be done verbally between players. This might require an undo-action by the host after the action you want to prevent has occured.";
 }

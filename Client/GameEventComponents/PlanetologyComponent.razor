@@ -19,9 +19,9 @@
 
 @code {
 
-    protected override Planetology ConfirmedResult => new Planetology(Game) { Initiator = Faction, AddOneToMovement = true };
+    protected override Planetology ConfirmedResult => new Planetology(Game, Faction) { AddOneToMovement = true };
 
-    protected override Planetology OtherResult => new Planetology(Game) { Initiator = Faction, AddOneToMovement = false };
+    protected override Planetology OtherResult => new Planetology(Game, Faction) { AddOneToMovement = false };
 
     protected override void OnParametersSet()
     {

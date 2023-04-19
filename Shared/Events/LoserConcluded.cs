@@ -13,7 +13,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public LoserConcluded(Game game) : base(game)
+        public LoserConcluded(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

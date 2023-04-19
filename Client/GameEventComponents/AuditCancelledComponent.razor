@@ -21,7 +21,7 @@
 
     protected override bool IsUrgent => true;
 
-    protected override AuditCancelled ConfirmedResult => new AuditCancelled(Game) { Initiator = Faction, Cancelled = true };
+    protected override AuditCancelled ConfirmedResult => new AuditCancelled(Game, Faction) { Cancelled = true };
 
-    protected override AuditCancelled PassedResult => new AuditCancelled(Game) { Initiator = Faction, Cancelled = false };
+    protected override AuditCancelled PassedResult => new AuditCancelled(Game, Faction) { Cancelled = false };
 }

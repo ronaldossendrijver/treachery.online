@@ -339,7 +339,7 @@ namespace Treachery.Client
         {
             try
             {
-                e.Game = Game;
+                e.Initialize(Game);
 
                 int expectedEventNumber = Game.EventCount + 1;
                 if (newEventNumber == expectedEventNumber)

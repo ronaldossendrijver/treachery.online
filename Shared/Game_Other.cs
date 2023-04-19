@@ -10,7 +10,39 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
+        #region State
+
         public List<Faction> ResourceAuditedFactions { get; private set; } = new();
+        internal Phase PhasePausedByClairvoyance { get; set; }
+        public ClairVoyancePlayed LatestClairvoyance { get; internal set; }
+        public ClairVoyanceQandA LatestClairvoyanceQandA { get; internal set; }
+        public BattleInitiated LatestClairvoyanceBattle { get; internal set; }
+        public int KarmaHmsMovesLeft { get; internal set; } = 2;
+        public bool GreenKarma { get; internal set; } = false;
+        public int PinkKarmaBonus { get; internal set; } = 0;
+        public List<Faction> SecretsRemainHidden { get; private set; } = new();
+        private List<FactionAdvantage> PreventedAdvantages { get; set; } = new();
+        internal Phase PhaseBeforeSearchingDiscarded { get; set; }
+        public JuicePlayed CurrentJuice { get; internal set; }
+        internal bool BureaucratWasUsedThisPhase { get; set; }
+        internal Phase PhaseBeforeBureaucratWasActivated { get; set; }
+        public Faction TargetOfBureaucracy { get; internal set; }
+        public NexusPlayed CurrentGreenNexus { get; internal set; }
+        public NexusPlayed CurrentYellowNexus { get; internal set; }
+        public NexusPlayed CurrentRedNexus { get; internal set; }
+        public NexusPlayed CurrentOrangeNexus { get; internal set; }
+        public NexusPlayed CurrentBlueNexus { get; internal set; }
+        public NexusPlayed CurrentGreyNexus { get; internal set; }
+        internal Faction WasVictimOfBureaucracy { get; set; }
+        private bool BankerWasUsedThisPhase { get; set; }
+        public BrownKarmaPrevention CurrentKarmaPrevention { get; internal set; } = null;
+        public Planetology CurrentPlanetology { get; internal set; }
+        public bool BlackTraitorWasCancelled { get; internal set; } = false;
+        public bool FacedancerWasCancelled { get; internal set; } = false;
+
+        #endregion State
+
+        #region Events
 
         internal void RevealCurrentNoField(Player player, Location inLocation = null)
         {
@@ -50,8 +82,6 @@ namespace Treachery.Shared
             }
         }
 
-        internal Phase PhaseBeforeSearchingDiscarded { get; set; }
-
         internal void ExchangeResourcesInBribe(Player from, Player target, int amount)
         {
             from.Resources -= amount;
@@ -73,29 +103,6 @@ namespace Treachery.Shared
             }
         }
 
-        internal Phase PhasePausedByClairvoyance;
-        public ClairVoyancePlayed LatestClairvoyance { get; internal set; }
-        public ClairVoyanceQandA LatestClairvoyanceQandA { get; internal set; }
-        public BattleInitiated LatestClairvoyanceBattle { get; internal set; }
-
-        public int KarmaHmsMovesLeft { get; internal set; } = 2;
-
-        public bool GreenKarma { get; internal set; } = false;
-
-        public int PinkKarmaBonus { get; internal set; } = 0;
-
-        public List<Faction> SecretsRemainHidden { get; private set; } = new();
-
-        public bool YieldsSecrets(Player p)
-        {
-            return !SecretsRemainHidden.Contains(p.Faction);
-        }
-
-        public bool YieldsSecrets(Faction f)
-        {
-            return !SecretsRemainHidden.Contains(f);
-        }
-
         internal void RevokePlanIfNeeded(Faction f)
         {
             RevokePlan(CurrentBattle?.PlanOf(f));
@@ -112,8 +119,6 @@ namespace Treachery.Shared
                 DefenderBattleAction = null;
             }
         }
-
-        private List<FactionAdvantage> PreventedAdvantages = new();
 
         internal void Prevent(Faction initiator, FactionAdvantage advantage)
         {
@@ -134,28 +139,6 @@ namespace Treachery.Shared
             }
         }
 
-        public bool Prevented(FactionAdvantage advantage) => PreventedAdvantages.Contains(advantage);
-
-        public bool BribesDuringMentat => !Applicable(Rule.BribesAreImmediate);
-
-        public bool KarmaPrevented(Faction f)
-        {
-            return CurrentKarmaPrevention != null && CurrentKarmaPrevention.Target == f;
-        }
-
-        public BrownKarmaPrevention CurrentKarmaPrevention { get; internal set; } = null;
-
-        public bool JuiceForcesFirstPlayer => CurrentJuice != null && CurrentJuice.Type == JuiceType.GoFirst;
-
-        public bool JuiceForcesLastPlayer => CurrentJuice != null && CurrentJuice.Type == JuiceType.GoLast;
-
-
-        public JuicePlayed CurrentJuice { get; internal set; }
-
-        private bool BureaucratWasUsedThisPhase { get; set; } = false;
-        private Phase _phaseBeforeBureaucratWasActivated;
-        public Faction TargetOfBureaucracy { get; internal set; }
-
         internal void ApplyBureaucracy(Faction payer, Faction receiver)
         {
             if (!BureaucratWasUsedThisPhase)
@@ -164,29 +147,12 @@ namespace Treachery.Shared
                 if (bureaucrat != null && bureaucrat.Faction != payer && bureaucrat.Faction != receiver)
                 {
                     if (Version < 133) BureaucratWasUsedThisPhase = true;
-                    _phaseBeforeBureaucratWasActivated = CurrentPhase;
+                    PhaseBeforeBureaucratWasActivated = CurrentPhase;
                     TargetOfBureaucracy = receiver;
                     Enter(Phase.Bureaucracy);
                 }
             }
         }
-
-        internal Faction WasVictimOfBureaucracy { get; set; }
-        public void HandleEvent(Bureaucracy e)
-        {
-            Log(e.GetDynamicMessage());
-            if (!e.Passed)
-            {
-                Stone(Milestone.Bureaucracy);
-                BureaucratWasUsedThisPhase = true;
-                GetPlayer(TargetOfBureaucracy).Resources -= 2;
-                WasVictimOfBureaucracy = TargetOfBureaucracy;
-            }
-            Enter(_phaseBeforeBureaucratWasActivated);
-            TargetOfBureaucracy = Faction.None;
-        }
-
-        private bool BankerWasUsedThisPhase { get; set; } = false;
 
         internal void ActivateBanker(Player playerWhoPaid)
         {
@@ -201,11 +167,6 @@ namespace Treachery.Shared
                 }
             }
         }
-
-        public Planetology CurrentPlanetology { get; internal set; }
-
-        public bool BlackTraitorWasCancelled { get; internal set; } = false;
-        public bool FacedancerWasCancelled { get; internal set; } = false;
         
         internal void PlayNexusCard(Player initiator, params object[] messageElements)
         {
@@ -237,29 +198,28 @@ namespace Treachery.Shared
             DiscardNexusCard(initiator);
         }
 
-        public NexusPlayed CurrentGreenNexus { get; internal set; }
-        public NexusPlayed CurrentYellowNexus { get; internal set; }
-        public NexusPlayed CurrentRedNexus { get; internal set; }
-        public NexusPlayed CurrentOrangeNexus { get; internal set; }
-        public NexusPlayed CurrentBlueNexus { get; internal set; }
-        public NexusPlayed CurrentGreyNexus { get; internal set; }
-        
-        internal void LogPreventionByKarma(FactionAdvantage prevented)
-        {
-            Log(TreacheryCardType.Karma, " prevents ", prevented);
-        }
+        internal void LogPreventionByKarma(FactionAdvantage prevented) => Log(TreacheryCardType.Karma, " prevents ", prevented);
 
-        internal void LogPreventionByLowThreshold(FactionAdvantage prevented)
-        {
-            Log("Low Threshold prevents ", prevented);
-        }
+        internal void LogPreventionByLowThreshold(FactionAdvantage prevented) => Log("Low Threshold prevents ", prevented);
 
-        public bool CharityIsCancelled => EconomicsStatus == BrownEconomicsStatus.Cancel || EconomicsStatus == BrownEconomicsStatus.CancelFlipped;
-    }
+        #endregion Events
 
-    class TriggeredBureaucracy
-    {
-        internal Faction PaymentFrom;
-        internal Faction PaymentTo;
+        #region Information
+
+        public bool Prevented(FactionAdvantage advantage) => PreventedAdvantages.Contains(advantage);
+
+        public bool BribesDuringMentat => !Applicable(Rule.BribesAreImmediate);
+
+        public bool KarmaPrevented(Faction f) => CurrentKarmaPrevention != null && CurrentKarmaPrevention.Target == f;
+
+        public bool JuiceForcesFirstPlayer => CurrentJuice != null && CurrentJuice.Type == JuiceType.GoFirst;
+
+        public bool JuiceForcesLastPlayer => CurrentJuice != null && CurrentJuice.Type == JuiceType.GoLast;
+
+        public bool YieldsSecrets(Player p) => !SecretsRemainHidden.Contains(p.Faction);
+
+        public bool YieldsSecrets(Faction f) => !SecretsRemainHidden.Contains(f);
+
+        #endregion Information
     }
 }

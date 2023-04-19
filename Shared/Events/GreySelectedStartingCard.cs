@@ -10,7 +10,7 @@ namespace Treachery.Shared
     {
         #region Construction
         
-        public GreySelectedStartingCard(Game game) : base(game)
+        public GreySelectedStartingCard(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public PortableAntidoteUsed(Game game) : base(game)
+        public PortableAntidoteUsed(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

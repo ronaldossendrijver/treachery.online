@@ -69,9 +69,9 @@
         h.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override Retreat ConfirmedResult => new Retreat(Game) { Initiator = Faction, Location = target, Forces = forces, SpecialForces = specialForces };
+    protected override Retreat ConfirmedResult => new Retreat(Game, Faction) { Location = target, Forces = forces, SpecialForces = specialForces };
 
-    protected override Retreat PassedResult => new Retreat(Game) { Initiator = Faction, Location = target, Forces = 0, SpecialForces = 0 };
+    protected override Retreat PassedResult => new Retreat(Game, Faction) { Location = target, Forces = 0, SpecialForces = 0 };
 
     private void HandleLocationSelected(object sender, Location l)
     {

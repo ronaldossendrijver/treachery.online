@@ -25,7 +25,7 @@
 
     private TreacheryCard card;
 
-    protected override GreyRemovedCardFromAuction ConfirmedResult => new GreyRemovedCardFromAuction(Game) { Initiator = Faction, PutOnTop = true, Card = card };
+    protected override GreyRemovedCardFromAuction ConfirmedResult => new GreyRemovedCardFromAuction(Game, Faction) { PutOnTop = true, Card = card };
 
-    protected override GreyRemovedCardFromAuction OtherResult => new GreyRemovedCardFromAuction(Game) { Initiator = Faction, PutOnTop = false, Card = card };
+    protected override GreyRemovedCardFromAuction OtherResult => new GreyRemovedCardFromAuction(Game, Faction) { PutOnTop = false, Card = card };
 }

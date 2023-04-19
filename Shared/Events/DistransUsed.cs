@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public DistransUsed(Game game) : base(game)
+        public DistransUsed(Game game, Faction initiator) : base(game, initiator)
         {
         }
 
@@ -96,11 +96,11 @@ namespace Treachery.Shared
         {
             if (Game.CurrentPhase == Phase.BlackMarketBidding && hadRoomForCards && !player.HasRoomForCards && BlackMarketBid.MayBePlayed(Game, player))
             {
-                new Bid(Game) { Initiator = player.Faction, Passed = true }.Execute(false, false);
+                new Bid(Game, player.Faction) { Passed = true }.Execute(false, false);
             }
             else if (Game.CurrentPhase == Phase.Bidding && hadRoomForCards && !player.HasRoomForCards && Bid.MayBePlayed(Game, player))
             {
-                new Bid(Game) { Initiator = player.Faction, Passed = true }.Execute(false, false);
+                new Bid(Game, player.Faction) { Passed = true }.Execute(false, false);
             }
         }
 

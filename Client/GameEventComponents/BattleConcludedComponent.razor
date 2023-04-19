@@ -139,9 +139,8 @@
     private IHero traitorToReplace;
     private bool addExtraForce;
 
-    protected override BattleConcluded ConfirmedResult => new BattleConcluded(Game) {
-
-        Initiator = Faction,
+    protected override BattleConcluded ConfirmedResult => new BattleConcluded(Game, Faction)
+    {
         DiscardedCards = DetermineSelectedCards(),
         StolenToken = stolenToken,
         SpecialForceLossesReplaced = replacementAmount,

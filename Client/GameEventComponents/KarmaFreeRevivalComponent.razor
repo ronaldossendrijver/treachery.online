@@ -57,5 +57,5 @@
     private IHero hero;
     private bool assignSkill;
 
-    protected override KarmaFreeRevival ConfirmedResult => new KarmaFreeRevival(Game) { Initiator = Faction, AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = hero, AssignSkill = assignSkill };
+    protected override KarmaFreeRevival ConfirmedResult => new KarmaFreeRevival(Game, Faction) { AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = hero, AssignSkill = assignSkill };
 }

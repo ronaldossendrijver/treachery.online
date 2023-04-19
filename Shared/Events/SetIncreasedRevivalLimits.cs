@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public SetIncreasedRevivalLimits(Game game) : base(game)
+        public SetIncreasedRevivalLimits(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

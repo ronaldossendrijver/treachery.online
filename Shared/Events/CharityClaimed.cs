@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public CharityClaimed(Game game) : base(game)
+        public CharityClaimed(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

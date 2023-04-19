@@ -23,5 +23,5 @@
 
     private int amount;
 
-    protected override TestingStationUsed ConfirmedResult => new TestingStationUsed(Game) { Initiator = Faction, ValueAdded = amount };
+    protected override TestingStationUsed ConfirmedResult => new TestingStationUsed(Game, Faction) { ValueAdded = amount };
 }

@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public FactionTradeOffered(Game game) : base(game)
+        public FactionTradeOffered(Game game, Faction initiator) : base(game, initiator)
         {
         }
 
@@ -67,14 +67,9 @@ namespace Treachery.Shared
                 if (match != null)
                 {
                     Log(Initiator, " and ", match.Initiator, " traded factions");
-                    var initiator = GetPlayer(Initiator);
                     var target = GetPlayer(Target);
-                    (target.Faction, initiator.Faction) = (initiator.Faction, target.Faction);
-                    FactionTradeOffered invalidOffer;
-                    while ((invalidOffer = Game.CurrentTradeOffers.FirstOrDefault(x => x.Initiator == Initiator || x.Initiator == Target)) != null)
-                    {
-                        Game.CurrentTradeOffers.Remove(invalidOffer);
-                    }
+                    (target.Faction, Player.Faction) = (Player.Faction, target.Faction);
+                    RemoveInvalidTradeOffers();
                 }
                 else
                 {
@@ -87,14 +82,20 @@ namespace Treachery.Shared
             }
         }
 
+        private void RemoveInvalidTradeOffers()
+        {
+            var invalidOffers = Game.CurrentTradeOffers.Where(x => x.Initiator == Initiator || x.Initiator == Target).ToList();
+            foreach (var invalidOffer in invalidOffers)
+            {
+                Game.CurrentTradeOffers.Remove(invalidOffer);
+            }
+        }
+
         public override Message GetMessage()
         {
             return Message.Express(Initiator, " offer to trade factions with ", Target);
         }
 
         #endregion Execution
-
-        
     }
-
 }

@@ -10,7 +10,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public DivideResources(Game game) : base(game)
+        public DivideResources(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

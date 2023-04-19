@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public SkillAssigned(Game game) : base(game)
+        public SkillAssigned(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

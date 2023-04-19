@@ -20,7 +20,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Blue;
 
-    protected override BlueFlip ConfirmedResult => new BlueFlip(Game) { Initiator = Faction, AsAdvisors = false };
+    protected override BlueFlip ConfirmedResult => new BlueFlip(Game, Faction) { AsAdvisors = false };
 
-    protected override BlueFlip OtherResult => new BlueFlip(Game) { Initiator = Faction, AsAdvisors = true };
+    protected override BlueFlip OtherResult => new BlueFlip(Game, Faction) { AsAdvisors = true };
 }

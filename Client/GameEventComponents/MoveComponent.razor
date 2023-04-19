@@ -14,9 +14,9 @@
 
     override protected bool IsUrgent => true;
 
-    override protected Move ConfirmedResult => new Move(Game) { Initiator = Faction, ForceLocations = forces, To = toLocation, AsAdvisors = asAdvisors, Passed = false };
+    override protected Move ConfirmedResult => new Move(Game, Faction) { ForceLocations = forces, To = toLocation, AsAdvisors = asAdvisors, Passed = false };
 
-    override protected Move PassedResult => new Move(Game) { Initiator = Faction, Passed = true };
+    override protected Move PassedResult => new Move(Game, Faction) { Passed = true };
 
     override protected bool InformAboutCaravan => Player.Has(TreacheryCardType.Caravan);
 

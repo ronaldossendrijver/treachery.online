@@ -105,9 +105,9 @@
     private int _forcesInSneakAttack;
     private Location _sneakAttackTo;
 
-    protected override TerrorRevealed ConfirmedResult => new TerrorRevealed(Game) { Initiator = Faction, Type = _type, RobberyTakesCard = _robberyTakesCard, CardToGiveInSabotage = _toGiveInSabotage, ForcesInSneakAttack = _forcesInSneakAttack, SneakAttackTo = _sneakAttackTo };
+    protected override TerrorRevealed ConfirmedResult => new TerrorRevealed(Game, Faction) { Type = _type, RobberyTakesCard = _robberyTakesCard, CardToGiveInSabotage = _toGiveInSabotage, ForcesInSneakAttack = _forcesInSneakAttack, SneakAttackTo = _sneakAttackTo };
 
-    protected override TerrorRevealed PassedResult => new TerrorRevealed(Game) { Initiator = Faction, Passed = true };
+    protected override TerrorRevealed PassedResult => new TerrorRevealed(Game, Faction) { Passed = true };
 
-    protected override TerrorRevealed OtherResult => new TerrorRevealed(Game) { Initiator = Faction, AllianceOffered = true };
+    protected override TerrorRevealed OtherResult => new TerrorRevealed(Game, Faction) { AllianceOffered = true };
 }

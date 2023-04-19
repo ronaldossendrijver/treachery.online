@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public HMSAdvantageChosen(Game game) : base(game)
+        public HMSAdvantageChosen(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

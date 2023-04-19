@@ -30,5 +30,5 @@
         BackgroundImage = Skin.Current.GetImageURL(LeaderSkill.Diplomat);
     }
 
-    protected override Diplomacy ConfirmedResult => new Diplomacy(Game) { Initiator = Faction, Card = card };
+    protected override Diplomacy ConfirmedResult => new Diplomacy(Game, Faction) { Card = card };
 }

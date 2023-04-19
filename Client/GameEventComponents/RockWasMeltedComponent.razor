@@ -24,7 +24,7 @@
 
     protected override bool IsUrgent => true;
 
-    protected override RockWasMelted ConfirmedResult => new RockWasMelted(Game) { Initiator = Faction, Kill = true };
+    protected override RockWasMelted ConfirmedResult => new RockWasMelted(Game, Faction) { Kill = true };
 
-    protected override RockWasMelted OtherResult => new RockWasMelted(Game) { Initiator = Faction, Kill = false };
+    protected override RockWasMelted OtherResult => new RockWasMelted(Game, Faction) { Kill = false };
 }

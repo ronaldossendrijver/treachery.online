@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public RedBidSupport(Game game) : base(game)
+        public RedBidSupport(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

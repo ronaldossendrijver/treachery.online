@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public SetShipmentPermission(Game game) : base(game)
+        public SetShipmentPermission(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

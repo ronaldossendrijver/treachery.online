@@ -39,7 +39,7 @@
     private Faction target;
     private bool special;
 
-    protected override BrownRemoveForce ConfirmedResult => new BrownRemoveForce(Game) { Initiator = Faction, Location = location, Target = target, SpecialForce = special };
+    protected override BrownRemoveForce ConfirmedResult => new BrownRemoveForce(Game, Faction) { Location = location, Target = target, SpecialForce = special };
 
     protected override void OnAfterRender(bool firstRender)
     {

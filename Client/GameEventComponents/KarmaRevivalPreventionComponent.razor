@@ -27,5 +27,5 @@
 
     private Faction target;
 
-    protected override KarmaRevivalPrevention ConfirmedResult => new KarmaRevivalPrevention(Game) { Initiator = Faction, Target = target };
+    protected override KarmaRevivalPrevention ConfirmedResult => new KarmaRevivalPrevention(Game, Faction) { Target = target };
 }

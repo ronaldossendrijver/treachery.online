@@ -8,7 +8,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public Bureaucracy(Game game) : base(game)
+        public Bureaucracy(Game game, Faction initiator) : base(game, initiator)
         {
         }
 
@@ -31,7 +31,16 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log(GetDynamicMessage());
+            if (!Passed)
+            {
+                Game.Stone(Milestone.Bureaucracy);
+                Game.BureaucratWasUsedThisPhase = true;
+                Game.GetPlayer(Game.TargetOfBureaucracy).Resources -= 2;
+                Game.WasVictimOfBureaucracy = Game.TargetOfBureaucracy;
+            }
+            Game.Enter(Game.PhaseBeforeBureaucratWasActivated);
+            Game.TargetOfBureaucracy = Faction.None;
         }
 
         public override Message GetMessage()

@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public BrownRemoveForce(Game game) : base(game)
+        public BrownRemoveForce(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

@@ -29,5 +29,5 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Brown;
 
-    protected override Audited ConfirmedResult => new Audited(Game) { Initiator = Faction };
+    protected override Audited ConfirmedResult => new Audited(Game, Faction) {  };
 }

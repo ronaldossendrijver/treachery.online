@@ -10,10 +10,18 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public int HmsMovesLeft { get; internal set; }
-        public List<Faction> HasBattleWheel { get; private set; } = new List<Faction>();
+        #region State
 
-        internal readonly List<int> Dials = new();
+        public int HmsMovesLeft { get; internal set; }
+        public List<Faction> HasBattleWheel { get; } = new();
+        internal List<int> Dials { get; set; } = new();
+        public bool CurrentTestingStationUsed { get; internal set; }
+        internal Phase PhaseBeforeStormLoss { get; set; }
+        public List<LossToTake> StormLossesToTake { get; } = new();
+
+        #endregion State
+
+        #region Storm
 
         internal void EnterStormPhase()
         {
@@ -43,8 +51,6 @@ namespace Treachery.Shared
 
             DetermineOccupationAtStartOrEndOfTurn();
         }
-
-        
 
         internal void MoveHMSBeforeDiallingStorm()
         {
@@ -118,11 +124,6 @@ namespace Treachery.Shared
                 Log(faction, " collect ", Payment.Of(collected), " from ", l);
             }
         }
-
-        
-        public bool CurrentTestingStationUsed { get; internal set; }
-
-        
 
         internal void MoveStormAndDetermineNext(int amount)
         {
@@ -208,23 +209,6 @@ namespace Treachery.Shared
             }
         }
 
-        internal Phase PhaseBeforeStormLoss { get; set; }
-
-        public List<LossToTake> StormLossesToTake { get; private set; } = new List<LossToTake>();
-        public bool UseStormDeck => Applicable(Rule.StormDeckWithoutYellow) || IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm);
-
-        public bool IsProtectedFromStorm(Location l)
-        {
-            if (!ShieldWallDestroyed)
-            {
-                return l.Territory.IsProtectedFromStorm;
-            }
-            else
-            {
-                return l.Territory.IsProtectedFromStorm && !(l == Map.Arrakeen || l.Territory == Map.ImperialBasin || l == Map.Carthag);
-            }
-        }
-
         internal void EndStormPhase()
         {
             JustRevealedDiscoveryStrongholds.Clear();
@@ -249,12 +233,25 @@ namespace Treachery.Shared
                 }
             }
         }
-    }
 
-    public class LossToTake
-    {
-        public Faction Faction;
-        public Location Location;
-        public int Amount;
+        #endregion Storm
+
+        #region Information
+
+        internal bool UseStormDeck => Applicable(Rule.StormDeckWithoutYellow) || IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm);
+
+        public bool IsProtectedFromStorm(Location l)
+        {
+            if (!ShieldWallDestroyed)
+            {
+                return l.Territory.IsProtectedFromStorm;
+            }
+            else
+            {
+                return l.Territory.IsProtectedFromStorm && !(l == Map.Arrakeen || l.Territory == Map.ImperialBasin || l == Map.Carthag);
+            }
+        }
+
+        #endregion Information
     }
 }

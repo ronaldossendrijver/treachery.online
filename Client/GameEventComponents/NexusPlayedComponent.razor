@@ -270,9 +270,8 @@
         h.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override NexusPlayed ConfirmedResult => new NexusPlayed(Game)
+    protected override NexusPlayed ConfirmedResult => new NexusPlayed(Game, Faction)
     {
-        Initiator = Faction,
         Faction = Player.Nexus,
         GreenPrescienceAspect = greenPrescienceAspect,
         PurpleForces = purpleAmountOfForces,

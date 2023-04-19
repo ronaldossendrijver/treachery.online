@@ -13,7 +13,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public BlackMarketBid(Game game) : base(game)
+        public BlackMarketBid(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

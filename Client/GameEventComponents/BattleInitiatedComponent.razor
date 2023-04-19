@@ -42,5 +42,5 @@
         }
     }
 
-    protected override BattleInitiated ConfirmedResult => new BattleInitiated(Game) { Initiator = Faction, Territory = territory, Target = faction };
+    protected override BattleInitiated ConfirmedResult => new BattleInitiated(Game, Faction) { Territory = territory, Target = faction };
 }

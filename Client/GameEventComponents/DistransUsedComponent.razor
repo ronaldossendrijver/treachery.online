@@ -31,5 +31,5 @@
         BackgroundImage = GetImage(TreacheryCardType.Distrans);
     }
 
-    protected override DistransUsed ConfirmedResult => new DistransUsed(Game) { Initiator = Faction, Target = target, Card = card };
+    protected override DistransUsed ConfirmedResult => new DistransUsed(Game, Faction) { Target = target, Card = card };
 }

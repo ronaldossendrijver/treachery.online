@@ -25,5 +25,5 @@
 
     private IHero hero;
 
-    protected override RequestPurpleRevival ConfirmedResult => new RequestPurpleRevival(Game) { Initiator = Faction, Hero = hero };
+    protected override RequestPurpleRevival ConfirmedResult => new RequestPurpleRevival(Game, Faction) { Hero = hero };
 }

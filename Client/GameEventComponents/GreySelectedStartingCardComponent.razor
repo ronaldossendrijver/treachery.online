@@ -23,5 +23,5 @@
 
     private TreacheryCard card;
 
-    protected override GreySelectedStartingCard ConfirmedResult => new GreySelectedStartingCard(Game) { Initiator = Faction, Card = card };
+    protected override GreySelectedStartingCard ConfirmedResult => new GreySelectedStartingCard(Game, Faction) { Card = card };
 }

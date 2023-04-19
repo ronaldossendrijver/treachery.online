@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public EndPhase(Game game) : base(game)
+        public EndPhase(Game game, Faction initiator) : base(game, initiator)
         {
         }
 
@@ -373,7 +373,7 @@ namespace Treachery.Shared
             Game.MainPhaseStart(MainPhase.Collection);
             Game.ResourcesCollectedByYellow = 0;
             Game.ResourcesCollectedByBlackFromDesertOrHomeworld = 0;
-            Game.CallHeroesHome();
+            CallHeroesHome();
             Game.PendingDiscoveries = Game.DiscoveriesOnPlanet.Where(kvp => Game.AnyForcesIn(kvp.Key.Territory)).Select(kvp => kvp.Value.Token).ToList();
 
             if (Game.Version < 122)
@@ -383,6 +383,14 @@ namespace Treachery.Shared
             else
             {
                 Game.Enter(Phase.BeginningOfCollection);
+            }
+        }
+
+        private void CallHeroesHome()
+        {
+            foreach (var ls in Game.LeaderState)
+            {
+                ls.Value.CurrentTerritory = null;
             }
         }
 

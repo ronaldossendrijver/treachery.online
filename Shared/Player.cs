@@ -10,6 +10,26 @@ namespace Treachery.Shared
 {
     public partial class Player : ICloneable
     {
+        #region Construction
+
+        public Player(Game game, string name)
+        {
+            Game = game;
+            Name = name;
+        }
+
+        public Player(Game game, string name, Faction faction, bool isBot = false)
+        {
+            Game = game;
+            Name = name;
+            Faction = faction;
+            IsBot = isBot;
+        }
+
+        #endregion Construction
+
+        #region Properties
+
         public string Name { get; set; }
 
         private Faction _faction = Faction.None;
@@ -28,17 +48,17 @@ namespace Treachery.Shared
 
         public int PositionAtTable { get; set; } = -1;
 
-        public int Resources { get; set; } = 0;
+        public int Resources { get; set; }
 
-        public int Extortion { get; set; } = 0;
+        public int Extortion { get; set; }
 
-        public int Bribes { get; set; } = 0;
+        public int Bribes { get; set; }
 
-        public int ResourcesAfterBidding { get; set; } = 0;
+        public int ResourcesAfterBidding { get; set; }
 
-        public int BankedResources { get; set; } = 0;
+        public int BankedResources { get; set; }
 
-        public int TransferrableResources { get; set; } = 0;
+        public int TransferrableResources { get; set; }
 
         public List<TreacheryCard> TreacheryCards { get; set; } = new();
 
@@ -64,7 +84,6 @@ namespace Treachery.Shared
 
         public List<IHero> ToldNonFacedancers { get; set; } = new();
 
-
         public List<Leader> Leaders { get; set; } = new();
 
         public int ForcesInReserve => Homeworlds.Sum(w => ForcesIn(w));
@@ -79,15 +98,15 @@ namespace Treachery.Shared
 
         public List<Ambassador> Ambassadors { get; set; } = new();
 
-        public Faction PredictedFaction { get; set; } = 0;
+        public Faction PredictedFaction { get; set; }
 
-        public int PredictedTurn { get; set; } = 0;
+        public int PredictedTurn { get; set; }
 
-        public int ForcesKilled { get; set; } = 0;
+        public int ForcesKilled { get; set; }
 
-        public int SpecialForcesKilled { get; set; } = 0;
+        public int SpecialForcesKilled { get; set; }
 
-        public int TotalForcesKilledInBattle { get; set; } = 0;
+        public int TotalForcesKilledInBattle { get; set; }
 
         public Faction Ally { get; set; }
 
@@ -107,29 +126,9 @@ namespace Treachery.Shared
 
         protected Game Game { get; set; }
 
-        public Player(Game game, string name)
-        {
-            Game = game;
-            Name = name;
-        }
+        #endregion Properties
 
-        public Player(Game game, string name, Faction faction, bool isBot = false)
-        {
-            Game = game;
-            Name = name;
-            Faction = faction;
-            IsBot = isBot;
-        }
-
-        public Player AlliedPlayer => Game.GetPlayer(Ally);
-
-        public bool HasAlly => Ally != Faction.None;
-
-        public bool Has(TreacheryCard card) => TreacheryCards.Contains(card);
-
-        public bool Has(TreacheryCardType cardtype) => TreacheryCards.Any(c => c.Type == cardtype);
-
-        public bool Is(Faction f) => Faction == f;
+        #region Forces
 
         private Battalion GetAndCreateIfNeeded(Location location)
         {
@@ -560,33 +559,6 @@ namespace Treachery.Shared
             }
         }
 
-        public int MaximumNumberOfCards
-        {
-            get
-            {
-                var occupierOfBrownHomeworld = Game.OccupierOf(World.Brown);
-                int occupationBonus = occupierOfBrownHomeworld != null && (occupierOfBrownHomeworld == this || occupierOfBrownHomeworld.Faction == Ally) ? 1 : 0;
-
-                int amount = Faction switch
-                {
-                    Faction.Black => 8,
-                    Faction.Brown => 5,
-                    Faction.Cyan when Game.AtomicsAftermath != null => 3,
-                    _ => 4
-                };
-
-                return amount + occupationBonus;
-            }
-        }
-
-        public bool HasRoomForCards => TreacheryCards.Count < MaximumNumberOfCards;
-
-        public bool HandSizeExceeded => TreacheryCards.Count > MaximumNumberOfCards;
-
-        public int NumberOfTraitors => Faction == Faction.Black ? 4 : 1;
-
-        public int NumberOfFacedancers => Faction == Faction.Purple ? 3 : 0;
-
         public FactionForce Force
         {
             get
@@ -625,6 +597,57 @@ namespace Treachery.Shared
                 };
             }
         }
+        public bool HasSpecialForces
+        {
+            get
+            {
+                return (
+                    Game.Applicable(Rule.YellowSpecialForces) && Is(Faction.Yellow) ||
+                    Game.Applicable(Rule.RedSpecialForces) && Is(Faction.Red)) ||
+                    Is(Faction.Grey);
+            }
+        }
+
+        #endregion Forces
+
+        #region Information
+
+        public Player AlliedPlayer => Game.GetPlayer(Ally);
+
+        public bool HasAlly => Ally != Faction.None;
+
+        public bool Has(TreacheryCard card) => TreacheryCards.Contains(card);
+
+        public bool Has(TreacheryCardType cardtype) => TreacheryCards.Any(c => c.Type == cardtype);
+
+        public bool Is(Faction f) => Faction == f;
+
+        public int MaximumNumberOfCards
+        {
+            get
+            {
+                var occupierOfBrownHomeworld = Game.OccupierOf(World.Brown);
+                int occupationBonus = occupierOfBrownHomeworld != null && (occupierOfBrownHomeworld == this || occupierOfBrownHomeworld.Faction == Ally) ? 1 : 0;
+
+                int amount = Faction switch
+                {
+                    Faction.Black => 8,
+                    Faction.Brown => 5,
+                    Faction.Cyan when Game.AtomicsAftermath != null => 3,
+                    _ => 4
+                };
+
+                return amount + occupationBonus;
+            }
+        }
+
+        public bool HasRoomForCards => TreacheryCards.Count < MaximumNumberOfCards;
+
+        public bool HandSizeExceeded => TreacheryCards.Count > MaximumNumberOfCards;
+
+        public int NumberOfTraitors => Faction == Faction.Black ? 4 : 1;
+
+        public int NumberOfFacedancers => Faction == Faction.Purple ? 3 : 0;
 
         public void AssignLeaders(Game g)
         {
@@ -638,27 +661,13 @@ namespace Treachery.Shared
 
         public TreacheryCard Card(TreacheryCardType type) => TreacheryCards.FirstOrDefault(c => c.Type == type);
 
-        public bool HasUnrevealedFaceDancers => UnrevealedFaceDancers.Any();
-
         public IEnumerable<IHero> UnrevealedTraitors => Traitors.Where(f => !RevealedTraitors.Contains(f));
 
         public IEnumerable<IHero> UnrevealedFaceDancers => FaceDancers.Where(f => !RevealedDancers.Contains(f));
 
         public bool MessiahAvailable => Game.Applicable(Rule.GreenMessiah) && Is(Faction.Green) && TotalForcesKilledInBattle >= 7 && Game.IsAlive(LeaderManager.Messiah);
 
-        public bool HasSpecialForces
-        {
-            get
-            {
-                return (
-                    Game.Applicable(Rule.YellowSpecialForces) && Is(Faction.Yellow) ||
-                    Game.Applicable(Rule.RedSpecialForces) && Is(Faction.Red)) ||
-                    Is(Faction.Grey);
-            }
-        }
-
         public bool HasKarma(Game g) => Karma.ValidKarmaCards(g, this).Any();
-
 
         public void InitializeHomeworld(Homeworld world, int initialNormalForces, int initialSpecialForces)
         {
@@ -666,21 +675,6 @@ namespace Treachery.Shared
             if (initialSpecialForces > 0) AddSpecialForces(world, initialSpecialForces, false);
 
             Homeworlds.Add(world);
-        }
-
-        public object Clone()
-        {
-            var result = (Player)MemberwiseClone();
-
-            result.TreacheryCards = new List<TreacheryCard>(TreacheryCards);
-            result.Traitors = new List<IHero>(Traitors);
-            result.FaceDancers = new List<IHero>(FaceDancers);
-            result.RevealedDancers = new List<IHero>(RevealedDancers);
-            result.Leaders = new List<Leader>(Leaders);
-            result.ForcesInLocations = Utilities.CloneObjectDictionary(ForcesInLocations);
-            result.TechTokens = new List<TechToken>(TechTokens);
-
-            return result;
         }
 
         public override string ToString()
@@ -719,9 +713,7 @@ namespace Treachery.Shared
 
         public bool Initiated(GameEvent e) => e != null && e.Initiator == Faction;
 
-        public bool IsNative(Territory territory) => territory.Locations.Any(l => IsNative(l));
-
-        public bool IsNative(Location l) => l is Homeworld hw && IsNative(hw);
+        public bool IsNative(Territory territory) => territory.Locations.Any(l => l is Homeworld hw && IsNative(hw));
 
         public bool IsNative(Homeworld hw) => Homeworlds.Contains(hw);
 
@@ -743,5 +735,26 @@ namespace Treachery.Shared
             }
 
         }
+
+        #endregion Information
+
+        #region Support
+
+        public object Clone()
+        {
+            var result = (Player)MemberwiseClone();
+
+            result.TreacheryCards = new List<TreacheryCard>(TreacheryCards);
+            result.Traitors = new List<IHero>(Traitors);
+            result.FaceDancers = new List<IHero>(FaceDancers);
+            result.RevealedDancers = new List<IHero>(RevealedDancers);
+            result.Leaders = new List<Leader>(Leaders);
+            result.ForcesInLocations = Utilities.CloneObjectDictionary(ForcesInLocations);
+            result.TechTokens = new List<TechToken>(TechTokens);
+
+            return result;
+        }
+
+        #endregion Support
     }
 }

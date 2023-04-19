@@ -11,6 +11,7 @@ namespace Treachery.Shared
         #region State
 
         internal bool ResourceTechTokenIncome { get; set; }
+        public bool CharityIsCancelled => EconomicsStatus == BrownEconomicsStatus.Cancel || EconomicsStatus == BrownEconomicsStatus.CancelFlipped;
 
         #endregion State
 

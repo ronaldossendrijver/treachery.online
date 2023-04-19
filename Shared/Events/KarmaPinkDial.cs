@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public KarmaPinkDial(Game game) : base(game)
+        public KarmaPinkDial(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

@@ -30,6 +30,7 @@ namespace Treachery.Shared
         public List<Milestone> RecentMilestones { get; } = new();
         public int Version { get; private set; }
         public Map Map { get; private set; } = new();
+        public Ruleset Ruleset { get; internal set; }
         public List<Rule> Rules { get; internal set; } = new();
         public List<Rule> RulesForBots { get; internal set; } = new();
         public List<Rule> AllRules { get; internal set; } = new();
@@ -78,6 +79,11 @@ namespace Treachery.Shared
         internal Phase PhaseBeforeDiscardingTraitor { get; set; }
         internal Faction FactionThatMustDiscardTraitor { get; set; }
         internal int NumberOfTraitorsToDiscard { get; set; }
+
+        public List<Faction> FactionsInPlay { get; internal set; }
+        public List<TerrorType> UnplacedTerrorTokens { get; internal set; } = new();
+        internal Deck<IHero> TraitorDeck { get; set; }
+        public Leader PinkLoyalLeader { get; private set; }
 
         #endregion GameState
 
@@ -142,7 +148,7 @@ namespace Treachery.Shared
             var result = new Game(Version);
             for (int i = 0; i < untilEventNr; i++)
             {
-                History[i].Game = result;
+                History[i].Initialize(result);
                 History[i].ExecuteWithoutValidation();
             }
             return result;
@@ -771,7 +777,7 @@ namespace Treachery.Shared
 
         internal void Discard(TreacheryCard card)
         {
-            var player = Players.SingleOrDefault(p => p.TreacheryCards.Contains(card));
+            var player = Players.SingleOrDefault(p => p.Has(card));
             Discard(player, card);
             RegisterKnown(card);
         }
@@ -812,7 +818,7 @@ namespace Treachery.Shared
                 int nr = 0;
                 foreach (var e in state.Events)
                 {
-                    e.Game = result;
+                    e.Initialize(result);
                     var message = e.Execute(performValidation, isHost);
                     if (message != null)
                     {
@@ -830,12 +836,12 @@ namespace Treachery.Shared
             }
         }
 
-        private void Log(params object[] expression)
+        internal void Log(params object[] expression)
         {
             CurrentReport.Express(expression);
         }
 
-        private void LogIf(bool condition, params object[] expression)
+        internal void LogIf(bool condition, params object[] expression)
         {
             if (condition)
             {
@@ -843,7 +849,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void LogTo(Faction faction, params object[] expression)
+        internal void LogTo(Faction faction, params object[] expression)
         {
             CurrentReport.ExpressTo(faction, expression);
         }
@@ -976,7 +982,7 @@ namespace Treachery.Shared
 
         public Player OwnerOf(IHero hero) => Players.FirstOrDefault(p => p.Leaders.Contains(hero));
 
-        public Player OwnerOf(TreacheryCard karmaCard) => karmaCard != null ? Players.FirstOrDefault(p => p.TreacheryCards.Contains(karmaCard)) : null;
+        public Player OwnerOf(TreacheryCard karmaCard) => karmaCard != null ? Players.FirstOrDefault(p => p.Has(karmaCard)) : null;
 
         public Player OwnerOf(TreacheryCardType cardType) => Players.FirstOrDefault(p => p.TreacheryCards.Any(c => c.Type == cardType));
 
@@ -1138,6 +1144,28 @@ namespace Treachery.Shared
                 (p != null &&
                 !Prevented(FactionAdvantage.GreenBiddingPrescience) &&
                 (p.Faction == Faction.Green || (p.Ally == Faction.Green && GreenSharesPrescience) || HasDeal(p.Faction, DealType.ShareBiddingPrescience)));
+        }
+
+        public IEnumerable<IHero> TraitorsInPlay
+        {
+            get
+            {
+                var result = new List<IHero>();
+
+                var factionsInPlay = Players.Select(p => p.Faction);
+                result.AddRange(LeaderManager.Leaders.Where(l =>
+                    factionsInPlay.Contains(l.Faction) &&
+                    l.HeroType != HeroType.Vidal &&
+                    (Version <= 140 || l.HeroType != HeroType.Auditor || Applicable(Rule.BrownAuditor))
+                    ));
+
+                if (Applicable(Rule.CheapHeroTraitor))
+                {
+                    result.Add(TreacheryCardManager.GetCardsInPlay(this).First(c => c.Type == TreacheryCardType.Mercenary));
+                }
+
+                return result;
+            }
         }
 
         #endregion Information

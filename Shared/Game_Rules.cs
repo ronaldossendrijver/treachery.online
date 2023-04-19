@@ -11,8 +11,6 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public Ruleset Ruleset { get; internal set; }
-
         public IEnumerable<Rule> GetCustomRules()
         {
             return Rules.Where(rule =>

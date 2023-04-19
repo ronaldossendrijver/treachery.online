@@ -23,7 +23,7 @@
 
     private Faction target;
 
-    protected override FactionTradeOffered ConfirmedResult => new FactionTradeOffered(Game) { Initiator = Faction, Target = target };
+    protected override FactionTradeOffered ConfirmedResult => new FactionTradeOffered(Game, Faction) { Target = target };
 
     private string ConfirmText => Game.Players.Any(p => p.Faction == target) ? Skin.Current.Format("Offer Trade with {0}", target) : Skin.Current.Format("Pick {0}", target);
 }

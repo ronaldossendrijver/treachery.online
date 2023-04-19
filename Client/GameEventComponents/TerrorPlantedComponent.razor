@@ -55,9 +55,9 @@
         }
     }
 
-    protected override TerrorPlanted ConfirmedResult => new TerrorPlanted(Game) { Initiator = Faction, Type = _type, Stronghold = _remove ? null : _stronghold };
+    protected override TerrorPlanted ConfirmedResult => new TerrorPlanted(Game, Faction) { Type = _type, Stronghold = _remove ? null : _stronghold };
 
-    protected override TerrorPlanted PassedResult => new TerrorPlanted(Game) { Initiator = Faction, Passed = true };
+    protected override TerrorPlanted PassedResult => new TerrorPlanted(Game, Faction) { Passed = true };
 
     private void HandleLocationSelected(object sender, Location l)
     {

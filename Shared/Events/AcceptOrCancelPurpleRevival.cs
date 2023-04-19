@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public AcceptOrCancelPurpleRevival(Game g) : base(g) 
+        public AcceptOrCancelPurpleRevival(Game game, Faction initiator) : base(game, initiator) 
         { 
         }
 

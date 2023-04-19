@@ -10,7 +10,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public ClairVoyanceAnswered(Game game) : base(game)
+        public ClairVoyanceAnswered(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

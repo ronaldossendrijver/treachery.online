@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public BrownExtraMove(Game game) : base(game)
+        public BrownExtraMove(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

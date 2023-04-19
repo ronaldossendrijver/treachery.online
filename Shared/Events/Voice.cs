@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public Voice(Game game) : base(game)
+        public Voice(Game game, Faction initiator) : base(game, initiator)
         {
         }
 

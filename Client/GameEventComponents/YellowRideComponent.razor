@@ -60,9 +60,9 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Yellow;
 
-    override protected YellowRidesMonster ConfirmedResult => new YellowRidesMonster(Game) { Initiator = Faction, ForceLocations = forces, To = toLocation, ForcesFromReserves = _forcesFromReserves, SpecialForcesFromReserves = _specialForcesFromReserves, Passed = false };
+    override protected YellowRidesMonster ConfirmedResult => new YellowRidesMonster(Game, Faction) { ForceLocations = forces, To = toLocation, ForcesFromReserves = _forcesFromReserves, SpecialForcesFromReserves = _specialForcesFromReserves, Passed = false };
 
-    override protected YellowRidesMonster PassedResult => new YellowRidesMonster(Game) { Initiator = Faction, Passed = true };
+    override protected YellowRidesMonster PassedResult => new YellowRidesMonster(Game, Faction) { Passed = true };
 
     override protected IEnumerable<Location> ValidTargets => YellowRidesMonster.ValidTargets(Game, Player).OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l));
 
