@@ -455,7 +455,7 @@ namespace Treachery.Shared
             switch (Faction)
             {
                 case Faction.Green:
-                    Game.CurrentGreenNexus = this;
+                    Game.CurrentNexusPrescience = this;
                     Game.PlayNexusCard(Player, "see their opponent's ", GreenPrescienceAspect);
                     break;
 
@@ -469,22 +469,22 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Red:
-                    Game.CurrentRedNexus = this;
+                    Game.CurrentRedCunning = this;
                     Game.PlayNexusCard(Player, "let 5 ", FactionForce.Red, " count as ", FactionSpecialForce.Red, " during this battle");
                     break;
 
                 case Faction.Orange:
-                    Game.CurrentOrangeNexus = this;
+                    Game.CurrentOrangeCunning = this;
                     Game.PlayNexusCard(Player, "perform an extra shipment after their move");
                     break;
 
                 case Faction.Blue:
-                    Game.CurrentBlueNexus = this;
+                    Game.CurrentBlueCunning = this;
                     Game.PlayNexusCard(Player, "be able to flip advisor to fighters during ", MainPhase.ShipmentAndMove);
                     break;
 
                 case Faction.Grey:
-                    Game.CurrentGreyNexus = this;
+                    Game.CurrentGreyCunning = this;
                     Game.PlayNexusCard(Player, "let ", FactionForce.Grey, " be full strength during this battle");
                     break;
 
@@ -532,7 +532,7 @@ namespace Treachery.Shared
             switch (Faction)
             {
                 case Faction.Green:
-                    Game.CurrentGreenNexus = this;
+                    Game.CurrentNexusPrescience = this;
                     Game.PlayNexusCard(Player, "see their opponent's ", GreenPrescienceAspect);
                     break;
 
@@ -547,7 +547,7 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Yellow:
-                    Game.CurrentYellowNexus = this;
+                    Game.CurrentYellowSecretAlly = this;
                     if (Game.CurrentMainPhase == MainPhase.Blow)
                     {
                         Game.PlayNexusCard(Player, "prevent their forces from being devoured by ", Concept.Monster);
@@ -559,13 +559,8 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Orange:
-                    Game.CurrentOrangeNexus = this;
+                    Game.CurrentOrangeSecretAlly = this;
                     Game.PlayNexusCard(Player, "be able to ship as ", Faction.Orange);
-                    break;
-
-                case Faction.Grey:
-                    Game.CurrentGreyNexus = this;
-                    Game.PlayNexusCard(Player, "discard a card you buy and draw a new card from the treachery deck");
                     break;
 
                 case Faction.Purple:

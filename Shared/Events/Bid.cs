@@ -58,6 +58,91 @@ namespace Treachery.Shared
 
         #endregion
 
+        #region Validation
+
+        public override Message Validate()
+        {
+            if ((Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent) && Passed) return Message.Express("You cannot pass a silent bid");
+
+            if (Passed) return null;
+
+            bool isSpecialAuction = Game.CurrentAuctionType == AuctionType.WhiteOnceAround || Game.CurrentAuctionType == AuctionType.WhiteSilent;
+            if (KarmaBid && isSpecialAuction) return Message.Express("You can't use ", TreacheryCardType.Karma, " in Once Around or Silent bidding");
+
+            if (KarmaBid && !CanKarma(Game, Player)) return Message.Express("You can't use ", TreacheryCardType.Karma, " for this bid");
+
+            if (KarmaBid) return null;
+
+            var p = Game.GetPlayer(Initiator);
+            if (TotalAmount < 1 && Game.CurrentAuctionType != AuctionType.WhiteSilent) return Message.Express("Bid must be higher than 0");
+            if (Game.CurrentBid != null && TotalAmount <= Game.CurrentBid.TotalAmount && Game.CurrentAuctionType != AuctionType.WhiteSilent) return Message.Express("Bid not high enough");
+
+            if (AllyContributionAmount > ValidMaxAllyAmount(Game, Player)) return Message.Express("your ally won't pay that much");
+
+            var red = Game.GetPlayer(Faction.Red);
+            if (RedContributionAmount > 0 && RedContributionAmount > red.Resources) return Message.Express(Faction.Red, " won't pay that much");
+
+            if (!UsingKarmaToRemoveBidLimit && Amount > Player.Resources) return Message.Express("You can't pay ", Payment.Of(Amount));
+            if (KarmaCard != null && !Karma.ValidKarmaCards(Game, p).Contains(KarmaCard)) return Message.Express("Invalid ", TreacheryCardType.Karma, " card");
+
+            if (UsesRedSecretAlly && !MayUseRedSecretAlly(Game, Player)) return Message.Express("You can't use ", Faction.Red, " cunning");
+
+            if (Game.Version >= 155 && Game.CurrentAuctionType == AuctionType.WhiteSilent && TotalAmount > Player.Resources) return Message.Express("In a Silent auction, you can't bid more than you have");
+
+            return null;
+        }
+
+        public static int ValidMaxAmount(Player p, bool usingKarma)
+        {
+            if (usingKarma)
+            {
+                return 100;
+            }
+            else
+            {
+                return p.Resources;
+            }
+        }
+
+        public static int ValidMaxAllyAmount(Game g, Player p)
+        {
+            return g.ResourcesYourAllyCanPay(p);
+        }
+
+        public static IEnumerable<SequenceElement> PlayersToBid(Game g)
+        {
+            return g.CurrentAuctionType switch
+            {
+                AuctionType.Normal or AuctionType.WhiteOnceAround => g.BidSequence.GetPlayersInSequence(),
+                AuctionType.WhiteSilent => g.Players.Select(p => new SequenceElement() { Player = p, HasTurn = p.HasRoomForCards && !g.Bids.Keys.Contains(p.Faction) }),
+                _ => Array.Empty<SequenceElement>(),
+            };
+        }
+
+        public static IEnumerable<TreacheryCard> ValidKarmaCards(Game g, Player p)
+        {
+            if (g.CurrentAuctionType == AuctionType.Normal)
+            {
+                return Karma.ValidKarmaCards(g, p);
+            }
+            else
+            {
+                return Array.Empty<TreacheryCard>();
+            }
+        }
+
+        public static bool CanKarma(Game g, Player p) => ValidKarmaCards(g, p).Any();
+
+        public static bool MayBePlayed(Game game, Player player)
+        {
+            return game.CurrentAuctionType == AuctionType.WhiteSilent && !game.Bids.ContainsKey(player.Faction) && player.HasRoomForCards ||
+                   game.CurrentAuctionType != AuctionType.WhiteSilent && player == game.BidSequence.CurrentPlayer;
+        }
+
+        public static bool MayUseRedSecretAlly(Game game, Player player) => game.CurrentAuctionType == AuctionType.Normal && player.Nexus == Faction.Red && NexusPlayed.CanUseSecretAlly(game, player);
+
+        #endregion Validation
+        
         #region Execution
 
         protected override void ExecuteConcreteEvent()
@@ -295,91 +380,5 @@ namespace Treachery.Shared
 
         #endregion
 
-        #region Validation
-
-        public override Message Validate()
-        {
-            if ((Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent) && Passed) return Message.Express("You cannot pass a silent bid");
-
-            if (Passed) return null;
-
-            bool isSpecialAuction = Game.CurrentAuctionType == AuctionType.WhiteOnceAround || Game.CurrentAuctionType == AuctionType.WhiteSilent;
-            if (KarmaBid && isSpecialAuction) return Message.Express("You can't use ", TreacheryCardType.Karma, " in Once Around or Silent bidding");
-
-            if (KarmaBid && !CanKarma(Game, Player)) return Message.Express("You can't use ", TreacheryCardType.Karma, " for this bid");
-
-            if (KarmaBid) return null;
-
-            var p = Game.GetPlayer(Initiator);
-            if (TotalAmount < 1 && Game.CurrentAuctionType != AuctionType.WhiteSilent) return Message.Express("Bid must be higher than 0");
-            if (Game.CurrentBid != null && TotalAmount <= Game.CurrentBid.TotalAmount && Game.CurrentAuctionType != AuctionType.WhiteSilent) return Message.Express("Bid not high enough");
-
-            var ally = Game.GetPlayer(p.Ally);
-            if (AllyContributionAmount > 0 && AllyContributionAmount > ally.Resources) return Message.Express("Your ally can't pay that much");
-
-            var red = Game.GetPlayer(Faction.Red);
-            if (RedContributionAmount > 0 && RedContributionAmount > red.Resources) return Message.Express(Faction.Red, " won't pay that much");
-
-            if (!UsingKarmaToRemoveBidLimit && Amount > Player.Resources) return Message.Express("You can't pay ", Payment.Of(Amount));
-            if (KarmaCard != null && !Karma.ValidKarmaCards(Game, p).Contains(KarmaCard)) return Message.Express("Invalid ", TreacheryCardType.Karma, " card");
-
-            if (UsesRedSecretAlly && !MayUseRedSecretAlly(Game, Player)) return Message.Express("you can't use ", Faction.Red, " cunning");
-
-            return null;
-        }
-
-        public static int ValidMaxAmount(Player p, bool usingKarma)
-        {
-            if (usingKarma)
-            {
-                return 100;
-            }
-            else
-            {
-                return p.Resources;
-            }
-        }
-
-        public static int ValidMaxAllyAmount(Game g, Player p)
-        {
-            return g.ResourcesYourAllyCanPay(p);
-        }
-
-        public static IEnumerable<SequenceElement> PlayersToBid(Game g)
-        {
-            return g.CurrentAuctionType switch
-            {
-                AuctionType.Normal or AuctionType.WhiteOnceAround => g.BidSequence.GetPlayersInSequence(),
-                AuctionType.WhiteSilent => g.Players.Select(p => new SequenceElement() { Player = p, HasTurn = p.HasRoomForCards && !g.Bids.Keys.Contains(p.Faction) }),
-                _ => Array.Empty<SequenceElement>(),
-            };
-        }
-
-        public static IEnumerable<TreacheryCard> ValidKarmaCards(Game g, Player p)
-        {
-            if (g.CurrentAuctionType == AuctionType.Normal)
-            {
-                return Karma.ValidKarmaCards(g, p);
-            }
-            else
-            {
-                return Array.Empty<TreacheryCard>();
-            }
-        }
-
-        public static bool CanKarma(Game g, Player p)
-        {
-            return ValidKarmaCards(g, p).Any();
-        }
-
-        public static bool MayBePlayed(Game game, Player player)
-        {
-            return game.CurrentAuctionType == AuctionType.WhiteSilent && !game.Bids.ContainsKey(player.Faction) && player.HasRoomForCards ||
-                   game.CurrentAuctionType != AuctionType.WhiteSilent && player == game.BidSequence.CurrentPlayer;
-        }
-
-        public static bool MayUseRedSecretAlly(Game game, Player player) => game.CurrentAuctionType == AuctionType.Normal && player.Nexus == Faction.Red && NexusPlayed.CanUseSecretAlly(game, player);
-
-        #endregion Validation
     }
 }

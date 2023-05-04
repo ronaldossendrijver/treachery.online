@@ -23,8 +23,10 @@
             <div>Enter @Name(toLocation)?</div>
         }
 
-        <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces=@forces Locations=@DiscoveryEntered.ValidSources(Player, toLocation) />
-        
+        @if (toLocation != null)
+        {
+            <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces=@forces Locations=@DiscoveryEntered.ValidSources(Player, toLocation) />
+        }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation Pass="Pass"/>
 

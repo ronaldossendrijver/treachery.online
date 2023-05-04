@@ -60,7 +60,7 @@ namespace Treachery.Shared
 
             if (Game.InOrangeCunningShipment)
             {
-                Game.CurrentOrangeNexus = null;
+                Game.CurrentOrangeCunning = null;
                 Game.InOrangeCunningShipment = false;
             }
 

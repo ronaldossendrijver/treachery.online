@@ -97,7 +97,7 @@
 
         foreach (var l in Locations.Where(l => !Forces.ContainsKey(l)).ToArray())
         {
-            var toAdd = new Battalion() { AmountOfForces = InitializeToMaximum ? Max(l) : 0, AmountOfSpecialForces = InitializeToMaximum ? MaxSpecial(l) : 0 };
+            var toAdd = new Battalion(Player.Faction, InitializeToMaximum ? Max(l) : 0, InitializeToMaximum ? MaxSpecial(l) : 0, l);
             Forces.Add(l, toAdd);
             changed = true;
         }
@@ -134,11 +134,11 @@
         {
             if (specialForces)
             {
-                Forces.Add(location, new Battalion() { AmountOfSpecialForces = amount, AmountOfForces = 0 });
+                Forces.Add(location, new Battalion(Player.Faction, 0, amount, location));
             }
             else
             {
-                Forces.Add(location, new Battalion() { AmountOfSpecialForces = 0, AmountOfForces = amount });
+                Forces.Add(location, new Battalion(Player.Faction, amount, 0, location));
             }
         }
 

@@ -441,6 +441,29 @@ namespace Treachery.Shared
                 BestSafeAndNearbyResources(locationWithBattalion.Key, locationWithBattalion.Value) != null)
                 .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
 
+        private Location BestSafeAndNearbyResources(Location location, Battalion b, bool mayFight = false)
+        {
+            return Game.ResourcesOnPlanet.Where(l => IsSafeAndNearby(location, l.Key, b, mayFight)).HighestOrDefault(r => r.Value).Key;
+        }
+
+        private Location BestSafeAndNearbyDiscovery(Location location, Battalion b, bool mayFight = false)
+        {
+            return Game.DiscoveriesOnPlanet.Keys.Where(l => IsSafeAndNearby(location, l, b, mayFight)).FirstOrDefault();
+        }
+
+        private IEnumerable<Battalion> NearbyBattalionsOutsideStrongholds(Location l) => ForcesOnPlanet.Where(kvp => !kvp.Key.IsStronghold && WithinRange(kvp.Key, l, kvp.Value)).Select(kvp => kvp.Value);
+
+        protected virtual bool IsSafeAndNearby(Location source, Location destination, Battalion b, bool mayFight)
+        {
+            var opponent = GetOpponentThatOccupies(destination.Territory);
+
+            return WithinRange(source, destination, b) &&
+                AllyDoesntBlock(destination.Territory) &&
+                ProbablySafeFromShaiHulud(destination.Territory) &&
+                (opponent == null || mayFight && GetDialNeeded(destination.Territory, opponent, false) < MaxDial(Resources, b, opponent.Faction)) &&
+                !StormWillProbablyHit(destination);
+        }
+
         #endregion
 
         #region DestinationsOfMovement

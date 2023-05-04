@@ -455,7 +455,7 @@ namespace Treachery.Shared
 
         internal void EndBlowPhase()
         {
-            CurrentYellowNexus = null;
+            CurrentYellowSecretAlly = null;
             HasActedOrPassed.Clear();
             ReshuffleIgnoredMonsters();
             MainPhaseEnd();
@@ -533,7 +533,7 @@ namespace Treachery.Shared
 
         public bool ProtectedFromMonster(Player p)
         {
-            if (CurrentYellowNexus != null && CurrentYellowNexus.Player == p)
+            if (CurrentYellowSecretAlly != null && CurrentYellowSecretAlly.Player == p)
             {
                 return true;
             }

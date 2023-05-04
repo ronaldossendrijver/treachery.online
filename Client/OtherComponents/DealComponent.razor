@@ -10,9 +10,24 @@
 
     @{
         var acceptableDeals = DealAccepted.AcceptableDeals(Game, Player).ToArray();
+        var cancellableDeals = DealAccepted.CancellableDeals(Game, Player).ToArray();
+        var currentDeals = DealAccepted.CurrentDeals(Game).ToArray();
 
         <div class="card-header" @onclick=@(e => _collapsed = !_collapsed) style="cursor:pointer">
-            Deals <span class="badge bg-primary">@acceptableDeals.Length</span>
+            Deals
+            @if (acceptableDeals.Any())
+            {
+                <span class="badge bg-warning" title="Deals offered to you">@acceptableDeals.Length</span>
+            }
+            @if (cancellableDeals.Any())
+            {
+                <span class="badge bg-success" title="Your deal offers">@cancellableDeals.Length</span>
+            }
+            @if (currentDeals.Any())
+            {
+                <span class="badge bg-primary" title="Current deals">@currentDeals.Length</span>
+            }
+
             <CollapseButton Collapsed=@_collapsed />
         </div>
 
@@ -20,7 +35,7 @@
         {
             <div class="card-body">
 
-                @if (h.IsPlayer && (acceptableDeals.Length > 0 || DealAccepted.CancellableDeals(Game, Player).Any())) 
+                @if (h.IsPlayer && (acceptableDeals.Any() || cancellableDeals.Any())) 
                 {
                     <label>Deal offers</label>
                     <table class="table table-striped table-sm">
@@ -42,7 +57,7 @@
                                 </tr>
                             }
 
-                            @foreach (var offer in DealAccepted.CancellableDeals(Game, Player))
+                            @foreach (var offer in cancellableDeals)
                             {
                                 var offerToShow = offer;
 
@@ -62,12 +77,12 @@
                     </table>
                 }
 
-                @if (DealAccepted.CurrentDeals(Game).Any())
+                @if (currentDeals.Any())
                 {
                     <label>Current deals</label>
                     <table class="table table-striped table-sm">
                         <tbody>
-                            @foreach (var deal in DealAccepted.CurrentDeals(Game))
+                            @foreach (var deal in currentDeals)
                             {
                                 <tr>
                                     <td class="p-0">

@@ -514,7 +514,7 @@ namespace Treachery.Shared
         internal void EndBiddingPhase()
         {
             CardThatMustBeKeptOrGivenToAlly = null;
-            CurrentGreyNexus = null;
+            CurrentGreyCunning = null;
             var red = GetPlayer(Faction.Red);
             if (red != null)
             {

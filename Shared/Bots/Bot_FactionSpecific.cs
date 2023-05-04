@@ -231,7 +231,7 @@ namespace Treachery.Shared
         {
             var forceLocations = new Dictionary<Location, Battalion>
             {
-                { Game.Map.FalseWallSouth.MiddleLocation, new Battalion() { Faction = Faction, AmountOfForces = 3 + D(1, 4), AmountOfSpecialForces = SpecialForcesInReserve > 0 ? 1 : 0 } }
+                { Game.Map.FalseWallSouth.MiddleLocation, new Battalion(Faction, 3 + D(1, 4), SpecialForcesInReserve > 0 ? 1 : 0, Game.Map.FalseWallSouth.MiddleLocation) }
             };
 
             int forcesLeft = 10 - forceLocations.Sum(kvp => kvp.Value.TotalAmountOfForces);
@@ -239,7 +239,7 @@ namespace Treachery.Shared
             if (forcesLeft > 0)
             {
                 var amountOfSpecialForces = SpecialForcesInReserve > 1 ? 1 : 0;
-                forceLocations.Add(Game.Map.FalseWallWest.MiddleLocation, new Battalion() { Faction = Faction, AmountOfForces = forcesLeft - amountOfSpecialForces, AmountOfSpecialForces = amountOfSpecialForces });
+                forceLocations.Add(Game.Map.FalseWallWest.MiddleLocation, new Battalion(Faction, forcesLeft - amountOfSpecialForces, amountOfSpecialForces, Game.Map.FalseWallWest.MiddleLocation));
             }
 
             return new PerformYellowSetup(Game, Faction) { ForceLocations = forceLocations };
@@ -868,7 +868,7 @@ namespace Treachery.Shared
 
             var targetLocations = new Dictionary<Location, Battalion>
             {
-                { targetLocation, new Battalion() { AmountOfForces = forcesFromPlanet.Sum(kvp => kvp.Value.AmountOfForces) + fromReserves, AmountOfSpecialForces = forcesFromPlanet.Sum(kvp => kvp.Value.AmountOfSpecialForces) } }
+                { targetLocation, new Battalion(Faction, forcesFromPlanet.Sum(kvp => kvp.Value.AmountOfForces) + fromReserves, forcesFromPlanet.Sum(kvp => kvp.Value.AmountOfSpecialForces), targetLocation )}
             };
 
             var result = new FaceDanced(Game, Faction) { ForceLocations = forcesFromPlanet, ForcesFromReserve = fromReserves, TargetForceLocations = targetLocations };

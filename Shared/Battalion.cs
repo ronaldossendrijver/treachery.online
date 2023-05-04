@@ -10,9 +10,19 @@ namespace Treachery.Shared
     {
         public Faction Faction { get; set; }
 
+        public Location Location { get; set; }
+
         public int AmountOfForces { get; set; }
 
         public int AmountOfSpecialForces { get; set; }
+
+        public Battalion(Faction faction, int amountOfForces, int amountOfSpecialForces, Location location)
+        {
+            Faction = faction;
+            AmountOfForces = amountOfForces;
+            AmountOfSpecialForces = amountOfSpecialForces;
+            Location = location;
+        }
 
         public bool Is(Faction f) => Faction == f;
 
@@ -44,7 +54,7 @@ namespace Treachery.Shared
 
         public Battalion TakeHalf()
         {
-            return new Battalion() { Faction = Faction, AmountOfForces = (int)Math.Ceiling(0.5 * AmountOfForces), AmountOfSpecialForces = (int)Math.Ceiling(0.5 * AmountOfSpecialForces) };
+            return new Battalion(Faction, (int)Math.Ceiling(0.5 * AmountOfForces), (int)Math.Ceiling(0.5 * AmountOfSpecialForces), Location);
         }
 
         public Battalion Take(int amount, bool preferSpecial)
@@ -61,7 +71,7 @@ namespace Treachery.Shared
                     int specialAmountToTake = Math.Min(AmountOfSpecialForces, toTake);
                     toTake -= specialAmountToTake;
                     int normalAmountToTake = Math.Min(AmountOfForces, toTake);
-                    return new Battalion() { Faction = Faction, AmountOfForces = normalAmountToTake, AmountOfSpecialForces = specialAmountToTake };
+                    return new Battalion(Faction, normalAmountToTake, specialAmountToTake, Location);
                 }
                 else
                 {
@@ -69,7 +79,7 @@ namespace Treachery.Shared
                     int normalAmountToTake = Math.Min(AmountOfForces, toTake);
                     toTake -= normalAmountToTake;
                     int specialAmountToTake = Math.Min(AmountOfSpecialForces, toTake);
-                    return new Battalion() { Faction = Faction, AmountOfForces = normalAmountToTake, AmountOfSpecialForces = specialAmountToTake };
+                    return new Battalion(Faction, normalAmountToTake, specialAmountToTake, Location);
                 }
             }
         }

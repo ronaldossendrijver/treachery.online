@@ -120,7 +120,7 @@ namespace Treachery.Shared
                     var amounts = locationAndAmounts[1].Split('|');
                     var amountOfNormalForces = Convert.ToInt32(amounts[0]);
                     var amountOfNormalSpecialForces = Convert.ToInt32(amounts[1]);
-                    result.Add(location, new Battalion() { Faction = f, AmountOfForces = amountOfNormalForces, AmountOfSpecialForces = amountOfNormalSpecialForces });
+                    result.Add(location, new Battalion(f, amountOfNormalForces, amountOfNormalSpecialForces , location));
                 }
             }
 

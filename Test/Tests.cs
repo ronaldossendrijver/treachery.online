@@ -27,12 +27,10 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            /*
 		    if (e is Battle b && b.Player.Ally == Faction.Brown && b.Player.AlliedPlayer.Resources > 10)
             {
-                WriteSavegameIfApplicable(g, e.Player, "battle");
+                WriteSavegameIfApplicable(g, e.Player, "battle with brown ally");
             }
-            */
 		}
 
         private readonly List<string> WrittenCases = new();

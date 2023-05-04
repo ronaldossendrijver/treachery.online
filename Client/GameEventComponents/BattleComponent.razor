@@ -96,15 +96,15 @@
                     }
                 }
 
-                if (Game.CurrentGreenNexus != null)
+                if (Game.CurrentNexusPrescience != null)
                 {
                     if (opponentBattlePlan != null)
                     {
-                        <Hoverable Class="text-success mt-1" Popover=@GetPopupForAspect(Game.CurrentGreenNexus.GreenPrescienceAspect, opponentBattlePlan, false)>Enemy @Game.CurrentGreenNexus.GreenPrescienceAspect: @GetTextForAspect(Game.CurrentGreenNexus.GreenPrescienceAspect, opponentBattlePlan, false).</Hoverable>
+                        <Hoverable Class="text-success mt-1" Popover=@GetPopupForAspect(Game.CurrentNexusPrescience.GreenPrescienceAspect, opponentBattlePlan, false)>Enemy @Game.CurrentNexusPrescience.GreenPrescienceAspect: @GetTextForAspect(Game.CurrentNexusPrescience.GreenPrescienceAspect, opponentBattlePlan, false).</Hoverable>
                     }
                     else
                     {
-                        <div class="text-success mt-1">Opponent @Game.CurrentGreenNexus.GreenPrescienceAspect will be visible as soon as they confirm their battle plan.</div>
+                        <div class="text-success mt-1">Opponent @Game.CurrentNexusPrescience.GreenPrescienceAspect will be visible as soon as they confirm their battle plan.</div>
                     }
                 }
             }
@@ -144,11 +144,13 @@
                     int maxAllyResources = Battle.MaxAllyResources(Game, Player, forces, specialForces);
                     int maxTotalResources = Math.Min(forces + specialForces, maxResources + maxAllyResources);
 
-                    <SelectResourcesComponent @bind-Value="resources" Min="0" Max=@maxTotalResources Title=@Skin.Current.Format("{0} used to support forces", Concept.Resource)/> <span>&nbsp;</span>
+                    <SelectResourcesComponent @bind-Value=@resources Min=0 Max=@maxTotalResources Title=@Skin.Current.Format("{0} used to support forces", Concept.Resource)/> <span>&nbsp;</span>
 
-                    @if (Player.Ally == Faction.Brown && maxAllyResources > 0)
+                    int maxPaidByAlly = Math.Min(maxAllyResources, resources);
+
+                    @if (Player.Ally == Faction.Brown && maxPaidByAlly > 0)
                     {
-                        <SelectResourcesFromFactionComponent @bind-Value="resourcesFromAlly" Min="0" Max=@Math.Min(maxAllyResources, maxTotalResources) Faction="Player.Ally" Title=@Skin.Current.Format("{0} paid by your ally", Concept.Resource)/>
+                        <SelectResourcesFromFactionComponent @bind-Value=@resourcesFromAlly Min=0 Max=@maxPaidByAlly Faction="Player.Ally" Title=@Skin.Current.Format("{0} paid by your ally", Concept.Resource) />
                     }
                     else
                     {

@@ -286,11 +286,11 @@ namespace Treachery.Shared
 
         public static float ForceValue(Game g, Faction player, Faction opponent, int Forces, int SpecialForces, int ForcesAtHalfStrength, int SpecialForcesAtHalfStrength)
         {
-            int nrOfForcesToCountAsSpecialDueToRedCunning = g.CurrentRedNexus != null && g.CurrentRedNexus.Initiator == player ? Math.Min(5, Forces) : 0;
+            int nrOfForcesToCountAsSpecialDueToRedCunning = g.CurrentRedCunning != null && g.CurrentRedCunning.Initiator == player ? Math.Min(5, Forces) : 0;
             int ForcesAdjustedForCunning = Forces - nrOfForcesToCountAsSpecialDueToRedCunning;
             int SpecialForcesAdjustedForCunning = SpecialForces + nrOfForcesToCountAsSpecialDueToRedCunning;
 
-            int nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning = g.CurrentRedNexus != null && g.CurrentRedNexus.Initiator == player ? Math.Max(0, Math.Min(5, ForcesAtHalfStrength) - nrOfForcesToCountAsSpecialDueToRedCunning) : 0;
+            int nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning = g.CurrentRedCunning != null && g.CurrentRedCunning.Initiator == player ? Math.Max(0, Math.Min(5, ForcesAtHalfStrength) - nrOfForcesToCountAsSpecialDueToRedCunning) : 0;
             int ForcesAtHalfStrengthAdjustedForCunning = ForcesAtHalfStrength - nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning;
             int SpecialForcesAtHalfStrengthAdjustedForCunning = SpecialForcesAtHalfStrength + nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning;
 
@@ -344,7 +344,7 @@ namespace Treachery.Shared
 
         public static float DetermineNormalForceStrength(Game g, Faction player)
         {
-            if (player == Faction.Grey && g.CurrentGreyNexus == null)
+            if (player == Faction.Grey && g.CurrentGreyCunning == null)
             {
                 return 0.5f;
             }

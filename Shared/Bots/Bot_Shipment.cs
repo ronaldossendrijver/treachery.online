@@ -637,29 +637,7 @@ namespace Treachery.Shared
             return dialNeeded;
         }
 
-        private IEnumerable<Battalion> NearbyBattalionsOutsideStrongholds(Location l) => ForcesOnPlanet.Where(kvp => !kvp.Key.IsStronghold && WithinRange(kvp.Key, l, kvp.Value)).Select(kvp => kvp.Value);
-
-        protected virtual bool IsSafeAndNearby(Location source, Location destination, Battalion b, bool mayFight)
-        {
-            var opponent = GetOpponentThatOccupies(destination.Territory);
-
-            return WithinRange(source, destination, b) &&
-                AllyDoesntBlock(destination.Territory) &&
-                ProbablySafeFromShaiHulud(destination.Territory) &&
-                (opponent == null || mayFight && GetDialNeeded(destination.Territory, opponent, false) < MaxDial(Resources, b, opponent.Faction)) &&
-                !StormWillProbablyHit(destination);
-        }
-
-        private Location BestSafeAndNearbyResources(Location location, Battalion b, bool mayFight = false)
-        {
-            return Game.ResourcesOnPlanet.Where(l => IsSafeAndNearby(location, l.Key, b, mayFight)).HighestOrDefault(r => r.Value).Key;
-        }
-
-        private Location BestSafeAndNearbyDiscovery(Location location, Battalion b, bool mayFight = false)
-        {
-            return Game.DiscoveriesOnPlanet.Keys.Where(l => IsSafeAndNearby(location, l, b, mayFight)).FirstOrDefault();
-        }
-
+                        
         protected Battalion FindOneTroopThatCanSafelyMove(Location from, Location to)
         {
             if (ForcesInLocations.ContainsKey(from) && from.Sector != Game.SectorInStorm && NotOccupiedByOthers(from.Territory))
@@ -752,11 +730,11 @@ namespace Treachery.Shared
             if (Faction == Faction.Blue && SpecialForcesIn(l.Territory) > 0)
             {
                 //Forces shipped by BG into a territory with advisors must become advisors
-                return new Battalion() { Faction = Faction, AmountOfForces = 0, AmountOfSpecialForces = 1 };
+                return new Battalion(Faction, 0, 1, l);
             }
             else
             {
-                return new Battalion() { Faction = Faction, AmountOfForces = 1, AmountOfSpecialForces = 1 };
+                return new Battalion(Faction, 1, 1, l);
             }
         }
 

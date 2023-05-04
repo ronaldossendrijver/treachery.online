@@ -17,7 +17,7 @@
     var forceX = X + Skin.Current.BattleWheelForcesX;
     var forceY = Y + Skin.Current.BattleWheelForcesY;
 
-    if (ShowEntirePlan || Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Dial || Game.CurrentGreenNexus != null && Game.CurrentGreenNexus.GreenPrescienceAspect == PrescienceAspect.Dial)
+    if (ShowEntirePlan || Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Dial || Game.CurrentNexusPrescience != null && Game.CurrentNexusPrescience.GreenPrescienceAspect == PrescienceAspect.Dial)
     {
         var dial = Support.RoundWithHalves(Plan.Dial(Game, IsAggressor ? Game.CurrentBattle.Defender : Game.CurrentBattle.Aggressor));
 
@@ -99,7 +99,7 @@
         }
     }
 
-    if (ShowEntirePlan || Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Leader || Game.CurrentGreenNexus != null && Game.CurrentGreenNexus.GreenPrescienceAspect == PrescienceAspect.Leader)
+    if (ShowEntirePlan || Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Leader || Game.CurrentNexusPrescience != null && Game.CurrentNexusPrescience.GreenPrescienceAspect == PrescienceAspect.Leader)
     {
         if (Plan.Hero == null)
         {
@@ -202,7 +202,7 @@
         }
     }
 
-    if (ShowEntirePlan || Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Defense || Game.CurrentGreenNexus != null && Game.CurrentGreenNexus.GreenPrescienceAspect == PrescienceAspect.Defense)
+    if (ShowEntirePlan || Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Defense || Game.CurrentNexusPrescience != null && Game.CurrentNexusPrescience.GreenPrescienceAspect == PrescienceAspect.Defense)
     {
         bool isUsingPortableAntidote = Battle.IsUsingPortableAntidote(Game, Plan.Initiator) && Plan.Player.Card(TreacheryCardType.PortableAntidote) != null;
         if (Plan.Defense != null && (ShowEntirePlan || Plan.Defense.IsDefense) || isUsingPortableAntidote)
@@ -223,7 +223,7 @@
         }
     }
 
-    if (ShowEntirePlan || Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Weapon || Game.CurrentGreenNexus != null && Game.CurrentGreenNexus.GreenPrescienceAspect == PrescienceAspect.Weapon)
+    if (ShowEntirePlan || Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Weapon || Game.CurrentNexusPrescience != null && Game.CurrentNexusPrescience.GreenPrescienceAspect == PrescienceAspect.Weapon)
     {
         if (Plan.Weapon != null && (ShowEntirePlan || Plan.Weapon.IsWeapon))
         {

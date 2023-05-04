@@ -665,7 +665,7 @@ namespace Treachery.Shared
                 CurrentPlayerMayPerformExtraMove = false;
                 Enter(Phase.OrangeMove);
             }
-            else if (!InOrangeCunningShipment && CurrentOrangeNexus != null && CurrentOrangeNexus.Initiator == Faction.Orange)
+            else if (!InOrangeCunningShipment && CurrentOrangeCunning != null && CurrentOrangeCunning.By(Faction.Orange))
             {
                 InOrangeCunningShipment = true;
                 Enter(Phase.OrangeShip);
@@ -684,7 +684,7 @@ namespace Treachery.Shared
             Enter(Phase.ShipmentAndMoveConcluded);
             ReceiveShipsTechIncome();
             BrownHasExtraMove = false;
-            CurrentBlueNexus = null;
+            CurrentBlueCunning = null;
         }
 
         private void CheckIfCyanGainsVidal()
@@ -835,14 +835,14 @@ namespace Treachery.Shared
         {
             return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) ||
                    p.Ally == Faction.Orange && OrangeAllowsShippingDiscount ||
-                   p.Initiated(CurrentOrangeNexus) ||
+                   p.Initiated(CurrentOrangeSecretAlly) ||
                    HasShipmentPermission(p, ShipmentPermission.Cross);
         }
 
         public bool MayShipToReserves(Player p)
         {
             return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) ||
-                   p.Initiated(CurrentOrangeNexus) ||
+                   p.Initiated(CurrentOrangeSecretAlly) ||
                    HasShipmentPermission(p, ShipmentPermission.ToHomeworld);
         }
 
@@ -850,7 +850,7 @@ namespace Treachery.Shared
         {
             return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeShipmentsDiscount) ||
                    p.Ally == Faction.Orange && OrangeAllowsShippingDiscount && !Prevented(FactionAdvantage.OrangeShipmentsDiscountAlly) ||
-                   p.Initiated(CurrentOrangeNexus);
+                   p.Initiated(CurrentOrangeSecretAlly);
         }
 
         internal static Ambassador AmbassadorOf(Faction faction) => (Ambassador)((int)faction);

@@ -27,12 +27,13 @@ namespace Treachery.Shared
         internal bool BureaucratWasUsedThisPhase { get; set; }
         internal Phase PhaseBeforeBureaucratWasActivated { get; set; }
         public Faction TargetOfBureaucracy { get; internal set; }
-        public NexusPlayed CurrentGreenNexus { get; internal set; }
-        public NexusPlayed CurrentYellowNexus { get; internal set; }
-        public NexusPlayed CurrentRedNexus { get; internal set; }
-        public NexusPlayed CurrentOrangeNexus { get; internal set; }
-        public NexusPlayed CurrentBlueNexus { get; internal set; }
-        public NexusPlayed CurrentGreyNexus { get; internal set; }
+        public NexusPlayed CurrentNexusPrescience { get; internal set; }
+        public NexusPlayed CurrentYellowSecretAlly { get; internal set; }
+        public NexusPlayed CurrentRedCunning { get; internal set; }
+        public NexusPlayed CurrentOrangeCunning { get; internal set; }
+        public NexusPlayed CurrentOrangeSecretAlly { get; internal set; }
+        public NexusPlayed CurrentBlueCunning { get; internal set; }
+        public NexusPlayed CurrentGreyCunning { get; internal set; }
         internal Faction WasVictimOfBureaucracy { get; set; }
         private bool BankerWasUsedThisPhase { get; set; }
         public BrownKarmaPrevention CurrentKarmaPrevention { get; internal set; } = null;

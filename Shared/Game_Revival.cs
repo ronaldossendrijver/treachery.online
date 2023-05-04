@@ -84,7 +84,7 @@ namespace Treachery.Shared
                     nrOfFreeRevivals = 3;
                 }
 
-                if (CurrentYellowNexus != null && CurrentYellowNexus.Player == player)
+                if (CurrentYellowSecretAlly != null && CurrentYellowSecretAlly.Player == player)
                 {
                     nrOfFreeRevivals = 3;
                 }

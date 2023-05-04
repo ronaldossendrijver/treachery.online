@@ -53,12 +53,12 @@ namespace Treachery.Shared
             {
                 if (thisCardIsUseless || thisCardIsCrappy)
                 {
-                    int toBid = thisCardIsUseless || resourcesAvailable < 2 ? 0 : D(1, 2);
+                    int toBid = thisCardIsUseless || Math.Max(0, Resources - resourcesToKeep) < 2 ? 0 : D(1, 2);
                     return CreateBidUsingAllyAndRedSpice(toBid, 0, null);
                 }
                 else
                 {
-                    return CreateBidUsingAllyAndRedSpice(amountToBidInSilentOrOnceAround, 0, null);
+                    return CreateBidUsingAllyAndRedSpice(Math.Min(Math.Max(0, Resources - resourcesToKeep), amountToBidInSilentOrOnceAround), 0, null);
                 }
             }
             else if (currentBidIsFromAlly || thisCardIsUseless && currentBid > 0 || thisCardIsCrappy && D(1, 1 + 2 * currentBid) > 1)

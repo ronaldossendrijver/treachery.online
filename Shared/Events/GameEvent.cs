@@ -172,6 +172,8 @@ namespace Treachery.Shared
 
         public bool By(Faction f) => Initiator == f;
 
+        public bool By(Player p) => Player == p;
+
         public GameEvent Clone() => (GameEvent)MemberwiseClone();
 
         protected void Log() => Game.CurrentReport.Express(GetMessage());

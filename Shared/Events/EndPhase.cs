@@ -190,6 +190,28 @@ namespace Treachery.Shared
             Game.EndStormPhase();
         }
 
+        private void EndNexus()
+        {
+            Game.NexusHasOccured = true;
+            Game.CurrentAllianceOffers.Clear();
+
+            if (YellowRidesMonster.IsApplicable(Game))
+            {
+                Game.Enter(Game.CurrentPhase == Phase.AllianceA, Phase.YellowRidingMonsterA, Phase.YellowRidingMonsterB);
+            }
+            else
+            {
+                if (Game.CurrentPhase == Phase.AllianceA)
+                {
+                    Game.Enter(Game.Applicable(Rule.IncreasedResourceFlow), Game.EnterBlowB, Game.StartNexusCardPhase);
+                }
+                else if (Game.CurrentPhase == Phase.AllianceB)
+                {
+                    Game.StartNexusCardPhase();
+                }
+            }
+        }
+
         private void EnterCharityPhase()
         {
             Game.MainPhaseStart(MainPhase.Charity);
@@ -287,7 +309,7 @@ namespace Treachery.Shared
         {
             if (Game.RevivalTechTokenIncome) Game.ReceiveTechIncome(TechToken.Graveyard);
             Game.CurrentKarmaRevivalPrevention = null;
-            Game.CurrentYellowNexus = null;
+            Game.CurrentYellowSecretAlly = null;
             Game.CurrentRecruitsPlayed = null;
 
             if (Game.Version < 122)
@@ -330,6 +352,8 @@ namespace Treachery.Shared
             Game.MainPhaseStart(MainPhase.Battle);
             Game.NrOfBattlesFought = 0;
             Game.BattleSequence = new PlayerSequence(Game);
+            Game.CurrentOrangeCunning = null;
+            Game.CurrentOrangeSecretAlly = null;
             if (Game.KarmaHmsMovesLeft != 2) Game.KarmaHmsMovesLeft = 0;
             ResetBattle();
             Game.Enter(Game.NextPlayerToBattle == null, EnterSpiceCollectionPhase, Game.Version >= 107, Phase.BeginningOfBattle, Phase.BattlePhase);
@@ -342,10 +366,10 @@ namespace Treachery.Shared
             Game.CurrentPrescience = null;
             Game.CurrentThought = null;
             Game.CurrentVoice = null;
-            Game.CurrentGreenNexus = null;
-            Game.CurrentBlueNexus = null;
-            Game.CurrentRedNexus = null;
-            Game.CurrentGreyNexus = null;
+            Game.CurrentNexusPrescience = null;
+            Game.CurrentBlueCunning = null;
+            Game.CurrentRedCunning = null;
+            Game.CurrentGreyCunning = null;
             Game.BlackVictim = null;
             Game.AggressorBattleAction = null;
             Game.DefenderBattleAction = null;
@@ -391,28 +415,6 @@ namespace Treachery.Shared
             foreach (var ls in Game.LeaderState)
             {
                 ls.Value.CurrentTerritory = null;
-            }
-        }
-
-        private void EndNexus()
-        {
-            Game.NexusHasOccured = true;
-            Game.CurrentAllianceOffers.Clear();
-
-            if (YellowRidesMonster.IsApplicable(Game))
-            {
-                Game.Enter(Game.CurrentPhase == Phase.AllianceA, Phase.YellowRidingMonsterA, Phase.YellowRidingMonsterB);
-            }
-            else
-            {
-                if (Game.CurrentPhase == Phase.AllianceA)
-                {
-                    Game.Enter(Game.Applicable(Rule.IncreasedResourceFlow), Game.EnterBlowB, Game.StartNexusCardPhase);
-                }
-                else if (Game.CurrentPhase == Phase.AllianceB)
-                {
-                    Game.StartNexusCardPhase();
-                }
             }
         }
 

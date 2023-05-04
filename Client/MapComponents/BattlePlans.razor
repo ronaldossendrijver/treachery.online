@@ -14,11 +14,11 @@
     
     bool AggressorIsAffectedByPartialPrescience = Game.AggressorBattleAction != null && 
         (Game.CurrentPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentPrescience.Initiator) == Game.AggressorBattleAction.Player ||
-         Game.CurrentGreenNexus != null && Game.CurrentBattle.OpponentOf(Game.CurrentGreenNexus.Initiator) == Game.AggressorBattleAction.Player);
+         Game.CurrentNexusPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentNexusPrescience.Initiator) == Game.AggressorBattleAction.Player);
 
     bool DefenderIsAffectedByPartialPrescience = Game.DefenderBattleAction != null && 
         (Game.CurrentPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentPrescience.Initiator) == Game.DefenderBattleAction.Player ||
-         Game.CurrentGreenNexus != null && Game.CurrentBattle.OpponentOf(Game.CurrentGreenNexus.Initiator) == Game.DefenderBattleAction.Player);
+         Game.CurrentNexusPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentNexusPrescience.Initiator) == Game.DefenderBattleAction.Player);
 
     bool AggressorCallsTraitor = Game.AggressorTraitorAction != null && Game.AggressorTraitorAction.Succeeded;
     bool DefenderCallsTraitor = Game.DefenderTraitorAction != null && Game.DefenderTraitorAction.Succeeded;

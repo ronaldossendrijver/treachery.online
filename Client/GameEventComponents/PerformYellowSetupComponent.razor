@@ -147,11 +147,11 @@
         {
             if (specialForces)
             {
-                forces.Add(location, new Battalion() { AmountOfSpecialForces = amount, AmountOfForces = 0 });
+                forces.Add(location, new Battalion(Faction, 0, amount, location));
             }
             else
             {
-                forces.Add(location, new Battalion() { AmountOfSpecialForces = 0, AmountOfForces = amount });
+                forces.Add(location, new Battalion(Faction, amount, 0, location));
             }
         }
 

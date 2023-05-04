@@ -17,7 +17,7 @@
         Amount = amount, 
         KarmaBid = false, 
         KarmaCard = karmaCard, 
-        UsesRedSecretAlly = useRedCunning,
+        UsesRedSecretAlly = useRedSecretAlly,
         AllyContributionAmount = allyContributionAmount, 
         RedContributionAmount = redContributionAmount };
 
@@ -29,7 +29,7 @@
 
     protected override bool CanUseKarma => Bid.CanKarma(Game, Player);
 
-    protected override bool CanUseRedCunning => Bid.MayUseRedSecretAlly(Game, Player);
+    protected override bool CanUseRedSecretAlly => Bid.MayUseRedSecretAlly(Game, Player);
 
     protected override int MaxAllyBidAmount => Bid.ValidMaxAllyAmount(Game, Player);
 

@@ -62,13 +62,13 @@
 
                 @if (CanBid)
                 {
-                    if (CanUseRedCunning)
+                    if (CanUseRedSecretAlly)
                     {
-                        <CheckboxComponent @bind-Value=@useRedCunning>Use your Nexus card to get this card for free?</CheckboxComponent>
+                        <CheckboxComponent @bind-Value=@useRedSecretAlly>Use your Nexus card to get this card for free?</CheckboxComponent>
                     }
                     else
                     {
-                        useRedCunning = false;
+                        useRedSecretAlly = false;
                     }
 
                     if (CanUseKarma)
@@ -145,7 +145,7 @@
     protected int allyContributionAmount;
     protected int redContributionAmount;
     protected TreacheryCard karmaCard;
-    protected bool useRedCunning;
+    protected bool useRedSecretAlly;
 
     private bool _canBid = false;
 

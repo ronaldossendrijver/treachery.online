@@ -79,7 +79,7 @@ namespace Treachery.Shared
         public TreacheryCard KarmaCard
         {
             get => TreacheryCardManager.Lookup.Find(_karmaCardId);
-            set => TreacheryCardManager.GetId(value);
+            set => _karmaCardId = TreacheryCardManager.GetId(value);
         }
 
         [JsonIgnore]
@@ -174,6 +174,8 @@ namespace Treachery.Shared
                 int forcesToShip = Math.Min(NoFieldValue, p.ForcesInReserve + p.SpecialForcesInReserve);
                 if (ForceAmount + SpecialForceAmount != forcesToShip) return Message.Express("Using a No-Field of ", NoFieldValue, ", you must select ", forcesToShip, " forces to ship");
             }
+
+            if (KarmaCard != null && !ValidKarmaCards(Game, Player).Contains(KarmaCard)) return Message.Express("Invalid ", TreacheryCardType.Karma, " card: ", KarmaCard);
 
             return null;
         }

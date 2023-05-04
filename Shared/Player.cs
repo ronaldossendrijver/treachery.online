@@ -96,6 +96,8 @@ namespace Treachery.Shared
 
         public Dictionary<Location, Battalion> ForcesOnPlanet => ForcesInLocations.Where(kvp => kvp.Key is not Homeworld).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
+        public IEnumerable<Battalion> BattalionsOnPlanet => ForcesInLocations.Where(kvp => kvp.Key is not Homeworld).Select(kvp => kvp.Value);
+
         public List<Ambassador> Ambassadors { get; set; } = new();
 
         public Faction PredictedFaction { get; set; }
@@ -132,12 +134,13 @@ namespace Treachery.Shared
 
         private Battalion GetAndCreateIfNeeded(Location location)
         {
-            if (!ForcesInLocations.ContainsKey(location))
+            if (!ForcesInLocations.TryGetValue(location, out var result))
             {
-                ForcesInLocations[location] = new Battalion() { Faction = Faction, AmountOfForces = 0, AmountOfSpecialForces = 0 };
+                result = new Battalion(Faction, 0, 0, location);
+                ForcesInLocations.Add(location, result);
             }
 
-            return ForcesInLocations[location];
+            return result;
         }
 
         private void ChangeForces(Location location, int nrOfForces)
