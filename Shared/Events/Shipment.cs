@@ -369,7 +369,7 @@ namespace Treachery.Shared
             Game.ChosenDestinationsWithAllies.Clear();
             Game.BlueMayAccompany = false;
 
-            MessagePart receivedPaymentMessage = MessagePart.Express();
+            var receivedPaymentMessage = MessagePart.Express();
             int totalCost = 0;
 
             if (!Passed)

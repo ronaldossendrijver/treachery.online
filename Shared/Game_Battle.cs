@@ -1126,21 +1126,6 @@ namespace Treachery.Shared
         internal bool BattleWasConcludedByWinner { get; set; } = false;
 
         public List<Leader> Assassinated { get; private set; } = new();
-
-        public bool OccupationPreventsAlliance(Faction a, Faction b)
-        {
-            var playerA = GetPlayer(a);
-            var playerB = GetPlayer(b);
-            foreach (var t in playerA.ForcesOnPlanet.Select(kvp => kvp.Key.Territory).Distinct())
-            {
-                if (a == Faction.Blue && Applicable(Rule.AdvisorsDontConflictWithAlly) && playerA.ForcesIn(t) == 0) continue;
-                if (b == Faction.Blue && Applicable(Rule.AdvisorsDontConflictWithAlly) && playerB.ForcesIn(t) == 0) continue;
-
-                if (playerB.ForcesIn(t) > 0) return true;
-            }
-
-            return false;
-        }
         
         private void SelectVictimOfBlackWinner(Battle harkonnenAction, Battle victimAction)
         {
@@ -1163,8 +1148,7 @@ namespace Treachery.Shared
         }
 
         public Dictionary<Leader, Faction> CapturedLeaders { get; private set; } = new Dictionary<Leader, Faction>();
-        
-                
+                        
         internal void FinishBattle()
         {
             if (AggressorBattleAction.Hero == Vidal && WhenToSetAsideVidal == VidalMoment.AfterUsedInBattle && !(AggressorTraitorAction.Succeeded && !DefenderTraitorAction.Succeeded))

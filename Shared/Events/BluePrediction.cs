@@ -41,10 +41,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<Faction> ValidTargets(Game g, Player p) => g.PlayersOtherThan(p);
 
-        public static IEnumerable<int> ValidTurns(Game g)
-        {
-            return Enumerable.Range(1, g.MaximumNumberOfTurns);
-        }
+        public static IEnumerable<int> ValidTurns(Game g) => Enumerable.Range(1, g.MaximumNumberOfTurns);
 
         #endregion Validation
 

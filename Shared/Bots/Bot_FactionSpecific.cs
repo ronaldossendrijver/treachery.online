@@ -415,22 +415,33 @@ namespace Treachery.Shared
 
         private BluePrediction DetermineBluePrediction()
         {
-            var factionId = D(1, BluePrediction.ValidTargets(Game, this).Count()) - 1;
-            var faction = BluePrediction.ValidTargets(Game, this).ElementAt(factionId);
+            Player predicted;
+            if (D(1, 2) == 1) predicted = Others.Where(p => !p.IsBot).RandomOrDefault();
+            predicted = Others.Where(p => !p.IsBot).RandomOrDefault();
+            predicted ??= Others.RandomOrDefault();
 
             int turn;
-            if (faction == Faction.Black)
+            if (predicted.Is(Faction.Black))
             {
                 if (D(1, 2) == 1) turn = D(1, Math.Min(3, Game.MaximumNumberOfTurns));
                 else turn = D(1, Game.MaximumNumberOfTurns);
             }
+            else if (predicted.Is(Faction.Green) || predicted.Is(Faction.Grey))
+            {
+                if (D(1, 2) == 1) turn = D(1, Game.MaximumNumberOfTurns);
+                else turn = 2 + D(1, Game.MaximumNumberOfTurns - 2);
+            }
+            else if (predicted.Is(Faction.Purple))
+            {
+                turn = 3 + D(1, Game.MaximumNumberOfTurns - 3);
+            }
             else
             {
-                if (D(1, 2) == 1) turn = D(1, Math.Min(5, Game.MaximumNumberOfTurns));
+                if (D(1, 2) == 1) turn = 1 + D(1, Game.MaximumNumberOfTurns - 1);
                 else turn = 2 + D(1, Game.MaximumNumberOfTurns - 2);
             }
 
-            return new BluePrediction(Game, Faction) { ToWin = faction, Turn = turn };
+            return new BluePrediction(Game, Faction) { ToWin = predicted.Faction, Turn = turn };
         }
 
         private VoicePlan voicePlan = null;

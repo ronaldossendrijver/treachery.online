@@ -721,6 +721,7 @@ namespace Treachery.Test
                     statistics.GameWinningMethods.Count(game.WinMethod);
                     statistics.GameNumberOfTurns.Count(game.CurrentTurn);
                     statistics.GameTimes.Add(latest.Time.Subtract(game.History[0].Time));
+                    statistics.GamesPerMonth.Count(game.Started.ToString("yyyyMM"));
 
                     foreach (var p in game.Winners)
                     {
