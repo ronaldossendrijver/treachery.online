@@ -745,10 +745,15 @@ namespace Treachery.Shared
 
         private void PayDialedSpice(Player p, Battle plan, bool traitorWasRevealed)
         {
-            int cost = plan.Cost(this);
+            int cost = plan.Cost(this, out int paidByArrakeen);
             int costToBrown = p.Ally == Faction.Brown ? plan.AllyContributionAmount : 0;
 
-            if (cost > 0)
+            if (paidByArrakeen > 0)
+            {
+                Log(Map.Arrakeen, " stronghold advantage supports ", Payment.Of(paidByArrakeen));
+            }
+
+            if (cost + paidByArrakeen > 0)
             {
                 int costForPlayer = cost - plan.AllyContributionAmount;
                 int refundedResources = 0;
@@ -763,9 +768,6 @@ namespace Treachery.Shared
                         refundedResources = costForPlayer;
                         p.Bribes += costForPlayer;
                     }
-
-                    LogIf(HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles, CurrentBattle.Territory),
-                        Map.Arrakeen, " stronghold advantage: supporting forces costs ", Payment.Of(2), " less");
                 }
 
                 if (plan.AllyContributionAmount > 0)
@@ -774,7 +776,10 @@ namespace Treachery.Shared
                     if (Version >= 117) DecreasePermittedUseOfAllySpice(p.Faction, plan.AllyContributionAmount);
                 }
 
-                int receiverProfit = HandleBrownIncome(p, cost - costToBrown - refundedResources, traitorWasRevealed);
+                int dialledResourcesRelevantForBrown = cost - costToBrown - refundedResources;
+                if (Version >= 155) dialledResourcesRelevantForBrown += paidByArrakeen;
+
+                int receiverProfit = HandleBrownIncome(p, dialledResourcesRelevantForBrown, traitorWasRevealed);
 
                 if (cost - receiverProfit >= 4)
                 {

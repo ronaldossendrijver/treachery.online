@@ -132,7 +132,15 @@
 
         if (h.Game.AssistedNotekeepingEnabled(Player))
         {
-            result += GetCardImages(h.Game.TreacheryDiscardPile.Items);
+            var known = Game.KnownCards(Player).ToArray();
+            result += "<div class=\"row row-cols-6 mt-1\">";
+            foreach (var c in h.Game.TreacheryDiscardPile.Items)
+            {
+                string imgUrl = known.Contains(c) ? Skin.Current.GetImageURL(c) : Skin.Current.CardBack_TreacheryCard_URL;
+                result += string.Format("<img src=\"{0}\" class=\"img-fluid p-1\"/>", imgUrl);
+            }
+            result += "</div>";
+
         }
         else if (h.Game.TreacheryDiscardPile.Top != null)
         {

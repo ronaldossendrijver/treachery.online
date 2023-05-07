@@ -255,7 +255,7 @@ namespace Treachery.Shared
 
                 LogInfo("Leader: {0}, Weapon: {1}, Defense: {2}, Forces: {3} (supp) {4} (non-supp) {5} (spec supp) {6} (spec non-supp)", hero, weapon, defense, forcesAtFullStrength, forcesAtHalfStrength, specialForcesAtFullStrength, specialForcesAtHalfStrength);
 
-                int cost = Battle.Cost(Game, this, forcesAtFullStrength, specialForcesAtFullStrength);
+                int cost = Battle.Cost(Game, this, forcesAtFullStrength, specialForcesAtFullStrength, out int _);
                 return new Battle(Game, Faction)
                 {
                     Hero = hero,

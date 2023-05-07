@@ -236,8 +236,9 @@ namespace Treachery.Shared
                 return ForceValue(g, Player.Ally, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + pinkBattleContribution;
             }
         }
+        public int Cost(Game g) => Cost(g, Player, Forces, SpecialForces, out int _);
 
-        public int Cost(Game g) => Cost(g, Player, Forces, SpecialForces);
+        public int Cost(Game g, out int paidByArrakeen) => Cost(g, Player, Forces, SpecialForces, out paidByArrakeen);
 
         #endregion Execution
 
@@ -248,7 +249,7 @@ namespace Treachery.Shared
             var p = Player;
             if (Forces + ForcesAtHalfStrength > MaxForces(Game, p, false)) return Message.Express("Too many ", p.Force, " selected");
             if (SpecialForces + SpecialForcesAtHalfStrength > MaxForces(Game, p, true)) return Message.Express("Too many ", p.SpecialForce, " selected");
-            int cost = Cost(Game, p, Forces, SpecialForces);
+            int cost = Cost(Game, p, Forces, SpecialForces, out int _);
             if (AllyContributionAmount > cost) return Message.Express("Your ally is paying more than needed");
             if (AllyContributionAmount > MaxAllyResources(Game, p, Forces, SpecialForces)) return Message.Express("Your ally won't pay that much");
             if (cost > p.Resources + AllyContributionAmount) return Message.Express("You can't pay ", Payment.Of(cost), " to fight with ", Forces + SpecialForces, " forces at full strength");
@@ -367,10 +368,11 @@ namespace Treachery.Shared
 
         public static bool MessiahMayBeUsedInBattle(Game g, Player p) => MessiahAvailableForBattle(g, p);
 
-        public static int Cost(Game g, Player p, int AmountOfForcesAtFullStrength, int AmountOfSpecialForcesAtFullStrength)
+        public static int Cost(Game g, Player p, int AmountOfForcesAtFullStrength, int AmountOfSpecialForcesAtFullStrength, out int paidByArrakeen)
         {
             int cost = AmountOfForcesAtFullStrength * NormalForceCost(g, p) + AmountOfSpecialForcesAtFullStrength * SpecialForceCost(g, p);
-            return cost - Math.Min(CostReduction(g, p), cost);
+            paidByArrakeen = Math.Min(CostReduction(g, p), cost);
+            return cost - paidByArrakeen;
         }
 
         public static int CostReduction(Game g, Player p)
