@@ -10,7 +10,7 @@
     <div class="card-header">Victory!</div>
     <div class="card-body">
 
-        @foreach (var w in h.Game.Winners)
+        @foreach (var w in Client.Game.Winners)
         {
             <h1 class="h1" style=@Support.TextBorder(1,"black")><img width="80" src="@Skin.Current.GetImageURL(w.Faction)" /> @w.Name</h1>
         }
@@ -18,7 +18,7 @@
         @if (!Game.Applicable(Rule.DisableEndOfGameReport))
         {
             <button class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#storyModal">Read the story of this game...</button>
-            <StoryComponent Id="storyModal" Game="h.Game" />
+            <StoryComponent Id="storyModal" Game="Client.Game" />
         }
 
     </div>

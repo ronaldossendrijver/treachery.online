@@ -267,20 +267,20 @@
     {
         if (firstRender)
         {
-            h.OnLocationSelected += HandleLocationSelected;
-            h.OnLocationSelectedWithShift += HandleLocationSelectedWithModifier;
-            h.OnLocationSelectedWithCtrlOrAlt += HandleLocationSelectedWithModifier;
-            h.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleLocationSelectedWithModifier;
+            Client.OnLocationSelected += HandleLocationSelected;
+            Client.OnLocationSelectedWithShift += HandleLocationSelectedWithModifier;
+            Client.OnLocationSelectedWithCtrlOrAlt += HandleLocationSelectedWithModifier;
+            Client.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleLocationSelectedWithModifier;
         }
     }
 
     public override void Dispose()
     {
         base.Dispose();
-        h.OnLocationSelected -= HandleLocationSelected;
-        h.OnLocationSelectedWithShift -= HandleLocationSelectedWithModifier;
-        h.OnLocationSelectedWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
-        h.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
+        Client.OnLocationSelected -= HandleLocationSelected;
+        Client.OnLocationSelectedWithShift -= HandleLocationSelectedWithModifier;
+        Client.OnLocationSelectedWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
+        Client.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
     }
 
     private void HandleLocationSelected(object sender, Location l)

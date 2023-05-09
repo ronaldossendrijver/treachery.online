@@ -43,13 +43,13 @@
     {
         if (firstRender)
         {
-            h.OnLocationSelected += HandleAddForce;
-            h.OnLocationSelectedWithShift += HandleRemoveForce;
+            Client.OnLocationSelected += HandleAddForce;
+            Client.OnLocationSelectedWithShift += HandleRemoveForce;
 
             if (Player.HasSpecialForces)
             {
-                h.OnLocationSelectedWithCtrlOrAlt += HandleAddSpecialForce;
-                h.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleRemoveSpecialForce;
+                Client.OnLocationSelectedWithCtrlOrAlt += HandleAddSpecialForce;
+                Client.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleRemoveSpecialForce;
             }
         }
     }
@@ -57,13 +57,13 @@
     public override void Dispose()
     {
         base.Dispose();
-        h.OnLocationSelected -= HandleAddForce;
-        h.OnLocationSelectedWithShift -= HandleRemoveForce;
+        Client.OnLocationSelected -= HandleAddForce;
+        Client.OnLocationSelectedWithShift -= HandleRemoveForce;
 
         if (Player.HasSpecialForces)
         {
-            h.OnLocationSelectedWithCtrlOrAlt -= HandleAddSpecialForce;
-            h.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveSpecialForce;
+            Client.OnLocationSelectedWithCtrlOrAlt -= HandleAddSpecialForce;
+            Client.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveSpecialForce;
         }
     }
 

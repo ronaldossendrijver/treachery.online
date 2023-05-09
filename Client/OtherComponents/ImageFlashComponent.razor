@@ -8,11 +8,11 @@
 @inherits GameComponent;
 @inject IJSRuntime JSRuntime;
 
-@if (h.Game != null && h.Status != null && Time > 0)
+@if (Client.Game != null && Client.Status != null && Time > 0)
 {
     <div style="position:absolute;left:@Support.Px(WindowX);top:@Support.Px(WindowY);width:@Support.Px(FlashWidth);overflow:hidden;animation:fadeInFadeOut @(Time)ms;z-index:1000;" @onclick=@Hide>
 
-        @foreach (var img in h.Status.FlashInfo)
+        @foreach (var img in Client.Status.FlashInfo)
         {
             <div style="float:left;position:relative;top:0px;display:inline-block;vertical-align:top;width:@Support.Px(ItemWidth)">
 
@@ -44,7 +44,7 @@
         await base.OnParametersSetAsync();
 
         var dimensions = await Browser.GetWindowDimensions();
-        var nrOfItems = h.Status != null ? h.Status.FlashInfo.Count() : 0;
+        var nrOfItems = Client.Status != null ? Client.Status.FlashInfo.Count() : 0;
 
         if (dimensions.Height > dimensions.Width)
         {
@@ -78,13 +78,13 @@
         FlashWidth = nrOfItems * (ItemWidth + 20);
         WindowX = (int)(0.5f * (dimensions.Width - FlashWidth));
 
-        if (h.Game.EventCount != afterEventId)
+        if (Client.Game.EventCount != afterEventId)
         {
-            afterEventId = h.Game.EventCount;
+            afterEventId = Client.Game.EventCount;
 
-            if (h.Status != null && h.Status.FlashInfo.Any())
+            if (Client.Status != null && Client.Status.FlashInfo.Any())
             {
-                Time = 5000 + h.Status.FlashInfo.Count() * 1000;
+                Time = 5000 + Client.Status.FlashInfo.Count() * 1000;
             }
         }
     }

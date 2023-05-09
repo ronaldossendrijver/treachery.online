@@ -1,7 +1,7 @@
 ﻿@using Treachery.Client.GenericComponents
 @inherits GameComponent
 
-@if (!h.StatisticsSent)
+@if (!Client.StatisticsSent)
 {
     <div class="card mb-2" style="animation:fadeIn 1s;">
         <div class="card-header" style="cursor:pointer">
@@ -20,8 +20,8 @@
 
     private async Task ConfirmUpload()
     {
-        await h.Host.UploadStatistics(h.Game);
-        h.StatisticsSent = true;
+        await Client.Host.UploadStatistics(Client.Game);
+        Client.StatisticsSent = true;
         StateHasChanged();
     }
 }

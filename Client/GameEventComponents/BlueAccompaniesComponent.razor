@@ -43,14 +43,14 @@
     {
         if (firstRender)
         {
-            h.OnLocationSelected += HandleLocationSelected;
+            Client.OnLocationSelected += HandleLocationSelected;
         }
     }
 
     public override void Dispose()
     {
         base.Dispose();
-        h.OnLocationSelected -= HandleLocationSelected;
+        Client.OnLocationSelected -= HandleLocationSelected;
     }
 
     protected override BlueAccompanies ConfirmedResult => new BlueAccompanies(Game, Faction) { Location = target, Accompanies = true, ExtraAdvisor = addExtraAdvisor };

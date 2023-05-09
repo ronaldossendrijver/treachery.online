@@ -19,7 +19,7 @@
 
             <div class="mb-1">
 
-                @foreach (var p in Players.Where(p => p != h.Player))
+                @foreach (var p in Players.Where(p => p != Client.Player))
                 {
                     <button class="btn @ButtonStyle(p) p-1" @onclick="(e => Toggle(p))" data-bs-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
                         <img class="img-fluid" width="29" height="29" src="@Skin.Current.GetFactionTableImageURL(p.Faction)" />
@@ -156,7 +156,7 @@
     {
         get
         {
-            return h.Game.Players.OrderBy(p => Name(p.Faction));
+            return Client.Game.Players.OrderBy(p => Name(p.Faction));
         }
     }
     
@@ -176,7 +176,7 @@
 
     private bool IsKnownCard(TreacheryCard c)
     {
-        return h.Player.KnownCards.Contains(c);
+        return Client.Player.KnownCards.Contains(c);
     }
 
     private string ButtonStyle(object o)

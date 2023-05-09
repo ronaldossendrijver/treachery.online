@@ -87,20 +87,20 @@ else {
     {
         if (firstRender)
         {
-            h.OnLocationSelected += HandleAddForce;
-            h.OnLocationSelectedWithShift += HandleRemoveForce;
-            h.OnLocationSelectedWithCtrlOrAlt += HandleAddTargetForce;
-            h.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleRemoveTargetForce;
+            Client.OnLocationSelected += HandleAddForce;
+            Client.OnLocationSelectedWithShift += HandleRemoveForce;
+            Client.OnLocationSelectedWithCtrlOrAlt += HandleAddTargetForce;
+            Client.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleRemoveTargetForce;
         }
     }
 
     public override void Dispose()
     {
         base.Dispose();
-        h.OnLocationSelected -= HandleAddForce;
-        h.OnLocationSelectedWithShift -= HandleRemoveForce;
-        h.OnLocationSelectedWithCtrlOrAlt -= HandleAddTargetForce;
-        h.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveTargetForce;
+        Client.OnLocationSelected -= HandleAddForce;
+        Client.OnLocationSelectedWithShift -= HandleRemoveForce;
+        Client.OnLocationSelectedWithCtrlOrAlt -= HandleAddTargetForce;
+        Client.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveTargetForce;
     }
 
     private void HandleAddForce(object sender, Location l)

@@ -33,14 +33,14 @@
     {
         if (firstRender)
         {
-            h.OnLocationSelected += HandleLocationSelected;
+            Client.OnLocationSelected += HandleLocationSelected;
         }
     }
 
     public override void Dispose()
     {
         base.Dispose();
-        h.OnLocationSelected -= HandleLocationSelected;
+        Client.OnLocationSelected -= HandleLocationSelected;
     }
 
     protected override PerformBluePlacement ConfirmedResult => new PerformBluePlacement(Game, Faction) { Target = target };

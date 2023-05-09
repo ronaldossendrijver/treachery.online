@@ -260,14 +260,14 @@
     {
         if (firstRender)
         {
-            h.OnLocationSelected += HandleLocationSelected;
+            Client.OnLocationSelected += HandleLocationSelected;
         }
     }
 
     public override void Dispose()
     {
         base.Dispose();
-        h.OnLocationSelected -= HandleLocationSelected;
+        Client.OnLocationSelected -= HandleLocationSelected;
     }
 
     protected override NexusPlayed ConfirmedResult => new NexusPlayed(Game, Faction)

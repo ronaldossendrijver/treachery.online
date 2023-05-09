@@ -12,7 +12,7 @@ using Treachery.Shared;
 
 namespace Treachery.Client
 {
-    public partial class Handler
+    public partial class Client
     {
         #region FieldsAndConstructor
 
@@ -55,7 +55,7 @@ namespace Treachery.Client
 
         private readonly HubConnection _connection;
 
-        public Handler(Uri uri)
+        public Client(Uri uri)
         {
             _connection = new HubConnectionBuilder()
                 .WithUrl(uri)

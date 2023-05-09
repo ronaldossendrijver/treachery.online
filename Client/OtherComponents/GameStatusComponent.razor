@@ -10,11 +10,11 @@
 
     <div class="card-body bg-transparent border-bottom-0">
 
-    @if (h.Status != null) {
+    @if (Client.Status != null) {
 
-        if (h.Status.TimedEvent != null)
+        if (Client.Status.TimedEvent != null)
         {
-            <div style="position:absolute;left:5px;top:0px;color:@TimerColor(h.Status.WaitingForMe(Player, h.IsHost));font-weight:bolder;">@TimerText(h.Status.TimedEvent)</div>
+            <div style="position:absolute;left:5px;top:0px;color:@TimerColor(Client.Status.WaitingForMe(Player, Client.IsHost));font-weight:bolder;">@TimerText(Client.Status.TimedEvent)</div>
         }
 
         if (IsBiddingPhase || OneOrMorePlayersNeedToAct || PlayersAreInSequence) {
@@ -27,8 +27,8 @@
 
                     @if (IsBiddingPhase && ToBid.Count() > 0)
                     {
-                        bool showTurnInSequence = h.Game.CurrentPhase == Phase.BlackMarketBidding || h.Game.CurrentPhase == Phase.Bidding || h.Game.CurrentPhase == Phase.BiddingReport;
-                        var hasTurn = h.Status.WaitingForPlayers.Count() == 1 && !showTurnInSequence ? h.Status.WaitingForPlayers.First() : null;
+                        bool showTurnInSequence = Client.Game.CurrentPhase == Phase.BlackMarketBidding || Client.Game.CurrentPhase == Phase.Bidding || Client.Game.CurrentPhase == Phase.BiddingReport;
+                        var hasTurn = Client.Status.WaitingForPlayers.Count() == 1 && !showTurnInSequence ? Client.Status.WaitingForPlayers.First() : null;
 
                         foreach (var se in ToBid)
                         {
@@ -43,9 +43,9 @@
                     }
                     else if (OneOrMorePlayersNeedToAct)
                     {
-                        if (h.Status.WaitingForPlayers.Count() == 1) {
+                        if (Client.Status.WaitingForPlayers.Count() == 1) {
 
-                            var player = h.Status.WaitingForPlayers.First();
+                            var player = Client.Status.WaitingForPlayers.First();
 
                             <div style="position: relative; width: 64px; height: 64px;">
                                 <img title="@player.Name" src="@Skin.Current.GetImageURL(player.Faction)" width="64" style="position: absolute; left: 0px; filter: drop-shadow(2px 2px 2px black)" />
@@ -54,7 +54,7 @@
                         }
                         else {
 
-                            foreach (var p in h.Status.WaitingForPlayers)
+                            foreach (var p in Client.Status.WaitingForPlayers)
                             {
                                 <div style="position: relative; width: 48px;">
                                     <img class="p-2" title="@p.Name" src="@Skin.Current.GetImageURL(p.Faction)" width="48" style="filter:drop-shadow(2px 2px 2px black)" />
@@ -64,7 +64,7 @@
                     }
                     else if (PlayersAreInSequence)
                     {
-                        foreach (var f in h.Status.WaitingInSequence)
+                        foreach (var f in Client.Status.WaitingInSequence)
                         {
                             <div class="align-self-center p-0 m-0" style="position: relative; width: 64px;">
                                 @if (f.HasTurn)
@@ -94,7 +94,7 @@
         }
 
         <div class="text-dark fw-bold text-center" style="@StatusStyle">
-            <ExpressionComponent Game=Game Expression=@h.Status.GetMessage(h.Player, h.IsHost).Expression Size=20/>
+            <ExpressionComponent Game=Game Expression=@Client.Status.GetMessage(Client.Player, Client.IsHost).Expression Size=20/>
         </div>
 
         @if (!autoConfirm && CanEndPhase)
@@ -109,7 +109,7 @@
             </div>
         }
 
-        @if (h.IsHost && Game.CurrentMainPhase == MainPhase.Bidding && Game.Players.Count(p => !p.IsBot) > 1)
+        @if (Client.IsHost && Game.CurrentMainPhase == MainPhase.Bidding && Game.Players.Count(p => !p.IsBot) > 1)
         {
             <div class="mt-1" style="color:black;">
                 <CheckboxComponent @bind-Value="@timeLimitSet" OnChanged=EnableOrDisableTimer>Time limit (seconds)</CheckboxComponent>
@@ -160,7 +160,7 @@
         {
             ticksPassed++;
 
-            if (autoConfirm && CanEndPhase && ticksPassed >= 3 + h.Status.FlashInfo.Count)
+            if (autoConfirm && CanEndPhase && ticksPassed >= 3 + Client.Status.FlashInfo.Count)
             {
                 ticksPassed = 0;
                 await Confirm();
@@ -186,7 +186,7 @@
 
     private void UpdateTimer(int value)
     {
-        _ = h.Host.SetTimer(value);
+        _ = Client.Host.SetTimer(value);
     }
 
     private bool CancelAutoConfirm =>
@@ -201,24 +201,24 @@
     {
         get
         {
-            if (h.Game.CurrentPhase == Phase.BlackMarketAnnouncement || h.Game.CurrentPhase == Phase.BlackMarketBidding)
+            if (Client.Game.CurrentPhase == Phase.BlackMarketAnnouncement || Client.Game.CurrentPhase == Phase.BlackMarketBidding)
             {
-                return BlackMarketBid.PlayersToBid(h.Game);
+                return BlackMarketBid.PlayersToBid(Client.Game);
             }
             else
             {
-                return Bid.PlayersToBid(h.Game);
+                return Bid.PlayersToBid(Client.Game);
             }
         }
     }
 
-    private bool IsBiddingPhase => h.Game.CurrentMainPhase == MainPhase.Bidding;
+    private bool IsBiddingPhase => Client.Game.CurrentMainPhase == MainPhase.Bidding;
 
-    private bool OneOrMorePlayersNeedToAct => h.Status.WaitingForPlayers.Any();
+    private bool OneOrMorePlayersNeedToAct => Client.Status.WaitingForPlayers.Any();
 
-    private bool PlayersAreInSequence => h.Status.WaitingInSequence.Any();
+    private bool PlayersAreInSequence => Client.Status.WaitingInSequence.Any();
 
-    private string StatusStyle => h.Status.WaitingForMe(Player, h.IsHost) ? Support.TextBorder(1, "#FF000016") : "";
+    private string StatusStyle => Client.Status.WaitingForMe(Player, Client.IsHost) ? Support.TextBorder(1, "#FF000016") : "";
 
     private string PlayerWithCardsTitle(Player player) => player.Name;
 
@@ -241,9 +241,9 @@
                 result = elapsed.ToString(@"m\:ss");
             }
 
-            if (Game.CurrentPhase == Phase.Bidding && h.Timer > 0)
+            if (Game.CurrentPhase == Phase.Bidding && Client.Timer > 0)
             {
-                result += string.Format(" (limit: {0}s)", h.Timer);
+                result += string.Format(" (limit: {0}s)", Client.Timer);
             }
         }
 

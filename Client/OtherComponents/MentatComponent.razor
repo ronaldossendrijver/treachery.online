@@ -11,7 +11,7 @@
     <h5>Treachery Cards</h5>
     <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
 
-        @foreach (var v in TreacheryCardManager.GetCardsInPlay(h.Game))
+        @foreach (var v in TreacheryCardManager.GetCardsInPlay(Client.Game))
         {
             <div class="card">
                 <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
@@ -22,7 +22,7 @@
 
     </div>
 
-    @if (h.Game.IsPlaying(Faction.White))
+    @if (Client.Game.IsPlaying(Faction.White))
     {
         <h5 class="mt-2">@Skin.Current.Describe(Faction.White) Cards</h5>
         <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
@@ -42,7 +42,7 @@
     <h5 class="mt-2">@Skin.Current.Describe(Concept.Resource) Cards</h5>
     <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
 
-        @foreach (var v in Map.GetResourceCardsInPlay(h.Game))
+        @foreach (var v in Map.GetResourceCardsInPlay(Client.Game))
         {
             <div class="card">
                 <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
@@ -53,7 +53,7 @@
 
     </div>
 
-    @if (h.Game.Applicable(Rule.LeaderSkills))
+    @if (Client.Game.Applicable(Rule.LeaderSkills))
     {
         <h5 class="mt-2">Leader Skill Cards</h5>
         <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
@@ -70,7 +70,7 @@
         </div>
     }
 
-    @if (h.Game.Applicable(Rule.StrongholdBonus))
+    @if (Client.Game.Applicable(Rule.StrongholdBonus))
     {
         <h5 class="mt-2">Stronghold Cards</h5>
         <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
@@ -87,7 +87,7 @@
         </div>
     }
 
-    @if (h.Game.Applicable(Rule.NexusCards))
+    @if (Client.Game.Applicable(Rule.NexusCards))
     {
         <h5 class="mt-2">Nexus Cards</h5>
         <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
@@ -104,12 +104,12 @@
         </div>
     }
 
-    @if (h.Game.Applicable(Rule.Homeworlds))
+    @if (Client.Game.Applicable(Rule.Homeworlds))
     {
         <h5 class="mt-2">Homeworld Cards</h5>
         <div class="row row-cols-2 row-cols-md-3 ms-1 me-1">
 
-            @foreach (var w in h.Game.Map.Homeworlds)
+            @foreach (var w in Client.Game.Map.Homeworlds)
             {
                 <div class="card">
                     <Hoverable Class="card-img-top" Popover=@Popup.Get(w)>

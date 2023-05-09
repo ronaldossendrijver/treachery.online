@@ -22,5 +22,5 @@
 
     private Faction faction;
 
-    protected override FactionSelected ConfirmedResult => new FactionSelected(Game, h.PlayerName) { InitiatorPlayerName = h.PlayerName, Faction = faction };
+    protected override FactionSelected ConfirmedResult => new FactionSelected(Game, Client.PlayerName) { InitiatorPlayerName = Client.PlayerName, Faction = faction };
 }

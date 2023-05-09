@@ -41,16 +41,16 @@
 
             <div class="col align-top">
 
-                @if (!h.IsObserver && h.Player.Faction != Faction.None)
+                @if (!Client.IsObserver && Client.Player.Faction != Faction.None)
                 {
-                    <CheckboxComponent @bind-Value="@h.Autopass" OnChanged="AutoPassChanged">Auto-pass</CheckboxComponent>
-                    @if (h.Autopass)
+                    <CheckboxComponent @bind-Value="@Client.Autopass" OnChanged="AutoPassChanged">Auto-pass</CheckboxComponent>
+                    @if (Client.Autopass)
                     {
-                        <SelectResourcesComponent @bind-Value="@h.BidAutoPassThreshold" Min="0" Max="50" Label="When above:" />
+                        <SelectResourcesComponent @bind-Value="@Client.BidAutoPassThreshold" Min="0" Max="50" Label="When above:" />
 
                         @if (ShowRepeatAutoPass)
                         {
-                            <CheckboxComponent @bind-Value="@h.KeepAutopassSetting">Repeat auto-pass every round</CheckboxComponent>
+                            <CheckboxComponent @bind-Value="@Client.KeepAutopassSetting">Repeat auto-pass every round</CheckboxComponent>
                         }
                     }
 
@@ -156,9 +156,9 @@
 
     private void AutoPassChanged(bool value)
     {
-        if (value && h.BidAutoPassThreshold > Player.Resources)
+        if (value && Client.BidAutoPassThreshold > Player.Resources)
         {
-            h.BidAutoPassThreshold = Math.Min(Player.Resources, 5);
+            Client.BidAutoPassThreshold = Math.Min(Player.Resources, 5);
             StateHasChanged();
         }
     }
@@ -169,8 +169,8 @@
 
         if (!_canBid && CanBid)
         {
-            if (Game.CurrentBid != null && h.Autopass && Game.CurrentBid.TotalAmount + 1 > h.BidAutoPassThreshold ||
-                Game.CurrentBid == null && h.Autopass && h.BidAutoPassThreshold == 0)
+            if (Game.CurrentBid != null && Client.Autopass && Game.CurrentBid.TotalAmount + 1 > Client.BidAutoPassThreshold ||
+                Game.CurrentBid == null && Client.Autopass && Client.BidAutoPassThreshold == 0)
                 {
                 _ = Task.Delay(800 + Random.Shared.Next(1600)).ContinueWith(e => AutoPass());
             }
@@ -197,7 +197,7 @@
 
     protected override async Task CycleAsync()
     {
-        if (h.Status.TimedEvent != null && h.Timer > 0 && DateTime.Now.Subtract(h.Status.TimedEvent.Time).TotalSeconds > h.Timer)
+        if (Client.Status.TimedEvent != null && Client.Timer > 0 && DateTime.Now.Subtract(Client.Status.TimedEvent.Time).TotalSeconds > Client.Timer)
         {
             await Pass();
         }
@@ -205,7 +205,7 @@
 
     private async Task AutoPass()
     {
-        if (CanBid && h.Autopass)
+        if (CanBid && Client.Autopass)
         {
             await Pass();
         }
@@ -213,9 +213,9 @@
 
     private void ResetAutopassThreshold()
     {
-        if (Game.CurrentMainPhase == MainPhase.Bidding && Game.RecentMilestones.Contains(Milestone.AuctionWon) && (!h.KeepAutopassSetting || Game.CurrentPhase == Phase.BiddingReport))
+        if (Game.CurrentMainPhase == MainPhase.Bidding && Game.RecentMilestones.Contains(Milestone.AuctionWon) && (!Client.KeepAutopassSetting || Game.CurrentPhase == Phase.BiddingReport))
         {
-            h.Autopass = false;
+            Client.Autopass = false;
         }
     }
 

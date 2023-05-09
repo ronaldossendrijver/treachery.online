@@ -51,7 +51,7 @@
     {
         if (firstRender)
         {
-            h.OnLocationSelected += HandleLocationSelected;
+            Client.OnLocationSelected += HandleLocationSelected;
         }
     }
 
@@ -67,7 +67,7 @@
     public override void Dispose()
     {
         base.Dispose();
-        h.OnLocationSelected -= HandleLocationSelected;
+        Client.OnLocationSelected -= HandleLocationSelected;
     }
 
     private string[] ValueLabels => new string[] { "Place or move a token", Skin.Current.Format("Remove a token to gain 4 ", Concept.Resource) };

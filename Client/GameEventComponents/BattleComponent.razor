@@ -43,7 +43,7 @@
         }
 
         <div class="text-warning mt-1">
-            @if(h.IAm(Game.CurrentBattle.Aggressor)) {
+            @if(Client.IAm(Game.CurrentBattle.Aggressor)) {
 
                 <span>You are aggressor.</span>
             }
@@ -302,8 +302,8 @@
             lastdefense = defense;
             lastweapon = weapon;
             lastbankerBoost = bankerBoost;
-            h.BattleUnderConstruction = ConfirmedResult;
-            h.Refresh();
+            Client.BattleUnderConstruction = ConfirmedResult;
+            Client.Refresh();
         }
     }
 

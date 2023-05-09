@@ -22,7 +22,7 @@ namespace Treachery.Client
 
         private readonly HubConnection connection;
         private readonly string Name;
-        private readonly Handler h;
+        private readonly Client client;
         private readonly string gamePassword;
         private readonly int gameID;
         private Game gameAtHost;
@@ -30,13 +30,13 @@ namespace Treachery.Client
 
         public GameInfo GameBeingEstablished;
 
-        public Host(string hostName, string gamePassword, Handler h, string loadedGameData, Game loadedGame, HubConnection hubConnection)
+        public Host(string hostName, string gamePassword, Client client, string loadedGameData, Game loadedGame, HubConnection hubConnection)
         {
             HostID = (new Random()).Next();
             Name = hostName;
             this.gamePassword = gamePassword;
             gameID = (new Random()).Next();
-            this.h = h;
+            this.client = client;
             LoadedGameData = loadedGameData;
             LoadedGame = loadedGame;
             connection = hubConnection;
@@ -128,7 +128,7 @@ namespace Treachery.Client
                 if (gameAtHost.CurrentPhase == Phase.AwaitingPlayers)
                 {
                     result = GameBeingEstablished;
-                    result.Players = JoinedPlayers.Where(p => GameBeingEstablished.HostParticipates || p != h.PlayerName).ToArray();
+                    result.Players = JoinedPlayers.Where(p => GameBeingEstablished.HostParticipates || p != client.PlayerName).ToArray();
                     result.NumberOfBots = 0;
                 }
                 else
@@ -156,7 +156,7 @@ namespace Treachery.Client
 
         public async Task JoinGame(string playerName)
         {
-            await h.Request(HostID, new PlayerJoined() { HashedPassword = Support.GetHash(gamePassword), Name = playerName });
+            await client.Request(HostID, new PlayerJoined() { HashedPassword = Support.GetHash(gamePassword), Name = playerName });
         }
 
         //Broadcasts the game hosted by this client to everyone connected to treachery.online
@@ -184,13 +184,13 @@ namespace Treachery.Client
                     {
                         JoinedPlayers.Remove(thePlayer);
                         Heartbeats.Remove(disconnectedPlayerName);
-                        h.Refresh();
+                        client.Refresh();
                     }
                 }
             }
         }
 
-        private IEnumerable<string> DisconnectedPlayers => Heartbeats.Where(kvp => kvp.Value.AddMilliseconds(1.5 * Handler.HEARTBEAT_DELAY) < DateTime.Now).Select(kvp => kvp.Key);
+        private IEnumerable<string> DisconnectedPlayers => Heartbeats.Where(kvp => kvp.Value.AddMilliseconds(1.5 * Client.HEARTBEAT_DELAY) < DateTime.Now).Select(kvp => kvp.Key);
 
         //Processes that the given player is still connected
         public void Receive_Heartbeat(string playerName)
@@ -219,7 +219,7 @@ namespace Treachery.Client
                 if (denyMessage == "")
                 {
                     JoinedPlayers.Add(e.Name);
-                    h.Refresh();
+                    client.Refresh();
                 }
             }
             catch (Exception ex)
@@ -238,7 +238,7 @@ namespace Treachery.Client
 
                 if (denyMessage == "")
                 {
-                    var data = GameState.GetStateAsString(h.Game);
+                    var data = GameState.GetStateAsString(client.Game);
                     var skin = Skin.Current.SkinToString();
                     await connection.SendAsync("LoadGame", gameID, data, e.Name, skin);
                 }
@@ -273,7 +273,7 @@ namespace Treachery.Client
                 string denyMessage = "";
                 await connection.SendAsync("RespondObserverRejoined", gameID, playerConnectionId, HostID, denyMessage);
                 if (!JoinedObservers.Contains(e.Name)) JoinedObservers.Add(e.Name);
-                var data = GameState.GetStateAsString(h.Game);
+                var data = GameState.GetStateAsString(client.Game);
                 var skin = Skin.Current.SkinToString();
                 await connection.SendAsync("LoadGame", gameID, data, e.Name, skin);
             }

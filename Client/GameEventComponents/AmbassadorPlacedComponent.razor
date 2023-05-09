@@ -41,7 +41,7 @@
     {
         if (firstRender)
         {
-            h.OnLocationSelected += HandleLocationSelected;
+            Client.OnLocationSelected += HandleLocationSelected;
         }
     }
 
@@ -55,6 +55,6 @@
     public override void Dispose()
     {
         base.Dispose();
-        h.OnLocationSelected -= HandleLocationSelected;
+        Client.OnLocationSelected -= HandleLocationSelected;
     }
 }

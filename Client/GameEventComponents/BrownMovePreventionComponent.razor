@@ -35,7 +35,7 @@
     {
         if (firstRender)
         {
-            h.OnLocationSelected += HandleLocationSelected;
+            Client.OnLocationSelected += HandleLocationSelected;
         }
     }
 
@@ -49,7 +49,7 @@
     public override void Dispose()
     {
         base.Dispose();
-        h.OnLocationSelected -= HandleLocationSelected;
+        Client.OnLocationSelected -= HandleLocationSelected;
     }
 
     private string ToUse => BrownMovePrevention.CardToUse(Player) != null ? Skin.Current.Describe(BrownMovePrevention.CardToUse(Player)) : "Nexus Cunning";

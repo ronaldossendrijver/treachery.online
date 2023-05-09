@@ -38,12 +38,12 @@
     {
         base.OnParametersSet();
 
-        undoEventId = h.Game.History.Count - 1;
+        undoEventId = Client.Game.History.Count - 1;
     }
 
     private async Task ConfirmUndo()
     {
-        await h.Host.Undo(undoEventId);
+        await Client.Host.Undo(undoEventId);
     }
 
     private string DetermineEventDescription(int eventnumber, GameEvent e) => "" + eventnumber + ". " + e.GetShortMessage()?.ToString(Skin.Current);
@@ -56,12 +56,12 @@
         {
             var result = new Dictionary<string,Dictionary<int, GameEvent>>();
 
-            for (int i = h.Game.History.Count - 1; i > 0; i--)
+            for (int i = Client.Game.History.Count - 1; i > 0; i--)
             {
-                var e = h.Game.History[i];
+                var e = Client.Game.History[i];
                 if (!(e is AllyPermission) && !(e is BattleRevision))
                 {
-                    var group = DetermineGroup(h.Game.Moments[i-1]);
+                    var group = DetermineGroup(Client.Game.Moments[i-1]);
                     if (!result.ContainsKey(group))
                     {
                         result.Add(group, new());

@@ -25,7 +25,7 @@
             <div class="small">Add / Remove @Skin.Current.Describe(currentPlayer.SpecialForce): <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL" /> / <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL | ClickHintModifier.SHIFT" /></div>
         }
 
-        <ForceSelectionComponent Game=h.Game Player=currentPlayer OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="20" FixedMaxSpecialForces=MaxSpecialForces AllowMultipleTerritories="true"/>
+        <ForceSelectionComponent Game=Client.Game Player=currentPlayer OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="20" FixedMaxSpecialForces=MaxSpecialForces AllowMultipleTerritories="true"/>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError=@Validation />
 
@@ -58,20 +58,20 @@
     {
         if (firstRender)
         {
-            h.OnLocationSelected += HandleAddForce;
-            h.OnLocationSelectedWithShift += HandleRemoveForce;
-            h.OnLocationSelectedWithCtrlOrAlt += HandleAddSpecialForce;
-            h.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleRemoveSpecialForce;
+            Client.OnLocationSelected += HandleAddForce;
+            Client.OnLocationSelectedWithShift += HandleRemoveForce;
+            Client.OnLocationSelectedWithCtrlOrAlt += HandleAddSpecialForce;
+            Client.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleRemoveSpecialForce;
         }
     }
 
     public override void Dispose()
     {
         base.Dispose();
-        h.OnLocationSelected -= HandleAddForce;
-        h.OnLocationSelectedWithShift -= HandleRemoveForce;
-        h.OnLocationSelectedWithCtrlOrAlt -= HandleAddSpecialForce;
-        h.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveSpecialForce;
+        Client.OnLocationSelected -= HandleAddForce;
+        Client.OnLocationSelectedWithShift -= HandleRemoveForce;
+        Client.OnLocationSelectedWithCtrlOrAlt -= HandleAddSpecialForce;
+        Client.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveSpecialForce;
     }
 
     private Player CurrentPlayer => Game.GetPlayer(Game.NextFactionToPerformCustomSetup);

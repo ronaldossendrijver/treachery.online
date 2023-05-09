@@ -13,7 +13,7 @@
 
         <div class="card-header text-center">
 
-            @Skin.Current.Describe(h.Game.CurrentReport.About) Report &nbsp;
+            @Skin.Current.Describe(Client.Game.CurrentReport.About) Report &nbsp;
 
             @if (SortDescending)
             {
@@ -66,7 +66,7 @@
 
         get {
 
-            var messagesAscending = Report.Messages.Where(m => m.Target == Faction.None || m.Target == h.Faction);
+            var messagesAscending = Report.Messages.Where(m => m.Target == Faction.None || m.Target == Client.Faction);
 
             if (SortDescending)
             {

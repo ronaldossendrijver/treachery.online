@@ -28,7 +28,7 @@
             card = null;
         }
 
-        @if (h.IsHost)
+        @if (Client.IsHost)
         {
             <CheckboxComponent @bind-Value="fromBank">
                 Host only: give from @Skin.Current.Describe(Concept.Resource) bank (you may select a negative amount to put that amount of @Skin.Current.Describe(Concept.Resource) from target faction in the bank)

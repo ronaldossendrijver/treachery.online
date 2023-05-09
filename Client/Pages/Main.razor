@@ -34,16 +34,16 @@
                 @if (h.PlayerName == "")
                 {
                     <div class="d-flex justify-content-center">
-                        <PlayerNameComponent h="@h" />
+                        <PlayerNameComponent Client="@h" />
                     </div>
                 }
                 else if (h.HostProxy == null && h.Host == null)
                 {
-                    <HostOrJoinGameComponent h="@h" />
+                    <HostOrJoinGameComponent Client="@h" />
                 }
                 else
                 {
-                    <ActionPanel h="@h" />
+                    <ActionPanel Client="@h" />
                 }
 
             </div>
@@ -67,14 +67,14 @@ else
         {
             <div class="@ActionGrid @Scrollbars">
 
-                <GameStatusComponent h="@h" CanEndPhase="h.Actions.Contains(typeof(EndPhase))" />
+                <GameStatusComponent Client="@h" CanEndPhase="h.Actions.Contains(typeof(EndPhase))" />
 
                 @if (h.CurrentPhase == Phase.GameEnded)
                 {
-                    <WinnerPanel h="h" />
+                    <WinnerPanel Client="h" />
                 }
 
-                <ActionPanel h="@h" />
+                <ActionPanel Client="@h" />
 
             </div>
         }
@@ -84,52 +84,52 @@ else
 
             @if (!h.IsObserver)
             {
-                <MenuComponent h="@h" />
+                <MenuComponent Client="@h" />
 
                 if (h.Player.Faction != Faction.None)
                 {
-                    <PlayerPanel h="h" ShownPlayer="h.Player" />
+                    <PlayerPanel Client="h" ShownPlayer="h.Player" />
                 }
                 else if (h.PlayerName != "")
                 {
-                    <ChatComponent h="@h" BackgroundColor="#e8dba6dd" />
+                    <ChatComponent Client="@h" BackgroundColor="#e8dba6dd" />
                 }
             }
             else if (h.IsObserver)
             {
-                <GameStatusComponent h="@h" />
+                <GameStatusComponent Client="@h" />
 
                 @if (h.CurrentPhase == Phase.GameEnded)
                 {
-                    <WinnerPanel h="h" />
+                    <WinnerPanel Client="h" />
                 }
 
                 @if (h.Game.CurrentPhase == Phase.Bidding)
                 {
-                    <NormalBiddingPanel h="h" CanBid="h.Actions.Contains(typeof(Bid))" />
+                    <NormalBiddingPanel Client="h" CanBid="h.Actions.Contains(typeof(Bid))" />
                 }
 
                 @if (h.Game.CurrentPhase == Phase.BlackMarketBidding)
                 {
-                    <BlackMarketBiddingPanel h="h" CanBid="h.Actions.Contains(typeof(BlackMarketBid))" />
+                    <BlackMarketBiddingPanel Client="h" CanBid="h.Actions.Contains(typeof(BlackMarketBid))" />
                 }
 
                 @if (DealAccepted.CurrentDeals(h.Game).Any())
                 {
-                    <DealComponent h="@h" />
+                    <DealComponent Client="@h" />
                 }
             }
 
             @if (h.Game.CurrentReport != null)
             {
-                <ReportComponent h="@h" Report="h.Game.CurrentReport" />
+                <ReportComponent Client="@h" Report="h.Game.CurrentReport" />
             }
 
             @if (!h.IsObserver && h.CurrentPhase > Phase.TradingFactions && h.Player.Faction == Faction.None)
             {
                 foreach (Player p in h.Game.Players)
                 {
-                    <PlayerPanel h="h" ShownPlayer="p" ShowHeader="true" />
+                    <PlayerPanel Client="h" ShownPlayer="p" ShowHeader="true" />
                 }
             }
 
@@ -140,8 +140,8 @@ else
         {
             <div class="col-sm-12 col-lg-3">
 
-                <MenuComponent h="@h" />
-                <ChatComponent h="@h" BackgroundColor="#e8dba6dd" />
+                <MenuComponent Client="@h" />
+                <ChatComponent Client="@h" BackgroundColor="#e8dba6dd" />
 
             </div>
         }
@@ -150,30 +150,30 @@ else
         @if (!h.IsObserver && h.CurrentPhase > Phase.AwaitingPlayers)
         {
             <HoverPanel Width=400 HandleWidth=12 BackgroundColor="#e8dba6dd">
-                <ChatComponent h="@h" />
+                <ChatComponent Client="@h" />
             </HoverPanel>
         }
 
         @if (h.JoinableAdvertisedGames.Any() && (h.IsObserver || h.Game != null && h.Game.NumberOfHumanPlayers <= 1))
         {
-            <AdvertisedGamesComponent h="@h" />
+            <AdvertisedGamesComponent Client="@h" />
         }
 
-        <ImageFlashComponent h="@h" />
+        <ImageFlashComponent Client="@h" />
 
     </div>
 }
 
 @code {
 
-    private Handler h;
+    private Client h;
     protected ElementReference element;
 
     protected override async Task OnInitializedAsync()
     {
         Message.DefaultDescriber = Skin.Current;
         Browser.Initialize(JSRuntime);
-        h = new Handler(NavigationManager.ToAbsoluteUri("/gameHub"));
+        h = new Client(NavigationManager.ToAbsoluteUri("/gameHub"));
         await h.Start();
         await LoadSkinDataIfSaved();
     }

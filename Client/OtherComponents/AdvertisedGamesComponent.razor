@@ -11,16 +11,16 @@
 
     <div class="p-2">
 
-        @foreach (var g in h.JoinableAdvertisedGames)
+        @foreach (var g in Client.JoinableAdvertisedGames)
         {
             if (!joinPWD.ContainsKey(g.HostID))
             {
                 joinPWD.Add(g.HostID, "");
             }
 
-            if (!h.JoinErrors.ContainsKey(g.HostID))
+            if (!Client.JoinErrors.ContainsKey(g.HostID))
             {
-                h.JoinErrors.Add(g.HostID, "");
+                Client.JoinErrors.Add(g.HostID, "");
             }
 
             <div class="alert alert-primary" role="alert">
@@ -31,7 +31,7 @@
                     <input class="form-inline" style="max-width:120px" @bind="joinPWD[g.HostID]" maxlength="24" placeholder="Game password" />
                 }
                 <button class="btn btn-primary" @onclick="@(e => JoinGameAsPlayer(g.HostID, joinPWD[g.HostID]))">Join</button>
-                <div class="text-danger">@h.JoinErrors[g.HostID]</div>
+                <div class="text-danger">@Client.JoinErrors[g.HostID]</div>
             </div>
         }
 
@@ -45,8 +45,8 @@
 
     private async Task JoinGameAsPlayer(int hostID, string pwd)
     {
-        h.Reset();
-        h.JoinErrors[hostID] = "";
-        await h.Request(hostID, new PlayerJoined() { HashedPassword = Support.GetHash(pwd), Name = h.PlayerName });
+        Client.Reset();
+        Client.JoinErrors[hostID] = "";
+        await Client.Request(hostID, new PlayerJoined() { HashedPassword = Support.GetHash(pwd), Name = Client.PlayerName });
     }
 }

@@ -25,14 +25,14 @@
             {
                 <select class="form-select" style="color:@SelectedFactionForegroundColor;background-color:@SelectedFactionColor" @bind="@playername" id="messageSentTarget">
 
-                    @if (!h.MuteGlobalChat)
+                    @if (!Client.MuteGlobalChat)
                     {
                         <option style="color:red;font-weight:bold;background-color:white" value="@LABEL_GLOBAL_CHAT">@LABEL_GLOBAL_CHAT</option>
                     }
 
                     <option style="color:red;font-weight:bold;background-color:white" value="@LABEL_ALL_PLAYERS_IN_GAME">@LABEL_ALL_PLAYERS_IN_GAME</option>
 
-                    @foreach (var p in h.Game.Players.Where(p => p.Name != h.MyName))
+                    @foreach (var p in Client.Game.Players.Where(p => p.Name != Client.MyName))
                     {
                         <option style="color:@Skin.Current.GetFactionColor(p.Faction);background-color:white" value="@p.Name">@p.Name</option>
                     }
@@ -46,24 +46,24 @@
 
         </div>
 
-        @foreach (var m in h.Messages.Where(message => !h.MuteGlobalChat || message is not GlobalChatMessage))
+        @foreach (var m in Client.Messages.Where(message => !Client.MuteGlobalChat || message is not GlobalChatMessage))
         {
             var bgcolor = (m) switch
             {
-                GameChatMessage gcm => Skin.Current.GetFactionColor(gcm.GetSourceFaction(h.Game)),
+                GameChatMessage gcm => Skin.Current.GetFactionColor(gcm.GetSourceFaction(Client.Game)),
                 GlobalChatMessage gcm => "grey",
                 _ => "grey"
             };
 
             <div class='text-break p-1 mt-1 small' style="background-color:@bgcolor">
-                <ExpressionComponent Game=Game Expression=@m.GetBodyIncludingPlayerInfo(h.MyName, h.Game, h.HostProxy == null).Expression Size=20/>
+                <ExpressionComponent Game=Game Expression=@m.GetBodyIncludingPlayerInfo(Client.MyName, Client.Game, Client.HostProxy == null).Expression Size=20/>
             </div>
         }
 
         @if (ShowGameChat)
         {
             <div class="mt-1" style="color:black">
-                <CheckboxComponent @bind-Value="h.MuteGlobalChat">Hide global chat messages</CheckboxComponent>
+                <CheckboxComponent @bind-Value="Client.MuteGlobalChat">Hide global chat messages</CheckboxComponent>
             </div>
         }
 
@@ -81,17 +81,17 @@
 
     private string message;
     private string playername;
-    private static Handler currentHandler;
+    private static Client currentHandler;
 
     protected override void OnInitialized()
     {
-        currentHandler = h;
+        currentHandler = Client;
 
         if (ShowGameChat)
         {
-            if (h.Game.Players.Where(p => p.Name != h.MyName).Any())
+            if (Client.Game.Players.Where(p => p.Name != Client.MyName).Any())
             {
-                playername = h.Game.Players.Where(p => p.Name != h.MyName).Select(p => p.Name).First();
+                playername = Client.Game.Players.Where(p => p.Name != Client.MyName).Select(p => p.Name).First();
             }
             else
             {
@@ -153,13 +153,13 @@
     {
         get
         {
-            if (h.Faction == Faction.None)
+            if (Client.Faction == Faction.None)
             {
                 return "white";
             }
             else
             {
-                var p = h.Game.GetPlayer(playername);
+                var p = Client.Game.GetPlayer(playername);
                 if (p != null)
                 {
                     return Skin.Current.GetFactionColor(p.Faction);
@@ -176,7 +176,7 @@
     {
         get
         {
-            if (h.Faction == Faction.None)
+            if (Client.Faction == Faction.None)
             {
                 return "black";
             }
@@ -187,6 +187,6 @@
         }
     }
 
-    private bool ShowGameChat => h.HostProxy != null && !h.IsObserver;
+    private bool ShowGameChat => Client.HostProxy != null && !Client.IsObserver;
 }
 

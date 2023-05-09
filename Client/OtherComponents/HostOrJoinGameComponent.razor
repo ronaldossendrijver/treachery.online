@@ -38,7 +38,7 @@
     <div class="card-header">Join or observe a game</div>
     <div class="card-body">
 
-        @if (!h.RunningGames.Any())
+        @if (!Client.RunningGames.Any())
         {
             <div class="text-info">No games hosted...</div>
         }
@@ -47,16 +47,16 @@
             <table class="table table-sm table-striped" id="availableGames">
                 <tbody>
 
-                    @foreach (var av in h.RunningGames)
+                    @foreach (var av in Client.RunningGames)
                     {
                         if (!joinPWD.ContainsKey(av.HostID))
                         {
                             joinPWD.Add(av.HostID, "");
                         }
 
-                        if (!h.JoinErrors.ContainsKey(av.HostID))
+                        if (!Client.JoinErrors.ContainsKey(av.HostID))
                         {
-                            h.JoinErrors.Add(av.HostID, "");
+                            Client.JoinErrors.Add(av.HostID, "");
                         }
 
                         var fontColorStyle = av.LastAction != null && DateTime.Now.Subtract((DateTime)av.LastAction).TotalMinutes > 20 ? "color:grey" : "";
@@ -77,7 +77,7 @@
                                     }
                                     <button class="btn btn-primary btn-sm" @onclick="@(e => JoinGameAsPlayer(av.HostID, joinPWD[av.HostID]))">Join</button>
                                     <button class="btn btn-primary btn-sm" @onclick="@(e => JoinGameAsObserver(av.HostID, joinPWD[av.HostID]))">Observe</button>
-                                    <div class="text-danger">@h.JoinErrors[av.HostID]</div>
+                                    <div class="text-danger">@Client.JoinErrors[av.HostID]</div>
                                 </td>
                             }
                             else
@@ -94,7 +94,7 @@
 
                                 </td>
                                 <td>
-                                    @if (h.GameInProgressHostId == av.HostID)
+                                    @if (Client.GameInProgressHostId == av.HostID)
                                     {
                                         <div class="form-inline">
                                             @if (av.HasPassword)
@@ -103,7 +103,7 @@
                                             }
                                             <button class="btn btn-primary btn-sm" @onclick="@(e => RejoinGameAsPlayer(av.HostID, joinPWD[av.HostID]))">Reconnect</button>
                                         </div>
-                                        <div class="text-danger">@h.JoinErrors[av.HostID]</div>
+                                        <div class="text-danger">@Client.JoinErrors[av.HostID]</div>
                                     }
                                     <button class="btn btn-primary btn-sm" @onclick="@(e => RejoinGameAsObserver(av.HostID, joinPWD[av.HostID]))">Observe</button>
                                 </td>
@@ -137,7 +137,7 @@
 
     public GameInfo RejoinableGame(int hostID)
     {
-        return h.RunningGames.FirstOrDefault(g => g.HostID == hostID && g.CurrentPhase > Phase.AwaitingPlayers);
+        return Client.RunningGames.FirstOrDefault(g => g.HostID == hostID && g.CurrentPhase > Phase.AwaitingPlayers);
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -151,7 +151,7 @@
 
     private async Task LoadRecentGame()
     {
-        recentGameData = await Browser.LoadSetting<string>(string.Format("treachery.online;latestgame;{0}", h.PlayerName.ToLower().Trim()));
+        recentGameData = await Browser.LoadSetting<string>(string.Format("treachery.online;latestgame;{0}", Client.PlayerName.ToLower().Trim()));
         if (recentGameData != default)
         {
             recentGameState = GameState.Load(recentGameData);
@@ -161,31 +161,31 @@
 
     private async Task StartNewGame()
     {
-        await h.StartHost(hostPWD, loadedGameData != null ? loadedGameData : restoredGameData, loadedGame != null ? loadedGame : restoredGame);
+        await Client.StartHost(hostPWD, loadedGameData != null ? loadedGameData : restoredGameData, loadedGame != null ? loadedGame : restoredGame);
     }
 
     private async Task JoinGameAsPlayer(int hostID, string pwd)
     {
-        h.JoinErrors[hostID] = "";
-        await h.Request(hostID, new PlayerJoined() { HashedPassword = Support.GetHash(pwd), Name = h.PlayerName });
+        Client.JoinErrors[hostID] = "";
+        await Client.Request(hostID, new PlayerJoined() { HashedPassword = Support.GetHash(pwd), Name = Client.PlayerName });
     }
 
     private async Task RejoinGameAsPlayer(int hostID, string pwd)
     {
-        h.JoinErrors[hostID] = "";
-        await h.Request(h.GameInProgressHostId, new PlayerRejoined() { HashedPassword = Support.GetHash(pwd), Name = h.PlayerName });
+        Client.JoinErrors[hostID] = "";
+        await Client.Request(Client.GameInProgressHostId, new PlayerRejoined() { HashedPassword = Support.GetHash(pwd), Name = Client.PlayerName });
     }
 
     private async Task JoinGameAsObserver(int hostID, string pwd)
     {
-        h.JoinErrors[hostID] = "";
-        await h.Request(hostID, new ObserverJoined() { HashedPassword = Support.GetHash(pwd), Name = h.PlayerName });
+        Client.JoinErrors[hostID] = "";
+        await Client.Request(hostID, new ObserverJoined() { HashedPassword = Support.GetHash(pwd), Name = Client.PlayerName });
     }
 
     private async Task RejoinGameAsObserver(int hostID, string pwd)
     {
-        h.JoinErrors[hostID] = "";
-        await h.Request(hostID, new ObserverRejoined() { HashedPassword = Support.GetHash(pwd), Name = h.PlayerName });
+        Client.JoinErrors[hostID] = "";
+        await Client.Request(hostID, new ObserverRejoined() { HashedPassword = Support.GetHash(pwd), Name = Client.PlayerName });
     }
 
     private string NumberOfBotsMessage(GameInfo av)

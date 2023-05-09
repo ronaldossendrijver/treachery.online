@@ -8,7 +8,7 @@
 
 <div class="row m-0 d-flex justify-content-center" style="animation:fadeIn 1s;">
 
-    @if (h.HostProxy == null)
+    @if (Client.HostProxy == null)
     {
         <div class="col col-xs-auto p-0">
         <a class="btn btn-link p-1" href="https://discord.gg/rRGEfn4" target="_blank" title="Use Discord to organize and join matches">
@@ -21,9 +21,9 @@
         </div>
     }
 
-    @if (h.Game.EventCount > 0)
+    @if (Client.Game.EventCount > 0)
     {
-        if (h.Host != null || h.PlayerName == h.ServerSettings.AdminName)
+        if (Client.Host != null || Client.PlayerName == Client.ServerSettings.AdminName)
         {
             <div class="col col-xs-auto p-0">
             <a class="btn btn-link p-1" title="Save game..." @onclick="Save">
@@ -35,7 +35,7 @@
             </div>
         }
 
-        if (!h.IsObserver && h.Host != null)
+        if (!Client.IsObserver && Client.Host != null)
         {
             <div class="col col-xs-auto p-0">
             <label class="btn btn-link p-1" title="Load game...">
@@ -57,12 +57,12 @@
             </label>
             </div>
 
-            @if (h.Game.Players.Any(p => p.IsBot))
+            @if (Client.Game.Players.Any(p => p.IsBot))
             {
                 <div class="col col-xs-auto p-0">
-                    @if (h.BotsArePaused)
+                    @if (Client.BotsArePaused)
                     {
-                        <a class="btn btn-link p-1" @onclick="e => h.ToggleBotPause()" title="Unpause Bots">
+                        <a class="btn btn-link p-1" @onclick="e => Client.ToggleBotPause()" title="Unpause Bots">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-play-fill" viewBox="0 0 16 16">
                                 <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z" />
                             </svg>
@@ -70,7 +70,7 @@
                     }
                     else
                     {
-                        <a class="btn btn-link p-1" @onclick="e => h.ToggleBotPause()" title="Pause Bots">
+                        <a class="btn btn-link p-1" @onclick="e => Client.ToggleBotPause()" title="Pause Bots">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-pause-fill" viewBox="0 0 16 16">
                                 <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z" />
                             </svg>
@@ -79,7 +79,7 @@
                 </div>
             }
 
-            @if (h.Game.EventCount > 1)
+            @if (Client.Game.EventCount > 1)
             {
                 <div class="col col-xs-auto p-0">
                 <a class="btn btn-link p-1" @onclick="e => SetVisible(HOST)" title="Undo">
@@ -127,7 +127,7 @@
     </a>
     </div>
 
-    @if (h.HostProxy != null)
+    @if (Client.HostProxy != null)
     {
         <div class="col col-xs-auto p-0">
         <a class="btn btn-link p-1" @onclick="e => SetVisible(RESTART)" title="Exit Game">
@@ -157,14 +157,14 @@
 
 @if (IsVisible(HOST))
 {
-    <UndoComponent h="@h" />
+    <UndoComponent Client="@Client" />
 }
 else if (IsVisible(HELP))
 {
     <div class="card p-1 mb-2">
         <div class="card-body text-center">
 
-            @if (h.HostProxy != null)
+            @if (Client.HostProxy != null)
             {
                 <button class="btn btn-primary mt-1 me-1" data-bs-toggle="modal" data-bs-target="#mentatModal">List of Cards</button>
             }
@@ -192,8 +192,8 @@ else if (IsVisible(RESTART))
     </div>
 }
 
-<MusicComponent h="@h" Visible="IsVisible(VOLUME)" />
-<MentatComponent Id="mentatModal" h="@h" />
+<MusicComponent Client="@Client" Visible="IsVisible(VOLUME)" />
+<MentatComponent Id="mentatModal" Client="@Client" />
 <CreditComponent Id="creditModal" />
 <TutorialComponent Id="tutorialModal" />
 
@@ -217,8 +217,8 @@ else if (IsVisible(RESTART))
     private void RestartGame()
     {
         SetVisible(RESTART);
-        h.Reset();
-        h.Refresh();
+        Client.Reset();
+        Client.Refresh();
     }
 
     private void SetVisible(object o)
@@ -241,12 +241,12 @@ else if (IsVisible(RESTART))
     private async Task ToggleFullScreen()
     {
         await Browser.ToggleFullScreen();
-        await Task.Delay(2000).ContinueWith(e => h.Refresh());
+        await Task.Delay(2000).ContinueWith(e => Client.Refresh());
     }
 
     private async Task Save()
     {
-        var stateData = GameState.GetStateAsString(h.Game);
+        var stateData = GameState.GetStateAsString(Client.Game);
         await Browser.Save("savegame.json", stateData);
     }
 
@@ -273,7 +273,7 @@ else if (IsVisible(RESTART))
                     }
                     else
                     {
-                        await h.Host.LoadGame(data, game);
+                        await Client.Host.LoadGame(data, game);
                     }
                 }
                 else
@@ -303,7 +303,7 @@ else if (IsVisible(RESTART))
             if (data.Length < MAX_SKINFILE_SIZE)
             {
                 var newSkin = Skin.Load(data);
-                await h.Host.LoadSkin(newSkin.SkinToString());
+                await Client.Host.LoadSkin(newSkin.SkinToString());
             }
             else
             {

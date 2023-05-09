@@ -7,218 +7,218 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameComponent;
 
-@if (!h.IsHost && h.CurrentPhase == Phase.AwaitingPlayers)
+@if (!Client.IsHost && Client.CurrentPhase == Phase.AwaitingPlayers)
 {
-    <AwaitingGameComponent h="@h" />
+    <AwaitingGameComponent Client="@Client" />
 }
 
-@if (h.Actions.Contains(typeof(EstablishPlayers)))
+@if (Client.Actions.Contains(typeof(EstablishPlayers)))
 {
-    <EstablishPlayersComponent h="@h" />
+    <EstablishPlayersComponent Client="@Client" />
 }
 
-@if (h.Game.CurrentPhase == Phase.Bidding)
+@if (Client.Game.CurrentPhase == Phase.Bidding)
 {
-    <NormalBiddingPanel h="h" CanBid="h.Actions.Contains(typeof(Bid))" />
+    <NormalBiddingPanel Client="Client" CanBid="Client.Actions.Contains(typeof(Bid))" />
 }
 
-@if (h.Game.CurrentPhase == Phase.BlackMarketBidding)
+@if (Client.Game.CurrentPhase == Phase.BlackMarketBidding)
 {
-    <BlackMarketBiddingPanel h="h" CanBid="h.Actions.Contains(typeof(BlackMarketBid))" />
+    <BlackMarketBiddingPanel Client="Client" CanBid="Client.Actions.Contains(typeof(BlackMarketBid))" />
 }
 
-@foreach (var a in h.Actions)
+@foreach (var a in Client.Actions)
 {
     switch (a.Name)
     {
         case "FactionSelected":
             {
-                <FactionSelectedComponent h="@h" />
+                <FactionSelectedComponent Client="@Client" />
             }
             break;
         case "FactionTradeOffered":
             {
-                <FactionTradeOfferedComponent h="@h" />
+                <FactionTradeOfferedComponent Client="@Client" />
             }
             break;
         case "SkillAssigned":
             {
-                <SkillAssignedComponent h="@h" />
+                <SkillAssignedComponent Client="@Client" />
             }
             break;
         case "DiscoveryEntered":
             {
-                <DiscoveryEnteredComponent h="@h" />
+                <DiscoveryEnteredComponent Client="@Client" />
             }
             break;
         case "StormDialled":
             {
-                <StormDialledComponent h="@h" />
+                <StormDialledComponent Client="@Client" />
             }
             break;
         case "TestingStationUsed":
             {
-                <TestingStationUsedComponent h="@h" />
+                <TestingStationUsedComponent Client="@Client" />
             }
             break;
         case "CardsDetermined":
             {
-                <CardsDeterminedComponent h="@h" />
+                <CardsDeterminedComponent Client="@Client" />
             }
             break;
         case "PerformSetup":
             {
-                <PerformSetupComponent h="@h" />
+                <PerformSetupComponent Client="@Client" />
             }
             break;
         case "PerformYellowSetup":
             {
-                <PerformYellowSetupComponent h="@h" />
+                <PerformYellowSetupComponent Client="@Client" />
             }
             break;
         case "BluePrediction":
             {
-                <BluePredictionComponent h="@h" />
+                <BluePredictionComponent Client="@Client" />
             }
             break;
         case "PerformBluePlacement":
             {
-                <PerformBluePlacementComponent h="@h" />
+                <PerformBluePlacementComponent Client="@Client" />
             }
             break;
         case "PerformCyanSetup":
             {
-                <PerformCyanSetupComponent h="@h" />
+                <PerformCyanSetupComponent Client="@Client" />
             }
             break;
         case "MulliganPerformed":
             {
-                <MulliganPerformedComponent h="@h" />
+                <MulliganPerformedComponent Client="@Client" />
             }
             break;
         case "TraitorsSelected":
             {
-                <TraitorsSelectedComponent h="@h" />
+                <TraitorsSelectedComponent Client="@Client" />
             }
             break;
         case "StormSpellPlayed":
             {
-                <StormSpellPlayedComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.StormSpell)" />
+                <StormSpellPlayedComponent Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.StormSpell)" />
             }
             break;
         case "MetheorPlayed":
             {
-                <SimpleActionComponent GameEventType="MetheorPlayed" h="@h" BackgroundImage="@GetImage(TreacheryCardType.Metheor)" Title="@DescribeCard(TreacheryCardType.Metheor)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Metheor)" />
+                <SimpleActionComponent GameEventType="MetheorPlayed" Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Metheor)" Title="@DescribeCard(TreacheryCardType.Metheor)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Metheor)" />
             }
             break;
         case "TakeLosses":
             {
-                <TakeLossesComponent h="@h" />
+                <TakeLossesComponent Client="@Client" />
             }
             break;
         case "NexusVoted":
             {
-                <YesNoActionComponent GameEventType="NexusVoted" h="@h" Title="Should a Nexus occur?" Alert="true" />
+                <YesNoActionComponent GameEventType="NexusVoted" Client="@Client" Title="Should a Nexus occur?" Alert="true" />
             }
             break;
         case "YellowSentMonster":
             {
-                <YellowSentMonsterComponent h="@h" />
+                <YellowSentMonsterComponent Client="@Client" />
             }
             break;
         case "YellowRidesMonster":
             {
-                <YellowRideComponent h="@h" />
+                <YellowRideComponent Client="@Client" />
             }
             break;
         case "AllianceOffered":
             {
-                <AllianceOfferedComponent h="@h" />
+                <AllianceOfferedComponent Client="@Client" />
             }
             break;
         case "AllianceBroken":
             {
-                <SimpleActionComponent GameEventType="AllianceBroken" h="@h" Title="Break your current alliance?" Alert="false" ConfirmLabel="Break" />
+                <SimpleActionComponent GameEventType="AllianceBroken" Client="@Client" Title="Break your current alliance?" Alert="false" ConfirmLabel="Break" />
             }
             break;
         case "NexusCardDrawn":
             {
-                <NexusCardDrawnComponent h="@h" />
+                <NexusCardDrawnComponent Client="@Client" />
             }
             break;
         case "CharityClaimed":
             {
-                <SimpleActionComponent GameEventType="CharityClaimed" h="@h" Title="Claim Charity?" Alert="false" ConfirmLabel="Claim" />
+                <SimpleActionComponent GameEventType="CharityClaimed" Client="@Client" Title="Claim Charity?" Alert="false" ConfirmLabel="Claim" />
             }
             break;
         case "Revival":
             {
-                <RevivalComponent h="@h" />
+                <RevivalComponent Client="@Client" />
             }
             break;
         case "Shipment":
             {
-                <ShipmentComponent h="@h" />
+                <ShipmentComponent Client="@Client" />
             }
             break;
         case "OrangeDelay":
             {
-                <SimpleActionComponent GameEventType="OrangeDelay" h="@h" Title="Delay your turn?" Alert="true" ConfirmLabel="Delay" AllowAutoConfirm=true/>
+                <SimpleActionComponent GameEventType="OrangeDelay" Client="@Client" Title="Delay your turn?" Alert="true" ConfirmLabel="Delay" AllowAutoConfirm=true/>
             }
             break;
         case "BlueAccompanies":
             {
-                <BlueAccompaniesComponent h="@h" />
+                <BlueAccompaniesComponent Client="@Client" />
             }
             break;
         case "BlueFlip":
             {
-                <BlueFlipComponent h="@h" />
+                <BlueFlipComponent Client="@Client" />
             }
             break;
         case "TerrorRevealed":
             {
-                <TerrorRevealedComponent h="@h" />
+                <TerrorRevealedComponent Client="@Client" />
             }
             break;
         case "AmbassadorActivated":
             {
-                <AmbassadorActivatedComponent h="@h" />
+                <AmbassadorActivatedComponent Client="@Client" />
             }
             break;
             case "AllianceByTerror":
             {
-                <YesNoActionComponent GameEventType="AllianceByTerror" h="@h" Title=@Skin.Current.Format("Enter an alliance with {0}?", Faction.Cyan) Alert="true" />
+                <YesNoActionComponent GameEventType="AllianceByTerror" Client="@Client" Title=@Skin.Current.Format("Enter an alliance with {0}?", Faction.Cyan) Alert="true" />
             }
             break;
         case "AllianceByAmbassador":
             {
-                <YesNoActionComponent GameEventType="AllianceByAmbassador" h="@h" Title=@Skin.Current.Format("Enter an alliance with {0}?", Faction.Pink) Alert="true" />
+                <YesNoActionComponent GameEventType="AllianceByAmbassador" Client="@Client" Title=@Skin.Current.Format("Enter an alliance with {0}?", Faction.Pink) Alert="true" />
             }
             break;
         case "NexusPlayed":
             {
-                <NexusPlayedComponent h="@h" />
+                <NexusPlayedComponent Client="@Client" />
             }
             break;
         case "BlueBattleAnnouncement":
             {
-                <BlueBattleAnnouncementComponent h="@h" />
+                <BlueBattleAnnouncementComponent Client="@Client" />
             }
             break;
         case "Move":
             {
-                <MoveComponent h="@h" />
+                <MoveComponent Client="@Client" />
             }
             break;
         case "Caravan":
             {
-                <CaravanComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Caravan)" />
+                <CaravanComponent Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Caravan)" />
             }
             break;
         case "BattleInitiated":
             {
-                <BattleInitiatedComponent h="@h" />
+                <BattleInitiatedComponent Client="@Client" />
             }
             break;
         case "BattleClaimed":
@@ -227,384 +227,384 @@
                     Skin.Current.Format("Do you wish to fight in {0}? Otherwise, your ally will.", Game.BattleAboutToStart.Territory) : 
                     Skin.Current.Format("Should {0} fight the battle in {1}?", Faction.Pink, Game.BattleAboutToStart.Territory);
 
-                <YesNoActionComponent GameEventType="BattleClaimed" h="@h" Title=@title Alert="true" />
+                <YesNoActionComponent GameEventType="BattleClaimed" Client="@Client" Title=@title Alert="true" />
             }
             break;
         case "Voice":
             {
-                <VoiceComponent h="@h" />
+                <VoiceComponent Client="@Client" />
             }
             break;
         case "Prescience":
             {
-                <PrescienceComponent h="@h" />
+                <PrescienceComponent Client="@Client" />
             }
             break;
         case "Battle":
             {
-                <BattleComponent h="@h" />
+                <BattleComponent Client="@Client" />
             }
             break;
         case "BattleRevision":
             {
-                <SimpleActionComponent GameEventType="BattleRevision" h="@h" Title="Change your battle plan?" Alert="false" ConfirmLabel="Change Plan" />
+                <SimpleActionComponent GameEventType="BattleRevision" Client="@Client" Title="Change your battle plan?" Alert="false" ConfirmLabel="Change Plan" />
             }
             break;
         case "TreacheryCalled":
             {
-                <TreacheryCalledComponent h="@h" />
+                <TreacheryCalledComponent Client="@Client" />
             }
             break;
         case "FaceDancerRevealed":
             {
-                <FaceDancerRevealedComponent h="@h" />
+                <FaceDancerRevealedComponent Client="@Client" />
             }
             break;
         case "BattleConcluded":
             {
-                <BattleConcludedComponent h="@h" />
+                <BattleConcludedComponent Client="@Client" />
             }
             break;
         case "LoserConcluded":
             {
-                <LoserConcludedComponent h="@h" />
+                <LoserConcludedComponent Client="@Client" />
             }
             break;
         case "DivideResources":
             {
-                <DivideResourcesComponent h="@h" />
+                <DivideResourcesComponent Client="@Client" />
             }
             break;
         case "DivideResourcesAccepted":
             {
-                <YesNoActionComponent GameEventType="DivideResourcesAccepted" h="@h" Title=@Skin.Current.Format("Agree with the proposed division of {0}?", Concept.Resource) Alert="true" />
+                <YesNoActionComponent GameEventType="DivideResourcesAccepted" Client="@Client" Title=@Skin.Current.Format("Agree with the proposed division of {0}?", Concept.Resource) Alert="true" />
             }
             break;
         case "DiscoveryRevealed":
             {
-                <DiscoveryRevealedComponent h="@h" />
+                <DiscoveryRevealedComponent Client="@Client" />
             }
             break;
         case "CardGiven":
             {
-                <YesNoActionComponent GameEventType="CardGiven" h="@h" Title=@Skin.Current.Format("Give your ally the {0} you just received?", Game.CardThatMustBeKeptOrGivenToAlly) Alert="true" />
+                <YesNoActionComponent GameEventType="CardGiven" Client="@Client" Title=@Skin.Current.Format("Give your ally the {0} you just received?", Game.CardThatMustBeKeptOrGivenToAlly) Alert="true" />
             }
             break;
         case "RaiseDeadPlayed":
             {
-                <RaiseDeadComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.RaiseDead)" />
+                <RaiseDeadComponent Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.RaiseDead)" />
             }
             break;
         case "Donated":
             {
-                <DonatedComponent h="@h" />
+                <DonatedComponent Client="@Client" />
             }
             break;
         case "ResourcesTransferred":
             {
-                <ResourcesTransferredComponent h="@h" />
+                <ResourcesTransferredComponent Client="@Client" />
             }
             break;
         case "WhiteGaveCard":
             {
-                <WhiteGaveCardComponent h="@h" />
+                <WhiteGaveCardComponent Client="@Client" />
             }
             break;
         case "AllyPermission":
             {
-                <AllyPermissionComponent h="@h" />
+                <AllyPermissionComponent Client="@Client" />
             }
             break;
         case "ClairVoyancePlayed":
             {
-                <ClairVoyancePlayedComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Clairvoyance)" />
+                <ClairVoyancePlayedComponent Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Clairvoyance)" />
             }
             break;
         case "ClairVoyanceAnswered":
             {
-                <ClairVoyanceAnsweredComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Clairvoyance)" />
+                <ClairVoyanceAnsweredComponent Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Clairvoyance)" />
             }
             break;
         case "KarmaHandSwapInitiated":
             {
-                <KarmaHandSwapInitiatedComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
+                <KarmaHandSwapInitiatedComponent Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
             }
             break;
         case "KarmaShipmentPrevention":
             {
-                <KarmaShipmentPreventionComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
+                <KarmaShipmentPreventionComponent Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
             }
             break;
         case "KarmaRevivalPrevention":
             {
-                <KarmaRevivalPreventionComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
+                <KarmaRevivalPreventionComponent Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
             }
             break;
         case "KarmaHandSwap":
             {
-                <KarmaHandSwapComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
+                <KarmaHandSwapComponent Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
             }
             break;
         case "KarmaFreeRevival":
             {
-                <KarmaFreeRevivalComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
+                <KarmaFreeRevivalComponent Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
             }
             break;
         case "KarmaHmsMovement":
             {
-                <KarmaHmsMovementComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
+                <KarmaHmsMovementComponent Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
             }
             break;
         case "KarmaMonster":
             {
-                <KarmaMonsterComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
+                <KarmaMonsterComponent Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
             }
             break;
         case "KarmaPrescience":
             {
-                <SimpleActionComponent GameEventType="KarmaPrescience" h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Skin.Current.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)" />
+                <SimpleActionComponent GameEventType="KarmaPrescience" Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Skin.Current.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)" />
             }
             break;
         case "KarmaPinkDial":
             {
-                <SimpleActionComponent GameEventType="KarmaPinkDial" h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Skin.Current.Format("Use {0} to add the difference between the leader discs to your dial", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)" />
+                <SimpleActionComponent GameEventType="KarmaPinkDial" Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Skin.Current.Format("Use {0} to add the difference between the leader discs to your dial", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)" />
             }
             break;
         case "KarmaWhiteBuy":
             {
-                <KarmaWhiteBuyComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
+                <KarmaWhiteBuyComponent Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
             }
             break;
         case "Karma":
             {
-                <KarmaComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
+                <KarmaComponent Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
             }
             break;
         case "FaceDanced":
             {
-                <FaceDancedComponent h="@h" />
+                <FaceDancedComponent Client="@Client" />
             }
             break;
         case "FaceDancerReplaced":
             {
-                <FaceDancerReplacedComponent h="@h" />
+                <FaceDancerReplacedComponent Client="@Client" />
             }
             break;
         case "SetIncreasedRevivalLimits":
             {
-                <SetIncreasedRevivalLimitsComponent h="@h" />
+                <SetIncreasedRevivalLimitsComponent Client="@Client" />
             }
             break;
         case "SetShipmentPermission":
             {
-                <SetShipmentPermissionComponent h="@h" />
+                <SetShipmentPermissionComponent Client="@Client" />
             }
             break;
         case "RedBidSupport":
             {
-                <RedBidSupportComponent h="@h" />
+                <RedBidSupportComponent Client="@Client" />
             }
             break;
         case "RequestPurpleRevival":
             {
-                <RequestPurpleRevivalComponent h="@h" />
+                <RequestPurpleRevivalComponent Client="@Client" />
             }
             break;
         case "AcceptOrCancelPurpleRevival":
             {
-                <AcceptOrCancelPurpleRevivalComponent h="@h" />
+                <AcceptOrCancelPurpleRevivalComponent Client="@Client" />
             }
             break;
         case "AmalPlayed":
             {
-                <SimpleActionComponent GameEventType="AmalPlayed" h="@h" BackgroundImage="@GetImage(TreacheryCardType.Amal)" Title="@DescribeCard(TreacheryCardType.Amal)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Amal)" />
+                <SimpleActionComponent GameEventType="AmalPlayed" Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Amal)" Title="@DescribeCard(TreacheryCardType.Amal)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Amal)" />
             }
             break;
         case "RecruitsPlayed":
             {
-                <SimpleActionComponent GameEventType="RecruitsPlayed" h="@h" BackgroundImage="@GetImage(TreacheryCardType.Recruits)" Title="@DescribeCard(TreacheryCardType.Recruits)" Alert="false" ConfirmLabel="@Skin.Current.Format("Play {0}", TreacheryCardType.Recruits)" />
+                <SimpleActionComponent GameEventType="RecruitsPlayed" Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Recruits)" Title="@DescribeCard(TreacheryCardType.Recruits)" Alert="false" ConfirmLabel="@Skin.Current.Format("Play {0}", TreacheryCardType.Recruits)" />
             }
             break;
         case "WhiteAnnouncesBlackMarket":
             {
-                <WhiteAnnouncesBlackMarketComponent h="@h" />
+                <WhiteAnnouncesBlackMarketComponent Client="@Client" />
             }
             break;
         case "GreyRemovedCardFromAuction":
             {
-                <GreyRemovedCardFromAuctionComponent h="@h" />
+                <GreyRemovedCardFromAuctionComponent Client="@Client" />
             }
             break;
         case "GreySelectedStartingCard":
             {
-                <GreySelectedStartingCardComponent h="@h" />
+                <GreySelectedStartingCardComponent Client="@Client" />
             }
             break;
         case "GreySwappedCardOnBid":
             {
-                <GreySwappedCardOnBidComponent h="@h" />
+                <GreySwappedCardOnBidComponent Client="@Client" />
             }
             break;
         case "PerformHmsMovement":
             {
-                <PerformHmsMovementComponent h="@h" />
+                <PerformHmsMovementComponent Client="@Client" />
             }
             break;
         case "PerformHmsPlacement":
             {
-                <PerformHmsPlacementComponent h="@h" />
+                <PerformHmsPlacementComponent Client="@Client" />
             }
             break;
         case "HarvesterPlayed":
             {
-                <SimpleActionComponent GameEventType="HarvesterPlayed" h="@h" BackgroundImage="@GetImage(TreacheryCardType.Harvester)" Title="@DescribeCard(TreacheryCardType.Harvester)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Harvester)" />
+                <SimpleActionComponent GameEventType="HarvesterPlayed" Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Harvester)" Title="@DescribeCard(TreacheryCardType.Harvester)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Harvester)" />
             }
             break;
         case "PoisonToothCancelled":
             {
-                <SimpleActionComponent GameEventType="PoisonToothCancelled" h="@h" BackgroundImage="@GetImage(TreacheryCardType.PoisonTooth)" Title="Cancel Poison Tooth?" Alert="false" ConfirmLabel="Cancel" />
+                <SimpleActionComponent GameEventType="PoisonToothCancelled" Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.PoisonTooth)" Title="Cancel Poison Tooth?" Alert="false" ConfirmLabel="Cancel" />
             }
             break;
         case "ReplacedCardWon":
             {
-                <ReplacedCardWonComponent h="@h" />
+                <ReplacedCardWonComponent Client="@Client" />
             }
             break;
         case "ThumperPlayed":
             {
-                <SimpleActionComponent GameEventType="ThumperPlayed" h="@h" BackgroundImage="@GetImage(TreacheryCardType.Thumper)" Title="@DescribeCard(TreacheryCardType.Thumper)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Thumper)" />
+                <SimpleActionComponent GameEventType="ThumperPlayed" Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Thumper)" Title="@DescribeCard(TreacheryCardType.Thumper)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Thumper)" />
             }
             break;
         case "HideSecrets":
             {
-                <SimpleActionComponent GameEventType="HideSecrets" h="@h" Title="Hide your secret info (like cards and traitors) from other players at the end of the game?" ConfirmLabel="Yes" Alert="true" Dismissable="true" DismissLabel="No" />
+                <SimpleActionComponent GameEventType="HideSecrets" Client="@Client" Title="Hide your secret info (like cards and traitors) from other players at the end of the game?" ConfirmLabel="Yes" Alert="true" Dismissable="true" DismissLabel="No" />
             }
             break;
         case "DealOffered":
             {
-                <DealOfferedComponent h="@h" />
+                <DealOfferedComponent Client="@Client" />
             }
             break;
         case "Discarded":
             {
-                <DiscardedComponent h="@h" />
+                <DiscardedComponent Client="@Client" />
             }
             break;
         case "RedDiscarded":
             {
-                <RedDiscardedComponent h="@h" />
+                <RedDiscardedComponent Client="@Client" />
             }
             break;
         case "TraitorDiscarded":
             {
-                <TraitorDiscardedComponent h="@h" />
+                <TraitorDiscardedComponent Client="@Client" />
             }
             break;
         case "BrownDiscarded":
             {
-                <BrownDiscardedComponent h="@h" />
+                <BrownDiscardedComponent Client="@Client" />
             }
             break;
         case "TerrorPlanted":
             {
-                <TerrorPlantedComponent h="@h" />
+                <TerrorPlantedComponent Client="@Client" />
             }
             break;
         case "AmbassadorPlaced":
             {
-                <AmbassadorPlacedComponent h="@h" />
+                <AmbassadorPlacedComponent Client="@Client" />
             }
             break;
         case "ExtortionPrevented":
             {
                 var title = @Skin.Current.Format("Pay 3 to prevent {0} regaining their {1} token?", Faction.Cyan, TerrorType.Extortion);
-                <SimpleActionComponent GameEventType="ExtortionPrevented" h="@h" Title=@title ConfirmLabel="Yes" Alert="false" />
+                <SimpleActionComponent GameEventType="ExtortionPrevented" Client="@Client" Title=@title ConfirmLabel="Yes" Alert="false" />
             }
             break;
         case "BrownEconomics":
             {
-                <BrownEconomicsComponent h="@h" />
+                <BrownEconomicsComponent Client="@Client" />
             }
             break;
         case "CardTraded":
             {
-                <CardTradedComponent h="@h" />
+                <CardTradedComponent Client="@Client" />
             }
             break;
         case "KarmaBrownDiscard":
             {
-                <KarmaBrownDiscardComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
+                <KarmaBrownDiscardComponent Client="@Client" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
             }
             break;
         case "AuditCancelled":
             {
-                <AuditCancelledComponent h="@h" />
+                <AuditCancelledComponent Client="@Client" />
             }
             break;
         case "Audited":
             {
-                <AuditedComponent h="@h" />
+                <AuditedComponent Client="@Client" />
             }
             break;
         case "ResourcesAudited":
             {
-                <ResourcesAuditedComponent h="@h" />
+                <ResourcesAuditedComponent Client="@Client" />
             }
             break;
         case "BrownExtraMove":
             {
-                var cardToUse = BrownExtraMove.CardToUse(h.Player);
+                var cardToUse = BrownExtraMove.CardToUse(Client.Player);
                 var title = Skin.Current.Format("Use {0} to be able to move your forces one extra territory?", cardToUse != null ? Name(cardToUse) : "Nexus Cunning");
                 var background = cardToUse != null ? Skin.Current.GetImageURL(cardToUse) : Skin.Current.GetNexusCardImageURL(Faction.Brown);
-                <SimpleActionComponent GameEventType="BrownExtraMove" h="@h" BackgroundImage=@background Title=@title Alert="false" />
+                <SimpleActionComponent GameEventType="BrownExtraMove" Client="@Client" BackgroundImage=@background Title=@title Alert="false" />
             }
             break;
         case "BrownMovePrevention":
             {
-                <BrownMovePreventionComponent h="@h" />
+                <BrownMovePreventionComponent Client="@Client" />
             }
             break;
         case "BrownKarmaPrevention":
             {
-                <BrownKarmaPreventionComponent h="@h" />
+                <BrownKarmaPreventionComponent Client="@Client" />
             }
             break;
         case "BrownFreeRevivalPrevention":
             {
-                <BrownFreeRevivalPreventionComponent h="@h" />
+                <BrownFreeRevivalPreventionComponent Client="@Client" />
             }
             break;
         case "BrownRemoveForce":
             {
-                <BrownRemoveForceComponent h="@h" />
+                <BrownRemoveForceComponent Client="@Client" />
             }
             break;
         case "WhiteAnnouncesAuction":
             {
-                <WhiteAnnouncesAuctionComponent h="@h" />
+                <WhiteAnnouncesAuctionComponent Client="@Client" />
             }
             break;
         case "WhiteSpecifiesAuction":
             {
-                <WhiteSpecifiesAuctionComponent h="@h" />
+                <WhiteSpecifiesAuctionComponent Client="@Client" />
             }
             break;
         case "WhiteKeepsUnsoldCard":
             {
-                <WhiteKeepsUnsoldCardComponent h="@h" />
+                <WhiteKeepsUnsoldCardComponent Client="@Client" />
             }
             break;
         case "WhiteRevealedNoField":
             {
-                <SimpleActionComponent GameEventType="WhiteRevealedNoField" h="@h"
+                <SimpleActionComponent GameEventType="WhiteRevealedNoField" Client="@Client"
                                         IsFactionSpecific=Faction.White
-                                        Title="@Skin.Current.Format("Reveal your currently active No-Field of {0}, placing {1} forces?", h.Game.CurrentNoFieldValue, Math.Min(h.Game.CurrentNoFieldValue, h.Player.ForcesInReserve))"
+                                        Title="@Skin.Current.Format("Reveal your currently active No-Field of {0}, placing {1} forces?", Client.Game.CurrentNoFieldValue, Math.Min(Client.Game.CurrentNoFieldValue, Client.Player.ForcesInReserve))"
                                         ConfirmLabel="Reveal" />
             }
             break;
         case "ResidualPlayed":
             {
-                <SimpleActionComponent GameEventType="ResidualPlayed" h="@h"
+                <SimpleActionComponent GameEventType="ResidualPlayed" Client="@Client"
                                         BackgroundImage="@GetImage(TreacheryCardType.Residual)"
                                         Title="@Skin.Current.Format("Use {0} to kill a random available opponent leader?", TreacheryCardType.Residual)"
                                         ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Residual)" />
@@ -612,32 +612,32 @@
             break;
         case "FlightUsed":
             {
-                <FlightUsedComponent h="@h" />
+                <FlightUsedComponent Client="@Client" />
             }
             break;
         case "FlightDiscoveryUsed":
             {
-                <SimpleActionComponent GameEventType="FlightDiscoveryUsed" h="@h" Title=@Skin.Current.Format("Use your {0} Discovery Token to gain extra movement speed?", DiscoveryToken.Flight) Alert="false" ConfirmLabel="Yes" />
+                <SimpleActionComponent GameEventType="FlightDiscoveryUsed" Client="@Client" Title=@Skin.Current.Format("Use your {0} Discovery Token to gain extra movement speed?", DiscoveryToken.Flight) Alert="false" ConfirmLabel="Yes" />
             }
             break;
         case "RockWasMelted":
             {
-                <RockWasMeltedComponent h="@h" />
+                <RockWasMeltedComponent Client="@Client" />
             }
             break;
         case "DistransUsed":
             {
-                <DistransUsedComponent h="@h" />
+                <DistransUsedComponent Client="@Client" />
             }
             break;
         case "DiscardedTaken":
             {
-                <DiscardedTakenComponent h="@h" />
+                <DiscardedTakenComponent Client="@Client" />
             }
             break;
         case "DiscardedSearchedAnnounced":
             {
-                <SimpleActionComponent GameEventType="DiscardedSearchedAnnounced" h="@h"
+                <SimpleActionComponent GameEventType="DiscardedSearchedAnnounced" Client="@Client"
                                         BackgroundImage="@GetImage(TreacheryCardType.SearchDiscarded)"
                                         Title="@Skin.Current.Format("Use {0} to pay 2 and search and take a card from the treachery discard pile?", TreacheryCardType.SearchDiscarded)"
                                         ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.SearchDiscarded)" />
@@ -645,17 +645,17 @@
             break;
         case "DiscardedSearched":
             {
-                <DiscardedSearchedComponent h="@h" />
+                <DiscardedSearchedComponent Client="@Client" />
             }
             break;
         case "JuicePlayed":
             {
-                <JuicePlayedComponent h="@h" />
+                <JuicePlayedComponent Client="@Client" />
             }
             break;
         case "PortableAntidoteUsed":
             {
-                <SimpleActionComponent GameEventType="PortableAntidoteUsed" h="@h"
+                <SimpleActionComponent GameEventType="PortableAntidoteUsed" Client="@Client"
                                         BackgroundImage="@GetImage(TreacheryCardType.PortableAntidote)"
                                         Title="@Skin.Current.Format("Use your {0}?", TreacheryCardType.PortableAntidote)"
                                         ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.PortableAntidote)" />
@@ -663,80 +663,80 @@
             break;
         case "Bureaucracy":
             {
-                <YesNoActionComponent GameEventType="Bureaucracy" h="@h" BackgroundImage="@Skin.Current.GetImageURL(LeaderSkill.Bureaucrat)" Title="@Skin.Current.Format("Use your {0} skill?", LeaderSkill.Bureaucrat)" Alert="true" />
+                <YesNoActionComponent GameEventType="Bureaucracy" Client="@Client" BackgroundImage="@Skin.Current.GetImageURL(LeaderSkill.Bureaucrat)" Title="@Skin.Current.Format("Use your {0} skill?", LeaderSkill.Bureaucrat)" Alert="true" />
             }
             break;
         case "Captured":
             {
-                <YesNoActionComponent GameEventType="Captured" h="@h" Title="Do you wish to capture a random leader from your opponent?" Alert="true" ForFaction="Faction.Black" />
+                <YesNoActionComponent GameEventType="Captured" Client="@Client" Title="Do you wish to capture a random leader from your opponent?" Alert="true" ForFaction="Faction.Black" />
             }
             break;
         case "Diplomacy":
             {
-                <DiplomacyComponent h="@h" />
+                <DiplomacyComponent Client="@Client" />
             }
             break;
         case "SwitchedSkilledLeader":
             {
                 var skilledLeader = SwitchedSkilledLeader.SwitchableLeader(Game, Player);
-                var title = Skin.Current.Format("Place {0} {1} your player shield?", skilledLeader, h.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of");
-                var confirmLabel = Skin.Current.Format("Put {0} shield", h.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of");
+                var title = Skin.Current.Format("Place {0} {1} your player shield?", skilledLeader, Client.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of");
+                var confirmLabel = Skin.Current.Format("Put {0} shield", Client.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of");
 
-                <SimpleActionComponent GameEventType="SwitchedSkilledLeader" h="@h"
-                        BackgroundImage="@Skin.Current.GetImageURL(h.Game.Skill(skilledLeader))" Title="@title"
+                <SimpleActionComponent GameEventType="SwitchedSkilledLeader" Client="@Client"
+                        BackgroundImage="@Skin.Current.GetImageURL(Client.Game.Skill(skilledLeader))" Title="@title"
                         ConfirmLabel="@confirmLabel" />
             }
             break;
         case "Thought":
             {
-                <ThoughtComponent h="@h" />
+                <ThoughtComponent Client="@Client" />
             }
             break;
         case "ThoughtAnswered":
             {
-                <ThoughtAnsweredComponent h="@h" />
+                <ThoughtAnsweredComponent Client="@Client" />
             }
             break;
         case "HMSAdvantageChosen":
             {
-                <HMSAdvantageChosenComponent h="@h" />
+                <HMSAdvantageChosenComponent Client="@Client" />
             }
             break;
         case "Retreat":
             {
-                <RetreatComponent h="@h" />
+                <RetreatComponent Client="@Client" />
             }
             break;
         case "Planetology":
             {
-                <PlanetologyComponent h="@h" />
+                <PlanetologyComponent Client="@Client" />
             }
             break;
     }
 }
 
-@if (DealAccepted.CurrentDeals(h.Game).Any() || h.IsPlayer && (DealAccepted.AcceptableDeals(h.Game, h.Player).Any() || DealAccepted.CancellableDeals(h.Game, h.Player).Any()))
+@if (DealAccepted.CurrentDeals(Client.Game).Any() || Client.IsPlayer && (DealAccepted.AcceptableDeals(Client.Game, Client.Player).Any() || DealAccepted.CancellableDeals(Client.Game, Client.Player).Any()))
 {
-    <DealComponent h="@h" />
+    <DealComponent Client="@Client" />
 }
 
-@if (h.Game.AssistedNotekeepingEnabled(Player))
+@if (Client.Game.AssistedNotekeepingEnabled(Player))
 {
-    <NoteComponent h="@h" />
+    <NoteComponent Client="@Client" />
 }
 
-@if (h.IsPlayer && h.CurrentPhase >= Phase.SelectingTraitors && h.IAm(Faction.Green))
+@if (Client.IsPlayer && Client.CurrentPhase >= Phase.SelectingTraitors && Client.IAm(Faction.Green))
 {
-    <TrackerComponent h="@h" />
+    <TrackerComponent Client="@Client" />
 }
 
-@if (h.Game.CurrentPhase == Phase.GameEnded && h.IsHost && !h.StatisticsSent && h.Game.Players.Count() >= 4 && h.Game.Players.Count(p => !(p.IsBot)) > h.Game.Players.Count(p => p.IsBot))
+@if (Client.Game.CurrentPhase == Phase.GameEnded && Client.IsHost && !Client.StatisticsSent && Client.Game.Players.Count() >= 4 && Client.Game.Players.Count(p => !(p.IsBot)) > Client.Game.Players.Count(p => p.IsBot))
 {
-    <UploadStatisticsComponent h="@h" />
+    <UploadStatisticsComponent Client="@Client" />
 }
 
-@if (h.Game.CurrentMainPhase != MainPhase.Ended && h.Actions.Contains(typeof(PlayerReplaced)))
+@if (Client.Game.CurrentMainPhase != MainPhase.Ended && Client.Actions.Contains(typeof(PlayerReplaced)))
 {
-    <PlayerReplacedComponent h="@h" />
+    <PlayerReplacedComponent Client="@Client" />
 }
 

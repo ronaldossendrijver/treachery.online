@@ -59,14 +59,14 @@
     {
         if (firstRender)
         {
-            h.OnLocationSelected += HandleLocationSelected;
+            Client.OnLocationSelected += HandleLocationSelected;
         }
     }
 
     public override void Dispose()
     {
         base.Dispose();
-        h.OnLocationSelected -= HandleLocationSelected;
+        Client.OnLocationSelected -= HandleLocationSelected;
     }
 
     protected override Retreat ConfirmedResult => new Retreat(Game, Faction) { Location = target, Forces = forces, SpecialForces = specialForces };

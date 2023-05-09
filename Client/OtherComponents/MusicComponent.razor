@@ -52,7 +52,7 @@
 
     private async Task UpdateMusicAndSound()
     {
-        if (h.HostProxy != null)
+        if (Client.HostProxy != null)
         {
             var soundtrackToPlay = DetermineSoundtrack();
 
@@ -77,20 +77,20 @@
                 }
             }
 
-            h.CurrentEffectVolume = DesiredEffectVolume;
-            h.CurrentChatVolume = DesiredChatVolume;
+            Client.CurrentEffectVolume = DesiredEffectVolume;
+            Client.CurrentChatVolume = DesiredChatVolume;
         }
     }
 
     private string DetermineSoundtrack()
     {
-        if (h.Game == null)
+        if (Client.Game == null)
         {
             return Skin.Current.MusicGeneral_URL;
         }
         else
         {
-            return (h.Game.CurrentMainPhase) switch
+            return (Client.Game.CurrentMainPhase) switch
             {
                 MainPhase.Setup => Skin.Current.MusicSetup_URL,
                 MainPhase.Blow or MainPhase.Charity => Skin.Current.MusicResourceBlow_URL,
@@ -110,14 +110,14 @@
         await Browser.SaveSetting("treachery.online;setting.effect", DesiredEffectVolume);
         await Browser.SaveSetting("treachery.online;setting.chatvolume", DesiredChatVolume);
 
-        if (h.AudioDevice != null)
+        if (Client.AudioDevice != null)
         {
-            await Browser.SaveSetting("treachery.online;setting.audiodevice", h.AudioDevice.DeviceId);
+            await Browser.SaveSetting("treachery.online;setting.audiodevice", Client.AudioDevice.DeviceId);
         }
 
-        if (h.VideoDevice != null)
+        if (Client.VideoDevice != null)
         {
-            await Browser.SaveSetting("treachery.online;setting.videodevice", h.VideoDevice.DeviceId);
+            await Browser.SaveSetting("treachery.online;setting.videodevice", Client.VideoDevice.DeviceId);
         }
     }
 

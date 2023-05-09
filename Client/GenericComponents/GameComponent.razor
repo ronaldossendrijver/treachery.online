@@ -8,13 +8,13 @@
 @code {
 
     [Parameter]
-    public Handler h { get; set; }
+    public Client Client { get; set; }
 
-    protected Game Game => h.Game;
+    protected Game Game => Client.Game;
 
-    protected Player Player => h.Player;
+    protected Player Player => Client.Player;
 
-    protected Faction Faction => h.Faction;
+    protected Faction Faction => Client.Faction;
 
     private string _id = null;
     protected string Id
@@ -37,7 +37,7 @@
 
     protected async Task Request(GameEvent e)
     {
-        await h.HostProxy.Request(e);
+        await Client.HostProxy.Request(e);
     }
 
     private bool _redrawCycleStarted = false;
