@@ -33,11 +33,11 @@ namespace Treachery.Shared
         {
             if (By(Game.CurrentBattle.Aggressor))
             {
-                Game.AggressorBattleAction = null;
+                Game.AggressorPlan = null;
             }
             else if (By(Game.CurrentBattle.Defender))
             {
-                Game.DefenderBattleAction = null;
+                Game.DefenderPlan = null;
             }
         }
 

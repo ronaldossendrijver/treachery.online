@@ -119,27 +119,27 @@ namespace Treachery.Shared
         {
             if (Initiator == Game.CurrentBattle.Aggressor)
             {
-                Game.AggressorBattleAction = this;
+                Game.AggressorPlan = this;
             }
             else if (Initiator == Game.CurrentBattle.Defender)
             {
-                Game.DefenderBattleAction = this;
+                Game.DefenderPlan = this;
             }
 
-            if (Game.AggressorBattleAction != null && Game.DefenderBattleAction != null)
+            if (Game.AggressorPlan != null && Game.DefenderPlan != null)
             {
-                Game.RevealCurrentNoField(DetermineForceSupplier(Game, Game.AggressorBattleAction.Player), Game.CurrentBattle.Territory);
-                Game.RevealCurrentNoField(DetermineForceSupplier(Game, Game.DefenderBattleAction.Player), Game.CurrentBattle.Territory);
+                Game.RevealCurrentNoField(DetermineForceSupplier(Game, Game.AggressorPlan.Player), Game.CurrentBattle.Territory);
+                Game.RevealCurrentNoField(DetermineForceSupplier(Game, Game.DefenderPlan.Player), Game.CurrentBattle.Territory);
 
-                Log(Game.AggressorBattleAction.GetBattlePlanMessage());
-                Log(Game.DefenderBattleAction.GetBattlePlanMessage());
+                Log(Game.AggressorPlan.GetBattlePlanMessage());
+                Log(Game.DefenderPlan.GetBattlePlanMessage());
 
-                RegisterKnownCards(Game.AggressorBattleAction);
-                RegisterKnownCards(Game.DefenderBattleAction);
+                RegisterKnownCards(Game.AggressorPlan);
+                RegisterKnownCards(Game.DefenderPlan);
 
                 PassPurpleTraitorAction();
 
-                Game.Enter(Game.AggressorBattleAction.HasRockMelter || Game.DefenderBattleAction.HasRockMelter, Phase.MeltingRock, Phase.CallTraitorOrPass);
+                Game.Enter(Game.AggressorPlan.HasRockMelter || Game.DefenderPlan.HasRockMelter, Phase.MeltingRock, Phase.CallTraitorOrPass);
             }
         }
 

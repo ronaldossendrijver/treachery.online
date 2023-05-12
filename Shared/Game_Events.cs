@@ -388,20 +388,20 @@ namespace Treachery.Shared
                             result.Add(typeof(Prescience));
                         }
 
-                        if (CurrentBattle != null && faction == CurrentBattle.Aggressor && AggressorBattleAction == null)
+                        if (CurrentBattle != null && faction == CurrentBattle.Aggressor && AggressorPlan == null)
                         {
                             result.Add(typeof(Battle));
                         }
-                        else if (CurrentBattle != null && faction == CurrentBattle.Defender && DefenderBattleAction == null)
+                        else if (CurrentBattle != null && faction == CurrentBattle.Defender && DefenderPlan == null)
                         {
                             result.Add(typeof(Battle));
                         }
 
-                        if (CurrentBattle != null && faction == CurrentBattle.Aggressor && AggressorBattleAction != null)
+                        if (CurrentBattle != null && faction == CurrentBattle.Aggressor && AggressorPlan != null)
                         {
                             result.Add(typeof(BattleRevision));
                         }
-                        else if (CurrentBattle != null && faction == CurrentBattle.Defender && DefenderBattleAction != null)
+                        else if (CurrentBattle != null && faction == CurrentBattle.Defender && DefenderPlan != null)
                         {
                             result.Add(typeof(BattleRevision));
                         }
@@ -421,18 +421,18 @@ namespace Treachery.Shared
 
                 case Phase.CallTraitorOrPass:
 
-                    if (AggressorBattleAction != null && DefenderBattleAction != null &&
+                    if (AggressorPlan != null && DefenderPlan != null &&
                             (AggressorTraitorAction == null && faction == CurrentBattle.Aggressor ||
-                             AggressorTraitorAction == null && faction == Faction.Black && GetPlayer(AggressorBattleAction.Initiator).Ally == Faction.Black && player.Traitors.Contains(DefenderBattleAction.Hero) ||
+                             AggressorTraitorAction == null && faction == Faction.Black && GetPlayer(AggressorPlan.Initiator).Ally == Faction.Black && player.Traitors.Contains(DefenderPlan.Hero) ||
                              DefenderTraitorAction == null && faction == CurrentBattle.Defender ||
-                             DefenderTraitorAction == null && faction == Faction.Black && GetPlayer(DefenderBattleAction.Initiator).Ally == Faction.Black && player.Traitors.Contains(AggressorBattleAction.Hero)))
+                             DefenderTraitorAction == null && faction == Faction.Black && GetPlayer(DefenderPlan.Initiator).Ally == Faction.Black && player.Traitors.Contains(AggressorPlan.Hero)))
                     {
                         result.Add(typeof(TreacheryCalled));
                     }
 
-                    if (faction == AggressorBattleAction.Initiator && AggressorBattleAction.Weapon != null && AggressorBattleAction.Weapon.Type == TreacheryCardType.PoisonTooth && !PoisonToothCancelled) result.Add(typeof(PoisonToothCancelled));
+                    if (faction == AggressorPlan.Initiator && AggressorPlan.Weapon != null && AggressorPlan.Weapon.Type == TreacheryCardType.PoisonTooth && !PoisonToothCancelled) result.Add(typeof(PoisonToothCancelled));
 
-                    if (faction == DefenderBattleAction.Initiator && DefenderBattleAction.Weapon != null && DefenderBattleAction.Weapon.Type == TreacheryCardType.PoisonTooth && !PoisonToothCancelled) result.Add(typeof(PoisonToothCancelled));
+                    if (faction == DefenderPlan.Initiator && DefenderPlan.Weapon != null && DefenderPlan.Weapon.Type == TreacheryCardType.PoisonTooth && !PoisonToothCancelled) result.Add(typeof(PoisonToothCancelled));
 
                     if (PortableAntidoteUsed.CanBePlayed(this, player)) result.Add(typeof(PortableAntidoteUsed));
 
@@ -746,8 +746,8 @@ namespace Treachery.Shared
                     Donated.ValidTargets(this, player).Any() &&
                     (isHost || player.Resources > 0) &&
                     Donated.MayDonate(this, player) &&
-                    (AggressorBattleAction == null || faction != AggressorBattleAction.Initiator) &&
-                    (DefenderBattleAction == null || faction != DefenderBattleAction.Initiator))
+                    (AggressorPlan == null || faction != AggressorPlan.Initiator) &&
+                    (DefenderPlan == null || faction != DefenderPlan.Initiator))
                 {
                     result.Add(typeof(Donated));
                 }

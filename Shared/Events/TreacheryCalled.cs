@@ -43,24 +43,24 @@ namespace Treachery.Shared
 
         public static bool MayCallTreachery(Game g, Player p)
         {
-            if (g.AggressorBattleAction != null && g.DefenderBattleAction != null)
+            if (g.AggressorPlan != null && g.DefenderPlan != null)
             {
                 if (!g.CurrentBattle.Territory.IsHomeworld || p.IsNative(g.CurrentBattle.Territory))
                 {
-                    if (!g.DefenderBattleAction.Messiah)
+                    if (!g.DefenderPlan.Messiah)
                     {
-                        if (g.AggressorBattleAction.Initiator == p.Faction && HasTraitor(g, p, g.DefenderBattleAction.Hero) ||
-                             p.Is(Faction.Black) && p.Ally == g.AggressorBattleAction.Initiator && !g.Prevented(FactionAdvantage.BlackCallTraitorForAlly) && HasTraitor(g, p, g.DefenderBattleAction.Hero))
+                        if (g.AggressorPlan.Initiator == p.Faction && HasTraitor(g, p, g.DefenderPlan.Hero) ||
+                             p.Is(Faction.Black) && p.Ally == g.AggressorPlan.Initiator && !g.Prevented(FactionAdvantage.BlackCallTraitorForAlly) && HasTraitor(g, p, g.DefenderPlan.Hero))
 
                         {
                             return true;
                         }
                     }
 
-                    if (!g.AggressorBattleAction.Messiah)
+                    if (!g.AggressorPlan.Messiah)
                     {
-                        if (g.DefenderBattleAction.Initiator == p.Faction && HasTraitor(g, p, g.AggressorBattleAction.Hero) ||
-                             p.Is(Faction.Black) && p.Ally == g.DefenderBattleAction.Initiator && !g.Prevented(FactionAdvantage.BlackCallTraitorForAlly) && HasTraitor(g, p, g.AggressorBattleAction.Hero))
+                        if (g.DefenderPlan.Initiator == p.Faction && HasTraitor(g, p, g.AggressorPlan.Hero) ||
+                             p.Is(Faction.Black) && p.Ally == g.DefenderPlan.Initiator && !g.Prevented(FactionAdvantage.BlackCallTraitorForAlly) && HasTraitor(g, p, g.AggressorPlan.Hero))
                         {
                             return true;
                         }
@@ -82,25 +82,25 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            if (Game.AggressorBattleAction.By(Initiator) || By(Faction.Black) && Game.AreAllies(Game.AggressorBattleAction.Initiator, Faction.Black))
+            if (Game.AggressorPlan.By(Initiator) || By(Faction.Black) && Game.AreAllies(Game.AggressorPlan.Initiator, Faction.Black))
             {
                 Game.AggressorTraitorAction = this;
                 if (TraitorCalled)
                 {
                     Log();
                     Game.Stone(Milestone.TreacheryCalled);
-                    Player.RevealedTraitors.Add(Game.DefenderBattleAction.Hero);
+                    Player.RevealedTraitors.Add(Game.DefenderPlan.Hero);
                 }
             }
 
-            if (Game.DefenderBattleAction.By(Initiator) || By(Faction.Black) && Game.AreAllies(Game.DefenderBattleAction.Initiator, Faction.Black))
+            if (Game.DefenderPlan.By(Initiator) || By(Faction.Black) && Game.AreAllies(Game.DefenderPlan.Initiator, Faction.Black))
             {
                 Game.DefenderTraitorAction = this;
                 if (TraitorCalled)
                 {
                     Log();
                     Game.Stone(Milestone.TreacheryCalled);
-                    Player.RevealedTraitors.Add(Game.AggressorBattleAction.Hero);
+                    Player.RevealedTraitors.Add(Game.AggressorPlan.Hero);
                 }
             }
 

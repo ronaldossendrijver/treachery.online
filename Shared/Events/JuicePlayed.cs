@@ -97,7 +97,7 @@ namespace Treachery.Shared
             }
             else if (Game.CurrentBattle != null && Type == JuiceType.Aggressor && Game.CurrentBattle.AggressivePlayer != aggressorBeforeJuiceIsPlayed)
             {
-                (Game.DefenderBattleAction, Game.AggressorBattleAction) = (Game.AggressorBattleAction, Game.DefenderBattleAction);
+                (Game.DefenderPlan, Game.AggressorPlan) = (Game.AggressorPlan, Game.DefenderPlan);
                 (Game.DefenderTraitorAction, Game.AggressorTraitorAction) = (Game.AggressorTraitorAction, Game.DefenderTraitorAction);
             }
         }

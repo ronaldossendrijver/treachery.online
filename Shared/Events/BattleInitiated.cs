@@ -122,11 +122,11 @@ namespace Treachery.Shared
 
             if (p.Faction == Aggressor)
             {
-                return Game.AggressorBattleAction;
+                return Game.AggressorPlan;
             }
             else if (p.Faction == Defender)
             {
-                return Game.DefenderBattleAction;
+                return Game.DefenderPlan;
             }
             else
             {
@@ -142,11 +142,11 @@ namespace Treachery.Shared
         {
             if (f == Aggressor)
             {
-                return Game.AggressorBattleAction;
+                return Game.AggressorPlan;
             }
             else if (f == Defender)
             {
-                return Game.DefenderBattleAction;
+                return Game.DefenderPlan;
             }
             else
             {

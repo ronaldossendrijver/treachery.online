@@ -217,9 +217,9 @@
     {
         get
         {
-            if (Game.AggressorBattleAction != null)
+            if (Game.AggressorPlan != null)
             {
-                return Game.AggressorBattleAction.Initiator == Faction ? Game.AggressorBattleAction : Game.DefenderBattleAction;
+                return Game.AggressorPlan.Initiator == Faction ? Game.AggressorPlan : Game.DefenderPlan;
             }
             else
             {

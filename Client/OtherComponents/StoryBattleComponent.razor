@@ -123,9 +123,9 @@
     [Parameter]
     public Game Game { get; set; }
 
-    private Battle AggressorBattle => Game.AggressorBattleAction;
+    private Battle AggressorBattle => Game.AggressorPlan;
 
-    private Battle DefenderBattle => Game.DefenderBattleAction;
+    private Battle DefenderBattle => Game.DefenderPlan;
 
     private string BackgroundStyle(Faction f)
     {

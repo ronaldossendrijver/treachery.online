@@ -371,8 +371,8 @@ namespace Treachery.Shared
             Game.CurrentRedCunning = null;
             Game.CurrentGreyCunning = null;
             Game.BlackVictim = null;
-            Game.AggressorBattleAction = null;
-            Game.DefenderBattleAction = null;
+            Game.AggressorPlan = null;
+            Game.DefenderPlan = null;
             Game.AggressorTraitorAction = null;
             Game.DefenderTraitorAction = null;
             Game.PoisonToothCancelled = false;

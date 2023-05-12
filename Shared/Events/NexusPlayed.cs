@@ -185,7 +185,7 @@ namespace Treachery.Shared
             bool betrayal = CanUseBetrayal(g, p);
 
             bool gameIsInBattle = g.CurrentPhase == Phase.BattlePhase && g.CurrentBattle != null;
-            bool isCurrentlyFormulatingBattlePlan = gameIsInBattle && g.CurrentBattle.IsAggressorOrDefender(p) && (g.DefenderBattleAction == null || g.AggressorBattleAction == null);
+            bool isCurrentlyFormulatingBattlePlan = gameIsInBattle && g.CurrentBattle.IsAggressorOrDefender(p) && (g.DefenderPlan == null || g.AggressorPlan == null);
 
             return (p.Nexus) switch
             {

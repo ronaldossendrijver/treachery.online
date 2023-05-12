@@ -1162,7 +1162,7 @@ namespace Treachery.Shared
 
         protected RockWasMelted DetermineRockWasMelted()
         {
-            var outcome = Game.DetermineBattleOutcome(Game.AggressorBattleAction, Game.DefenderBattleAction, Game.CurrentBattle.Territory);
+            var outcome = Game.DetermineBattleOutcome(Game.AggressorPlan, Game.DefenderPlan, Game.CurrentBattle.Territory, Game);
             LogInfo(outcome.GetMessage());
             return new RockWasMelted(Game, Faction) { Kill = outcome.Winner == this };
         }

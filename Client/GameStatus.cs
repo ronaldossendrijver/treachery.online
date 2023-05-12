@@ -414,7 +414,7 @@ namespace Treachery.Client
                 Phase.MeltingRock => Status(
                     Express("Please decide how to use your ", TreacheryCardType.Rockmelter, "."),
                     Express("Waiting for a decision on how they wish to use their ", TreacheryCardType.Rockmelter, "..."),
-                    game.AggressorBattleAction.HasRockMelter ? game.CurrentBattle.Player : game.CurrentBattle.DefendingPlayer),
+                    game.AggressorPlan.HasRockMelter ? game.CurrentBattle.Player : game.CurrentBattle.DefendingPlayer),
 
                 Phase.CallTraitorOrPass => Status(
                     "You may now call TREACHERY if the enemy leader is a traitor under your command.",
@@ -602,8 +602,8 @@ namespace Treachery.Client
         public static IEnumerable<Player> PlayersThatNeedToMakeABattlePlan(Game Game)
         {
             var result = new List<Player>();
-            if (Game.AggressorBattleAction == null) result.Add(Game.CurrentBattle.AggressivePlayer);
-            if (Game.DefenderBattleAction == null) result.Add(Game.CurrentBattle.DefendingPlayer);
+            if (Game.AggressorPlan == null) result.Add(Game.CurrentBattle.AggressivePlayer);
+            if (Game.DefenderPlan == null) result.Add(Game.CurrentBattle.DefendingPlayer);
             return result;
         }
 

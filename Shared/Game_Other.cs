@@ -111,13 +111,13 @@ namespace Treachery.Shared
 
         internal void RevokePlan(Battle plan)
         {
-            if (plan == AggressorBattleAction)
+            if (plan == AggressorPlan)
             {
-                AggressorBattleAction = null;
+                AggressorPlan = null;
             }
-            else if (plan == DefenderBattleAction)
+            else if (plan == DefenderPlan)
             {
-                DefenderBattleAction = null;
+                DefenderPlan = null;
             }
         }
 

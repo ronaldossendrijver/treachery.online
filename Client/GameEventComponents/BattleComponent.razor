@@ -67,7 +67,7 @@
 
         @if (Faction == Faction.Green || Player.Ally == Faction.Green)
         {
-            var opponentBattlePlan = Game.CurrentBattle.Aggressor == Faction ? Game.DefenderBattleAction : Game.AggressorBattleAction;
+            var opponentBattlePlan = Game.CurrentBattle.Aggressor == Faction ? Game.DefenderPlan : Game.AggressorPlan;
             if (Game.GreenKarma)
             {
                 if (opponentBattlePlan != null)
