@@ -8,7 +8,56 @@ using System.Threading.Tasks;
 namespace Treachery.Shared
 {
     internal class Intel
-    {
+    {/*
+        public static float BattleGain(Battle plan, Battle opponentPlan, Territory battleTerritory, Game game)
+        {
+            var opponentIsAggressor = PlayerSequence.IsAfter(game, plan.Player, opponentPlan.Player);
+            
+            var aggPlan = opponentIsAggressor ? opponentPlan : plan;
+            var defPlan = opponentIsAggressor ? plan : opponentPlan;
+
+            var outcome = Battle.DetermineBattleOutcome(aggPlan, defPlan, battleTerritory, game);
+
+
+            bool lasgunShield = !aggtrt.Succeeded && !deftrt.Succeeded && (agg.HasLaser || def.HasLaser) && (agg.HasShield || def.HasShield);
+
+            ActivateSmuggler(aggtrt, deftrt, BattleOutcome, lasgunShield);
+
+            HandleReinforcements(agg);
+            HandleReinforcements(def);
+
+            var aggressor = GetPlayer(agg.Initiator);
+            var defender = GetPlayer(def.Initiator);
+
+            if (aggtrt.Succeeded || deftrt.Succeeded)
+            {
+                TraitorCalled(b, agg, def, deftrt, aggressor, defender, agg.Hero, def.Hero);
+            }
+            else if (lasgunShield)
+            {
+                LasgunShieldExplosion(agg, def, aggressor, defender, b.Territory, agg.Hero, def.Hero);
+            }
+            else
+            {
+                SetHeroLocations(agg, b.Territory);
+                SetHeroLocations(def, b.Territory);
+                HandleBattleOutcome(agg, def, b.Territory);
+            }
+
+            DetermineIfCapturedLeadersMustBeReleased();
+
+            float result = 0;
+            if ()
+            if (outcome.Winner == plan.Player)
+            {
+
+            }
+            else 
+        }
+        */
+        
+
+
         /*
         public Game Game { get; set; }
 

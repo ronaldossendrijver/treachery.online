@@ -1147,7 +1147,7 @@ namespace Treachery.Shared
 
         protected virtual AmbassadorPlaced DetermineAmbassadorPlaced()
         {
-            if (Resources > 1 && Game.AmbassadorsPlacedThisTurn == 0 || Resources > 6 + Game.AmbassadorsPlacedThisTurn)
+            if (AmbassadorPlaced.CanBePlayed(Game, this) && Resources > 1 && Game.AmbassadorsPlacedThisTurn == 0 || Resources > 6 + Game.AmbassadorsPlacedThisTurn)
             {
                 var stronghold = AmbassadorPlaced.ValidStrongholds(Game, this).Where(s => AnyForcesIn(s) > 0).RandomOrDefault();
                 if (stronghold == null && HasAlly) stronghold = AmbassadorPlaced.ValidStrongholds(Game, this).Where(s => AlliedPlayer.AnyForcesIn(s) > 0).RandomOrDefault();
@@ -1178,8 +1178,7 @@ namespace Treachery.Shared
             }
             else
             {
-
-                return null;
+                return new AmbassadorPlaced(Game, Faction) { Passed = true }; ;
             }
         }
 

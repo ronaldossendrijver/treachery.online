@@ -41,15 +41,15 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Log();
             Game.Stone(Milestone.WeatherControlled);
             Game.CurrentTestingStationUsed = true;
             Game.NextStormMoves += ValueAdded;
+            Log(Initiator, " use ", DiscoveryToken.TestingStation, ": storm ", ValueAdded > 0 ? "increases" : "weakens", " to ", Game.NextStormMoves);
         }
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " use ", DiscoveryToken.TestingStation, " to ", ValueAdded == 1 ? " add 1 to " : " subtract 1 from ", " Storm movement");
+            return Message.Express(Initiator, " use ", DiscoveryToken.TestingStation, " to influence Storm movement");
         }
 
         #endregion Execution

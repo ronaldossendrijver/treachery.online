@@ -60,8 +60,8 @@
                Src="@Skin.Current.HMS_URL"
                ShadowColor="@Skin.Current.SHADOW" ShadowX="5" ShadowY="5" ShadowBlur="1"
                Opacity="@(showHMS ? 1f : 0.3f)"
-               Popover="@Intel(location)"
-               OnClick="@(e => OnClick(e, location))" />
+               Popover=@Intel(location)
+               OnClick=@(e => OnClick(e, location)) />
 
             @if (showHMS && h.Status.HighlightedTerritories.Contains(location.Territory))
             {
@@ -83,7 +83,8 @@
 
             <MapImage X=@(pos.X - 1.25f * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 1.25f * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2.5f * Skin.Current.FORCETOKEN_RADIUS) 
                 Src=@Skin.Current.GetImageURL(ds.Discovery) Popover=@Intel(ds) 
-                ShadowX=1 ShadowY=1 />
+                ShadowX=1 ShadowY=1
+                OnClick=@(e => OnClick(e, location)) />
 
             @if (h.Status.HighlightedTerritories.Contains(location.Territory))
             {
