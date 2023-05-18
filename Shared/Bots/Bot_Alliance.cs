@@ -250,10 +250,10 @@ namespace Treachery.Shared
             {
                 case Faction.Green: return new string[] { "GreenSharesPrescience" };
                 case Faction.Yellow: return new string[] { "YellowSharesPrescience", "YellowWillProtectFromMonster", "YellowAllowsThreeFreeRevivals", "YellowRefundsBattleDial" };
-                case Faction.Orange: return new string[] { "AllyMayShipAsOrange" };
+                case Faction.Orange: return new string[] { "OrangeAllowsShippingDiscount" };
                 case Faction.Blue: return new string[] { "BlueAllowsUseOfVoice" };
-                case Faction.Grey: return new string[] { "AllyMayReplaceCards" };
-                case Faction.Purple: return new string[] { "AllyMayReviveAsPurple" };
+                case Faction.Grey: return new string[] { "GreyAllowsReplacingCards" };
+                case Faction.Purple: return new string[] { "PurpleAllowsRevivalDiscount" };
                 case Faction.White: return new string[] { "WhiteAllowsUseOfNoField" };
                 case Faction.Cyan: return new string[] { "CyanAllowsKeepingCards" };
                 case Faction.Pink: return new string[] { "PinkSharesAmbassadors" };

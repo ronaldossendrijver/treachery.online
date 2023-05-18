@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
 using Treachery.Client;
+using Treachery.Client.MapComponents;
 using Treachery.Shared;
 
 namespace Treachery.Test
@@ -58,6 +59,12 @@ namespace Treachery.Test
 
             p = g.Players.FirstOrDefault(p => p.Faction == Faction.White && (p.SpecialForcesInReserve != 0 || p.SpecialForcesKilled != 0));
             if (p != null) return "Invalid forces " + p.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
+
+            if (g.CurrentTurn > 1 || g.CurrentMainPhase > MainPhase.Storm)
+            {
+                p = g.Players.FirstOrDefault(p => p.ForcesInLocations.Keys.Any(l => l is AttachedLocation al && al.AttachedToLocation == null));
+                if (p != null) return "Forces in unattached location - " + p.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
+            }
 
             if (g.Version >= 142)
             {
@@ -350,7 +357,7 @@ namespace Treachery.Test
             int nrOfTurns = 10;
             int nrOfPlayers = 7;
 
-            int timeout = 30;
+            int timeout = 10;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

@@ -160,7 +160,7 @@ namespace Treachery.Shared
             return result;
         }
 
-        private static int GetPriceOfForceRevival(Game g, Player initiator, int amountOfForces, int amountOfSpecialForces, bool usesRedSecretAlly, out int nrOfPaidSpecialForces, out int numberOfForcesRevivedForFree)
+        public static int GetPriceOfForceRevival(Game g, Player initiator, int amountOfForces, int amountOfSpecialForces, bool usesRedSecretAlly, out int nrOfPaidSpecialForces, out int numberOfForcesRevivedForFree)
         {
             int nrOfFreeRevivals = g.FreeRevivals(initiator, usesRedSecretAlly);
             nrOfPaidSpecialForces = initiator.Is(Faction.Red) && initiator.HasLowThreshold(World.RedStar) ? amountOfSpecialForces : Math.Max(0, amountOfSpecialForces - nrOfFreeRevivals);
@@ -173,7 +173,7 @@ namespace Treachery.Shared
             int priceOfNormalForces = initiator.Is(Faction.Brown) && !g.Prevented(FactionAdvantage.BrownRevival) ? 1 : 2;
             var cost = nrOfPaidSpecialForces * priceOfSpecialForces + nrOfPaidNormalForces * priceOfNormalForces;
 
-            if (Revival.MayReviveWithDiscount(g, initiator))
+            if (MayReviveWithDiscount(g, initiator))
             {
                 cost = (int)Math.Ceiling(0.5 * cost);
             }

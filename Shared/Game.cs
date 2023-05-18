@@ -567,6 +567,8 @@ namespace Treachery.Shared
 
         #region Resources
 
+        internal int ResourcesIn(Location l) => ResourcesOnPlanet.TryGetValue(l, out int value) ? value : 0;
+
         internal void ChangeResourcesOnPlanet(Location location, int amount)
         {
             if (ResourcesOnPlanet.ContainsKey(location))

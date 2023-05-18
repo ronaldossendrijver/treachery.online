@@ -50,7 +50,7 @@ namespace Treachery.Shared
         public static int GetNumberOfCardsThatMayBeAudited(Game g)
         {
             var auditor = LeaderManager.GetLeaders(Faction.Brown).First(l => l.HeroType == HeroType.Auditor);
-            return Math.Min(g.IsAlive(auditor) ? 2 : 1, GetCardsThatMayBeAudited(g).Count());
+            return Math.Min(g.AuditorSurvivedBattle ? 2 : 1, GetCardsThatMayBeAudited(g).Count());
         }
 
         public static IEnumerable<TreacheryCard> GetCardsThatMayBeAudited(Game g)

@@ -47,6 +47,7 @@ namespace Treachery.Shared
         public Leader BlackVictim { get; internal set; }
         public int GreySpecialForceLossesToTake { get; internal set; }
         internal TriggeredBureaucracy BattleTriggeredBureaucracy { get; set; }
+        internal bool AuditorSurvivedBattle { get; set; }
 
         #endregion State
 
@@ -59,7 +60,7 @@ namespace Treachery.Shared
             BattleOutcome = null;
             NrOfBattlesFought++;
 
-			AnnounceHeroAvailability(CurrentBattle.AggressivePlayer);
+            AnnounceHeroAvailability(CurrentBattle.AggressivePlayer);
             AnnounceHeroAvailability(CurrentBattle.DefendingPlayer);
             AssignBattleWheels(CurrentBattle.AggressivePlayer, CurrentBattle.DefendingPlayer);
         }
@@ -148,16 +149,13 @@ namespace Treachery.Shared
             HandleReinforcements(agg);
             HandleReinforcements(def);
 
-            var aggressor = GetPlayer(agg.Initiator);
-            var defender = GetPlayer(def.Initiator);
-
             if (aggtrt.Succeeded || deftrt.Succeeded)
             {
-                TraitorCalled(b, agg, def, deftrt, aggressor, defender, agg.Hero, def.Hero);
+                TraitorCalled(b, agg, def, deftrt, agg.Hero, def.Hero);
             }
             else if (lasgunShield)
             {
-                LasgunShieldExplosion(agg, def, aggressor, defender, b.Territory, agg.Hero, def.Hero);
+                LasgunShieldExplosion(agg, def, agg.Player, def.Player, b.Territory, agg.Hero, def.Hero);
             }
             else
             {
@@ -167,6 +165,7 @@ namespace Treachery.Shared
             }
 
             DetermineIfCapturedLeadersMustBeReleased();
+            AuditorSurvivedBattle = (agg.Hero?.HeroType == HeroType.Auditor && IsAlive(agg.Hero) || def.Hero?.HeroType == HeroType.Auditor && IsAlive(def.Hero));
         }
 
         internal bool BlackMustDecideToCapture => Version >= 116 && BattleWinner == Faction.Black && Applicable(Rule.BlackCapturesOrKillsLeaders) && !Prevented(FactionAdvantage.BlackCaptureLeader);
@@ -815,16 +814,16 @@ namespace Treachery.Shared
 
         #region NonBattleOutcomes
 
-        private void TraitorCalled(BattleInitiated b, Battle agg, Battle def, TreacheryCalled deftrt, Player aggressor, Player defender, IHero aggLeader, IHero defLeader)
+        private void TraitorCalled(BattleInitiated b, Battle agg, Battle def, TreacheryCalled deftrt, IHero aggLeader, IHero defLeader)
         {
             if (AggressorTraitorAction.Succeeded && deftrt.Succeeded)
             {
-                TwoTraitorsCalled(agg, def, aggressor, defender, b.Territory, aggLeader, defLeader);
+                TwoTraitorsCalled(agg, def, agg.Player, def.Player, b.Territory, aggLeader, defLeader);
             }
             else
             {
-                var winner = AggressorTraitorAction.Succeeded ? aggressor : defender;
-                var loser = AggressorTraitorAction.Succeeded ? defender : aggressor;
+                var winner = AggressorTraitorAction.Succeeded ? agg.Player : def.Player;
+                var loser = AggressorTraitorAction.Succeeded ? def.Player : agg.Player;
                 var loserGambit = AggressorTraitorAction.Succeeded ? def : agg;
                 var winnerGambit = AggressorTraitorAction.Succeeded ? agg : def;
                 OneTraitorCalled(b.Territory, winner, loser, loserGambit, winnerGambit);

@@ -24,15 +24,7 @@
             Cost: <SimpleNumberComponent Size=20>@(Game.AmbassadorsPlacedThisTurn + 1)</SimpleNumberComponent>
         </div>
 
-        @if (AmbassadorPlaced.CanBePlayed(Game, Player)) 
-        {
-            <ButtonRowComponent Pass="Pass" Confirm="Confirm" ConfirmText="Place Ambassador" ConfirmError=@Validation />
-        }
-        else
-        {
-            <ButtonRowComponent Pass="Pass" ConfirmError=@Validation />
-        }
-        
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Place Ambassador" ConfirmError=@Validation />
 
     </Body>
 
@@ -54,8 +46,6 @@
     }
 
     protected override AmbassadorPlaced ConfirmedResult => new AmbassadorPlaced(Game, Faction) { Ambassador = _ambassador, Stronghold = _stronghold };
-
-    protected override AmbassadorPlaced PassedResult => new AmbassadorPlaced(Game, Faction) { Passed = true };
 
     private void HandleLocationSelected(object sender, Location l)
     {

@@ -22,18 +22,51 @@ namespace Treachery.Shared
 
         #region Properties
 
+        //Needed for versions < 155
         public bool AllyMayShipAsOrange { get; set; }
+
+        public bool OrangeAllowsShippingDiscount
+        {
+            get => AllyMayShipAsOrange;
+            set => AllyMayShipAsOrange = value;
+        }
+
         public int RedWillPayForExtraRevival { get; set; }
+
         public bool YellowWillProtectFromMonster { get; set; }
+
         public bool YellowAllowsThreeFreeRevivals { get; set; }
+
         public bool YellowSharesPrescience { get; set; }
+
         public bool YellowRefundsBattleDial { get; set; }
+
+        public bool PurpleAllowsRevivalDiscount
+        {
+            get => AllyMayReviveAsPurple;
+            set => AllyMayReviveAsPurple = value;
+        }
+        
+        //Needed for versions < 155
         public bool AllyMayReviveAsPurple { get; set; }
+
+        public bool GreyAllowsReplacingCards
+        {
+            get => AllyMayReplaceCards;
+            set => AllyMayReplaceCards = value;
+        }
+
+        //Needed for versions < 155
         public bool AllyMayReplaceCards { get; set; }
+
         public bool GreenSharesPrescience { get; set; }
+
         public bool BlueAllowsUseOfVoice { get; set; }
+
         public bool WhiteAllowsUseOfNoField { get; set; }
+
         public bool CyanAllowsKeepingCards { get; set; }
+
         public bool PinkSharesAmbassadors { get; set; }
 
         public int PermittedResources { get; set; }
@@ -67,15 +100,15 @@ namespace Treachery.Shared
             switch (Initiator)
             {
                 case Faction.Orange:
-                    Game.OrangeAllowsShippingDiscount = AllyMayShipAsOrange;
+                    Game.OrangeAllowsShippingDiscount = OrangeAllowsShippingDiscount;
                     break;
 
                 case Faction.Purple:
-                    Game.PurpleAllowsRevivalDiscount = AllyMayReviveAsPurple;
+                    Game.PurpleAllowsRevivalDiscount = PurpleAllowsRevivalDiscount;
                     break;
 
                 case Faction.Grey:
-                    Game.GreyAllowsReplacingCards = AllyMayReplaceCards;
+                    Game.GreyAllowsReplacingCards = GreyAllowsReplacingCards;
                     break;
 
                 case Faction.Red:

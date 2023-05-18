@@ -40,7 +40,7 @@ namespace Treachery.Shared
         {
             if (Passed) return null;
 
-            if (TotalAmountOfForcesAddedToLocation == 0) return Message.Express("No forces selected");
+            if (Game.Version >= 155 && TotalAmountOfForcesAddedToLocation == 0) return Message.Express("No forces selected");
             if (To == null) return Message.Express("Target location not selected");
             if (!ValidTargets(Game, Player).Contains(To)) return Message.Express("Invalid target location");
 
@@ -131,6 +131,7 @@ namespace Treachery.Shared
 
             return g.Map.Locations(false).Where(l =>
                     (mayMoveIntoStorm || l.Sector != g.SectorInStorm) &&
+                    (l is not AttachedLocation al || al.AttachedToLocation != null && al.AttachedToLocation.Sector != g.SectorInStorm) &&
                     (!l.Territory.IsStronghold || g.NrOfOccupantsExcludingPlayer(l, p) < 2) &&
                     (!p.HasAlly || l == g.Map.PolarSink || !p.AlliedPlayer.Occupies(l)));
         }

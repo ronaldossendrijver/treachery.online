@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,53 +9,74 @@ using System.Threading.Tasks;
 namespace Treachery.Shared
 {
     internal class Intel
-    {/*
-        public static float BattleGain(Battle plan, Battle opponentPlan, Territory battleTerritory, Game game)
+    {
+        public static float BattleGain(Territory battleTerritory, Game game, 
+            Battle plan, Battle opponentPlan, 
+            bool traitorCalled, bool opponentTraitorCalled)
         {
             var opponentIsAggressor = PlayerSequence.IsAfter(game, plan.Player, opponentPlan.Player);
             
             var aggPlan = opponentIsAggressor ? opponentPlan : plan;
             var defPlan = opponentIsAggressor ? plan : opponentPlan;
 
-            var outcome = Battle.DetermineBattleOutcome(aggPlan, defPlan, battleTerritory, game);
+            bool lasgunShield = !traitorCalled && !opponentTraitorCalled && (plan.HasLaser || opponentPlan.HasLaser) && (plan.HasShield || opponentPlan.HasShield);
 
-
-            bool lasgunShield = !aggtrt.Succeeded && !deftrt.Succeeded && (agg.HasLaser || def.HasLaser) && (agg.HasShield || def.HasShield);
-
-            ActivateSmuggler(aggtrt, deftrt, BattleOutcome, lasgunShield);
-
-            HandleReinforcements(agg);
-            HandleReinforcements(def);
-
-            var aggressor = GetPlayer(agg.Initiator);
-            var defender = GetPlayer(def.Initiator);
-
-            if (aggtrt.Succeeded || deftrt.Succeeded)
+            if (traitorCalled && opponentTraitorCalled || lasgunShield)
             {
-                TraitorCalled(b, agg, def, deftrt, aggressor, defender, agg.Hero, def.Hero);
+                return 0;
             }
-            else if (lasgunShield)
+            else if (traitorCalled)
             {
-                LasgunShieldExplosion(agg, def, aggressor, defender, b.Territory, agg.Hero, def.Hero);
+                return 0;//todo
+            }
+            else if (opponentTraitorCalled)
+            {
+                return 0;//todo
             }
             else
             {
-                SetHeroLocations(agg, b.Territory);
-                SetHeroLocations(def, b.Territory);
-                HandleBattleOutcome(agg, def, b.Territory);
+                var outcome = Battle.DetermineBattleOutcome(aggPlan, defPlan, battleTerritory, game);
+
+                var loserPlan = outcome.LoserBattlePlan;
+                var winnerPlan = outcome.WinnerBattlePlan;
+
+
+                if (outcome.Winner == plan.Player)
+                {
+                    var result =
+                        (outcome.LoserHeroKilled ? loserPlan.Hero.ValueInCombatAgainst(winnerPlan.Hero) : 0) +
+                        (outcome.WinnerHeroKilled ? winnerPlan.Hero.ValueInCombatAgainst(loserPlan.Hero) : 0) +
+                        ValueOf(loserPlan.Weapon) +
+                        ValueOf(loserPlan.Defense) +
+                        (MustBeDiscardedAfterBattle(winnerPlan.Weapon) ? ValueOf(loserPlan.Weapon) : 0) +
+                        (MustBeDiscardedAfterBattle(winnerPlan.Defense) ? ValueOf(loserPlan.Defense) : 0) +
+                        Revival.GetPriceOfForceRevival(game, outcome.Winner, winnerPlan.Forces + winnerPlan.ForcesAtHalfStrength, winnerPlan.SpecialForces + winnerPlan.SpecialForcesAtHalfStrength, false, out _, out _) +
+                        Revival.GetPriceOfForceRevival(game, outcome.Loser, loserPlan.Player.ForcesIn(battleTerritory), loserPlan.Player.SpecialForcesIn(battleTerritory), false, out _, out _) +
+                        (loserPlan.Player.TechTokens.Any() ? 5 : 0) +
+                        (battleTerritory.IsStronghold ? 10 : 0) +
+                        (battleTerritory == game.Map.Carthag.Territory || battleTerritory == game.Map.Arrakeen.Territory ? 3 : 0) +
+                        battleTerritory.Locations.Sum(l => Math.Min(game.ResourcesIn(l), winnerPlan.Player.BattalionIn(l).TotalAmountOfForces * game.ResourceCollectionRate(winnerPlan.Player)));
+                }
+                else
+                {
+
+                }
+
+                return 0;//todo
             }
 
-            DetermineIfCapturedLeadersMustBeReleased();
-
-            float result = 0;
-            if ()
-            if (outcome.Winner == plan.Player)
-            {
-
-            }
-            else 
         }
-        */
+
+        private static int ValueOf(TreacheryCard c) => c.IsUseless ? 0 : 5;
+        
+        private static bool MustBeDiscardedAfterBattle(TreacheryCard c)
+        {
+            if (c == null) return false;
+
+            return
+                !(c.IsWeapon || c.IsDefense || c.IsUseless) ||
+                c.IsArtillery || c.IsMirrorWeapon || c.IsRockmelter || c.IsPoisonTooth || c.IsPortableAntidote;
+        }
         
 
 

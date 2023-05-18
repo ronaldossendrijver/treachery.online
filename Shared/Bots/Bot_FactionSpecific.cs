@@ -1147,7 +1147,7 @@ namespace Treachery.Shared
 
         protected virtual AmbassadorPlaced DetermineAmbassadorPlaced()
         {
-            if (AmbassadorPlaced.CanBePlayed(Game, this) && Resources > 1 && Game.AmbassadorsPlacedThisTurn == 0 || Resources > 6 + Game.AmbassadorsPlacedThisTurn)
+            if (Resources > 1 && Game.AmbassadorsPlacedThisTurn == 0 || Resources > 3 + Game.AmbassadorsPlacedThisTurn)
             {
                 var stronghold = AmbassadorPlaced.ValidStrongholds(Game, this).Where(s => AnyForcesIn(s) > 0).RandomOrDefault();
                 if (stronghold == null && HasAlly) stronghold = AmbassadorPlaced.ValidStrongholds(Game, this).Where(s => AlliedPlayer.AnyForcesIn(s) > 0).RandomOrDefault();
@@ -1172,14 +1172,13 @@ namespace Treachery.Shared
                 if (ambassador == Ambassador.None && availableAmbassadors.Contains(Ambassador.Red) && Resources <= 4) ambassador = Ambassador.Red;
                 if (ambassador == Ambassador.None && availableAmbassadors.Contains(Ambassador.Yellow) && DetermineMovedBatallion(false) != null) ambassador = Ambassador.Yellow;
                 if (ambassador == Ambassador.None && availableAmbassadors.Contains(Ambassador.Pink) && !HasAlly) ambassador = Ambassador.Pink;
-                if (ambassador == Ambassador.None) ambassador = AmbassadorPlaced.ValidAmbassadors(this).RandomOrDefault();
+                if (Game.AmbassadorsPlacedThisTurn == 0 && ambassador == Ambassador.None) ambassador = AmbassadorPlaced.ValidAmbassadors(this).RandomOrDefault();
 
-                return new AmbassadorPlaced(Game, Faction) { Ambassador = ambassador, Stronghold = stronghold };
+                if (ambassador != Ambassador.None) return new AmbassadorPlaced(Game, Faction) { Ambassador = ambassador, Stronghold = stronghold };
             }
-            else
-            {
-                return new AmbassadorPlaced(Game, Faction) { Passed = true }; ;
-            }
+            
+            return null;
+            
         }
 
         protected virtual AmbassadorActivated DetermineAmbassadorActivated()
