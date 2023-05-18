@@ -353,7 +353,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 100;
+            int nrOfGames = 1000;
             int nrOfTurns = 10;
             int nrOfPlayers = 7;
 

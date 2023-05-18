@@ -39,6 +39,5 @@ namespace Treachery.Shared
                 return result;
             }
         }
-
     }
 }

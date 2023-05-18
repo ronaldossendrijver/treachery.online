@@ -767,7 +767,7 @@ namespace Treachery.Shared
                 int nrOfLivingLeaders = Leaders.Count(l => Game.IsAlive(l));
                 int specialForcesThatCanBeRevived = Math.Min(5, Revival.ValidMaxRevivals(Game, this, true, false));
 
-                if (ForcesKilled + specialForcesThatCanBeRevived >= 7 && nrOfLivingLeaders > 0)
+                if (ForcesKilled + specialForcesThatCanBeRevived >= 7 && nrOfLivingLeaders > 1 || ForcesKilled + specialForcesThatCanBeRevived >= 17 && nrOfLivingLeaders > 0)
                 {
                     int forces = Math.Max(0, Math.Min(5, ForcesKilled) - specialForcesThatCanBeRevived);
                     
