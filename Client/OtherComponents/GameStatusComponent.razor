@@ -190,12 +190,13 @@
     }
 
     private bool CancelAutoConfirm =>
+        Game.Players.Any(p => !p.IsBot) && (
         Game.CurrentPhase == Phase.AllianceA && _previousPhase != Phase.AllianceA ||
         Game.CurrentPhase == Phase.AllianceB && _previousPhase != Phase.AllianceB ||
         Game.CurrentPhase == Phase.ClaimingCharity && _previousPhase != Phase.ClaimingCharity ||
         Game.CurrentTurn > 1 && Game.CurrentPhase == Phase.Resurrection && _previousPhase != Phase.Resurrection ||
         Game.CurrentPhase == Phase.ResurrectionReport && Game.IsPlaying(Faction.Pink) ||
-        Game.CurrentPhase == Phase.Contemplate && (Game.IsPlaying(Faction.Brown) || Game.IsPlaying(Faction.Cyan));
+        Game.CurrentPhase == Phase.Contemplate && (Game.IsPlaying(Faction.Brown) || Game.IsPlaying(Faction.Cyan)));
 
     protected override EndPhase ConfirmedResult => new EndPhase(Game, Faction) {  };
 

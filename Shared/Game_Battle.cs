@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -47,6 +48,7 @@ namespace Treachery.Shared
         public Leader BlackVictim { get; internal set; }
         public int GreySpecialForceLossesToTake { get; internal set; }
         internal TriggeredBureaucracy BattleTriggeredBureaucracy { get; set; }
+        internal TreacheryCard CardUsedByDiplomat { get; set; }
         internal bool AuditorSurvivedBattle { get; set; }
 
         #endregion State
@@ -94,6 +96,12 @@ namespace Treachery.Shared
             DiscardOneTimeCardsUsedInBattle(AggressorTraitorAction, DefenderTraitorAction);
 
             ResolveBattle(CurrentBattle, AggressorPlan, DefenderPlan, AggressorTraitorAction, DefenderTraitorAction);
+
+            if (CardUsedByDiplomat != null)
+            {
+                Discard(CardUsedByDiplomat);
+                CardUsedByDiplomat = null;
+            }
 
             if (AggressorPlan.Initiator == BattleWinner) ActivateDeciphererIfApplicable(AggressorPlan);
             if (DefenderPlan.Initiator == BattleWinner) ActivateDeciphererIfApplicable(DefenderPlan);
@@ -262,10 +270,6 @@ namespace Treachery.Shared
             }
 
             if (plan.Defense != null && plan.Defense.IsPortableAntidote)
-            {
-                Discard(plan.Defense);
-            }
-            else if (CurrentDiplomacy != null && plan.Initiator == CurrentDiplomacy.Initiator && plan.Defense == CurrentDiplomacy.Card)
             {
                 Discard(plan.Defense);
             }

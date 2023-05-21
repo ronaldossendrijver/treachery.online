@@ -182,18 +182,24 @@ namespace Treachery.Shared
                 Defense);
         }
 
-        public void ActivateDynamicWeapons(TreacheryCard mirroredWeapon, TreacheryCard mirroredDefense)
+        public void ActivateDynamicWeapons(TreacheryCard opponentWeapon, IHero hero, TreacheryCard opponentDefense)
         {
             if (Weapon != null && Weapon.Type == TreacheryCardType.MirrorWeapon)
             {
                 OriginalWeapon = Weapon;
-                Weapon = mirroredWeapon;
+                Weapon = opponentWeapon;
+                Log(OriginalWeapon, " becomes a ", Weapon);
             }
 
-            if (Game.CurrentDiplomacy?.Initiator == Initiator)
+            if (Defense != null && Defense.IsUseless && 
+                Game.SkilledAs(hero, LeaderSkill.Diplomat) && 
+                opponentDefense != null && opponentWeapon != null && 
+                (opponentWeapon.CounteredBy(opponentDefense, Weapon) || opponentWeapon.IsArtillery && opponentDefense.IsShield))
             {
                 OriginalDefense = Defense;
-                Defense = mirroredDefense;
+                Defense = opponentDefense;
+                Log(hero, " turns ", OriginalDefense, " into a ", Defense);
+                Game.CardUsedByDiplomat = OriginalDefense;
             }
 
             if (IsUsingPortableAntidote(Game, Initiator))
@@ -211,13 +217,7 @@ namespace Treachery.Shared
                 OriginalWeapon = null;
             }
 
-            if (Game.CurrentDiplomacy?.Initiator == Initiator)
-            {
-                Defense = OriginalDefense;
-                OriginalDefense = null;
-            }
-
-            if (Game.CurrentPortableAntidoteUsed?.Initiator == Initiator)
+            if (OriginalDefense != null)
             {
                 Defense = OriginalDefense;
                 OriginalDefense = null;
@@ -803,8 +803,8 @@ namespace Treachery.Shared
 
             //Determine result
 
-            agg.ActivateDynamicWeapons(def.Weapon, def.Defense);
-            def.ActivateDynamicWeapons(agg.Weapon, agg.Defense);
+            agg.ActivateDynamicWeapons(def.Weapon, agg.Hero, def.Defense);
+            def.ActivateDynamicWeapons(agg.Weapon, def.Hero, agg.Defense);
 
             bool poisonToothUsed = !game.PoisonToothCancelled && (agg.HasPoisonTooth || def.HasPoisonTooth);
             bool artilleryUsed = agg.HasArtillery || def.HasArtillery;

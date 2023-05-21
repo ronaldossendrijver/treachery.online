@@ -17,7 +17,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
 using Treachery.Client;
-using Treachery.Client.MapComponents;
 using Treachery.Shared;
 
 namespace Treachery.Test
@@ -28,9 +27,10 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-		    if (e is DiscardedSearched)
+            //.CurrentBattle.OpponentOf(Faction.Grey).HasKarma(g)
+            if (e is Battle b && b.By(Faction.Grey) && b.SpecialForces > 2 && g.Prevented(FactionAdvantage.GreySpecialForceBonus))
             {
-                WriteSavegameIfApplicable(g, e.Player, "Nullentropy used");
+                WriteSavegameIfApplicable(g, e.Player, "Karama against Ix");
             }
 		}
 
