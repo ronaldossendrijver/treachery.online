@@ -26,18 +26,18 @@ namespace Treachery.Shared
 
         [JsonIgnore]
         public Territory Territory
-		{
-			get => Game.Map.TerritoryLookup.Find(_territoryId);
-			set => _territoryId = Game.Map.TerritoryLookup.GetId(value);
-		}
+        {
+            get => Game.Map.TerritoryLookup.Find(_territoryId);
+            set => _territoryId = Game.Map.TerritoryLookup.GetId(value);
+        }
 
-		public Faction Target { get; set; }
+        public Faction Target { get; set; }
 
         [JsonIgnore]
         public Faction ActualInitiator => Game.CurrentPinkOrAllyFighter != Faction.None && Initiator == Game.GetAlly(Game.CurrentPinkOrAllyFighter) ? Game.CurrentPinkOrAllyFighter : Initiator;
 
         [JsonIgnore]
-		public Faction ActualTarget => Game.CurrentPinkOrAllyFighter != Faction.None && Target == Game.GetAlly(Game.CurrentPinkOrAllyFighter) ? Game.CurrentPinkOrAllyFighter : Target;
+        public Faction ActualTarget => Game.CurrentPinkOrAllyFighter != Faction.None && Target == Game.GetAlly(Game.CurrentPinkOrAllyFighter) ? Game.CurrentPinkOrAllyFighter : Target;
 
         [JsonIgnore]
         public Faction Defender => (ActualInitiator == Aggressor) ? ActualTarget : ActualInitiator;
@@ -79,7 +79,7 @@ namespace Treachery.Shared
         public static bool IsInitiatorByJuice(Game g, Player initiator, Player target) => g.CurrentJuice != null && g.CurrentJuice.Type == JuiceType.GoFirst && g.CurrentJuice.Player == initiator && PlayerSequence.IsAfter(g, initiator, target);
 
         public static bool IsTargetByJuice(Game g, Player initiator, Player target) => g.CurrentJuice != null && g.CurrentJuice.Type == JuiceType.GoLast && g.CurrentJuice.Player == initiator && PlayerSequence.IsAfter(g, initiator, target);
-                
+
         public bool IsInvolved(Player p)
         {
             return Initiator == p.Faction || Target == p.Faction || Initiator == p.Ally || Target == p.Ally;
@@ -202,19 +202,19 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-			Game.CurrentReport = new Report(MainPhase.Battle);
-			Log();
-			Game.BattleAboutToStart = this;
+            Game.CurrentReport = new Report(MainPhase.Battle);
+            Log();
+            Game.BattleAboutToStart = this;
 
             var pink = GetPlayer(Faction.Pink);
             Game.Enter(pink != null && !Game.HasLowThreshold(Faction.Pink) && IsInvolved(Faction.Pink) && pink.Occupies(Territory) && pink.HasAlly && pink.AlliedPlayer.Occupies(Territory), Phase.ClaimingBattle, Game.InitiateBattle);
-		}
+        }
 
-		public override Message GetMessage()
-		{
-			return Message.Express(Initiator, " initiate battle against ", Target, Territory.IsHomeworld ? " on " : " in ", Territory);
-		}
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " initiate battle against ", Target, Territory.IsHomeworld ? " on " : " in ", Territory);
+        }
 
-		#endregion Execution
-	}
+        #endregion Execution
+    }
 }

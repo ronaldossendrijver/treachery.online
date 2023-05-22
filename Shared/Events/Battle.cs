@@ -191,9 +191,9 @@ namespace Treachery.Shared
                 Log(OriginalWeapon, " becomes a ", Weapon);
             }
 
-            if (Defense != null && Defense.IsUseless && 
-                Game.SkilledAs(hero, LeaderSkill.Diplomat) && 
-                opponentDefense != null && opponentWeapon != null && 
+            if (Defense != null && Defense.IsUseless &&
+                Game.SkilledAs(hero, LeaderSkill.Diplomat) &&
+                opponentDefense != null && opponentWeapon != null &&
                 (opponentWeapon.CounteredBy(opponentDefense, Weapon) || opponentWeapon.IsArtillery && opponentDefense.IsShield))
             {
                 OriginalDefense = Defense;
@@ -410,7 +410,7 @@ namespace Treachery.Shared
                 return 0;
             }
         }
-        
+
         public static int MaxResources(Game g, Player p, int forces, int specialForces) => Math.Min(p.Resources, Math.Max(0, forces + specialForces - CostReduction(g, p)));
 
         public static int MaxAllyResources(Game g, Player p, int forces, int specialForces) => Math.Min(g.ResourcesYourAllyCanPay(p), Math.Max(0, forces + specialForces - CostReduction(g, p)));

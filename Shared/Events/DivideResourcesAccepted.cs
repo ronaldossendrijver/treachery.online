@@ -40,7 +40,7 @@ namespace Treachery.Shared
             Game.DivideResourcesFromCollection(!Passed);
             Game.Enter(Game.CollectedResourcesToBeDivided.Any(), Phase.DividingCollectedResources, Game.EndCollectionMainPhase);
         }
-                
+
         public override Message GetMessage()
         {
             return Message.Express(Initiator, !Passed ? "" : " don't", " agree with the proposed division");

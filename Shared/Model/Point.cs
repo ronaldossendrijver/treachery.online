@@ -2,8 +2,6 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
-using System.Reflection.Metadata.Ecma335;
-
 namespace Treachery.Shared
 {
     public struct PointD

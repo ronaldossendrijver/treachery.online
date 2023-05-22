@@ -29,7 +29,7 @@ namespace Treachery.Shared
         [JsonIgnore]
         public Location Target
         {
-            get => Game.Map.LocationLookup.Find(_targetId); 
+            get => Game.Map.LocationLookup.Find(_targetId);
             set => _targetId = Game.Map.LocationLookup.GetId(value);
         }
 

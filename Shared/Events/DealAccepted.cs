@@ -98,15 +98,17 @@ namespace Treachery.Shared
 
             if (offer != null)
             {
-                var newDeal = new Deal() { 
-                    BoundFaction = offer.Initiator, 
-                    ConsumingFaction = Initiator, 
-                    DealParameter1 = DealParameter1, 
-                    DealParameter2 = DealParameter2, 
-                    End = End, 
-                    Text = Text, 
-                    Benefit = Benefit, 
-                    Type = Type };
+                var newDeal = new Deal()
+                {
+                    BoundFaction = offer.Initiator,
+                    ConsumingFaction = Initiator,
+                    DealParameter1 = DealParameter1,
+                    DealParameter2 = DealParameter2,
+                    End = End,
+                    Text = Text,
+                    Benefit = Benefit,
+                    Type = Type
+                };
 
                 Game.StartDeal(newDeal);
 

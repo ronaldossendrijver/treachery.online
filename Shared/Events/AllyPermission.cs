@@ -46,7 +46,7 @@ namespace Treachery.Shared
             get => AllyMayReviveAsPurple;
             set => AllyMayReviveAsPurple = value;
         }
-        
+
         //Needed for versions < 155
         public bool AllyMayReviveAsPurple { get; set; }
 

@@ -1176,9 +1176,9 @@ namespace Treachery.Shared
 
                 if (ambassador != Ambassador.None) return new AmbassadorPlaced(Game, Faction) { Ambassador = ambassador, Stronghold = stronghold };
             }
-            
+
             return null;
-            
+
         }
 
         protected virtual AmbassadorActivated DetermineAmbassadorActivated()

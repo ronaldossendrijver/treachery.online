@@ -28,7 +28,7 @@ namespace Treachery.Shared
         public FactionAdvantage Prevented { get; set; }
 
         public int _cardId;
-        
+
         [JsonIgnore]
         public TreacheryCard Card
         {
@@ -314,6 +314,6 @@ namespace Treachery.Shared
 
         #endregion Execution
 
-        
+
     }
 }

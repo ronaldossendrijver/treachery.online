@@ -168,7 +168,7 @@ namespace Treachery.Shared
                 }
             }
         }
-        
+
         internal void PlayNexusCard(Player initiator, params object[] messageElements)
         {
             Stone(Milestone.NexusPlayed);

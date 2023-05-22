@@ -213,9 +213,9 @@ namespace Treachery.Shared
 
         protected bool IsStronghold(Location l)
         {
-            return 
-                l.IsStronghold || 
-                Game.IsSpecialStronghold(l.Territory) || 
+            return
+                l.IsStronghold ||
+                Game.IsSpecialStronghold(l.Territory) ||
                 l is DiscoveredLocation dl && (dl.Discovery == DiscoveryToken.Cistern || dl.Discovery == DiscoveryToken.TestingStation || dl.Discovery == DiscoveryToken.ProcessingStation || dl.Discovery == DiscoveryToken.Shrine && Has(TreacheryCardType.Clairvoyance));
         }
 

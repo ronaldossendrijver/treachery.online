@@ -9,7 +9,7 @@ namespace Treachery.Shared
     public class GreySelectedStartingCard : GameEvent
     {
         #region Construction
-        
+
         public GreySelectedStartingCard(Game game, Faction initiator) : base(game, initiator)
         {
         }

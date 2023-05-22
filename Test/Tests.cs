@@ -4,13 +4,8 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using Svg;
-using Svg.Pathing;
-using Svg.Transforms;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -32,7 +27,7 @@ namespace Treachery.Test
             {
                 WriteSavegameIfApplicable(g, e.Player, "Karama against Ix");
             }
-		}
+        }
 
         private readonly List<string> WrittenCases = new();
         private void WriteSavegameIfApplicable(Game g, Player playerWithAction, string c)
@@ -875,319 +870,6 @@ namespace Treachery.Test
             Assert.AreEqual(oldName, skinToTest.Describe(leader));
         }
 
-
-        //[TestMethod]
-        public static void ApplyTransforms()
-        {
-            string filename = "e:\\svg2\\faction10force.svg";
-
-            var accumulatedTransforms = new Stack<SvgTransformCollection>();
-
-            var doc = SvgDocument.Open(filename);
-
-            ApplyTransforms(doc, accumulatedTransforms, 3);
-
-            doc.Write(filename + ".svg");
-        }
-
-        private static void ApplyTransforms(SvgElement element, Stack<SvgTransformCollection> transforms, int digits)
-        {
-            bool hadTransforms = element.Transforms != null;
-            var newTransforms = new SvgTransformCollection();
-
-            if (hadTransforms)
-            {
-                transforms.Push(element.Transforms);
-            }
-
-            if (element is SvgPath path)
-            {
-                foreach (var pathSegment in path.PathData)
-                {
-                    if (pathSegment is SvgCubicCurveSegment svgCubicCurveSegment)
-                    {
-                        //svgCubicCurveSegment.Start = Translate(svgCubicCurveSegment.Start, transforms, digits);
-                        svgCubicCurveSegment.End = Translate(svgCubicCurveSegment.End, transforms, digits);
-                        svgCubicCurveSegment.FirstControlPoint = Translate(svgCubicCurveSegment.FirstControlPoint, transforms, digits);
-                        svgCubicCurveSegment.SecondControlPoint = Translate(svgCubicCurveSegment.SecondControlPoint, transforms, digits);
-                    }
-                    else
-                    {
-                        //pathSegment.Start = Translate(pathSegment.Start, transforms, digits);
-                        pathSegment.End = Translate(pathSegment.End, transforms, digits);
-                    }
-                }
-            }
-            else if (element is SvgCircle circle)
-            {
-                var transformedCenter = Translate(circle.Center, transforms, digits);
-                circle.CenterX = new SvgUnit(transformedCenter.X);
-                circle.CenterY = new SvgUnit(transformedCenter.Y);
-                circle.Radius = new SvgUnit(Scale(circle.Radius, transforms, digits));
-            }
-            else if (element is SvgUse use)
-            {
-                var point = new PointF() { X = use.X.Value, Y = use.Y.Value };
-                var transformedPoint = Translate(point, transforms, digits);
-                use.X = new SvgUnit(transformedPoint.X);
-                use.Y = new SvgUnit(transformedPoint.Y);
-            }
-            else if (element is SvgRectangle rect)
-            {
-                var point = new PointF() { X = rect.X.Value, Y = rect.Y.Value };
-                var transformedPoint = Translate(point, transforms, digits);
-                rect.X = new SvgUnit(transformedPoint.X);
-                rect.Y = new SvgUnit(transformedPoint.Y);
-                rect.Width = new SvgUnit(Scale(rect.Width, transforms, digits));
-                rect.Height = new SvgUnit(Scale(rect.Height, transforms, digits));
-            }
-            else if (element is SvgLinearGradientServer linearGradient && linearGradient.GradientUnits == SvgCoordinateUnits.UserSpaceOnUse)
-            {
-                transforms.Push(linearGradient.GradientTransform);
-                var point1 = Translate(new PointF() { X = linearGradient.X1, Y = linearGradient.Y1 }, transforms, digits);
-                linearGradient.X1 = point1.X;
-                linearGradient.Y1 = point1.Y;
-                var point2 = Translate(new PointF() { X = linearGradient.X2, Y = linearGradient.Y2 }, transforms, digits);
-                linearGradient.X2 = point2.X;
-                linearGradient.Y2 = point2.Y;
-                transforms.Pop();
-                linearGradient.GradientTransform.Clear();
-            }
-            else if (element is SvgText text)
-            {
-                var point = new PointF();
-                foreach (var x in text.X)
-                {
-                    point.X = x;
-                }
-                foreach (var y in text.Y)
-                {
-                    point.Y = y;
-                }
-
-                var transformedPoint = Translate(point, transforms, digits);
-                text.X.Clear();
-                text.X.Add(new SvgUnit(transformedPoint.X));
-                text.Y.Clear();
-                text.Y.Add(new SvgUnit(transformedPoint.Y));
-
-                float rotation = Rotation(transforms);
-
-                if (Math.Abs(rotation) > 0.005)
-                {
-                    newTransforms.Add(new SvgRotate(rotation * 57.2957795f, transformedPoint.X, transformedPoint.Y));
-                }
-            }
-            else
-            {
-                Console.WriteLine("Skipped {0} ({1})", element.GetType(), element.ToString());
-            }
-
-            foreach (var child in element.Children)
-            {
-                ApplyTransforms(child, transforms, digits);
-            }
-
-            if (hadTransforms)
-            {
-                transforms.Pop();
-                element.Transforms.Clear();
-            }
-
-            if (newTransforms.Any())
-            {
-                element.Transforms = newTransforms;
-            }
-        }
-
-        private static PointF Translate(SvgPoint p, IEnumerable<SvgTransformCollection> transforms, int digits)
-        {
-            var point = new PointF() { X = p.X.Value, Y = p.Y.Value };
-            return Translate(point, transforms, digits);
-        }
-
-
-        private static PointF Translate(PointF p, IEnumerable<SvgTransformCollection> transforms, int digits)
-        {
-            var thePoints = new PointF[] { p };
-
-            foreach (var tc in transforms)
-            {
-                foreach (var t in tc)
-                {
-                    if (OperatingSystem.IsWindows())
-                    {
-                        t.Matrix.TransformPoints(thePoints);
-                    }
-                }
-            }
-
-            return new PointF() { X = (float)Math.Round(thePoints[0].X, digits), Y = (float)Math.Round(thePoints[0].Y, digits) };
-        }
-
-        private static float Rotation(IEnumerable<SvgTransformCollection> transforms)
-        {
-            if (OperatingSystem.IsWindows())
-            {
-                Matrix combinedMatrix = new();
-                foreach (var tc in transforms)
-                {
-                    foreach (var t in tc)
-                    {
-                        combinedMatrix.Multiply(t.Matrix);
-                    }
-                }
-
-                return (float)Math.Asin(combinedMatrix.MatrixElements.M12);
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        private static float Scale(float radius, IEnumerable<SvgTransformCollection> transforms, int digits)
-        {
-            foreach (var tc in transforms)
-            {
-                foreach (var t in tc)
-                {
-                    if (OperatingSystem.IsWindows())
-                    {
-                        radius *= t.Matrix.MatrixElements.M11;
-                    }
-                }
-            }
-
-            return (float)Math.Round(radius, digits);
-        }
-        /*
-        [TestMethod]
-        public static void SVG()
-        {
-            var accumulatedTransforms = new List<SvgTransformCollection>();
-
-            var doc = SvgDocument.Open("c:\\map.svg");
-            foreach (var group1 in doc.Children)
-            {
-                if (group1.ID == "Dune")
-                {
-                    if (group1.Transforms != null)
-                    {
-                        accumulatedTransforms.Add(group1.Transforms);
-                    }
-
-                    foreach (var child in group1.Children)
-                    {
-                        if (child.ID == "Areas")
-                        {
-                            if (child.Transforms != null)
-                            {
-                                accumulatedTransforms.Add(child.Transforms);
-                            }
-
-                            foreach (var areaOrSubgroup in child.Children)
-                            {
-                                Console.WriteLine(areaOrSubgroup.GetType());
-
-                                if (areaOrSubgroup is SvgGroup)
-                                {
-                                    if (areaOrSubgroup.Transforms != null)
-                                    {
-                                        accumulatedTransforms.Add(areaOrSubgroup.Transforms);
-                                    }
-
-                                    foreach (var area in areaOrSubgroup.Children)
-                                    {
-                                        if (area is SvgPath)
-                                        {
-                                            ProcessPath(accumulatedTransforms, area);
-                                        }
-                                    }
-                                }
-                                else if (areaOrSubgroup is SvgPath)
-                                {
-                                    ProcessPath(accumulatedTransforms, areaOrSubgroup);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private static void ProcessPath(List<SvgTransformCollection> accumulatedTransforms, SvgElement area)
-        {
-            var path = area as SvgPath;
-            //Console.WriteLine(area.ID);
-
-            var shape = new List<Segment>();
-
-            foreach (var elt in path.PathData)
-            {
-                if (elt is SvgClosePathSegment)
-                {
-                    shape.Add(new Close());
-                }
-                else if (elt is SvgCubicCurveSegment)
-                {
-                    var x = elt as SvgCubicCurveSegment;
-                    shape.Add(new BezierTo(TransformPoint(x.Start, accumulatedTransforms), TransformPoint(x.End, accumulatedTransforms), TransformPoint(x.FirstControlPoint, accumulatedTransforms), TransformPoint(x.SecondControlPoint, accumulatedTransforms)));
-                }
-                else if (elt is SvgLineSegment)
-                {
-                    var x = elt as SvgLineSegment;
-                    shape.Add(new LineTo(TransformPoint(x.Start, accumulatedTransforms), TransformPoint(x.End, accumulatedTransforms)));
-                }
-                else if (elt is SvgMoveToSegment)
-                {
-                    var x = elt as SvgMoveToSegment;
-                    shape.Add(new MoveTo(TransformPoint(x.Start, accumulatedTransforms), TransformPoint(x.End, accumulatedTransforms)));
-                }
-            }
-
-            Console.WriteLine("private static readonly Segment[] {1} = {{ {0} }};", string.Join(", ", shape), area.ID);
-
-            var xml = area.GetXML();
-            int end = xml.IndexOf("z\"") + 1;
-            var newPath = string.Join(' ', shape.Select(s => s.ToSvgString()));
-            //Console.WriteLine( "{0}{1}{2}", xml.Substring(0, 9), newPath, xml.Substring(end, xml.Length - end));
-        }
-        */
-
-        /*
-        public static void TranslatePoints()
-        {
-            Game g = new();
-            foreach (var l in g.Map.Locations)
-            {
-                Console.WriteLine("{0};{1};{2};{3};{4};{5};{6}",
-                    l.Territory.Id,
-                    l.Sector,
-                    l.Name,
-                    (int)(l.Center.X / 7.32),
-                    (int)(l.Center.Y / 7.32),
-                    l.SpiceLocation != null ? (int)(l.SpiceLocation.X / 7.32) : -1,
-                    l.SpiceLocation != null ? (int)(l.SpiceLocation.Y / 7.32) : -1);
-            }
-        }
-
-        private static PointF TransformPoint(PointF p, IEnumerable<SvgTransformCollection> transforms)
-        {
-            var thePoints = new PointF[] { p };
-
-            foreach (var tc in transforms)
-            {
-                foreach (var t in tc)
-                {
-                    //t.Matrix.TransformPoints(thePoints);
-                }
-            }
-
-            return new PointF((int)(7.362344583f * thePoints[0].X), (int)(7.349840256f * thePoints[0].Y));
-        }
-        */
-
         private static void SaveObject(object toSave, string filename)
         {
             var serializer = JsonSerializer.CreateDefault();
@@ -1240,7 +922,6 @@ namespace Treachery.Test
             return standardDeviation;
         }
 
-        
 
         [TestMethod]
         public void ScanForUndecoratedGetOnlyProperties()
@@ -1276,8 +957,8 @@ namespace Treachery.Test
                     Console.WriteLine($"Asymmetrical: {Skin.Current.Describe(l)}[{l.Id}] <-> {Skin.Current.Describe(asymNeighbour)}[{asymNeighbour.Id}]");
                 }
             }
-            
-            Assert.IsFalse( issueFound, "Asymmetrical neighbour relationship detected");
+
+            Assert.IsFalse(issueFound, "Asymmetrical neighbour relationship detected");
         }
     }
 }

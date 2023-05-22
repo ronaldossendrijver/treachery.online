@@ -339,7 +339,7 @@ namespace Treachery.Shared
             {
                 Enter(phaseIf1True);
             }
-            else 
+            else
             {
                 Enter(condition2, phaseIf2True, phaseOtherwise);
             }
@@ -351,7 +351,7 @@ namespace Treachery.Shared
             {
                 methodIf1True();
             }
-            else 
+            else
             {
                 Enter(condition2, phaseIf2True, phaseOtherwise);
             }
@@ -752,7 +752,7 @@ namespace Treachery.Shared
             PlayerToSetAsideVidal = null;
             WhenToSetAsideVidal = VidalMoment.None;
         }
-                
+
         internal TreacheryCard Discard(Player player, TreacheryCardType cardType)
         {
             TreacheryCard card = null;
@@ -991,7 +991,7 @@ namespace Treachery.Shared
         public Player OwnerOf(Location stronghold) => StrongholdOwnership.TryGetValue(stronghold, out Faction value) ? GetPlayer(value) : null;
 
         public int NumberOfHumanPlayers => Players.Count(p => !p.IsBot);
-                
+
         public int NrOfOccupantsExcludingPlayer(Location l, Player p)
         {
             Faction pinkOrPinkAllyToExclude = Faction.None;

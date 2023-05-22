@@ -19,6 +19,6 @@ namespace Treachery.Shared
             Faction = faction;
         }
 
-        
+
     }
 }

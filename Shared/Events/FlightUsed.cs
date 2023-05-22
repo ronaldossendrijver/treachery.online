@@ -14,7 +14,7 @@ namespace Treachery.Shared
         public FlightUsed(Game game, Faction initiator) : base(game, initiator)
         {
         }
-        
+
         public FlightUsed()
         {
         }

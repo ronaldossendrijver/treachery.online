@@ -140,7 +140,7 @@ namespace Treachery.Shared
             Bids.Clear();
             CardNumber = 1;
         }
-                
+
         internal void LogBid(Player initiator, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, MessagePart receiverIncome)
         {
             int bidTotalAmount = bidAmount + bidAllyContributionAmount + bidRedContributionAmount;
@@ -535,7 +535,7 @@ namespace Treachery.Shared
         internal IEnumerable<Player> PlayersThatCanBid => Players.Where(p => p.HasRoomForCards);
 
         internal bool NexusAllowsReplacingBoughtCards(Player p) => (p.Nexus == Faction.Grey || p.Nexus == Faction.White) && NexusPlayed.CanUseSecretAlly(this, p);
-        
+
         public bool HasBidToPay(Player p) => CurrentPhase == Phase.Bidding && CurrentBid != null &&
             (CurrentBid.Initiator == p.Faction || CurrentBid.Initiator == p.Ally && CurrentBid.AllyContributionAmount > 0);
 

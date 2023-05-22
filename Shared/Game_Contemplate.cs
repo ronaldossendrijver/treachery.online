@@ -14,7 +14,7 @@ namespace Treachery.Shared
         internal bool ExtortionToBeReturned { get; set; }
         public Dictionary<Location, Faction> StrongholdOwnership { get; private set; } = new();
         public bool CyanHasPlantedTerror { get; internal set; } = false;
-        public List<Player> Winners { get; } = new(); 
+        public List<Player> Winners { get; } = new();
         public WinMethod WinMethod { get; set; }
 
         #endregion State

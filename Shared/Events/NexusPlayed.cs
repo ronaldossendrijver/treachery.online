@@ -5,7 +5,6 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -79,10 +78,10 @@ namespace Treachery.Shared
         public int _purpleLocationId = -1;
 
         [JsonIgnore]
-        public Location PurpleLocation 
-        { 
-            get => Game.Map.LocationLookup.Find(_purpleLocationId); 
-            set => _purpleLocationId = Game.Map.LocationLookup.GetId(value); 
+        public Location PurpleLocation
+        {
+            get => Game.Map.LocationLookup.Find(_purpleLocationId);
+            set => _purpleLocationId = Game.Map.LocationLookup.GetId(value);
         }
 
         [JsonIgnore]

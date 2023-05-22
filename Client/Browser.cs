@@ -5,10 +5,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Treachery.Client
@@ -78,7 +75,7 @@ namespace Treachery.Client
         {
             if (IsValidSound(sound)) await JsInvoke("PlaySound", sound, CalculateVolume(volume), loop);
         }
-                
+
         public static async Task ChangeSoundVolume(string sound, float volume)
         {
             if (IsValidSound(sound)) await JsInvoke("ChangeSoundVolume", sound, CalculateVolume(volume));

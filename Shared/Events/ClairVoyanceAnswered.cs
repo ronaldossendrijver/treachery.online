@@ -72,12 +72,14 @@ namespace Treachery.Shared
 
             if (Game.LatestClairvoyance.Question == ClairvoyanceQuestion.WillAttackX && IsNo)
             {
-                var deal = new Deal() { 
-                    Type = DealType.DontShipOrMoveTo, 
-                    BoundFaction = Initiator, 
-                    ConsumingFaction = Game.LatestClairvoyance.Initiator, 
-                    DealParameter1 = Game.LatestClairvoyance.QuestionParameter1, 
-                    End = Phase.ShipmentAndMoveConcluded };
+                var deal = new Deal()
+                {
+                    Type = DealType.DontShipOrMoveTo,
+                    BoundFaction = Initiator,
+                    ConsumingFaction = Game.LatestClairvoyance.Initiator,
+                    DealParameter1 = Game.LatestClairvoyance.QuestionParameter1,
+                    End = Phase.ShipmentAndMoveConcluded
+                };
 
                 Game.StartDeal(deal);
             }

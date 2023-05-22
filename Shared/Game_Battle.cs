@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -67,7 +66,7 @@ namespace Treachery.Shared
             AssignBattleWheels(CurrentBattle.AggressivePlayer, CurrentBattle.DefendingPlayer);
         }
 
-		private void AssignBattleWheels(params Player[] players)
+        private void AssignBattleWheels(params Player[] players)
         {
             HasBattleWheel.Clear();
             foreach (var p in players)
@@ -996,7 +995,7 @@ namespace Treachery.Shared
         internal bool BattleWasConcludedByWinner { get; set; } = false;
 
         public List<Leader> Assassinated { get; private set; } = new();
-        
+
         private void SelectVictimOfBlackWinner(Battle harkonnenAction, Battle victimAction)
         {
             var harkonnen = GetPlayer(harkonnenAction.Initiator);
@@ -1018,7 +1017,7 @@ namespace Treachery.Shared
         }
 
         public Dictionary<Leader, Faction> CapturedLeaders { get; private set; } = new Dictionary<Leader, Faction>();
-                        
+
         internal void FinishBattle()
         {
             if (AggressorPlan.Hero == Vidal && WhenToSetAsideVidal == VidalMoment.AfterUsedInBattle && !(AggressorTraitorAction.Succeeded && !DefenderTraitorAction.Succeeded))

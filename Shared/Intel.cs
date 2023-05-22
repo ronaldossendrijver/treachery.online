@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using System.Resources;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Treachery.Shared
 {
     internal class Intel
     {
-        public static float BattleGain(Territory battleTerritory, Game game, 
-            Battle plan, Battle opponentPlan, 
+        public static float BattleGain(Territory battleTerritory, Game game,
+            Battle plan, Battle opponentPlan,
             bool traitorCalled, bool opponentTraitorCalled)
         {
             var opponentIsAggressor = PlayerSequence.IsAfter(game, plan.Player, opponentPlan.Player);
-            
+
             var aggPlan = opponentIsAggressor ? opponentPlan : plan;
             var defPlan = opponentIsAggressor ? plan : opponentPlan;
 
@@ -68,7 +63,7 @@ namespace Treachery.Shared
         }
 
         private static int ValueOf(TreacheryCard c) => c.IsUseless ? 0 : 5;
-        
+
         private static bool MustBeDiscardedAfterBattle(TreacheryCard c)
         {
             if (c == null) return false;
@@ -77,7 +72,7 @@ namespace Treachery.Shared
                 !(c.IsWeapon || c.IsDefense || c.IsUseless) ||
                 c.IsArtillery || c.IsMirrorWeapon || c.IsRockmelter || c.IsPoisonTooth || c.IsPortableAntidote;
         }
-        
+
 
 
         /*

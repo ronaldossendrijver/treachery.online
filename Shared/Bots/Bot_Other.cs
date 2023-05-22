@@ -760,7 +760,7 @@ namespace Treachery.Shared
 
         protected virtual RaiseDeadPlayed DetermineRaiseDeadPlayed()
         {
-            
+
 
             if (Game.CurrentTurn == Game.MaximumNumberOfTurns || !HasRoomForCards || Game.CurrentMainPhase > MainPhase.Resurrection && Game.CurrentMainPhase <= MainPhase.Battle)
             {
@@ -770,7 +770,7 @@ namespace Treachery.Shared
                 if (ForcesKilled + specialForcesThatCanBeRevived >= 7 && nrOfLivingLeaders > 1 || ForcesKilled + specialForcesThatCanBeRevived >= 17 && nrOfLivingLeaders > 0)
                 {
                     int forces = Math.Max(0, Math.Min(5, ForcesKilled) - specialForcesThatCanBeRevived);
-                    
+
                     Location targetOfForces = null;
                     int specialForcesToPlanet = Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(this, specialForcesThatCanBeRevived);
                     if (specialForcesToPlanet > 0)

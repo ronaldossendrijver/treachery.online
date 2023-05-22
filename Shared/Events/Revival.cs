@@ -115,7 +115,7 @@ namespace Treachery.Shared
             {
                 if (!ValidRevivedForceLocations(Game, Player).Contains(Location)) return Message.Express("You can't place revived forces there");
 
-                if (NumberOfForcesInLocation > NumberOfForcesThatMayBePlacedOnPlanet(Game, Player, UsesRedSecretAlly, AmountOfForces + ExtraForcesPaidByRed) || 
+                if (NumberOfForcesInLocation > NumberOfForcesThatMayBePlacedOnPlanet(Game, Player, UsesRedSecretAlly, AmountOfForces + ExtraForcesPaidByRed) ||
                     NumberOfSpecialForcesInLocation > NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, AmountOfSpecialForces + ExtraSpecialForcesPaidByRed))
                 {
                     return Message.Express("You can't place that many forces directly on the planet");
@@ -575,7 +575,7 @@ namespace Treachery.Shared
                     Player.ShipSpecialForces(Location, NumberOfSpecialForcesInLocation);
                     Log(Initiator, " place ", NumberOfSpecialForcesInLocation, FactionSpecialForce.Yellow, " in ", Location);
                 }
-                
+
                 if (NumberOfForcesInLocation > 0)
                 {
                     Player.ShipForces(Location, NumberOfForcesInLocation);

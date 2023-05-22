@@ -2,8 +2,6 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
-using System;
-
 namespace Treachery.Shared
 {
     public class WhiteAnnouncesAuction : GameEvent

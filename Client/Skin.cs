@@ -326,9 +326,9 @@ namespace Treachery.Client
             };
         }
 
-        private string [] Describe(object[] objects)
+        private string[] Describe(object[] objects)
         {
-            var result = new string [objects.Length];
+            var result = new string[objects.Length];
             for (int i = 0; i < objects.Length; i++)
             {
                 result[i] = Describe(objects[i]);
@@ -455,11 +455,11 @@ namespace Treachery.Client
 
         public string GetTerrorTypeDescription(TerrorType terr) => GetLabel(TerrorTokenDescription_STR, terr);
 
-        public string Describe(Ambassador ambassador) => GetLabel(AmbassadorName_STR,ambassador);
+        public string Describe(Ambassador ambassador) => GetLabel(AmbassadorName_STR, ambassador);
 
-        public string GetAmbassadorDescription(Ambassador ambassador) => GetLabel(AmbassadorDescription_STR,ambassador);
+        public string GetAmbassadorDescription(Ambassador ambassador) => GetLabel(AmbassadorDescription_STR, ambassador);
 
-        public string GetImageURL(Ambassador ambassador) => GetLabel(AmbassadorImage_URL,ambassador);
+        public string GetImageURL(Ambassador ambassador) => GetLabel(AmbassadorImage_URL, ambassador);
 
         public string Describe(MainPhase p) => GetLabel(MainPhase_STR, p);
 
@@ -500,7 +500,7 @@ namespace Treachery.Client
             };
         }
 
-        public string Describe(FactionSpecialForce f) => GetLabel(SpecialForceName_STR,GetFaction(f));
+        public string Describe(FactionSpecialForce f) => GetLabel(SpecialForceName_STR, GetFaction(f));
 
         public string Describe(FactionAdvantage advantage)
         {
@@ -815,7 +815,7 @@ namespace Treachery.Client
 
         public string GetTerritoryBorder(Territory t) => t != null ? GetLabel(TerritoryBorder_SVG, t.SkinId) : "";
 
-        public string GetImageURL(TreacheryCard c) => c != null ? GetLabel(TreacheryCardImage_URL, c.SkinId) : ""; 
+        public string GetImageURL(TreacheryCard c) => c != null ? GetLabel(TreacheryCardImage_URL, c.SkinId) : "";
 
         public string GetImageURL(World w) => GetLabel(HomeWorldImage_URL, w);
 
@@ -1231,7 +1231,7 @@ namespace Treachery.Client
             toFix.TechTokenName_STR = FixDictionary(toFix.TechTokenName_STR, donor.TechTokenName_STR);
             toFix.TechTokenImage_URL = FixDictionary(toFix.TechTokenImage_URL, donor.TechTokenImage_URL);
             toFix.Sound = FixDictionary(toFix.Sound, donor.Sound);
-            toFix.TreacheryCardType_STR= FixDictionary(toFix.TreacheryCardType_STR, donor.TreacheryCardType_STR);
+            toFix.TreacheryCardType_STR = FixDictionary(toFix.TreacheryCardType_STR, donor.TreacheryCardType_STR);
             toFix.TreacheryCardName_STR = FixDictionary(toFix.TreacheryCardName_STR, donor.TreacheryCardName_STR);
             toFix.TreacheryCardDescription_STR = FixDictionary(toFix.TreacheryCardDescription_STR, donor.TreacheryCardDescription_STR);
             toFix.TreacheryCardImage_URL = FixDictionary(toFix.TreacheryCardImage_URL, donor.TreacheryCardImage_URL);
@@ -1245,7 +1245,7 @@ namespace Treachery.Client
             toFix.HomeWorldCardImage_URL = FixDictionary(toFix.HomeWorldCardImage_URL, donor.HomeWorldCardImage_URL);
             toFix.NexusCardImage_URL = FixDictionary(toFix.NexusCardImage_URL, donor.NexusCardImage_URL);
             toFix.TerrorTokenName_STR = FixDictionary(toFix.TerrorTokenName_STR, donor.TerrorTokenName_STR);
-            toFix.TerrorTokenDescription_STR  = FixDictionary(toFix.TerrorTokenDescription_STR, donor.TerrorTokenDescription_STR);
+            toFix.TerrorTokenDescription_STR = FixDictionary(toFix.TerrorTokenDescription_STR, donor.TerrorTokenDescription_STR);
             toFix.DiscoveryTokenName_STR = FixDictionary(toFix.DiscoveryTokenName_STR, donor.DiscoveryTokenName_STR);
             toFix.DiscoveryTokenDescription_STR = FixDictionary(toFix.DiscoveryTokenDescription_STR, donor.DiscoveryTokenDescription_STR);
             toFix.DiscoveryTokenImage_URL = FixDictionary(toFix.DiscoveryTokenImage_URL, donor.DiscoveryTokenImage_URL);
@@ -1405,11 +1405,13 @@ namespace Treachery.Client
                 [Concept.Resource] = "Spice",
                 [Concept.Graveyard] = "Tleilaxu Tanks",
 
-            }.Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<Concept, string>>() : new Dictionary<Concept, string> {
+            }.Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<Concept, string>>() : new Dictionary<Concept, string>
+            {
                 [Concept.BabyMonster] = "Sandtrout",
 
-            }).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<Concept, string>>() : new Dictionary<Concept, string> {
-                [Concept.GreatMonster] = "Great Maker",          
+            }).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<Concept, string>>() : new Dictionary<Concept, string>
+            {
+                [Concept.GreatMonster] = "Great Maker",
 
             }).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
 
@@ -1454,13 +1456,15 @@ namespace Treachery.Client
                 [TreacheryCardType.Caravan] = "Hajr",
                 [TreacheryCardType.Clairvoyance] = "Truthtrance",
 
-            }.Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<TreacheryCardType, string>>() : new Dictionary<TreacheryCardType, string> {
+            }.Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<TreacheryCardType, string>>() : new Dictionary<TreacheryCardType, string>
+            {
                 [TreacheryCardType.ArtilleryStrike] = "Artillery Strike",
                 [TreacheryCardType.Harvester] = "Harvester",
                 [TreacheryCardType.Thumper] = "Thumper",
                 [TreacheryCardType.Amal] = "Amal",
 
-            }).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<TreacheryCardType, string>>() : new Dictionary<TreacheryCardType, string> {
+            }).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<TreacheryCardType, string>>() : new Dictionary<TreacheryCardType, string>
+            {
                 [TreacheryCardType.Distrans] = "Distrans",
                 [TreacheryCardType.Juice] = "Juice Of Sapho",
                 [TreacheryCardType.MirrorWeapon] = "Mirror Weapon",
@@ -1471,7 +1475,8 @@ namespace Treachery.Client
                 [TreacheryCardType.Residual] = "Residual Poison",
                 [TreacheryCardType.Rockmelter] = "Stone Burner",
 
-            }).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<TreacheryCardType, string>>() : new Dictionary<TreacheryCardType, string> { 
+            }).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<TreacheryCardType, string>>() : new Dictionary<TreacheryCardType, string>
+            {
                 [TreacheryCardType.Recruits] = "Recruits",
                 [TreacheryCardType.Reinforcements] = "Reinforcements",
                 [TreacheryCardType.HarassAndWithdraw] = "Harass and Withdraw"
@@ -1521,7 +1526,7 @@ namespace Treachery.Client
                 [43] = "Amal",
                 [44] = "Kull Wahad",
             }
-            ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string> 
+            ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
             {
                 [45] = "Distrans",
                 [46] = "Juice Of Sapho",
@@ -1534,7 +1539,7 @@ namespace Treachery.Client
                 [53] = "Stone Burner",
                 [54] = "Karama",
             }
-            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string> 
+            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
             {
                 [55] = "Recruits",
                 [56] = "Reinforcements",
@@ -1571,7 +1576,7 @@ namespace Treachery.Client
                 [32] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
             }
             .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
-            { 
+            {
                 [33] = "Weapon - Special - Play as part of your Battle Plan. This weapon counts as both projectile and poison. You may keep this card if you win this battle.",
                 [34] = "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
                 [35] = "Weapon - Poison - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Snooper. You may keep this card if you win the battle.",
@@ -1586,7 +1591,7 @@ namespace Treachery.Client
                 [44] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
             }
             ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
-            { 
+            {
                 [45] = "Distrans - Give another player a treachery card from your hand at any time except during a bid and if their hand size permits. Discard after use.",
                 [46] = "Choose one: (1) be considered aggressor in a battle or (2) play at the beginning of a phase or action that requires turn order to go first or (3) go last in a phase or action that requires turn order. Discard after use.",
                 [47] = "Weapon - Special - Play as part of your Battle Plan. Becomes a copy of your opponent's weapon. Discard after use.",
@@ -1599,7 +1604,7 @@ namespace Treachery.Client
                 [54] = "Allows you to prevent use of a Faction Advantage. Allows you to bid any amount of spice on a card or immediately win a card on bid. Allows you to ship at half price. In the advanced game, allows use of your Special Karama Power once during the game. Discard after use.",
             }
             ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
-            { 
+            {
                 [55] = "Play during Revival. All factions double their Free Revival rates. The revival limits is increased to 7. Discard after use.",
                 [56] = "Play as part of your battle plan in place of a weapon or defense if you have at least 3 forces in reserves. Add 2 to your dialed number, then send 3 forces from reserves to the Tanks. Discard after use.",
                 [57] = "Play as part of your battle plan in place of a weapon or defense when not on your own Home World. Your undialed forces return to your reserves. Your leader may be killed as normal. If your opponent calls traitor, this effect is cancelled. Discard after use."

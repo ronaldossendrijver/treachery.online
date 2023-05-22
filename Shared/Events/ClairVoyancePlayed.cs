@@ -26,7 +26,7 @@ namespace Treachery.Shared
         #region Properties
 
         public ClairvoyanceQuestion Question { get; set; }
-                
+
         public Faction Target { get; set; }
 
         public bool IsAbout(TreacheryCardType type)
@@ -43,13 +43,13 @@ namespace Treachery.Shared
             {
                 return Question switch
                 {
-                    ClairvoyanceQuestion.CardTypeInBattle or 
-                    ClairvoyanceQuestion.CardTypeAsDefenseInBattle or 
-                    ClairvoyanceQuestion.CardTypeAsWeaponInBattle or 
+                    ClairvoyanceQuestion.CardTypeInBattle or
+                    ClairvoyanceQuestion.CardTypeAsDefenseInBattle or
+                    ClairvoyanceQuestion.CardTypeAsWeaponInBattle or
                     ClairvoyanceQuestion.HasCardTypeInHand => Enum.Parse<TreacheryCardType>(QuestionParameter1),
 
-                    ClairvoyanceQuestion.LeaderAsFacedancer or 
-                    ClairvoyanceQuestion.LeaderAsTraitor or 
+                    ClairvoyanceQuestion.LeaderAsFacedancer or
+                    ClairvoyanceQuestion.LeaderAsTraitor or
                     ClairvoyanceQuestion.LeaderInBattle => LeaderManager.HeroLookup.Find(int.Parse(QuestionParameter1)),
 
                     ClairvoyanceQuestion.Prediction => Enum.Parse<Faction>(QuestionParameter1),
@@ -151,10 +151,10 @@ namespace Treachery.Shared
         {
             return q switch
             {
-                ClairvoyanceQuestion.CardTypeInBattle or 
-                ClairvoyanceQuestion.CardTypeAsDefenseInBattle or 
-                ClairvoyanceQuestion.CardTypeAsWeaponInBattle or 
-                ClairvoyanceQuestion.LeaderInBattle or 
+                ClairvoyanceQuestion.CardTypeInBattle or
+                ClairvoyanceQuestion.CardTypeAsDefenseInBattle or
+                ClairvoyanceQuestion.CardTypeAsWeaponInBattle or
+                ClairvoyanceQuestion.LeaderInBattle or
                 ClairvoyanceQuestion.DialOfMoreThanXInBattle => g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p),
 
                 _ => true,

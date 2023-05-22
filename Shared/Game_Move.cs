@@ -154,7 +154,7 @@ namespace Treachery.Shared
             totalNumberOfForces += battalion.AmountOfForces;
             totalNumberOfSpecialForces += battalion.AmountOfSpecialForces;
         }
-                
+
         private bool MustMoveThroughStorm(Player initiator, Location from, Location to, Battalion moved)
         {
             if (from == null || to == null) return false;
@@ -207,7 +207,7 @@ namespace Treachery.Shared
 
             SetInFrontOfShield(vidal, false);
         }
-                
+
         internal void LetPlayerDiscardTreacheryCardOfChoice(Faction f)
         {
             PhaseBeforeDiscarding = CurrentPhase;

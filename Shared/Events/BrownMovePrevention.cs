@@ -29,7 +29,7 @@ namespace Treachery.Shared
         [JsonIgnore]
         public Territory Territory
         {
-            get =>  Game.Map.TerritoryLookup.Find(_territoryId);
+            get => Game.Map.TerritoryLookup.Find(_territoryId);
             set => _territoryId = Game.Map.TerritoryLookup.GetId(value);
         }
 

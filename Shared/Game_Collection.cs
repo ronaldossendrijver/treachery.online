@@ -104,7 +104,7 @@ namespace Treachery.Shared
                 Collect(player.Faction, stronghold.Territory, amount);
             }
         }
-        
+
         private void CollectResourcesFromTerritories()
         {
             var thief = Players.FirstOrDefault(p => p.Occupies(Map.ProcessingStation));

@@ -637,7 +637,7 @@ namespace Treachery.Shared
             return dialNeeded;
         }
 
-                        
+
         protected Battalion FindOneTroopThatCanSafelyMove(Location from, Location to)
         {
             if (ForcesInLocations.ContainsKey(from) && from.Sector != Game.SectorInStorm && NotOccupiedByOthers(from.Territory))

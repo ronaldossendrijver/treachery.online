@@ -8,8 +8,8 @@ namespace Treachery.Shared
     {
         #region Construction
 
-        public AllianceBroken(Game game, Faction initiator) : base(game, initiator) 
-        { 
+        public AllianceBroken(Game game, Faction initiator) : base(game, initiator)
+        {
         }
 
         public AllianceBroken()

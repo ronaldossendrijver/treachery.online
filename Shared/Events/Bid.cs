@@ -142,7 +142,7 @@ namespace Treachery.Shared
         public static bool MayUseRedSecretAlly(Game game, Player player) => game.CurrentAuctionType == AuctionType.Normal && player.Nexus == Faction.Red && NexusPlayed.CanUseSecretAlly(game, player);
 
         #endregion Validation
-        
+
         #region Execution
 
         protected override void ExecuteConcreteEvent()

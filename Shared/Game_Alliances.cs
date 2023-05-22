@@ -126,7 +126,7 @@ namespace Treachery.Shared
                 case Faction.Pink: PinkSharesAmbassadors = permission; break;
             }
         }
-                       
+
         #endregion Nexus
 
         #region Information

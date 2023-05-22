@@ -45,10 +45,10 @@ namespace Treachery.Shared
         public int _yellowOrOrangeToId;
 
         [JsonIgnore]
-        public Location YellowOrOrangeTo 
-        { 
-            get => Game.Map.LocationLookup.Find(_yellowOrOrangeToId); 
-            set => _yellowOrOrangeToId = Game.Map.LocationLookup.GetId(value); 
+        public Location YellowOrOrangeTo
+        {
+            get => Game.Map.LocationLookup.Find(_yellowOrOrangeToId);
+            set => _yellowOrOrangeToId = Game.Map.LocationLookup.GetId(value);
         }
 
         [JsonIgnore]
@@ -60,7 +60,7 @@ namespace Treachery.Shared
         public Dictionary<Location, Battalion> YellowForceLocations
         {
             get => PlacementEvent.ParseForceLocations(Game, Player.Faction, _yellowForceLocations);
-            set => _yellowForceLocations = PlacementEvent.ForceLocationsString(Game, value);        
+            set => _yellowForceLocations = PlacementEvent.ForceLocationsString(Game, value);
         }
 
         public int _greyCardId;

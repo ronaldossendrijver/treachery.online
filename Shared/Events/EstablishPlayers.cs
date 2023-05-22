@@ -226,7 +226,7 @@ namespace Treachery.Shared
 
             Game.Ruleset = Game.DetermineApproximateRuleset(FactionsInPlay, Game.Rules, Game.ExpansionLevel);
             Log("Ruleset: ", Game.Ruleset);
-            
+
             var customRules = Game.GetCustomRules().ToList();
             LogIf(customRules.Any(), "House rules: ", customRules);
 

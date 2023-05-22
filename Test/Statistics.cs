@@ -78,7 +78,7 @@ namespace Treachery.Test
             Console.WriteLine("PlayedGames:" + PlayedGames);
             Console.WriteLine("Battles:" + Battles);
             Console.WriteLine("Total Game Time (minutes):" + Math.Round(GameTimes.Sum(t => t.TotalMinutes), 0));
-            
+
             OutputCounter("GamesPerMonth", GamesPerMonth, describer);
             OutputCounter("GameTypes", GameTypes, describer);
             OutputCounter("GamePlayerSetup", GamePlayerSetup, describer);
@@ -109,7 +109,7 @@ namespace Treachery.Test
             OutputCounter("Truthtrances", Truthtrances, describer, 50);
             OutputCounter("Karamas", Karamas, describer);
             OutputCounter("AcceptedDeals", AcceptedDeals, describer, 50);
-            
+
         }
 
         private static void OutputCounter<T>(string title, ObjectCounter<T> c, IDescriber describer, int topX = -1)
