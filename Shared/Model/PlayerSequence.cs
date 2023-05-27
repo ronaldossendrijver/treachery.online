@@ -11,7 +11,7 @@ namespace Treachery.Shared
     public class PlayerSequence
     {
         private List<Player> Players { get; set; }
-        private readonly List<Player> _played = new List<Player>();
+        private readonly List<Player> _played = new();
         private readonly Game _game;
         private readonly bool _skipPlayersThatCantBidOnCards;
         private readonly int _direction;

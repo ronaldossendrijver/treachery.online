@@ -10,10 +10,10 @@ namespace Treachery.Shared
     public static class LeaderManager
     {
         public const int FIRST_ID = 1000;
-        public static List<Leader> Leaders;
-        public static Messiah Messiah = new Messiah() { Id = FIRST_ID, SkinId = 1098 };
-        public static LeaderFetcher LeaderLookup = new();
-        public static HeroFetcher HeroLookup = new();
+        public static List<Leader> Leaders { get; private set; }
+        public static Messiah Messiah { get; private set; } = new() { Id = FIRST_ID, SkinId = 1098 };
+        public static LeaderFetcher LeaderLookup { get; private set; } = new();
+        public static HeroFetcher HeroLookup { get; private set; } = new();
 
         static LeaderManager()
         {

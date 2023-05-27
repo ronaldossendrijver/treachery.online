@@ -5,7 +5,7 @@ namespace Treachery.Shared
 {
     public class ObjectCounter<T>
     {
-        private readonly Dictionary<T, int> counters = new Dictionary<T, int>();
+        private readonly Dictionary<T, int> counters = new();
 
         public void Count(T obj)
         {

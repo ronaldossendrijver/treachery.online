@@ -22,11 +22,7 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            //.CurrentBattle.OpponentOf(Faction.Grey).HasKarma(g)
-            if (e is Battle b && b.By(Faction.Grey) && b.SpecialForces > 2 && g.Prevented(FactionAdvantage.GreySpecialForceBonus))
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Karama against Ix");
-            }
+
         }
 
         private readonly List<string> WrittenCases = new();
@@ -348,7 +344,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 1000;
+            int nrOfGames = 2000;
             int nrOfTurns = 10;
             int nrOfPlayers = 7;
 

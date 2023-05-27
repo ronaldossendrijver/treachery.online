@@ -109,12 +109,7 @@ namespace Treachery.Shared
         protected TraitorDiscarded DetermineTraitorDiscarded()
         {
             var worstTraitor = DetermineWorstTraitor();
-
-            if (worstTraitor == null)
-            {
-                worstTraitor = Traitors.LowestOrDefault(t => t.Value);
-            }
-
+            worstTraitor ??= Traitors.LowestOrDefault(t => t.Value);
             return new TraitorDiscarded(Game, Faction) { Traitor = worstTraitor };
         }
 
@@ -127,15 +122,8 @@ namespace Treachery.Shared
                 result = Traitors.Where(t => t.Faction == Faction).LowestOrDefault(t => t.Value);
             }
 
-            if (result == null)
-            {
-                result = Traitors.Where(t => t is Leader && !Game.IsAlive(t)).LowestOrDefault(t => t.Value);
-            }
-
-            if (result == null)
-            {
-                result = Traitors.Where(t => t is Leader).LowestOrDefault(t => t.Value);
-            }
+            result ??= Traitors.Where(t => t is Leader && !Game.IsAlive(t)).LowestOrDefault(t => t.Value);
+            result ??= Traitors.Where(t => t is Leader).LowestOrDefault(t => t.Value);
 
             return result;
         }
@@ -679,7 +667,7 @@ namespace Treachery.Shared
                         if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(this))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
-                            if (plan == null) plan = DetermineBattlePlan(false, true);
+                            plan ??= DetermineBattlePlan(false, true);
                             LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                             if (plan != null)
                             {
@@ -894,7 +882,7 @@ namespace Treachery.Shared
             return null;
         }
 
-        protected virtual ThumperPlayed DetermineThumperPlayed() => new ThumperPlayed(Game, Faction);
+        protected virtual ThumperPlayed DetermineThumperPlayed() => new(Game, Faction);
 
         protected virtual StormSpellPlayed DetermineStormSpellPlayed()
         {

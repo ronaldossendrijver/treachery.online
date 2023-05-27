@@ -15,7 +15,7 @@ namespace Treachery.Shared
             About = about;
         }
 
-        public LinkedList<Message> Messages = new LinkedList<Message>();
+        public LinkedList<Message> Messages = new();
 
         public void Express(params object[] list)
         {

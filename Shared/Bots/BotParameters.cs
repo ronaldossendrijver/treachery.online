@@ -26,7 +26,7 @@ namespace Treachery.Shared
         public float Battle_MimimumChanceToAssumeMyLeaderSurvives { get; set; }
         public float Battle_DialShortageThresholdForThrowing { get; set; }
 
-        public static BotParameters BlackParameters = new()
+        public static readonly BotParameters BlackParameters = new()
         {
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 4,
@@ -44,7 +44,7 @@ namespace Treachery.Shared
             Battle_DialShortageThresholdForThrowing = 3
         };
 
-        public static BotParameters GreenParameters = new()
+        public static readonly BotParameters GreenParameters = new()
         {
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 4,
@@ -62,7 +62,7 @@ namespace Treachery.Shared
             Battle_DialShortageThresholdForThrowing = 3
         };
 
-        public static BotParameters YellowParameters = new()
+        public static readonly BotParameters YellowParameters = new()
         {
             Bidding_ResourcesToKeepWhenCardIsPerfect = 0,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 0,
@@ -80,7 +80,7 @@ namespace Treachery.Shared
             Battle_DialShortageThresholdForThrowing = 4
         };
 
-        public static BotParameters RedParameters = new()
+        public static readonly BotParameters RedParameters = new()
         {
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 8,
@@ -98,7 +98,7 @@ namespace Treachery.Shared
             Battle_DialShortageThresholdForThrowing = 3
         };
 
-        public static BotParameters OrangeParameters = new()
+        public static readonly BotParameters OrangeParameters = new()
         {
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 8,
@@ -116,7 +116,7 @@ namespace Treachery.Shared
             Battle_DialShortageThresholdForThrowing = 6
         };
 
-        public static BotParameters BlueParameters = new()
+        public static readonly BotParameters BlueParameters = new()
         {
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 7,
@@ -134,7 +134,7 @@ namespace Treachery.Shared
             Battle_DialShortageThresholdForThrowing = 6
         };
 
-        public static BotParameters GreyParameters = new()
+        public static readonly BotParameters GreyParameters = new()
         {
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 5,
@@ -152,7 +152,7 @@ namespace Treachery.Shared
             Battle_DialShortageThresholdForThrowing = 4
         };
 
-        public static BotParameters PurpleParameters = new()
+        public static readonly BotParameters PurpleParameters = new()
         {
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 5,
@@ -170,7 +170,7 @@ namespace Treachery.Shared
             Battle_DialShortageThresholdForThrowing = 6
         };
 
-        private static BotParameters BrownParameters = new()
+        private static readonly BotParameters BrownParameters = new()
         {
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 8,
@@ -188,7 +188,7 @@ namespace Treachery.Shared
             Battle_DialShortageThresholdForThrowing = 3
         };
 
-        private static BotParameters WhiteParameters = new BotParameters()
+        private static readonly BotParameters WhiteParameters = new()
         {
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 5,
@@ -206,7 +206,7 @@ namespace Treachery.Shared
             Battle_DialShortageThresholdForThrowing = 6
         };
 
-        public static BotParameters PinkParameters = new()
+        public static readonly BotParameters PinkParameters = new()
         {
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 5,
@@ -224,7 +224,7 @@ namespace Treachery.Shared
             Battle_DialShortageThresholdForThrowing = 3
         };
 
-        public static BotParameters CyanParameters = new()
+        public static readonly BotParameters CyanParameters = new()
         {
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 5,

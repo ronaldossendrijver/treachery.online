@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public static class TreacheryCardManager
     {
-        private static readonly List<TreacheryCard> Items = new List<TreacheryCard>();
+        private static readonly List<TreacheryCard> Items = new();
         public static IFetcher<TreacheryCard> Lookup = new TreacheryCardFetcher();
 
         public const int CARD_BALISET = 28;
