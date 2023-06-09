@@ -13,13 +13,13 @@
 
     @if (Label != null)
     {
-        <label class="mb-0" for="@Id">
+        <label class="mb-0" for=@Id>
             @Label
             <ClickHintComponent Button="@ButtonHint" Modifier="@ModifierHint" />
         </label>
     }
 
-    <select class="form-select" style="cursor:pointer" @onchange=@(e => ChangeValue(e)) disabled="@Disabled" >
+    <select class="form-select" style="cursor:pointer" @onchange=@(e => ChangeValue(e)) disabled="@Disabled" id=@Id>
 
         @if (AddEmptyValue)
         {

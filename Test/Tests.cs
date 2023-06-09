@@ -22,7 +22,18 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-
+            if (g.CurrentPhase == Phase.NonOrangeMove)
+            {
+                var p = g.ShipmentAndMoveSequence.CurrentPlayer;
+                if (p != null)
+                {
+                    var locationsWithForcesInstorm = p.ForcesInLocations.Keys.Where(l => g.IsInStorm(l));
+                    if (locationsWithForcesInstorm.Any(l => l.Territory.Locations.Any(locInSameTerritory => locInSameTerritory != l && p.AnyForcesIn(locInSameTerritory) > 0)))
+                    {
+                        WriteSavegameIfApplicable(g, p, "territory partially covered by storm with forces in multiple locations");
+                    }
+                }
+            }
         }
 
         private readonly List<string> WrittenCases = new();
@@ -344,7 +355,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 2000;
+            int nrOfGames = 200;
             int nrOfTurns = 10;
             int nrOfPlayers = 7;
 

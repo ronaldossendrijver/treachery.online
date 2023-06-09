@@ -36,6 +36,40 @@ namespace Treachery.Shared
 
         public string _forceLocations = "";
 
+        [JsonIgnore]
+        public Dictionary<Location, Battalion> ForceLocations
+        {
+            get => ParseForceLocations(Game, Player.Faction, _forceLocations);
+            set => _forceLocations = ForceLocationsString(Game, value);
+        }
+
+        public static string ForceLocationsString(Game g, Dictionary<Location, Battalion> forceLocations)
+        {
+            return string.Join(',', forceLocations.Select(x => g.Map.LocationLookup.GetId(x.Key) + ":" + x.Value.AmountOfForces + "|" + x.Value.AmountOfSpecialForces));
+        }
+
+        public static Dictionary<Location, Battalion> ParseForceLocations(Game g, Faction f, string forceLocations)
+        {
+            var result = new Dictionary<Location, Battalion>();
+            if (forceLocations != null && forceLocations.Length > 0)
+            {
+                foreach (var locationAmountPair in forceLocations.Split(','))
+                {
+                    var locationAndAmounts = locationAmountPair.Split(':');
+                    var location = g.Map.LocationLookup.Find(Convert.ToInt32(locationAndAmounts[0]));
+                    var amounts = locationAndAmounts[1].Split('|');
+                    var amountOfNormalForces = Convert.ToInt32(amounts[0]);
+                    var amountOfNormalSpecialForces = Convert.ToInt32(amounts[1]);
+                    result.Add(location, new Battalion(f, amountOfNormalForces, amountOfNormalSpecialForces, location));
+                }
+            }
+
+            return result;
+        }
+
+        [JsonIgnore]
+        public virtual int TotalAmountOfForcesAddedToLocation => ForceLocations != null ? ForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
+
         #endregion Properties
 
         #region Validation
@@ -79,53 +113,16 @@ namespace Treachery.Shared
             if (numberOfSelectedTerritories > 1 && !canMoveFromTwoTerritories) return Message.Express("You can't move from two territories at the same time");
             if (numberOfSelectedTerritories > 2) return Message.Express("You can't move from more than two territories at the same time");
 
+            if (Game.Version >= 156 && ForceLocations.Keys.Any(l => Game.IsInStorm(l))) return Message.Express("Cannot move out of a storm");
+
             if (Initiator == Faction.White && ForceLocations.Values.Any(v => v.AmountOfSpecialForces != 0) && Game.HasLowThreshold(Faction.White)) return Message.Express("Low Threshold prevents you from moving your No-Field");
 
             return null;
         }
 
-        #endregion Validation
-
         public static bool MayMoveAsAdvisors(Game g, Player p, Territory to) => p.Is(Faction.Blue) && g.Applicable(Rule.BlueAdvisors) && (p.SpecialForcesIn(to) > 0 || p.ForcesIn(to) == 0 && g.AnyForcesIn(to));
 
         public static bool MayMoveAsBlueFighters(Player p, Territory to) => p.Is(Faction.Blue) && p.SpecialForcesIn(to) == 0;
-
-        [JsonIgnore]
-        public Dictionary<Location, Battalion> ForceLocations
-        {
-            get
-            {
-                return ParseForceLocations(Game, Player.Faction, _forceLocations);
-            }
-            set
-            {
-                _forceLocations = ForceLocationsString(Game, value);
-            }
-        }
-
-        public static string ForceLocationsString(Game g, Dictionary<Location, Battalion> forceLocations)
-        {
-            return string.Join(',', forceLocations.Select(x => g.Map.LocationLookup.GetId(x.Key) + ":" + x.Value.AmountOfForces + "|" + x.Value.AmountOfSpecialForces));
-        }
-
-        public static Dictionary<Location, Battalion> ParseForceLocations(Game g, Faction f, string forceLocations)
-        {
-            var result = new Dictionary<Location, Battalion>();
-            if (forceLocations != null && forceLocations.Length > 0)
-            {
-                foreach (var locationAmountPair in forceLocations.Split(','))
-                {
-                    var locationAndAmounts = locationAmountPair.Split(':');
-                    var location = g.Map.LocationLookup.Find(Convert.ToInt32(locationAndAmounts[0]));
-                    var amounts = locationAndAmounts[1].Split('|');
-                    var amountOfNormalForces = Convert.ToInt32(amounts[0]);
-                    var amountOfNormalSpecialForces = Convert.ToInt32(amounts[1]);
-                    result.Add(location, new Battalion(f, amountOfNormalForces, amountOfNormalSpecialForces, location));
-                }
-            }
-
-            return result;
-        }
 
         public static IEnumerable<Location> ValidTargets(Game g, Player p, Location location, Battalion battalion)
         {
@@ -178,7 +175,6 @@ namespace Treachery.Shared
             return g.Map.Territories(false).Where(t => t.Locations.Any(l => l.Sector != g.SectorInStorm && p.AnyForcesIn(l) > 0));
         }
 
-        [JsonIgnore]
-        public virtual int TotalAmountOfForcesAddedToLocation => ForceLocations != null ? ForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
+        #endregion Validation
     }
 }

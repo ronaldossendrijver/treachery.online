@@ -30,7 +30,7 @@
                     <Label>From</Label>
                 </SelectComponent>
 
-                <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="forces" Locations="Player.LocationsWithAnyForcesInTerritory(fromTerritory)" InitializeToMaximum=true/>
+                <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="forces" Locations="Player.LocationsWithAnyForcesInTerritory(fromTerritory).Where(l => !Game.IsInStorm(l))" InitializeToMaximum=true/>
             }
 
             <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="toLocation" Values="ValidTargets">
