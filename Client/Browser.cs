@@ -73,7 +73,7 @@ namespace Treachery.Client
 
         public static async Task PlaySound(string sound, float volume = 100f, bool loop = false)
         {
-            if (IsValidSound(sound)) await JsInvoke("PlaySound", sound, CalculateVolume(volume), loop);
+            if (IsValidSound(sound)) await JsInvoke("PlaySound", sound, 0, CalculateVolume(volume), loop);
         }
 
         public static async Task ChangeSoundVolume(string sound, float volume)
@@ -81,21 +81,12 @@ namespace Treachery.Client
             if (IsValidSound(sound)) await JsInvoke("ChangeSoundVolume", sound, CalculateVolume(volume));
         }
 
-        public static async Task StopSound(string sound)
+        public static async Task StopSound(string sound, float fromVolume)
         {
-            if (IsValidSound(sound)) await JsInvoke("StopSound", sound);
+            if (IsValidSound(sound)) await JsInvoke("StopSound", sound, 3000);
         }
 
-        public static async Task FadeSound(string sound, float fromVolume, float toVolume, int milliseconds)
-        {
-            if (IsValidSound(sound) && fromVolume != toVolume) await JsInvoke("FadeSound", sound, CalculateVolume(fromVolume), CalculateVolume(toVolume), milliseconds);
-        }
-
-        public static async Task FadeAndStopSound(string sound, float fromVolume)
-        {
-            await FadeSound(sound, fromVolume, 0, 3000);
-            _ = Task.Delay(3000).ContinueWith(e => StopSound(sound));
-        }
+        public static async Task StopSounds() => await JsInvoke("StopSounds", null, 0);
 
         private static float CalculateVolume(float volumeOnLinearScaleFrom0to100)
         {
@@ -115,7 +106,6 @@ namespace Treachery.Client
 
         private static bool IsValidSound(string sound) => sound != null && sound != "" && sound != "?";
 
-        public static async Task StopSounds() => await JsInvoke("StopSounds");
 
         public static async Task SaveSetting(string name, object value) => await Storage.SetAsync(name, value);
 

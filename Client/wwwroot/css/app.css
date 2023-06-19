@@ -18,6 +18,11 @@ a, .btn-link {
     padding-top: 1.1rem;
 }
 
+.form-control::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
 @keyframes fadeIn {
     0% {
         opacity: 0;
