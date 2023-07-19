@@ -13,7 +13,7 @@
 
         <div class="d-flex flex-row-reverse">
 
-            <input @bind-value=message class="form-control" type="text" maxlength="512" placeholder=@Placeholder id="messageSentBody" @onkeyup=@(e => KeyUp(e))/>
+            <input @bind-value=message class="form-control" type="text" maxlength="512" placeholder=@Placeholder @onkeyup=@(e => KeyUp(e))/>
 
         </div>
 
@@ -23,7 +23,7 @@
 
             @if (ShowGameChat)
             {
-                <select class="form-select" style="color:@SelectedFactionForegroundColor;background-color:@SelectedFactionColor" @bind="@playername" id="messageSentTarget">
+                <select class="form-select" style="color:@SelectedFactionForegroundColor;background-color:@SelectedFactionColor" @bind="@playername">
 
                     @if (!Client.MuteGlobalChat)
                     {

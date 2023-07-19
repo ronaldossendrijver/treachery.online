@@ -44,17 +44,17 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (!FaceDancerCalled) return null;
+            if (Game.Version <= 150 && !FaceDancerCalled) return null;
 
             var p = Player;
             if (!MayCallFaceDancer(Game, p)) return Message.Express("You can't reveal a Face Dancer");
+            
+            int maximumForces = MaximumNumberOfForces(Game, p);
+            int amountOfPlacedForces = TargetForceLocations.Values.Sum(b => b.TotalAmountOfForces);
+            if (amountOfPlacedForces > maximumForces) return Message.Express("Place ", maximumForces, " or less forces");
 
             int amountOfForces = ForcesFromReserve + ForceLocations.Values.Sum(b => b.TotalAmountOfForces);
-            int maximumForces = MaximumNumberOfForces(Game, p);
-            if (amountOfForces > maximumForces) return Message.Express("Place ", maximumForces, " or less forces");
-
-            int amountOfTargetForces = TargetForceLocations.Values.Sum(b => b.TotalAmountOfForces);
-            if (amountOfForces != amountOfTargetForces) return Message.Express("The amount of forces you selected from the planet and from reserves (", amountOfForces, ") should equal the amount you wish to put in ", Game.CurrentBattle.Territory, " (", amountOfTargetForces, ")");
+            if (amountOfForces != amountOfPlacedForces) return Message.Express("The amount of forces you selected from the planet and from reserves (", amountOfForces, ") should equal the amount you wish to put in ", Game.CurrentBattle.Territory, " (", amountOfPlacedForces, ")");
 
             return null;
         }
@@ -97,7 +97,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<Location> ValidSourceLocations(Game g, Player p)
         {
-            return g.LocationsWithAnyForcesNotInStorm(p);
+            return g.LocationsWithAnyForcesNotInStorm(p).Where(l => !l.IsHomeworld);
         }
 
         public static IEnumerable<int> ValidForcesFromReserves(Player p)
@@ -215,7 +215,14 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, MessagePart.ExpressIf(!FaceDancerCalled, " don't"), " reveal a Face Dancer!");
+            if (Game.Version <= 150)
+            {
+                return Message.Express(Initiator, MessagePart.ExpressIf(!FaceDancerCalled, " don't"), " reveal a Face Dancer!");
+            }
+            else
+            {
+                return Message.Express(Initiator, " replace forces by their own");
+            }
         }
 
         #endregion Execution

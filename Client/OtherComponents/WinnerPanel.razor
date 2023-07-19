@@ -12,7 +12,7 @@
 
         @foreach (var w in Client.Game.Winners)
         {
-            <h1 class="h1" style=@Support.TextBorder(1,"black")><img width="80" src="@Skin.Current.GetImageURL(w.Faction)" /> @w.Name</h1>
+            <h1 class="h1"><img width="72" src="@Skin.Current.GetImageURL(w.Faction)" /> @w.Name</h1>
         }
 
         @if (!Game.Applicable(Rule.DisableEndOfGameReport))
@@ -20,6 +20,15 @@
             <button class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#storyModal">Read the story of this game...</button>
             <StoryComponent Id="storyModal" Game="Client.Game" />
         }
+
+        <div class="mt-3">
+            <small>If you like this game, a donation would be kindly appreciated so I can cover the expenses of keeping the game online and up to date!</small>
+            <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+                <input type="hidden" name="cmd" value="_s-xclick" />
+                <input type="hidden" name="hosted_button_id" value="X6BLRPXHX7HDQ" />
+                <input type="image" src="art/donate.svg" border="0" height="32" name="submit" title="Donate CHOAM Charity using PayPal" alt="Donate" />
+            </form>
+        </div>
 
     </div>
 </div>

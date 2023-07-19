@@ -13,24 +13,24 @@
 
                 @if (AlwaysShowLocation || Locations.Count() > 1)
                 {
-                    <td class="ps-0">@Skin.Current.Describe(l)</td>
+                    <td class="ps-0 bg-transparent align-middle">@Skin.Current.Describe(l)</td>
                 }
 
                 @if (MaySelectFromStorm || !Game.IsInStorm(l)) {
 
                     if (Max(l) > 0) 
                     {
-                        <td class="ps-0"><SelectForcesComponent Value=@Forces[l].AmountOfForces OnDown="(e => ChangeForceAmount(l, -1, false))" OnUp="(e => ChangeForceAmount(l, 1, false))" Min="Min" Max="Max(l)" Faction="Player.Faction" Special="false"/></td>
+                        <td class="ps-0 bg-transparent"><SelectForcesComponent Value=@Forces[l].AmountOfForces OnDown="(e => ChangeForceAmount(l, -1, false))" OnUp="(e => ChangeForceAmount(l, 1, false))" Min="Min" Max="Max(l)" Faction="Player.Faction" Special="false" /></td>
                     }
 
                     if (MaxSpecial(l) > 0) 
                     {
-                        <td class="ps-0"><SelectForcesComponent Value=@Forces[l].AmountOfSpecialForces OnDown="(e => ChangeForceAmount(l, -1, true))" OnUp="(e => ChangeForceAmount(l, 1, true))" Min="Min" Max="MaxSpecial(l)" Faction="Player.Faction" Special="true" /></td>
+                        <td class="ps-0 bg-transparent"><SelectForcesComponent Value=@Forces[l].AmountOfSpecialForces OnDown="(e => ChangeForceAmount(l, -1, true))" OnUp="(e => ChangeForceAmount(l, 1, true))" Min="Min" Max="MaxSpecial(l)" Faction="Player.Faction" Special="true" /></td>
                     }
                 }
                 else
                 {
-                    <td class="font-italic text-danger ps-0">cannot move from storm</td>
+                    <td class="font-italic text-danger ps-0 bg-transparent">cannot move from storm</td>
                 }
 
             </tr>

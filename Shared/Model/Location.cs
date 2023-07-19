@@ -47,6 +47,8 @@ namespace Treachery.Shared
 
         public bool IsStronghold => Territory.IsStronghold;
 
+        public bool IsHomeworld => Territory.IsHomeworld;
+
         public bool IsProtectedFromStorm => Territory.IsProtectedFromStorm;
 
         public StrongholdAdvantage Advantage => Territory.Advantage;

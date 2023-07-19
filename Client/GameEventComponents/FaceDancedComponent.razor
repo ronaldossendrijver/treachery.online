@@ -16,15 +16,17 @@
 
             <div class="mb-2">You may place up to <strong>@FaceDanced.MaximumNumberOfForces(Game, Player)</strong> forces in <strong>@Name(Game.CurrentBattle.Territory)</strong> from your reserves and/or from anywhere on the planet.</div>
 
-            <SelectForcesComponent @bind-Value="forcesFromReserve" Min="0" Max="Player.ForcesInReserve" Faction="Faction" Special="false" Label="From reserves:" />
+            <div>
+                <SelectForcesComponent @bind-Value="forcesFromReserve" Min="0" Max="Player.ForcesInReserve" Faction="Faction" Special="false" Label="From reserves:" />
+            </div>
 
             @if (FaceDanced.ValidSourceLocations(Game, Player).Any())
             {
-                <label class="mt-2 mb-0">From somewhere on the planet:</label>
+                <div class="mt-2 mb-0">From somewhere on the planet:</div>
                 <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="forces" Locations="FaceDanced.ValidSourceLocations(Game, Player)" MaySelectFromStorm="true" AlwaysShowLocation="true" AllowMultipleTerritories="true" />
             }
 
-            <label class="mt-2 mb-0">Select where to put your replacements:</label>
+            <div class="mt-2 mb-0">Select where to put your replacements:</div>
             <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="targetForces" Locations="FaceDanced.ValidTargetLocations(Game)" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="@FaceDanced.MaximumNumberOfForces(Game, Player)" />
 
             <ButtonRowComponent Confirm="Confirm" ConfirmText="Reveal & Place Forces" ConfirmError=@Validation />
