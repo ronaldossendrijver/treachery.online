@@ -81,7 +81,7 @@ namespace Treachery.Client
             if (IsValidSound(sound)) await JsInvoke("ChangeSoundVolume", sound, CalculateVolume(volume));
         }
 
-        public static async Task StopSound(string sound, float fromVolume)
+        public static async Task StopSound(string sound)
         {
             if (IsValidSound(sound)) await JsInvoke("StopSound", sound, 3000);
         }

@@ -58,7 +58,11 @@
 
             if (CurrentSoundtrack != soundtrackToPlay)
             {
-                await Browser.StopSound(CurrentSoundtrack, DesiredMusicVolume);
+                if (CurrentSoundtrack != "")
+                {
+                    await Browser.StopSound(CurrentSoundtrack);
+                }
+
                 CurrentSoundtrack = soundtrackToPlay;
                 await Browser.PlaySound(soundtrackToPlay, DesiredMusicVolume, true);
             }

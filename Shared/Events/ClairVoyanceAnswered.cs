@@ -122,7 +122,7 @@ namespace Treachery.Shared
                 }
             }
 
-            Game.Enter(Game.PhasePausedByClairvoyance);
+            Game.Enter(Game.PhasePausedByClairvoyance, false);
         }
 
         public override Message GetMessage()

@@ -70,7 +70,7 @@ namespace Treachery.Shared
             }
 
             Log();
-            Game.Enter(Game.KarmaHandSwapPausedPhase);
+            Game.Enter(Game.KarmaHandSwapPausedPhase, false);
         }
 
         public override Message GetMessage()

@@ -170,30 +170,39 @@
         let currentSounds = new Map();
         function PlaySound(file, fadeTime, volume, loop) {
 
-            var sound = new Audio(file);
-            sound.loop = loop;
-
-            currentSounds.set(file, sound);
-
-            if (fadeTime > 0) {
-                fadeStepTimeInterval = fadeTime / 8;
-                fadeStepVolumeInterval = volume / 8;
-                var interval = setInterval(function () {
-                    if (sound.volume + fadeStepVolumeInterval >= volume) {
-                        clearInterval(interval);
-                        sound.volume = volume;
-                    }
-                    else {
-                        sound.volume += fadeStepVolumeInterval;
-                    }
-                }, fadeStepTimeInterval)
+            let sound = currentSounds.get(file);
+            if (sound != null)
+            {
+                sound.currentTime = 0;
+                sound.play();
             }
-            else {
+            else
+            {
+                sound = new Audio(file);
+                sound.loop = loop;
 
-                sound.volume = volume;
+                currentSounds.set(file, sound);
+
+                if (fadeTime > 0) {
+                    fadeStepTimeInterval = fadeTime / 8;
+                    fadeStepVolumeInterval = volume / 8;
+                    var interval = setInterval(function () {
+                        if (sound.volume + fadeStepVolumeInterval >= volume) {
+                            clearInterval(interval);
+                            sound.volume = volume;
+                        }
+                        else {
+                            sound.volume += fadeStepVolumeInterval;
+                        }
+                    }, fadeStepTimeInterval)
+                }
+                else {
+
+                    sound.volume = volume;
+                }
+
+                sound.play();
             }
-
-            sound.play();
         }
 
         function StopSound(file, fadeTime) {

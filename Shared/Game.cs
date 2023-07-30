@@ -278,10 +278,14 @@ namespace Treachery.Shared
             if (Version >= 103) AllowAllPreventedFactionAdvantages(exceptionsToAllowing);
         }
 
-        internal void Enter(Phase phase)
+        internal void Enter(Phase phase, bool cleanupDeals = true)
         {
             CurrentPhase = phase;
-            RemoveEndedDeals(phase);
+
+            if (cleanupDeals)
+            {
+                RemoveEndedDeals(phase);
+            }
         }
 
         internal void Enter(bool condition, Phase phaseIfTrue, Phase phaseIfFalse)

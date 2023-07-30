@@ -22,6 +22,13 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            var p = g.Players.FirstOrDefault(p => p.Has(TreacheryCardType.Clairvoyance));
+            if (g.CurrentPhase == Phase.Bidding && p != null)
+            {
+                WriteSavegameIfApplicable(g, p, "bidding and clairvoyance");
+            }
+
+            /*
             if (g.CurrentPhase == Phase.NonOrangeMove)
             {
                 var p = g.ShipmentAndMoveSequence.CurrentPlayer;
@@ -34,6 +41,7 @@ namespace Treachery.Test
                     }
                 }
             }
+            */
         }
 
         private readonly List<string> WrittenCases = new();
