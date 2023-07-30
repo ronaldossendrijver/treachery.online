@@ -120,7 +120,8 @@ namespace Treachery.Shared
             {
                 if (In(g, MainPhase.ShipmentAndMove))
                 {
-                    if (g.Applicable(Rule.OrangeDetermineShipment)) result.Add(FactionAdvantage.OrangeDetermineMoveMoment);
+                    bool guildDetermineShipmentMayStillBePrevented = g.Version < 156 || !g.HasActedOrPassed.Contains(Faction.Orange) && g.CurrentPhase != Phase.OrangeShip;
+                    if (g.Applicable(Rule.OrangeDetermineShipment) && guildDetermineShipmentMayStillBePrevented) result.Add(FactionAdvantage.OrangeDetermineMoveMoment);
                     result.Add(FactionAdvantage.OrangeSpecialShipments);
                     result.Add(FactionAdvantage.OrangeShipmentsDiscount);
                     result.Add(FactionAdvantage.OrangeShipmentsDiscountAlly);
