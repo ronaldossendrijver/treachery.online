@@ -50,7 +50,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express("Using ", TreacheryCardType.Karma, Initiator, " add the difference between leader discs to their dial");
+            return Message.Express("Using ", TreacheryCardType.Karma, ", ", Initiator, " add the difference between leader discs to their dial");
         }
 
         #endregion Execution

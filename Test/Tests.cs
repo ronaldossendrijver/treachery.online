@@ -8,11 +8,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using Treachery.Client;
 using Treachery.Shared;
+using System.Collections.Concurrent;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Treachery.Test
 {
@@ -88,7 +92,7 @@ namespace Treachery.Test
                     p.ForcesKilled + p.ForcesInLocations.Sum(b => b.Value.AmountOfForces) +
                     (p.Faction != Faction.White ? p.SpecialForcesKilled + p.ForcesInLocations.Sum(b => b.Value.AmountOfSpecialForces) : 0) != 20);
 
-                if (p != null)
+                if (p != null && (g.Version >= 157 || !p.Is(Faction.Purple)))
                 {
                     return "Illegal number of forces " + p.Faction;
                 }
@@ -615,6 +619,9 @@ namespace Treachery.Test
         public void Regression()
         {
             var statistics = new Statistics();
+            var centralStyleStatistics = new ConcurrentBag<string>();
+
+            File.WriteAllText("CentralStyleStatistics.json", "{\r\n  \"entries\": [");
 
             Message.DefaultDescriber = Skin.Current;
 
@@ -635,7 +642,7 @@ namespace Treachery.Test
                 Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, f =>
                 {
                     gamesTested++;
-                    ReplayGame(f, statistics);
+                    ReplayGame(f, statistics, centralStyleStatistics);
                 });
 
                 Assert.AreNotEqual(0, gamesTested);
@@ -645,11 +652,25 @@ namespace Treachery.Test
                 Console.WriteLine(e.Message);
                 throw;
             }
-
+            
             statistics?.Output(Skin.Current);
+            
+            bool firstLine = true;
+            foreach (var item in centralStyleStatistics)
+            {
+                if (!firstLine)
+                {
+                    File.AppendAllText("CentralStyleStatistics.json", ",\r\n");
+                    firstLine = false;
+                }
+
+                File.AppendAllText("CentralStyleStatistics.json", item);
+            }
+
+            File.AppendAllText("CentralStyleStatistics.json", "]\r\n}");
         }
 
-        private void ReplayGame(string fileData, Statistics statistics)
+        private void ReplayGame(string fileData, Statistics statistics, ConcurrentBag<string> centralStyleStatistics)
         {
             var fs = File.OpenText(fileData);
             var state = GameState.Load(fs.ReadToEnd());
@@ -674,7 +695,7 @@ namespace Treachery.Test
                 {
                     File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
                 }
-                Assert.IsNull(result, fileData + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + ")");
+                Assert.IsNull(result, fileData + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + result?.ToString());
 
                 var actualValues = DetermineTestvalues(game);
                 tc.Testvalues[valueId].Equals(actualValues);
@@ -705,6 +726,21 @@ namespace Treachery.Test
                     GatherStatistics(statistics, game, ref previousBattleOutcome);
                 }
             }
+
+            var centralStyleStats = GameStatistics.GetStatistics(game);
+            var data = GetStatisticsAsString(centralStyleStats);
+            centralStyleStatistics.Add(data);
+            //var json = new StringContent(data, Encoding.UTF8, "application/json");
+        }
+
+        private static string GetStatisticsAsString(GameStatistics g)
+        {
+            var serializer = JsonSerializer.CreateDefault();
+            serializer.TypeNameHandling = TypeNameHandling.None;
+            var writer = new StringWriter();
+            serializer.Serialize(writer, g);
+            writer.Close();
+            return writer.ToString();
         }
 
         private static void GatherStatistics(Statistics statistics, Game game, ref BattleOutcome previousBattleOutcome)

@@ -42,7 +42,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express("Using ", TreacheryCardType.Karma, Initiator, " see the entire enemy battle plan");
+            return Message.Express("Using ", TreacheryCardType.Karma, ", ", Initiator, " see the entire enemy battle plan");
         }
 
         #endregion Execution

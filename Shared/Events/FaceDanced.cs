@@ -51,10 +51,10 @@ namespace Treachery.Shared
             
             int maximumForces = MaximumNumberOfForces(Game, p);
             int amountOfPlacedForces = TargetForceLocations.Values.Sum(b => b.TotalAmountOfForces);
-            if (amountOfPlacedForces > maximumForces) return Message.Express("Place ", maximumForces, " or less forces");
+            if (Game.Version >= 157 && amountOfPlacedForces > maximumForces) return Message.Express("Place ", maximumForces, " or less forces");
 
             int amountOfForces = ForcesFromReserve + ForceLocations.Values.Sum(b => b.TotalAmountOfForces);
-            if (amountOfForces != amountOfPlacedForces) return Message.Express("The amount of forces you selected from the planet and from reserves (", amountOfForces, ") should equal the amount you wish to put in ", Game.CurrentBattle.Territory, " (", amountOfPlacedForces, ")");
+            if (Game.Version >= 157 && amountOfForces != amountOfPlacedForces) return Message.Express("The amount of forces you selected from the planet and from reserves (", amountOfForces, ") should equal the amount you wish to put in ", Game.CurrentBattle.Territory, " (", amountOfPlacedForces, ")");
 
             return null;
         }
@@ -221,7 +221,7 @@ namespace Treachery.Shared
             }
             else
             {
-                return Message.Express(Initiator, " replace forces by their own");
+                return Message.Express(Initiator, " replace ", TotalAmountOfForcesAddedToLocation, " forces by their own");
             }
         }
 
