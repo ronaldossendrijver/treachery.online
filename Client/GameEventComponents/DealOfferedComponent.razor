@@ -11,7 +11,7 @@
     <Header>Offer a Deal</Header>
     <Body>
 
-        <SelectFromImageComponent Selected="to" Values="Game.PlayersOtherThan(Player)" T=Faction OnChanged=StateHasChanged Required=false ImageWidth="40">
+        <SelectFromImageComponent Selected="to" Values="Game.PlayersOtherThan(Player).Where(p => p != Player.Ally)" T=Faction OnChanged=StateHasChanged Required=false ImageWidth="40">
             <Label>Offer to whom (select none to offer to all)</Label>
         </SelectFromImageComponent>
 
