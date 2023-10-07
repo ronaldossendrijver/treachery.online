@@ -163,9 +163,17 @@ namespace Treachery.Shared
                         Game.KillAmbassadorIn(territory);
                         Game.AtomicsAftermath = territory;
 
-                        if (Player.TreacheryCards.Count > Player.MaximumNumberOfCards)
+                        while (Player.HasTooManyCards)
                         {
                             Game.Discard(Player, Player.TreacheryCards.RandomOrDefault(Game.Random));
+                        }
+
+                        if (Player.HasAlly)
+                        {
+                            while (Player.AlliedPlayer.HasTooManyCards)
+                            {
+                                Game.Discard(Player.AlliedPlayer, Player.AlliedPlayer.TreacheryCards.RandomOrDefault(Game.Random));
+                            }
                         }
 
                         Game.Stone(Milestone.MetheorUsed);

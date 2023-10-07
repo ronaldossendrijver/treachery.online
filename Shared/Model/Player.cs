@@ -637,6 +637,7 @@ namespace Treachery.Shared
                     Faction.Black => 8,
                     Faction.Brown => 5,
                     Faction.Cyan when Game.AtomicsAftermath != null => 3,
+                    _ when Game.Version >= 158 && Ally == Faction.Cyan && Game.AtomicsAftermath != null => 3,
                     _ => 4
                 };
 

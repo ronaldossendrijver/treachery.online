@@ -14,7 +14,7 @@
 
         @if (TerrorPlanted.MayRemoveTokens(Game, Player))
         {
-            <RadioComponent Value=_remove Values="new bool[] {false, true}" ValueLabels=@ValueLabels/>
+            <RadioComponent @bind-Value=_remove Values="new bool[] {false, true}" ValueLabels=@ValueLabels />
         }
         else
         {
@@ -29,9 +29,12 @@
             @Skin.Current.GetTerrorTypeDescription(_type)
         </div>
 
-        <SelectComponent ButtonHint=ClickHintButton.LMB @bind-Value=_stronghold Values=@TerrorPlanted.ValidStrongholds(Game, Player)>
-            <Label>Stronghold</Label>
-        </SelectComponent>
+        @if (!_remove)
+        {
+            <SelectComponent ButtonHint=ClickHintButton.LMB @bind-Value=_stronghold Values=@TerrorPlanted.ValidStrongholds(Game, Player)>
+                <Label>Stronghold</Label>
+            </SelectComponent>
+        }
 
         <ButtonRowComponent Pass="Pass" Confirm="Confirm" ConfirmText=@ConfirmLabel ConfirmError=@Validation />
 

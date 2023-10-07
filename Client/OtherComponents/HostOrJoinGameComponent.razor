@@ -59,10 +59,10 @@
                             Client.JoinErrors.Add(av.HostID, "");
                         }
 
-                        var fontColorStyle = av.LastAction != null && DateTime.Now.Subtract((DateTime)av.LastAction).TotalMinutes > 20 ? "color:grey" : "";
+                        var fontColorStyle = av.LastAction != null && DateTime.Now.Subtract((DateTime)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
 
-                        <tr class="small">
-                            <td class="w-25" style=@fontColorStyle>@av.GameName</td>
+                        <tr class="small" style=@fontColorStyle>
+                            <td class="w-25">@av.GameName</td>
                             
                             @if (av.CurrentPhase == Phase.AwaitingPlayers)
                             {
@@ -83,7 +83,7 @@
                             else
                             {
                                 var factions = av.FactionsInPlay != null ? av.FactionsInPlay : new List<Faction>();
-                                <td style=@fontColorStyle>
+                                <td>
                                     @Name(Game.DetermineApproximateRuleset(factions, av.Rules, Game.ExpansionLevel)), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
                                     <br>
                                     @foreach (var f in @factions.Where(f => f != Faction.None))

@@ -639,10 +639,22 @@ namespace Treachery.Test
                 {
                     MaxDegreeOfParallelism = Environment.ProcessorCount
                 };
-                Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, f =>
+                Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, fileName =>
                 {
                     gamesTested++;
-                    ReplayGame(f, statistics, centralStyleStatistics);
+                    var testcaseFileName = fileName + ".testcase";
+
+                    try
+                    {
+                        ReplayGame(fileName, testcaseFileName, statistics, centralStyleStatistics);
+                    }
+                    catch (Exception)
+                    {
+                        //Console.WriteLine("Errors encountered in " + fileName);
+                        //File.Delete(fileName);
+                        //File.Delete(testcaseFileName);
+                        throw;
+                    }
                 });
 
                 Assert.AreNotEqual(0, gamesTested);
@@ -670,15 +682,17 @@ namespace Treachery.Test
             File.AppendAllText("CentralStyleStatistics.json", "]\r\n}");
         }
 
-        private void ReplayGame(string fileData, Statistics statistics, ConcurrentBag<string> centralStyleStatistics)
+        private void ReplayGame(string fileName, string testcaseFileName, Statistics statistics, ConcurrentBag<string> centralStyleStatistics)
         {
-            var fs = File.OpenText(fileData);
+            var fs = File.OpenText(fileName);
             var state = GameState.Load(fs.ReadToEnd());
-            Console.WriteLine("Checking {0} (version {1})...", fileData, state.Version);
+            fs.Close();
+            Console.WriteLine("Checking {0} (version {1})...", fileName, state.Version);
             var game = new Game(state.Version);
 
-            fs = File.OpenText(fileData + ".testcase");
+            fs = File.OpenText(testcaseFileName);
             var tc = LoadObject<Testcase>(fs.ReadToEnd());
+            fs.Close();
 
             int valueId = 0;
 
@@ -695,7 +709,7 @@ namespace Treachery.Test
                 {
                     File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
                 }
-                Assert.IsNull(result, fileData + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + result?.ToString());
+                Assert.IsNull(result, fileName + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + result?.ToString());
 
                 var actualValues = DetermineTestvalues(game);
                 tc.Testvalues[valueId].Equals(actualValues);
@@ -703,14 +717,14 @@ namespace Treachery.Test
                 {
                     File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
                 }
-                Assert.AreEqual(tc.Testvalues[valueId], actualValues, fileData + ", " + previousPhase + " - " + game.CurrentPhase + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + Testvalues.Difference);
+                Assert.AreEqual(tc.Testvalues[valueId], actualValues, fileName + ", " + previousPhase + " - " + game.CurrentPhase + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + Testvalues.Difference);
 
                 var strangeCase = TestIllegalCases(game, evt);
                 if (strangeCase != "")
                 {
                     File.WriteAllText("illegalcase_" + game.EventCount + "_" + strangeCase + ".json", GameState.GetStateAsString(game));
                 }
-                Assert.AreEqual("", strangeCase, fileData + ", " + strangeCase);
+                Assert.AreEqual("", strangeCase, fileName + ", " + strangeCase);
 
                 SaveSpecialCases(game, evt);
 

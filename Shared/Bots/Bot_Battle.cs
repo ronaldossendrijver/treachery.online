@@ -774,7 +774,7 @@ namespace Treachery.Shared
 
         public Homeworld PrimaryHomeworld => Homeworlds.First();
 
-
+        public bool HasTooManyCards => TreacheryCards.Count > MaximumNumberOfCards;
 
         protected float ChanceOfEnemyLeaderDying(Player opponent, VoicePlan voicePlan, PrescienceAspect prescience, out TreacheryCard mostEffectiveWeapon, out bool enemyCanDefendPoisonTooth)
         {

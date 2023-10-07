@@ -13,7 +13,7 @@ namespace Treachery.Shared
         #region Settings
 
         public const int LowestSupportedVersion = 100;
-        public const int LatestVersion = 157;
+        public const int LatestVersion = 158;
 
         public const int ExpansionLevel = 3;
         public bool BotInfologging = false;
@@ -998,20 +998,11 @@ namespace Treachery.Shared
 
         public int NrOfOccupantsExcludingPlayer(Location l, Player p)
         {
-            Faction pinkOrPinkAllyToExclude = Faction.None;
-
-            if (p.Is(Faction.Pink))
-            {
-                pinkOrPinkAllyToExclude = p.Ally;
-            }
-            else if (p.Ally == Faction.Pink)
-            {
-                pinkOrPinkAllyToExclude = p.Faction;
-            }
+            Faction factionToExclude = p.Is(Faction.Pink) || p.Ally == Faction.Pink ? p.Ally : Faction.None;
 
             if (OccupyingForcesOnPlanet.TryGetValue(l, out List<Battalion> value))
             {
-                return value.Where(of => of.Faction != p.Faction && of.Faction != pinkOrPinkAllyToExclude).Count();
+                return value.Where(otherFaction => otherFaction.Faction != p.Faction && otherFaction.Faction != factionToExclude).Count();
             }
             else
             {

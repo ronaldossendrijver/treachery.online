@@ -56,6 +56,16 @@ namespace Treachery.Shared
                 SetPermissions(a, true);
                 SetPermissions(b, true);
             }
+            
+            while (playerA.HasTooManyCards)
+            {
+                Discard(playerA, playerA.TreacheryCards.RandomOrDefault(Random));
+            }
+
+            while (playerB.HasTooManyCards)
+            {
+                Discard(playerB, playerB.TreacheryCards.RandomOrDefault(Random));
+            }
         }
 
         internal void BreakAlliance(Faction f)

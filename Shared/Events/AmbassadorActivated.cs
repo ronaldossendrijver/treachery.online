@@ -287,9 +287,13 @@ namespace Treachery.Shared
                         Game.PausedAmbassadorPhase = Game.CurrentPhase;
                         Game.Enter(Phase.AllianceByAmbassador);
                     }
-                    else if (Game.CurrentAmbassadorActivated.PinkTakeVidal)
+                    else 
                     {
-                        Game.TakeVidal(Player, VidalMoment.AfterUsedInBattle);
+                        if (Game.CurrentAmbassadorActivated.PinkTakeVidal)
+                        {
+                            Game.TakeVidal(Player, VidalMoment.AfterUsedInBattle);
+                        }
+
                         Game.DetermineNextShipmentAndMoveSubPhase();
                     }
                     break;

@@ -177,13 +177,20 @@ namespace Treachery.Shared
                 Log(ResourceCardDiscardPileA.Items.Count, " cards were shuffled from the ", Concept.Resource, " discard pile into a new deck");
             }
 
-            foreach (var i in ResourceCardDiscardPileA.Items)
+            bool excludeDiscoveryCardsWhenReshuffling = Version >= 158;
+
+            if (excludeDiscoveryCardsWhenReshuffling && (ResourceCardDiscardPileA.Items.Any(c => c.IsDiscovery) || ResourceCardDiscardPileB.Items.Any(c => c.IsDiscovery)))
+            {
+                Log("Discovery were removed from the game");
+            }
+
+            foreach (var i in ResourceCardDiscardPileA.Items.Where(c => !excludeDiscoveryCardsWhenReshuffling || !c.IsDiscovery))
             {
                 ResourceCardDeck.Items.Add(i);
             }
             ResourceCardDiscardPileA.Clear();
 
-            foreach (var i in ResourceCardDiscardPileB.Items)
+            foreach (var i in ResourceCardDiscardPileB.Items.Where(c => !excludeDiscoveryCardsWhenReshuffling || !c.IsDiscovery))
             {
                 ResourceCardDeck.Items.Add(i);
             }
