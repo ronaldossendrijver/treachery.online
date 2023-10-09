@@ -11,6 +11,7 @@ namespace Treachery.Shared
         public virtual int Sector { get; set; }
 
         private Territory _territory = null;
+
         public virtual Territory Territory
         {
             get

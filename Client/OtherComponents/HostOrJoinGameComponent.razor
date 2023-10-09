@@ -44,7 +44,7 @@
         }
         else
         {
-            <table class="table table-sm table-striped" id="availableGames">
+            <table class="table table-sm" id="availableGames">
                 <tbody>
 
                     @foreach (var av in Client.RunningGames)
@@ -61,7 +61,7 @@
 
                         var fontColorStyle = av.LastAction != null && DateTime.Now.Subtract((DateTime)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
 
-                        <tr class="small" style=@fontColorStyle>
+                        <tr class="small table-dark" style="@fontColorStyle">
                             <td class="w-25">@av.GameName</td>
                             
                             @if (av.CurrentPhase == Phase.AwaitingPlayers)

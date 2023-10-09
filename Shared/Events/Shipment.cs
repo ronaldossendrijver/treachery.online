@@ -558,14 +558,11 @@ namespace Treachery.Shared
             var currentOccupierOfPinkHomeworld = Game.OccupierOf(World.Pink);
             var player = GetPlayer(Initiator);
 
-            if (To is Homeworld hw && !player.Homeworlds.Contains(hw) && player.Controls(Game, hw, false))
+            if (To is Homeworld hw && !player.Homeworlds.Contains(hw) && Game.NrOfOccupantsExcludingFaction(hw, Initiator) == 0)
             {
-                if (!Game.Occupies(Initiator, hw.World))
-                {
-                    Game.HomeworldOccupation.Remove(hw);
-                    Game.HomeworldOccupation.Add(hw, Initiator);
-                    Log(Initiator, " now occupy ", hw);
-                }
+                Game.HomeworldOccupation.Remove(hw);
+                Game.HomeworldOccupation.Add(hw, Initiator);
+                Log(Initiator, " now occupy ", hw);
             }
 
             Game.CheckIfShipmentPermissionsShouldBeRevoked();

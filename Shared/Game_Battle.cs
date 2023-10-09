@@ -251,26 +251,26 @@ namespace Treachery.Shared
                 Discard(plan.Hero as TreacheryCard);
             }
 
-            if (plan.Weapon != null && !(plan.Weapon.IsWeapon || plan.Weapon.IsDefense || plan.Weapon.IsUseless))
+            if (plan.Weapon != null)
             {
-                Discard(plan.Weapon);
-            }
-            else if (CurrentDiplomacy != null && plan.Initiator == CurrentDiplomacy.Initiator && plan.Weapon == CurrentDiplomacy.Card)
-            {
-                Discard(plan.Weapon);
-            }
-            else if (plan.Weapon != null && (
-                plan.Weapon.IsArtillery ||
-                plan.Weapon.IsMirrorWeapon ||
-                plan.Weapon.IsRockmelter ||
-                plan.Weapon.IsPoisonTooth && !PoisonToothCancelled))
-            {
-                Discard(plan.Weapon);
+                if (plan.Weapon.IsArtillery ||
+                    plan.Weapon.IsMirrorWeapon ||
+                    plan.Weapon.IsRockmelter ||
+                    plan.Weapon.IsPoisonTooth && !PoisonToothCancelled ||
+                    !(plan.Weapon.IsWeapon || plan.Weapon.IsDefense || plan.Weapon.IsUseless) ||
+                    CurrentDiplomacy != null && plan.Initiator == CurrentDiplomacy.Initiator && plan.Weapon == CurrentDiplomacy.Card)
+                {
+                    Discard(plan.Weapon);
+                }
             }
 
-            if (plan.Defense != null && plan.Defense.IsPortableAntidote)
+            if (plan.Defense != null)
             {
-                Discard(plan.Defense);
+                if (plan.Defense.IsPortableAntidote || 
+                    Version >= 158 && !(plan.Defense.IsWeapon || plan.Defense.IsDefense || plan.Defense.IsUseless))
+                {
+                    Discard(plan.Defense);
+                }
             }
 
             if (CurrentPortableAntidoteUsed != null && CurrentPortableAntidoteUsed.Player == plan.Player)

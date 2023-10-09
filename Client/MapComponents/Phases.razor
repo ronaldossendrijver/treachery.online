@@ -123,9 +123,9 @@
             result += string.Format("<p><string>Game started:</strong> {0}", Game.Started.ToString("dddd, dd MMMM yyyy H:mm:ss"));
             result += string.Format("<p><string>Last activity:</strong> {0}", Game.History.Last().Time.ToString("dddd, dd MMMM yyyy H:mm:ss"));
             result += string.Format("<p><string>Game duration:</strong> {0} hours", Math.Round(Game.Duration.TotalHours, 1));
-            result += "<table class='table table-sm table-striped'>";
+            result += "<table class='table table-sm'>";
             result += "<thead>";
-            result += "<tr><th>Player</th><th>Bidding</th><th>Move</th><th>Battle</th><th>Total</th></tr>";
+            result += "<tr class='table-dark'><th>Player</th><th>Bidding</th><th>Move</th><th>Battle</th><th>Total</th></tr>";
             result += "</thead>";
             
             result += "<tbody>";
@@ -137,7 +137,7 @@
                 var timeBattling = Game.TimeSpent(p, MainPhase.Battle);
                 var timeTotal = timeBidding + timeShipping + timeBattling;
 
-                result += Skin.Current.Format("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>", 
+                result += Skin.Current.Format("<tr class='table-dark'><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>",
                 p.Name, timeBidding.ToString(@"h\:mm\:ss"), timeShipping.ToString(@"h\:mm\:ss"), timeBattling.ToString(@"h\:mm\:ss"), timeTotal.ToString(@"h\:mm\:ss"));
             }
 

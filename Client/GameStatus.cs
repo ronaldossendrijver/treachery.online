@@ -268,13 +268,13 @@ namespace Treachery.Client
 
                 Phase.WhiteKeepingUnsoldCard => Status(game,
                     Express("Please decide if you wish to keep this unsold card."),
-                    Express(Faction.White, " are deciding about keeping the unsold card..."),
-                    Faction.White),
+                    Express(FactionOrOccupier(game, Faction.White, World.White), " are deciding about keeping the unsold card..."),
+                    FactionOrOccupier(game, Faction.White, World.White)),
 
                 Phase.GreyRemovingCardFromBid => Status(game,
                     Express("Please put one card from the auction on top or at the bottom of the Treachery Card deck."),
-                    Express(Faction.Grey, " are putting one card from the auction on top or at the bottom of the Treachery Card deck..."),
-                    Faction.Grey),
+                    Express(FactionOrOccupier(game, Faction.Grey, World.Grey), " are putting one card from the auction on top or at the bottom of the Treachery Card deck..."),
+                    FactionOrOccupier(game, Faction.Grey, World.Grey)),
 
                 Phase.GreySwappingCard => Status(game,
                     Express("You may swap the next card on auction with a card from your hand, or pass."),

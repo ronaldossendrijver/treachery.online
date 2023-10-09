@@ -996,48 +996,32 @@ namespace Treachery.Shared
 
         public int NumberOfHumanPlayers => Players.Count(p => !p.IsBot);
 
-        public int NrOfOccupantsExcludingPlayer(Location l, Player p)
-        {
-            Faction factionToExclude = p.Is(Faction.Pink) || p.Ally == Faction.Pink ? p.Ally : Faction.None;
+        public int NrOfOccupantsExcludingFaction(Location l, Faction toExclude) => 
+            CountDifferentFactions(BattalionsIn(l).Where(b => b.CanOccupy).Select(b => b.Faction), toExclude);
 
-            if (OccupyingForcesOnPlanet.TryGetValue(l, out List<Battalion> value))
-            {
-                return value.Where(otherFaction => otherFaction.Faction != p.Faction && otherFaction.Faction != factionToExclude).Count();
-            }
-            else
-            {
-                return 0;
-            }
-        }
+        public int NrOfOccupantsExcludingFaction(Territory t, Faction toExclude) => 
+            CountDifferentFactions(t.Locations.SelectMany(l => BattalionsIn(l).Where(b => b.CanOccupy).Select(b => b.Faction)), toExclude);
 
-        public int NrOfOccupantsExcludingPlayer(Territory t, Player p)
+        private int CountDifferentFactions(IEnumerable<Faction> factions, Faction toExclude)
         {
             int result = 0;
-            var counted = new List<Faction>();
+            var pinkAlly = GetAlly(Faction.Pink);
+            bool pinkOrPinkAllyCounted = false;
 
-            Faction pinkOrPinkAllyToExclude = Faction.None;
-
-            if (p.Is(Faction.Pink))
+            foreach (var faction in factions.Distinct())
             {
-                pinkOrPinkAllyToExclude = p.Ally;
-            }
-            else if (p.Ally == Faction.Pink)
-            {
-                pinkOrPinkAllyToExclude = p.Faction;
-            }
-
-            foreach (Location l in t.Locations)
-            {
-                if (OccupyingForcesOnPlanet.TryGetValue(l, out List<Battalion> batallionsInLocation))
+                if (faction == Faction.Pink || faction == pinkAlly)
                 {
-                    foreach (var b in batallionsInLocation)
+                    if (!pinkOrPinkAllyCounted && toExclude != Faction.Pink && toExclude != pinkAlly)
                     {
-                        if (b.Faction != p.Faction && !counted.Contains(b.Faction) && b.Faction != pinkOrPinkAllyToExclude)
-                        {
-                            result++;
-                            counted.Add(b.Faction);
-                        }
+                        result++;
                     }
+
+                    pinkOrPinkAllyCounted = true;
+                }
+                else if (faction != toExclude)
+                {
+                    result++;
                 }
             }
 
@@ -1085,7 +1069,7 @@ namespace Treachery.Shared
                 p.Is(Faction.Blue) && p.SpecialForcesIn(l) > 0 ||
                 p.Is(Faction.Pink) && p.HasAlly && p.AlliedPlayer.AnyForcesIn(l.Territory) > 0 ||
                 p.Ally == Faction.Pink && p.AlliedPlayer.AnyForcesIn(l.Territory) > 0 ||
-                NrOfOccupantsExcludingPlayer(l, p) < 2;
+                NrOfOccupantsExcludingFaction(l, p.Faction) < 2;
         }
 
         internal bool EveryoneActedOrPassed => HasActedOrPassed.Count == Players.Count;

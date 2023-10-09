@@ -6,9 +6,9 @@
 @using Treachery.Client.GenericComponents;
 
 <div>
-    <table class="table table-sm table-striped" style="background-color:#FFFFFF32">
+    <table class="table table-sm">
         <thead>
-            <tr>
+            <tr class="table-dark">
                 <th>Faction</th>
 
                 @if (ShowName)
@@ -75,7 +75,7 @@
 
             @foreach (var p in Players)
             {
-                <tr>
+                <tr class ="table-dark">
 
                     <td><img class="img-fluid p-1" width=60 src="@Skin.Current.GetFactionTableImageURL(p.Faction)" /></td>
 
@@ -163,7 +163,7 @@
                         <td>
                             @foreach (var l in p.LocationsWithAnyForces.Where(l => Game.Applicable(Rule.Homeworlds) || !l.Territory.IsHomeworld).OrderByDescending(l => l.IsStronghold).ThenBy(l => l.Orientation))
                             {
-                                var isContested = l != Game.Map.PolarSink && p.Occupies(l.Territory) && Game.NrOfOccupantsExcludingPlayer(l.Territory, p) > 0;
+                                var isContested = l != Game.Map.PolarSink && p.Occupies(l.Territory) && Game.NrOfOccupantsExcludingFaction(l.Territory, p.Faction) > 0;
 
                                 <div class="@(isContested?"text-danger":"")">
 

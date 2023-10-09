@@ -237,8 +237,7 @@ namespace Treachery.Shared
                     }
                 case Phase.GreySwappingCard:
                     {
-                        var occupierOfGreyHomeworld = OccupierOf(World.Grey);
-                        if (occupierOfGreyHomeworld == null && faction == Faction.Grey || occupierOfGreyHomeworld == player) result.Add(typeof(GreySwappedCardOnBid));
+                        if (faction == Faction.Grey) result.Add(typeof(GreySwappedCardOnBid));
                         if (Version < 103 && player.Has(TreacheryCardType.Amal) && CardNumber == 1 && !Bids.Any()) result.Add(typeof(AmalPlayed));
                         break;
                     }

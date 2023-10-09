@@ -17,7 +17,9 @@ namespace Treachery.Shared
         public bool IsHomeOfNormalForces { get; private set; }
 
         public bool IsHomeOfSpecialForces { get; private set; }
+
         public int BattleBonusAndLasgunShieldLimitAtHighThreshold { get; private set; }
+
         public int BattleBonusAndLasgunShieldLimitAtLowThreshold { get; private set; }
 
         public Homeworld(World world, Faction faction, Territory t, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int treshold, int battleBonusAtHighThreshold, int battleBonusAtLowThreshold, int resourceAmount, int id) : base(id)
@@ -32,6 +34,8 @@ namespace Treachery.Shared
             BattleBonusAndLasgunShieldLimitAtLowThreshold = battleBonusAtLowThreshold;
             ResourceAmount = resourceAmount;
         }
+
+        public override int Sector => -1;
 
         public override string ToString()
         {

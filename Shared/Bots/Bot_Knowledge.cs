@@ -226,7 +226,7 @@ namespace Treachery.Shared
 
         protected bool NotOccupiedByOthers(Territory t)
         {
-            return Game.NrOfOccupantsExcludingPlayer(t, this) == 0 && AllyDoesntBlock(t);
+            return Game.NrOfOccupantsExcludingFaction(t, Faction) == 0 && AllyDoesntBlock(t);
         }
 
         protected bool NotOccupied(Territory t)

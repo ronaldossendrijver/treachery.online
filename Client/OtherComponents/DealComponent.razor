@@ -38,7 +38,7 @@
                 @if (Client.IsPlayer && (acceptableDeals.Any() || cancellableDeals.Any())) 
                 {
                     <label>Deal offers</label>
-                    <table class="table table-striped table-sm">
+                    <table class="table table-sm">
 
                         <tbody>
 
@@ -47,7 +47,7 @@
                                 var offerToShow = offer;
                                 var validity = offer.Acceptance(Faction).Validate();
 
-                                <tr>
+                                <tr class="table-dark">
                                     <td><img width=24 src="@Skin.Current.GetImageURL(offer.Initiator)" /></td>
                                     <td>@offer.Price</td>
                                     <td class="text-break">@offer.GetDealDescription().ToString(Skin.Current)</td>
@@ -61,7 +61,7 @@
                             {
                                 var offerToShow = offer;
 
-                                <tr>
+                                <tr class="table-dark">
                                     <td><img width=24 src="@Skin.Current.GetImageURL(offer.Initiator)" /></td>
                                     <td>@offer.Price</td>
                                     <td class="text-break">@offer.GetDealDescription().ToString(Skin.Current)</td>
@@ -80,11 +80,11 @@
                 @if (currentDeals.Any())
                 {
                     <label>Current deals</label>
-                    <table class="table table-striped table-sm">
+                    <table class="table table-sm">
                         <tbody>
                             @foreach (var deal in currentDeals)
                             {
-                                <tr>
+                                <tr class="table-dark">
                                     <td class="p-0">
                                         <img width=24 src="@Skin.Current.GetImageURL(deal.BoundFaction)" />
                                         ⇒

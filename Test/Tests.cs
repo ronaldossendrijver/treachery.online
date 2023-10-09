@@ -637,7 +637,7 @@ namespace Treachery.Test
                 int gamesTested = 0;
                 ParallelOptions po = new()
                 {
-                    MaxDegreeOfParallelism = Environment.ProcessorCount
+                    MaxDegreeOfParallelism = Environment.ProcessorCount//1
                 };
                 Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, fileName =>
                 {

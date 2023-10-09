@@ -53,7 +53,7 @@ namespace Treachery.Shared
             return g.Map.Territories(g.Applicable(Rule.Homeworlds)).Where(t =>
                 (!p.HasAlly || p.AlliedPlayer.AnyForcesIn(t) == 0) &&
                 p.SpecialForcesIn(t) > 0 &&
-                (!t.IsStronghold || g.NrOfOccupantsExcludingPlayer(t, p) <= 1) &&
+                (!t.IsStronghold || g.NrOfOccupantsExcludingFaction(t, p.Faction) <= 1) &&
                 !t.Locations.Any(l => l.Sector == g.SectorInStorm && p.SpecialForcesIn(l) > 0));
         }
 

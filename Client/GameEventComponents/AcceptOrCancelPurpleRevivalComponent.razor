@@ -28,11 +28,11 @@
             }
 
             <div>Existing early revival offers:</div>
-            <table class="table table-striped table-sm">
+            <table class="table table-sm">
                 <tbody>
                     @foreach (var kvp in Game.EarlyRevivalsOffers)
                     {
-                        <tr>
+                        <tr class="table-dark">
                             <td><Image Shown=@kvp.Key Width=32/></td>
                             <td>
                                 @if (kvp.Value == int.MaxValue)

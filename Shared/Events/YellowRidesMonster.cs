@@ -132,7 +132,7 @@ namespace Treachery.Shared
             return g.Map.Locations(false).Where(l =>
                     (mayMoveIntoStorm || l.Sector != g.SectorInStorm) &&
                     (l is not AttachedLocation al || al.AttachedToLocation != null && al.AttachedToLocation.Sector != g.SectorInStorm) &&
-                    (!l.Territory.IsStronghold || g.NrOfOccupantsExcludingPlayer(l, p) < 2) &&
+                    (!l.Territory.IsStronghold || g.NrOfOccupantsExcludingFaction(l, p.Faction) < 2) &&
                     (!p.HasAlly || l == g.Map.PolarSink || !p.AlliedPlayer.Occupies(l)));
         }
 

@@ -113,10 +113,10 @@
                 <h5 class="mt-2">Situation at the end of turn @replay.CurrentTurn:</h5>
                 <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowForces="true" ShowTanks="true" ShowResources="true" ShowTechTokens="true" ShowPoints="true" />
 
-                <table class="table table-sm table-striped" style="background-color:#FFFFFF32">
+                <table class="table table-sm" style="background-color:#FFFFFF32">
 
                     <thead>
-                        <tr>
+                        <tr class="table-dark">
                             <th>Stronghold</th>
                             <th>Forces</th>
                             @if (replay.Applicable(Rule.StrongholdBonus))
@@ -133,7 +133,7 @@
                     <tbody>
                     @foreach (var sh in replay.Map.Strongholds)
                     {
-                        <tr>
+                            <tr class="table-dark">
                             <td>@Skin.Current.Describe(sh)</td>
                             <td>
                                 @foreach (var b in replay.BattalionsIn(sh))

@@ -449,7 +449,7 @@ namespace Treachery.Shared
         {
             return g.Map.Locations(false).Where(l =>
                     (p.Faction == Faction.Yellow || l.Sector != g.SectorInStorm) &&
-                    (!l.Territory.IsStronghold || g.NrOfOccupantsExcludingPlayer(l, p) < 2) &&
+                    (!l.Territory.IsStronghold || g.NrOfOccupantsExcludingFaction(l, p.Faction) < 2) &&
                     l.Visible &&
                     (!p.HasAlly || l == g.Map.PolarSink || !p.AlliedPlayer.Occupies(l)) &&
                     (p.Faction == Faction.Purple || p.Faction == Faction.Yellow && p.AnyForcesIn(l.Territory) >= 1));

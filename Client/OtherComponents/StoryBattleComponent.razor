@@ -6,9 +6,9 @@
 @using Treachery.Shared;
 
 <div>
-    <table class="table table-sm table-striped">
+    <table class="table table-sm">
         <thead>
-            <tr>
+            <tr class="table-dark">
                 <th>Faction</th>
                 <th>Leader</th>
                 <th>Weapon</th>
@@ -25,7 +25,7 @@
 
         <tbody>
 
-            <tr style="@BackgroundStyle(AggressorBattle.Initiator)">
+            <tr class="table-dark" style="@BackgroundStyle(AggressorBattle.Initiator)">
                 <td>
                     <img class="img-fluid p-1" width=60 src="@Skin.Current.GetFactionTableImageURL(AggressorBattle.Initiator)" />
 
@@ -70,7 +70,7 @@
                 }
             </tr>
 
-            <tr style="@BackgroundStyle(DefenderBattle.Initiator)">
+            <tr class="table-dark" style="@BackgroundStyle(DefenderBattle.Initiator)">
                 <td>
                     <img class="img-fluid p-1" width=60 src="@Skin.Current.GetFactionTableImageURL(DefenderBattle.Initiator)" />
 

@@ -530,7 +530,7 @@ namespace Treachery.Shared
             }
             else
             {
-                return Occupies(l) && g.NrOfOccupantsExcludingPlayer(l, this) == 0;
+                return Occupies(l) && g.NrOfOccupantsExcludingFaction(l, Faction) == 0;
             }
         }
 
@@ -542,7 +542,7 @@ namespace Treachery.Shared
             }
             else
             {
-                return Occupies(t) && g.NrOfOccupantsExcludingPlayer(t, this) == 0;
+                return Occupies(t) && g.NrOfOccupantsExcludingFaction(t, Faction) == 0;
             }
         }
 

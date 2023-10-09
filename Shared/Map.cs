@@ -1751,9 +1751,7 @@ namespace Treachery.Shared
         private static List<Location> DetermineForceObstacles(Faction f, Game game)
         {
             return game.Forces(false).Where(kvp =>
-                kvp.Key.IsStronghold &&
-                !kvp.Value.Any(b => BelongsTo(game, b, f)) &&
-                kvp.Value.Count(b => b.CanOccupy) >= 2)
+                kvp.Key.IsStronghold && !kvp.Value.Any(b => BelongsTo(game, b, f)) && game.NrOfOccupantsExcludingFaction(kvp.Key, f) >= 2)
                 .Select(kvp => kvp.Key)
                 .Distinct()
                 .Union(game.CurrentBlockedTerritories.SelectMany(t => t.Locations))
