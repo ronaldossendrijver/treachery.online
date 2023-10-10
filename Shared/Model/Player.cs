@@ -631,17 +631,16 @@ namespace Treachery.Shared
             {
                 var occupierOfBrownHomeworld = Game.OccupierOf(World.Brown);
                 int occupationBonus = occupierOfBrownHomeworld != null && (occupierOfBrownHomeworld == this || occupierOfBrownHomeworld.Faction == Ally) ? 1 : 0;
+                int atomicsPenalty = Game.AtomicsAftermath != null && (Faction == Faction.Cyan || Game.Version >= 158 && Ally == Faction.Cyan) ? 1 : 0;
 
                 int amount = Faction switch
                 {
                     Faction.Black => 8,
                     Faction.Brown => 5,
-                    Faction.Cyan when Game.AtomicsAftermath != null => 3,
-                    _ when Game.Version >= 158 && Ally == Faction.Cyan && Game.AtomicsAftermath != null => 3,
                     _ => 4
                 };
 
-                return amount + occupationBonus;
+                return amount + occupationBonus - atomicsPenalty;
             }
         }
 

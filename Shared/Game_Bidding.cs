@@ -343,7 +343,7 @@ namespace Treachery.Shared
 
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreenBiddingPrescience);
 
-            bool enterReplacingCardJustWon = mightReplace && Version > 150 && Players.Any(p => p.Nexus != Faction.None);
+            bool enterReplacingCardJustWon = mightReplace && Version > 150 && (Version < 159 && Players.Any(p => p.Nexus != Faction.None) || Version >= 159 && winner?.Nexus != Faction.None);
 
             if (mightReplace && winner != null)
             {

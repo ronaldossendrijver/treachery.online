@@ -25,7 +25,7 @@ namespace Treachery.Shared
         {
             var to = DiscoveryEntered.ValidTargets(Game, this).FirstOrDefault();
             var battalionsToMove = DiscoveryEntered.ValidSources(this, to).ToDictionary(l => l, l => BattalionIn(l));
-            return new DiscoveryEntered(Game, Faction) { ForceLocations = new Dictionary<Location, Battalion>(battalionsToMove) };
+            return new DiscoveryEntered(Game, Faction) { ForceLocations = new Dictionary<Location, Battalion>(battalionsToMove), To = to };
         }
 
         private DiscoveryRevealed DetermineDiscoveryRevealed()

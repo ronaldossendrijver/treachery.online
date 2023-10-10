@@ -14,8 +14,18 @@ namespace Treachery.Shared
         {
             var territory = Game.BattleAboutToStart.Territory;
             var opponent = Game.GetPlayer(Game.BattleAboutToStart.Target);
-            bool iWillFight = GetDialNeeded(AlliedPlayer, territory, opponent, false) > GetDialNeeded(this, territory, opponent, false);
-            return new BattleClaimed(Game, Faction) { Passed = !iWillFight };
+            var pink = Game.GetPlayer(Faction.Pink);
+            var pinkAlly = pink.AlliedPlayer;
+            bool pinkIsStrongest = GetDialNeeded(pinkAlly, territory, opponent, false) > GetDialNeeded(pink, territory, opponent, false);
+
+            if (Faction == Faction.Pink)
+            {
+                return new BattleClaimed(Game, Faction) { Passed = !pinkIsStrongest };
+            }
+            else
+            {
+                return new BattleClaimed(Game, Faction) { Passed = pinkIsStrongest };
+            }
         }
 
         protected virtual SwitchedSkilledLeader DetermineSwitchedSkilledLeader()
