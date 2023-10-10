@@ -226,8 +226,8 @@ namespace Treachery.Shared
 
         public float Dial(Game g, Faction opponent)
         {
-            var pinkBattleContribution = !g.Prevented(FactionAdvantage.PinkOccupation) ? g.CurrentPinkBattleContribution : 0;
-            if (Initiator != Faction.Pink || Game.CurrentPinkOrAllyFighter == Faction.None)
+            var pinkBattleContribution = !g.Prevented(FactionAdvantage.PinkOccupation) && (Initiator == Faction.Pink || Player.Ally == Faction.Pink) ? g.CurrentPinkBattleContribution : 0;
+            if (Game.CurrentPinkOrAllyFighter == Faction.None || Initiator != Faction.Pink)
             {
                 return ForceValue(g, Initiator, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + pinkBattleContribution;
             }
@@ -236,6 +236,7 @@ namespace Treachery.Shared
                 return ForceValue(g, Player.Ally, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + pinkBattleContribution;
             }
         }
+
         public int Cost(Game g) => Cost(g, Player, Forces, SpecialForces, out int _);
 
         public int Cost(Game g, out int paidByArrakeen) => Cost(g, Player, Forces, SpecialForces, out paidByArrakeen);
@@ -846,9 +847,6 @@ namespace Treachery.Shared
             int aggPinkKarmaContribution = agg.Initiator == Faction.Pink ? game.PinkKarmaBonus : 0;
             int defPinkKarmaContribution = def.Initiator == Faction.Pink ? game.PinkKarmaBonus : 0;
 
-            float aggForceDial;
-            float defForceDial;
-
             var aggForceSupplier = Battle.DetermineForceSupplier(game, result.Aggressor);
             result.AggUndialedForces = aggForceSupplier.AnyForcesIn(territory) - agg.TotalForces;
 
@@ -857,26 +855,23 @@ namespace Treachery.Shared
 
             if (!rockMelterUsed)
             {
-                aggForceDial = agg.Dial(game, result.Defender.Faction);
-                defForceDial = def.Dial(game, result.Aggressor.Faction);
+                result.AggReinforcementsContribution = agg.HasReinforcements ? 2 : 0;
+                result.DefReinforcementsContribution = def.HasReinforcements ? 2 : 0;
+
+                result.AggHomeworldContribution = agg.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
+                result.DefHomeworldContribution = def.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
+
+                result.AggTotal = agg.Dial(game, result.Defender.Faction) + aggHeroContribution + aggPinkKarmaContribution + result.AggHomeworldContribution + result.AggReinforcementsContribution;
+                result.DefTotal = def.Dial(game, result.Aggressor.Faction) + defHeroContribution + defPinkKarmaContribution + result.DefHomeworldContribution + result.DefReinforcementsContribution;
             }
             else
             {
-                aggForceDial = result.AggUndialedForces;
-                if (result.Aggressor.Faction == game.CurrentPinkOrAllyFighter) aggForceDial += (int)Math.Ceiling(0.5f * game.GetPlayer(Faction.Pink).AnyForcesIn(territory));
+                result.AggTotal = result.AggUndialedForces;
+                if (result.Aggressor.Faction == game.CurrentPinkOrAllyFighter) result.AggTotal += (int)Math.Ceiling(0.5f * game.GetPlayer(Faction.Pink).AnyForcesIn(territory));
 
-                defForceDial = result.DefUndialedForces;
-                if (result.Defender.Faction == game.CurrentPinkOrAllyFighter) defForceDial += (int)Math.Ceiling(0.5f * game.GetPlayer(Faction.Pink).AnyForcesIn(territory));
+                result.DefTotal = result.DefUndialedForces;
+                if (result.Defender.Faction == game.CurrentPinkOrAllyFighter) result.DefTotal += (int)Math.Ceiling(0.5f * game.GetPlayer(Faction.Pink).AnyForcesIn(territory));
             }
-
-            result.AggReinforcementsContribution = agg.HasReinforcements ? 2 : 0;
-            result.DefReinforcementsContribution = def.HasReinforcements ? 2 : 0;
-
-            result.AggHomeworldContribution = agg.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
-            result.DefHomeworldContribution = def.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
-
-            result.AggTotal = aggForceDial + aggHeroContribution + aggPinkKarmaContribution + result.AggHomeworldContribution + result.AggReinforcementsContribution;
-            result.DefTotal = defForceDial + defHeroContribution + defPinkKarmaContribution + result.DefHomeworldContribution + result.DefReinforcementsContribution;
 
             agg.DeactivateDynamicWeapons();
             def.DeactivateDynamicWeapons();

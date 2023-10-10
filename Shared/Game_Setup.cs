@@ -140,6 +140,14 @@ namespace Treachery.Shared
                 }
             }
 
+            if (Vidal != null)
+            {
+                foreach (var p in Players)
+                {
+                    p.KnownNonTraitors.Add(Vidal);
+                }
+            }
+
             result.Shuffle();
             return result;
         }

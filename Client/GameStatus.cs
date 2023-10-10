@@ -401,8 +401,8 @@ namespace Treachery.Client
 
                 Phase.ClaimingBattle => Status(
                     Express("You may now decide who will fight in ", game.BattleAboutToStart.Territory),
-                    Express(Faction.Pink, " are deciding who will fight in ", game.BattleAboutToStart.Territory, "..."),
-                    game.GetPlayer(Faction.Pink)),
+                    Express(game.HasLowThreshold(Faction.Pink) ? game.BattleAboutToStart.OpponentOf(Faction.Pink).Faction : Faction.Pink, " are deciding who will fight in ", game.BattleAboutToStart.Territory, "..."),
+                    game.HasLowThreshold(Faction.Pink) ? game.BattleAboutToStart.OpponentOf(Faction.Pink) : game.GetPlayer(Faction.Pink)),
 
                 Phase.Thought => Status(
                     Express(game.CurrentThought.Initiator, " asked you a question and are waiting for your answer."),

@@ -207,7 +207,7 @@ namespace Treachery.Shared
             Game.BattleAboutToStart = this;
 
             var pink = GetPlayer(Faction.Pink);
-            Game.Enter(pink != null && !Game.HasLowThreshold(Faction.Pink) && IsInvolved(Faction.Pink) && pink.Occupies(Territory) && pink.HasAlly && pink.AlliedPlayer.Occupies(Territory), Phase.ClaimingBattle, Game.InitiateBattle);
+            Game.Enter(pink != null && IsInvolved(Faction.Pink) && pink.Occupies(Territory) && pink.HasAlly && pink.AlliedPlayer.Occupies(Territory), Phase.ClaimingBattle, Game.InitiateBattle);
         }
 
         public override Message GetMessage()

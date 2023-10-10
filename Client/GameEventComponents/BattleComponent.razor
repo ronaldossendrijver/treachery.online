@@ -18,7 +18,13 @@
             Opponent forces: 
             @if (Opponent.ForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Skin.Current.GetFactionForceImageURL(Opponent.Faction)" width=30 height=30/><span>&nbsp;<strong>@Opponent.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
+                <img class="img-fluid ms-1" src="@Skin.Current.GetFactionForceImageURL(Opponent.Faction)" width=30 height=30/>
+                <span>&nbsp;<strong>@Opponent.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
+            }
+            @if (Opponent.HasAlly && Opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory) > 0)
+            {
+                <img class="img-fluid ms-1" src="@Skin.Current.GetFactionForceImageURL(Opponent.Ally)" width=30 height=30 />
+                <span>&nbsp;<strong>@Opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
             }
             @if (Opponent.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
             {
@@ -29,10 +35,19 @@
                     <span>&nbsp;<strong>@Opponent.SpecialForcesIn(Game.CurrentBattle.Territory)</strong></span>
                 }
             }
+            @if (Opponent.HasAlly && Opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
+            {
+                <img class="img-fluid ms-1" src="@Skin.Current.GetFactionSpecialForceImageURL(Opponent.Ally)" width=30 height=30 />
+
+                @if (Opponent.Ally != Faction.White)
+                {
+                    <span>&nbsp;<strong>@Opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory)</strong></span>
+                }
+            }
 
         </div>
 
-        @if (Game.CurrentPinkBattleContribution > 0 && Opponent.Ally == Faction.Pink)
+        @if (Game.CurrentPinkBattleContribution > 0 && !(Player.Faction == Faction.Pink || Player.Ally == Faction.Pink))
         {
             <div class="text-success mt-1"><Image Shown=Faction.Pink Width=30 /> forces contribute <strong>@Game.CurrentPinkBattleContribution</strong> to your opponents dial.</div>
         }
@@ -110,7 +125,7 @@
             }
         }
 
-        @if (Game.CurrentPinkBattleContribution > 0 && Player.Ally == Faction.Pink)
+        @if (Game.CurrentPinkBattleContribution > 0 && (Player.Faction == Faction.Pink || Player.Ally == Faction.Pink))
         {
             <div class="text-success mt-1"><FactionComponent Faction=Faction.Pink Diameter=20 /> forces contribute <strong>@Game.CurrentPinkBattleContribution</strong> to your dial.</div>
         }
