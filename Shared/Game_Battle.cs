@@ -1087,8 +1087,8 @@ namespace Treachery.Shared
 
             if (mayChooseToKeepOne)
             {
-                if (plan.Weapon != null) CardsToBeDiscardedByLoserAfterBattle.Add(plan.Weapon);
-                if (plan.Defense != null) CardsToBeDiscardedByLoserAfterBattle.Add(plan.Defense);
+                if (plan.Weapon != null && plan.Player.Has(plan.Weapon)) CardsToBeDiscardedByLoserAfterBattle.Add(plan.Weapon);
+                if (plan.Defense != null && plan.Player.Has(plan.Defense)) CardsToBeDiscardedByLoserAfterBattle.Add(plan.Defense);
             }
             else
             {

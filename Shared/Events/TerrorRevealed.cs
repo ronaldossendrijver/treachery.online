@@ -147,8 +147,9 @@ namespace Treachery.Shared
                         var randomLeader = victimPlayer.Leaders.RandomOrDefault(Game.Random);
                         if (randomLeader != null)
                         {
-                            Log(Initiator, " gain ", Payment.Of(randomLeader.CostToRevive), " from assassinating ", randomLeader, " in ", territory);
-                            Player.Resources += randomLeader.CostToRevive;
+                            var price = randomLeader.HeroType == HeroType.VariableValue ? 3 : randomLeader.CostToRevive;
+                            Log(Initiator, " gain ", Payment.Of(price), " from assassinating ", randomLeader, " in ", territory);
+                            Player.Resources += price;
                             Game.KillHero(randomLeader);
                         }
                         else

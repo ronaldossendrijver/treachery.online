@@ -146,11 +146,14 @@ namespace Treachery.Shared
         public Game Undo(int untilEventNr)
         {
             var result = new Game(Version);
-            for (int i = 0; i < untilEventNr; i++)
+            int maxEventNr = Math.Min(untilEventNr, History.Count);
+
+            for (int i = 0; i < maxEventNr; i++)
             {
                 History[i].Initialize(result);
                 History[i].ExecuteWithoutValidation();
             }
+
             return result;
         }
 

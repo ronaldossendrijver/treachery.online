@@ -38,15 +38,15 @@ namespace Treachery.Shared
             int gainedByFirstFaction = DivideResources.GainedByFirstFaction(toBeDivided, divisionWasAgreed, CurrentDivisionProposal.PortionToFirstPlayer);
             int gainedByOtherFaction = DivideResources.GainedByOtherFaction(toBeDivided, divisionWasAgreed, CurrentDivisionProposal.PortionToFirstPlayer);
 
-            Collect(toBeDivided.FirstFaction, toBeDivided.Territory, gainedByFirstFaction);
-            Collect(toBeDivided.OtherFaction, toBeDivided.Territory, gainedByOtherFaction);
+            GainCollectedResources(toBeDivided.FirstFaction, toBeDivided.Territory, gainedByFirstFaction);
+            GainCollectedResources(toBeDivided.OtherFaction, toBeDivided.Territory, gainedByOtherFaction);
 
             CollectedResourcesToBeDivided.Remove(toBeDivided);
 
             CurrentDivisionProposal = null;
         }
 
-        private void Collect(Faction faction, Territory from, int amount)
+        private void GainCollectedResources(Faction faction, Territory from, int amount)
         {
             Log(faction, " collect ", Payment.Of(amount), " from ", from);
             GetPlayer(faction).Resources += amount;
@@ -90,7 +90,7 @@ namespace Treachery.Shared
                 var occupier = OccupierOf(homeworld.World);
                 if (occupier != null)
                 {
-                    Collect(occupier.Faction, homeworld.Territory, homeworld.ResourceAmount);
+                    GainCollectedResources(occupier.Faction, homeworld.Territory, homeworld.ResourceAmount);
                     occupier.TransferrableResources += homeworld.ResourceAmount;
                 }
             }
@@ -101,16 +101,15 @@ namespace Treachery.Shared
             if (player.Controls(this, stronghold, Applicable(Rule.ContestedStongholdsCountAsOccupied)) &&
                 !(player.Is(Faction.Pink) && Prevented(FactionAdvantage.PinkCollection) && player.HasAlly && !player.AlliedPlayer.Controls(this, stronghold, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
             {
-                Collect(player.Faction, stronghold.Territory, amount);
+                GainCollectedResources(player.Faction, stronghold.Territory, amount);
             }
         }
 
         private void CollectResourcesFromTerritories()
         {
-            var thief = Players.FirstOrDefault(p => p.Occupies(Map.ProcessingStation));
-
             foreach (var l in ResourcesOnPlanet.Where(x => x.Value > 0).ToList())
             {
+                var thief = Players.FirstOrDefault(p => p.Occupies(Map.ProcessingStation));
                 var playersToCollect = Players.Where(y => y.Occupies(l.Key)).ToArray();
                 int totalCollectedAmount = 0;
                 var spiceLeft = l.Value;
@@ -125,17 +124,17 @@ namespace Treachery.Shared
                     ChangeResourcesOnPlanet(l.Key, -collectedAmountByThisPlayer);
                     spiceLeft -= collectedAmountByThisPlayer;
 
-                    if (collectedAmountByThisPlayer > 0 && thief != null)
+                    if (collectedAmountByThisPlayer > 0 && thief != null && (Version < 159 || p != thief))
                     {
                         collectedAmountByThisPlayer -= 1;
                         thief.Resources += 1;
-                        Log(thief.Faction, " steal ", Payment.Of(1), " from the ", Concept.Resource, " collected by ", p.Faction);
+                        Log(thief.Faction, " steal ", Payment.Of(1), " from the ", Concept.Resource, " collected by ", p.Faction, " from ", l.Key.Territory);
                         thief = null;
                     }
 
                     if (playersToCollect.Length == 1)
                     {
-                        Collect(p.Faction, l.Key.Territory, collectedAmountByThisPlayer);
+                        GainCollectedResources(p.Faction, l.Key.Territory, collectedAmountByThisPlayer);
                     }
                     else
                     {

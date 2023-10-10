@@ -431,16 +431,16 @@ namespace Treachery.Client
             return (obj) switch
             {
                 null => "",
-                TreacheryCard tc => Skin.Current.GetImageURL(tc),
-                ResourceCard rc => Skin.Current.GetImageURL(rc),
-                IHero h => Skin.Current.GetImageURL(h),
-                LeaderSkill ls => Skin.Current.GetImageURL(ls),
-                TechToken tt => Skin.Current.GetImageURL(tt),
-                Faction f => Skin.Current.GetImageURL(f),
-                Ambassador a => Skin.Current.GetImageURL(a),
-                FactionForce ff => Skin.Current.GetImageURL(ff),
-                FactionSpecialForce fsf => Skin.Current.GetImageURL(fsf),
-                StrongholdAdvantage adv => Skin.Current.GetImageURL(adv),
+                TreacheryCard tc => GetImageURL(tc),
+                ResourceCard rc => GetImageURL(rc),
+                IHero h => GetImageURL(h),
+                LeaderSkill ls => GetImageURL(ls),
+                TechToken tt => GetImageURL(tt),
+                Faction f => GetImageURL(f),
+                Ambassador a => GetImageURL(a),
+                FactionForce ff => GetImageURL(ff),
+                FactionSpecialForce fsf => GetImageURL(fsf),
+                StrongholdAdvantage adv => GetImageURL(adv),
                 _ => ""
             };
         }

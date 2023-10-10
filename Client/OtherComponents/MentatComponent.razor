@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameComponent;
 
-<ModalComponent Id="@Id" Title="Card Reference" Size="modal-xl">
+<ModalComponent Id="@Id" Title="Card and Token Reference" Size="modal-xl">
 
     <h5>Treachery Cards</h5>
     <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
@@ -117,6 +117,51 @@
                     </Hoverable>
                 </div>
             }
+
+        </div>
+    }
+
+    @if (Client.Game.IsPlaying(Faction.Pink))
+    {
+        <h5 class="mt-2">Ambassador Tokens</h5>
+        <div class="row row-cols-2 row-cols-md-3 ms-1 me-1">
+
+            @foreach (var t in Enumerations.GetValuesExceptDefault(typeof(Ambassador), Ambassador.None))
+            {
+                <div class="card">
+                    <img src="@Skin.Current.GetImageURL(t)" class="card-img" alt=@Skin.Current.GetAmbassadorDescription(t)>
+                </div>
+            }
+
+        </div>
+    }
+
+    @if (Client.Game.IsPlaying(Faction.Cyan))
+    {
+        <h5 class="mt-2">Terror Tokens</h5>
+        <div>
+
+            <ul>
+                @foreach (var t in Enumerations.GetValuesExceptDefault(typeof(TerrorType), TerrorType.None))
+                {
+                    <li><strong>@Name(t) -</strong> @Skin.Current.GetTerrorTypeDescription(t)</li>
+                }
+            </ul>
+
+        </div>
+    }
+
+    @if (Client.Game.Applicable(Rule.DiscoveryTokens))
+    {
+        <h5 class="mt-2">Discovery Tokens</h5>
+        <div>
+
+            <ul>
+            @foreach (var t in Enumerations.GetValuesExceptDefault(typeof(DiscoveryToken), DiscoveryToken.None))
+            {
+                <li><strong>@Name(t) -</strong> @Skin.Current.GetDiscoveryTokenDescription(t)</li>
+            }
+            </ul>
 
         </div>
     }

@@ -330,17 +330,20 @@ namespace Treachery.Shared
             RemoveIllegalChoices(ref lowestAvailableHero, ref weapon, ref defense, territory);
 
             TreacheryCard harassAndWithdraw = null;
+            bool harass = false;
             if (territory != null && AnyForcesIn(territory) >= 4)
             {
                 if (weapon == null && Battle.ValidWeapons(Game, this, defense, lowestAvailableHero, territory).Any(c => c.Type == TreacheryCardType.HarassAndWithdraw))
                 {
                     harassAndWithdraw = TreacheryCards.First(tc => tc.Type == TreacheryCardType.HarassAndWithdraw);
                     weapon = harassAndWithdraw;
+                    harass = true;
                 }
                 else if (defense == null && Battle.ValidDefenses(Game, this, weapon, territory).Any(c => c.Type == TreacheryCardType.HarassAndWithdraw))
                 {
                     harassAndWithdraw = TreacheryCards.First(tc => tc.Type == TreacheryCardType.HarassAndWithdraw);
                     defense = harassAndWithdraw;
+                    harass = true;
                 }
             }
 
@@ -349,15 +352,16 @@ namespace Treachery.Shared
             if (Battle.MustPayForForcesInBattle(Game, this))
             {
                 int strongholdFreeForces = Game.HasStrongholdAdvantage(Faction, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory) ? 2 : 0;
-                int specialAtFull = harassAndWithdraw != null ? 0 : Math.Min(strongholdFreeForces, Battle.MaxForces(Game, this, true));
-                int normalAtFull = harassAndWithdraw != null ? 0 : Math.Min(strongholdFreeForces - specialAtFull, Battle.MaxForces(Game, this, false));
+                int specialAtFull = Math.Min(strongholdFreeForces, Battle.MaxForces(Game, this, true));
+                int normalAtFull = Math.Min(strongholdFreeForces - specialAtFull, Battle.MaxForces(Game, this, false));
+
                 return new Battle(Game, Faction)
                 {
                     Hero = lowestAvailableHero,
-                    Forces = normalAtFull,
-                    ForcesAtHalfStrength = Battle.MaxForces(Game, this, false) - normalAtFull,
-                    SpecialForces = specialAtFull,
-                    SpecialForcesAtHalfStrength = Battle.MaxForces(Game, this, true) - specialAtFull,
+                    Forces = harass ? 0 : normalAtFull,
+                    ForcesAtHalfStrength = harass ? 0 : Battle.MaxForces(Game, this, false) - normalAtFull,
+                    SpecialForces = harass ? 0 : specialAtFull,
+                    SpecialForcesAtHalfStrength = harass ? 0 : Battle.MaxForces(Game, this, true) - specialAtFull,
                     Defense = defense,
                     Weapon = weapon,
                     BankerBonus = 0,
@@ -369,9 +373,9 @@ namespace Treachery.Shared
                 return new Battle(Game, Faction)
                 {
                     Hero = lowestAvailableHero,
-                    Forces = Battle.MaxForces(Game, this, false),
+                    Forces = harass ? 0 : Battle.MaxForces(Game, this, false),
                     ForcesAtHalfStrength = 0,
-                    SpecialForces = Battle.MaxForces(Game, this, true),
+                    SpecialForces = harass ? 0 : Battle.MaxForces(Game, this, true),
                     SpecialForcesAtHalfStrength = 0,
                     Defense = defense,
                     Weapon = weapon,
@@ -803,7 +807,7 @@ namespace Treachery.Shared
                 return voicePlan.opponentHeroWillCertainlyBeZero ? 1 : 0.5f;
             }
 
-            var availableWeapons = Weapons(null, null, null).Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth && w.Type != TreacheryCardType.Rockmelter)
+            var availableWeapons = Weapons(null, null, null).Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth && w.Type != TreacheryCardType.Rockmelter && w.Type != TreacheryCardType.HarassAndWithdraw && w.Type != TreacheryCardType.Recruits)
                 .OrderBy(w => NumberOfUnknownDefensesThatCouldCounterThisWeapon(CardsUnknownToMe, w)).ToArray();
 
             var opponentPlan = Game.CurrentBattle?.PlanOf(opponent);
