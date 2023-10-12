@@ -266,36 +266,27 @@ namespace Treachery.Shared
 
         public static IEnumerable<Location> ValidShipmentLocations(Game g, Player p, bool fromPlanet, bool secretAlly)
         {
-            IEnumerable<Location> potentialLocations;
             if (p.Is(Faction.Yellow) && !secretAlly)
             {
                 if (MayShipCrossPlanet(g, p))
                 {
-                    potentialLocations = YellowSpawnLocations(g, p).Union(NormalShipmentLocations(g, p, fromPlanet)).Distinct();
+                    return YellowSpawnLocations(g, p).Union(RegularShipmentLocations(g, p, fromPlanet)).Distinct();
                 }
                 else
                 {
-                    potentialLocations = YellowSpawnLocations(g, p);
+                    return YellowSpawnLocations(g, p);
                 }
             }
             else
             {
-                potentialLocations = NormalShipmentLocations(g, p, fromPlanet);
-            }
-
-            if (g.AtomicsAftermath == null)
-            {
-                return potentialLocations;
-            }
-            else
-            {
-                return potentialLocations.Where(l => l.Territory != g.AtomicsAftermath);
+                return RegularShipmentLocations(g, p, fromPlanet);
             }
         }
 
-        private static IEnumerable<Location> NormalShipmentLocations(Game g, Player p, bool fromPlanet)
+        private static IEnumerable<Location> RegularShipmentLocations(Game g, Player p, bool fromPlanet)
         {
             return g.Map.Locations(g.Applicable(Rule.Homeworlds)).Where(l =>
+                l.Territory != g.AtomicsAftermath &&
                 l.Sector != g.SectorInStorm &&
                 (l != g.Map.HiddenMobileStronghold || p.Is(Faction.Grey)) &&
                 IsEitherValidHomeworldOrNoHomeworld(g, p, l, fromPlanet) &&
@@ -303,14 +294,14 @@ namespace Treachery.Shared
                 g.IsNotFull(p, l));
         }
 
-        private static bool IsEitherValidHomeworldOrNoHomeworld(Game g, Player p, Location l, bool fromPlanet) =>
+        public static bool IsEitherValidHomeworldOrNoHomeworld(Game g, Player p, Location l, bool fromPlanet) =>
             l is not Homeworld hw ||
             (!fromPlanet || p.Is(Faction.Orange) || p.IsNative(hw) && MayShipToReserves(g, p)) &&
             g.Applicable(Rule.Homeworlds) &&
             g.Players.Any(native => native.IsNative(hw)) &&
             (!p.HasAlly || !p.AlliedPlayer.IsNative(hw) && p.AlliedPlayer.AnyForcesIn(hw) == 0);
 
-        private static bool IsEitherValidDiscoveryOrNoDiscovery(Location l) => l is not DiscoveredLocation ds || ds.Visible;
+        public static bool IsEitherValidDiscoveryOrNoDiscovery(Location l) => l is not DiscoveredLocation ds || ds.Visible;
 
         public static IEnumerable<int> ValidNoFieldValues(Game g, Player p)
         {

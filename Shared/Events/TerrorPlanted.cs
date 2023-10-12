@@ -94,7 +94,7 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Log();
+            Log(GetVerboseMessage());
 
             if (!Passed)
             {
@@ -125,6 +125,29 @@ namespace Treachery.Shared
                         Game.TerrorOnPlanet.Add(Type, Stronghold);
                     }
                 }
+            }
+        }
+
+        private Message GetVerboseMessage()
+        {
+            if (Passed)
+            {
+                return Message.Express(Initiator, " don't plant terror");
+            }
+            else if (Stronghold != null)
+            {
+                if (Game.TerrorOnPlanet.TryGetValue(Type, out var territory))
+                {
+                    return Message.Express(Initiator, " move terror from ", territory, " to ", Stronghold);
+                }
+                else
+                {
+                    return Message.Express(Initiator, " plant terror in ", Stronghold);
+                }
+            }
+            else
+            {
+                return Message.Express(Initiator, " remove a terror token to get ", Payment.Of(4));
             }
         }
 

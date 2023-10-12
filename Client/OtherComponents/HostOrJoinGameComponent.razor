@@ -61,8 +61,8 @@
 
                         var fontColorStyle = av.LastAction != null && DateTime.Now.Subtract((DateTime)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
 
-                        <tr class="small table-dark" style="@fontColorStyle">
-                            <td class="w-25">@av.GameName</td>
+                        <tr class="small table-dark">
+                            <td class="w-25" style="@fontColorStyle">@av.GameName</td>
                             
                             @if (av.CurrentPhase == Phase.AwaitingPlayers)
                             {
@@ -83,7 +83,7 @@
                             else
                             {
                                 var factions = av.FactionsInPlay != null ? av.FactionsInPlay : new List<Faction>();
-                                <td>
+                                <td style="@fontColorStyle">
                                     @Name(Game.DetermineApproximateRuleset(factions, av.Rules, Game.ExpansionLevel)), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
                                     <br>
                                     @foreach (var f in @factions.Where(f => f != Faction.None))

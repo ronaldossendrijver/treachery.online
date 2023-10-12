@@ -1098,21 +1098,29 @@ namespace Treachery.Shared
 
         protected virtual TerrorPlanted DetermineTerrorPlanted()
         {
-            var type = TerrorPlanted.ValidTerrorTypes(Game, false).RandomOrDefault();
-            if (TerrorPlanted.ValidTerrorTypes(Game, false).Contains(TerrorType.Extortion)) type = TerrorType.Extortion;
+            var availableToPlace = TerrorPlanted.ValidTerrorTypes(Game, false).Where(t => !Game.TerrorOnPlanet.ContainsKey(t));
 
-            var stronghold = TerrorPlanted.ValidStrongholds(Game, this).FirstOrDefault(t => AnyForcesIn(t) > 0);
-            if (stronghold == null && HasAlly) stronghold = TerrorPlanted.ValidStrongholds(Game, this).FirstOrDefault(t => AlliedPlayer.AnyForcesIn(t) > 0);
-            stronghold ??= TerrorPlanted.ValidStrongholds(Game, this).FirstOrDefault(t => !Game.AnyForcesIn(t));
+            if (availableToPlace.Any())
+            {
+                TerrorType type = TerrorType.None;
 
-            if (stronghold == null)
-            {
-                return new TerrorPlanted(Game, Faction) { Passed = true };
+                if (type == TerrorType.None && availableToPlace.Contains(TerrorType.Extortion) && Opponents.Sum(p => p.Resources) > Opponents.Count() * 10) type = TerrorType.Robbery;
+                if (type == TerrorType.None && availableToPlace.Contains(TerrorType.Atomics) && TerrorPlanted.ValidStrongholds(Game, this).Any(t => Opponents.Sum(o => o.AnyForcesIn(t)) > 12 && MeAndMyAlly.Sum(o => o.AnyForcesIn(t)) < 2)) type = TerrorType.Atomics;
+                if (type == TerrorType.None && availableToPlace.Contains(TerrorType.Extortion) && Resources < 5) type = TerrorType.Extortion;
+                if (type == TerrorType.None) type = availableToPlace.RandomOrDefault();
+
+                var stronghold = (type == TerrorType.Atomics) ? TerrorPlanted.ValidStrongholds(Game, this).HighestOrDefault(t => Opponents.Sum(o => o.AnyForcesIn(t))) : null;
+                if (stronghold == null) stronghold = TerrorPlanted.ValidStrongholds(Game, this).HighestOrDefault(t => AnyForcesIn(t));
+                if (stronghold == null && HasAlly) stronghold = TerrorPlanted.ValidStrongholds(Game, this).HighestOrDefault(t => AlliedPlayer.AnyForcesIn(t) > 0);
+                stronghold ??= TerrorPlanted.ValidStrongholds(Game, this).RandomOrDefault();
+
+                if (stronghold != null)
+                {
+                    return new TerrorPlanted(Game, Faction) { Type = type, Stronghold = stronghold };
+                }
             }
-            else
-            {
-                return new TerrorPlanted(Game, Faction) { Type = type, Stronghold = stronghold };
-            }
+
+            return new TerrorPlanted(Game, Faction) { Passed = true }; ;
         }
 
         protected virtual TerrorRevealed DetermineTerrorRevealed()

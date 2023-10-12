@@ -21,6 +21,8 @@ namespace Treachery.Shared
 
         protected IEnumerable<Player> Opponents => Game.Players.Where(p => p.Faction != Faction && p.Faction != Ally);
 
+        protected IEnumerable<Player> MeAndMyAlly => Game.Players.Where(p => p.Faction == Faction || p.Faction == Ally);
+
         protected bool WinWasPredictedByMeThisTurn(Faction opponentFaction)
         {
             var ally = Game.GetPlayer(opponentFaction).Ally;

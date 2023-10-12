@@ -181,7 +181,16 @@ namespace Treachery.Shared
 
         public static IEnumerable<Location> ValidYellowTargets(Game g, Player p) => g.Map.Locations(false).Where(l => l.Sector != g.SectorInStorm && l != g.Map.HiddenMobileStronghold && g.IsNotFull(p, l));
 
-        public static IEnumerable<Location> ValidOrangeTargets(Game g, Player p) => Shipment.ValidShipmentLocations(g, p, false, false).Where(l => !g.ContainsConflictingAlly(p, l));
+        public static IEnumerable<Location> ValidOrangeTargets(Game g, Player p)
+        {
+            return g.Map.Locations(g.Applicable(Rule.Homeworlds)).Where(l =>
+                l.Sector != g.SectorInStorm &&
+                (l != g.Map.HiddenMobileStronghold || p.Is(Faction.Grey)) &&
+                !g.ContainsConflictingAlly(p, l) &&
+                Shipment.IsEitherValidHomeworldOrNoHomeworld(g, p, l, false) &&
+                Shipment.IsEitherValidDiscoveryOrNoDiscovery(l) &&
+                g.IsNotFull(p, l));
+        }
 
         public static int ValidOrangeMaxForces(Player p) => Math.Min(p.ForcesInReserve, 4);
 
@@ -213,7 +222,7 @@ namespace Treachery.Shared
                 if (ambassadorFaction == Ambassador.Blue)
                 {
                     ambassadorFaction = BlueSelectedAmbassador;
-                    Log("The ", ambassadorFaction, " Ambassador is removed from the game");
+                    Log("The ", Ambassador.Blue, " Ambassador is removed from the game");
                 }
                 else if (ambassadorFaction == Ambassador.Pink)
                 {
