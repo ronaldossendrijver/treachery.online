@@ -8,15 +8,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using Treachery.Client;
 using Treachery.Shared;
 using System.Collections.Concurrent;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace Treachery.Test
 {
@@ -26,26 +24,10 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            var p = g.Players.FirstOrDefault(p => p.Has(TreacheryCardType.Clairvoyance));
-            if (g.CurrentPhase == Phase.Bidding && p != null)
+            if (e is DiscoveryRevealed dr)
             {
-                WriteSavegameIfApplicable(g, p, "bidding and clairvoyance");
+                WriteSavegameIfApplicable(g, e.Player, "discovery");
             }
-
-            /*
-            if (g.CurrentPhase == Phase.NonOrangeMove)
-            {
-                var p = g.ShipmentAndMoveSequence.CurrentPlayer;
-                if (p != null)
-                {
-                    var locationsWithForcesInstorm = p.ForcesInLocations.Keys.Where(l => g.IsInStorm(l));
-                    if (locationsWithForcesInstorm.Any(l => l.Territory.Locations.Any(locInSameTerritory => locInSameTerritory != l && p.AnyForcesIn(locInSameTerritory) > 0)))
-                    {
-                        WriteSavegameIfApplicable(g, p, "territory partially covered by storm with forces in multiple locations");
-                    }
-                }
-            }
-            */
         }
 
         private readonly List<string> WrittenCases = new();

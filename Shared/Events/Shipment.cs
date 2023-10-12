@@ -95,7 +95,9 @@ namespace Treachery.Shared
         public bool IsNoField => NoFieldValue >= 0;
 
         [JsonIgnore]
-        public int TotalAmountOfForcesAddedToLocation => ForceAmount + SpecialForceAmount + SmuggledAmount + SmuggledSpecialAmount;
+        public int TotalAmountOfForcesAddedToLocation => UseWhiteSecretAlly ? 1 : ForceAmount + SpecialForceAmount + SmuggledAmount + SmuggledSpecialAmount;
+
+        public bool UseWhiteSecretAlly { get; set; }
 
         public int DetermineOrangeProfits(Game game)
         {
@@ -132,8 +134,8 @@ namespace Treachery.Shared
                 return Message.Express(TreacheryCardType.Karma, " prevents you from shipping");
             }
 
-            if (IsBackToReserves && !Game.MayShipToReserves(p)) return Message.Express("You can't ship back to reserves");
-            if (IsSiteToSite && !Game.MayShipCrossPlanet(p)) return Message.Express("You can't ship site-to-site");
+            if (IsBackToReserves && !MayShipToReserves(Game, p)) return Message.Express("You can't ship back to reserves");
+            if (IsSiteToSite && !MayShipCrossPlanet(Game, p)) return Message.Express("You can't ship site-to-site");
 
             if (!IsBackToReserves && (ForceAmount < 0 || SpecialForceAmount < 0)) return Message.Express("Can't ship less than zero forces");
             if (ForceAmount == 0 && SpecialForceAmount == 0) return Message.Express("Select forces to ship");
@@ -142,7 +144,7 @@ namespace Treachery.Shared
             var cost = DetermineCost(Game, p, this);
             if (cost > p.Resources + AllyContributionAmount) return Message.Express("You can't pay that much");
             if (cost < AllyContributionAmount) return Message.Express("Your ally is paying more than needed");
-            if (!ValidShipmentLocations(Game, p, IsBackToReserves || IsSiteToSite && From is not Homeworld).Contains(To)) return Message.Express("Cannot ship there");
+            if (!ValidShipmentLocations(Game, p, IsBackToReserves || IsSiteToSite && From is not Homeworld, UseWhiteSecretAlly).Contains(To)) return Message.Express("Cannot ship there");
 
             //no field checks, requires refactoring
             if (NoFieldValue >= 0 && !MayUseNoField(Game, Player)) return Message.Express("You can't use a No-Field");
@@ -177,6 +179,9 @@ namespace Treachery.Shared
 
             if (KarmaCard != null && !ValidKarmaCards(Game, Player).Contains(KarmaCard)) return Message.Express("Invalid ", TreacheryCardType.Karma, " card: ", KarmaCard);
 
+            if (UseWhiteSecretAlly && !MayUseWhiteSecretAllly(Game, Player)) return Message.Express(Faction.White, " are not your secret ally");
+            if (UseWhiteSecretAlly && ForceAmount + SpecialForceAmount > 5) return Message.Express("You can't ship that much using ", Faction.White, " as your secret ally");
+
             return null;
         }
 
@@ -196,20 +201,22 @@ namespace Treachery.Shared
                 return 0;
             }
 
-            return DetermineCost(g, p, Math.Abs(s.ForceAmount) + Math.Abs(s.SpecialForceAmount), s.To, s.IsUsingKarma, s.IsBackToReserves, s.IsSiteToSite, s.IsNoField);
+            return DetermineCost(g, p, Math.Abs(s.ForceAmount) + Math.Abs(s.SpecialForceAmount), s.To, s.IsUsingKarma, s.IsBackToReserves, s.IsSiteToSite, s.IsNoField || s.UseWhiteSecretAlly);
         }
 
-        public static int DetermineCost(Game g, Player p, int amount, Location to, bool karamaShipment, bool backToReserves, bool siteToSite, bool noField)
+        public static int DetermineCost(Game g, Player p, int amount, Location to, bool karamaShipment, bool backToReserves, bool siteToSite, bool noFieldOrSecretAlly)
         {
             var amountToPayFor = amount;
+
             if (g.Version < 139 && amountToPayFor > 1 && g.SkilledAs(p, LeaderSkill.Smuggler) && !g.AnyForcesIn(to.Territory))
             {
                 amountToPayFor--;
             }
-            else if (noField)
+            else if (noFieldOrSecretAlly)
             {
-                amountToPayFor = 1;
+                amountToPayFor = Math.Min(amount, 1);
             }
+            
 
             if (backToReserves)
             {
@@ -217,14 +224,14 @@ namespace Treachery.Shared
             }
             else
             {
-                if ((g.Version < 154 || !siteToSite && !backToReserves) && p.Is(Faction.Yellow) && YellowSpawnLocations(g, p).Contains(to))
+                if ((g.Version < 154 || !siteToSite && !backToReserves) && p.Is(Faction.Yellow) && YellowSpawnLocations(g, p).Contains(to) && (g.Version < 159 || !noFieldOrSecretAlly))
                 {
                     return 0;
                 }
 
                 double costOfShipment = Math.Abs(amountToPayFor) * (to.Territory.HasReducedShippingCost ? 1 : 2);
 
-                if (g.MayShipWithDiscount(p) || karamaShipment || siteToSite && g.HasShipmentPermission(p, ShipmentPermission.OrangeRate) || backToReserves && g.HasShipmentPermission(p, ShipmentPermission.OrangeRate))
+                if (MayShipWithDiscount(g, p) || karamaShipment || siteToSite && g.HasShipmentPermission(p, ShipmentPermission.OrangeRate) || backToReserves && g.HasShipmentPermission(p, ShipmentPermission.OrangeRate))
                 {
                     costOfShipment /= 2;
                 }
@@ -237,6 +244,11 @@ namespace Treachery.Shared
         {
             int noFieldMax = usedNoField == -1 ? int.MaxValue : usedNoField;
             return specialForces ? Math.Min(p.SpecialForcesInReserve, noFieldMax) : Math.Min(p.ForcesInReserve, noFieldMax);
+        }
+
+        public static int ValidMaxSecretAllyShipmentForces(Player p, bool specialForces)
+        {
+            return specialForces ? Math.Min(p.SpecialForcesInReserve, 5) : Math.Min(p.ForcesInReserve, 5);
         }
 
         public static int ValidMaxShipmentBackForces(Player p, bool specialForces, Location source)
@@ -252,12 +264,12 @@ namespace Treachery.Shared
             return specialForces ? p.SpecialForcesIn(source) : p.ForcesIn(source);
         }
 
-        public static IEnumerable<Location> ValidShipmentLocations(Game g, Player p, bool fromPlanet)
+        public static IEnumerable<Location> ValidShipmentLocations(Game g, Player p, bool fromPlanet, bool secretAlly)
         {
             IEnumerable<Location> potentialLocations;
-            if (p.Is(Faction.Yellow))
+            if (p.Is(Faction.Yellow) && !secretAlly)
             {
-                if (g.MayShipCrossPlanet(p))
+                if (MayShipCrossPlanet(g, p))
                 {
                     potentialLocations = YellowSpawnLocations(g, p).Union(NormalShipmentLocations(g, p, fromPlanet)).Distinct();
                 }
@@ -293,7 +305,7 @@ namespace Treachery.Shared
 
         private static bool IsEitherValidHomeworldOrNoHomeworld(Game g, Player p, Location l, bool fromPlanet) =>
             l is not Homeworld hw ||
-            (!fromPlanet || p.Is(Faction.Orange) || p.IsNative(hw) && g.MayShipToReserves(p)) &&
+            (!fromPlanet || p.Is(Faction.Orange) || p.IsNative(hw) && MayShipToReserves(g, p)) &&
             g.Applicable(Rule.Homeworlds) &&
             g.Players.Any(native => native.IsNative(hw)) &&
             (!p.HasAlly || !p.AlliedPlayer.IsNative(hw) && p.AlliedPlayer.AnyForcesIn(hw) == 0);
@@ -356,6 +368,30 @@ namespace Treachery.Shared
         public static bool MayUseNoField(Game g, Player p) => p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield) || p.Ally == Faction.White && g.WhiteAllowsUseOfNoField;
 
         public static bool MayUseCunningNoField(Player p) => p.Faction == Faction.White && NexusPlayed.CanUseCunning(p);
+
+        public static bool MayUseWhiteSecretAllly(Game g, Player p) => p.Nexus == Faction.White && NexusPlayed.CanUseSecretAlly(g, p);
+
+        public static bool MayShipCrossPlanet(Game g, Player p)
+        {
+            return p.Is(Faction.Orange) && !g.Prevented(FactionAdvantage.OrangeSpecialShipments) ||
+                   p.Ally == Faction.Orange && g.OrangeAllowsShippingDiscount ||
+                   p.Initiated(g.CurrentOrangeSecretAlly) ||
+                   g.HasShipmentPermission(p, ShipmentPermission.Cross);
+        }
+
+        public static bool MayShipToReserves(Game g, Player p)
+        {
+            return p.Is(Faction.Orange) && !g.Prevented(FactionAdvantage.OrangeSpecialShipments) ||
+                   p.Initiated(g.CurrentOrangeSecretAlly) ||
+                   g.HasShipmentPermission(p, ShipmentPermission.ToHomeworld);
+        }
+
+        public static bool MayShipWithDiscount(Game g, Player p)
+        {
+            return p.Is(Faction.Orange) && !g.Prevented(FactionAdvantage.OrangeShipmentsDiscount) ||
+                   p.Ally == Faction.Orange && g.OrangeAllowsShippingDiscount && !g.Prevented(FactionAdvantage.OrangeShipmentsDiscountAlly) ||
+                   p.Initiated(g.CurrentOrangeSecretAlly);
+        }
 
         #endregion Validation
 
@@ -421,6 +457,11 @@ namespace Treachery.Shared
                 else
                 {
                     PerformNormalShipment(Player, To, ForceAmount + SmuggledAmount, SpecialForceAmount + SmuggledSpecialAmount, IsSiteToSite);
+                }
+
+                if (UseWhiteSecretAlly)
+                {
+                    Game.PlayNexusCard(Player, "ship from reserves as if shipping ", 1);
                 }
 
                 if (!By(Faction.Yellow))

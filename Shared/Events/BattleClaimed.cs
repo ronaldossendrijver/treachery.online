@@ -2,6 +2,8 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
+
 namespace Treachery.Shared
 {
     public class BattleClaimed : PassableGameEvent
@@ -45,7 +47,14 @@ namespace Treachery.Shared
             if (Game.CurrentBattle != null && (fighter.Is(Faction.Pink) || fighter.Ally == Faction.Pink))
             {
                 var pink = GetPlayer(Faction.Pink);
-                Game.CurrentPinkBattleContribution = (int)(0.5f * pink.AnyForcesIn(Game.CurrentBattle.Territory));
+                if (Game.Version < 159)
+                {
+                    Game.CurrentPinkBattleContribution = (int)(0.5f * pink.AnyForcesIn(Game.CurrentBattle.Territory));
+                }
+                else
+                {
+                    Game.CurrentPinkBattleContribution = (int)Math.Ceiling(0.5f * pink.AnyForcesIn(Game.CurrentBattle.Territory));
+                }
             }
             else
             {

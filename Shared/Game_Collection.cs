@@ -107,9 +107,15 @@ namespace Treachery.Shared
 
         private void CollectResourcesFromTerritories()
         {
+            var thief = Players.FirstOrDefault(p => p.Occupies(Map.ProcessingStation));
+
             foreach (var l in ResourcesOnPlanet.Where(x => x.Value > 0).ToList())
             {
-                var thief = Players.FirstOrDefault(p => p.Occupies(Map.ProcessingStation));
+                if (Version >= 159)
+                {
+                    thief = Players.FirstOrDefault(p => p.Occupies(Map.ProcessingStation));
+                }
+
                 var playersToCollect = Players.Where(y => y.Occupies(l.Key)).ToArray();
                 int totalCollectedAmount = 0;
                 var spiceLeft = l.Value;

@@ -166,7 +166,7 @@ namespace Treachery.Shared
             {
                 Game.Stone(Milestone.Assassination);
 
-                var assassinated = LoserConcluded.TargetOfAssassination(Game, Player);
+                var assassinated = TargetOfAssassination(Game, Player);
 
                 Game.Assassinated.Add(assassinated);
                 Player.RevealedTraitors.Add(assassinated);
@@ -177,7 +177,8 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    Log(Initiator, " get ", Payment.Of(assassinated.CostToRevive), " by ASSASSINATING ", assassinated, "!");
+                    var price = assassinated.HeroType == HeroType.VariableValue ? 3 : assassinated.CostToRevive;
+                    Log(Initiator, " get ", Payment.Of(price), " by ASSASSINATING ", assassinated, "!");
                     Player.Resources += assassinated.CostToRevive;
                     Game.KillHero(assassinated);
                 }

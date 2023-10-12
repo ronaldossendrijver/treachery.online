@@ -71,7 +71,7 @@ namespace Treachery.Shared
 
             if (!Passed)
             {
-                Game.Map.HiddenMobileStronghold.PointAt(Target);
+                Game.Map.HiddenMobileStronghold.PointAt(Game, Target);
                 Game.CollectSpiceFrom(Initiator, Target, collectionRate);
                 Game.KarmaHmsMovesLeft--;
                 Game.Stone(Milestone.HmsMovement);

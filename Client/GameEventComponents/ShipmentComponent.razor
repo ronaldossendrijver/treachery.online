@@ -15,9 +15,14 @@
         {
             <div>Bring any number of forces onto @Skin.Current.Describe(Game.Map.TheGreatFlat.Territory) or onto any one territory within two territories of @Skin.Current.Describe(Game.Map.TheGreatFlat.Territory).</div>
 
-            @if (Game.MayShipCrossPlanet(Player))
+            @if (Shipment.MayShipCrossPlanet(Game, Player))
             {
                 <div>In addition, your ally allows you to ship to other locations as well from your reserves.</div>
+            }
+
+            @if (Shipment.MayUseWhiteSecretAllly(Game, Player))
+            {
+                <div>You may also ship with <FactionComponent Faction="Faction.White"/> as your secret ally.</div>
             }
         }
         else
@@ -25,12 +30,12 @@
             <div>Select forces to ship, or pass.</div>
         }
 
-        @if (Game.MayShipCrossPlanet(Player))
+        @if (Shipment.MayShipCrossPlanet(Game, Player))
         {
             <div>You may ship site-to-site any number of forces from a source location to another location.</div>
         }
 
-        @if (Game.MayShipToReserves(Player))
+        @if (Shipment.MayShipToReserves(Game, Player))
         {
             <div>You may ship any number of forces from any one location back to your reserves.</div>
         }
@@ -38,7 +43,7 @@
     </Header>
     <Body>
 
-        @if (Game.MayShipCrossPlanet(Player) || Game.MayShipToReserves(Player))
+        @if (Shipment.MayShipCrossPlanet(Game, Player) || Shipment.MayShipToReserves(Game, Player) || Shipment.MayUseWhiteSecretAllly(Game, Player))
         {
             <RadioComponent @bind-Value="shipmentType" Values="@ValidShipmentTypes" ValueLabels="@ValidShipmentTypeLabels" />
         }
@@ -139,7 +144,10 @@
         }
 
         
-        @if (shipmentType == SHIPMENT_NORMAL && (shipmentForceAmount > 0 || shipmentSpecialForceAmount > 0) && Shipment.MaySmuggle(Game, Player, shipmentTo))
+        @if (
+            (shipmentType == SHIPMENT_NORMAL || shipmentType == SHIPMENT_SECRETALLY) && 
+            (shipmentForceAmount > 0 || shipmentSpecialForceAmount > 0) && 
+            Shipment.MaySmuggle(Game, Player, shipmentTo))
         {
             <div class="mt-1">
 
@@ -182,7 +190,7 @@
             shipmentAllyContributionAmount = 0;
         }
 
-        @if (Shipment.CanKarma(Game, Player) && (Faction != Faction.Yellow || shipmentType == SHIPMENT_SITETOSITE) && !Game.MayShipCrossPlanet(Player))
+        @if (Shipment.CanKarma(Game, Player) && (Faction != Faction.Yellow || shipmentType == SHIPMENT_SITETOSITE) && !Shipment.MayShipCrossPlanet(Game, Player))
         {
             <div class="mt-1">
 
@@ -208,7 +216,11 @@
         {
             <ButtonRowComponent Pass="Pass" PassText="Pass" />
         }
-        else 
+        else if (shipmentType == SHIPMENT_SECRETALLY)
+        {
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Ship" ConfirmError=@Validation />
+        }
+        else
         {
             <ButtonRowComponent Confirm="Confirm" ConfirmText="Ship" ConfirmError=@Validation Pass="Pass" PassText="Pass" />
         }
@@ -224,6 +236,7 @@
     const int SHIPMENT_NORMAL = 0;
     const int SHIPMENT_SITETOSITE = 1;
     const int SHIPMENT_BACK = 2;
+    const int SHIPMENT_SECRETALLY = 3;
 
     private int shipmentType = SHIPMENT_NORMAL;
     private TreacheryCard karmaCard;
@@ -256,7 +269,8 @@
                 To = shipmentTo,
                 Passed = false,
                 KarmaCard = karmaCard,
-                AllyContributionAmount = shipmentAllyContributionAmount
+                AllyContributionAmount = shipmentAllyContributionAmount,
+                UseWhiteSecretAlly = (shipmentType == SHIPMENT_SECRETALLY)
             };
         }
     }
@@ -304,12 +318,15 @@
         get
         {
             switch (shipmentType)
-            {
+            {                
                 case SHIPMENT_NORMAL:
-                    return Shipment.ValidShipmentLocations(Game, Player, false);
+                    return Shipment.ValidShipmentLocations(Game, Player, false, false);
+
+                case SHIPMENT_SECRETALLY:
+                    return Shipment.ValidShipmentLocations(Game, Player, false, true);
 
                 case SHIPMENT_SITETOSITE:
-                    return Shipment.ValidShipmentLocations(Game, Player, true);
+                    return Shipment.ValidShipmentLocations(Game, Player, true, false);
 
                 case SHIPMENT_BACK:
                     return Player.LocationsWithAnyForces;
@@ -326,6 +343,7 @@
             switch (shipmentType)
             {
                 case SHIPMENT_NORMAL: return Shipment.ValidMaxNormalShipmentForces(Player, false, nofieldValue);
+                case SHIPMENT_SECRETALLY: return Shipment.ValidMaxSecretAllyShipmentForces(Player, false);
                 case SHIPMENT_SITETOSITE: return Shipment.ValidMaxShipmentSiteToSiteForces(Player, false, shipmentFrom);
                 case SHIPMENT_BACK: return Shipment.ValidMaxShipmentBackForces(Player, false, shipmentTo);
             }
@@ -341,6 +359,7 @@
             switch (shipmentType)
             {
                 case SHIPMENT_NORMAL: return Shipment.ValidMaxNormalShipmentForces(Player, true, nofieldValue);
+                case SHIPMENT_SECRETALLY: return Shipment.ValidMaxSecretAllyShipmentForces(Player, true);
                 case SHIPMENT_SITETOSITE: return Shipment.ValidMaxShipmentSiteToSiteForces(Player, true, shipmentFrom);
                 case SHIPMENT_BACK: return Shipment.ValidMaxShipmentBackForces(Player, true, shipmentTo);
             }
@@ -351,7 +370,7 @@
 
     private IEnumerable<Location> ValidSourceLocations => Game.LocationsWithAnyForcesNotInStorm(Player);
 
-    private int Cost => Shipment.DetermineCost(Game, Player, (Shipment) ConfirmedResult);
+    private int Cost => Shipment.DetermineCost(Game, Player, ConfirmedResult);
 
     private IEnumerable<int> ValidShipmentTypes
     {
@@ -361,9 +380,9 @@
 
             result.Add(SHIPMENT_NORMAL);
 
-            if (Game.MayShipCrossPlanet(Player)) result.Add(SHIPMENT_SITETOSITE);
-
-            if (Game.MayShipToReserves(Player)) result.Add(SHIPMENT_BACK);
+            if (Shipment.MayShipCrossPlanet(Game, Player)) result.Add(SHIPMENT_SITETOSITE);
+            if (Shipment.MayShipToReserves(Game, Player)) result.Add(SHIPMENT_BACK);
+            if (Shipment.MayUseWhiteSecretAllly(Game, Player)) result.Add(SHIPMENT_SECRETALLY);
 
             return result;
         }
@@ -376,10 +395,9 @@
             var result = new List<string>();
 
             result.Add("Normal Shipment");
-
-            if (Game.MayShipCrossPlanet(Player)) result.Add("Site-to-site");
-
-            if (Game.MayShipToReserves(Player)) result.Add("Back to reserves");
+            if (Shipment.MayShipCrossPlanet(Game, Player)) result.Add("Site-to-site");
+            if (Shipment.MayShipToReserves(Game, Player)) result.Add("Back to reserves");
+            if (Shipment.MayUseWhiteSecretAllly(Game, Player)) result.Add($"{Name(Faction.White)} Secret Ally");
 
             return result;
         }

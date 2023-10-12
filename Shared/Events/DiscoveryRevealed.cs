@@ -72,7 +72,7 @@ namespace Treachery.Shared
                     case DiscoveryToken.Cistern:
                     case DiscoveryToken.ProcessingStation:
                         var sh = Game.Map.GetDiscoveryStronghold(discovery.Token);
-                        sh.PointAt(discovery.Location);
+                        sh.PointAt(Game, discovery.Location);
                         Game.JustRevealedDiscoveryStrongholds.Add(sh);
                         break;
 

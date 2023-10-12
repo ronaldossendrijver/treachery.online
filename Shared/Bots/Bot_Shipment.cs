@@ -50,9 +50,9 @@ namespace Treachery.Shared
                 if (decidedShipment == null && !winning && (feelingConfident && hasCards || hasWeapons)) DetermineShipment_AttackWeakStronghold(extraForces, minResourcesToKeep, feelingConfident || LastTurn ? 20 : 0);
                 if (decidedShipment == null && Faction != Faction.Yellow && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipToStrongholdNearSpice();
                 if (decidedShipment == null && Faction == Faction.Yellow && !winning && !LastTurn && stillNeedsResources) DetermineShipment_ShipDirectlyToSpiceOrDiscoveryAsYellow();
-                if (decidedShipment == null && Game.MayShipWithDiscount(this) && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipDirectlyToSpiceOrDiscoveryAsOrangeOrOrangeAlly();
+                if (decidedShipment == null && Shipment.MayShipWithDiscount(Game, this) && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipDirectlyToSpiceOrDiscoveryAsOrangeOrOrangeAlly();
                 if (decidedShipment == null) DetermineShipment_UnlockMoveBonus(minResourcesToKeep);
-                if (decidedShipment == null && Faction == Faction.Orange && !LastTurn && Game.MayShipToReserves(this)) DetermineShipment_BackToReserves();
+                if (decidedShipment == null && Faction == Faction.Orange && !LastTurn && Shipment.MayShipToReserves(Game, this)) DetermineShipment_BackToReserves();
                 if (decidedShipment == null) DetermineShipment_DummyAttack(minResourcesToKeep);
                 if (decidedShipment == null) DetermineShipment_StrengthenWeakestStronghold(true, extraForces, Param.Shipment_DialShortageToAccept, !MayFlipToAdvisors);
                 if (decidedShipment == null && Faction == Faction.Yellow && AnyForcesIn(Game.Map.PolarSink) <= 2 && (AlmostLastTurn || LastTurn || ForcesInReserve + SpecialForcesInReserve * 2 >= 8)) DetermineShipment_PolarSinkAsYellow();
@@ -475,7 +475,7 @@ namespace Treachery.Shared
             int roundedDialNeeded = (int)Math.Ceiling(dialNeeded);
             if (roundedDialNeeded <= 0) roundedDialNeeded = 1;
 
-            if (Game.MayShipWithDiscount(this) && (roundedDialNeeded % 2) != 0)
+            if (Shipment.MayShipWithDiscount(Game, this) && (roundedDialNeeded % 2) != 0)
             {
                 return roundedDialNeeded + 1;
             }
@@ -738,10 +738,10 @@ namespace Treachery.Shared
             }
         }
 
-        protected IEnumerable<Location> ValidShipmentLocations(bool fromPlanet)
+        protected IEnumerable<Location> ValidShipmentLocations(bool fromPlanet, bool secretAlly = false)
         {
             var forbidden = Game.Deals.Where(deal => deal.BoundFaction == Faction && deal.Type == DealType.DontShipOrMoveTo).Select(deal => deal.GetParameter1<Territory>(Game));
-            return Shipment.ValidShipmentLocations(Game, this, fromPlanet).Where(l => !forbidden.Contains(l.Territory));
+            return Shipment.ValidShipmentLocations(Game, this, fromPlanet, secretAlly).Where(l => !forbidden.Contains(l.Territory));
         }
 
         protected IEnumerable<KeyValuePair<Location, Battalion>> ForceLocationsOutsideStrongholds => ForcesOnPlanet.Where(f => !f.Key.IsStronghold);
@@ -773,7 +773,7 @@ namespace Treachery.Shared
             if (
                 HasKarma(Game) && !Game.KarmaPrevented(Faction) &&
                 (!Param.Karma_SaveCardToUseSpecialKarmaAbility || SpecialKarmaPowerUsed) &&
-                !Game.MayShipWithDiscount(this) &&
+                !Shipment.MayShipWithDiscount(Game, this) &&
                 Shipment.DetermineCost(Game, this, shipment) > 7)
             {
                 //shipment.KarmaShipment = true;

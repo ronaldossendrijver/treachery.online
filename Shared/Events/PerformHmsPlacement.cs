@@ -62,7 +62,7 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.Map.HiddenMobileStronghold.PointAt(Target);
+            Game.Map.HiddenMobileStronghold.PointAt(Game, Target);
             Log();
             Game.EndStormPhase();
             Game.Stone(Milestone.HmsMovement);

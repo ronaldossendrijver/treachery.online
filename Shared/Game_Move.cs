@@ -831,28 +831,6 @@ namespace Treachery.Shared
 
         internal bool OccupiesArrakeenOrCarthag(Player p) => p.Occupies(Map.Arrakeen) || p.Occupies(Map.Carthag);
 
-        public bool MayShipCrossPlanet(Player p)
-        {
-            return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) ||
-                   p.Ally == Faction.Orange && OrangeAllowsShippingDiscount ||
-                   p.Initiated(CurrentOrangeSecretAlly) ||
-                   HasShipmentPermission(p, ShipmentPermission.Cross);
-        }
-
-        public bool MayShipToReserves(Player p)
-        {
-            return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) ||
-                   p.Initiated(CurrentOrangeSecretAlly) ||
-                   HasShipmentPermission(p, ShipmentPermission.ToHomeworld);
-        }
-
-        public bool MayShipWithDiscount(Player p)
-        {
-            return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeShipmentsDiscount) ||
-                   p.Ally == Faction.Orange && OrangeAllowsShippingDiscount && !Prevented(FactionAdvantage.OrangeShipmentsDiscountAlly) ||
-                   p.Initiated(CurrentOrangeSecretAlly);
-        }
-
         internal static Ambassador AmbassadorOf(Faction faction) => (Ambassador)((int)faction);
 
         public bool OrangeMayDelay => OrangeMayShipOutOfTurnOrder && Players.Count - HasActedOrPassed.Count > (JuiceForcesLastPlayer && !HasActedOrPassed.Contains(CurrentJuice.Initiator) ? 2 : 1);

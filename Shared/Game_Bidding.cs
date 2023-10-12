@@ -534,7 +534,7 @@ namespace Treachery.Shared
 
         internal IEnumerable<Player> PlayersThatCanBid => Players.Where(p => p.HasRoomForCards);
 
-        internal bool NexusAllowsReplacingBoughtCards(Player p) => (p.Nexus == Faction.Grey || p.Nexus == Faction.White) && NexusPlayed.CanUseSecretAlly(this, p);
+        internal bool NexusAllowsReplacingBoughtCards(Player p) => (p.Nexus == Faction.Grey || Version < 159 && p.Nexus == Faction.White) && NexusPlayed.CanUseSecretAlly(this, p);
 
         public bool HasBidToPay(Player p) => CurrentPhase == Phase.Bidding && CurrentBid != null &&
             (CurrentBid.Initiator == p.Faction || CurrentBid.Initiator == p.Ally && CurrentBid.AllyContributionAmount > 0);
