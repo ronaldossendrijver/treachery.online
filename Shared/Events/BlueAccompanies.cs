@@ -42,7 +42,14 @@ namespace Treachery.Shared
         public bool ExtraAdvisor { get; set; }
 
         [JsonIgnore]
-        public int TotalAmountOfForcesAddedToLocation => (Accompanies ? 1 : 0) + (ExtraAdvisor ? 1 : 0);
+        public int TotalAmountOfForcesAddedToLocation => SpecialForcesAddedToLocation;
+
+        [JsonIgnore]
+        public int ForcesAddedToLocation => 0;
+
+        [JsonIgnore]
+        public int SpecialForcesAddedToLocation => (Accompanies ? 1 : 0) + (ExtraAdvisor ? 1 : 0);
+
 
         #endregion Properties
 

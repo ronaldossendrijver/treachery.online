@@ -95,7 +95,14 @@ namespace Treachery.Shared
         public bool IsNoField => NoFieldValue >= 0;
 
         [JsonIgnore]
-        public int TotalAmountOfForcesAddedToLocation => UseWhiteSecretAlly ? 1 : ForceAmount + SpecialForceAmount + SmuggledAmount + SmuggledSpecialAmount;
+        public int TotalAmountOfForcesAddedToLocation => ForcesAddedToLocation + SpecialForcesAddedToLocation;
+
+
+        [JsonIgnore]
+        public int ForcesAddedToLocation => UseWhiteSecretAlly ? 1 : ForceAmount + SmuggledAmount;
+
+        [JsonIgnore]
+        public int SpecialForcesAddedToLocation => UseWhiteSecretAlly ? 0 : SpecialForceAmount + SmuggledSpecialAmount;
 
         public bool UseWhiteSecretAlly { get; set; }
 

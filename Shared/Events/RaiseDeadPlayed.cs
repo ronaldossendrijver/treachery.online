@@ -57,6 +57,12 @@ namespace Treachery.Shared
         [JsonIgnore]
         public int TotalAmountOfForcesAddedToLocation => NumberOfSpecialForcesInLocation;
 
+        [JsonIgnore]
+        public int ForcesAddedToLocation => 0;
+
+        [JsonIgnore]
+        public int SpecialForcesAddedToLocation => NumberOfSpecialForcesInLocation;
+
         #endregion Properties
 
         #region Validation

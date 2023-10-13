@@ -759,6 +759,7 @@ namespace Treachery.Shared
         {
             var pinkPlayer = GetPlayer(Faction.Pink);
             if (pinkPlayer != null &&
+                (Version < 160 || e.Initiator != Faction.Blue || e.ForcesAddedToLocation > 0) &&
                 e.Initiator != Faction.Pink &&
                 e.Initiator != pinkPlayer.Ally &&
                 AmbassadorIn(e.To.Territory) != Ambassador.None &&

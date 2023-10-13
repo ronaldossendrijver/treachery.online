@@ -625,6 +625,8 @@ namespace Treachery.Shared
 
         public bool Is(Faction f) => Faction == f;
 
+        public bool OrAllyIs(Faction f) => Faction == f || Ally == f;
+
         public int MaximumNumberOfCards
         {
             get

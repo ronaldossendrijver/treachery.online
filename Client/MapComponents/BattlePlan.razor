@@ -27,6 +27,11 @@
                  BorderWidth="Skin.Current.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Skin.Current.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Skin.Current.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
                  Align="@TextAlignment.Center" />
         
+        @if (Game.CurrentPinkBattleContribution > 0 && (Plan.By(Faction.Pink) || Plan.ByAllyOf(Faction.Pink)))
+        {
+            <MapForce X="@(forceX - 3 * Skin.Current.FORCETOKEN_RADIUS)" Y="@(forceY - Skin.Current.FORCETOKEN_RADIUS)" Diameter="@(2 * Skin.Current.FORCETOKEN_RADIUS)" Faction="Faction.Pink" Special="false" Amount="@Game.CurrentPinkBattleContribution" />
+        }
+
         var dialBonusX = forceX + 3 * Skin.Current.RESOURCETOKEN_RADIUS;
 
         if (Plan.Initiator == Faction.Pink && Game.PinkKarmaBonus != 0)
@@ -249,7 +254,7 @@ else
 
 <MapImage X=@(X + Skin.Current.BattleWheelForcesX - 0.5f * Skin.Current.FORCETOKEN_RADIUS) Y=@(Y + 0.25f * Skin.Current.FORCETOKEN_RADIUS)
     Diameter=@Skin.Current.FORCETOKEN_RADIUS
-    Src="@(showPlan ? Skin.Current.Eye_URL : Skin.Current.EyeSlash_URL)"
+    Src="@(showPlan ? Skin.Current.EyeSlash_URL : Skin.Current.Eye_URL)"
     OnClick="OnShowPlanClick"
     ShadowColor="black" ShadowX="1" ShadowY="1" ShadowBlur="0"
     Popover="@(showPlan ? "Hide Wheel" : "Show Wheel")" PopoverAsTooltip=true/>

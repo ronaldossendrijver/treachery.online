@@ -91,6 +91,12 @@ namespace Treachery.Shared
         public int TotalAmountOfForcesAddedToLocation => YellowForceLocations != null ? YellowForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
 
         [JsonIgnore]
+        public int ForcesAddedToLocation => YellowForceLocations != null ? YellowForceLocations.Values.Sum(b => b.AmountOfForces) : 0;
+
+        [JsonIgnore]
+        public int SpecialForcesAddedToLocation => YellowForceLocations != null ? YellowForceLocations.Values.Sum(b => b.AmountOfSpecialForces) : 0;
+
+        [JsonIgnore]
         public Dictionary<Location, Battalion> ForceLocations => YellowForceLocations;
 
         #endregion Properties

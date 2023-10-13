@@ -50,6 +50,19 @@ namespace Treachery.Test
         {
             var p = g.GetPlayer(e.Initiator);
 
+            if (!g.Applicable(Rule.AdvisorsDontConflictWithAlly) && g.CurrentPhase == Phase.BattleConclusion && g.CurrentBattle != null)
+            {
+                var battleLoser = g.GetPlayer(g.BattleLoser);
+                if (battleLoser != null)
+                {
+                    var allyOfBattleLoser = battleLoser.AlliedPlayer;
+                    if (battleLoser.AnyForcesIn(g.CurrentBattle.Territory) > 0 || allyOfBattleLoser != null && allyOfBattleLoser.AnyForcesIn(g.CurrentBattle.Territory) > 0)
+                    {
+                        return "Loser of battle still has forces in the territory";
+                    }
+                }
+            }
+
             p = g.Players.FirstOrDefault(p => p.ForcesInReserve < 0 || p.SpecialForcesInReserve < 0);
             if (p != null) return "Negative forces " + p.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
 

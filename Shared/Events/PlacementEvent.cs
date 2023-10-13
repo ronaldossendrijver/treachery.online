@@ -68,7 +68,13 @@ namespace Treachery.Shared
         }
 
         [JsonIgnore]
-        public virtual int TotalAmountOfForcesAddedToLocation => ForceLocations != null ? ForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
+        public virtual int TotalAmountOfForcesAddedToLocation => ForcesAddedToLocation + SpecialForcesAddedToLocation;
+
+        [JsonIgnore]
+        public int ForcesAddedToLocation => ForceLocations != null ? ForceLocations.Values.Sum(b => b.AmountOfForces) : 0;
+
+        [JsonIgnore]
+        public int SpecialForcesAddedToLocation => ForceLocations != null ? ForceLocations.Values.Sum(b => b.AmountOfSpecialForces) : 0;
 
         #endregion Properties
 

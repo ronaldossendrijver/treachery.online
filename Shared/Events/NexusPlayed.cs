@@ -91,6 +91,13 @@ namespace Treachery.Shared
         public int TotalAmountOfForcesAddedToLocation => PurpleNumberOfSpecialForcesInLocation;
 
         [JsonIgnore]
+        public int ForcesAddedToLocation => 0;
+
+        [JsonIgnore]
+        public int SpecialForcesAddedToLocation => PurpleNumberOfSpecialForcesInLocation;
+
+
+        [JsonIgnore]
         public bool IsCunning => Initiator == Faction;
 
         [JsonIgnore]
