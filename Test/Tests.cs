@@ -24,9 +24,17 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is DiscoveryRevealed dr)
+
+            if (g.CurrentPhase == Phase.TurnConcluded)
             {
-                WriteSavegameIfApplicable(g, e.Player, "discovery");
+                var pink = g.GetPlayer(Faction.Pink);
+                if (pink != null && pink.HasAlly)
+                {
+                    if (g.Map.Strongholds.Count(t => pink.AnyForcesIn(t) > 0 && pink.AlliedPlayer.OccupyingForces(t) > 0) >= 3)
+                    {
+                        WriteSavegameIfApplicable(g, e.Player, "pink special victory");
+                    }
+                }
             }
         }
 
@@ -50,7 +58,7 @@ namespace Treachery.Test
         {
             var p = g.GetPlayer(e.Initiator);
 
-            if (!g.Applicable(Rule.AdvisorsDontConflictWithAlly) && g.CurrentPhase == Phase.BattleConclusion && g.CurrentBattle != null)
+            if (!g.Applicable(Rule.AdvisorsDontConflictWithAlly) && e is BattleConcluded)
             {
                 var battleLoser = g.GetPlayer(g.BattleLoser);
                 if (battleLoser != null)
@@ -362,7 +370,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 200;
+            int nrOfGames = 10000;
             int nrOfTurns = 10;
             int nrOfPlayers = 7;
 

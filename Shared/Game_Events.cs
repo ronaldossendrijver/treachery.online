@@ -529,7 +529,7 @@ namespace Treachery.Shared
             //Events that are (amost) always valid
             if (CurrentMainPhase > MainPhase.Setup)
             {
-                if (faction == Faction.Brown && player.HasLowThreshold() && ResourcesAudited.ValidFactions(this, player).Any()) result.Add(typeof(ResourcesAudited));
+                if (faction == Faction.Brown && player.HasLowThreshold() && !IsOccupied(World.Brown) && ResourcesAudited.ValidFactions(this, player).Any()) result.Add(typeof(ResourcesAudited));
             }
 
             if (CurrentMainPhase == MainPhase.ShipmentAndMove && SetShipmentPermission.IsApplicable(this, player)) result.Add(typeof(SetShipmentPermission));

@@ -59,15 +59,15 @@ namespace Treachery.Shared
         {
             Game.BlueMayAccompany = false;
 
-            if (Accompanies && Player.ForcesInReserve > 0)
+            if (Accompanies)
             {
                 if (Player.Occupies(Location.Territory) || !Game.IsOccupied(Location.Territory) || !Game.Applicable(Rule.BlueAdvisors))
                 {
-                    Player.ShipForces(Location, 1);
+                    Player.ShipForces(Location, Game.Version >= 160 ? SpecialForcesAddedToLocation : 1);
                 }
                 else
                 {
-                    Player.ShipAdvisors(Location, 1);
+                    Player.ShipAdvisors(Location, Game.Version >= 160 ? SpecialForcesAddedToLocation : 1);
                 }
 
                 Log(Initiator, " accompany to ", Location);
@@ -118,7 +118,8 @@ namespace Treachery.Shared
         public static IEnumerable<Location> ValidTargets(Game g, Player p)
         {
             var result = new List<Location>();
-            if (g.LastShipmentOrMovement != g.Map.PolarSink &&
+            if (g.LastShipmentOrMovement.To != g.Map.PolarSink &&
+                g.LastShipmentOrMovement.To.Territory != g.AtomicsAftermath &&
                 !p.Occupies(g.LastShipmentOrMovement.To.Territory) &&
                 BlueMayAccompanyToShipmentLocation(g) &&
                 !AllyPreventsAccompanyingToShipmentLocation(g, p))

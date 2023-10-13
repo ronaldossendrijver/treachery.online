@@ -2,6 +2,7 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,7 +26,7 @@ namespace Treachery.Shared
         public ResourceCard SandTrout { get; private set; } = null;
         private bool SandTroutDoublesResources { get; set; } = false;
 
-        public List<Faction> FactionsThatMayDrawNexusCard { get; private set; }
+        public List<Faction> FactionsThatMayDrawNexusCard { get; private set; } = new();
         public List<Faction> FactionsThatDrewNexusCard { get; } = new();
 
         #endregion State
@@ -462,6 +463,7 @@ namespace Treachery.Shared
 
         internal void EndBlowPhase()
         {
+            FactionsThatMayDrawNexusCard.Clear();
             CurrentYellowSecretAlly = null;
             HasActedOrPassed.Clear();
             ReshuffleIgnoredMonsters();

@@ -1727,7 +1727,7 @@ namespace Treachery.Client
                 [1007] = "Margot Lady Fenring",
                 [1008] = "Mother Ramallo",
                 [1009] = "Princess Irulan",
-                [1010] = "Wanna Marcus",
+                [1010] = "Wanna Yueh",
                 [1011] = "Hasimir Fenring",
                 [1012] = "Captain Aramsham",
                 [1013] = "Caid",

@@ -1,281 +1,13 @@
 {
   "Description": "1979 Art",
-  "Version": 138,
-  "DrawResourceIconsOnMap": true,
-  "ShowVerboseToolipsOnMap": true,
-  "ShowArrowsForRecentMoves": true,
-  "TreacheryCardType_STR": {
-    "None": "None",
-    "Laser": "Lasegun",
-    "ProjectileDefense": "Projectile Defense",
-    "Projectile": "Projectile Weapon",
-    "WeirdingWay": "Weirding Way",
-    "ProjectileAndPoison": "Poison Blade",
-    "PoisonDefense": "Poison Defense",
-    "Poison": "Poison Weapon",
-    "Chemistry": "Chemistry",
-    "PoisonTooth": "Poison Tooth",
-    "Shield": "Shield",
-    "Antidote": "Snooper",
-    "ShieldAndAntidote": "Shield Snooper",
-    "Mercenary": "Cheap Hero",
-    "Karma": "Karama",
-    "Useless": "Worthless",
-    "StormSpell": "Weather Control",
-    "RaiseDead": "Tleilaxu Ghola",
-    "Metheor": "Family Atomics",
-    "Caravan": "Hajr",
-    "Clairvoyance": "Truthtrance",
-    "ArtilleryStrike": "Artillery Strike",
-    "Harvester": "Harvester",
-    "Thumper": "Thumper",
-    "Amal": "Amal",
-    "Distrans": "Distrans",
-    "Juice": "Juice Of Sapho",
-    "MirrorWeapon": "Mirror Weapon",
-    "PortableAntidote": "Portable Snooper",
-    "Flight": "Ornithopter",
-    "SearchDiscarded": "Nullentropy",
-    "TakeDiscarded": "Semuta Drug",
-    "Residual": "Residual Poison",
-    "Rockmelter": "Stone Burner"
-  },
-  "TreacheryCardName_STR": {
-    "0": "Lasegun",
-    "1": "Crysknife",
-    "2": "Maula Pistol",
-    "3": "Slip Tip",
-    "4": "Stunner",
-    "5": "Chaumas",
-    "6": "Chaumurky",
-    "7": "Ellaca Drug",
-    "8": "Gom Jabbar",
-    "9": "Shield",
-    "13": "Snooper",
-    "17": "Cheap Hero",
-    "18": "Cheap Hero",
-    "19": "Cheap Hero",
-    "20": "Tleilaxu Ghola",
-    "21": "Family Atomics",
-    "22": "Hajr",
-    "23": "Karama",
-    "25": "Truthtrance",
-    "27": "Weather Control",
-    "28": "Baliset",
-    "29": "Jubba Cloak",
-    "30": "Kulon",
-    "31": "La La La",
-    "32": "Trip to Gamont",
-    "33": "Poison Blade",
-    "34": "Hunter-Seeker",
-    "35": "Basilia Weapon",
-    "36": "Weirding Way",
-    "37": "Poison Tooth",
-    "38": "Shield Snooper",
-    "39": "Chemistry",
-    "40": "Artillery Strike",
-    "41": "Harvester",
-    "42": "Thumper",
-    "43": "Amal",
-    "44": "Kull Wahad",
-    "45": "Distrans",
-    "46": "Juice Of Sapho",
-    "47": "Mirror Weapon",
-    "48": "Portable Snooper",
-    "49": "Ornithopter",
-    "50": "Nullentropy Box",
-    "51": "Semuta Drug",
-    "52": "Residual Poison",
-    "53": "Stone Burner",
-    "54": "Karama"
-  },
-  "TreacheryCardDescription_STR": {
-    "0": "Weapon - Special - Play as part of your Battle Plan. Automatically kills your opponent's leader. Causes an explosion when a Shield is used in the same battle, killing both leaders and all forces in the territory, cause both factions to loose the battle.",
-    "1": "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
-    "2": "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
-    "3": "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
-    "4": "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
-    "5": "Weapon - Poison - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Snooper. You may keep this card if you win the battle.",
-    "6": "Weapon - Poison - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Snooper. You may keep this card if you win the battle.",
-    "7": "Weapon - Poison - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Snooper. You may keep this card if you win the battle.",
-    "8": "Weapon - Poison - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Snooper. You may keep this card if you win the battle.",
-    "9": "Defense - Projectile - Play as part of your Battle Plan. Protects your leader from a projectile weapon in this battle. You may keep this card if you win this battle.",
-    "13": "Defense - Poison - Play as part of your Battle Plan. Protects your leader from a poison weapon in this battle. You may keep this card if you win this battle.",
-    "17": "Play as a leader with zero strength on your Battle Plan and discard after the battle.",
-    "18": "Play as a leader with zero strength on your Battle Plan and discard after the battle.",
-    "19": "Play as a leader with zero strength on your Battle Plan and discard after the battle.",
-    "20": "Play at any time to revive up to 5 forces or 1 leader.",
-    "21": "Can be played after turn 1 just before the storm moves if you have forces on the Shield Wall or an adjacent territory. Destroys the Shield Wall and all forces on it, causing Arrakeen, Carthag and the Imperial Basin to be vulnerable to storms for the rest of the game. This card is then removed from play.",
-    "22": "Play during your turn at the Movement phase to perform an additional move.",
-    "23": "Allows you to prevent use of a Faction Advantage. Allows you to bid any amount of spice on a card or immediately win a card on bid. Allows you to ship at half price. In the advanced game, allows use of your Special Karama Power once during the game. Discard after use.",
-    "25": "Publicly ask one player a yes or no question about the game. That question must be answered truthfully.",
-    "27": "Can be played after turn 1 just before the storm moves. Instead of normal storm moved, you can move the storm 0 to 10 sectors.",
-    "28": "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
-    "29": "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
-    "30": "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
-    "31": "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
-    "32": "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
-    "33": "Weapon - Special - Play as part of your Battle Plan. This weapon counts as both projectile and poison. You may keep this card if you win this battle.",
-    "34": "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
-    "35": "Weapon - Poison - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Snooper. You may keep this card if you win the battle.",
-    "36": "Weapon - Special - Play as part of your Battle Plan. Counts as a projectile weapon but has the same effect as a projectile defense when played as a defense with another weapon. You may keep this card if you win this battle.",
-    "37": "Weapon - Special - Play as part of your Battle Plan. Kills both leaders, and is not stopped by a Snooper. After seeing the battle results, you may choose not to use this weapon in which case you don't need to discard it if you win the battle.",
-    "38": "Defense - Special - Play as part of your Battle Plan. Counts as both a Shield (projectile defense) and Snooper (poison defense). You may keep this card if you win this battle.",
-    "39": "Defense - Special - Play as part of your Battle Plan. Counts as a poison defense but has the same effect as a poison weapon when played as a weapon with another defense. You may keep this card if you win this battle.",
-    "40": "Weapon - Special - Play as part of your Battle Plan. Kills both leaders (no spice is paid for them). Both players may use Shields to protect their leader against the Artillery Strike. Surviving (shielded) leaders do not count towards the battle total, the side that dialed higher wins the battle. Discard after use.",
-    "41": "Play just after a spice blow comes up. Doubles the Spice blow. Place double the amount of spice in the territory.",
-    "42": "Play at beginning of Spice Blow Phase instead of revealing the Spice Blow card. Causes a Shai-Hulud to appear. Play proceeds as though Shai-Hulud has been revealed.",
-    "43": "At the beginning of any phase, cause all players to discard half of the spice behind their shields, rounded up, to the Spice Bank.",
-    "44": "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
-    "45": "Distrans - Give another player a treachery card from your hand at any time except during a bid and if their hand size permits. Discard after use.",
-    "46": "Choose one: (1) be considered aggressor in a battle or (2) play at the beginning of a phase or action that requires turn order to go first or (3) go last in a phase or action that requires turn order. Discard after use.",
-    "47": "Weapon - Special - Play as part of your Battle Plan. Becomes a copy of your opponent's weapon. Discard after use.",
-    "48": "Defense - Poison - You may play this after revealing your battle plan if you did not play a defense and if Voice permits. Discard after use.",
-    "49": "Ornithopter - As part of your movement you may move one group of forces up to 3 territories or two groups of forces up to your normal move distance. Discard after use.",
-    "50": "Nullentropy Box - At any time, pay 2 spice to secretly search and take one card from the treachery discard pile. Then shuffle the discard pilem discarding this card on top.",
-    "51": "Semuta Drug - Add a treachery card to your hand immediately after another player discards it. You choose if multiple cards are discarded at the same time. Discard after use.",
-    "52": "Residual Poison - Play against your opponent in battle before making battle plans. Kills one of their available leaders at random. No spice is collected for it. Discard after use.",
-    "53": "Weapon - Special - Play as part of your Battle Plan. You choose after pland are revealed to either kill both leaders or reduce the strength of both leaders to 0. The player with the highest number of undialed forces wins the battle. Dialed forces are lost normally. Discard after use.",
-    "54": "Allows you to prevent use of a Faction Advantage. Allows you to bid any amount of spice on a card or immediately win a card on bid. Allows you to ship at half price. In the advanced game, allows use of your Special Karama Power once during the game. Discard after use."
-  },
-  "TreacheryCardImage_URL": {
-    "0": "./art/Lasegun.gif",
-    "1": "./art/Chrysknife.gif",
-    "2": "./art/MaulaPistol.gif",
-    "3": "./art/Slip-Tip.gif",
-    "4": "./art/Stunner.gif",
-    "5": "./art/Chaumas.gif",
-    "6": "./art/Chaumurky.gif",
-    "7": "./art/EllacaDrug.gif",
-    "8": "./art/GomJabbar.gif",
-    "9": "./art/Shield.gif",
-    "13": "./art/Snooper.gif",
-    "17": "./art/CheapHero.gif",
-    "19": "./art/CheapHeroine.gif",
-    "20": "./art/TleilaxuGhola.gif",
-    "21": "./art/FamilyAtomics.gif",
-    "22": "./art/Hajr.gif",
-    "23": "./art/Karama.gif",
-    "25": "./art/Truthtrance.gif",
-    "27": "./art/WeatherControl.gif",
-    "28": "./art/Baliset.gif",
-    "29": "./art/JubbaCloak.gif",
-    "30": "./art/Kulon.gif",
-    "31": "./art/LaLaLa.gif",
-    "32": "./art/TripToGamont.gif",
-    "33": "./art/PoisonBlade.gif",
-    "34": "./art/Hunter-Seeker.gif",
-    "35": "./art/BasiliaWeapon.gif",
-    "36": "./art/WeirdingWay.gif",
-    "37": "./art/PoisonTooth.gif",
-    "38": "./art/ShieldSnooper.gif",
-    "39": "./art/Chemistry.gif",
-    "40": "./art/ArtilleryStrike.gif",
-    "41": "./art/Harvester.gif",
-    "42": "./art/Thumper.gif",
-    "43": "./art/Amal.gif",
-    "44": "./art/KullWahad.gif",
-    "45": "./art/Distrans.gif",
-    "46": "./art/JuiceOfSapho.gif",
-    "47": "./art/MirrorWeapon.gif",
-    "48": "./art/PortableSnooper.gif",
-    "49": "./art/Ornithopter.gif",
-    "50": "./art/Nullentropy.gif",
-    "51": "./art/SemutaDrug.gif",
-    "52": "./art/ResidualPoison.gif",
-    "53": "./art/StoneBurner.gif",
-    "54": "./art/WhiteKarama.gif"
-  },
-  "TechTokenDescription_STR": {
-    "Graveyard": "At the end of the Revival phase, yields 1 spice per tech token you own if any player except Tleilaxu used free revival.",
-    "Resources": "At the end of the Charity phase, yields 1 spice per tech token you own if any player except Bene Gesserit claimed charity.",
-    "Ships": "At the end of the Shipment & Move phase, yields 1 spice per tech token you own if any player except Guild shipped forces from off-planet."
-  },
-  "ResourceCardImage_URL": {
-    "7": "./art/CielagoNorth.gif",
-    "10": "./art/CielagoSouth.gif",
-    "15": "./art/TheMinorErg.gif",
-    "17": "./art/RedChasm.gif",
-    "18": "./art/SouthMesa.gif",
-    "22": "./art/SihayaRidge.gif",
-    "25": "./art/OHGap.gif",
-    "26": "./art/BrokenLand.gif",
-    "29": "./art/RockOutcroppings.gif",
-    "31": "./art/HaggaBasin.gif",
-    "33": "./art/FuneralPlain.gif",
-    "34": "./art/TheGreatFlat.gif",
-    "37": "./art/HabbanyaErg.gif",
-    "39": "./art/WindPassNorth.gif",
-    "40": "./art/HabbanyaRidgeFlat.gif",
-    "98": "./art/Shai-Hulud.gif",
-    "99": "./art/Sandtrout.gif"
-  },
-  "LeaderSkillCardName_STR": {
-    "Bureaucrat": "Bureaucrat",
-    "Diplomat": "Diplomat",
-    "Decipherer": "Rihani Decipherer",
-    "Smuggler": "Smuggler",
-    "Graduate": "Suk Graduate",
-    "Planetologist": "Planetologist",
-    "Warmaster": "Warmaster",
-    "Adept": "Prana Bindu Adept",
-    "Swordmaster": "Swordmaster of Ginaz",
-    "KillerMedic": "Killer Medic",
-    "MasterOfAssassins": "Master of Assassins",
-    "Sandmaster": "Sandmaster",
-    "Thinker": "Mentat",
-    "Banker": "Spice Banker"
-  },
-  "LeaderSkillCardImage_URL": {
-    "Bureaucrat": "./art/Bureaucrat.gif",
-    "Diplomat": "./art/Diplomat.gif",
-    "Decipherer": "./art/Decipherer.gif",
-    "Smuggler": "./art/Smuggler.gif",
-    "Graduate": "./art/Graduate.gif",
-    "Planetologist": "./art/Planetologist.gif",
-    "Warmaster": "./art/Warmaster.gif",
-    "Adept": "./art/Adept.gif",
-    "Swordmaster": "./art/Swordmaster.gif",
-    "KillerMedic": "./art/KillerMedic.gif",
-    "MasterOfAssassins": "./art/MasterOfAssassins.gif",
-    "Sandmaster": "./art/Sandmaster.gif",
-    "Thinker": "./art/Mentat.gif",
-    "Banker": "./art/Banker.gif"
-  },
-  "StrongholdCardName_STR": {
-    "2": "Carthag",
-    "3": "Arrakeen",
-    "4": "Tuek's Sietch",
-    "5": "Sietch Tabr",
-    "6": "Habbanya Sietch",
-    "42": "Hidden Mobile Stronghold"
-  },
-  "StrongholdCardImage_URL": {
-    "2": "./art/Carthag.gif",
-    "3": "./art/Arrakeen.gif",
-    "4": "./art/TueksSietch.gif",
-    "5": "./art/SietchTabr.gif",
-    "6": "./art/HabbanyaSietch.gif",
-    "42": "./art/HMS.gif"
-  },
-  "Map_URL": "./art/map.svg",
-  "Eye_URL": "./art/eye.svg",
-  "EyeSlash_URL": "./art/eyeslash.svg",
-  "Planet_URL": "./art/planet.png",
-  "CardBack_ResourceCard_URL": "./art/SpiceBack.gif",
-  "CardBack_TreacheryCard_URL": "./art/TreacheryBack.gif",
-  "BattleScreen_URL": "./art/wheel.png",
-  "Messiah_URL": "./art/messiah.svg",
-  "Monster_URL": "./art/monster.svg",
-  "Harvester_URL": "./art/ActiveSpice.svg",
-  "Resource_URL": "./art/PassiveSpice.svg",
-  "HMS_URL": "./art/hms.svg",
+  "Version": 151,
   "Concept_STR": {
     "Messiah": "Kwisatz Haderach",
     "Monster": "Shai Hulud",
     "Resource": "Spice",
     "Graveyard": "Tleilaxu Tanks",
-    "BabyMonster": "Sandtrout"
+    "BabyMonster": "Sandtrout",
+    "GreatMonster": "Great Maker"
   },
   "MainPhase_STR": {
     "None": "None",
@@ -343,7 +75,18 @@
     "1048": "Haloa Rund",
     "1049": "Flinto Kinnis",
     "1050": "Lady Helena",
-    "1051": "Premier Ein Calimar"
+    "1051": "Premier Ein Calimar",
+    "1052": "Sanya Ecaz",
+    "1053": "Rivvy Dinari",
+    "1054": "Ilesa Ecaz",
+    "1055": "Bindikk Narvi",
+    "1056": "Whitmore Bludd",
+    "1057": "Duke Prad Vidal",
+    "1058": "Lupino Ord",
+    "1059": "Hiih Resser",
+    "1060": "Trin Kronos",
+    "1061": "Grieu Kronos",
+    "1062": "Vando Terboli"
   },
   "PersonImage_URL": {
     "1001": "./art/person0.png",
@@ -396,7 +139,18 @@
     "1048": "./art/person1048.gif",
     "1049": "./art/person1049.gif",
     "1050": "./art/person1050.gif",
-    "1051": "./art/person1051.gif"
+    "1051": "./art/person1051.gif",
+    "1052": "./art/person1052.png",
+    "1053": "./art/person1053.png",
+    "1054": "./art/person1054.png",
+    "1055": "./art/person1055.png",
+    "1056": "./art/person1056.png",
+    "1057": "./art/person1057.png",
+    "1058": "./art/person1058.png",
+    "1059": "./art/person1059.png",
+    "1060": "./art/person1060.png",
+    "1061": "./art/person1061.png",
+    "1062": "./art/person1062.png"
   },
   "TerritoryName_STR": {
     "0": "Polar Sink",
@@ -441,7 +195,25 @@
     "39": "Wind Pass North",
     "40": "Habbanya Ridge Flat",
     "41": "Cielago West",
-    "42": "Hidden Mobile Stronghold"
+    "42": "Hidden Mobile Stronghold",
+    "43": "Caladan",
+    "44": "Giedi Prime",
+    "45": "Southern Hemisphere",
+    "46": "Kaitain",
+    "47": "Salusa Secundus",
+    "48": "Junction",
+    "49": "Wallach IX",
+    "50": "Ix",
+    "51": "Tleilax",
+    "52": "Tupile",
+    "53": "Richese",
+    "54": "Ecaz",
+    "55": "Grumman",
+    "56": "Jacurutu Sietch",
+    "57": "Cistern",
+    "58": "Ecological Testing Station",
+    "59": "Shrine",
+    "60": "Orgiz Processing Station"
   },
   "TerritoryBorder_SVG": {
     "0": "M243.4 297.6 L236.2 311.3 L233.7 326.2 L238.9 332 L242.4 332.3 L248.8 338.5 L256.8 341.8 L264.1 340.8 L268.6 348.9 L273.6 353.9 L288.7 354.5 L301 345.8 L301.4 337.3 L305.7 332 L310.1 321.9 L317.7 311.3 L320.2 297.1 L312 285.4 L302.7 285.5 L298.3 287.3 L291.4 287.1 L286.2 281.9 L281 281.9 L276.5 285.3 L267.7 288.3 L254.9 289.4 L243.4 297.6 z",
@@ -489,410 +261,410 @@
   },
   "LocationCenter_Point": {
     "0": {
-      "X": 277,
-      "Y": 314
+      "X": 277.0,
+      "Y": 314.0
     },
     "1": {
-      "X": 327,
-      "Y": 243
+      "X": 327.0,
+      "Y": 243.0
     },
     "2": {
-      "X": 323,
-      "Y": 204
+      "X": 323.0,
+      "Y": 204.0
     },
     "3": {
-      "X": 291,
-      "Y": 204
+      "X": 291.0,
+      "Y": 204.0
     },
     "4": {
-      "X": 274,
-      "Y": 169
+      "X": 274.0,
+      "Y": 169.0
     },
     "5": {
-      "X": 348,
-      "Y": 146
+      "X": 348.0,
+      "Y": 146.0
     },
     "6": {
-      "X": 451,
-      "Y": 407
+      "X": 451.0,
+      "Y": 407.0
     },
     "7": {
-      "X": 110,
-      "Y": 201
+      "X": 110.0,
+      "Y": 201.0
     },
     "8": {
-      "X": 109,
-      "Y": 408
+      "X": 109.0,
+      "Y": 408.0
     },
     "9": {
-      "X": 241,
-      "Y": 417
+      "X": 241.0,
+      "Y": 417.0
     },
     "10": {
-      "X": 279,
-      "Y": 421
+      "X": 279.0,
+      "Y": 421.0
     },
     "11": {
-      "X": 316,
-      "Y": 416
+      "X": 316.0,
+      "Y": 416.0
     },
     "12": {
-      "X": 236,
-      "Y": 457
+      "X": 236.0,
+      "Y": 457.0
     },
     "13": {
-      "X": 277,
-      "Y": 454
+      "X": 277.0,
+      "Y": 454.0
     },
     "14": {
-      "X": 324,
-      "Y": 461
+      "X": 324.0,
+      "Y": 461.0
     },
     "15": {
-      "X": 215,
-      "Y": 509
+      "X": 217.0,
+      "Y": 511.0
     },
     "16": {
-      "X": 253,
-      "Y": 523
+      "X": 253.0,
+      "Y": 523.0
     },
     "17": {
-      "X": 296,
-      "Y": 498
+      "X": 296.0,
+      "Y": 498.0
     },
     "18": {
-      "X": 326,
-      "Y": 497
+      "X": 326.0,
+      "Y": 497.0
     },
     "19": {
-      "X": 353,
-      "Y": 462
+      "X": 358.0,
+      "Y": 462.0
     },
     "20": {
-      "X": 380,
-      "Y": 468
+      "X": 380.0,
+      "Y": 468.0
     },
     "21": {
-      "X": 312,
-      "Y": 355
+      "X": 312.0,
+      "Y": 355.0
     },
     "22": {
-      "X": 333,
-      "Y": 346
+      "X": 333.0,
+      "Y": 346.0
     },
     "23": {
-      "X": 388,
-      "Y": 434
+      "X": 388.0,
+      "Y": 434.0
     },
     "24": {
-      "X": 394,
-      "Y": 393
+      "X": 394.0,
+      "Y": 393.0
     },
     "25": {
-      "X": 319,
-      "Y": 333
+      "X": 319.0,
+      "Y": 333.0
     },
     "26": {
-      "X": 326,
-      "Y": 320
+      "X": 326.0,
+      "Y": 320.0
     },
     "27": {
-      "X": 332,
-      "Y": 303
+      "X": 332.0,
+      "Y": 303.0
     },
     "28": {
-      "X": 325,
-      "Y": 284
+      "X": 325.0,
+      "Y": 284.0
     },
     "29": {
-      "X": 316,
-      "Y": 276
+      "X": 316.0,
+      "Y": 276.0
     },
     "30": {
-      "X": 367,
-      "Y": 355
+      "X": 367.0,
+      "Y": 355.0
     },
     "31": {
-      "X": 361,
-      "Y": 326
+      "X": 361.0,
+      "Y": 326.0
     },
     "32": {
-      "X": 379,
-      "Y": 295
+      "X": 379.0,
+      "Y": 295.0
     },
     "33": {
-      "X": 371,
-      "Y": 268
+      "X": 371.0,
+      "Y": 268.0
     },
     "34": {
-      "X": 408,
-      "Y": 365
+      "X": 408.0,
+      "Y": 365.0
     },
     "35": {
-      "X": 433,
-      "Y": 336
+      "X": 433.0,
+      "Y": 336.0
     },
     "36": {
-      "X": 439,
-      "Y": 278
+      "X": 439.0,
+      "Y": 288.0
     },
     "37": {
-      "X": 431,
-      "Y": 234
+      "X": 431.0,
+      "Y": 234.0
     },
     "38": {
-      "X": 489,
-      "Y": 279
+      "X": 489.0,
+      "Y": 279.0
     },
     "39": {
-      "X": 446,
-      "Y": 473
+      "X": 446.0,
+      "Y": 473.0
     },
     "40": {
-      "X": 460,
-      "Y": 449
+      "X": 460.0,
+      "Y": 449.0
     },
     "41": {
-      "X": 507,
-      "Y": 346
+      "X": 507.0,
+      "Y": 346.0
     },
     "42": {
-      "X": 428,
-      "Y": 129
+      "X": 428.0,
+      "Y": 129.0
     },
     "43": {
-      "X": 367,
-      "Y": 179
+      "X": 367.0,
+      "Y": 179.0
     },
     "44": {
-      "X": 393,
-      "Y": 187
+      "X": 393.0,
+      "Y": 187.0
     },
     "45": {
-      "X": 428,
-      "Y": 159
+      "X": 428.0,
+      "Y": 159.0
     },
     "46": {
-      "X": 383,
-      "Y": 235
+      "X": 383.0,
+      "Y": 235.0
     },
     "47": {
-      "X": 355,
-      "Y": 235
+      "X": 355.0,
+      "Y": 235.0
     },
     "48": {
-      "X": 464,
-      "Y": 185
+      "X": 477.0,
+      "Y": 190.0
     },
     "49": {
-      "X": 400,
-      "Y": 118
+      "X": 400.0,
+      "Y": 118.0
     },
     "50": {
-      "X": 357,
-      "Y": 93
+      "X": 357.0,
+      "Y": 93.0
     },
     "51": {
-      "X": 312,
-      "Y": 80
+      "X": 312.0,
+      "Y": 80.0
     },
     "52": {
-      "X": 278,
-      "Y": 82
+      "X": 278.0,
+      "Y": 82.0
     },
     "53": {
-      "X": 219,
-      "Y": 97
+      "X": 219.0,
+      "Y": 97.0
     },
     "54": {
-      "X": 272,
-      "Y": 114
+      "X": 272.0,
+      "Y": 114.0
     },
     "55": {
-      "X": 230,
-      "Y": 137
+      "X": 230.0,
+      "Y": 137.0
     },
     "56": {
-      "X": 192,
-      "Y": 178
+      "X": 192.0,
+      "Y": 178.0
     },
     "57": {
-      "X": 275,
-      "Y": 223
+      "X": 275.0,
+      "Y": 223.0
     },
     "58": {
-      "X": 266,
-      "Y": 268
+      "X": 266.0,
+      "Y": 268.0
     },
     "59": {
-      "X": 124,
-      "Y": 156
+      "X": 124.0,
+      "Y": 156.0
     },
     "60": {
-      "X": 81,
-      "Y": 180
+      "X": 81.0,
+      "Y": 180.0
     },
     "61": {
-      "X": 198,
-      "Y": 132
+      "X": 198.0,
+      "Y": 132.0
     },
     "62": {
-      "X": 161,
-      "Y": 161
+      "X": 165.0,
+      "Y": 165.0
     },
     "63": {
-      "X": 172,
-      "Y": 254
+      "X": 172.0,
+      "Y": 254.0
     },
     "64": {
-      "X": 235,
-      "Y": 188
+      "X": 235.0,
+      "Y": 188.0
     },
     "65": {
-      "X": 199,
-      "Y": 203
+      "X": 199.0,
+      "Y": 203.0
     },
     "66": {
-      "X": 71,
-      "Y": 214
+      "X": 71.0,
+      "Y": 214.0
     },
     "67": {
-      "X": 67,
-      "Y": 244
+      "X": 67.0,
+      "Y": 244.0
     },
     "68": {
-      "X": 85,
-      "Y": 261
+      "X": 85.0,
+      "Y": 261.0
     },
     "69": {
-      "X": 143,
-      "Y": 295
+      "X": 143.0,
+      "Y": 295.0
     },
     "70": {
-      "X": 236,
-      "Y": 287
+      "X": 236.0,
+      "Y": 287.0
     },
     "71": {
-      "X": 227,
-      "Y": 303
+      "X": 227.0,
+      "Y": 303.0
     },
     "72": {
-      "X": 213,
-      "Y": 327
+      "X": 213.0,
+      "Y": 327.0
     },
     "73": {
-      "X": 207,
-      "Y": 357
+      "X": 207.0,
+      "Y": 357.0
     },
     "74": {
-      "X": 155,
-      "Y": 327
+      "X": 155.0,
+      "Y": 327.0
     },
     "75": {
-      "X": 84,
-      "Y": 371
+      "X": 84.0,
+      "Y": 371.0
     },
     "76": {
-      "X": 145,
-      "Y": 375
+      "X": 145.0,
+      "Y": 375.0
     },
     "77": {
-      "X": 192,
-      "Y": 334
+      "X": 192.0,
+      "Y": 334.0
     },
     "78": {
-      "X": 182,
-      "Y": 364
+      "X": 196.0,
+      "Y": 374.0
     },
     "79": {
-      "X": 163,
-      "Y": 449
+      "X": 163.0,
+      "Y": 449.0
     },
     "80": {
-      "X": 241,
-      "Y": 336
+      "X": 241.0,
+      "Y": 336.0
     },
     "81": {
-      "X": 247,
-      "Y": 355
+      "X": 247.0,
+      "Y": 355.0
     },
     "82": {
-      "X": 79,
-      "Y": 408
+      "X": 79.0,
+      "Y": 408.0
     },
     "83": {
-      "X": 152,
-      "Y": 485
+      "X": 152.0,
+      "Y": 485.0
     },
     "84": {
-      "X": 205,
-      "Y": 402
+      "X": 205.0,
+      "Y": 402.0
     },
     "85": {
-      "X": 201,
-      "Y": 463
+      "X": 201.0,
+      "Y": 463.0
     }
   },
   "LocationSpice_Point": {
     "11": {
-      "X": 309,
-      "Y": 393
+      "X": 309.0,
+      "Y": 393.0
     },
     "17": {
-      "X": 290,
-      "Y": 539
+      "X": 290.0,
+      "Y": 539.0
     },
     "33": {
-      "X": 362,
-      "Y": 272
+      "X": 362.0,
+      "Y": 272.0
     },
     "38": {
-      "X": 510,
-      "Y": 292
+      "X": 509.0,
+      "Y": 292.0
     },
     "40": {
-      "X": 491,
-      "Y": 401
+      "X": 491.0,
+      "Y": 401.0
     },
     "45": {
-      "X": 443,
-      "Y": 144
+      "X": 442.0,
+      "Y": 144.0
     },
     "50": {
-      "X": 335,
-      "Y": 86
+      "X": 335.0,
+      "Y": 86.0
     },
     "53": {
-      "X": 196,
-      "Y": 99
+      "X": 196.0,
+      "Y": 99.0
     },
     "60": {
-      "X": 94,
-      "Y": 176
+      "X": 94.0,
+      "Y": 176.0
     },
     "65": {
-      "X": 216,
-      "Y": 233
+      "X": 216.0,
+      "Y": 233.0
     },
     "68": {
-      "X": 59,
-      "Y": 266
+      "X": 59.0,
+      "Y": 266.0
     },
     "69": {
-      "X": 55,
-      "Y": 293
+      "X": 55.0,
+      "Y": 293.0
     },
     "75": {
-      "X": 60,
-      "Y": 367
+      "X": 60.0,
+      "Y": 367.0
     },
     "80": {
-      "X": 233,
-      "Y": 340
+      "X": 233.0,
+      "Y": 340.0
     },
     "83": {
-      "X": 133,
-      "Y": 483
+      "X": 133.0,
+      "Y": 483.0
     }
   },
   "FactionName_STR": {
@@ -906,7 +678,9 @@
     "Grey": "Ixian",
     "Purple": "Tleilaxu",
     "Brown": "CHOAM",
-    "White": "Richese"
+    "White": "Richese",
+    "Pink": "Ecaz",
+    "Cyan": "Moritani"
   },
   "FactionImage_URL": {
     "Green": "./art/faction1.svg",
@@ -918,7 +692,9 @@
     "Grey": "./art/faction7.svg",
     "Purple": "./art/faction8.svg",
     "Brown": "./art/faction9.svg",
-    "White": "./art/faction10.svg"
+    "White": "./art/faction10.svg",
+    "Pink": "./art/faction11.svg",
+    "Cyan": "./art/faction12.svg"
   },
   "FactionTableImage_URL": {
     "Green": "./art/faction1.svg",
@@ -930,7 +706,9 @@
     "Grey": "./art/faction7.svg",
     "Purple": "./art/faction8.svg",
     "Brown": "./art/faction9.svg",
-    "White": "./art/faction10.svg"
+    "White": "./art/faction10.svg",
+    "Pink": "./art/faction11.svg",
+    "Cyan": "./art/faction12.svg"
   },
   "FactionFacedownImage_URL": {
     "Green": "./art/faction1.svg",
@@ -942,7 +720,9 @@
     "Grey": "./art/faction7.svg",
     "Purple": "./art/faction8.svg",
     "Brown": "./art/faction9.svg",
-    "White": "./art/faction10.svg"
+    "White": "./art/faction10.svg",
+    "Pink": "./art/faction11.svg",
+    "Cyan": "./art/faction12.svg"
   },
   "FactionForceImage_URL": {
     "Green": "./art/faction1force.svg",
@@ -954,7 +734,9 @@
     "Grey": "./art/faction7force.svg",
     "Purple": "./art/faction8force.svg",
     "Brown": "./art/faction9force.svg",
-    "White": "./art/faction10force.svg"
+    "White": "./art/faction10force.svg",
+    "Pink": "./art/faction11force.svg",
+    "Cyan": "./art/faction12force.svg"
   },
   "FactionSpecialForceImage_URL": {
     "Yellow": "./art/faction3specialforce.svg",
@@ -962,19 +744,6 @@
     "Blue": "./art/faction6specialforce.svg",
     "Grey": "./art/faction7specialforce.svg",
     "White": "./art/faction10specialforce.svg"
-  },
-  "FactionColorTransparant": {
-    "None": "#646464bb",
-    "Green": "#63842ebb",
-    "Black": "#2c2c2cbb",
-    "Yellow": "#d29422bb",
-    "Red": "#b33715bb",
-    "Orange": "#c85b20bb",
-    "Blue": "#385884bb",
-    "Grey": "#b0b079bb",
-    "Purple": "#602d8bbb",
-    "Brown": "#582d1bbb",
-    "White": "#b3afa4bb"
   },
   "FactionColor": {
     "None": "#646464",
@@ -987,7 +756,9 @@
     "Grey": "#b0b079",
     "Purple": "#602d8b",
     "Brown": "#582d1b",
-    "White": "#b3afa4"
+    "White": "#b3afa4",
+    "Pink": "#a85f9c",
+    "Cyan": "#289caa"
   },
   "ForceName_STR": {
     "None": "-",
@@ -1000,7 +771,9 @@
     "Grey": "suboids",
     "Purple": "forces",
     "Brown": "forces",
-    "White": "forces"
+    "White": "forces",
+    "Pink": "forces",
+    "Cyan": "forces"
   },
   "SpecialForceName_STR": {
     "None": "-",
@@ -1013,7 +786,9 @@
     "Grey": "cyborgs",
     "Purple": "-",
     "Brown": "-",
-    "White": "No-Field"
+    "White": "No-Field",
+    "Pink": "-",
+    "Cyan": "-"
   },
   "TechTokenName_STR": {
     "Graveyard": "Axlotl Tanks",
@@ -1030,6 +805,7 @@
     "Shuffled": "./art/shuffleanddeal.mp3",
     "BabyMonster": "./art/monster.mp3",
     "Monster": "./art/monster.mp3",
+    "GreatMonster": "./art/monster.mp3",
     "Resource": "./art/resource.mp3",
     "MetheorUsed": "./art/explosion.mp3",
     "CharityClaimed": "./art/bid.mp3",
@@ -1061,8 +837,431 @@
     "ResourcesReceived": "./art/bid.mp3",
     "Economics": "./art/bribe.mp3",
     "CardTraded": "./art/cardflip.mp3",
-    "Discard": "./art/cardflip.mp3",
-    "SpecialUselessPlayed": "./art/karma.mp3"
+    "Discard": "./art/crumple.mp3",
+    "SpecialUselessPlayed": "./art/karma.mp3",
+    "Bureaucracy": "./art/typewriter.mp3",
+    "Audited": "./art/typewriter.mp3",
+    "TerrorPlanted": "./art/terror.mp3",
+    "TerrorRevealed": "./art/terror.mp3",
+    "AmbassadorPlaced": "./art/ambassador.mp3",
+    "AmbassadorActivated": "./art/ambassador.mp3",
+    "NexusPlayed": "./art/fairybell.mp3",
+    "DiscoveryAppeared": "./art/discoveryhorn.mp3",
+    "DiscoveryRevealed": "./art/discoveryhorn.mp3",
+    "Assassination": "./art/scream.mp3"
+  },
+  "TreacheryCardType_STR": {
+    "None": "None",
+    "Laser": "Lasegun",
+    "ProjectileDefense": "Projectile Defense",
+    "Projectile": "Projectile Weapon",
+    "WeirdingWay": "Weirding Way",
+    "ProjectileAndPoison": "Poison Blade",
+    "PoisonDefense": "Poison Defense",
+    "Poison": "Poison Weapon",
+    "Chemistry": "Chemistry",
+    "PoisonTooth": "Poison Tooth",
+    "Shield": "Shield",
+    "Antidote": "Snooper",
+    "ShieldAndAntidote": "Shield Snooper",
+    "Mercenary": "Cheap Hero",
+    "Karma": "Karama",
+    "Useless": "Worthless",
+    "StormSpell": "Weather Control",
+    "RaiseDead": "Tleilaxu Ghola",
+    "Metheor": "Family Atomics",
+    "Caravan": "Hajr",
+    "Clairvoyance": "Truthtrance",
+    "ArtilleryStrike": "Artillery Strike",
+    "Harvester": "Harvester",
+    "Thumper": "Thumper",
+    "Amal": "Amal",
+    "Distrans": "Distrans",
+    "Juice": "Juice Of Sapho",
+    "MirrorWeapon": "Mirror Weapon",
+    "PortableAntidote": "Portable Snooper",
+    "Flight": "Ornithopter",
+    "SearchDiscarded": "Nullentropy",
+    "TakeDiscarded": "Semuta Drug",
+    "Residual": "Residual Poison",
+    "Rockmelter": "Stone Burner",
+    "Recruits": "Recruits",
+    "Reinforcements": "Reinforcements",
+    "HarassAndWithdraw": "Harass and Withdraw"
+  },
+  "TreacheryCardName_STR": {
+    "0": "Lasegun",
+    "1": "Crysknife",
+    "2": "Maula Pistol",
+    "3": "Slip Tip",
+    "4": "Stunner",
+    "5": "Chaumas",
+    "6": "Chaumurky",
+    "7": "Ellaca Drug",
+    "8": "Gom Jabbar",
+    "9": "Shield",
+    "13": "Snooper",
+    "17": "Cheap Hero",
+    "18": "Cheap Hero",
+    "19": "Cheap Hero",
+    "20": "Tleilaxu Ghola",
+    "21": "Family Atomics",
+    "22": "Hajr",
+    "23": "Karama",
+    "25": "Truthtrance",
+    "27": "Weather Control",
+    "28": "Baliset",
+    "29": "Jubba Cloak",
+    "30": "Kulon",
+    "31": "La La La",
+    "32": "Trip to Gamont",
+    "33": "Poison Blade",
+    "34": "Hunter-Seeker",
+    "35": "Basilia Weapon",
+    "36": "Weirding Way",
+    "37": "Poison Tooth",
+    "38": "Shield Snooper",
+    "39": "Chemistry",
+    "40": "Artillery Strike",
+    "41": "Harvester",
+    "42": "Thumper",
+    "43": "Amal",
+    "44": "Kull Wahad",
+    "45": "Distrans",
+    "46": "Juice Of Sapho",
+    "47": "Mirror Weapon",
+    "48": "Portable Snooper",
+    "49": "Ornithopter",
+    "50": "Nullentropy Box",
+    "51": "Semuta Drug",
+    "52": "Residual Poison",
+    "53": "Stone Burner",
+    "54": "Karama",
+    "55": "Recruits",
+    "56": "Reinforcements",
+    "57": "Harass and Withdraw"
+  },
+  "TreacheryCardDescription_STR": {
+    "0": "Weapon - Special - Play as part of your Battle Plan. Automatically kills your opponent's leader. Causes an explosion when a Shield is used in the same battle, killing both leaders and all forces in the territory, cause both factions to loose the battle.",
+    "1": "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
+    "2": "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
+    "3": "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
+    "4": "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
+    "5": "Weapon - Poison - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Snooper. You may keep this card if you win the battle.",
+    "6": "Weapon - Poison - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Snooper. You may keep this card if you win the battle.",
+    "7": "Weapon - Poison - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Snooper. You may keep this card if you win the battle.",
+    "8": "Weapon - Poison - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Snooper. You may keep this card if you win the battle.",
+    "9": "Defense - Projectile - Play as part of your Battle Plan. Protects your leader from a projectile weapon in this battle. You may keep this card if you win this battle.",
+    "13": "Defense - Poison - Play as part of your Battle Plan. Protects your leader from a poison weapon in this battle. You may keep this card if you win this battle.",
+    "17": "Play as a leader with zero strength on your Battle Plan and discard after the battle.",
+    "18": "Play as a leader with zero strength on your Battle Plan and discard after the battle.",
+    "19": "Play as a leader with zero strength on your Battle Plan and discard after the battle.",
+    "20": "Play at any time to revive up to 5 forces or 1 leader.",
+    "21": "Can be played after turn 1 just before the storm moves if you have forces on the Shield Wall or an adjacent territory. Destroys the Shield Wall and all forces on it, causing Arrakeen, Carthag and the Imperial Basin to be vulnerable to storms for the rest of the game. This card is then removed from play.",
+    "22": "Play during your turn at the Movement phase to perform an additional move.",
+    "23": "Allows you to prevent use of a Faction Advantage. Allows you to bid any amount of spice on a card or immediately win a card on bid. Allows you to ship at half price. In the advanced game, allows use of your Special Karama Power once during the game. Discard after use.",
+    "25": "Publicly ask one player a yes or no question about the game. That question must be answered truthfully.",
+    "27": "Can be played after turn 1 just before the storm moves. Instead of normal storm moved, you can move the storm 0 to 10 sectors.",
+    "28": "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
+    "29": "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
+    "30": "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
+    "31": "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
+    "32": "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
+    "33": "Weapon - Special - Play as part of your Battle Plan. This weapon counts as both projectile and poison. You may keep this card if you win this battle.",
+    "34": "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
+    "35": "Weapon - Poison - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Snooper. You may keep this card if you win the battle.",
+    "36": "Weapon - Special - Play as part of your Battle Plan. Counts as a projectile weapon but has the same effect as a projectile defense when played as a defense with another weapon. You may keep this card if you win this battle.",
+    "37": "Weapon - Special - Play as part of your Battle Plan. Kills both leaders, and is not stopped by a Snooper. After seeing the battle results, you may choose not to use this weapon in which case you don't need to discard it if you win the battle.",
+    "38": "Defense - Special - Play as part of your Battle Plan. Counts as both a Shield (projectile defense) and Snooper (poison defense). You may keep this card if you win this battle.",
+    "39": "Defense - Special - Play as part of your Battle Plan. Counts as a poison defense but has the same effect as a poison weapon when played as a weapon with another defense. You may keep this card if you win this battle.",
+    "40": "Weapon - Special - Play as part of your Battle Plan. Kills both leaders (no spice is paid for them). Both players may use Shields to protect their leader against the Artillery Strike. Surviving (shielded) leaders do not count towards the battle total, the side that dialed higher wins the battle. Discard after use.",
+    "41": "Play just after a spice blow comes up. Doubles the Spice blow. Place double the amount of spice in the territory.",
+    "42": "Play at beginning of Spice Blow Phase instead of revealing the Spice Blow card. Causes a Shai-Hulud to appear. Play proceeds as though Shai-Hulud has been revealed.",
+    "43": "At the beginning of any phase, cause all players to discard half of the spice behind their shields, rounded up, to the Spice Bank.",
+    "44": "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
+    "45": "Distrans - Give another player a treachery card from your hand at any time except during a bid and if their hand size permits. Discard after use.",
+    "46": "Choose one: (1) be considered aggressor in a battle or (2) play at the beginning of a phase or action that requires turn order to go first or (3) go last in a phase or action that requires turn order. Discard after use.",
+    "47": "Weapon - Special - Play as part of your Battle Plan. Becomes a copy of your opponent's weapon. Discard after use.",
+    "48": "Defense - Poison - You may play this after revealing your battle plan if you did not play a defense and if Voice permits. Discard after use.",
+    "49": "Ornithopter - As part of your movement you may move one group of forces up to 3 territories or two groups of forces up to your normal move distance. Discard after use.",
+    "50": "Nullentropy Box - At any time, pay 2 spice to secretly search and take one card from the treachery discard pile. Then shuffle the discard pile, discarding this card on top.",
+    "51": "Semuta Drug - Add a treachery card to your hand immediately after another player discards it. You choose if multiple cards are discarded at the same time. Discard after use.",
+    "52": "Residual Poison - Play against your opponent in battle before making battle plans. Kills one of their available leaders at random. No spice is collected for it. Discard after use.",
+    "53": "Weapon - Special - Play as part of your Battle Plan. You choose after pland are revealed to either kill both leaders or reduce the strength of both leaders to 0. The player with the highest number of undialed forces wins the battle. Dialed forces are lost normally. Discard after use.",
+    "54": "Allows you to prevent use of a Faction Advantage. Allows you to bid any amount of spice on a card or immediately win a card on bid. Allows you to ship at half price. In the advanced game, allows use of your Special Karama Power once during the game. Discard after use.",
+    "55": "Play during Revival. All factions double their Free Revival rates. The revival limits is increased to 7. Discard after use.",
+    "56": "Play as part of your battle plan in place of a weapon or defense if you have at least 3 forces in reserves. Add 2 to your dialed number, then send 3 forces from reserves to the Tanks. Discard after use.",
+    "57": "Play as part of your battle plan in place of a weapon or defense when not on your own Home World. Your undialed forces return to your reserves. Your leader may be killed as normal. If your opponent calls traitor, this effect is cancelled. Discard after use."
+  },
+  "TreacheryCardImage_URL": {
+    "0": "./art/Lasegun.gif",
+    "1": "./art/Chrysknife.gif",
+    "2": "./art/MaulaPistol.gif",
+    "3": "./art/Slip-Tip.gif",
+    "4": "./art/Stunner.gif",
+    "5": "./art/Chaumas.gif",
+    "6": "./art/Chaumurky.gif",
+    "7": "./art/EllacaDrug.gif",
+    "8": "./art/GomJabbar.gif",
+    "9": "./art/Shield.gif",
+    "13": "./art/Snooper.gif",
+    "17": "./art/CheapHero.gif",
+    "19": "./art/CheapHeroine.gif",
+    "20": "./art/TleilaxuGhola.gif",
+    "21": "./art/FamilyAtomics.gif",
+    "22": "./art/Hajr.gif",
+    "23": "./art/Karama.gif",
+    "25": "./art/Truthtrance.gif",
+    "27": "./art/WeatherControl.gif",
+    "28": "./art/Baliset.gif",
+    "29": "./art/JubbaCloak.gif",
+    "30": "./art/Kulon.gif",
+    "31": "./art/LaLaLa.gif",
+    "32": "./art/TripToGamont.gif",
+    "33": "./art/PoisonBlade.gif",
+    "34": "./art/Hunter-Seeker.gif",
+    "35": "./art/BasiliaWeapon.gif",
+    "36": "./art/WeirdingWay.gif",
+    "37": "./art/PoisonTooth.gif",
+    "38": "./art/ShieldSnooper.gif",
+    "39": "./art/Chemistry.gif",
+    "40": "./art/ArtilleryStrike.gif",
+    "41": "./art/Harvester.gif",
+    "42": "./art/Thumper.gif",
+    "43": "./art/Amal.gif",
+    "44": "./art/KullWahad.gif",
+    "45": "./art/Distrans.gif",
+    "46": "./art/JuiceOfSapho.gif",
+    "47": "./art/MirrorWeapon.gif",
+    "48": "./art/PortableSnooper.gif",
+    "49": "./art/Ornithopter.gif",
+    "50": "./art/Nullentropy.gif",
+    "51": "./art/SemutaDrug.gif",
+    "52": "./art/ResidualPoison.gif",
+    "53": "./art/StoneBurner.gif",
+    "54": "./art/WhiteKarama.gif",
+    "55": "./art/Recruits.gif",
+    "56": "./art/Reinforcements.gif",
+    "57": "./art/HarassAndWithdraw.gif"
+  },
+  "TechTokenDescription_STR": {
+    "Graveyard": "At the end of the Revival phase, yields 1 spice per tech token you own if any player except Tleilaxu used free revival.",
+    "Resources": "At the end of the Charity phase, yields 1 spice per tech token you own if any player except Bene Gesserit claimed charity.",
+    "Ships": "At the end of the Shipment & Move phase, yields 1 spice per tech token you own if any player except Guild shipped forces from off-planet."
+  },
+  "ResourceCardImage_URL": {
+    "7": "./art/CielagoNorth.gif",
+    "10": "./art/CielagoSouth.gif",
+    "15": "./art/TheMinorErg.gif",
+    "17": "./art/RedChasm.gif",
+    "18": "./art/SouthMesa.gif",
+    "22": "./art/SihayaRidge.gif",
+    "25": "./art/OHGap.gif",
+    "26": "./art/BrokenLand.gif",
+    "29": "./art/RockOutcroppings.gif",
+    "31": "./art/HaggaBasin.gif",
+    "33": "./art/FuneralPlain.gif",
+    "34": "./art/TheGreatFlat.gif",
+    "37": "./art/HabbanyaErg.gif",
+    "39": "./art/WindPassNorth.gif",
+    "40": "./art/HabbanyaRidgeFlat.gif",
+    "98": "./art/Shai-Hulud.gif",
+    "99": "./art/Sandtrout.gif",
+    "41": "./art/SihayaRidgeDiscovery.gif",
+    "42": "./art/RockOutcroppingsDiscovery.gif",
+    "43": "./art/HaggaBasinDiscovery.gif",
+    "44": "./art/FuneralPlainDiscovery.gif",
+    "45": "./art/WindPassNorthDiscovery.gif",
+    "46": "./art/OHGapDiscovery.gif",
+    "100": "./art/GreatMaker.gif"
+  },
+  "LeaderSkillCardName_STR": {
+    "Bureaucrat": "Bureaucrat",
+    "Diplomat": "Diplomat",
+    "Decipherer": "Rihani Decipherer",
+    "Smuggler": "Smuggler",
+    "Graduate": "Suk Graduate",
+    "Planetologist": "Planetologist",
+    "Warmaster": "Warmaster",
+    "Adept": "Prana Bindu Adept",
+    "Swordmaster": "Swordmaster of Ginaz",
+    "KillerMedic": "Killer Medic",
+    "MasterOfAssassins": "Master of Assassins",
+    "Sandmaster": "Sandmaster",
+    "Thinker": "Mentat",
+    "Banker": "Spice Banker"
+  },
+  "LeaderSkillCardImage_URL": {
+    "Bureaucrat": "./art/Bureaucrat.gif",
+    "Diplomat": "./art/Diplomat.gif",
+    "Decipherer": "./art/Decipherer.gif",
+    "Smuggler": "./art/Smuggler.gif",
+    "Graduate": "./art/Graduate.gif",
+    "Planetologist": "./art/Planetologist.gif",
+    "Warmaster": "./art/Warmaster.gif",
+    "Adept": "./art/Adept.gif",
+    "Swordmaster": "./art/Swordmaster.gif",
+    "KillerMedic": "./art/KillerMedic.gif",
+    "MasterOfAssassins": "./art/MasterOfAssassins.gif",
+    "Sandmaster": "./art/Sandmaster.gif",
+    "Thinker": "./art/Mentat.gif",
+    "Banker": "./art/Banker.gif"
+  },
+  "StrongholdCardName_STR": {
+    "2": "Carthag",
+    "3": "Arrakeen",
+    "4": "Tuek's Sietch",
+    "5": "Sietch Tabr",
+    "6": "Habbanya Sietch",
+    "42": "Hidden Mobile Stronghold"
+  },
+  "StrongholdCardImage_URL": {
+    "CountDefensesAsAntidote": "./art/Carthag.gif",
+    "FreeResourcesForBattles": "./art/Arrakeen.gif",
+    "CollectResourcesForUseless": "./art/TueksSietch.gif",
+    "CollectResourcesForDial": "./art/SietchTabr.gif",
+    "WinTies": "./art/HabbanyaSietch.gif",
+    "AnyOtherAdvantage": "./art/HMS.gif"
+  },
+  "HomeWorldImage_URL": {
+    "Green": "./art/faction1planet.svg",
+    "Black": "./art/faction2planet.svg",
+    "Yellow": "./art/faction3planet.svg",
+    "Red": "./art/faction4planet.svg",
+    "RedStar": "./art/faction4planet2.svg",
+    "Orange": "./art/faction5planet.svg",
+    "Blue": "./art/faction6planet.svg",
+    "Grey": "./art/faction7planet.svg",
+    "Purple": "./art/faction8planet.svg",
+    "Brown": "./art/faction9planet.svg",
+    "White": "./art/faction10planet.svg",
+    "Pink": "./art/faction11planet.svg",
+    "Cyan": "./art/faction12planet.svg"
+  },
+  "HomeWorldCardImage_URL": {
+    "Green": "./art/CaladanCard.gif",
+    "Black": "./art/GiediPrimeCard.gif",
+    "Yellow": "./art/ArrakisCard.gif",
+    "Red": "./art/KaitainCard.gif",
+    "RedStar": "./art/SalusaSecundusCard.gif",
+    "Orange": "./art/JunctionCard.gif",
+    "Blue": "./art/WallachIXCard.gif",
+    "Grey": "./art/IxCard.gif",
+    "Purple": "./art/TleilaxCard.gif",
+    "Brown": "./art/TupileCard.gif",
+    "White": "./art/RicheseCard.gif",
+    "Pink": "./art/EcazCard.gif",
+    "Cyan": "./art/GrummanCard.gif"
+  },
+  "NexusCardImage_URL": {
+    "Green": "./art/faction1nexus.gif",
+    "Black": "./art/faction2nexus.gif",
+    "Yellow": "./art/faction3nexus.gif",
+    "Red": "./art/faction4nexus.gif",
+    "Orange": "./art/faction5nexus.gif",
+    "Blue": "./art/faction6nexus.gif",
+    "Grey": "./art/faction7nexus.gif",
+    "Purple": "./art/faction8nexus.gif",
+    "Brown": "./art/faction9nexus.gif",
+    "White": "./art/faction10nexus.gif",
+    "Pink": "./art/faction11nexus.gif",
+    "Cyan": "./art/faction12nexus.gif"
+  },
+  "TerrorTokenName_STR": {
+    "None": "None",
+    "Assassination": "Assassination",
+    "Atomics": "Atomics",
+    "Extortion": "Extortion",
+    "Robbery": "Robbery",
+    "Sabotage": "Sabotage",
+    "SneakAttack": "Sneak Attack"
+  },
+  "TerrorTokenDescription_STR": {
+    "None": "None",
+    "Assassination": "Choose a random leader from that player, send it to the Tanks and collect spice for it",
+    "Atomics": "All forces in the territory go to the Tanks. Place the Atomics Aftermath token in the territory. No forces may ever ship into this territory (even Fremen). From this turn forward, your hand limit is reduced by 1 (as well as your ally’s), discarding a random card if a hand exceeds the limit",
+    "Extortion": "Gain 5 spice from the Spice Bank, placed in front of your shield. Collect it in the Mentat Pause, then regain this Terror token unless any one player in storm order pays you 3 spice",
+    "Robbery": "Steal half the spice (rounded up) from that player or take the top card of the Treachery Deck (then discarding a card of your choice if you exceed your hand size)",
+    "Sabotage": "Draw a random Treachery Card from that player and discard it if possible. Then you may give that player a Treachery Card of your choice from your hand",
+    "SneakAttack": "Send up to 5 of your forces in reserves into that territory at no cost (subject to storm and occupancy rules), even if the Atomics Aftermath token is there"
+  },
+  "DiscoveryTokenName_STR": {
+    "Jacurutu": "Jacurutu Sietch",
+    "Shrine": "Shrine",
+    "TestingStation": "Ecological Testing Station",
+    "Cistern": "Cistern",
+    "ProcessingStation": "Orgiz Processing Station",
+    "CardStash": "Treachery Card Stash",
+    "ResourceStash": "Spice Stash",
+    "Flight": "Ornithopter"
+  },
+  "DiscoveryTokenDescription_STR": {
+    "Jacurutu": "Counts as a normal stronghold.  If you win a battle here, gain 1 spice for each of your opponent’s undialed forces that go to the Tanks",
+    "Shrine": "If occupied, you may play Truthtrance as a Karama card, and vice versa",
+    "TestingStation": "If occupied during Storm, you may add or subtract the movement of the storm by 1, not affecting Weather Control",
+    "Cistern": "If occupied during Collection, gain 2 spice from the bank",
+    "ProcessingStation": "If occupied during Collection, steal 1 spice of each spice blow collected",
+    "CardStash": "Gain a treachery card, remove this token from the game and discard a card if you exceed your maximum hand size",
+    "ResourceStash": "Gain 7 spice from the bank and remove this token from the game",
+    "Flight": "Gain the token and remove it from the game to gain 3 movement for one movement action."
+  },
+  "DiscoveryTokenImage_URL": {
+    "Jacurutu": "/art/discovery1.png",
+    "Cistern": "/art/discovery2.png",
+    "TestingStation": "/art/discovery3.png",
+    "Shrine": "/art/discovery4.png",
+    "ProcessingStation": "/art/discovery5.png"
+  },
+  "DiscoveryTokenTypeName_STR": {
+    "Yellow": "Hiereg",
+    "Orange": "Smuggler"
+  },
+  "DiscoveryTokenTypeImage_URL": {
+    "Yellow": "/art/discoverytype1.png",
+    "Orange": "/art/discoverytype2.png"
+  },
+  "AmbassadorImage_URL": {
+    "Green": "./art/faction1ambassador.svg",
+    "Black": "./art/faction2ambassador.svg",
+    "Yellow": "./art/faction3ambassador.svg",
+    "Red": "./art/faction4ambassador.svg",
+    "Orange": "./art/faction5ambassador.svg",
+    "Blue": "./art/faction6ambassador.svg",
+    "Grey": "./art/faction7ambassador.svg",
+    "Purple": "./art/faction8ambassador.svg",
+    "Brown": "./art/faction9ambassador.svg",
+    "White": "./art/faction10ambassador.svg",
+    "Pink": "./art/faction11ambassador.svg",
+    "Cyan": "./art/faction12ambassador.svg"
+  },
+  "AmbassadorName_STR": {
+    "None": "None",
+    "Green": "Atreides",
+    "Black": "Harkonnen",
+    "Yellow": "Fremen",
+    "Red": "Emperor",
+    "Orange": "Guild",
+    "Blue": "Bene Gesserit",
+    "Grey": "Ixian",
+    "Purple": "Tleilaxu",
+    "Brown": "CHOAM",
+    "White": "Richese",
+    "Pink": "Ecaz",
+    "Cyan": "Moritani"
+  },
+  "AmbassadorDescription_STR": {
+    "None": "None",
+    "Green": "Atreides - See visitor's hand",
+    "Black": "Harkonnen - Look at a random Traitor Card the visiting faction holds",
+    "Yellow": "Fremen - Move a group of your forces on the board to any territory (subject to storm and occupancy rules)",
+    "Red": "Emperor - Gain 5 spice",
+    "Orange": "Guild - Send up to 4 of your forces in reserves to any territory not in storm for free",
+    "Blue": "Bene Gesserit - Trigger the effect of any Ambassador that was not part of your supply",
+    "Grey": "Ixian - Discard a Treachery Card and draw from the deck",
+    "Purple": "Tleilaxu - Revive one of your leaders or up to 4 of your forces for free",
+    "Brown": "CHOAM - Discard any of your Treachery Cards and gain 3 spice for each one",
+    "White": "Richese - Pay 3 spice to the Bank for a Treachery Card",
+    "Pink": "Ecaz - Gain Vidal if he is not in the Tanks, captured, or a ghola until used in a battle, or form an alliance with the visiting faction (if neither of you are allied); they may take control of Vidal instead. This token returns to your available supply"
   },
   "MusicGeneral_URL": "./art/101_-_Dune_-_DOS_-_Arrakis.mp3",
   "MusicResourceBlow_URL": "./art/104_-_Dune_-_DOS_-_Sequence.mp3",
@@ -1074,31 +1273,41 @@
   "MusicMentat_URL": "./art/102_-_Dune_-_DOS_-_Morning.mp3",
   "Sound_YourTurn_URL": "./art/yourturn.mp3",
   "Sound_Chatmessage_URL": "./art/whisper.mp3",
+  "Map_URL": "./art/map.svg",
+  "Eye_URL": "./art/eye.svg",
+  "EyeSlash_URL": "./art/eyeslash.svg",
+  "CardBack_ResourceCard_URL": "./art/SpiceBack.gif",
+  "CardBack_TreacheryCard_URL": "./art/TreacheryBack.gif",
+  "BattleScreen_URL": "./art/wheel.png",
+  "Messiah_URL": "./art/messiah.svg",
+  "Monster_URL": "./art/monster.svg",
+  "Harvester_URL": "./art/ActiveSpice.svg",
+  "Resource_URL": "./art/PassiveSpice.svg",
+  "HMS_URL": "./art/hms.svg",
   "MapDimensions": {
-    "X": 563,
-    "Y": 626
+    "X": 563.0,
+    "Y": 626.0
   },
   "PlanetCenter": {
-    "X": 281,
-    "Y": 311
+    "X": 281.0,
+    "Y": 311.0
   },
   "PlanetRadius": 242,
   "MapRadius": 260,
   "PlayerTokenRadius": 11,
   "SpiceDeckLocation": {
-    "X": 0,
-    "Y": 540
+    "X": 0.0,
+    "Y": 540.0
   },
   "TreacheryDeckLocation": {
-    "X": 475,
-    "Y": 540
+    "X": 475.0,
+    "Y": 540.0
   },
   "CardSize": {
-    "X": 40,
-    "Y": 56
+    "X": 40.0,
+    "Y": 56.0
   },
   "BattleScreenWidth": 273,
-  "BattleScreenHeight": 273,
   "BattleScreenHeroX": 47,
   "BattleScreenHeroY": 150,
   "BattleWheelHeroWidth": 86,
@@ -1112,20 +1321,13 @@
   "MONSTERTOKEN_RADIUS": 13,
   "FORCETOKEN_FONT": "normal normal bold 8px Verdana, Open Sans, Calibri, Tahoma, sans-serif",
   "FORCETOKEN_FONTCOLOR": "white",
-  "FORCETOKEN_SPECIAL_FONTCOLOR": "gold",
   "FORCETOKEN_FONT_BORDERCOLOR": "black",
   "FORCETOKEN_FONT_BORDERWIDTH": 1,
-  "FORCETOKEN_SPECIAL_BORDERCOLOR": "gold",
-  "FORCETOKEN_BORDERCOLOR": "white",
-  "FORCETOKEN_BORDERWIDTH": 1,
-  "FORCETOKEN_SPECIAL_BORDERWIDTH": 2,
   "FORCETOKEN_RADIUS": 8,
   "RESOURCETOKEN_FONT": "normal normal bold 8px Verdana, Open Sans, Calibri, Tahoma, sans-serif",
   "RESOURCETOKEN_FONTCOLOR": "white",
   "RESOURCETOKEN_FONT_BORDERCOLOR": "black",
   "RESOURCETOKEN_FONT_BORDERWIDTH": 1,
-  "RESOURCETOKEN_COLOR": "rgba(255,140,60,0.9)",
-  "RESOURCETOKEN_BORDERCOLOR": "white",
   "RESOURCETOKEN_RADIUS": 8,
   "HIGHLIGHT_OVERLAY_COLOR": "rgba(255,255,255,0.5)",
   "METHEOR_OVERLAY_COLOR": "rgba(209,247,137,0.5)",
@@ -1162,9 +1364,10 @@
   "WHEEL_FONT_DEFENDER_BORDERCOLOR": "white",
   "WHEEL_FONT_BORDERWIDTH": 2,
   "SHADOW": "#000000AA",
-  "GAMEVERSION_FONT": "normal normal normal 16px Advokat, Calibri, Tahoma, sans-serif;",
-  "PLAYEDCARD_MESSAGE_FONT": "normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif",
-  "FACTION_INFORMATIONCARDSTYLE": "font: normal normal normal 14px Verdana, Open Sans, Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;",
-  "TRACKER_FONT": "normal normal normal 12px Verdana, Open Sans, Calibri, Tahoma, sans-serif;",
-  "JSPANEL_DEFAULTSTYLE": "font-family: Verdana, Open Sans, Calibri, Tahoma, sans-serif"
+  "FACTION_INFORMATIONCARDSTYLE": "font: normal normal normal 14px Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;",
+  "DrawResourceIconsOnMap": true,
+  "ShowVerboseToolipsOnMap": true,
+  "ShowArrowsForRecentMoves": true,
+  "HmsDX": -33.0,
+  "HmsRadius": 16.5
 }

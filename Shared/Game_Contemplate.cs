@@ -304,7 +304,7 @@ namespace Treachery.Shared
         public bool MeetsNormalVictoryCondition(Player p, bool contestedStongholdsCountAsOccupied)
         {
             return
-                MeetsBasicPinkVictoryCondition(p, contestedStongholdsCountAsOccupied) ||
+                MeetsPinkVictoryCondition(p, contestedStongholdsCountAsOccupied) ||
                 MeetsHighThresholdPinkVictoryCondition(p, contestedStongholdsCountAsOccupied) ||
                 NumberOfVictoryPoints(p, contestedStongholdsCountAsOccupied) >= TresholdForWin(p);
         }
@@ -328,14 +328,14 @@ namespace Treachery.Shared
 
         private IEnumerable<Territory> Strongholds => Map.Territories(false).Where(t => t.IsStronghold || IsSpecialStronghold(t));
 
-        public bool MeetsBasicPinkVictoryCondition(Player p, bool contestedStongholdsCountAsOccupied) =>
+        public bool MeetsPinkVictoryCondition(Player p, bool contestedStongholdsCountAsOccupied) =>
             (p.Is(Faction.Pink) && p.HasAlly || p.Ally == Faction.Pink) &&
-            Strongholds.Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied) && p.AlliedPlayer.Controls(this, l, contestedStongholdsCountAsOccupied)) >= 3;
+            Strongholds.Count(t => p.Controls(this, t, contestedStongholdsCountAsOccupied) && p.AlliedPlayer.Controls(this, t, contestedStongholdsCountAsOccupied)) >= 3;
 
         public bool MeetsHighThresholdPinkVictoryCondition(Player p, bool contestedStongholdsCountAsOccupied) =>
+            HasHighThreshold(Faction.Pink) && 
             (p.Is(Faction.Pink) && p.HasAlly || p.Ally == Faction.Pink) &&
-            HasHighThreshold(Faction.Pink) &&
-            Strongholds.Any(l => p.Controls(this, l, contestedStongholdsCountAsOccupied) && p.AlliedPlayer.Controls(this, l, contestedStongholdsCountAsOccupied)) &&
+            Strongholds.Any(t => p.Controls(this, t, contestedStongholdsCountAsOccupied) && p.AlliedPlayer.Controls(this, t, contestedStongholdsCountAsOccupied)) &&
             HomeworldOccupation.Values.Count(f => f == p.Faction || f == p.Ally) >= 2;
 
         public int NumberOfVictoryPoints(Player p, bool contestedStongholdsCountAsOccupied)

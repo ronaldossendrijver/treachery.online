@@ -588,7 +588,7 @@ namespace Treachery.Shared
             var forceSupplier = Battle.DetermineForceSupplier(this, loser);
             ProcessPinkOccupationLoserLosses(territory, loser);
 
-            Log(forceSupplier.Faction, " lose all ", forceSupplier.AnyForcesIn(territory), " forces in ", territory);
+            Log(forceSupplier.Faction, " lose all ", forceSupplier.AnyForcesIn(territory), " forces ", InOrOn(territory), territory);
             forceSupplier.KillAllForces(territory, true);
             LoseCards(loserGambit, MayKeepCardsAfterLosingBattle(loser));
             PayDialedSpice(loser, loserGambit, false);
@@ -607,7 +607,7 @@ namespace Treachery.Shared
                 if (pink != null)
                 {
                     pink.KillForces(territory, CurrentPinkBattleContribution, false, true);
-                    Log(Faction.Pink, " lose ", CurrentPinkBattleContribution, pink.Force, " in ", territory);
+                    Log(Faction.Pink, " lose ", CurrentPinkBattleContribution, pink.Force, InOrOn(territory), territory);
                 }
             }
         }
@@ -619,7 +619,7 @@ namespace Treachery.Shared
                 var pink = GetPlayer(Faction.Pink);
                 if (pink != null)
                 {
-                    Log(Faction.Pink, " lose all ", pink.AnyForcesIn(territory), " forces in ", territory);
+                    Log(Faction.Pink, " lose all ", pink.AnyForcesIn(territory), " forces ", InOrOn(territory), territory);
                     pink.KillAllForces(territory, true);
                 }
             }
@@ -875,11 +875,11 @@ namespace Treachery.Shared
 
             if (forceSupplierOfLoser != loser)
             {
-                Log(forceSupplierOfLoser.Faction, " lose all ", forceSupplierOfLoser.SpecialForcesIn(territory) + forceSupplierOfLoser.ForcesIn(territory), " forces in ", territory);
+                Log(forceSupplierOfLoser.Faction, " lose all ", forceSupplierOfLoser.SpecialForcesIn(territory) + forceSupplierOfLoser.ForcesIn(territory), " forces ", InOrOn(territory), territory);
                 forceSupplierOfLoser.KillAllForces(territory, true);
             }
 
-            Log(loser.Faction, " lose all ", loser.SpecialForcesIn(territory) + loser.ForcesIn(territory), " forces in ", territory);
+            Log(loser.Faction, " lose all ", loser.SpecialForcesIn(territory) + loser.ForcesIn(territory), " forces ", InOrOn(territory), territory);
             loser.KillAllForces(territory, true);
             LoseCards(loserGambit, MayKeepCardsAfterLosingBattle(loser));
             PayDialedSpice(loser, loserGambit, true);
@@ -902,22 +902,22 @@ namespace Treachery.Shared
             ProcessPinkOccupationLoserLosses(territory, defender);
             if (forceSupplierOfDefender != defender)
             {
-                Log(forceSupplierOfDefender.Faction, " lose all ", forceSupplierOfDefender.SpecialForcesIn(territory) + forceSupplierOfDefender.ForcesIn(territory), " forces in ", territory);
+                Log(forceSupplierOfDefender.Faction, " lose all ", forceSupplierOfDefender.SpecialForcesIn(territory) + forceSupplierOfDefender.ForcesIn(territory), " forces ", InOrOn(territory), territory);
                 forceSupplierOfDefender.KillAllForces(territory, true);
             }
 
-            Log(defender.Faction, " lose all ", defender.SpecialForcesIn(territory) + defender.ForcesIn(territory), " forces in ", territory);
+            Log(defender.Faction, " lose all ", defender.SpecialForcesIn(territory) + defender.ForcesIn(territory), " forces ", InOrOn(territory), territory);
             defender.KillAllForces(territory, true);
 
             var forceSupplierOfAggressor = Battle.DetermineForceSupplier(this, aggressor);
             ProcessPinkOccupationLoserLosses(territory, aggressor);
             if (forceSupplierOfAggressor != aggressor)
             {
-                Log(forceSupplierOfAggressor.Faction, " lose all ", forceSupplierOfAggressor.SpecialForcesIn(territory) + forceSupplierOfAggressor.ForcesIn(territory), " forces in ", territory);
+                Log(forceSupplierOfAggressor.Faction, " lose all ", forceSupplierOfAggressor.SpecialForcesIn(territory) + forceSupplierOfAggressor.ForcesIn(territory), " forces ", InOrOn(territory), territory);
                 forceSupplierOfAggressor.KillAllForces(territory, true);
             }
 
-            Log(aggressor.Faction, " lose all ", aggressor.SpecialForcesIn(territory) + aggressor.ForcesIn(territory), " forces in ", territory);
+            Log(aggressor.Faction, " lose all ", aggressor.SpecialForcesIn(territory) + aggressor.ForcesIn(territory), " forces ", InOrOn(territory), territory);
             aggressor.KillAllForces(territory, true);
 
             LoseCards(def, false);
@@ -931,6 +931,8 @@ namespace Treachery.Shared
                 Stone(Milestone.Messiah);
             }
         }
+
+        private string InOrOn(Territory t) => t.IsHomeworld ? " on " : " in ";
 
         private void LasgunShieldExplosion(Battle agg, Battle def, Player aggressor, Player defender, Territory territory, IHero aggLeader, IHero defLeader)
         {
