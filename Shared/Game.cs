@@ -16,7 +16,7 @@ namespace Treachery.Shared
         public const int LatestVersion = 161;
 
         public const int ExpansionLevel = 3;
-        public bool BotInfologging = true;
+        public bool BotInfologging = false;
 
         #endregion Settings
 

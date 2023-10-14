@@ -355,6 +355,7 @@ namespace Treachery.Shared
                 h.HeroType != HeroType.Auditor &&
                 g.Applicable(Rule.LeaderSkills) &&
                 !g.CapturedLeaders.Any(cl => cl.Value == p.Faction && g.IsSkilled(cl.Key)) &&
+                !(p.Is(Faction.Pink) && g.IsSkilled(g.Vidal)) &&
                 !p.Leaders.Any(l => g.IsSkilled(l)) &&
                 !capturedLeadersToConsider.Any(l => g.IsSkilled(l));
         }
