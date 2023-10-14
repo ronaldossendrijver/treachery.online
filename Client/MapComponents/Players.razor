@@ -52,7 +52,30 @@
                     <MapImage X=homeworldXY.X Y=@homeworldXY.Y
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
-                       Popover=@Popup.Get(homeworld, Game.GetStatusOf(homeworld)) OnClick="e => OnClick(e, homeworld)" PopoverStyle="" />
+                       Popover=@Popup.Get(homeworld) OnClick="e => OnClick(e, homeworld)" PopoverStyle="" />
+
+                    if (Game.IsOccupied(homeworld.World))
+                    {
+                        <MapImage X=@(homeworldXY.X + 0.75f * Skin.Current.PlayerTokenRadius) Y=@(homeworldXY.Y + 1.5f * Skin.Current.PlayerTokenRadius)
+                                  Diameter=@(0.5f * Skin.Current.PlayerTokenRadius)
+                                  Src="@Skin.Current.GetFactionFacedownImageURL(Game.OccupierOf(homeworld.World).Faction)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
+                                  Popover="High Threshold" PopoverAsTooltip="true" />
+                    }
+                    else if (p.HasHighThreshold(homeworld.World))
+                    {
+                        <MapImage X=@(homeworldXY.X + 0.75f * Skin.Current.PlayerTokenRadius) Y=@(homeworldXY.Y + 1.5f * Skin.Current.PlayerTokenRadius)
+                                  Diameter=@(0.5f * Skin.Current.PlayerTokenRadius)
+                                  Src="@Skin.Current.HighThreshold_URL" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
+                                  Popover="High Threshold" PopoverAsTooltip="true" />
+                    }
+                    else if (p.HasLowThreshold(homeworld.World))
+                    {
+                        <MapImage X=@(homeworldXY.X + 0.75f * Skin.Current.PlayerTokenRadius) Y=@(homeworldXY.Y + 1.5f * Skin.Current.PlayerTokenRadius)
+                                  Diameter=@(0.5f * Skin.Current.PlayerTokenRadius)
+                                  Src="@Skin.Current.LowThreshold_URL" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
+                                  Popover="Low Threshold" PopoverAsTooltip="true" />
+                    }
+
                 }
                 else
                 {
@@ -90,7 +113,7 @@
                     reservesY += Skin.Current.FORCETOKEN_RADIUS;
                 }
 
-                positionOnCircle += 0.01f;
+                positionOnCircle += 0.02f;
             }
 
             foreach (var tt in p.TechTokens)
@@ -109,7 +132,25 @@
                 <MapImage XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(Game.PinkLoyalLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
-                       Popover=@Skin.Current.Format("{0} is Loyal to {1}", Game.PinkLoyalLeader, Faction.Pink) PopoverAsTooltip=true/>
+                Popover=@Skin.Current.Format("{0} is Loyal to {1}", Game.PinkLoyalLeader, Faction.Pink) PopoverAsTooltip=true/>
+            }
+
+            if (p.Faction == Faction.Pink)
+            {
+                positionOnCircle += (TWOPI / 90);
+
+                var ambassadorXY = Pos(positionOnCircle, 0.5f * Skin.Current.PlayerTokenRadius);
+                var yOffset = - 0.5f * p.Ambassadors.Count() * 0.5f * Skin.Current.PlayerTokenRadius;
+                foreach (var a in p.Ambassadors)
+                {
+                    <MapImage X=@ambassadorXY.X 
+                              Y=@(ambassadorXY.Y + yOffset)
+                              Diameter=@(Skin.Current.PlayerTokenRadius)
+                              Src="@Skin.Current.GetImageURL(a)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
+                              Popover=@Skin.Current.GetAmbassadorDescription(a) PopoverAsTooltip=true />
+
+                    yOffset += 0.5f * Skin.Current.PlayerTokenRadius;
+                }
             }
 
             foreach (var skilledLeader in Game.GetSkilledLeaders(p).Where(l => Game.IsInFrontOfShield(l))) {

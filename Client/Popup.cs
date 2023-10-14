@@ -23,19 +23,9 @@ namespace Treachery.Client
 
         public static string GetNexusCard(Faction f) => GetImageHoverHTML(Skin.Current.GetNexusCardImageURL(f));
 
-        public static string Get(Homeworld w, HomeworldStatus status)
-        {
-            return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}' width=480/><span style='color:{1};font-size:24px;position:absolute;left:6px;top:-6px;{4};'>{2}</span><img src='{3}' width=100 style='position:absolute;left:460px;top:100px;filter:drop-shadow(-3px 3px 2px black);'/></div>",
-                        Skin.Current.GetHomeworldCardImageURL(w.World),
-                        status.IsHigh ? "green" : "red",
-                        status.IsHigh ? "HIGH" : "LOW",
-                        Skin.Current.GetImageURL(status.Occupant),
-                        Support.TextBorder(2, "white"));
-        }
-
         public static string Get(Homeworld w)
         {
-            return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}'/></div>",
+            return string.Format("<div style='position:relative'><img width=480 style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}'/></div>",
                         Skin.Current.GetHomeworldCardImageURL(w.World));
         }
 

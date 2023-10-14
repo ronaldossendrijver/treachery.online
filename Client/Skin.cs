@@ -93,6 +93,8 @@ namespace Treachery.Client
         public string Harvester_URL;
         public string Resource_URL;
         public string HMS_URL;
+        public string HighThreshold_URL;
+        public string LowThreshold_URL;
 
         public PointD MapDimensions;
         public PointD PlanetCenter;
@@ -1268,6 +1270,8 @@ namespace Treachery.Client
             FixValue(ref toFix.Map_URL, donor.Map_URL);
             FixValue(ref toFix.Eye_URL, donor.Eye_URL);
             FixValue(ref toFix.EyeSlash_URL, donor.EyeSlash_URL);
+            FixValue(ref toFix.HighThreshold_URL, donor.HighThreshold_URL);
+            FixValue(ref toFix.LowThreshold_URL, donor.LowThreshold_URL);
             FixValue(ref toFix.CardBack_ResourceCard_URL, donor.CardBack_ResourceCard_URL);
             FixValue(ref toFix.CardBack_TreacheryCard_URL, donor.CardBack_TreacheryCard_URL);
             FixValue(ref toFix.BattleScreen_URL, donor.BattleScreen_URL);
@@ -1386,6 +1390,8 @@ namespace Treachery.Client
             Map_URL = DEFAULT_ART_LOCATION + "/art/map.svg",
             Eye_URL = DEFAULT_ART_LOCATION + "/art/eye.svg",
             EyeSlash_URL = DEFAULT_ART_LOCATION + "/art/eyeslash.svg",
+            HighThreshold_URL = DEFAULT_ART_LOCATION + "/art/arrow-up-circle-fill.svg",
+            LowThreshold_URL = DEFAULT_ART_LOCATION + "/art/arrow-down-circle-fill.svg",
             CardBack_ResourceCard_URL = DEFAULT_ART_LOCATION + "/art/SpiceBack.gif",
             CardBack_TreacheryCard_URL = DEFAULT_ART_LOCATION + "/art/TreacheryBack.gif",
             BattleScreen_URL = DEFAULT_ART_LOCATION + "/art/wheel.png",

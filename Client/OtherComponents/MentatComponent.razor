@@ -124,13 +124,16 @@
     @if (Client.Game.IsPlaying(Faction.Pink))
     {
         <h5 class="mt-2">Ambassador Tokens</h5>
-        <div class="row row-cols-2 row-cols-md-3 ms-1 me-1">
+        <div class="row row-cols-6 row-cols-md-12 ms-1 me-1">
 
             @foreach (var t in Enumerations.GetValuesExceptDefault(typeof(Ambassador), Ambassador.None))
             {
-                <div class="card">
-                    <img src="@Skin.Current.GetImageURL(t)" class="card-img" alt=@Skin.Current.GetAmbassadorDescription(t)>
+                if (t != Ambassador.Cyan)
+                {
+                    <div class="card">
+                        <img src="@Skin.Current.GetImageURL(t)" class="card-img" title=@Skin.Current.GetAmbassadorDescription(t)>
                 </div>
+                }
             }
 
         </div>
