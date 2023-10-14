@@ -269,7 +269,11 @@ namespace Treachery.Shared
 
                 case Faction.Red:
                     p.InitializeHomeworld(normalForceWorld, Applicable(Rule.RedSpecialForces) ? 15 : 20, 0);
-                    if (Applicable(Rule.RedSpecialForces)) p.InitializeHomeworld(Map.Homeworlds.First(w => w.Faction == p.Faction && w.IsHomeOfSpecialForces), 0, 5);
+                    if (Applicable(Rule.RedSpecialForces))
+                    {
+                        p.InitializeHomeworld(Map.Homeworlds.First(w => w.Faction == p.Faction && w.IsHomeOfSpecialForces), 0, 5);
+                    }
+
                     break;
 
                 case Faction.Grey:

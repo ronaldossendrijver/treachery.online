@@ -27,6 +27,7 @@ namespace Treachery.Shared
         internal bool CurrentPlayerMayPerformExtraMove { get; set; }
         internal bool BlueMayAccompany { get; set; }
         internal Phase PhaseBeforeCaravanCausedIntrusion { get; set; }
+        internal Phase PhaseBeforeRevivalCausedIntrusion { get; set; }
         internal FlightUsed CurrentFlightUsed { get; set; }
         internal FlightDiscoveryUsed CurrentFlightDiscoveryUsed { get; set; }
         internal AmbassadorActivated CurrentAmbassadorActivated { get; set; }
@@ -229,7 +230,21 @@ namespace Treachery.Shared
 
         internal void DetermineNextShipmentAndMoveSubPhase()
         {
+            //Console.WriteLine("** DetermineNextShipmentAndMoveSubPhase **");
+
+            /*Console.WriteLine("* Before cleanup: *");
+            foreach (var i in Intrusions)
+            {
+                Console.WriteLine($"- {i.GetType()} {i.Type} {i.TriggeringEvent.To} {i.TriggeringEvent.Initiator} {i.Territory}");
+            }*/
+
             CleanupObsoleteIntrusions();
+
+            /*Console.WriteLine("* After cleanup: *");
+            foreach (var i in Intrusions)
+            {
+                Console.WriteLine($"- {i.GetType()} {i.Type} {i.TriggeringEvent.To} {i.TriggeringEvent.Initiator} {i.Territory}");
+            }*/
 
             if (BlueMayAccompany)
             {
@@ -371,6 +386,13 @@ namespace Treachery.Shared
                 case Phase.AmbassadorTriggeredByCaravan:
                     Enter(PhaseBeforeCaravanCausedIntrusion);
                     break;
+
+                case Phase.BlueIntrudedByRevival:
+                case Phase.TerrorTriggeredByRevival:
+                case Phase.AmbassadorTriggeredByRevival:
+                    Enter(PhaseBeforeRevivalCausedIntrusion);
+                    break;
+
             }
         }
 
@@ -428,6 +450,12 @@ namespace Treachery.Shared
                 case Phase.TerrorTriggeredByCaravan:
                 case Phase.AmbassadorTriggeredByCaravan:
                     Enter(Phase.BlueIntrudedByCaravan);
+                    break;
+
+                case Phase.BlueIntrudedByRevival:
+                case Phase.TerrorTriggeredByRevival:
+                case Phase.AmbassadorTriggeredByRevival:
+                    Enter(Phase.BlueIntrudedByRevival);
                     break;
 
                 default:
@@ -499,6 +527,12 @@ namespace Treachery.Shared
                     Enter(Phase.TerrorTriggeredByCaravan);
                     break;
 
+                case Phase.BlueIntrudedByRevival:
+                case Phase.TerrorTriggeredByRevival:
+                case Phase.AmbassadorTriggeredByRevival:
+                    Enter(Phase.TerrorTriggeredByRevival);
+                    break;
+
                 default:
                     throw new Exception($"Terror triggered during undefined phase: {CurrentPhase}");
             }
@@ -566,6 +600,12 @@ namespace Treachery.Shared
                 case Phase.TerrorTriggeredByCaravan:
                 case Phase.AmbassadorTriggeredByCaravan:
                     Enter(Phase.AmbassadorTriggeredByCaravan);
+                    break;
+
+                case Phase.BlueIntrudedByRevival:
+                case Phase.TerrorTriggeredByRevival:
+                case Phase.AmbassadorTriggeredByRevival:
+                    Enter(Phase.AmbassadorTriggeredByRevival);
                     break;
 
                 default:

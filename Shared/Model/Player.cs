@@ -155,6 +155,7 @@ namespace Treachery.Shared
             var result = GetAndCreateIfNeeded(location);
             result.ChangeSpecialForces(nrOfForces);
             if (result.TotalAmountOfForces == 0) ForcesInLocations.Remove(location);
+            CheckIfRedStarThresholdWasPassed();
         }
 
         public void AddForces(Location location, int nrOfForces, bool fromReserves)
@@ -187,6 +188,25 @@ namespace Treachery.Shared
         {
             var sourceWorld = Homeworlds.FirstOrDefault(w => w.IsHomeOfNormalForces);
             if (sourceWorld != null) ChangeForces(sourceWorld, nrOfForces);
+        }
+
+        private bool RedStarHomeworldIsOnLowThreshold { get; set; }
+        private void CheckIfRedStarThresholdWasPassed()
+        {
+            if (Faction == Faction.Red && Game.Applicable(Rule.RedSpecialForces))
+            {
+                var homeworld = Homeworlds.FirstOrDefault(hw => hw.World == World.RedStar);
+                bool hasLessThanThreshold = homeworld != null && AnyForcesIn(homeworld) < homeworld.Threshold;
+
+                if (hasLessThanThreshold && !RedStarHomeworldIsOnLowThreshold)
+                {
+                    RedStarHomeworldIsOnLowThreshold = true;
+                }
+                else if (!hasLessThanThreshold && RedStarHomeworldIsOnLowThreshold)
+                {
+                    RedStarHomeworldIsOnLowThreshold = false;
+                }
+            }
         }
 
         public void AddSpecialForcesToReserves(int nrOfForces)
@@ -282,6 +302,7 @@ namespace Treachery.Shared
             }
 
             ForcesInLocations.Remove(location);
+            CheckIfRedStarThresholdWasPassed();
         }
 
         public void ForcesToReserves(Location location, int amount)
@@ -368,6 +389,7 @@ namespace Treachery.Shared
                 }
 
                 ForcesInLocations.Remove(location);
+                CheckIfRedStarThresholdWasPassed();
 
                 if (inBattle)
                 {
@@ -390,13 +412,9 @@ namespace Treachery.Shared
 
         public int KillForces(Location location, int amountOfForces, int amountOfSpecialForces, bool inBattle)
         {
-            var battallion = ForcesInLocations[location];
-
-            battallion.ChangeForces(-amountOfForces);
-            battallion.ChangeSpecialForces(-amountOfSpecialForces);
-
-            if (battallion.TotalAmountOfForces == 0) ForcesInLocations.Remove(location);
-
+            ChangeForces(location, -amountOfForces);
+            ChangeSpecialForces(location, -amountOfSpecialForces);
+            
             ForcesKilled += amountOfForces;
 
             if (Faction == Faction.Blue)
@@ -679,6 +697,8 @@ namespace Treachery.Shared
             if (initialNormalForces > 0) AddForces(world, initialNormalForces, false);
             if (initialSpecialForces > 0) AddSpecialForces(world, initialSpecialForces, false);
 
+            RedStarHomeworldIsOnLowThreshold = (world.World == World.RedStar && initialSpecialForces < world.Threshold);
+
             Homeworlds.Add(world);
         }
 
@@ -692,13 +712,16 @@ namespace Treachery.Shared
             if (!Game.Applicable(Rule.Homeworlds)) return false;
 
             var homeworld = Homeworlds.FirstOrDefault(hw => hw.World == w);
+
+            if (homeworld.World == World.RedStar) return !RedStarHomeworldIsOnLowThreshold;
+
             return homeworld != null && AnyForcesIn(homeworld) >= homeworld.Threshold;
         }
 
         public bool HasHighThreshold()
         {
             if (!Game.Applicable(Rule.Homeworlds)) return false;
-            return Homeworlds.Any(w => AnyForcesIn(w) >= w.Threshold);
+            return Homeworlds.Any(w => HasHighThreshold(w.World));
         }
 
         public bool HasLowThreshold(World w)
@@ -706,13 +729,16 @@ namespace Treachery.Shared
             if (!Game.Applicable(Rule.Homeworlds)) return false;
 
             var homeworld = Homeworlds.FirstOrDefault(hw => hw.World == w);
+
+            if (homeworld.World == World.RedStar) return RedStarHomeworldIsOnLowThreshold;
+
             return homeworld != null && AnyForcesIn(homeworld) < homeworld.Threshold;
         }
 
         public bool HasLowThreshold()
         {
             if (!Game.Applicable(Rule.Homeworlds)) return false;
-            return Homeworlds.Any(w => AnyForcesIn(w) < w.Threshold);
+            return Homeworlds.Any(w => HasLowThreshold(w.World));
         }
 
 

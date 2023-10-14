@@ -22,17 +22,31 @@ namespace Treachery.Test
     [TestClass]
     public class Tests
     {
+        int gameId = 0;
+        int terrorEventId = 0;
+        int nrOfBgDeadLeaders = 0;
+
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-
-            if (g.CurrentPhase == Phase.TurnConcluded)
+            var blue = g.GetPlayer(Faction.Blue);
+            if (blue != null)
             {
-                var pink = g.GetPlayer(Faction.Pink);
-                if (pink != null && pink.HasAlly)
+                if (g.CurrentPhase == Phase.TerrorTriggeredByBlueAccompaniesOrangeShip && g.TerrorIn(g.LastShipmentOrMovement?.To.Territory).Contains(TerrorType.Assassination))
                 {
-                    if (g.Map.Strongholds.Count(t => pink.AnyForcesIn(t) > 0 && pink.AlliedPlayer.OccupyingForces(t) > 0) >= 3)
+                    gameId = g.Seed;
+                    terrorEventId = g.History.Count;
+                    nrOfBgDeadLeaders = blue.Leaders.Count(l => !g.IsAlive(l));
+                }
+
+                if (g.Seed == gameId && e is TerrorRevealed tr && tr.Type == TerrorType.Assassination && g.History.Count == terrorEventId + 1)
+                {
+                    if (blue.Leaders.Count(l => !g.IsAlive(l)) != nrOfBgDeadLeaders + 1)
                     {
-                        WriteSavegameIfApplicable(g, e.Player, "pink special victory");
+                        WriteSavegameIfApplicable(g, e.Player, "Failed Assassination");
+                    }
+                    else
+                    {
+                        WriteSavegameIfApplicable(g, e.Player, "Assassination");
                     }
                 }
             }
@@ -371,7 +385,7 @@ namespace Treachery.Test
             _leadercount = new();
 
             int nrOfGames = 10000;
-            int nrOfTurns = 10;
+            int nrOfTurns = 12;
             int nrOfPlayers = 7;
 
             int timeout = 10;

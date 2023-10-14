@@ -194,6 +194,9 @@ namespace Treachery.Shared
 
         BeginningOfResurrection = 209000,
         Resurrection = 210000,
+        BlueIntrudedByRevival = 211000,
+        TerrorTriggeredByRevival = 211100,
+        AmbassadorTriggeredByRevival = 211110,
         ResurrectionReport = 215000,
 
         BeginningOfShipAndMove = 219000,

@@ -16,7 +16,7 @@
             <table class="table table-sm">
 
                 <thead>
-                    <tr>
+                    <tr class="table-dark">
                         <th scope="col">Faction</th>
                         <th scope="col">Cross planet</th>
                         <th scope="col">To (own) homeworld</th>
@@ -48,12 +48,14 @@
             <SelectFromImageComponent Values=@SetShipmentPermission.ValidTargets(Game, Player) Selected=@targets Required=true ImageWidth="40" T=Faction OnChanged=StateHasChanged>
                 <Label>Set permissions for:</Label>
             </SelectFromImageComponent>
+        </div>
 
+        <div class="mt-1">
             <CheckboxComponent @bind-Value=@_crossPermission>Allow cross planet shipments</CheckboxComponent>
             <CheckboxComponent @bind-Value=@_homeworldPermission>Allow shipment to (own) homeworld</CheckboxComponent>
             <CheckboxComponent @bind-Value=@_discountPermission>May ship at half price</CheckboxComponent>
         </div>
-        
+
         <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
 
     </Body>

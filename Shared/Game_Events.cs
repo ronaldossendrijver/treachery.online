@@ -324,6 +324,7 @@ namespace Treachery.Shared
                 case Phase.BlueIntrudedByYellowRidingMonsterA:
                 case Phase.BlueIntrudedByYellowRidingMonsterB:
                 case Phase.BlueIntrudedByCaravan:
+                case Phase.BlueIntrudedByRevival:
                     if (faction == Faction.Blue) result.Add(typeof(BlueFlip));
                     break;
 
@@ -336,6 +337,7 @@ namespace Treachery.Shared
                 case Phase.TerrorTriggeredByYellowRidingMonsterA:
                 case Phase.TerrorTriggeredByYellowRidingMonsterB:
                 case Phase.TerrorTriggeredByCaravan:
+                case Phase.TerrorTriggeredByRevival:
                     if (faction == Faction.Cyan) result.Add(typeof(TerrorRevealed));
                     break;
 
@@ -348,6 +350,7 @@ namespace Treachery.Shared
                 case Phase.AmbassadorTriggeredByYellowRidingMonsterA:
                 case Phase.AmbassadorTriggeredByYellowRidingMonsterB:
                 case Phase.AmbassadorTriggeredByCaravan:
+                case Phase.AmbassadorTriggeredByRevival:
                     if (faction == Faction.Pink || player.Ally == Faction.Pink && PinkSharesAmbassadors) result.Add(typeof(AmbassadorActivated));
                     break;
 

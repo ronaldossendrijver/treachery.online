@@ -587,6 +587,12 @@ namespace Treachery.Shared
                     Player.ShipForces(Location, NumberOfForcesInLocation);
                     Log(Initiator, " place ", NumberOfForcesInLocation, FactionForce.Purple, " in ", Location);
                 }
+
+                if (Game.Version >= 161 && Game.CheckIntrusion(this))
+                {
+                    Game.PhaseBeforeRevivalCausedIntrusion = Game.CurrentPhase;
+                    Game.Enter(Game.LastBlueIntrusion != null, Phase.BlueIntrudedByRevival, Game.LastTerrorTrigger != null, Phase.TerrorTriggeredByRevival, Phase.AmbassadorTriggeredByRevival);
+                }
             }
 
             if (Initiator != Faction.Purple)

@@ -748,7 +748,7 @@ namespace Treachery.Shared
 
         protected virtual RaiseDeadPlayed DetermineRaiseDeadPlayed()
         {
-            if (Game.CurrentTurn == Game.MaximumNumberOfTurns || !HasRoomForCards || Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
+            if (!HasRoomForCards || Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
             {
                 int nrOfLivingLeaders = Leaders.Count(l => Game.IsAlive(l));
                 int specialForcesThatCanBeRevived = Math.Min(5, Revival.ValidMaxRevivals(Game, this, true, false));

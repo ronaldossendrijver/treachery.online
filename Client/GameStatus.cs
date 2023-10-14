@@ -346,7 +346,8 @@ namespace Treachery.Client
                 Phase.TerrorTriggeredByOrangeShip or
                 Phase.TerrorTriggeredByNonOrangeMove or
                 Phase.TerrorTriggeredByOrangeMove or
-                Phase.TerrorTriggeredByCaravan => Status(game,
+                Phase.TerrorTriggeredByCaravan or
+                Phase.TerrorTriggeredByRevival => Status(game,
                     Express("Do you wish to respond to this intrusion with terror?"),
                     Express(Faction.Cyan, " are thinking about resorting to terror..."),
                     Faction.Cyan),
@@ -364,7 +365,8 @@ namespace Treachery.Client
                 Phase.AmbassadorTriggeredByOrangeShip or
                 Phase.AmbassadorTriggeredByNonOrangeMove or
                 Phase.AmbassadorTriggeredByOrangeMove or
-                Phase.AmbassadorTriggeredByCaravan => Status(game,
+                Phase.AmbassadorTriggeredByCaravan or 
+                Phase.AmbassadorTriggeredByRevival => Status(game,
                     Express("Do you wish to activate your ambassador?"),
                     Express(Faction.Pink, Ally(game, Faction.Pink), " are thinking about activating their ambassador..."),
                     PlayerAndAlly(game, Faction.Pink)),
@@ -378,9 +380,10 @@ namespace Treachery.Client
                 Phase.BlueIntrudedByOrangeShip or
                 Phase.BlueIntrudedByNonOrangeMove or
                 Phase.BlueIntrudedByOrangeMove or
-                Phase.BlueIntrudedByCaravan => Status(game,
-                    Express("Please decide how to respond to the intrusion in ", game.LastShipmentOrMovement.To.Territory, "; be fighters or advisors?"),
-                    Express(Faction.Blue, " are deciding how to respond to the intrusion in ", game.LastShipmentOrMovement.To.Territory, "..."),
+                Phase.BlueIntrudedByCaravan or 
+                Phase.BlueIntrudedByRevival => Status(game,
+                    Express("Please decide how to respond to the intrusion in ", game.LastShipmentOrMovement?.To?.Territory, "; be fighters or advisors?"),
+                    Express(Faction.Blue, " are deciding how to respond to the intrusion in ", game.LastShipmentOrMovement?.To?.Territory, "..."),
                     Faction.Blue),
 
                 Phase.NonOrangeMove => Status(
@@ -540,7 +543,28 @@ namespace Treachery.Client
                 Phase.HarvesterA => new Territory[] { game.LatestSpiceCardA.Location.Territory },
                 Phase.HarvesterB => new Territory[] { game.LatestSpiceCardB.Location.Territory },
 
+                Phase.TerrorTriggeredByBlueAccompaniesNonOrangeShip or
+                Phase.TerrorTriggeredByBlueAccompaniesOrangeShip or
+                Phase.TerrorTriggeredByOrangeShip or
+                Phase.TerrorTriggeredByNonOrangeShip or
+                Phase.TerrorTriggeredByNonOrangeShip or
+                Phase.TerrorTriggeredByOrangeShip or
+                Phase.TerrorTriggeredByNonOrangeMove or
+                Phase.TerrorTriggeredByOrangeMove or
+                Phase.TerrorTriggeredByCaravan or
+                Phase.TerrorTriggeredByRevival or
+                Phase.AmbassadorTriggeredByBlueAccompaniesNonOrangeShip or
+                Phase.AmbassadorTriggeredByBlueAccompaniesOrangeShip or
+                Phase.AmbassadorTriggeredByOrangeShip or
+                Phase.AmbassadorTriggeredByNonOrangeShip or
+                Phase.AmbassadorTriggeredByNonOrangeShip or
+                Phase.AmbassadorTriggeredByOrangeShip or
+                Phase.AmbassadorTriggeredByNonOrangeMove or
+                Phase.AmbassadorTriggeredByOrangeMove or
+                Phase.AmbassadorTriggeredByCaravan or
+                Phase.AmbassadorTriggeredByRevival or
                 Phase.BlueIntrudedByCaravan or
+                Phase.BlueIntrudedByRevival or
                 Phase.BlueIntrudedByNonOrangeMove or
                 Phase.BlueIntrudedByNonOrangeShip or
                 Phase.BlueIntrudedByOrangeMove or
