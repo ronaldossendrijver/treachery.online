@@ -66,6 +66,8 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
+            if (Game.CurrentPhase != Phase.AwaitingPlayers) return Message.Express("Invalid game phase");
+
             int extraSpotsForBots =
                 (ApplicableRules.Contains(Rule.PurpleBot) && FactionsInPlay.Contains(Faction.Purple) ? 1 : 0) +
                 (ApplicableRules.Contains(Rule.BlackBot) && FactionsInPlay.Contains(Faction.Black) ? 1 : 0) +
@@ -208,6 +210,8 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
+            if (Game.CurrentPhase != Phase.AwaitingPlayers) return;
+
             Game.CurrentReport = new Report(MainPhase.Setup);
 
             Game.Stone(Milestone.GameStarted);

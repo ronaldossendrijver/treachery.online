@@ -150,7 +150,7 @@ namespace Treachery.Shared
                 {
                     case TerrorType.Assassination:
 
-                        var randomLeader = victimPlayer.Leaders.RandomOrDefault(Game.Random);
+                        var randomLeader = victimPlayer.Leaders.Where(l => Game.IsAlive(l)).RandomOrDefault(Game.Random);
                         if (randomLeader != null)
                         {
                             var price = randomLeader.HeroType == HeroType.VariableValue ? 3 : randomLeader.CostToRevive;

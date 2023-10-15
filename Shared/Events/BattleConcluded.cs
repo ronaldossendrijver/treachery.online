@@ -144,6 +144,13 @@ namespace Treachery.Shared
         {
             Game.BattleWasConcludedByWinner = true;
 
+            if (AddExtraForce && Game.Version >= 161)
+            {
+                var to = Game.CurrentBattle.Territory.Locations.FirstOrDefault(l => Player.AnyForcesIn(l) > 0);
+                Player.ShipForces(to, 1);
+                Log(Initiator, " place ", 1, " extra force in ", Game.CurrentBattle.Territory);
+            }
+
             foreach (var c in DiscardedCards)
             {
                 Log(Initiator, " discard ", c);
