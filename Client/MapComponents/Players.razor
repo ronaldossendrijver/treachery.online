@@ -52,30 +52,32 @@
                     <MapImage X=homeworldXY.X Y=@homeworldXY.Y
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
-                       Popover=@Popup.Get(homeworld) OnClick="e => OnClick(e, homeworld)" PopoverStyle="" />
+                    Popover=@Popup.Get(homeworld) OnClick="e => OnClick(e, homeworld)" PopoverStyle="" />
 
                     if (Game.IsOccupied(homeworld.World))
                     {
+                        var occupier = Game.OccupierOf(homeworld.World).Faction;
+                        var occupierMessage = Skin.Current.Format("Occupied by ", occupier);
+
                         <MapImage X=@(homeworldXY.X + 0.75f * Skin.Current.PlayerTokenRadius) Y=@(homeworldXY.Y + 1.5f * Skin.Current.PlayerTokenRadius)
                                   Diameter=@(0.5f * Skin.Current.PlayerTokenRadius)
-                                  Src="@Skin.Current.GetFactionFacedownImageURL(Game.OccupierOf(homeworld.World).Faction)" ShadowColor="white" ShadowX="1" ShadowY="1" ShadowBlur="0"
-                                  Popover="High Threshold" PopoverAsTooltip="true" />
+                                  Src="@Skin.Current.GetFactionFacedownImageURL(occupier)" ShadowColor="white" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
+                                  Popover=@occupierMessage PopoverAsTooltip="true" />
                     }
                     else if (p.HasHighThreshold(homeworld.World))
                     {
                         <MapImage X=@(homeworldXY.X + 0.75f * Skin.Current.PlayerTokenRadius) Y=@(homeworldXY.Y + 1.5f * Skin.Current.PlayerTokenRadius)
                                   Diameter=@(0.5f * Skin.Current.PlayerTokenRadius)
-                                  Src="@Skin.Current.HighThreshold_URL" ShadowColor="white" ShadowX="1" ShadowY="1" ShadowBlur="0"
+                                  Src="@Skin.Current.HighThreshold_URL" ShadowColor="white" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
                                   Popover="High Threshold" PopoverAsTooltip="true" />
                     }
                     else if (p.HasLowThreshold(homeworld.World))
                     {
                         <MapImage X=@(homeworldXY.X + 0.75f * Skin.Current.PlayerTokenRadius) Y=@(homeworldXY.Y + 1.5f * Skin.Current.PlayerTokenRadius)
                                   Diameter=@(0.5f * Skin.Current.PlayerTokenRadius)
-                                  Src="@Skin.Current.LowThreshold_URL" ShadowColor="white" ShadowX="1" ShadowY="1" ShadowBlur="0"
+                                  Src="@Skin.Current.LowThreshold_URL" ShadowColor="white" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
                                   Popover="Low Threshold" PopoverAsTooltip="true" />
                     }
-
                 }
                 else
                 {

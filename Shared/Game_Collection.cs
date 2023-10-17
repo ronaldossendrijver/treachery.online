@@ -58,11 +58,11 @@ namespace Treachery.Shared
         {
             if (receivedAmount > 1 && Applicable(Rule.Homeworlds))
             {
-                int amountToOccupier = from.HasLowThreshold() ? (int)(0.5f * receivedAmount) : 0;
-                receivedAmount -= amountToOccupier;
-
                 var homeworld = from.Homeworlds.First();
                 var occupier = OccupierOf(homeworld.World);
+
+                int amountToOccupier = (!from.Is(Faction.White) || occupier != null) && from.HasLowThreshold() ? (int)(0.5f * receivedAmount) : 0;
+                receivedAmount -= amountToOccupier;
 
                 if (occupier != null)
                 {

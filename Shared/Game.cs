@@ -13,7 +13,7 @@ namespace Treachery.Shared
         #region Settings
 
         public const int LowestSupportedVersion = 100;
-        public const int LatestVersion = 161;
+        public const int LatestVersion = 162;
 
         public const int ExpansionLevel = 3;
         public bool BotInfologging = false;
@@ -742,9 +742,10 @@ namespace Treachery.Shared
                     TakeVidal(occupierOfPinkHomeworld, VidalMoment.WhilePinkWorldIsOccupied);
                 }
             }
-            else
+            else if (previousOccupierOfPinkHomeworld != null && previousOccupierOfPinkHomeworld.Leaders.Contains(Vidal))
             {
-                previousOccupierOfPinkHomeworld?.Leaders.Remove(Vidal);
+                previousOccupierOfPinkHomeworld.Leaders.Remove(Vidal);
+                Log(previousOccupierOfPinkHomeworld.Faction, " lose ", Vidal);
             }
         }
 

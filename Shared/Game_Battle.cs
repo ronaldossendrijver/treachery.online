@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 
 namespace Treachery.Shared
@@ -1054,6 +1055,7 @@ namespace Treachery.Shared
             }
 
             ReturnSkilledLeadersInFrontOfShieldAfterBattle();
+            if (Version >= 162) DetermineOccupation(CurrentBattle.Territory);
             if (!Applicable(Rule.FullPhaseKarma)) AllowPreventedBattleFactionAdvantages();
             if (CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor) CurrentJuice = null;
             CurrentDiplomacy = null;
@@ -1062,6 +1064,47 @@ namespace Treachery.Shared
             FinishDeciphererIfApplicable();
             if (NextPlayerToBattle == null) MainPhaseEnd();
             Enter(Phase.BattleReport);
+        }
+
+        internal void DetermineOccupation(Territory territory)
+        {
+            foreach (var location in territory.Locations)
+            {
+                DetermineOccupation(location);
+            }
+        }
+
+        internal void DetermineOccupation(Location location)
+        {
+            if (location is Homeworld hw)
+            {
+                var previousOccupier = OccupierOf(hw.World);
+                var solePlayerOnPlanet = BattalionsIn(hw).Count() == 1 ? GetPlayer(BattalionsIn(hw).First().Faction) : null;
+
+                if (solePlayerOnPlanet != null)
+                {
+                    HomeworldOccupation.Remove(hw);
+
+                    if (!solePlayerOnPlanet.IsNative(hw))
+                    {
+                        HomeworldOccupation.Add(hw, solePlayerOnPlanet.Faction);
+                        Log(solePlayerOnPlanet.Faction, " now occupy ", hw);
+                    }
+                    else if (previousOccupier != null)
+                    {
+                        Log(previousOccupier.Faction, " no longer occupy ", hw);
+                    }
+
+                    CheckIfShipmentPermissionsShouldBeRevoked();
+
+                    if (hw.World == World.Pink)
+                    {
+                        CheckIfOccupierTakesVidal(previousOccupier);
+                    }
+
+                    LetFactionsDiscardSurplusCards();
+                }
+            }
         }
 
         private void ReturnSkilledLeadersInFrontOfShieldAfterBattle()

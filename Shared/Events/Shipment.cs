@@ -482,7 +482,7 @@ namespace Treachery.Shared
                 }
 
                 Game.FlipBeneGesseritWhenAloneOrWithPinkAlly();
-                DetermineOccupationAfterShipment();
+                Game.DetermineOccupation(To);
             }
             else
             {
@@ -590,23 +590,6 @@ namespace Treachery.Shared
             {
                 Game.ShipsTechTokenIncome = true;
             }
-        }
-
-        private void DetermineOccupationAfterShipment()
-        {
-            var currentOccupierOfPinkHomeworld = Game.OccupierOf(World.Pink);
-            var player = GetPlayer(Initiator);
-
-            if (To is Homeworld hw && !player.Homeworlds.Contains(hw) && Game.NrOfOccupantsExcludingFaction(hw, Initiator) == 0)
-            {
-                Game.HomeworldOccupation.Remove(hw);
-                Game.HomeworldOccupation.Add(hw, Initiator);
-                Log(Initiator, " now occupy ", hw);
-            }
-
-            Game.CheckIfShipmentPermissionsShouldBeRevoked();
-            Game.CheckIfOccupierTakesVidal(currentOccupierOfPinkHomeworld);
-            Game.LetFactionsDiscardSurplusCards();
         }
 
         public override Message GetMessage()
