@@ -22,7 +22,7 @@ namespace Treachery.Shared
 
         #endregion State
 
-        #region Construction
+        #region Collection
 
         internal void StartCollection()
         {
@@ -67,7 +67,7 @@ namespace Treachery.Shared
                 if (occupier != null)
                 {
                     occupier.Resources += amountToOccupier;
-                    Log(Payment.Of(amountToOccupier), " received by ", from, " goes to ", occupier.Faction);
+                    Log(Payment.Of(amountToOccupier), " received by ", from.Faction, " goes to ", occupier.Faction);
                 }
             }
         }
@@ -85,7 +85,7 @@ namespace Treachery.Shared
                 }
             }
 
-            foreach (var homeworld in Map.Homeworlds)
+            foreach (var homeworld in Map.Homeworlds.Where(hw => hw.ResourceAmount != 0))
             {
                 var occupier = OccupierOf(homeworld.World);
                 if (occupier != null)
@@ -175,8 +175,17 @@ namespace Treachery.Shared
 
         internal void EndCollectionMainPhase()
         {
-            int receivedAmountByYellow = ResourcesCollectedByYellow;
-            ModifyIncomeBasedOnThresholdOrOccupation(GetPlayer(Faction.Yellow), ref receivedAmountByYellow);
+            var yellow = GetPlayer(Faction.Yellow);
+            if (yellow != null)
+            {
+                int receivedAmountByYellowAfterTakingIntoAccountOccupation = ResourcesCollectedByYellow;
+                ModifyIncomeBasedOnThresholdOrOccupation(yellow, ref receivedAmountByYellowAfterTakingIntoAccountOccupation);
+
+                if (Version >= 162)
+                {
+                    yellow.Resources -= (ResourcesCollectedByYellow - receivedAmountByYellowAfterTakingIntoAccountOccupation);
+                }
+            }
 
             var black = GetPlayer(Faction.Black);
             if (ResourcesCollectedByBlackFromDesertOrHomeworld != 0 && black.HasHighThreshold())
@@ -190,7 +199,7 @@ namespace Treachery.Shared
         }
 
 
-        #endregion Construction
+        #endregion Collection
 
         #region Information
 
