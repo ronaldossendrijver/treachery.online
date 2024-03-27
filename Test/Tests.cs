@@ -80,7 +80,7 @@ namespace Treachery.Test
                     var allyOfBattleLoser = battleLoser.AlliedPlayer;
                     if (battleLoser.AnyForcesIn(g.CurrentBattle.Territory) > 0 || allyOfBattleLoser != null && allyOfBattleLoser.AnyForcesIn(g.CurrentBattle.Territory) > 0)
                     {
-                        return "Loser of battle still has forces in the territory";
+                        return "Loser of battle still has forces in the territory - " + g.History.Count;
                     }
                 }
             }
@@ -111,7 +111,7 @@ namespace Treachery.Test
 
                 if (p != null && (g.Version >= 157 || !p.Is(Faction.Purple)))
                 {
-                    return "Illegal number of forces " + p.Faction;
+                    return "Illegal number of forces " + p.Faction + " - " + g.History.Count;
                 }
             }
 
@@ -162,7 +162,7 @@ namespace Treachery.Test
                 }
                 else if (currentNumberOfCards != previousNumberOfCardsInPlay)
                 {
-                    return string.Format("Total number of cards has changed from {0} to {1}.",
+                    return string.Format("Total number of cards has changed from {0} to {1} - " + g.History.Count,
                         previousNumberOfCardsInPlay,
                         currentNumberOfCards);
                 }
@@ -181,7 +181,7 @@ namespace Treachery.Test
                 }
                 else if (currentNumberOfLeaders != previousNumberOfLeadersInPlay)
                 {
-                    return string.Format("Total number of leaders has changed from {0} to {1}.",
+                    return string.Format("Total number of leaders has changed from {0} to {1} - " + g.History.Count,
                         previousNumberOfLeadersInPlay,
                         currentNumberOfLeaders);
                 }
@@ -216,18 +216,18 @@ namespace Treachery.Test
             if (blue != null &&
                 blue.ForcesInLocations.Any(bat => bat.Value.AmountOfSpecialForces > 0 && !g.Players.Any(p => p.Occupies(bat.Key.Territory))))
             {
-                return "Lonely advisor";
+                return "Lonely advisor - " + g.History.Count;
             }
 
             if (g.Version >= 148 && blue != null && g.Map.Territories(true).Any(t => blue.ForcesIn(t) > 0 && blue.SpecialForcesIn(t) > 0))
             {
-                return "Advisor and fighter together";
+                return "Advisor and fighter together - " + g.History.Count;
             }
 
 
             if (g.Players.Any(p => p.Leaders.Any(l => l.HeroType != HeroType.Vidal && l.Faction != p.Faction && p.Faction != Faction.Purple && !g.CapturedLeaders.ContainsKey(l))))
             {
-                return "Lost Leader";
+                return "Lost Leader - " + g.History.Count;
             }
 
             if (g.CurrentPhase == Phase.BeginningOfCollection)
@@ -235,7 +235,7 @@ namespace Treachery.Test
                 var terr = g.OccupyingForcesOnPlanet.Where(kvp => kvp.Key != g.Map.PolarSink && !g.IsInStorm(kvp.Key.Territory) && kvp.Value.Count(b => b.Faction != Faction.Pink) > 1).Select(kvp => kvp.Key).FirstOrDefault();
                 if (terr != null)
                 {
-                    return $"{terr} occupied by more than one faction";
+                    return $"{terr} occupied by more than one faction - " + g.History.Count;
                 }
             }
 
@@ -243,8 +243,8 @@ namespace Treachery.Test
             {
                 var aggressor = g.CurrentBattle.AggressivePlayer;
                 var defender = g.CurrentBattle.DefendingPlayer;
-                if (aggressor == null || defender == null) return "Battle without aggressor or defender";
-                if (aggressor.AlliedPlayer == defender) return "Battle between allies";
+                if (aggressor == null || defender == null) return "Battle without aggressor or defender - " + g.History.Count;
+                if (aggressor.AlliedPlayer == defender) return "Battle between allies - " + g.History.Count;
             }
 
             var pink = g.GetPlayer(Faction.Pink);
@@ -254,7 +254,7 @@ namespace Treachery.Test
                 int expectedAmount = EstablishPlayers.AvailableFactions().Count(f => f != Faction.Blue) - 1;
 
                 if (actualAmount != expectedAmount)
-                    return $"Invalid number of ambassadors: {actualAmount} != {EstablishPlayers.AvailableFactions().Count() - 1}";
+                    return $"Invalid number of ambassadors: {actualAmount} != {EstablishPlayers.AvailableFactions().Count() - 1} - " + g.History.Count;
             }
 
             return "";
@@ -840,7 +840,25 @@ namespace Treachery.Test
                 {
                     statistics.Karamas.Count(karma.Prevented);
                 }
-                else if (game.BattleOutcome != null && previousBattleOutcome != game.BattleOutcome)
+                else if (game.Applicable(Rule.AdvancedCombat) && latest is Battle battle && game.AggressorPlan != null && game.DefenderPlan != null)
+                {
+                    if (!game.AggressorPlan.Player.IsBot)
+                    {
+                        statistics.SpiceUsed.Add(new Tuple<Faction, float>(game.AggressorPlan.Initiator, game.AggressorPlan.Cost(game)));
+                        statistics.TotalDialUsed.Add(new Tuple<Faction, float>(game.AggressorPlan.Initiator, game.AggressorPlan.Dial(game, game.DefenderPlan.Initiator)));
+                        statistics.ForceTokensUsed.Add(new Tuple<Faction, float>(game.AggressorPlan.Initiator, game.AggressorPlan.TotalForces));
+                    }
+
+                    if (!game.DefenderPlan.Player.IsBot)
+                    {
+                        statistics.SpiceUsed.Add(new Tuple<Faction, float>(game.DefenderPlan.Initiator, game.DefenderPlan.Cost(game)));
+                        statistics.TotalDialUsed.Add(new Tuple<Faction, float>(game.DefenderPlan.Initiator, game.DefenderPlan.Dial(game, game.AggressorPlan.Initiator)));
+                        statistics.ForceTokensUsed.Add(new Tuple<Faction, float>(game.DefenderPlan.Initiator, game.DefenderPlan.TotalForces));
+
+                    }
+                }
+                
+                if (game.BattleOutcome != null && previousBattleOutcome != game.BattleOutcome)
                 {
                     var outcome = game.BattleOutcome;
                     previousBattleOutcome = outcome;
@@ -858,7 +876,8 @@ namespace Treachery.Test
                     if (outcome.LoserBattlePlan.Weapon != null) statistics.UsedWeapons.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Weapon));
                     if (outcome.LoserBattlePlan.Defense != null) statistics.UsedDefenses.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Defense));
                 }
-                else if (game.CurrentPhase == Phase.BeginningOfCollection && latest is EndPhase)
+                
+                if (game.CurrentPhase == Phase.BeginningOfCollection && latest is EndPhase)
                 {
                     foreach (var p in game.Players)
                     {

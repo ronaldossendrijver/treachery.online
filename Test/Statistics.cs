@@ -32,6 +32,9 @@ namespace Treachery.Test
         public ObjectCounter<string> FacedancedLeaders { get; } = new();
         public ObjectCounter<string> UsedWeapons { get; } = new();
         public ObjectCounter<string> UsedDefenses { get; } = new();
+        public List<Tuple<Faction, float>> SpiceUsed { get; } = new();
+        public List<Tuple<Faction, float>> ForceTokensUsed { get; } = new();
+        public List<Tuple<Faction, float>> TotalDialUsed { get; } = new();
 
         public ObjectCounter<Faction> FactionsOccupyingArrakeen { get; } = new();
         public ObjectCounter<Faction> FactionsOccupyingCarthag { get; } = new();
@@ -109,6 +112,19 @@ namespace Treachery.Test
             OutputCounter("Truthtrances", Truthtrances, describer, 50);
             OutputCounter("Karamas", Karamas, describer);
             OutputCounter("AcceptedDeals", AcceptedDeals, describer, 50);
+
+            Console.WriteLine("*** Spice used per battle ***");
+            Console.WriteLine("Faction;Battles;Total Spice;Average Spice;Average Dial;Average Force Tokens");
+            foreach (var faction in GamePlayingFactions.Counted)
+            {
+                var spiceRecords = SpiceUsed.Where(v => v.Item1 == faction).ToList();
+                var dialRecords = TotalDialUsed.Where(v => v.Item1 == faction).ToList();
+                var forceRecords = ForceTokensUsed.Where(v => v.Item1 == faction).ToList();
+                if (spiceRecords.Count > 0)
+                {
+                    Console.WriteLine($"{describer.Describe(faction)};{spiceRecords.Count};{spiceRecords.Sum(x => x.Item2)};{spiceRecords.Average(x => x.Item2)};{dialRecords.Average(x => x.Item2)};{forceRecords.Average(x => x.Item2)}");
+                }
+            }
 
         }
 

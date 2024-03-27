@@ -186,6 +186,8 @@ namespace Treachery.Shared
                 }
             }
 
+            //if (Version > = 163)
+            FlipBeneGesseritWhenAloneOrWithPinkAlly();
 
             foreach (var t in Strongholds.Where(s => s.Locations.Any(l => l.Sector == SectorInStorm && !IsProtectedFromStorm(l))))
             {
