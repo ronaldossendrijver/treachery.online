@@ -119,7 +119,8 @@ namespace Treachery.Shared
             if (Version < 116) CaptureLeaderIfApplicable();
 
             FlipBeneGesseritWhenAloneOrWithPinkAlly();
-
+            if (Version >= 162) DetermineOccupation(CurrentBattle.Territory);
+            
             if (BattleTriggeredBureaucracy != null)
             {
                 ApplyBureaucracy(BattleTriggeredBureaucracy.PaymentFrom, BattleTriggeredBureaucracy.PaymentTo);
@@ -401,6 +402,7 @@ namespace Treachery.Shared
             else
             {
                 Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
+                LetFactionsDiscardSurplusCards();
             }
         }
 
@@ -425,6 +427,8 @@ namespace Treachery.Shared
                 Log(Auditee.Faction, " don't have cards to audit");
                 Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
             }
+            
+            LetFactionsDiscardSurplusCards();
         }
 
         private void DetermineIfCapturedLeadersMustBeReleased()
@@ -1101,8 +1105,6 @@ namespace Treachery.Shared
                     {
                         CheckIfOccupierTakesVidal(previousOccupier);
                     }
-
-                    LetFactionsDiscardSurplusCards();
                 }
             }
         }
