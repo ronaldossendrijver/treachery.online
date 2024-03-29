@@ -1125,17 +1125,21 @@ namespace Treachery.Shared
 
         protected virtual TerrorRevealed DetermineTerrorRevealed()
         {
-            //This is for now just random
-            var validTokens = TerrorRevealed.GetTypes(Game).Where(t => t != TerrorType.SneakAttack || TerrorRevealed.ValidSneakAttackTargets(Game, this).Any());
+            //This is for now just quite random
+            var territory = TerrorRevealed.GetTerritory(Game);
+            var mayUseAtomics = Opponents.Sum(o => o.AnyForcesIn(TerrorRevealed.GetTerritory(Game))) > 5 &&
+                                AlliedPlayer?.AnyForcesIn(territory) == 0; 
+            
+            var validTokens = TerrorRevealed.GetTypes(Game).Where(t => 
+                (t != TerrorType.SneakAttack || TerrorRevealed.ValidSneakAttackTargets(Game, this).Any()) &&
+                (t != TerrorType.Atomics || mayUseAtomics)
+                );
 
             if (!validTokens.Any())
             {
                 return new TerrorRevealed(Game, Faction) { Passed = true };
             }
 
-            var territory = TerrorRevealed.GetTerritory(Game);
-            var mayUseAtomics = Opponents.Sum(o => o.AnyForcesIn(TerrorRevealed.GetTerritory(Game))) > 5 &&
-                                AlliedPlayer?.AnyForcesIn(territory) == 0; 
             var type = TerrorRevealed.GetTypes(Game).Where(t => 
                 (t != TerrorType.SneakAttack || TerrorRevealed.ValidSneakAttackTargets(Game, this).Any()) &&
                 (t != TerrorType.Atomics || mayUseAtomics)).RandomOrDefault();

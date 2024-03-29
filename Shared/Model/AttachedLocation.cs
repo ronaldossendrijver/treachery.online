@@ -33,7 +33,10 @@ namespace Treachery.Shared
             newLocation.Neighbours.Add(this);
             AttachedToLocation = newLocation;
 
-            Game = game;
+            if (game.Version >= 163)
+            {
+                Game = game;                
+            }
         }
 
         public override List<Location> Neighbours
