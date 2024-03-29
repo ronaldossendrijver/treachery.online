@@ -249,7 +249,7 @@ namespace Treachery.Shared
 
         public static int ValidMaxNormalShipmentForces(Player p, bool specialForces, int usedNoField)
         {
-            int noFieldMax = usedNoField == -1 ? int.MaxValue : usedNoField;
+            int noFieldMax = usedNoField < 0 || p.Faction is Faction.White ? int.MaxValue : usedNoField;
             return specialForces ? Math.Min(p.SpecialForcesInReserve, noFieldMax) : Math.Min(p.ForcesInReserve, noFieldMax);
         }
 

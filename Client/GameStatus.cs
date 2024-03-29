@@ -292,8 +292,8 @@ namespace Treachery.Client
                     game.Players.Where(p => p.HasRoomForCards && !game.Bids.ContainsKey(p.Faction)), game.LatestEvent(typeof(WhiteSpecifiesAuction))),
 
                 Phase.ReplacingCardJustWon => Status(
-                    Express("You may now discard the card you just won and draw a new card instead."),
-                    Express(game.WinningBid?.Initiator, " might replace the card they just won with a card from the deck..."),
+                    Express("You might discard the card you just won and draw a new card instead, in case you have the necessary Nexus or alliance advantage."),
+                    Express(game.WinningBid?.Initiator, " might replace the card they just won with a card from the deck in case they have the required Nexus or alliance advantage..."),
                     game.GetPlayer(game.WinningBid?.Initiator)),
 
                 Phase.WaitingForNextBiddingRound => Status("Factions are waiting for the next card to be put on auction..."),

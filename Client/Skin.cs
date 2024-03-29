@@ -617,7 +617,7 @@ namespace Treachery.Client
         {
             return m switch
             {
-                WinMethod.Strongholds => "by number of occupied strongholds",
+                WinMethod.Strongholds => "by number of victory points",
                 WinMethod.Prediction => "by prediction",
                 WinMethod.Timeout => "by running out of time",
                 WinMethod.Forfeit => "by forfeit",

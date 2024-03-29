@@ -113,7 +113,7 @@
             cunningNofieldValue = -1;
         }
 
-        @if (!(Faction == Faction.White && nofieldValue >= 0))
+        @if (Faction is not Faction.White || nofieldValue < 0 || Game.HasHighThreshold(Faction.White))
         {
             <div class="mt-1">
 
@@ -132,7 +132,7 @@
                 }
                 else
                 {
-                    shipmentSpecialForceAmount = 0;
+                    shipmentSpecialForceAmount = nofieldValue < 0 ? 0 : 1;
                 }
 
             </div>

@@ -713,6 +713,9 @@ namespace Treachery.Shared
 
             var homeworld = Homeworlds.FirstOrDefault(hw => hw.World == w);
 
+            if (homeworld == null)
+                return false;
+
             if (homeworld.World == World.RedStar) return !RedStarHomeworldIsOnLowThreshold;
 
             return homeworld != null && AnyForcesIn(homeworld) >= homeworld.Threshold;

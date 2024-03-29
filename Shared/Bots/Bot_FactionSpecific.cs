@@ -1133,7 +1133,12 @@ namespace Treachery.Shared
                 return new TerrorRevealed(Game, Faction) { Passed = true };
             }
 
-            var type = TerrorRevealed.GetTypes(Game).Where(t => t != TerrorType.SneakAttack || TerrorRevealed.ValidSneakAttackTargets(Game, this).Any()).RandomOrDefault();
+            var territory = TerrorRevealed.GetTerritory(Game);
+            var mayUseAtomics = Opponents.Sum(o => o.AnyForcesIn(TerrorRevealed.GetTerritory(Game))) > 5 &&
+                                AlliedPlayer?.AnyForcesIn(territory) == 0; 
+            var type = TerrorRevealed.GetTypes(Game).Where(t => 
+                (t != TerrorType.SneakAttack || TerrorRevealed.ValidSneakAttackTargets(Game, this).Any()) &&
+                (t != TerrorType.Atomics || mayUseAtomics)).RandomOrDefault();
             var cardInSabotage = TreacheryCards.FirstOrDefault(c => c.IsUseless);
             var victim = Game.GetPlayer(TerrorRevealed.GetVictim(Game));
 
@@ -1141,7 +1146,7 @@ namespace Treachery.Shared
 
             if (offerAlliance)
             {
-                return new TerrorRevealed(Game, Faction) { AllianceOffered = offerAlliance };
+                return new TerrorRevealed(Game, Faction) { AllianceOffered = true };
             }
             else
             {

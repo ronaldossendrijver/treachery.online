@@ -42,12 +42,17 @@
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-        _dims = await Browser.GetWindowDimensions();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _dims = await Browser.GetWindowDimensions();
+        var currentDimensions = await Browser.GetWindowDimensions();
+        if (Math.Abs(_dims.Width - currentDimensions.Width) > 0.1f || Math.Abs(_dims.Height - currentDimensions.Height) > 0.1f)
+        {
+            _dims = currentDimensions;
+            StateHasChanged();
+        }
+        
     }
 
     private Dimensions _dims = new Dimensions() { Width = 640, Height = 480 };

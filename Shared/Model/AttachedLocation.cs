@@ -16,7 +16,7 @@ namespace Treachery.Shared
 
         public override bool Visible => AttachedToLocation != null;
 
-        public override int Sector => Game?.Version >= 159 && AttachedToLocation != null ? AttachedToLocation.Sector : - 1;
+        public override int Sector => Game?.Version >= 159 && AttachedToLocation != null ? AttachedToLocation.Sector : -1;
 
         public AttachedLocation(int id) : base(id)
         {
@@ -33,7 +33,7 @@ namespace Treachery.Shared
             newLocation.Neighbours.Add(this);
             AttachedToLocation = newLocation;
 
-            Game = Game;
+            Game = game;
         }
 
         public override List<Location> Neighbours
