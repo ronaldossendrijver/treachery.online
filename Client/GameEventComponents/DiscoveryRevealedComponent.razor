@@ -16,17 +16,16 @@
 
             if (locations.Count() > 1)
             {
-                <SelectComponent @bind-Value="_location" Values=@locations>
+                <SelectComponent @bind-Value="_selectedLocation" Values=@locations>
                     <Label>Where?</Label>
                  </SelectComponent>
             }
-            else
-            {
-                _location = locations.First();
-            }
 
-            <div>Reveal the <strong>@Name(Game.DiscoveriesOnPlanet[_location].Token)</strong> in @Name(_location.Territory)?</div>
-            <div class="label-info">@Skin.Current.GetDiscoveryTokenDescription(Game.DiscoveriesOnPlanet[_location].Token)</div>
+            if (_selectedLocation == null || !Game.DiscoveriesOnPlanet.ContainsKey(_selectedLocation)) 
+                _selectedLocation = locations.First();
+            
+            <div>Reveal the <strong>@Name(Game.DiscoveriesOnPlanet[_selectedLocation].Token)</strong> in @Name(_selectedLocation.Territory)?</div>
+            <div class="label-info">@Skin.Current.GetDiscoveryTokenDescription(Game.DiscoveriesOnPlanet[_selectedLocation].Token)</div>
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation Pass="Pass" />
@@ -37,9 +36,9 @@
 
 @code {
 
-    private Location _location;
+    private Location _selectedLocation;
 
-    protected override DiscoveryRevealed ConfirmedResult => new DiscoveryRevealed(Game, Faction) { Location = _location };
+    protected override DiscoveryRevealed ConfirmedResult => new DiscoveryRevealed(Game, Faction) { Location = _selectedLocation };
 
     protected override DiscoveryRevealed PassedResult => new DiscoveryRevealed(Game, Faction) { Passed = true };
 }
