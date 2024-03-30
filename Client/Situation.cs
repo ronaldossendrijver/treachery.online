@@ -1,6 +1,4 @@
-﻿using Treachery.Shared;
-
-namespace Treachery.Client
+﻿namespace Treachery.Client
 {
     public class Situation
     {

@@ -1,6 +1,4 @@
-﻿using Treachery.Shared;
-
-namespace Treachery.Client.GameEventComponents
+﻿namespace Treachery.Client.GameEventComponents
 {
     public abstract partial class PlacementComponent<PlacementEventType> where PlacementEventType : PlacementEvent, new()
     {

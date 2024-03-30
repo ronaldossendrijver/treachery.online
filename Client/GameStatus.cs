@@ -10,7 +10,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Treachery.Shared;
 
 namespace Treachery.Client
 {

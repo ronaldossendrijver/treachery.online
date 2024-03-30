@@ -7,10 +7,5 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace Treachery.Client.GenericComponents
-{
-    public partial class GameEventComponent<GameEventType> where GameEventType : GameEvent, new()
-    {
-
-    }
-}
+global using Treachery.Shared;
+global using Treachery.Client.GenericComponents;

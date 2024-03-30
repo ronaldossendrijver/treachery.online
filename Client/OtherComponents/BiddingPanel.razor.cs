@@ -1,6 +1,4 @@
-﻿using Treachery.Shared;
-
-namespace Treachery.Client.OtherComponents
+﻿namespace Treachery.Client.OtherComponents
 {
     public abstract partial class BiddingPanel<BidType> where BidType : GameEvent, new()
     {
