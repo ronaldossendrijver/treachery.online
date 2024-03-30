@@ -6,12 +6,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<SkillAssigned>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Assign a skill to a one of your leaders</Header>
     <Body>
@@ -20,7 +17,7 @@
 
         <SelectFromImageComponent Game="Game" @bind-Value="leader" Values="SkillAssigned.ValidLeaders(Game, Player)" ImageWidth="80"/>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Assign Skill" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Assign Skill" ConfirmError="@Validation" />
 
     </Body>
 
@@ -33,7 +30,7 @@
     private LeaderSkill skill;
     private IHero leader;
 
-    protected override SkillAssigned ConfirmedResult => new SkillAssigned(Game, Faction) { Passed = false, Leader = leader as Leader, Skill = skill };
+    protected override SkillAssigned ConfirmedResult => new(Game, Faction) { Passed = false, Leader = leader as Leader, Skill = skill };
 
-    protected override SkillAssigned PassedResult => new SkillAssigned(Game, Faction) { Passed = true };
+    protected override SkillAssigned PassedResult => new(Game, Faction) { Passed = true };
 }

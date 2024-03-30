@@ -5,25 +5,24 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public interface IBid
 {
-    public interface IBid
-    {
-        public int TotalAmount { get; }
-        public int Amount { get; }
-        public int AllyContributionAmount { get; }
-        public int RedContributionAmount { get; }
+    public int TotalAmount { get; }
+    public int Amount { get; }
+    public int AllyContributionAmount { get; }
+    public int RedContributionAmount { get; }
 
-        public bool UsesRedSecretAlly { get; }
-        public Faction Initiator { get; }
-        public Player Player { get; }
-        public bool Passed { get; }
+    public bool UsesRedSecretAlly { get; }
+    public Faction Initiator { get; }
+    public Player Player { get; }
+    public bool Passed { get; }
 
-        public bool UsingKarmaToRemoveBidLimit { get; }
-        public TreacheryCard KarmaCard { get; }
+    public bool UsingKarmaToRemoveBidLimit { get; }
+    public TreacheryCard KarmaCard { get; }
 
-        public Message GetMessage();
-    }
+    public Message GetMessage();
 }

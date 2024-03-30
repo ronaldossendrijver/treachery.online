@@ -6,19 +6,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BrownDiscarded>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>You may discard surplus duplicate cards for 3 and @Skin.Current.Describe(TreacheryCardType.Useless) cards for 2 @Skin.Current.Describe(Concept.Resource) each</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="card" Values="BrownDiscarded.ValidCards(Player)" Required="true" ImageWidth="80" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Discard {0}", card)" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Discard {0}", card)" ConfirmError="@Validation" />
 
     </Body>
 
@@ -30,5 +27,5 @@
 
     private TreacheryCard card;
 
-    protected override BrownDiscarded ConfirmedResult => new BrownDiscarded(Game, Faction) { Card = card };
+    protected override BrownDiscarded ConfirmedResult => new(Game, Faction) { Card = card };
 }

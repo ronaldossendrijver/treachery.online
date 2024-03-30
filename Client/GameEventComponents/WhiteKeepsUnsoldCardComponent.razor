@@ -6,17 +6,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<WhiteKeepsUnsoldCard>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Do you wish to get the card no faction bid on for free or should it be removed from the game?</Header>
     <Body>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Get for free" ConfirmError=@Validation Pass="Pass" PassText="Remove from game" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Get for free" ConfirmError="@Validation" Pass="Pass" PassText="Remove from game" />
 
     </Body>
 
@@ -27,7 +24,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.White;
 
-    protected override WhiteKeepsUnsoldCard ConfirmedResult => new WhiteKeepsUnsoldCard(Game, Faction) { Passed = false };
+    protected override WhiteKeepsUnsoldCard ConfirmedResult => new(Game, Faction) { Passed = false };
 
-    protected override WhiteKeepsUnsoldCard PassedResult => new WhiteKeepsUnsoldCard(Game, Faction) { Passed = true };
+    protected override WhiteKeepsUnsoldCard PassedResult => new(Game, Faction) { Passed = true };
 }

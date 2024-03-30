@@ -6,15 +6,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Battle>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType() TimedEvent=Game.LatestEvent(typeof(BattleInitiated))>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" TimedEvent="Game.LatestEvent(typeof(BattleInitiated))">
 
     <Header>
-        Fighting <Image Shown=Opponent.Faction Width=30 /> in @Name(Game.CurrentBattle.Territory).
+        Fighting <Image Shown="Opponent.Faction" Width="30" /> in @Name(Game.CurrentBattle.Territory).
     </Header>
 
     <Body>
@@ -160,13 +157,13 @@
 
                 if (forces + specialForces > 0 && Battle.MustPayForForcesInBattle(Game, Player))
                 {
-                    int maxResources = Battle.MaxResources(Game, Player, forces, specialForces);
-                    int maxAllyResources = Battle.MaxAllyResources(Game, Player, forces, specialForces);
-                    int maxTotalResources = Math.Min(forces + specialForces, maxResources + maxAllyResources);
+                    var maxResources = Battle.MaxResources(Game, Player, forces, specialForces);
+                    var maxAllyResources = Battle.MaxAllyResources(Game, Player, forces, specialForces);
+                    var maxTotalResources = Math.Min(forces + specialForces, maxResources + maxAllyResources);
 
                     <SelectResourcesComponent @bind-Value=@resources Min=0 Max=@maxTotalResources Title=@Skin.Current.Format("{0} used to support forces", Concept.Resource)/> <span>&nbsp;</span>
 
-                    int maxPaidByAlly = Math.Min(maxAllyResources, resources);
+                    var maxPaidByAlly = Math.Min(maxAllyResources, resources);
 
                     @if (Player.Ally == Faction.Brown && maxPaidByAlly > 0)
                     {
@@ -226,7 +223,7 @@
         @if (Player.MessiahAvailable && !Game.Prevented(FactionAdvantage.GreenUseMessiah))
         {
             <div class="mt-2">
-                <RadioComponent @bind-Value="messiah" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"No","Yes"})">
+                <RadioComponent @bind-Value="messiah" Values="@(new[] {false,true})" ValueLabels="@(new[] {"No","Yes"})">
                     <Label>Should <img class="img-fluid" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> join the fight?</Label>
                 </RadioComponent>
             </div>
@@ -245,7 +242,7 @@
             bankerBoost = 0;
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Battle!" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Battle!" ConfirmError="@Validation" />
 
     </Body>
 
@@ -331,7 +328,7 @@
     {
         get
         {
-            Battle.DetermineForces(Game, Player, forces, specialForces, resources, out int forcesFull, out int forcesHalf, out int specialForcesFull, out int specialForcesHalf);
+            Battle.DetermineForces(Game, Player, forces, specialForces, resources, out var forcesFull, out var forcesHalf, out var specialForcesFull, out var specialForcesHalf);
 
             var result = new Battle(Game, Faction)
             {
@@ -396,10 +393,8 @@
         {
             return _revisablePlan;
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 
     private IEnumerable<TreacheryCard> Weapons => Battle.ValidWeapons(Game, Player, defense, hero, Game.CurrentBattle.Territory).OrderBy(c => Name(c));

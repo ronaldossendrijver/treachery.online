@@ -6,12 +6,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents; 
 @inherits GameEventComponent<AcceptOrCancelPurpleRevival>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Manage Revival Requests</Header>
 
@@ -71,13 +68,16 @@
     private IHero offerHero;
     private int price;
 
-    protected override AcceptOrCancelPurpleRevival ConfirmedResult => new AcceptOrCancelPurpleRevival(Game, Faction) { Cancel = false, Hero = offerHero, Price = price };
+    protected override AcceptOrCancelPurpleRevival ConfirmedResult => new(Game, Faction) { Cancel = false, Hero = offerHero, Price = price };
 
-    protected override AcceptOrCancelPurpleRevival PassedResult => new AcceptOrCancelPurpleRevival(Game, Faction) { Cancel = false, Hero = null };
+    protected override AcceptOrCancelPurpleRevival PassedResult => new(Game, Faction) { Cancel = false, Hero = null };
 
-    protected override AcceptOrCancelPurpleRevival OtherResult => new AcceptOrCancelPurpleRevival(Game, Faction) { Cancel = false, Hero = offerHero, Price = int.MaxValue };
+    protected override AcceptOrCancelPurpleRevival OtherResult => new(Game, Faction) { Cancel = false, Hero = offerHero, Price = int.MaxValue };
 
-    private async Task Cancel(IHero hero) => await Request(new AcceptOrCancelPurpleRevival(Game, Faction) { Cancel = true, Hero = hero });
+    private async Task Cancel(IHero hero)
+    {
+        await Request(new AcceptOrCancelPurpleRevival(Game, Faction) { Cancel = true, Hero = hero });
+    }
 
     private IEnumerable<IHero> CurrentRevivalOfferValues => Game.EarlyRevivalsOffers.Select(kvp => kvp.Key);
 

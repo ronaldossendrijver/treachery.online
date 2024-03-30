@@ -117,7 +117,7 @@ else
 
     private string GetShownPopover()
     {
-        return (Shown) switch
+        return Shown switch
         {
             null => "",
             TreacheryCard tc => Popup.Get(tc),

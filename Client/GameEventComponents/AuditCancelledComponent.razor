@@ -6,17 +6,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<AuditCancelled>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Do you wish to pay @Skin.Current.Describe(Faction.Brown) @AuditCancelled.Cost(Game) @Skin.Current.Describe(Concept.Resource) to cancel a scheduled audit of @AuditCancelled.GetNumberOfCardsThatMayBeAudited(Game) of your treachery cards?</Header>
     <Body>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError=@Validation Pass="Pass" PassText="No" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError="@Validation" Pass="Pass" PassText="No" />
 
     </Body>
 
@@ -26,7 +23,7 @@
 
     protected override bool IsUrgent => true;
 
-    protected override AuditCancelled ConfirmedResult => new AuditCancelled(Game, Faction) { Cancelled = true };
+    protected override AuditCancelled ConfirmedResult => new(Game, Faction) { Cancelled = true };
 
-    protected override AuditCancelled PassedResult => new AuditCancelled(Game, Faction) { Cancelled = false };
+    protected override AuditCancelled PassedResult => new(Game, Faction) { Cancelled = false };
 }

@@ -6,12 +6,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<CardTraded>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Trade one of your cards with your ally?</Header>
     <Body>
@@ -24,7 +21,7 @@
             <SelectFromImageComponent @bind-Value="returnCard" Values="CardTraded.ValidCards(Player.AlliedPlayer)" Required="false" ImageWidth="80" />
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Trade Card" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Trade Card" ConfirmError="@Validation" />
     </Body>
 
 </GameEventComponentLayout>
@@ -37,5 +34,5 @@
     private TreacheryCard card;
     private TreacheryCard returnCard;
 
-    protected override CardTraded ConfirmedResult => new CardTraded(Game, Faction) { Target = Player.Ally, Card = card, RequestedCard = returnCard };
+    protected override CardTraded ConfirmedResult => new(Game, Faction) { Target = Player.Ally, Card = card, RequestedCard = returnCard };
 }

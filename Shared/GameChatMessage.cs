@@ -5,68 +5,46 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class GameChatMessage : ChatMessage
 {
-    public class GameChatMessage : ChatMessage
+    public string TargetPlayerName { get; set; }
+
+    public override Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g, bool contextIsGlobal)
     {
-        public string TargetPlayerName { get; set; }
-
-        public override Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g, bool contextIsGlobal)
+        if (SourcePlayerName == receivingPlayerName)
         {
-            if (SourcePlayerName == receivingPlayerName)
-            {
-                if (TargetPlayerName == "")
-                {
-                    return Message.Express("You: ", Body, " ⇒ ALL");
-                }
-                else
-                {
-                    return Message.Express("You: ", Body, " ⇒ ", GetTargetFaction(g));
-                }
-            }
-            else
-            {
-                var sourceFaction = GetSourceFaction(g);
-
-                if (TargetPlayerName == "")
-                {
-                    if (sourceFaction != Faction.None)
-                    {
-                        return Message.Express(GetSourceFaction(g), " (to ALL) ", Body);
-                    }
-                    else
-                    {
-                        return Message.Express(SourcePlayerName, " (to ALL) ", Body);
-                    }
-                }
-                else
-                {
-                    if (sourceFaction != Faction.None)
-                    {
-                        return Message.Express(GetSourceFaction(g), Body);
-                    }
-                    else
-                    {
-                        return Message.Express(SourcePlayerName, Body);
-                    }
-                }
-            }
+            if (TargetPlayerName == "")
+                return Message.Express("You: ", Body, " ⇒ ALL");
+            return Message.Express("You: ", Body, " ⇒ ", GetTargetFaction(g));
         }
 
-        public Faction GetSourceFaction(Game g)
+        var sourceFaction = GetSourceFaction(g);
+
+        if (TargetPlayerName == "")
         {
-            var p = g.GetPlayer(SourcePlayerName);
-            return p == null ? Faction.None : p.Faction;
+            if (sourceFaction != Faction.None)
+                return Message.Express(GetSourceFaction(g), " (to ALL) ", Body);
+            return Message.Express(SourcePlayerName, " (to ALL) ", Body);
         }
 
-        public Faction GetTargetFaction(Game g)
-        {
-            var p = g.GetPlayer(TargetPlayerName);
-            return p == null ? Faction.None : p.Faction;
-        }
+        if (sourceFaction != Faction.None)
+            return Message.Express(GetSourceFaction(g), Body);
+        return Message.Express(SourcePlayerName, Body);
     }
 
+    public Faction GetSourceFaction(Game g)
+    {
+        var p = g.GetPlayer(SourcePlayerName);
+        return p == null ? Faction.None : p.Faction;
+    }
 
+    public Faction GetTargetFaction(Game g)
+    {
+        var p = g.GetPlayer(TargetPlayerName);
+        return p == null ? Faction.None : p.Faction;
+    }
 }

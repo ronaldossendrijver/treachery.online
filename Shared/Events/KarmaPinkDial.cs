@@ -5,59 +5,55 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 using System;
 using System.Linq;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class KarmaPinkDial : GameEvent
 {
-    public class KarmaPinkDial : GameEvent
+    #region Construction
+
+    public KarmaPinkDial(Game game, Faction initiator) : base(game, initiator)
     {
-        #region Construction
-
-        public KarmaPinkDial(Game game, Faction initiator) : base(game, initiator)
-        {
-        }
-
-        public KarmaPinkDial()
-        {
-        }
-
-        #endregion Construction
-
-        #region Validation
-
-        public override Message Validate()
-        {
-            return null;
-        }
-
-        #endregion Validation
-
-        #region Execution
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.Discard(Player, Karma.ValidKarmaCards(Game, Player).FirstOrDefault());
-            Player.SpecialKarmaPowerUsed = true;
-            Game.Stone(Milestone.Karma);
-            var myLeader = Game.CurrentBattle.PlanOf(Initiator).Hero;
-            var opponentLeader = Game.CurrentBattle.PlanOfOpponent(Player).Hero;
-
-            if (myLeader != null && opponentLeader != null)
-            {
-                Game.PinkKarmaBonus = Math.Abs(myLeader.Value - opponentLeader.ValueInCombatAgainst(myLeader));
-            }
-
-            Log("Using ", TreacheryCardType.Karma, ", ", Initiator, " add ", Game.PinkKarmaBonus, " to their dial");
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express("Using ", TreacheryCardType.Karma, ", ", Initiator, " add the difference between leader discs to their dial");
-        }
-
-        #endregion Execution
     }
+
+    public KarmaPinkDial()
+    {
+    }
+
+    #endregion Construction
+
+    #region Validation
+
+    public override Message Validate()
+    {
+        return null;
+    }
+
+    #endregion Validation
+
+    #region Execution
+
+    protected override void ExecuteConcreteEvent()
+    {
+        Game.Discard(Player, Karma.ValidKarmaCards(Game, Player).FirstOrDefault());
+        Player.SpecialKarmaPowerUsed = true;
+        Game.Stone(Milestone.Karma);
+        var myLeader = Game.CurrentBattle.PlanOf(Initiator).Hero;
+        var opponentLeader = Game.CurrentBattle.PlanOfOpponent(Player).Hero;
+
+        if (myLeader != null && opponentLeader != null) Game.PinkKarmaBonus = Math.Abs(myLeader.Value - opponentLeader.ValueInCombatAgainst(myLeader));
+
+        Log("Using ", TreacheryCardType.Karma, ", ", Initiator, " add ", Game.PinkKarmaBonus, " to their dial");
+    }
+
+    public override Message GetMessage()
+    {
+        return Message.Express("Using ", TreacheryCardType.Karma, ", ", Initiator, " add the difference between leader discs to their dial");
+    }
+
+    #endregion Execution
 }

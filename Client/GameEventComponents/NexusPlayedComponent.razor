@@ -1,21 +1,18 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<NexusPlayed>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Nexus: Play <FactionComponent Faction=@Player.Nexus/> @NexusTypeText</Header>
+    <Header>Nexus: Play <FactionComponent Faction="@Player.Nexus"/> @NexusTypeText</Header>
     <Body>
 
         @{
-            bool cunning = NexusPlayed.CanUseCunning(Player);
-            bool secretAlly = NexusPlayed.CanUseSecretAlly(Game, Player);
-            bool betrayal = NexusPlayed.CanUseBetrayal(Game, Player);
+            var cunning = NexusPlayed.CanUseCunning(Player);
+            var secretAlly = NexusPlayed.CanUseSecretAlly(Game, Player);
+            var betrayal = NexusPlayed.CanUseBetrayal(Game, Player);
 
             switch (Player.Nexus)
             {
@@ -133,7 +130,7 @@
                         purpleAmountOfSpecialForces = 0;
                     }
 
-                    int maxSpecialForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, purpleAmountOfSpecialForces) : 0;
+                    var maxSpecialForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, purpleAmountOfSpecialForces) : 0;
                     if (maxSpecialForcesPlacedOnPlanet > 0)
                     {
                         <div>
@@ -160,7 +157,7 @@
 
                     if (purpleHero != null && Revival.MayAssignSkill(Game, Player, purpleHero))
                     {
-                        <RadioComponent @bind-Value="purpleAssignSkill" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"No","Yes"})">
+                        <RadioComponent @bind-Value="purpleAssignSkill" Values="@(new[] {false,true})" ValueLabels="@(new[] {"No","Yes"})">
                             <Label>Do you wish to assign a skill to this leader?</Label>
                         </RadioComponent>
                     }
@@ -223,7 +220,7 @@
             }
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
 
     </Body>
 
@@ -270,7 +267,7 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override NexusPlayed ConfirmedResult => new NexusPlayed(Game, Faction)
+    protected override NexusPlayed ConfirmedResult => new(Game, Faction)
     {
         Faction = Player.Nexus,
         GreenPrescienceAspect = greenPrescienceAspect,

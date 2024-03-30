@@ -5,45 +5,44 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class HideSecrets : GameEvent
 {
-    public class HideSecrets : GameEvent
+    #region Construction
+
+    public HideSecrets(Game game, Faction initiator) : base(game, initiator)
     {
-        #region Construction
-
-        public HideSecrets(Game game, Faction initiator) : base(game, initiator)
-        {
-        }
-
-        public HideSecrets()
-        {
-        }
-
-        #endregion Construction
-
-        #region Validation
-
-        public override Message Validate()
-        {
-            return null;
-        }
-
-        #endregion Validation
-
-        #region Execution
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.SecretsRemainHidden.Add(Initiator);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " hide their secrets at end of game");
-        }
-
-        #endregion Execution
     }
+
+    public HideSecrets()
+    {
+    }
+
+    #endregion Construction
+
+    #region Validation
+
+    public override Message Validate()
+    {
+        return null;
+    }
+
+    #endregion Validation
+
+    #region Execution
+
+    protected override void ExecuteConcreteEvent()
+    {
+        Game.SecretsRemainHidden.Add(Initiator);
+    }
+
+    public override Message GetMessage()
+    {
+        return Message.Express(Initiator, " hide their secrets at end of game");
+    }
+
+    #endregion Execution
 }

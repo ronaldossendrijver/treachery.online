@@ -6,18 +6,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Client.GenericComponents;
-@using Treachery.Shared
 @inherits GameEventComponent<StormSpellPlayed>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Use @Skin.Current.Describe(TreacheryCardType.StormSpell)?</Header>
     <Body>
 
         <SelectNumberComponent @bind-Value="nrOfSectors" Min="0" Max="10" Label="Number of sectors" />
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.StormSpell)" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.StormSpell)" ConfirmError="@Validation" />
 
     </Body>
 
@@ -27,5 +24,5 @@
 
     private int nrOfSectors;
 
-    protected override StormSpellPlayed ConfirmedResult => new StormSpellPlayed(Game, Faction) { MoveAmount = nrOfSectors };
+    protected override StormSpellPlayed ConfirmedResult => new(Game, Faction) { MoveAmount = nrOfSectors };
 }

@@ -1,8 +1,6 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
-@using Treachery.Shared
 @inherits MapComponent
 
 @{
@@ -16,7 +14,7 @@
         {
             var opacity = stronghold == Game.Map.HiddenMobileStronghold && !showHMS ? 0.2f : 1f;
             <MapImage X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src="@Skin.Current.GetFactionTableImageURL(h.Game.StrongholdOwnership[stronghold])"
-               Opacity=opacity Popover=@Popup.Get(stronghold.Advantage, owner) PopoverStyle=""/>
+               Opacity=opacity Popover=@Popup.Get((StrongholdAdvantage)stronghold.Advantage, owner) PopoverStyle=""/>
 
             y += Skin.Current.PlayerTokenRadius;
         }
@@ -41,12 +39,12 @@
         }
     }
 
-    var forceLocations = Game.ForcesOnPlanetExcludingEmptyLocations(false);
+    var forceLocations = Game.ForcesOnPlanetExcludingEmptyLocations();
 
     foreach (var location in Game.Map.Locations(false).Where(l => l.Visible).OrderBy(l => Skin.Current.GetCenter(l).Y))
     {
         var pos = Skin.Current.GetCenter(location);
-        bool showForces = true;
+        var showForces = true;
         float forceDiameter = 2 * Skin.Current.FORCETOKEN_RADIUS;
 
         if (location is HiddenMobileStronghold hms)
@@ -65,7 +63,7 @@
 
             @if (showHMS && h.Status.HighlightedTerritories.Contains(location.Territory))
             {
-                <Circle X="(pos.X + 0.3f * Skin.Current.HmsRadius)" Y="pos.Y" Radius="(0.85f * Skin.Current.HmsRadius)"
+                <Circle X="pos.X + 0.3f * Skin.Current.HmsRadius" Y="pos.Y" Radius="0.85f * Skin.Current.HmsRadius"
                     FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
             }
 
@@ -94,8 +92,8 @@
         }
         else if (Game.DiscoveriesOnPlanet.TryGetValue(location, out var discovery))
         {
-            string popoverToShow =
-                (Player.Faction == Faction.Yellow && discovery.TokenType == DiscoveryTokenType.Yellow || Player.Faction == Faction.Orange && discovery.TokenType == DiscoveryTokenType.Orange) ?
+            var popoverToShow =
+                (Player.Faction == Faction.Yellow && discovery.TokenType == DiscoveryTokenType.Yellow) || (Player.Faction == Faction.Orange && discovery.TokenType == DiscoveryTokenType.Orange) ?
                 $"{Skin.Current.Describe(discovery.Token)} - {Skin.Current.GetDiscoveryTokenDescription(discovery.Token)}" : Skin.Current.Describe(discovery.TokenType);
 
             <MapImage X=@(pos.X - 3 * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 3 * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS)
@@ -113,7 +111,10 @@
 @code {
 
     private Situation situation = new();
-    protected override bool ShouldRender() => CheckAndResetDirty() || situation.RequiresUpdate(Game);
+    protected override bool ShouldRender()
+    {
+        return CheckAndResetDirty() || situation.RequiresUpdate(Game);
+    }
 
     private bool showHMS = true;
     private bool dirty = false;
@@ -123,12 +124,12 @@
 
     private async Task OnClick(MouseEventArgs e, Location l)
     {
-        await OnLocationClick.InvokeAsync(new LocationEventArgs() { Location = l, AltKey = e.AltKey, CtrlKey = e.CtrlKey, ShiftKey = e.ShiftKey });
+        await OnLocationClick.InvokeAsync(new LocationEventArgs { Location = l, AltKey = e.AltKey, CtrlKey = e.CtrlKey, ShiftKey = e.ShiftKey });
     }
 
     private bool CheckAndResetDirty()
     {
-        bool result = dirty;
+        var result = dirty;
         dirty = false;
         return result;
     }

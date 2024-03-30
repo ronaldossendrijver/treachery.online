@@ -6,18 +6,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<ResourcesAudited>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Force a faction to reveal the amount of @Name(Concept.Resource), weapons and defenses?</Header>
 
     <Body>
-        <SelectFromImageComponent @bind-Value="target" Values=@ResourcesAudited.ValidFactions(Game, Player) Required=true ImageWidth="40" />
-        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
+        <SelectFromImageComponent @bind-Value="target" Values="@ResourcesAudited.ValidFactions(Game, Player)" Required="true" ImageWidth="40" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
     </Body>
 
 </GameEventComponentLayout>
@@ -26,5 +23,5 @@
 
     private Faction target;
 
-    protected override ResourcesAudited ConfirmedResult => new ResourcesAudited(Game, Faction) { Target = target };
+    protected override ResourcesAudited ConfirmedResult => new(Game, Faction) { Target = target };
 }

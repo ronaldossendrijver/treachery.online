@@ -6,19 +6,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<DiscardedSearched>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Use @Skin.Current.Describe(TreacheryCardType.SearchDiscarded)?</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="card" Values="DiscardedSearched.ValidCards(Game)" Required="true" ImageWidth="80" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.SearchDiscarded)" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.SearchDiscarded)" ConfirmError="@Validation" />
 
     </Body>
 
@@ -35,5 +32,5 @@
         BackgroundImage = GetImage(TreacheryCardType.SearchDiscarded);
     }
 
-    protected override DiscardedSearched ConfirmedResult => new DiscardedSearched(Game, Faction) { Card = card };
+    protected override DiscardedSearched ConfirmedResult => new(Game, Faction) { Card = card };
 }

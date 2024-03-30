@@ -6,15 +6,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
 @inherits MapComponent
 
 <div id="planetmap" style="position:absolute; left:0px">
 
     <div id="planetmap_inner" style="position:absolute; width:@Px(Skin.Current.MapDimensions.X); height:@Px(Skin.Current.MapDimensions.Y);">
 
-        <BackgroundImage X="0" Y="0" Width=@Skin.Current.MapDimensions.X Height=@Skin.Current.MapDimensions.Y Src=@Skin.Current.Map_URL/>
+        <BackgroundImage X="0" Y="0" Width="@Skin.Current.MapDimensions.X" Height="@Skin.Current.MapDimensions.Y" Src="@Skin.Current.Map_URL"/>
 
         @if (h.Game.CurrentPhase > Phase.AwaitingPlayers)
         {

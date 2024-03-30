@@ -6,10 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using System.Collections;
-@using System.Collections.Generic;
-@using System.Linq;
 @inherits GameComponent;
 @typeparam T
 
@@ -23,7 +19,7 @@
         </label>
     }
 
-    <select class="form-select" style="cursor:pointer" @onchange=@(e => ChangeValue(e)) disabled="@Disabled" id=@Id>
+    <select class="form-select" style="cursor:pointer" @onchange="@(e => ChangeValue(e))" disabled="@Disabled" id="@Id">
 
         @if (AddEmptyValue)
         {
@@ -113,9 +109,10 @@
         {
             return EmptyLabel;
         }
-        else if (ValueLabels != null && ValueLabels.Count() == Values.Count())
+
+        if (ValueLabels != null && ValueLabels.Count() == Values.Count())
         {
-            int i = 0;
+            var i = 0;
             foreach (var item in Values)
             {
                 if (value.Equals(item)) return ValueLabels.ElementAt(i);

@@ -6,8 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared 
 @inherits MapComponent
 
 @{
@@ -15,7 +13,7 @@
     {
         var position = Skin.Current.GetCenter(Game.Map.ShieldWall.MiddleLocation);
 
-        for (int i = 0; i < Game.NumberOfMonsters; i++)
+        for (var i = 0; i < Game.NumberOfMonsters; i++)
         {
             <MapImage X="@(i * 0.7f * Skin.Current.MONSTERTOKEN_RADIUS + position.X - 0.35f * Skin.Current.MONSTERTOKEN_RADIUS)" 
                    Y="position.Y" Width=@(0.7f * Skin.Current.MONSTERTOKEN_RADIUS) Height=@(0.7f * Skin.Current.MONSTERTOKEN_RADIUS) Src=@Skin.Current.Monster_URL 

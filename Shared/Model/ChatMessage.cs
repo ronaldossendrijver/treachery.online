@@ -5,20 +5,19 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 using System;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public abstract class ChatMessage
 {
-    public abstract class ChatMessage
-    {
-        public string SourcePlayerName { get; set; }
+    public string SourcePlayerName { get; set; }
 
-        public string Body { get; set; }
+    public string Body { get; set; }
 
-        public DateTime DateTimeReceived { get; set; }
+    public DateTime DateTimeReceived { get; set; }
 
-        public abstract Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g, bool contextIsGlobal);
-    }
+    public abstract Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g, bool contextIsGlobal);
 }

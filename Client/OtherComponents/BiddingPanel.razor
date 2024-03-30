@@ -6,7 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BidType>
 @typeparam BidType
 
@@ -29,7 +28,7 @@
 
                 <div style="position: absolute; top: 80px; left: 5px; width: 180px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
 
-                    <div style=@AuctionDescriptionStyle>
+                    <div style="@AuctionDescriptionStyle">
                         @AuctionDescription
                     </div>
                             
@@ -150,7 +149,7 @@
     protected TreacheryCard karmaCard;
     protected bool useRedSecretAlly;
 
-    private bool _canBid = false;
+    private bool _canBid;
 
     [Parameter]
     public bool CanBid { get; set; }
@@ -172,8 +171,8 @@
 
         if (!_canBid && CanBid)
         {
-            if (Game.CurrentBid != null && Client.Autopass && Game.CurrentBid.TotalAmount + 1 > Client.BidAutoPassThreshold ||
-                Game.CurrentBid == null && Client.Autopass && Client.BidAutoPassThreshold == 0)
+            if ((Game.CurrentBid != null && Client.Autopass && Game.CurrentBid.TotalAmount + 1 > Client.BidAutoPassThreshold) ||
+                (Game.CurrentBid == null && Client.Autopass && Client.BidAutoPassThreshold == 0))
                 {
                 _ = Task.Delay(800 + Random.Shared.Next(1600)).ContinueWith(e => AutoPass());
             }
@@ -183,9 +182,9 @@
 
         if (!IsSilentAuction)
         {
-            int allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllyResources(Faction);
-            int playerResources = Player.Resources;
-            int bidToDo = Game.CurrentBid != null ? Game.CurrentBid.TotalAmount + 1 : 1;
+            var allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllyResources(Faction);
+            var playerResources = Player.Resources;
+            var bidToDo = Game.CurrentBid != null ? Game.CurrentBid.TotalAmount + 1 : 1;
             allyContributionAmount = Math.Min(bidToDo, allyResources);
             amount = Math.Min(bidToDo - allyContributionAmount, playerResources);
         }

@@ -6,12 +6,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<TerrorRevealed>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Resort to Terror against @Name(TerrorRevealed.GetVictim(Game)) in @Name(TerrorRevealed.GetTerritory(Game))?</Header>
     <Body>
@@ -30,7 +27,7 @@
 
         @if(_type == TerrorType.Robbery)
         {
-            <RadioComponent @bind-Value="_robberyTakesCard" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"Steal half their spice (rounded up)", "Draw a Treachery Card"})">
+            <RadioComponent @bind-Value="_robberyTakesCard" Values="@(new[] {false,true})" ValueLabels="@(new[] {"Steal half their spice (rounded up)", "Draw a Treachery Card"})">
                 <Label>Which kind of robbery?</Label>
             </RadioComponent>
         }
@@ -110,9 +107,9 @@
     private int _forcesInSneakAttack;
     private Location _sneakAttackTo;
 
-    protected override TerrorRevealed ConfirmedResult => new TerrorRevealed(Game, Faction) { Type = _type, RobberyTakesCard = _robberyTakesCard, CardToGiveInSabotage = _toGiveInSabotage, ForcesInSneakAttack = _forcesInSneakAttack, SneakAttackTo = _sneakAttackTo };
+    protected override TerrorRevealed ConfirmedResult => new(Game, Faction) { Type = _type, RobberyTakesCard = _robberyTakesCard, CardToGiveInSabotage = _toGiveInSabotage, ForcesInSneakAttack = _forcesInSneakAttack, SneakAttackTo = _sneakAttackTo };
 
-    protected override TerrorRevealed PassedResult => new TerrorRevealed(Game, Faction) { Passed = true };
+    protected override TerrorRevealed PassedResult => new(Game, Faction) { Passed = true };
 
-    protected override TerrorRevealed OtherResult => new TerrorRevealed(Game, Faction) { AllianceOffered = true };
+    protected override TerrorRevealed OtherResult => new(Game, Faction) { AllianceOffered = true };
 }

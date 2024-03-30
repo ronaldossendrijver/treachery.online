@@ -1,57 +1,56 @@
 ﻿using System;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class LeaderState : ICloneable
 {
-    public class LeaderState : ICloneable
+    private static int moment;
+
+    public Territory CurrentTerritory { get; set; }
+
+    //even = alive, odd = dead
+    public int DeathCounter { get; set; }
+
+    public int TimeOfDeath { get; set; }
+
+    public LeaderSkill Skill { get; set; }
+
+    public bool InFrontOfShield { get; set; }
+
+    public bool Alive => DeathCounter % 2 == 0;
+
+    public bool IsFaceDownDead => DeathCounter % 4 == 3;
+
+    public void Kill(Game g)
     {
-        private static int moment;
-
-        public Territory CurrentTerritory { get; set; }
-
-        //even = alive, odd = dead
-        public int DeathCounter { get; set; }
-
-        public int TimeOfDeath { get; set; }
-
-        public LeaderSkill Skill { get; set; }
-
-        public bool InFrontOfShield { get; set; }
-
-        public bool Alive => (DeathCounter % 2) == 0;
-
-        public bool IsFaceDownDead => (DeathCounter % 4) == 3;
-
-        public void Kill(Game g)
+        if (Skill != LeaderSkill.None)
         {
-            if (Skill != LeaderSkill.None)
-            {
-                g.SkillDeck.PutOnTop(Skill);
-                Skill = LeaderSkill.None;
-                InFrontOfShield = false;
-            }
-
-            DeathCounter++;
-            TimeOfDeath = moment++;
+            g.SkillDeck.PutOnTop(Skill);
+            Skill = LeaderSkill.None;
+            InFrontOfShield = false;
         }
 
-        public void Assassinate(Game g)
+        DeathCounter++;
+        TimeOfDeath = moment++;
+    }
+
+    public void Assassinate(Game g)
+    {
+        Kill(g);
+        if (!IsFaceDownDead)
         {
+            Revive();
             Kill(g);
-            if (!IsFaceDownDead)
-            {
-                Revive();
-                Kill(g);
-            }
         }
+    }
 
-        public void Revive()
-        {
-            DeathCounter++;
-        }
+    public void Revive()
+    {
+        DeathCounter++;
+    }
 
-        public object Clone()
-        {
-            return MemberwiseClone();
-        }
+    public object Clone()
+    {
+        return MemberwiseClone();
     }
 }

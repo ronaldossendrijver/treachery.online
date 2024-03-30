@@ -6,12 +6,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Audited>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Perform your audit</Header>
     <Body>
@@ -23,7 +20,7 @@
             }
         </div>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Finish Audit" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Finish Audit" ConfirmError="@Validation" />
 
     </Body>
 
@@ -34,5 +31,5 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Brown;
 
-    protected override Audited ConfirmedResult => new Audited(Game, Faction) {  };
+    protected override Audited ConfirmedResult => new(Game, Faction);
 }

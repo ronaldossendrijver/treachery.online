@@ -5,85 +5,82 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class Territory : IIdentifiable, ICloneable
 {
-    public class Territory : IIdentifiable, ICloneable
+    public Territory(int id)
     {
-        public Territory(int id)
+        Id = id;
+    }
+
+    public Territory(bool isHomeworld, bool isStronghold, bool hasReducedShippingCost, bool isDiscovery, bool isProtectedFromStorm, bool isProtectedFromWorm, int id) : this(id)
+    {
+        IsHomeworld = isHomeworld;
+        IsStronghold = isStronghold;
+        IsProtectedFromStorm = isProtectedFromStorm;
+        IsProtectedFromWorm = isProtectedFromWorm;
+        IsDiscovery = isDiscovery;
+        HasReducedShippingCost = hasReducedShippingCost;
+    }
+
+    public int Id { get; }
+
+    public int SkinId => Id;
+
+    public bool IsHomeworld { get; set; }
+
+    public bool HasReducedShippingCost { get; set; }
+
+    public bool IsDiscovery { get; set; }
+
+    public bool IsDiscoveredStronghold => IsStronghold && IsDiscovery;
+
+    public bool IsVisible => Locations.Any(l => l.Visible);
+
+    public bool IsStronghold { get; set; }
+
+    public bool IsProtectedFromStorm { get; set; }
+
+    public bool IsProtectedFromWorm { get; set; }
+
+    public StrongholdAdvantage Advantage { get; set; }
+
+    public List<Location> Locations { get; } = new();
+
+    public void AddLocation(Location l)
+    {
+        Locations.Add(l);
+    }
+
+    public Location MiddleLocation
+    {
+        get
         {
-            Id = id;
+            var locations = Locations.ToList();
+            return locations[(int)(0.5 * locations.Count)];
         }
+    }
 
-        public Territory(bool isHomeworld, bool isStronghold, bool hasReducedShippingCost, bool isDiscovery, bool isProtectedFromStorm, bool isProtectedFromWorm, int id) : this(id)
-        {
-            IsHomeworld = isHomeworld;
-            IsStronghold = isStronghold;
-            IsProtectedFromStorm = isProtectedFromStorm;
-            IsProtectedFromWorm = isProtectedFromWorm;
-            IsDiscovery = isDiscovery;
-            HasReducedShippingCost = hasReducedShippingCost;
-        }
+    public Location ResourceBlowLocation => Locations.FirstOrDefault(l => l.SpiceBlowAmount > 0);
 
-        public int Id { get; private set; }
+    public Location DiscoveryTokenLocation => Locations.FirstOrDefault(l => l.DiscoveryTokenType != DiscoveryTokenType.None);
 
-        public int SkinId => Id;
+    public override string ToString()
+    {
+        if (Message.DefaultDescriber != null)
+            return Message.DefaultDescriber.Describe(this) + "*";
+        return base.ToString();
+    }
 
-        public bool IsHomeworld { get; set; }
-
-        public bool HasReducedShippingCost { get; set; }
-
-        public bool IsDiscovery { get; set; }
-
-        public bool IsDiscoveredStronghold => IsStronghold && IsDiscovery;
-
-        public bool IsVisible => Locations.Any(l => l.Visible);
-
-        public bool IsStronghold { get; set; }
-
-        public bool IsProtectedFromStorm { get; set; }
-
-        public bool IsProtectedFromWorm { get; set; }
-
-        public StrongholdAdvantage Advantage { get; set; }
-
-        public List<Location> Locations { get; private set; } = new List<Location>();
-
-        public void AddLocation(Location l)
-        {
-            Locations.Add(l);
-        }
-
-        public Location MiddleLocation
-        {
-            get
-            {
-                var locations = Locations.ToList();
-                return locations[(int)(0.5 * locations.Count)];
-            }
-        }
-
-        public Location ResourceBlowLocation => Locations.FirstOrDefault(l => l.SpiceBlowAmount > 0);
-
-        public Location DiscoveryTokenLocation => Locations.FirstOrDefault(l => l.DiscoveryTokenType != DiscoveryTokenType.None);
-
-        public override string ToString()
-        {
-            if (Message.DefaultDescriber != null)
-            {
-                return Message.DefaultDescriber.Describe(this) + "*";
-            }
-            else
-            {
-                return base.ToString();
-            }
-        }
-
-        public object Clone() => MemberwiseClone();
+    public object Clone()
+    {
+        return MemberwiseClone();
     }
 }

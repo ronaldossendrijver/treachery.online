@@ -6,12 +6,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<RedBidSupport>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>How much of your @Skin.Current.Describe(Concept.Resource) may non-allied factions use for bidding?</Header>
     <Body>
@@ -23,7 +20,7 @@
 
         <div class="text-info small">Your contributions to opponent bids will flow back to you <i>at the end</i> of the bidding phase.</div>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Support" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Support" ConfirmError="@Validation" />
 
     </Body>
 
@@ -33,7 +30,7 @@
 
     protected override Faction IsFactionSpecific => Faction.Red;
 
-    private Dictionary<Faction, int> amounts = new Dictionary<Faction, int>();
+    private Dictionary<Faction, int> amounts = new();
 
     protected override void OnInitialized()
     {
@@ -43,7 +40,7 @@
         }
     }
 
-    protected override RedBidSupport ConfirmedResult => new RedBidSupport(Game, Faction) { Amounts = amounts };
+    protected override RedBidSupport ConfirmedResult => new(Game, Faction) { Amounts = amounts };
 
     private IEnumerable<Faction> ValidTargets => Game.PlayersOtherThan(Player).Where(f => f != Player.Ally);
 }

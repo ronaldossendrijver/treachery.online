@@ -1,13 +1,10 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<RaiseDeadPlayed>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Use @Skin.Current.Describe(TreacheryCardType.RaiseDead) to revive up to five forces or one leader for free</Header>
     <Body>
@@ -35,7 +32,7 @@
                 amountOfSpecialForces = 0;
             }
 
-            int maxSpecialForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, amountOfSpecialForces) : 0;
+            var maxSpecialForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, amountOfSpecialForces) : 0;
             if (maxSpecialForcesPlacedOnPlanet > 0)
             {
                 <div>
@@ -65,7 +62,7 @@
 
             if (hero != null && Revival.MayAssignSkill(Game, Player, hero))
             {
-                <RadioComponent @bind-Value="assignSkill" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"No","Yes"})">
+                <RadioComponent @bind-Value="assignSkill" Values="@(new[] {false,true})" ValueLabels="@(new[] {"No","Yes"})">
                     <Label>Do you wish to assign a skill to this leader?</Label>
                 </RadioComponent>
             }
@@ -80,7 +77,7 @@
             }
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.RaiseDead)" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.RaiseDead)" ConfirmError="@Validation" />
 
     </Body>
 
@@ -109,7 +106,7 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override RaiseDeadPlayed ConfirmedResult => new RaiseDeadPlayed(Game, Faction)
+    protected override RaiseDeadPlayed ConfirmedResult => new(Game, Faction)
     {
         AmountOfForces = amountOfForces, 
         AmountOfSpecialForces = amountOfSpecialForces, 
@@ -121,6 +118,6 @@
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid<Location, Location>(ref location, Revival.ValidRevivedForceLocations(Game, Player), l);
+        SetIfValid(ref location, Revival.ValidRevivedForceLocations(Game, Player), l);
     }
 }

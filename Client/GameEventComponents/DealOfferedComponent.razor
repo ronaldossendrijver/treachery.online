@@ -1,17 +1,14 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<DealOffered>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType() Collapsed=CollapseState.Collapsed>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsed="CollapseState.Collapsed">
 
     <Header>Offer a Deal</Header>
     <Body>
 
-        <SelectFromImageComponent Selected="to" Values="Game.PlayersOtherThan(Player).Where(p => p != Player.Ally)" T=Faction OnChanged=StateHasChanged Required=false ImageWidth="40">
+        <SelectFromImageComponent Selected="to" Values="Game.PlayersOtherThan(Player).Where(p => p != Player.Ally)" T="Faction" OnChanged="StateHasChanged" Required="false" ImageWidth="40">
             <Label>Offer to whom (select none to offer to all)</Label>
         </SelectFromImageComponent>
 
@@ -32,7 +29,7 @@
 
         <textarea class="form-control mt-1" rows="5" @bind="text" maxlength="512" placeholder="Deal description" />
 
-        <ButtonRowComponent Confirm="ConfirmOffer" ConfirmText="Offer Deal" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="ConfirmOffer" ConfirmText="Offer Deal" ConfirmError="@Validation" />
 
     </Body>
 
@@ -40,7 +37,7 @@
 
 @code {
 
-    private List<Faction> to = new List<Faction>();
+    private List<Faction> to = new();
     private int price;
     private int benefit;
     private DealType type;
@@ -52,11 +49,11 @@
         StateHasChanged();
     }
 
-    protected override DealOffered ConfirmedResult => new DealOffered(Game, Faction) { To = to.Count >= Game.Players.Count - 1 ? Array.Empty<Faction>() : to.ToArray(), Price = price, Benefit = benefit, Type = type, Text = text, EndPhase = until };
+    protected override DealOffered ConfirmedResult => new(Game, Faction) { To = to.Count >= Game.Players.Count - 1 ? Array.Empty<Faction>() : to.ToArray(), Price = price, Benefit = benefit, Type = type, Text = text, EndPhase = until };
 
     private async Task ConfirmOffer()
     {
-        await base.Confirm();
+        await Confirm();
         text = "";
     }
 
@@ -66,10 +63,10 @@
         {
             return type switch
             {
-                DealType.ShareStormPrescience => new Phase[] { Phase.TurnConcluded },
-                DealType.ShareBiddingPrescience => new Phase[] { Phase.Bidding, Phase.BiddingReport },
-                DealType.ShareResourceDeckPrescience => new Phase[] { Phase.TurnConcluded },
-                _ => new Phase[] { Phase.TurnConcluded, Phase.GameEnded }
+                DealType.ShareStormPrescience => new[] { Phase.TurnConcluded },
+                DealType.ShareBiddingPrescience => new[] { Phase.Bidding, Phase.BiddingReport },
+                DealType.ShareResourceDeckPrescience => new[] { Phase.TurnConcluded },
+                _ => new[] { Phase.TurnConcluded, Phase.GameEnded }
             };
         }
     }

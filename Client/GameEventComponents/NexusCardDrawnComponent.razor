@@ -6,12 +6,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<NexusCardDrawn>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Draw a Nexus Card?</Header>
     <Body>
@@ -33,7 +30,7 @@
 
     protected override bool IsUrgent => true;
 
-    protected override NexusCardDrawn ConfirmedResult => new NexusCardDrawn(Game, Faction) { Passed = false };
+    protected override NexusCardDrawn ConfirmedResult => new(Game, Faction) { Passed = false };
 
-    protected override NexusCardDrawn PassedResult => new NexusCardDrawn(Game, Faction) { Passed = true };
+    protected override NexusCardDrawn PassedResult => new(Game, Faction) { Passed = true };
 }

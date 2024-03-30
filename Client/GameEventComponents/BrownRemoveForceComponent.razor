@@ -6,13 +6,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BrownRemoveForce>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Use @ToUse to force a player to send 1 force to their reserves?</Header>
 
@@ -22,13 +19,13 @@
             <Label>From</Label>
         </SelectComponent>
 
-        <SelectFromImageComponent @bind-Value="target" Values="BrownRemoveForce.ValidFactions(Game, Player, location)" Required=true ImageWidth="40" />
+        <SelectFromImageComponent @bind-Value="target" Values="BrownRemoveForce.ValidFactions(Game, Player, location)" Required="true" ImageWidth="40" />
 
         <div class="mt-1">
             <SelectFromImageComponent @bind-Value="special" Values="ForceChoices" ImageWidth="40" Required="true" />
         </div>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Remove Force" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Remove Force" ConfirmError="@Validation" />
 
     </Body>
 
@@ -44,7 +41,7 @@
     private Faction target;
     private bool special;
 
-    protected override BrownRemoveForce ConfirmedResult => new BrownRemoveForce(Game, Faction) { Location = location, Target = target, SpecialForce = special };
+    protected override BrownRemoveForce ConfirmedResult => new(Game, Faction) { Location = location, Target = target, SpecialForce = special };
 
     protected override void OnAfterRender(bool firstRender)
     {

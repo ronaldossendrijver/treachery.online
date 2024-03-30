@@ -5,23 +5,22 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Client
+namespace Treachery.Client;
+
+public class CaptureDevice
 {
-    public class CaptureDevice
+    public string Label { get; internal set; }
+
+    public string DeviceId { get; internal set; }
+
+    public string Kind { get; internal set; }
+
+    public string GroupId { get; internal set; }
+
+    public override string ToString()
     {
-        public string Label { get; internal set; }
-
-        public string DeviceId { get; internal set; }
-
-        public string Kind { get; internal set; }
-
-        public string GroupId { get; internal set; }
-
-        public override string ToString()
-        {
-            return DeviceId;
-        }
+        return DeviceId;
     }
 }

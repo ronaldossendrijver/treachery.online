@@ -6,19 +6,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<HMSAdvantageChosen>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Select which advantage of another stronghold you control to use for the @Skin.Current.Describe(Game.Map.HiddenMobileStronghold)</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="advantage" Values="HMSAdvantageChosen.ValidAdvantages(Game, Player)" ImageWidth="100" Required="true"/>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Select {0}", advantage)" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Select {0}", advantage)" ConfirmError="@Validation" />
 
     </Body>
 
@@ -28,5 +25,5 @@
 
     private StrongholdAdvantage advantage;
 
-    protected override HMSAdvantageChosen ConfirmedResult => new HMSAdvantageChosen(Game, Faction) { Advantage = advantage };
+    protected override HMSAdvantageChosen ConfirmedResult => new(Game, Faction) { Advantage = advantage };
 }

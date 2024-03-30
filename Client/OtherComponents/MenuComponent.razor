@@ -6,9 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameComponent
 
 <div class="row m-0 d-flex justify-content-center" style="animation:fadeIn 1s;">
@@ -241,7 +238,7 @@ else if (IsVisible(RESTART))
 
     private bool IsVisible(object o)
     {
-        return (o == Visible);
+        return o == Visible;
     }
 
     private async Task ToggleFullScreen()
@@ -271,7 +268,7 @@ else if (IsVisible(RESTART))
 
                 if (state.Version > 0)
                 {
-                    var result = Game.TryLoad(state, true, true, out Game game);
+                    var result = Game.TryLoad(state, true, true, out var game);
 
                     if (result != null)
                     {

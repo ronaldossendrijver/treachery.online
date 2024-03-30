@@ -7,18 +7,15 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
+namespace Treachery.Shared;
 
-namespace Treachery.Shared
+public class DiscoveredLocation : AttachedLocation
 {
-    public class DiscoveredLocation : AttachedLocation
-    {
-        public DiscoveryToken Discovery { get; private set; }
+    public DiscoveryToken Discovery { get; private set; }
 
-        public DiscoveredLocation(Territory t, int id, DiscoveryToken discovery) : base(id)
-        {
-            Territory = t;
-            Discovery = discovery;
-        }
+    public DiscoveredLocation(Territory t, int id, DiscoveryToken discovery) : base(id)
+    {
+        Territory = t;
+        Discovery = discovery;
     }
 }

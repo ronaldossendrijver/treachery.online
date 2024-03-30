@@ -6,17 +6,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<ReplacedCardWon>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Replace the card you just won by discarding it and drawing a new card from the Treachery Card deck?</Header>
     <Body>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError=@Validation Pass="Pass" PassText="No" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError="@Validation" Pass="Pass" PassText="No" />
 
     </Body>
 
@@ -26,7 +23,7 @@
 
     protected override bool IsUrgent => false;
 
-    protected override ReplacedCardWon ConfirmedResult => new ReplacedCardWon(Game, Faction) { Passed = false };
+    protected override ReplacedCardWon ConfirmedResult => new(Game, Faction) { Passed = false };
 
-    protected override ReplacedCardWon PassedResult => new ReplacedCardWon(Game, Faction) { Passed = true };
+    protected override ReplacedCardWon PassedResult => new(Game, Faction) { Passed = true };
 }

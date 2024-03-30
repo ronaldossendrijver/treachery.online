@@ -6,30 +6,27 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<WhiteAnnouncesBlackMarket>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Select a card to put on the Black Market, or pass</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="card" Values="WhiteAnnouncesBlackMarket.ValidCards(Player)" Required="true" ImageWidth="80" />
 
-        <RadioComponent @bind-Value="auctionType" Values="new AuctionType[] { AuctionType.BlackMarketNormal, AuctionType.BlackMarketOnceAround, AuctionType.BlackMarketSilent }" ValueLabels="@(new string[] { "Normal", "Once Around", "Silent"})">
+        <RadioComponent @bind-Value="auctionType" Values="new[] { AuctionType.BlackMarketNormal, AuctionType.BlackMarketOnceAround, AuctionType.BlackMarketSilent }" ValueLabels="@(new[] { "Normal", "Once Around", "Silent"})">
             <Label>Type of auction</Label>
         </RadioComponent>
 
         @if (auctionType == AuctionType.BlackMarketOnceAround)
         {
-            <RadioComponent @bind-Value="direction" Values="new int[] { 1, -1 }" ValueLabels="@(new string[] { "Counter-clockwise", "Clockwise"})">
+            <RadioComponent @bind-Value="direction" Values="new[] { 1, -1 }" ValueLabels="@(new[] { "Counter-clockwise", "Clockwise"})">
                 <Label>Bidding direction</Label>
             </RadioComponent>
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Put {0} on Black Market", card)" ConfirmError=@Validation Pass="Pass" PassText="Pass" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Put {0} on Black Market", card)" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
 
     </Body>
 
@@ -45,7 +42,7 @@
     private AuctionType auctionType = AuctionType.BlackMarketNormal;
     private int direction = 1;
 
-    protected override WhiteAnnouncesBlackMarket ConfirmedResult => new WhiteAnnouncesBlackMarket(Game, Faction) { Card = card, AuctionType = auctionType, Direction = direction };
+    protected override WhiteAnnouncesBlackMarket ConfirmedResult => new(Game, Faction) { Card = card, AuctionType = auctionType, Direction = direction };
 
-    protected override WhiteAnnouncesBlackMarket PassedResult => new WhiteAnnouncesBlackMarket(Game, Faction) { Passed = true };
+    protected override WhiteAnnouncesBlackMarket PassedResult => new(Game, Faction) { Passed = true };
 }

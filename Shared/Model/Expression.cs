@@ -5,29 +5,28 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 using System.Collections.Generic;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class Expression
 {
-    public class Expression
+    public object[] Elements { get; private set; }
+
+    public Expression(params object[] elements)
     {
-        public object[] Elements { get; private set; }
+        Elements = elements;
+    }
 
-        public Expression(params object[] elements)
-        {
-            Elements = elements;
-        }
+    public Expression(List<object> elements)
+    {
+        Elements = elements.ToArray();
+    }
 
-        public Expression(List<object> elements)
-        {
-            Elements = elements.ToArray();
-        }
-
-        public static Expression Express(params object[] list)
-        {
-            return new Expression(list);
-        }
+    public static Expression Express(params object[] list)
+    {
+        return new Expression(list);
     }
 }

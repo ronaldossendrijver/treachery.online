@@ -5,53 +5,49 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class Audited : GameEvent
 {
-    public class Audited : GameEvent
+    #region Construction
+
+    public Audited(Game game, Faction initiator) : base(game, initiator)
     {
-        #region Construction
-
-        public Audited(Game game, Faction initiator) : base(game, initiator)
-        {
-        }
-
-        public Audited()
-        {
-        }
-
-        #endregion Construction
-
-        #region Validation
-
-        public override Message Validate()
-        {
-            return null;
-        }
-
-        #endregion Validation
-
-        #region Execution
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Log();
-            Game.Stone(Milestone.Audited);
-
-            foreach (var card in Game.AuditedCards)
-            {
-                Game.RegisterKnown(Player, card);
-            }
-
-            Game.Enter(Game.BattleWinner == Faction.None, Game.FinishBattle, Game.BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Faction.Brown, " finish their audit");
-        }
-
-        #endregion Execution
     }
+
+    public Audited()
+    {
+    }
+
+    #endregion Construction
+
+    #region Validation
+
+    public override Message Validate()
+    {
+        return null;
+    }
+
+    #endregion Validation
+
+    #region Execution
+
+    protected override void ExecuteConcreteEvent()
+    {
+        Log();
+        Game.Stone(Milestone.Audited);
+
+        foreach (var card in Game.AuditedCards) Game.RegisterKnown(Player, card);
+
+        Game.Enter(Game.BattleWinner == Faction.None, Game.FinishBattle, Game.BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
+    }
+
+    public override Message GetMessage()
+    {
+        return Message.Express(Faction.Brown, " finish their audit");
+    }
+
+    #endregion Execution
 }

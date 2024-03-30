@@ -5,53 +5,45 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-using System;
 using System.Collections.Generic;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public abstract class AttachedLocation : Location
 {
-    public abstract class AttachedLocation : Location
+    public Location AttachedToLocation { get; private set; }
+
+    //Needed to check game version
+    public Game Game { get; private set; }
+
+    public override bool Visible => AttachedToLocation != null;
+
+    public override int Sector => Game?.Version >= 159 && AttachedToLocation != null ? AttachedToLocation.Sector : -1;
+
+    public AttachedLocation(int id) : base(id)
     {
-        public Location AttachedToLocation { get; private set; } = null;
 
-        //Needed to check game version
-        public Game Game { get; private set; }
+    }
 
-        public override bool Visible => AttachedToLocation != null;
+    public void PointAt(Game game, Location newLocation)
+    {
+        if (AttachedToLocation != null) AttachedToLocation.Neighbours.Remove(this);
 
-        public override int Sector => Game?.Version >= 159 && AttachedToLocation != null ? AttachedToLocation.Sector : -1;
+        newLocation.Neighbours.Add(this);
+        AttachedToLocation = newLocation;
 
-        public AttachedLocation(int id) : base(id)
+        if (game.Version >= 163) Game = game;
+    }
+
+    public override List<Location> Neighbours
+    {
+        get
         {
-
-        }
-
-        public void PointAt(Game game, Location newLocation)
-        {
-            if (AttachedToLocation != null)
-            {
-                AttachedToLocation.Neighbours.Remove(this);
-            }
-
-            newLocation.Neighbours.Add(this);
-            AttachedToLocation = newLocation;
-
-            if (game.Version >= 163)
-            {
-                Game = game;                
-            }
-        }
-
-        public override List<Location> Neighbours
-        {
-            get
-            {
-                var result = new List<Location>();
-                if (AttachedToLocation != null) result.Add(AttachedToLocation);
-                return result;
-            }
+            var result = new List<Location>();
+            if (AttachedToLocation != null) result.Add(AttachedToLocation);
+            return result;
         }
     }
 }

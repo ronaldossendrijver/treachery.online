@@ -6,12 +6,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BattleConcluded>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Conclude the battle you just won</Header>
 
@@ -124,7 +121,7 @@
             }
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@Validation" />
 
     </Body>
 
@@ -144,7 +141,7 @@
     private IHero traitorToReplace;
     private bool addExtraForce;
 
-    protected override BattleConcluded ConfirmedResult => new BattleConcluded(Game, Faction)
+    protected override BattleConcluded ConfirmedResult => new(Game, Faction)
     {
         DiscardedCards = DetermineSelectedCards(),
         StolenToken = stolenToken,
@@ -179,10 +176,8 @@
             {
                 return action.Hero as TreacheryCard;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 
@@ -195,10 +190,8 @@
             {
                 return action.Weapon;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 
@@ -211,10 +204,8 @@
             {
                 return action.Defense;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 
@@ -226,20 +217,12 @@
             {
                 return Game.AggressorPlan.Initiator == Faction ? Game.AggressorPlan : Game.DefenderPlan;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 
-    private Player Loser
-    {
-        get
-        {
-            return Game.GetPlayer(Game.BattleLoser);
-        }
-    }
+    private Player Loser => Game.GetPlayer(Game.BattleLoser);
 
     private string ConfirmLabel => traitorToReplace == null ? "Conclude Battle" : Skin.Current.Format("Conclude Battle and Reveal & Replace {0}", traitorToReplace);
 }

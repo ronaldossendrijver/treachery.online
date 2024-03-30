@@ -6,13 +6,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BlueAccompanies>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Accompany the latest shipment?</Header>
     <Body>
@@ -30,7 +27,7 @@
             addExtraAdvisor = false;
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError=@Validation Pass="Pass" PassText="No" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError="@Validation" Pass="Pass" PassText="No" />
 
     </Body>
 
@@ -58,12 +55,12 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override BlueAccompanies ConfirmedResult => new BlueAccompanies(Game, Faction) { Location = target, Accompanies = true, ExtraAdvisor = addExtraAdvisor };
+    protected override BlueAccompanies ConfirmedResult => new(Game, Faction) { Location = target, Accompanies = true, ExtraAdvisor = addExtraAdvisor };
 
-    protected override BlueAccompanies PassedResult => new BlueAccompanies(Game, Faction) { Accompanies = false };
+    protected override BlueAccompanies PassedResult => new(Game, Faction) { Accompanies = false };
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid<Location, Location>(ref target, BlueAccompanies.ValidTargets(Game, Player), l);
+        SetIfValid(ref target, BlueAccompanies.ValidTargets(Game, Player), l);
     }
 }

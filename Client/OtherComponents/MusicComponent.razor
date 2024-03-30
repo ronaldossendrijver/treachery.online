@@ -6,8 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-@using Treachery.Client.GenericComponents;
-@using System.Linq;
 @inherits GameComponent;
  
 @if (Visible)
@@ -95,20 +93,18 @@
         {
             return Skin.Current.MusicGeneral_URL;
         }
-        else
+
+        return Client.Game.CurrentMainPhase switch
         {
-            return (Client.Game.CurrentMainPhase) switch
-            {
-                MainPhase.Setup => Skin.Current.MusicSetup_URL,
-                MainPhase.Blow or MainPhase.Charity => Skin.Current.MusicResourceBlow_URL,
-                MainPhase.Bidding => Skin.Current.MusicBidding_URL,
-                MainPhase.ShipmentAndMove => Skin.Current.MusicShipmentAndMove_URL,
-                MainPhase.Battle when Game.CurrentPhase >= Phase.CallTraitorOrPass => Skin.Current.MusicBattleClimax_URL,
-                MainPhase.Battle => Skin.Current.MusicBattle_URL,
-                MainPhase.Collection or MainPhase.Contemplate or MainPhase.Ended => Skin.Current.MusicMentat_URL,
-                _ => Skin.Current.MusicGeneral_URL
-            };
-        }
+            MainPhase.Setup => Skin.Current.MusicSetup_URL,
+            MainPhase.Blow or MainPhase.Charity => Skin.Current.MusicResourceBlow_URL,
+            MainPhase.Bidding => Skin.Current.MusicBidding_URL,
+            MainPhase.ShipmentAndMove => Skin.Current.MusicShipmentAndMove_URL,
+            MainPhase.Battle when Game.CurrentPhase >= Phase.CallTraitorOrPass => Skin.Current.MusicBattleClimax_URL,
+            MainPhase.Battle => Skin.Current.MusicBattle_URL,
+            MainPhase.Collection or MainPhase.Contemplate or MainPhase.Ended => Skin.Current.MusicMentat_URL,
+            _ => Skin.Current.MusicGeneral_URL
+        };
     }
 
     private async Task SaveSettings()

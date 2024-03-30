@@ -5,74 +5,71 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR.Client;
 
-namespace Treachery.Client
+namespace Treachery.Client;
+
+public class HostProxy
 {
-    public class HostProxy
+    public int HostID;
+    private readonly HubConnection _connection;
+
+    public HostProxy(int hostID, HubConnection connection)
     {
-        public int HostID;
-        private readonly HubConnection _connection;
+        HostID = hostID;
+        _connection = connection;
+    }
 
-        public HostProxy(int hostID, HubConnection connection)
+    public async Task Request(GameEvent e)
+    {
+        try
         {
-            HostID = hostID;
-            _connection = connection;
+            await _connection.SendAsync("Request" + e.GetType().Name, HostID, e);
         }
-
-        public async Task Request(GameEvent e)
+        catch (Exception)
         {
+            Support.Log("Disconnected...");
+        }
+    }
+
+    public async Task Request(GameChatMessage message)
+    {
+        if (message.Body != null && message.Body.Length > 0)
             try
             {
-                await _connection.SendAsync("Request" + e.GetType().Name, HostID, e);
+                await _connection.SendAsync("RequestChatMessage", HostID, message);
             }
             catch (Exception)
             {
                 Support.Log("Disconnected...");
             }
-        }
+    }
 
-        public async Task Request(GameChatMessage message)
+    public async Task SendHeartbeat(string playerName)
+    {
+        try
         {
-            if (message.Body != null && message.Body.Length > 0)
-            {
-                try
-                {
-                    await _connection.SendAsync("RequestChatMessage", HostID, message);
-                }
-                catch (Exception)
-                {
-                    Support.Log("Disconnected...");
-                }
-            }
+            await _connection.SendAsync("ProcessHeartbeat", HostID, playerName);
         }
-
-        public async Task SendHeartbeat(string playerName)
+        catch (Exception)
         {
-            try
-            {
-                await _connection.SendAsync("ProcessHeartbeat", HostID, playerName);
-            }
-            catch (Exception)
-            {
-                Support.Log("Disconnected...");
-            }
+            Support.Log("Disconnected...");
         }
+    }
 
-        public async Task SendVideo(int playerPosition, byte[] data)
+    public async Task SendVideo(int playerPosition, byte[] data)
+    {
+        try
         {
-            try
-            {
-                await _connection.SendAsync("SendVideo", HostID, playerPosition, data);
-            }
-            catch (Exception)
-            {
-                Support.Log("Disconnected...");
-            }
+            await _connection.SendAsync("SendVideo", HostID, playerPosition, data);
+        }
+        catch (Exception)
+        {
+            Support.Log("Disconnected...");
         }
     }
 }

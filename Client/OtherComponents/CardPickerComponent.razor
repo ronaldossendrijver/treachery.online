@@ -1,7 +1,6 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-@using Treachery.Client.GenericComponents;
 
 <ModalComponent Id="@Id" Title="Pick a card">
 
@@ -33,14 +32,14 @@
 
         @{
             var green = Tracker.Client.Game.GetPlayer(Faction.Green);
-            string lastWonCardName = Tracker.Client.Game.CardJustWon != null && Tracker.Client.Game.KnownCards(green).Contains(Tracker.Client.Game.CardJustWon) ? Name(Tracker.Client.Game.CardJustWon) : "";
+            var lastWonCardName = Tracker.Client.Game.CardJustWon != null && Tracker.Client.Game.KnownCards(green).Contains(Tracker.Client.Game.CardJustWon) ? Name(Tracker.Client.Game.CardJustWon) : "";
 
             @foreach (var v in Tracker.CardsToPick)
             {
                 var cardName = Name(v);
-                bool isCardJustWon = lastWonCardName == cardName;
-                string border = isCardJustWon? "border-success" : "border-0";
-                string cardbg = isCardJustWon? "bg-light" : "";
+                var isCardJustWon = lastWonCardName == cardName;
+                var border = isCardJustWon? "border-success" : "border-0";
+                var cardbg = isCardJustWon? "bg-light" : "";
 
                 <div class="card p-1 m-0 @border @cardbg">
                     <div class="card-img-top">
@@ -74,5 +73,9 @@
         await Browser.HideModal(Id);
     }
 
-    private string Name(TreacheryCard card) => Skin.Current.Describe(card);
+    private string Name(TreacheryCard card)
+    {
+        return Skin.Current.Describe(card);
+    }
+
 }

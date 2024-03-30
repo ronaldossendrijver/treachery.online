@@ -6,16 +6,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<PerformSetup>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>
-        Set <FactionComponent Faction=CurrentFaction/> initial @Skin.Current.Describe(Concept.Resource) and forces.
+        Set <FactionComponent Faction="CurrentFaction"/> initial @Skin.Current.Describe(Concept.Resource) and forces.
     </Header>
 
     <Body>
@@ -30,9 +27,9 @@
             <div class="small">Add / Remove @Skin.Current.Describe(currentPlayer.SpecialForce): <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL" /> / <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL | ClickHintModifier.SHIFT" /></div>
         }
 
-        <ForceSelectionComponent Game=Client.Game Player=currentPlayer OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="20" FixedMaxSpecialForces=MaxSpecialForces AllowMultipleTerritories="true"/>
+        <ForceSelectionComponent Game="Client.Game" Player="currentPlayer" OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="20" FixedMaxSpecialForces="MaxSpecialForces" AllowMultipleTerritories="true"/>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
     </Body>
 
@@ -44,9 +41,9 @@
 
     private Player currentPlayer;
     private int resources;
-    private Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
+    private Dictionary<Location, Battalion> forces = new();
 
-    protected override PerformSetup ConfirmedResult => new PerformSetup(Game, Faction) { Passed = false, Resources = resources, ForceLocations = forces };
+    protected override PerformSetup ConfirmedResult => new(Game, Faction) { Passed = false, Resources = resources, ForceLocations = forces };
 
     protected override void OnParametersSet()
     {
@@ -123,15 +120,11 @@
             {
                 return forces[l].AmountOfSpecialForces;
             }
-            else
-            {
-                return forces[l].AmountOfForces;
-            }
+
+            return forces[l].AmountOfForces;
         }
-        else
-        {
-            return 0;
-        }
+
+        return 0;
     }
 
     protected void ForceAmountButton(Location location, int amount, bool specialForces)

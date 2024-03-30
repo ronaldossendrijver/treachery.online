@@ -6,19 +6,17 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
 @inherits MapComponent
 @implements IDisposable;
  
-<svg @ref=@element width="@Skin.Current.MapDimensions.X" height="@Skin.Current.MapDimensions.Y" viewBox="0 0 @Skin.Current.MapDimensions.X @Skin.Current.MapDimensions.Y" 
+<svg @ref="@element" width="@Skin.Current.MapDimensions.X" height="@Skin.Current.MapDimensions.Y" viewBox="0 0 @Skin.Current.MapDimensions.X @Skin.Current.MapDimensions.Y" 
      version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" 
      style="position: absolute; left: 0px; top: 0px; height: 100%; width: 100%;" pointer-events="none">
 
     <!-- Clipping areas of each sector -->
-    @for (int i = 0; i < Map.NUMBER_OF_SECTORS; i++) {
+    @for (var i = 0; i < Map.NUMBER_OF_SECTORS; i++) {
 
-        <clipPath id="@SectorClipName(@i)">
+        <clipPath id="@SectorClipName(i)">
             <path d="
                 M @Round(ScaleX * Skin.Current.PlanetCenter.X),@Round(ScaleY * Skin.Current.PlanetCenter.Y)
                 L @Round(ScaleX * StartX(i)),@Round(ScaleY * StartY(i)) 
@@ -73,7 +71,10 @@
 @code {
 
     private Situation situation = new();
-    protected override bool ShouldRender() => situation.RequiresUpdate(Game);
+    protected override bool ShouldRender()
+    {
+        return situation.RequiresUpdate(Game);
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -119,7 +120,7 @@
 
     private bool NextStormWillPassOver(Location l)
     {
-        for (int i = 1; i <= Game.NextStormMoves; i++)
+        for (var i = 1; i <= Game.NextStormMoves; i++)
         {
             if ((Game.SectorInStorm + i) % Map.NUMBER_OF_SECTORS == l.Sector)
             {
@@ -135,15 +136,30 @@
 
     private async Task OnClick(MouseEventArgs e, Location l)
     {
-        await OnLocationClick.InvokeAsync(new LocationEventArgs() { Location = l, AltKey = e.AltKey, CtrlKey = e.CtrlKey, ShiftKey = e.ShiftKey });
+        await OnLocationClick.InvokeAsync(new LocationEventArgs { Location = l, AltKey = e.AltKey, CtrlKey = e.CtrlKey, ShiftKey = e.ShiftKey });
     }
 
     private float Angle => 360f / Map.NUMBER_OF_SECTORS;
 
-    private double StartX(int sector) => Math.Cos(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.X;
-    private double StartY(int sector) => Math.Sin(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.Y;
-    private double EndX(int sector) => Math.Cos(2f * Math.PI * (5 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.X;
-    private double EndY(int sector) => Math.Sin(2f * Math.PI * (5 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.Y;
+    private double StartX(int sector)
+    {
+        return Math.Cos(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.X;
+    }
+
+    private double StartY(int sector)
+    {
+        return Math.Sin(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.Y;
+    }
+
+    private double EndX(int sector)
+    {
+        return Math.Cos(2f * Math.PI * (5 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.X;
+    }
+
+    private double EndY(int sector)
+    {
+        return Math.Sin(2f * Math.PI * (5 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.Y;
+    }
 
     private double ScaleX = 563f / Skin.Current.MapDimensions.X;
 
@@ -151,7 +167,10 @@
 
     private string PointerEvents => OnLocationClick.HasDelegate ? "all" : "none";
 
-    private string SectorClipName(int i) => "clipOfSector" + i;
+    private string SectorClipName(int i)
+    {
+        return "clipOfSector" + i;
+    }
 
     public void Dispose()
     {

@@ -6,17 +6,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<GreySelectedStartingCard>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Select your starting Treachery Card. The remaining cards will be shuffled and dealt to the other factions.</Header>
     <Body>
         <SelectFromImageComponent @bind-Value="card" Values="Game.StartingTreacheryCards.Items" ImageWidth="80" />
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Select {0}", card)" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Select {0}", card)" ConfirmError="@Validation" />
     </Body>
 
 </GameEventComponentLayout>
@@ -28,5 +25,5 @@
 
     private TreacheryCard card;
 
-    protected override GreySelectedStartingCard ConfirmedResult => new GreySelectedStartingCard(Game, Faction) { Card = card };
+    protected override GreySelectedStartingCard ConfirmedResult => new(Game, Faction) { Card = card };
 }

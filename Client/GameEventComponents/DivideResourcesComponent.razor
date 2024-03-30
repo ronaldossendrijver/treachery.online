@@ -6,12 +6,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<DivideResources>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Please choose how to divide collected @Name(Concept.Resource)</Header>
     <Body>
@@ -48,7 +45,7 @@
 
     private int amountToFirstFaction;
 
-    protected override DivideResources ConfirmedResult => new DivideResources(Game, Faction) { PortionToFirstPlayer = amountToFirstFaction };
+    protected override DivideResources ConfirmedResult => new(Game, Faction) { PortionToFirstPlayer = amountToFirstFaction };
 
-    protected override DivideResources PassedResult => new DivideResources(Game, Faction) { Passed = true };
+    protected override DivideResources PassedResult => new(Game, Faction) { Passed = true };
 }

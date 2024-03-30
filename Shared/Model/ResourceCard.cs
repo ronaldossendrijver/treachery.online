@@ -5,44 +5,38 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class ResourceCard
 {
-    public class ResourceCard
+    public bool IsSandTrout { get; set; } = false;
+    public bool IsGreatMaker { get; set; } = false;
+
+    public int SkinId { get; private set; }
+
+    public Location Location { get; set; } = null;
+
+    public Location DiscoveryLocation { get; set; } = null;
+
+    public ResourceCard(int skinId)
     {
-        public bool IsSandTrout { get; set; } = false;
-        public bool IsGreatMaker { get; set; } = false;
+        SkinId = skinId;
+    }
 
-        public int SkinId { get; private set; }
+    public bool IsShaiHulud => Location == null && !IsSandTrout && !IsGreatMaker;
 
-        public Location Location { get; set; } = null;
+    public bool IsSpiceBlow => Location != null;
 
-        public Location DiscoveryLocation { get; set; } = null;
+    public bool IsDiscovery => DiscoveryLocation != null;
 
-        public ResourceCard(int skinId)
-        {
-            SkinId = skinId;
-        }
+    public Territory Territory => Location?.Territory;
 
-        public bool IsShaiHulud => Location == null && !IsSandTrout && !IsGreatMaker;
-
-        public bool IsSpiceBlow => Location != null;
-
-        public bool IsDiscovery => DiscoveryLocation != null;
-
-        public Territory Territory => Location?.Territory;
-
-        public override string ToString()
-        {
-            if (Message.DefaultDescriber != null)
-            {
-                return Message.DefaultDescriber.Describe(this) + "*";
-            }
-            else
-            {
-                return base.ToString();
-            }
-        }
+    public override string ToString()
+    {
+        if (Message.DefaultDescriber != null)
+            return Message.DefaultDescriber.Describe(this) + "*";
+        return base.ToString();
     }
 }

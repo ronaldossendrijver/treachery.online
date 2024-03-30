@@ -1,12 +1,9 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits PlacementComponent<YellowRidesMonster>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>@Title</Header>
     <Body>
@@ -46,7 +43,7 @@
             <Label>To</Label>
         </SelectComponent>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Ride!" ConfirmError=@Validation Pass="Pass" PassText="Pass" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Ride!" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
 
     </Body>
 
@@ -60,15 +57,15 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Yellow;
 
-    override protected YellowRidesMonster ConfirmedResult => new YellowRidesMonster(Game, Faction) { ForceLocations = forces, To = toLocation, ForcesFromReserves = _forcesFromReserves, SpecialForcesFromReserves = _specialForcesFromReserves, Passed = false };
+    protected override YellowRidesMonster ConfirmedResult => new(Game, Faction) { ForceLocations = forces, To = toLocation, ForcesFromReserves = _forcesFromReserves, SpecialForcesFromReserves = _specialForcesFromReserves, Passed = false };
 
-    override protected YellowRidesMonster PassedResult => new YellowRidesMonster(Game, Faction) { Passed = true };
+    protected override YellowRidesMonster PassedResult => new(Game, Faction) { Passed = true };
 
-    override protected IEnumerable<Location> ValidTargets => YellowRidesMonster.ValidTargets(Game, Player).OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l));
+    protected override IEnumerable<Location> ValidTargets => YellowRidesMonster.ValidTargets(Game, Player).OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l));
 
-    override protected bool InformAboutCaravan => false;
+    protected override bool InformAboutCaravan => false;
 
-    override protected string Title
+    protected override string Title
     {
         get
         {
@@ -77,12 +74,10 @@
             {
                 return Skin.Current.Format("Ride the {0} with forces from your reserves?", Concept.GreatMonster);
             }
-            else
-            {
-                return Skin.Current.Format("Ride the Worm that appeared in {0}?", toRide.Territory);
-            }
+
+            return Skin.Current.Format("Ride the Worm that appeared in {0}?", toRide.Territory);
         }
     }
 
-    override protected bool MayPass => false;
+    protected override bool MayPass => false;
 }

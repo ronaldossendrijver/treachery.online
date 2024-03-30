@@ -6,9 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits PlacementComponent<Caravan>
 
 @{
@@ -19,11 +16,11 @@
 
     protected override bool IsUrgent => true;
 
-    override protected Caravan ConfirmedResult => new Caravan(Game, Faction) { ForceLocations = forces, To = toLocation, AsAdvisors = asAdvisors, Passed = false };
+    protected override Caravan ConfirmedResult => new(Game, Faction) { ForceLocations = forces, To = toLocation, AsAdvisors = asAdvisors, Passed = false };
 
-    override protected bool InformAboutCaravan => false;
+    protected override bool InformAboutCaravan => false;
 
-    override protected string Title => Skin.Current.Format("Perform a {0}", TreacheryCardType.Caravan);
+    protected override string Title => Skin.Current.Format("Perform a {0}", TreacheryCardType.Caravan);
 
-    override protected bool MayPass => false;
+    protected override bool MayPass => false;
 }

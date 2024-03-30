@@ -6,15 +6,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameComponent
 
 <div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeIn90 3s;">
     <div class="card-header">Please enter your player name to start playing!</div>
     <div class="card-body">
-        <input @ref=inputField class="form-control" @bind-value="playername" @bind-value:event="oninput" maxlength="24" placeholder="Your name" @onkeyup=@KeyUp/>
+        <input @ref="inputField" class="form-control" @bind-value="playername" @bind-value:event="oninput" maxlength="24" placeholder="Your name" @onkeyup="@KeyUp"/>
         <button class="btn btn-primary mt-1" disabled="@(!IsValid)" @onclick="Confirm">Confirm</button>
     </div>
     <div class="card-footer">Version @Game.LatestVersion (March 2024)</div>

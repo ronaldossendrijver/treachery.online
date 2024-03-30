@@ -6,19 +6,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<TraitorDiscarded>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Select a traitor to discard</Header>
     <Body>
 
-        <SelectFromImageComponent Game="Game" @bind-Value="hero" Values=@TraitorDiscarded.ValidTraitors(Player) Required="true" ImageWidth="80" />
+        <SelectFromImageComponent Game="Game" @bind-Value="hero" Values="@TraitorDiscarded.ValidTraitors(Player)" Required="true" ImageWidth="80" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Discard {0}", hero)" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Discard {0}", hero)" ConfirmError="@Validation" />
 
     </Body>
 
@@ -30,5 +27,5 @@
 
     private IHero hero;
 
-    protected override TraitorDiscarded ConfirmedResult => new TraitorDiscarded(Game, Faction) { Traitor = hero };
+    protected override TraitorDiscarded ConfirmedResult => new(Game, Faction) { Traitor = hero };
 }

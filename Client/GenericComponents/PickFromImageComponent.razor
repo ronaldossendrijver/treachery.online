@@ -6,17 +6,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using System.Collections.Generic;
 @implements IDisposable
 @typeparam T
 
-<ModalComponent Id="@Id" Title=@Title>
+<ModalComponent Id="@Id" Title="@Title">
 
-    <div @ref=@modalElement class="row row-cols-3 row-cols-md-6 m-0">
+    <div @ref="@modalElement" class="row row-cols-3 row-cols-md-6 m-0">
 
         <div class="card p-1 m-0 border-0">
-            <div class="card-img-top" @onclick="e => Click(default(T))" style="@DetermineFilter(default(T));cursor:pointer;">
+            <div class="card-img-top" @onclick="e => Click(default)" style="@DetermineFilter(default);cursor:pointer;">
                 @if (Placeholder != null)
                 {
                     @Placeholder
@@ -51,7 +49,7 @@
 
 </ModalComponent>
 
-<a @ref=@valueElement class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#@Id">
+<a @ref="@valueElement" class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#@Id">
     
     @if (Value != null && !Value.Equals(default))
     {
@@ -167,11 +165,11 @@
 
     private string DetermineFilter(T item)
     {
-        string result = "filter:";
+        var result = "filter:";
 
         if (!Equal(Value, item)) result += UnselectedFilter + " ";
 
-        if (!Equal(_hovered, default(T)) && Equal(_hovered, item)) result += HoverFilter;
+        if (!Equal(_hovered, default) && Equal(_hovered, item)) result += HoverFilter;
 
         if (Equal(Highlighted, item)) result += HighlightFilter;
 
@@ -180,7 +178,7 @@
 
     private bool Equal(T a, T b)
     {
-        return a == null && b == null || a != null && a.Equals(b);
+        return (a == null && b == null) || (a != null && a.Equals(b));
     }
 
     private ElementReference modalElement;

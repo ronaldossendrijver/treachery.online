@@ -6,19 +6,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<KarmaBrownDiscard>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to discard any cards from your hand to gain 3 @Skin.Current.Describe(Concept.Resource) each</Header>
     <Body>
 
-        <SelectFromImageComponent Selected="selectedCards" Values="KarmaBrownDiscard.ValidCards(Player)" T=TreacheryCard OnChanged=StateHasChanged ImageWidth="80" />
+        <SelectFromImageComponent Selected="selectedCards" Values="KarmaBrownDiscard.ValidCards(Player)" T="TreacheryCard" OnChanged="StateHasChanged" ImageWidth="80" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Discard" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Discard" ConfirmError="@Validation" />
 
     </Body>
 
@@ -28,7 +25,7 @@
 
     protected override Faction IsFactionSpecific => Faction.Brown;
 
-    private List<TreacheryCard> selectedCards = new List<TreacheryCard>();
+    private List<TreacheryCard> selectedCards = new();
 
-    protected override KarmaBrownDiscard ConfirmedResult => new KarmaBrownDiscard(Game, Faction) { Cards = selectedCards };
+    protected override KarmaBrownDiscard ConfirmedResult => new(Game, Faction) { Cards = selectedCards };
 }

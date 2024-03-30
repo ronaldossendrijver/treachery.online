@@ -5,52 +5,51 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class ExtortionPrevented : GameEvent
 {
-    public class ExtortionPrevented : GameEvent
+    #region Construction
+
+    public ExtortionPrevented(Game game, Faction initiator) : base(game, initiator)
     {
-        #region Construction
-
-        public ExtortionPrevented(Game game, Faction initiator) : base(game, initiator)
-        {
-        }
-
-        public ExtortionPrevented()
-        {
-        }
-
-        #endregion Construction
-
-        #region Validation
-
-        public override Message Validate()
-        {
-            return null;
-        }
-
-        public static bool CanBePlayed(Game g, Player p)
-        {
-            return p.Faction != Faction.Cyan && p.Resources >= 3;
-        }
-
-        #endregion Validation
-
-        #region Execution
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Log();
-            Game.ExtortionToBeReturned = false;
-            Player.Resources -= 3;
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " pay ", Payment.Of(3), " to prevent ", Faction.Cyan, " from regaining ", TerrorType.Extortion);
-        }
-
-        #endregion Execution
     }
+
+    public ExtortionPrevented()
+    {
+    }
+
+    #endregion Construction
+
+    #region Validation
+
+    public override Message Validate()
+    {
+        return null;
+    }
+
+    public static bool CanBePlayed(Game g, Player p)
+    {
+        return p.Faction != Faction.Cyan && p.Resources >= 3;
+    }
+
+    #endregion Validation
+
+    #region Execution
+
+    protected override void ExecuteConcreteEvent()
+    {
+        Log();
+        Game.ExtortionToBeReturned = false;
+        Player.Resources -= 3;
+    }
+
+    public override Message GetMessage()
+    {
+        return Message.Express(Initiator, " pay ", Payment.Of(3), " to prevent ", Faction.Cyan, " from regaining ", TerrorType.Extortion);
+    }
+
+    #endregion Execution
 }

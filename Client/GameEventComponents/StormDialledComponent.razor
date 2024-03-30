@@ -6,18 +6,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Client.GenericComponents;
-@using Treachery.Shared
 @inherits GameEventComponent<StormDialled>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Please dial a number to determine storm movement</Header>
     <Body>
 
         <SelectNumberComponent @bind-Value="amount" Min="StormDialled.ValidMinAmount(Game)" Max="StormDialled.ValidMaxAmount(Game)" />
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Dial {0}", amount)" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Dial {0}", amount)" ConfirmError="@Validation" />
 
     </Body>
 
@@ -29,5 +26,5 @@
 
     private int amount;
         
-    protected override StormDialled ConfirmedResult => new StormDialled(Game, Faction) { Amount = amount };
+    protected override StormDialled ConfirmedResult => new(Game, Faction) { Amount = amount };
 }

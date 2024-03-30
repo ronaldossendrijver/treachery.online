@@ -6,7 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-@using Treachery.Client.GenericComponents;
 @inherits GameComponent
 
 @{
@@ -63,7 +62,10 @@
 
     public bool SortDescending { get; set; } = false;
 
-    private string FontStyle(Message m) => m.Target == Faction.None ? "" : "font-style: italic;";
+    private string FontStyle(Message m)
+    {
+        return m.Target == Faction.None ? "" : "font-style: italic;";
+    }
 
     private IEnumerable<Message> MessagesInOrder {
 
@@ -75,10 +77,8 @@
             {
                 return messagesAscending.OrderByDescending(m => m.Nr);
             }
-            else
-            {
-                return messagesAscending;
-            }
+
+            return messagesAscending;
         }
     }
 

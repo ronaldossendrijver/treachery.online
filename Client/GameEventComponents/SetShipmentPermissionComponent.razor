@@ -6,12 +6,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<SetShipmentPermission>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Manage shipment permissions</Header>
     <Body>
@@ -50,18 +47,18 @@
         }
 
         <div class="mt-2">
-            <SelectFromImageComponent Values=@SetShipmentPermission.ValidTargets(Game, Player) Selected=@targets Required=true ImageWidth="40" T=Faction OnChanged=StateHasChanged>
+            <SelectFromImageComponent Values="@SetShipmentPermission.ValidTargets(Game, Player)" Selected="@targets" Required="true" ImageWidth="40" T="Faction" OnChanged="StateHasChanged">
                 <Label>Set permissions for:</Label>
             </SelectFromImageComponent>
         </div>
 
         <div class="mt-1">
-            <CheckboxComponent @bind-Value=@_crossPermission>Allow cross planet shipments</CheckboxComponent>
-            <CheckboxComponent @bind-Value=@_homeworldPermission>Allow shipment to (own) homeworld</CheckboxComponent>
-            <CheckboxComponent @bind-Value=@_discountPermission>May ship at half price</CheckboxComponent>
+            <CheckboxComponent @bind-Value="@_crossPermission">Allow cross planet shipments</CheckboxComponent>
+            <CheckboxComponent @bind-Value="@_homeworldPermission">Allow shipment to (own) homeworld</CheckboxComponent>
+            <CheckboxComponent @bind-Value="@_discountPermission">May ship at half price</CheckboxComponent>
         </div>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
 
     </Body>
 
@@ -76,9 +73,12 @@
 
     protected override Faction IsFactionSpecific => Faction.Orange;
 
-    protected override SetShipmentPermission ConfirmedResult => new SetShipmentPermission(Game, Faction) { Factions = targets.ToArray(), Permission = GetPermissions() };
+    protected override SetShipmentPermission ConfirmedResult => new(Game, Faction) { Factions = targets.ToArray(), Permission = GetPermissions() };
 
-    private async Task Revoke(Faction f) => await Request(new SetShipmentPermission(Game, Faction) { Factions = new Faction[] {f}, Permission = ShipmentPermission.None });
+    private async Task Revoke(Faction f)
+    {
+        await Request(new SetShipmentPermission(Game, Faction) { Factions = new[] { f }, Permission = ShipmentPermission.None });
+    }
 
     private ShipmentPermission GetPermissions()
     {

@@ -1,17 +1,14 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<ClairVoyancePlayed>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>@DescribeCard(TreacheryCardType.Clairvoyance)</Header>
     <Body>
 
-        <SelectFromImageComponent @bind-Value="target" Values="ClairVoyancePlayed.ValidTargets(Game, Player)" Required=true ImageWidth="40">
+        <SelectFromImageComponent @bind-Value="target" Values="ClairVoyancePlayed.ValidTargets(Game, Player)" Required="true" ImageWidth="40">
             <Label>Target Faction</Label>
         </SelectFromImageComponent>
 
@@ -60,7 +57,7 @@
                 break;
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.Clairvoyance)" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.Clairvoyance)" ConfirmError="@Validation" />
 
     </Body>
 
@@ -73,14 +70,14 @@
     private object questionParameterA;
     private object questionParameterB;
 
-    protected override ClairVoyancePlayed ConfirmedResult => new ClairVoyancePlayed(Game, Faction) { Target = target, Question = question, Parameter1 = questionParameterA, Parameter2 = questionParameterB };
+    protected override ClairVoyancePlayed ConfirmedResult => new(Game, Faction) { Target = target, Question = question, Parameter1 = questionParameterA, Parameter2 = questionParameterB };
 
     private IEnumerable<float> ValidDials
     {
         get
         {
             var result = new List<float>();
-            for (float current = 0.0f; current <= 25; current += 0.5f)
+            for (var current = 0.0f; current <= 25; current += 0.5f)
             {
                 result.Add(current);
             }

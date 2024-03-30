@@ -6,14 +6,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<PlacementEventType>
 @typeparam PlacementEventType
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>@(Title)?</Header>
     <Body>
@@ -49,11 +46,11 @@
 
             @if (Faction == Faction.Blue && toLocation != null)
             {
-                bool mayMoveAsAdvisors = PlacementEvent.MayMoveAsAdvisors(Game, Player, toLocation.Territory);
+                var mayMoveAsAdvisors = PlacementEvent.MayMoveAsAdvisors(Game, Player, toLocation.Territory);
 
                 if (mayMoveAsAdvisors && PlacementEvent.MayMoveAsBlueFighters(Player, toLocation.Territory))
                 {
-                    <RadioComponent @bind-Value="asAdvisors" Values="new bool[] { false, true }" ValueLabels="@(new string[] {"Fighters", "Advisors"})">
+                    <RadioComponent @bind-Value="asAdvisors" Values="new[] { false, true }" ValueLabels="@(new[] {"Fighters", "Advisors"})">
                         <Label>Become fighters or advisors?</Label>
                     </RadioComponent>
                 }
@@ -91,7 +88,7 @@
     protected Territory fromTerritory;
     protected Location toLocation;
     protected Dictionary<Location, Battalion> forces = new();
-    protected bool asAdvisors = false;
+    protected bool asAdvisors;
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -125,10 +122,8 @@
             {
                 return PlacementEvent.ValidTargets(Game, Player, forces).OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l));
             }
-            else
-            {
-                return Array.Empty<Location>();
-            }
+
+            return Array.Empty<Location>();
         }
     }
 

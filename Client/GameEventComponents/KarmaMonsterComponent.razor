@@ -6,13 +6,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<KarmaMonster>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to make @Skin.Current.Describe(Concept.Monster) appear in a territory of choice</Header>
     <Body>
@@ -21,7 +18,7 @@
             <Label>Territory</Label>
         </SelectComponent>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)" ConfirmError="@Validation" />
 
     </Body>
 
@@ -33,7 +30,7 @@
 
     private Territory target;
 
-    protected override KarmaMonster ConfirmedResult => new KarmaMonster(Game, Faction) { Territory = target };
+    protected override KarmaMonster ConfirmedResult => new(Game, Faction) { Territory = target };
 
     public override void Dispose()
     {

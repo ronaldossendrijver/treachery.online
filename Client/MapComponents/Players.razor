@@ -1,11 +1,9 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
-@using Treachery.Shared
 @inherits MapComponent
 
-<div @ref=@element>
+<div @ref="@element">
 
     @if (Game.CurrentPhase > Phase.SelectingFactions)
     {
@@ -22,7 +20,7 @@
             var position = PlayerTokenPosition(Game, p.PositionAtTable);
             var x = position.X - radiusModifier * Skin.Current.PlayerTokenRadius;
             var y = position.Y - radiusModifier * Skin.Current.PlayerTokenRadius;
-            var factionTokenDiameter = (radiusModifier * Skin.Current.PlayerTokenRadius * 2);
+            var factionTokenDiameter = radiusModifier * Skin.Current.PlayerTokenRadius * 2;
             var positionSector = (float)Math.Floor((float)p.PositionAtTable * Map.NUMBER_OF_SECTORS / Game.MaximumNumberOfPlayers);
 
             <Circle X="@position.X" Y="@position.Y" Radius="@(1.35f * Skin.Current.PlayerTokenRadius)" FillColor="@Skin.Current.TABLEPOSITION_BACKGROUNDCOLOR" />
@@ -38,7 +36,7 @@
                        Popover="@Intel(p.AlliedPlayer)"/>
             }
 
-            float positionOnCircle = (TWOPI / 180) + (4.5f - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
+            var positionOnCircle = TWOPI / 180 + (4.5f - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
                         
             //Homeworlds
             foreach (var homeworld in p.Homeworlds)
@@ -89,7 +87,7 @@
 
                 if (h.Status.HighlightedTerritories.Contains(homeworld.Territory))
                 {
-                    <Circle X=@(homeworldXY.X + Skin.Current.PlayerTokenRadius) Y=@(@homeworldXY.Y + Skin.Current.PlayerTokenRadius) Radius=@Skin.Current.PlayerTokenRadius 
+                    <Circle X=@(homeworldXY.X + Skin.Current.PlayerTokenRadius) Y=@(homeworldXY.Y + Skin.Current.PlayerTokenRadius) Radius=@Skin.Current.PlayerTokenRadius 
                             FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" StrokeWidth="1" StrokeColor="red"/>
                 }
 
@@ -103,13 +101,13 @@
 
                     if (b.AmountOfForces > 0)
                     {
-                        forcesToDraw.Add(new MapForce() { X = reservesX, Y = reservesY, Special = false, Amount = b.AmountOfForces, Faction = b.Faction });
+                        forcesToDraw.Add(new MapForce { X = reservesX, Y = reservesY, Special = false, Amount = b.AmountOfForces, Faction = b.Faction });
                         reservesX += Skin.Current.FORCETOKEN_RADIUS;
                     }
 
                     if (b.AmountOfSpecialForces > 0)
                     {
-                        forcesToDraw.Add(new MapForce() { X = reservesX, Y = reservesY, Special = true, Amount = b.AmountOfSpecialForces, Faction = b.Faction });
+                        forcesToDraw.Add(new MapForce { X = reservesX, Y = reservesY, Special = true, Amount = b.AmountOfSpecialForces, Faction = b.Faction });
                     }
 
                     reservesY += Skin.Current.FORCETOKEN_RADIUS;
@@ -120,7 +118,7 @@
 
             foreach (var tt in p.TechTokens)
             {
-                positionOnCircle += (TWOPI / 90);
+                positionOnCircle += TWOPI / 90;
                 <MapImage XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(tt)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
@@ -129,7 +127,7 @@
 
             if (p.Faction == Faction.Pink && Game.PinkLoyalLeader != null)
             {
-                positionOnCircle += (TWOPI / 90);
+                positionOnCircle += TWOPI / 90;
 
                 <MapImage XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
@@ -139,7 +137,7 @@
                         
             foreach (var skilledLeader in Game.GetSkilledLeaders(p).Where(l => Game.IsInFrontOfShield(l))) {
 
-                positionOnCircle += (TWOPI / 90);
+                positionOnCircle += TWOPI / 90;
 
                 <MapImage XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
                         Diameter=@(2 * Skin.Current.PlayerTokenRadius)
@@ -156,7 +154,7 @@
 
             if (p.Faction == Faction.Pink && p.Ambassadors.Any())
             {
-                positionOnCircle += (TWOPI / 90);
+                positionOnCircle += TWOPI / 90;
 
                 var ambassadorXY = Pos(positionOnCircle, 0.5f * Skin.Current.PlayerTokenRadius);
                 var yOffset = -0.5f * p.Ambassadors.Count() * 0.2f * Skin.Current.PlayerTokenRadius;
@@ -176,7 +174,7 @@
 
             if (p.Faction == Faction.White && Game.LatestRevealedNoFieldValue >= 0)
             {
-                positionOnCircle += (TWOPI / 90);
+                positionOnCircle += TWOPI / 90;
 
                 <MapImage XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) Src="@Skin.Current.FactionSpecialForceImage_URL[Faction.White]"
                        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
@@ -193,8 +191,8 @@
 
             if (totalSpiceToReceiveLater > 0)
             {
-                positionOnCircle += (TWOPI / 90);
-                string tooltip = Skin.Current.Format("To be collected during {0}", MainPhase.Contemplate);
+                positionOnCircle += TWOPI / 90;
+                var tooltip = Skin.Current.Format("To be collected during {0}", MainPhase.Contemplate);
 
                 <MapImage 
                     XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) 
@@ -216,8 +214,8 @@
 
             if (p.ResourcesAfterBidding > 0)
             {
-                positionOnCircle += (TWOPI / 90);
-                string tooltip = Skin.Current.Format("Subbed {0}", Concept.Resource);
+                positionOnCircle += TWOPI / 90;
+                var tooltip = Skin.Current.Format("Subbed {0}", Concept.Resource);
 
                 <MapImage 
                     XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) 
@@ -257,13 +255,16 @@
     public EventCallback<LocationEventArgs> OnLocationClick { get; set; }
 
     private Situation situation = new();
-    protected override bool ShouldRender() => situation.RequiresUpdate(Game);
+    protected override bool ShouldRender()
+    {
+        return situation.RequiresUpdate(Game);
+    }
 
     private bool EnableCameras => h.VideoDevice != null && Game.Players.Count(p => !p.IsBot) > 1 && h.Player != null;
 
     private string Intel(Player p)
     {
-        string result = Skin.Current.Format("<p><strong>{0} plays {1}</strong></p>", p.Name, p.Faction);
+        var result = Skin.Current.Format("<p><strong>{0} plays {1}</strong></p>", p.Name, p.Faction);
 
         foreach (var v in LeaderManager.Leaders.Where(l => l.Faction == p.Faction))
         {
@@ -284,17 +285,18 @@
         {
             return "";
         }
-        else
-        {
-            return string.Format("<img class='img-fluid' src='{0}' width=80 style='filter:drop-shadow(-3px 3px 2px black);'/>", Skin.Current.GetImageURL(l));
-        }
+
+        return string.Format("<img class='img-fluid' src='{0}' width=80 style='filter:drop-shadow(-3px 3px 2px black);'/>", Skin.Current.GetImageURL(l));
     }
 
-    private string DetermineVideoStreamId(Player p) => "video" + p.PositionAtTable;
+    private string DetermineVideoStreamId(Player p)
+    {
+        return "video" + p.PositionAtTable;
+    }
 
     private async Task OnClick(MouseEventArgs e, Location l)
     {
-        await OnLocationClick.InvokeAsync(new LocationEventArgs() { Location = l, AltKey = e.AltKey, CtrlKey = e.CtrlKey, ShiftKey = e.ShiftKey });
+        await OnLocationClick.InvokeAsync(new LocationEventArgs { Location = l, AltKey = e.AltKey, CtrlKey = e.CtrlKey, ShiftKey = e.ShiftKey });
     }
 
     internal class MapForce

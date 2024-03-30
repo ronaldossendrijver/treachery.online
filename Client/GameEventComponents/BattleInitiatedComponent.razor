@@ -1,21 +1,18 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BattleInitiated>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Select whom and where to battle</Header>
     <Body>
         
-        <SelectFromImageComponent Game=Game @bind-Value=@faction Values=@battles.Select(b => b.Faction).Distinct() Required=true/>
+        <SelectFromImageComponent Game="Game" @bind-Value="@faction" Values="@battles.Select(b => b.Faction).Distinct()" Required="true"/>
 
-        <SelectComponent @bind-Value=@territory Values=@battles.Where(b => b.Faction == @faction).Select(b => b.Territory) />
+        <SelectComponent @bind-Value="@territory" Values="@battles.Where(b => b.Faction == faction).Select(b => b.Territory)" />
                     
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Initiate Battle" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Initiate Battle" ConfirmError="@Validation" />
 
     </Body>
 
@@ -42,5 +39,5 @@
         }
     }
 
-    protected override BattleInitiated ConfirmedResult => new BattleInitiated(Game, Faction) { Territory = territory, Target = faction };
+    protected override BattleInitiated ConfirmedResult => new(Game, Faction) { Territory = territory, Target = faction };
 }

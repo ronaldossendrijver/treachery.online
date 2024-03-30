@@ -2,159 +2,107 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public static class ExtensionMethods
 {
-    public static class ExtensionMethods
+    public static T HighestOrDefault<T>(this IEnumerable<T> source, Func<T, IComparable> selector)
     {
-        public static T HighestOrDefault<T>(this IEnumerable<T> source, Func<T, IComparable> selector)
+        if (source is null) return default;
+
+        if (!source.Any()) return default;
+
+        var best = source.Max(v => selector(v));
+
+        return RandomOrDefault(source.Where(v => selector(v).Equals(best)));
+    }
+
+    public static T OneOfHighestNOrDefault<T>(this IEnumerable<T> source, Func<T, IComparable> selector, int n)
+    {
+        if (source is null || n <= 0) return default;
+
+        List<T> toSelectFrom = new();
+        var i = 0;
+        foreach (var item in source.OrderByDescending(selector))
         {
-            if (source is null)
-            {
-                return default;
-            }
-
-            if (!source.Any())
-            {
-                return default;
-            }
-
-            var best = source.Max(v => selector(v));
-
-            return RandomOrDefault(source.Where(v => selector(v).Equals(best)));
+            i++;
+            toSelectFrom.Add(item);
+            if (i == n) break;
         }
 
-        public static T OneOfHighestNOrDefault<T>(this IEnumerable<T> source, Func<T, IComparable> selector, int n)
+        if (i == 0) return default;
+
+        return RandomOrDefault(toSelectFrom);
+    }
+
+    public static T OneOfLowestNOrDefault<T>(this IEnumerable<T> source, Func<T, IComparable> selector, int n)
+    {
+        if (source is null || n <= 0) return default;
+
+        List<T> toSelectFrom = new();
+        var i = 0;
+        foreach (var item in source.OrderBy(selector))
         {
-            if (source is null || n <= 0)
-            {
-                return default;
-            }
-
-            List<T> toSelectFrom = new();
-            int i = 0;
-            foreach (var item in source.OrderByDescending(selector))
-            {
-                i++;
-                toSelectFrom.Add(item);
-                if (i == n) break;
-            }
-
-            if (i == 0)
-            {
-                return default;
-            }
-
-            return RandomOrDefault(toSelectFrom);
+            i++;
+            toSelectFrom.Add(item);
+            if (i == n) break;
         }
 
-        public static T OneOfLowestNOrDefault<T>(this IEnumerable<T> source, Func<T, IComparable> selector, int n)
-        {
-            if (source is null || n <= 0)
-            {
-                return default;
-            }
+        if (i == 0) return default;
 
-            List<T> toSelectFrom = new();
-            int i = 0;
-            foreach (var item in source.OrderBy(selector))
-            {
-                i++;
-                toSelectFrom.Add(item);
-                if (i == n) break;
-            }
+        return RandomOrDefault(toSelectFrom);
+    }
 
-            if (i == 0)
-            {
-                return default;
-            }
+    public static T LowestOrDefault<T>(this IEnumerable<T> source, Func<T, IComparable> selector)
+    {
+        if (source is null) return default;
 
-            return RandomOrDefault(toSelectFrom);
-        }
+        if (!source.Any()) return default;
 
-        public static T LowestOrDefault<T>(this IEnumerable<T> source, Func<T, IComparable> selector)
-        {
-            if (source is null)
-            {
-                return default;
-            }
+        var best = source.Min(v => selector(v));
 
-            if (!source.Any())
-            {
-                return default;
-            }
+        return RandomOrDefault(source.Where(v => selector(v).Equals(best)));
+    }
 
-            var best = source.Min(v => selector(v));
+    private static readonly Random _random = new();
+    public static T RandomOrDefault<T>(this IEnumerable<T> source)
+    {
+        if (source is null) return default;
 
-            return RandomOrDefault(source.Where(v => selector(v).Equals(best)));
-        }
+        var sourceArray = source.ToArray();
 
-        private static readonly Random _random = new();
-        public static T RandomOrDefault<T>(this IEnumerable<T> source)
-        {
-            if (source is null)
-            {
-                return default;
-            }
+        if (sourceArray.Length == 0)
+            return default;
+        if (sourceArray.Length == 1)
+            return sourceArray[0];
+        return sourceArray[_random.Next(sourceArray.Length)];
+    }
 
-            var sourceArray = source.ToArray();
+    public static T RandomOrDefault<T>(this IEnumerable<T> source, Random random)
+    {
+        if (source is null) return default;
 
-            if (sourceArray.Length == 0)
-            {
-                return default;
-            }
-            else if (sourceArray.Length == 1)
-            {
-                return sourceArray[0];
-            }
-            else
-            {
-                return sourceArray[_random.Next(sourceArray.Length)];
-            }
-        }
+        var sourceArray = source.ToArray();
 
-        public static T RandomOrDefault<T>(this IEnumerable<T> source, Random random)
-        {
-            if (source is null)
-            {
-                return default;
-            }
+        if (sourceArray.Length == 0)
+            return default;
+        if (sourceArray.Length == 1)
+            return sourceArray[0];
+        return sourceArray[random.Next(sourceArray.Length)];
+    }
 
-            var sourceArray = source.ToArray();
+    public static IEnumerable<T> TakeRandomN<T>(this IEnumerable<T> source, int n)
+    {
+        if (source is null) return Array.Empty<T>();
 
-            if (sourceArray.Length == 0)
-            {
-                return default;
-            }
-            else if (sourceArray.Length == 1)
-            {
-                return sourceArray[0];
-            }
-            else
-            {
-                return sourceArray[random.Next(sourceArray.Length)];
-            }
-        }
+        return source.OrderBy(x => _random.Next()).Take(n);
+    }
 
-        public static IEnumerable<T> TakeRandomN<T>(this IEnumerable<T> source, int n)
-        {
-            if (source is null)
-            {
-                return Array.Empty<T>();
-            }
-
-            return source.OrderBy(x => _random.Next()).Take(n);
-        }
-
-        public static void Set<KeyType, ValueType>(this IDictionary<KeyType, ValueType> source, KeyType key, ValueType value)
-        {
-            if (source.ContainsKey(key))
-            {
-                source[key] = value;
-            }
-            else
-            {
-                source.Add(key, value);
-            }
-        }
+    public static void Set<KeyType, ValueType>(this IDictionary<KeyType, ValueType> source, KeyType key, ValueType value)
+    {
+        if (source.ContainsKey(key))
+            source[key] = value;
+        else
+            source.Add(key, value);
     }
 }

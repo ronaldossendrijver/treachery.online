@@ -6,13 +6,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BrownMovePrevention>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Use @ToUse to prevent the current player from moving forces into a territory you occupy?</Header>
 
@@ -22,7 +19,7 @@
             <Label>Territory</Label>
         </SelectComponent>
         
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Prevent Move" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Prevent Move" ConfirmError="@Validation" />
 
     </Body>
 
@@ -46,10 +43,10 @@
 
      private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid<Territory, Territory>(ref territory, BrownMovePrevention.ValidTerritories(Player), l.Territory);
+        SetIfValid(ref territory, BrownMovePrevention.ValidTerritories(Player), l.Territory);
     }
 
-    protected override BrownMovePrevention ConfirmedResult => new BrownMovePrevention(Game, Faction) { Territory = territory };
+    protected override BrownMovePrevention ConfirmedResult => new(Game, Faction) { Territory = territory };
 
     public override void Dispose()
     {

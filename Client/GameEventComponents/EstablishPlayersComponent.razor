@@ -6,12 +6,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<EstablishPlayers>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType() Collapsible=false>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsible="false">
 
     <Header>Please review your game configuration</Header>
     <Body>
@@ -26,7 +23,7 @@
 
         <SelectNumberComponent Disabled="@Readonly" @bind-Value="info.MaximumNumberOfPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Label="Maximum number of players:"/>
 
-        <SelectFromImageComponent Disabled="@Readonly" Selected="info.FactionsInPlay" Values="EstablishPlayers.AvailableFactions()" T=Faction OnChanged=@StateHasChanged ImageWidth="40" Required=false>
+        <SelectFromImageComponent Disabled="@Readonly" Selected="info.FactionsInPlay" Values="EstablishPlayers.AvailableFactions()" T="Faction" OnChanged="@StateHasChanged" ImageWidth="40" Required="false">
             <Label>Factions in play:</Label>
         </SelectFromImageComponent>
 
@@ -36,11 +33,11 @@
             <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="StateHasChanged" />
         }
 
-        <SelectComponent Disabled="@Readonly" @bind-Value="@Ruleset" Values=@Game.GetAvailableRulesets()>
+        <SelectComponent Disabled="@Readonly" @bind-Value="@Ruleset" Values="@Game.GetAvailableRulesets()">
             <Label>Ruleset:</Label>
         </SelectComponent>
 
-        <ButtonRowComponent Confirm="StartNewOrLoadedGame" ConfirmText="@StartButtonLabel" ConfirmError=@Validate />
+        <ButtonRowComponent Confirm="StartNewOrLoadedGame" ConfirmText="@StartButtonLabel" ConfirmError="@Validate" />
 
         @if (Client.Host.LoadedGame == null)
         {
@@ -90,10 +87,7 @@
     private Ruleset _ruleset;
     private Ruleset Ruleset
     {
-        get
-        {
-            return _ruleset;
-        }
+        get => _ruleset;
         set
         {
             _ruleset = value;
@@ -127,7 +121,7 @@
         }
         else
         {
-            await base.Confirm();
+            await Confirm();
             if (skinData != "")
             {
                 await Client.Host.LoadSkin(skinData);
@@ -149,30 +143,33 @@
         }
     }
 
-    protected override EstablishPlayers ConfirmedResult
-    {
-        get
+    protected override EstablishPlayers ConfirmedResult =>
+        new(Game, Faction.None)
         {
-            return new EstablishPlayers(Game, Faction.None)
-            {
-                GameName = string.Format("{0}'s Game", Client.PlayerName),
-                Seed = new Random().Next(),
-                Players = Players,
-                MaximumTurns = info.MaximumNumberOfTurns,
-                MaximumNumberOfPlayers = info.MaximumNumberOfPlayers,
-                ApplicableRules = info.Rules.ToArray(),
-                FactionsInPlay = info.FactionsInPlay
-            };
-        }
-    }
+            GameName = string.Format("{0}'s Game", Client.PlayerName),
+            Seed = new Random().Next(),
+            Players = Players,
+            MaximumTurns = info.MaximumNumberOfTurns,
+            MaximumNumberOfPlayers = info.MaximumNumberOfPlayers,
+            ApplicableRules = info.Rules.ToArray(),
+            FactionsInPlay = info.FactionsInPlay
+        };
 
     private IEnumerable<string> Players => Client.Host.JoinedPlayers.Where(p => info.HostParticipates || p != Client.PlayerName);
 
-    private string StyleDef(Faction f) => string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(f, "bb"));
+    private string StyleDef(Faction f)
+    {
+        return string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(f, "bb"));
+    }
 
     private bool Readonly => Client.Host.LoadedGame != null;
 
     private string StartButtonLabel => Client.Host.LoadedGame == null ? "Go!" : "Continue!";
 
-    private bool IsNew(Rule rule) => false; // rule == Rule.CustomDecks || rule == Rule.DisableEndOfGameReport;
-}
+    private bool IsNew(Rule rule)
+    {
+        return false;
+        // rule == Rule.CustomDecks || rule == Rule.DisableEndOfGameReport;
+    }
+
+    }

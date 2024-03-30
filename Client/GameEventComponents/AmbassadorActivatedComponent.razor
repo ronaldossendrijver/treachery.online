@@ -1,14 +1,11 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<AmbassadorActivated>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Activate the <Image Shown=@AmbassadorActivated.GetAmbassador(Game) Width="30"/> Ambassador?</Header>
+    <Header>Activate the <Image Shown="@AmbassadorActivated.GetAmbassador(Game)" Width="30"/> Ambassador?</Header>
     <Body>
 
         @{
@@ -102,7 +99,7 @@
                     else
                     {
                         _yellowFromTerritory = null;
-                        _yellowForces = new();
+                        _yellowForces = new Dictionary<Location, Battalion>();
                         _yellowOrOrangeToLocation = null;
 
                         <div>You don't have any forces to move.</div>
@@ -178,7 +175,7 @@
 
                     @if (_purpleHero != null && Revival.MayAssignSkill(Game, Player, _purpleHero))
                     {
-                        <RadioComponent @bind-Value=_purpleAssignSkill Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"No","Yes"})">
+                        <RadioComponent @bind-Value=_purpleAssignSkill Values="@(new[] {false,true})" ValueLabels="@(new[] {"No","Yes"})">
                             <Label>Do you wish to assign a skill to this leader?</Label>
                         </RadioComponent>
                     }
@@ -210,13 +207,13 @@
     protected override Faction IsFactionSpecific => Faction.Pink;
 
     private Ambassador _actualAmbassador;
-    private List<TreacheryCard> _brownCards = new List<TreacheryCard>();
+    private List<TreacheryCard> _brownCards = new();
     private bool _pinkOfferAlliance;
     private bool _pinkTakeVidal;
     private bool _pinkGiveVidal;
     private Territory _yellowFromTerritory;
     private Location _yellowOrOrangeToLocation;
-    private Dictionary<Location, Battalion> _yellowForces = new Dictionary<Location, Battalion>();
+    private Dictionary<Location, Battalion> _yellowForces = new();
     private TreacheryCard _greyCard;
     private int _orangeForceAmount;
     private int _purpleAmountOfForces;
@@ -239,7 +236,7 @@
         Client.OnLocationSelectedWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
     }
 
-    protected override AmbassadorActivated ConfirmedResult => new AmbassadorActivated(Game, Faction) { 
+    protected override AmbassadorActivated ConfirmedResult => new(Game, Faction) { 
         BlueSelectedAmbassador = _actualAmbassador,  
         BrownCards = _brownCards,
         PinkOfferAlliance = _pinkOfferAlliance, PinkGiveVidalToAlly = _pinkGiveVidal, PinkTakeVidal = _pinkTakeVidal,
@@ -251,7 +248,7 @@
 
     };
 
-    protected override AmbassadorActivated PassedResult => new AmbassadorActivated(Game, Faction) { Passed = true };
+    protected override AmbassadorActivated PassedResult => new(Game, Faction) { Passed = true };
 
     private void HandleLocationSelected(object sender, Location l)
     {

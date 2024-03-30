@@ -6,19 +6,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<WhiteGaveCard>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Give your ally a card?</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="card" Values="WhiteGaveCard.ValidCards(Player)" Required="true" ImageWidth="80" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Give {0}", card)" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Give {0}", card)" ConfirmError="@Validation" />
 
     </Body>
 
@@ -30,5 +27,5 @@
 
     private TreacheryCard card;
 
-    protected override WhiteGaveCard ConfirmedResult => new WhiteGaveCard(Game, Faction) { Card = card };
+    protected override WhiteGaveCard ConfirmedResult => new(Game, Faction) { Card = card };
 }

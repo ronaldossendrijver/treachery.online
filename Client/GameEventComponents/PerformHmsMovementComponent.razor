@@ -6,13 +6,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<PerformHmsMovement>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Move the Hidden Mobile Stronghold one territory, or pass</Header>
     <Body>
@@ -23,7 +20,7 @@
             <Label>To</Label>
         </SelectComponent>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Move" ConfirmError=@Validation Pass="Pass" PassText="Pass" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Move" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
 
     </Body>
 
@@ -47,9 +44,9 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override PerformHmsMovement ConfirmedResult => new PerformHmsMovement(Game, Faction) { Passed = false, Target = target };
+    protected override PerformHmsMovement ConfirmedResult => new(Game, Faction) { Passed = false, Target = target };
 
-    protected override PerformHmsMovement PassedResult => new PerformHmsMovement(Game, Faction) { Passed = true };
+    protected override PerformHmsMovement PassedResult => new(Game, Faction) { Passed = true };
 
     private void HandleLocationSelected(object sender, Location l)
     {

@@ -6,21 +6,19 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
 @inherits MapComponent
 
 @if (h.Game.CurrentPhase >= Phase.MetheorAndStormSpell)
 {
-    float y = 1.75f * Skin.Current.FORCETOKEN_RADIUS;
-    float x = 1.5f * Skin.Current.FORCETOKEN_RADIUS;
-    float leaderDiameter = 3.2f * Skin.Current.FORCETOKEN_RADIUS;
-    float leaderPctHeight = .25f * leaderDiameter * Skin.Current.BattleWheelHeroHeight / Skin.Current.BattleWheelHeroWidth;
-    float spacing = 0.85f;
+    var y = 1.75f * Skin.Current.FORCETOKEN_RADIUS;
+    var x = 1.5f * Skin.Current.FORCETOKEN_RADIUS;
+    var leaderDiameter = 3.2f * Skin.Current.FORCETOKEN_RADIUS;
+    var leaderPctHeight = .25f * leaderDiameter * Skin.Current.BattleWheelHeroHeight / Skin.Current.BattleWheelHeroWidth;
+    var spacing = 0.85f;
 
     foreach (var p in h.Game.Players)
     {
-        string color = Skin.Current.GetFactionColor(p.Faction);
+        var color = Skin.Current.GetFactionColor(p.Faction);
 
         if (p.ForcesKilled > 0 || p.SpecialForcesKilled > 0)
         {
@@ -31,7 +29,7 @@
 
             if (p.SpecialForcesKilled > 0)
             {
-                var dX = (p.ForcesKilled > 0) ? 2 * Skin.Current.FORCETOKEN_RADIUS : 0;
+                var dX = p.ForcesKilled > 0 ? 2 * Skin.Current.FORCETOKEN_RADIUS : 0;
                 <MapForce X=@(x + dX) Y=@y Special=@true Amount=@p.SpecialForcesKilled Faction=@p.Faction />
             }
 
@@ -40,15 +38,15 @@
 
         var corpses = p.Leaders
             .Where(l => !h.Game.IsAlive(l))
-            .Select(l => new Tuple<Treachery.Shared.Leader, LeaderState>(l, h.Game.LeaderState[l]))
+            .Select(l => new Tuple<Leader, LeaderState>(l, h.Game.LeaderState[l]))
             .OrderBy(l => l.Item2.TimeOfDeath).Select(l => l.Item1);
 
-        int corpseNr = 0;
+        var corpseNr = 0;
         if (corpses.Any())
         {
             y += spacing * (leaderPctHeight * (corpses.Count() - 1));
-            int dy = 0;
-            int displaceX = (int)(0.2f * leaderDiameter);
+            var dy = 0;
+            var displaceX = (int)(0.2f * leaderDiameter);
             foreach (var leader in corpses)
             {
                 var l = new PointD(x, y - dy);
@@ -90,7 +88,10 @@
 @code {
         
     private Situation situation = new();
-    protected override bool ShouldRender() => situation.RequiresUpdate(Game);
+    protected override bool ShouldRender()
+    {
+        return situation.RequiresUpdate(Game);
+    }
 
     private static void NextColumnIfNecessary(ref float y, ref float x, float spacing)
     {
@@ -101,5 +102,9 @@
         }
     }
 
-    private string Popover(Leader l) => Player.Is(l.Faction) || Player.Is(Faction.Purple) ? Popup.Get(l, Game) : "?";
+    private string Popover(Leader l)
+    {
+        return Player.Is(l.Faction) || Player.Is(Faction.Purple) ? Popup.Get(l, Game) : "?";
+    }
+
 }

@@ -1,13 +1,10 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Retreat>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>You may retreat from the battle any number of undialed forces to an adjacent empty non-stronghold territory</Header>
     <Body>
@@ -69,12 +66,12 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override Retreat ConfirmedResult => new Retreat(Game, Faction) { Location = target, Forces = forces, SpecialForces = specialForces };
+    protected override Retreat ConfirmedResult => new(Game, Faction) { Location = target, Forces = forces, SpecialForces = specialForces };
 
-    protected override Retreat PassedResult => new Retreat(Game, Faction) { Location = target, Forces = 0, SpecialForces = 0 };
+    protected override Retreat PassedResult => new(Game, Faction) { Location = target, Forces = 0, SpecialForces = 0 };
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid<Location, Location>(ref target, Retreat.ValidTargets(Game, Player), l);
+        SetIfValid(ref target, Retreat.ValidTargets(Game, Player), l);
     }
 }

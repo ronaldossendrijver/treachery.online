@@ -6,21 +6,18 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BluePrediction>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Predict which faction will win the game.</Header>
     <Body>
 
-        <SelectFromImageComponent @bind-Value="toWin" Values="BluePrediction.ValidTargets(Game, Player)" Required=true ImageWidth="40" />
+        <SelectFromImageComponent @bind-Value="toWin" Values="BluePrediction.ValidTargets(Game, Player)" Required="true" ImageWidth="40" />
 
         <SelectNumberComponent @bind-Value="turn" Min="1" Max="Game.MaximumNumberOfTurns" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Prediction" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Prediction" ConfirmError="@Validation" />
 
     </Body>
 
@@ -34,5 +31,5 @@
     private int turn;
     private Faction toWin;
 
-    protected override BluePrediction ConfirmedResult => new BluePrediction(Game, Faction) { ToWin = toWin, Turn = turn };
+    protected override BluePrediction ConfirmedResult => new(Game, Faction) { ToWin = toWin, Turn = turn };
 }

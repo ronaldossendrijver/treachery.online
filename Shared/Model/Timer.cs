@@ -5,39 +5,29 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 using System;
 using System.Collections.Generic;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class Timer<T>
 {
-    public class Timer<T>
+    private readonly Dictionary<T, TimeSpan> _times = new();
+
+    public TimeSpan TimeSpent(T timedItem)
     {
-        private readonly Dictionary<T, TimeSpan> _times = new();
+        if (_times.TryGetValue(timedItem, out var ts))
+            return ts;
+        return TimeSpan.Zero;
+    }
 
-        public TimeSpan TimeSpent(T timedItem)
-        {
-            if (_times.TryGetValue(timedItem, out TimeSpan ts))
-            {
-                return ts;
-            }
-            else
-            {
-                return TimeSpan.Zero;
-            }
-        }
-
-        public void Add(T timedItem, TimeSpan ts)
-        {
-            if (_times.ContainsKey(timedItem))
-            {
-                _times[timedItem] += ts;
-            }
-            else
-            {
-                _times.Add(timedItem, ts);
-            }
-        }
+    public void Add(T timedItem, TimeSpan ts)
+    {
+        if (_times.ContainsKey(timedItem))
+            _times[timedItem] += ts;
+        else
+            _times.Add(timedItem, ts);
     }
 }

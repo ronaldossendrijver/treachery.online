@@ -5,61 +5,60 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class PlayerReplaced : GameEvent
 {
-    public class PlayerReplaced : GameEvent
+    #region Construction
+
+    public PlayerReplaced(Game game, Faction initiator) : base(game, initiator)
     {
-        #region Construction
-
-        public PlayerReplaced(Game game, Faction initiator) : base(game, initiator)
-        {
-        }
-
-        public PlayerReplaced()
-        {
-        }
-
-        #endregion Construction
-
-        #region Properties
-
-        public Faction ToReplace { get; set; }
-
-        #endregion Properties
-
-        #region Validation
-
-        public override Message Validate()
-        {
-            return null;
-        }
-
-        public static IEnumerable<Faction> ValidTargets(Game g)
-        {
-            return g.Players.Select(p => p.Faction);
-        }
-
-        #endregion Validation
-
-        #region Execution
-
-        protected override void ExecuteConcreteEvent()
-        {
-            var player = GetPlayer(ToReplace);
-            player.IsBot = !player.IsBot;
-            Log(ToReplace, " will now be played by a ", player.IsBot ? "Bot" : "Human");
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(ToReplace, " player has been replaced");
-        }
-
-        #endregion Execution
     }
+
+    public PlayerReplaced()
+    {
+    }
+
+    #endregion Construction
+
+    #region Properties
+
+    public Faction ToReplace { get; set; }
+
+    #endregion Properties
+
+    #region Validation
+
+    public override Message Validate()
+    {
+        return null;
+    }
+
+    public static IEnumerable<Faction> ValidTargets(Game g)
+    {
+        return g.Players.Select(p => p.Faction);
+    }
+
+    #endregion Validation
+
+    #region Execution
+
+    protected override void ExecuteConcreteEvent()
+    {
+        var player = GetPlayer(ToReplace);
+        player.IsBot = !player.IsBot;
+        Log(ToReplace, " will now be played by a ", player.IsBot ? "Bot" : "Human");
+    }
+
+    public override Message GetMessage()
+    {
+        return Message.Express(ToReplace, " player has been replaced");
+    }
+
+    #endregion Execution
 }

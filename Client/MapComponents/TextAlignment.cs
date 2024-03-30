@@ -1,10 +1,9 @@
-﻿namespace Treachery.Client.MapComponents
+﻿namespace Treachery.Client.MapComponents;
+
+public enum TextAlignment
 {
-    public enum TextAlignment
-    {
-        None = 0,
-        Left = 10,
-        Center = 20,
-        Right = 30
-    }
+    None = 0,
+    Left = 10,
+    Center = 20,
+    Right = 30
 }

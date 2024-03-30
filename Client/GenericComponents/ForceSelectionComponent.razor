@@ -23,12 +23,12 @@
 
                     if (Max(l) > 0) 
                     {
-                        <td class="ps-0 bg-transparent"><SelectForcesComponent Value=@Forces[l].AmountOfForces OnDown="(e => ChangeForceAmount(l, -1, false))" OnUp="(e => ChangeForceAmount(l, 1, false))" Min="Min" Max="Max(l)" Faction="Player.Faction" Special="false" /></td>
+                        <td class="ps-0 bg-transparent"><SelectForcesComponent Value=@Forces[l].AmountOfForces OnDown="e => ChangeForceAmount(l, -1, false)" OnUp="e => ChangeForceAmount(l, 1, false)" Min="Min" Max="Max(l)" Faction="Player.Faction" Special="false" /></td>
                     }
 
                     if (MaxSpecial(l) > 0) 
                     {
-                        <td class="ps-0 bg-transparent"><SelectForcesComponent Value=@Forces[l].AmountOfSpecialForces OnDown="(e => ChangeForceAmount(l, -1, true))" OnUp="(e => ChangeForceAmount(l, 1, true))" Min="Min" Max="MaxSpecial(l)" Faction="Player.Faction" Special="true" /></td>
+                        <td class="ps-0 bg-transparent"><SelectForcesComponent Value=@Forces[l].AmountOfSpecialForces OnDown="e => ChangeForceAmount(l, -1, true)" OnUp="e => ChangeForceAmount(l, 1, true)" Min="Min" Max="MaxSpecial(l)" Faction="Player.Faction" Special="true" /></td>
                     }
                 }
                 else
@@ -84,7 +84,7 @@
     {
         await base.OnParametersSetAsync();
 
-        bool changed = false;
+        var changed = false;
 
         foreach (var l in Forces.Keys.Where(l => !Locations.Contains(l) || Forces[l].AmountOfForces > Max(l) || Forces[l].AmountOfSpecialForces > MaxSpecial(l)).ToArray())
         {
@@ -106,8 +106,15 @@
     }
 
     private int Min => 0;
-    private int Max(Location l) => Game.IsInStorm(l) && !MaySelectFromStorm ? 0 : (FixedMaxForces > 0 ? FixedMaxForces : Player.ForcesIn(l));
-    private int MaxSpecial(Location l) => Game.IsInStorm(l) && !MaySelectFromStorm ? 0 : (FixedMaxSpecialForces > 0 ? FixedMaxSpecialForces : Player.SpecialForcesIn(l));
+    private int Max(Location l)
+    {
+        return Game.IsInStorm(l) && !MaySelectFromStorm ? 0 : FixedMaxForces > 0 ? FixedMaxForces : Player.ForcesIn(l);
+    }
+
+    private int MaxSpecial(Location l)
+    {
+        return Game.IsInStorm(l) && !MaySelectFromStorm ? 0 : FixedMaxSpecialForces > 0 ? FixedMaxSpecialForces : Player.SpecialForcesIn(l);
+    }
 
     private async Task ChangeForceAmount(Location location, int amount, bool specialForces)
     {

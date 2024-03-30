@@ -9,13 +9,13 @@
 
 @inherits GameEventComponent<AllianceOffered>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Offer a faction to form an Alliance</Header>
 
     <Body>
-        <SelectFromImageComponent @bind-Value="target" Values=@AllianceOffered.ValidTargets(Game, Player) Required=true ImageWidth="40"/>
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Offer Alliance" ConfirmError=@Validation />
+        <SelectFromImageComponent @bind-Value="target" Values="@AllianceOffered.ValidTargets(Game, Player)" Required="true" ImageWidth="40"/>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Offer Alliance" ConfirmError="@Validation" />
     </Body>
 
 </GameEventComponentLayout>
@@ -24,5 +24,5 @@
 
     private Faction target;
 
-    protected override AllianceOffered ConfirmedResult => new AllianceOffered(Game, Faction) { Target = target };
+    protected override AllianceOffered ConfirmedResult => new(Game, Faction) { Target = target };
 }

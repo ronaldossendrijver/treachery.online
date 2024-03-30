@@ -5,22 +5,21 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class ObserverJoined
 {
-    public class ObserverJoined
+    public string HashedPassword { get; set; }
+
+    public string Name { get; set; }
+
+    public static string ValidName(string name)
     {
-        public string HashedPassword { get; set; }
+        if (name == null || name.Length == 0) return "Please enter a name.";
+        if (name.Contains('&') || name.Contains('#') || name.Contains('\"') || name.Contains('<') || name.Contains('>')) return "Name cannot contain &, #, \", < or >";
 
-        public string Name { get; set; }
-
-        public static string ValidName(string name)
-        {
-            if (name == null || name.Length == 0) return "Please enter a name.";
-            if (name.Contains('&') || name.Contains('#') || name.Contains('\"') || name.Contains('<') || name.Contains('>')) return "Name cannot contain &, #, \", < or >";
-
-            return "";
-        }
+        return "";
     }
 }

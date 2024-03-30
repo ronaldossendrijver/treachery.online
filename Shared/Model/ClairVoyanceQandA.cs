@@ -5,20 +5,19 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class ClairVoyanceQandA
 {
-    public class ClairVoyanceQandA
+    public ClairVoyancePlayed Question { get; }
+
+    public ClairVoyanceAnswered Answer { get; }
+
+    public ClairVoyanceQandA(ClairVoyancePlayed question, ClairVoyanceAnswered answer)
     {
-        public ClairVoyancePlayed Question { get; }
-
-        public ClairVoyanceAnswered Answer { get; }
-
-        public ClairVoyanceQandA(ClairVoyancePlayed question, ClairVoyanceAnswered answer)
-        {
-            Question = question;
-            Answer = answer;
-        }
+        Question = question;
+        Answer = answer;
     }
 }

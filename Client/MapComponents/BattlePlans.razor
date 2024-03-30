@@ -6,30 +6,28 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
 @inherits MapComponent
 
 @if (Game.CurrentMainPhase == MainPhase.Battle && Game.CurrentPhase != Phase.BattleReport)
 {
-    bool MaySeeAggressorBattlePlan = Game.AggressorPlan != null && (Game.AggressorPlan.Initiator == h.Faction || Game.GreenKarma && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.AggressorPlan.Player);
-    bool MaySeeDefenderBattlePlan = Game.DefenderPlan != null && (Game.DefenderPlan.Initiator == h.Faction || Game.GreenKarma && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.DefenderPlan.Player);
+    var MaySeeAggressorBattlePlan = Game.AggressorPlan != null && (Game.AggressorPlan.Initiator == h.Faction || (Game.GreenKarma && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.AggressorPlan.Player));
+    var MaySeeDefenderBattlePlan = Game.DefenderPlan != null && (Game.DefenderPlan.Initiator == h.Faction || (Game.GreenKarma && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.DefenderPlan.Player));
 
-    bool MaySeeBothBattlePlans = Game.AggressorPlan != null && Game.DefenderPlan != null;
+    var MaySeeBothBattlePlans = Game.AggressorPlan != null && Game.DefenderPlan != null;
     
-    bool AggressorIsAffectedByPartialPrescience = Game.AggressorPlan != null && 
-        (Game.CurrentPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentPrescience.Initiator) == Game.AggressorPlan.Player ||
-         Game.CurrentNexusPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentNexusPrescience.Initiator) == Game.AggressorPlan.Player);
+    var AggressorIsAffectedByPartialPrescience = Game.AggressorPlan != null && 
+                                                 ((Game.CurrentPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentPrescience.Initiator) == Game.AggressorPlan.Player) ||
+                                                  (Game.CurrentNexusPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentNexusPrescience.Initiator) == Game.AggressorPlan.Player));
 
-    bool DefenderIsAffectedByPartialPrescience = Game.DefenderPlan != null && 
-        (Game.CurrentPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentPrescience.Initiator) == Game.DefenderPlan.Player ||
-         Game.CurrentNexusPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentNexusPrescience.Initiator) == Game.DefenderPlan.Player);
+    var DefenderIsAffectedByPartialPrescience = Game.DefenderPlan != null && 
+                                                ((Game.CurrentPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentPrescience.Initiator) == Game.DefenderPlan.Player) ||
+                                                 (Game.CurrentNexusPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentNexusPrescience.Initiator) == Game.DefenderPlan.Player));
 
-    bool AggressorCallsTraitor = Game.AggressorTraitorAction != null && Game.AggressorTraitorAction.Succeeded;
-    bool DefenderCallsTraitor = Game.DefenderTraitorAction != null && Game.DefenderTraitorAction.Succeeded;
+    var AggressorCallsTraitor = Game.AggressorTraitorAction != null && Game.AggressorTraitorAction.Succeeded;
+    var DefenderCallsTraitor = Game.DefenderTraitorAction != null && Game.DefenderTraitorAction.Succeeded;
 
-    bool AggressorWasFacedanced = Game.Version > 150 && Game.CurrentPhase == Phase.Facedancing && Game.CurrentBattle.Aggressor == Game.BattleWinner;
-    bool DefenderWasFacedanced = Game.Version > 150 && Game.CurrentPhase == Phase.Facedancing && Game.CurrentBattle.Defender == Game.BattleWinner;
+    var AggressorWasFacedanced = Game.Version > 150 && Game.CurrentPhase == Phase.Facedancing && Game.CurrentBattle.Aggressor == Game.BattleWinner;
+    var DefenderWasFacedanced = Game.Version > 150 && Game.CurrentPhase == Phase.Facedancing && Game.CurrentBattle.Defender == Game.BattleWinner;
 
     var x = 0.1f * Skin.Current.MapDimensions.X;
     var y = 0.1f * Skin.Current.MapDimensions.Y;

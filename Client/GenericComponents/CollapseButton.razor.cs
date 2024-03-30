@@ -1,11 +1,9 @@
-﻿namespace Treachery.Client.GenericComponents
+﻿namespace Treachery.Client.GenericComponents;
+
+public enum CollapseState
 {
 
-    public enum CollapseState
-    {
-
-        None = 0,
-        Collapsed = 10,
-        NotCollapsed = 20
-    }
+    None = 0,
+    Collapsed = 10,
+    NotCollapsed = 20
 }

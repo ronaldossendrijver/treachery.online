@@ -6,7 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-@using Treachery.Client.GenericComponents;
 
 <div>
     <table class="table table-sm">
@@ -265,13 +264,7 @@
     [Parameter]
     public Game Game { get; set; }
 
-    private IEnumerable<Player> Players
-    {
-        get
-        {
-            return Game.Players;
-        }
-    }
+    private IEnumerable<Player> Players => Game.Players;
 
     [Parameter]
     public bool ShowName { get; set; } = false;

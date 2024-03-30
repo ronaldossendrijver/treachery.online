@@ -5,49 +5,48 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class ThumperPlayed : GameEvent
 {
-    public class ThumperPlayed : GameEvent
+    #region Construction
+
+    public ThumperPlayed(Game game, Faction initiator) : base(game, initiator)
     {
-        #region Construction
-
-        public ThumperPlayed(Game game, Faction initiator) : base(game, initiator)
-        {
-        }
-
-        public ThumperPlayed()
-        {
-        }
-
-        #endregion Construction
-
-        #region Validation
-
-        public override Message Validate()
-        {
-            return null;
-        }
-
-        #endregion Validation
-
-        #region Execution
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.Discard(Player, TreacheryCardType.Thumper);
-            Log();
-            Game.Stone(Milestone.Thumper);
-            Game.ThumperUsed = true;
-            Game.EnterBlowA();
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " use a ", TreacheryCardType.Thumper, " to attract ", Concept.Monster);
-        }
-
-        #endregion Execution
     }
+
+    public ThumperPlayed()
+    {
+    }
+
+    #endregion Construction
+
+    #region Validation
+
+    public override Message Validate()
+    {
+        return null;
+    }
+
+    #endregion Validation
+
+    #region Execution
+
+    protected override void ExecuteConcreteEvent()
+    {
+        Game.Discard(Player, TreacheryCardType.Thumper);
+        Log();
+        Game.Stone(Milestone.Thumper);
+        Game.ThumperUsed = true;
+        Game.EnterBlowA();
+    }
+
+    public override Message GetMessage()
+    {
+        return Message.Express(Initiator, " use a ", TreacheryCardType.Thumper, " to attract ", Concept.Monster);
+    }
+
+    #endregion Execution
 }

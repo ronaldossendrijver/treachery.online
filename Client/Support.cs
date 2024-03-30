@@ -5,80 +5,77 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 using System;
 using System.Globalization;
 
-namespace Treachery.Client
+namespace Treachery.Client;
+
+public static class Support
 {
-    public static class Support
+    public static void Log(object o)
     {
-        public static void Log(object o)
+        Console.WriteLine(o);
+    }
+
+    public static void Log(string msg, params object[] o)
+    {
+        Console.WriteLine(msg, o);
+    }
+
+    public static string GetHash(string input)
+    {
+        if (input == null || input.Length == 0) return "";
+
+        var hashedValue = 3074457345618258791ul;
+        for (var i = 0; i < input.Length; i++)
         {
-            Console.WriteLine(o);
+            hashedValue += input[i];
+            hashedValue *= 3074457345618258799ul;
         }
 
-        public static void Log(string msg, params object[] o)
-        {
-            Console.WriteLine(msg, o);
-        }
+        return hashedValue.ToString();
+    }
 
-        public static string GetHash(string input)
-        {
-            if (input == null || input.Length == 0)
-            {
-                return "";
-            }
+    // Verify a hash against a string.
+    public static bool VerifyHash(string input, string hash)
+    {
+        // Hash the input.
+        var hashOfInput = GetHash(input);
 
-            ulong hashedValue = 3074457345618258791ul;
-            for (int i = 0; i < input.Length; i++)
-            {
-                hashedValue += input[i];
-                hashedValue *= 3074457345618258799ul;
-            }
+        // Create a StringComparer an compare the hashes.
+        var comparer = StringComparer.OrdinalIgnoreCase;
 
-            return hashedValue.ToString();
-        }
+        return comparer.Compare(hashOfInput, hash) == 0;
+    }
 
-        // Verify a hash against a string.
-        public static bool VerifyHash(string input, string hash)
-        {
-            // Hash the input.
-            var hashOfInput = GetHash(input);
+    public static string TextBorder(int borderwidth, string bordercolor)
+    {
+        return
+            $"-webkit-text-stroke: {Px(0.3f * borderwidth)} {bordercolor}; text-shadow: 0 0 {2 * borderwidth}px {bordercolor}";
+    }
+    //string.Format("text-shadow: {0}px {0}px {0}px {1}, 0px {0}px {0}px {1}, -{0}px {0}px {0}px {1}, -{0}px 0px {0}px {1}, -{0}px -{0}px {0}px {1}, 0px -{0}px {0}px {1}, {0}px -{0}px {0}px {1}, {0}px 0px {0}px {1}, 0px 0px {0}px {1};", Round(0.5f * borderwidth), bordercolor);
+    //$"-webkit-text-stroke: {Px(0.4f * borderwidth)} {bordercolor}";
 
-            // Create a StringComparer an compare the hashes.
-            StringComparer comparer = StringComparer.OrdinalIgnoreCase;
+    public static string Round(double x)
+    {
+        return Math.Round(x, 3).ToString(CultureInfo.InvariantCulture);
+    }
 
-            return comparer.Compare(hashOfInput, hash) == 0;
-        }
+    public static string RoundWithHalves(double x)
+    {
+        if (x == 0.5f)
+            return "½";
+        if (x == -0.5f)
+            return "-½";
+        if (x - 0.5f == (int)x)
+            return "" + (int)x + "½";
+        return Round(x);
+    }
 
-        public static string TextBorder(int borderwidth, string bordercolor) => $"-webkit-text-stroke: {Px(0.3f * borderwidth)} {bordercolor}; text-shadow: 0 0 {2 * borderwidth}px {bordercolor}";
-        //string.Format("text-shadow: {0}px {0}px {0}px {1}, 0px {0}px {0}px {1}, -{0}px {0}px {0}px {1}, -{0}px 0px {0}px {1}, -{0}px -{0}px {0}px {1}, 0px -{0}px {0}px {1}, {0}px -{0}px {0}px {1}, {0}px 0px {0}px {1}, 0px 0px {0}px {1};", Round(0.5f * borderwidth), bordercolor);
-        //$"-webkit-text-stroke: {Px(0.4f * borderwidth)} {bordercolor}";
-
-        public static string Round(double x) => Math.Round(x, 3).ToString(CultureInfo.InvariantCulture);
-
-        public static string RoundWithHalves(double x)
-        {
-            if (x == 0.5f)
-            {
-                return "½";
-            }
-            else if (x == -0.5f)
-            {
-                return "-½";
-            }
-            else if (x - 0.5f == (int)x)
-            {
-                return "" + (int)x + "½";
-            }
-            else
-            {
-                return Round(x);
-            }
-        }
-
-        public static string Px(double x) => "" + Round(x) + "px";
+    public static string Px(double x)
+    {
+        return "" + Round(x) + "px";
     }
 }

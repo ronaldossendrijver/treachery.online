@@ -5,52 +5,51 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class RecruitsPlayed : GameEvent
 {
-    public class RecruitsPlayed : GameEvent
+    #region Construction
+
+    public RecruitsPlayed(Game game, Faction initiator) : base(game, initiator)
     {
-        #region Construction
-
-        public RecruitsPlayed(Game game, Faction initiator) : base(game, initiator)
-        {
-        }
-
-        public RecruitsPlayed()
-        {
-        }
-
-        #endregion Construction
-
-        #region Validation
-
-        public override Message Validate()
-        {
-            return null;
-        }
-
-        public static bool IsApplicable(Game g, Player p)
-        {
-            return g.CurrentPhase == Phase.BeginningOfResurrection && p.Has(TreacheryCardType.Recruits);
-        }
-
-        #endregion Validation
-
-        #region Execution
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Log();
-            Game.CurrentRecruitsPlayed = this;
-            Game.Discard(Player, TreacheryCardType.Recruits);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " use ", TreacheryCardType.Recruits, " to double free revivals and set revival limits to ", 7);
-        }
-
-        #endregion Execution
     }
+
+    public RecruitsPlayed()
+    {
+    }
+
+    #endregion Construction
+
+    #region Validation
+
+    public override Message Validate()
+    {
+        return null;
+    }
+
+    public static bool IsApplicable(Game g, Player p)
+    {
+        return g.CurrentPhase == Phase.BeginningOfResurrection && p.Has(TreacheryCardType.Recruits);
+    }
+
+    #endregion Validation
+
+    #region Execution
+
+    protected override void ExecuteConcreteEvent()
+    {
+        Log();
+        Game.CurrentRecruitsPlayed = this;
+        Game.Discard(Player, TreacheryCardType.Recruits);
+    }
+
+    public override Message GetMessage()
+    {
+        return Message.Express(Initiator, " use ", TreacheryCardType.Recruits, " to double free revivals and set revival limits to ", 7);
+    }
+
+    #endregion Execution
 }

@@ -18,14 +18,8 @@
     [Parameter]
     public virtual string BackgroundImage
     {
-        get
-        {
-            return Background;
-        }
-        set
-        {
-            Background = value;
-        }
+        get => Background;
+        set => Background = value;
     }
 
     protected virtual string Background { get; set; } = "";
@@ -74,8 +68,8 @@
     {
         if ((object)field != (object)newValue && validValues.Contains(newValue))
         {
-            bool sameType = (typeof(OriginalType) == typeof(DisplayType));
-            bool useId = (typeof(DisplayType) == typeof(int)) && typeof(IIdentifiable).IsAssignableFrom(typeof(OriginalType));
+            var sameType = typeof(OriginalType) == typeof(DisplayType);
+            var useId = typeof(DisplayType) == typeof(int) && typeof(IIdentifiable).IsAssignableFrom(typeof(OriginalType));
 
             if (sameType)
             {
@@ -83,7 +77,7 @@
             }
             else if (useId)
             {
-                field = (DisplayType)((object)((IIdentifiable)newValue).Id);
+                field = (DisplayType)(object)((IIdentifiable)newValue).Id;
             }
             else
             {
@@ -104,15 +98,11 @@
                 {
                     return "";
                 }
-                else
-                {
-                    return string.Format("background-color: {0};", Skin.Current.GetFactionColorTransparant(IsFactionSpecific, "bb"));
-                }
+
+                return string.Format("background-color: {0};", Skin.Current.GetFactionColorTransparant(IsFactionSpecific, "bb"));
             }
-            else
-            {
-                return string.Format("background-color: rgba(0,0,0,0); background-image: url('{0}'); background-origin: content-box; background-size: cover; background-repeat: no-repeat;", BackgroundImage);
-            }
+
+            return string.Format("background-color: rgba(0,0,0,0); background-image: url('{0}'); background-origin: content-box; background-size: cover; background-repeat: no-repeat;", BackgroundImage);
         }
     }
 

@@ -6,19 +6,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Diplomacy>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Use Diplomacy?</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="card" Values="Diplomacy.ValidCards(Game, Player)" Required="true" ImageWidth="80" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Use Diplomacy" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Use Diplomacy" ConfirmError="@Validation" />
 
     </Body>
 
@@ -35,5 +32,5 @@
         BackgroundImage = Skin.Current.GetImageURL(LeaderSkill.Diplomat);
     }
 
-    protected override Diplomacy ConfirmedResult => new Diplomacy(Game, Faction) { Card = card };
+    protected override Diplomacy ConfirmedResult => new(Game, Faction) { Card = card };
 }

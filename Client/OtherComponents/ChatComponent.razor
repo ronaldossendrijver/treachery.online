@@ -6,7 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-@using Treachery.Client.GenericComponents;
 @inherits GameComponent;
 @inject IJSRuntime JSRuntime;
 
@@ -16,13 +15,13 @@
 
         <div class="d-flex flex-row-reverse">
 
-            <input @bind-value=message class="form-control" type="text" maxlength="512" placeholder=@Placeholder @onkeyup=@(e => KeyUp(e))/>
+            <input @bind-value="message" class="form-control" type="text" maxlength="512" placeholder="@Placeholder "@onkeyup="@(e => KeyUp(e))"/>
 
         </div>
 
         <div class="d-flex flex-row-reverse mt-1">
 
-            <button class="btn btn-primary" @onclick="(e => Send())">Send</button>
+            <button class="btn btn-primary" @onclick="e => Send()">Send</button>
 
             @if (ShowGameChat)
             {
@@ -51,7 +50,7 @@
 
         @foreach (var m in Client.Messages.Where(message => !Client.MuteGlobalChat || message is not GlobalChatMessage))
         {
-            var bgcolor = (m) switch
+            var bgcolor = m switch
             {
                 GameChatMessage gcm => Skin.Current.GetFactionColor(gcm.GetSourceFaction(Client.Game)),
                 GlobalChatMessage gcm => "grey",
@@ -129,8 +128,8 @@
         if (target == LABEL_GLOBAL_CHAT)
         {
             await currentHandler.Request(
-                new GlobalChatMessage()
-                    {
+                new GlobalChatMessage
+                {
                         SourcePlayerName = sourcePlayer != null ? currentHandler.Player.Name : "",
                         Body = msg
                     });
@@ -141,7 +140,7 @@
             var targetPlayer = target == LABEL_GLOBAL_CHAT || target == LABEL_ALL_PLAYERS_IN_GAME ? null : currentHandler.Game.GetPlayer(target);
 
             await currentHandler.HostProxy.Request(
-                new GameChatMessage()
+                new GameChatMessage
                 {
                     SourcePlayerName = sourcePlayer != null ? currentHandler.Player.Name : "",
                     TargetPlayerName = targetPlayer != null ? targetPlayer.Name : "",
@@ -160,18 +159,14 @@
             {
                 return "white";
             }
-            else
+
+            var p = Client.Game.GetPlayer(playername);
+            if (p != null)
             {
-                var p = Client.Game.GetPlayer(playername);
-                if (p != null)
-                {
-                    return Skin.Current.GetFactionColor(p.Faction);
-                }
-                else
-                {
-                    return "red";
-                }
+                return Skin.Current.GetFactionColor(p.Faction);
             }
+
+            return "red";
         }
     }
 
@@ -183,10 +178,8 @@
             {
                 return "black";
             }
-            else
-            {
-                return "white";
-            }
+
+            return "white";
         }
     }
 

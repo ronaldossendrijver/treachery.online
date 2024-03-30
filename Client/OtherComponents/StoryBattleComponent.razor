@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-@using Treachery.Client.GenericComponents;
-
 <div>
     <table class="table table-sm">
         <thead>
@@ -31,7 +29,7 @@
 
             <tr class="table-dark" style="@BackgroundStyle(AggressorBattle.Initiator)">
                 <td>
-                    <img class="img-fluid p-1" width=60 src="@Skin.Current.GetFactionTableImageURL(AggressorBattle.Initiator)" />
+                    <img class="img-fluid p-1" width="60" src="@Skin.Current.GetFactionTableImageURL(AggressorBattle.Initiator)" />
 
                     @if (AggressorBattle.Initiator == Game.BattleWinner)
                     {
@@ -76,7 +74,7 @@
 
             <tr class="table-dark" style="@BackgroundStyle(DefenderBattle.Initiator)">
                 <td>
-                    <img class="img-fluid p-1" width=60 src="@Skin.Current.GetFactionTableImageURL(DefenderBattle.Initiator)" />
+                    <img class="img-fluid p-1" width="60" src="@Skin.Current.GetFactionTableImageURL(DefenderBattle.Initiator)" />
 
                     @if (DefenderBattle.Initiator == Game.BattleWinner)
                     {
@@ -137,9 +135,7 @@
         {
             return "background-color:#AAFFAA32";
         }
-        else
-        {
-            return "background-color:#FFAAAA32";
-        }
+
+        return "background-color:#FFAAAA32";
     }
 }

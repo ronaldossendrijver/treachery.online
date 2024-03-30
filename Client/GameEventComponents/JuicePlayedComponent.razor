@@ -6,19 +6,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<JuicePlayed>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Juice)?</Header>
     <Body>
 
         <RadioComponent @bind-Value="type" Values="JuicePlayed.ValidTypes(Game, Player)" Required="true"/>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.Juice)" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.Juice)" ConfirmError="@Validation" />
 
     </Body>
 
@@ -33,5 +30,5 @@
         BackgroundImage = GetImage(TreacheryCardType.Juice);
     }
 
-    protected override JuicePlayed ConfirmedResult => new JuicePlayed(Game, Faction) { Type = type };
+    protected override JuicePlayed ConfirmedResult => new(Game, Faction) { Type = type };
 }

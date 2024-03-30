@@ -6,29 +6,26 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<AmbassadorPlaced>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>You may now place an Ambassador Token in a Stronghold</Header>
     <Body>
 
-        <SelectFromImageComponent @bind-Value=_ambassador Values=@AmbassadorPlaced.ValidAmbassadors(Player) PopupsAsTooltip=true Required=true>
+        <SelectFromImageComponent @bind-Value="_ambassador" Values="@AmbassadorPlaced.ValidAmbassadors(Player)" PopupsAsTooltip="true" Required="true">
             <Label>Which ambassador?</Label>
         </SelectFromImageComponent>
 
-        <SelectComponent ButtonHint=ClickHintButton.LMB @bind-Value=_stronghold Values=@AmbassadorPlaced.ValidStrongholds(Game, Player)>
+        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="_stronghold" Values="@AmbassadorPlaced.ValidStrongholds(Game, Player)">
             <Label>Where?</Label>
         </SelectComponent>
 
         <div>
-            Cost: <SimpleNumberComponent Size=20>@(Game.AmbassadorsPlacedThisTurn + 1)</SimpleNumberComponent>
+            Cost: <SimpleNumberComponent Size="20">@(Game.AmbassadorsPlacedThisTurn + 1)</SimpleNumberComponent>
         </div>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Place Ambassador" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Place Ambassador" ConfirmError="@Validation" />
 
     </Body>
 
@@ -49,11 +46,11 @@
         }
     }
 
-    protected override AmbassadorPlaced ConfirmedResult => new AmbassadorPlaced(Game, Faction) { Ambassador = _ambassador, Stronghold = _stronghold };
+    protected override AmbassadorPlaced ConfirmedResult => new(Game, Faction) { Ambassador = _ambassador, Stronghold = _stronghold };
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid<Territory, Territory>(ref _stronghold, AmbassadorPlaced.ValidStrongholds(Game, Player), l.Territory);
+        SetIfValid(ref _stronghold, AmbassadorPlaced.ValidStrongholds(Game, Player), l.Territory);
     }
 
     public override void Dispose()

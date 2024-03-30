@@ -6,9 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<FaceDanced>
 @implements IDisposable
 
@@ -89,15 +86,15 @@ else {
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Purple;
 
-    private Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
-    private Dictionary<Location, Battalion> targetForces = new Dictionary<Location, Battalion>();
+    private Dictionary<Location, Battalion> forces = new();
+    private Dictionary<Location, Battalion> targetForces = new();
     private int forcesFromReserve;
 
     protected override FaceDanced ConfirmedResult => Game.Version > 150 ?
         new FaceDanced(Game, Faction) { ForceLocations = forces, ForcesFromReserve = forcesFromReserve, TargetForceLocations = targetForces } :
         new FaceDanced(Game, Faction) { FaceDancerCalled = true, ForceLocations = forces, ForcesFromReserve = forcesFromReserve, TargetForceLocations = targetForces };
 
-    protected override FaceDanced PassedResult => new FaceDanced(Game, Faction) { FaceDancerCalled = false };
+    protected override FaceDanced PassedResult => new(Game, Faction) { FaceDancerCalled = false };
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -159,15 +156,11 @@ else {
             {
                 return forces[l].AmountOfSpecialForces;
             }
-            else
-            {
-                return forces[l].AmountOfForces;
-            }
+
+            return forces[l].AmountOfForces;
         }
-        else
-        {
-            return 0;
-        }
+
+        return 0;
     }
 
     protected void ForceAmountButton(Location location, int amount, bool specialForces)
@@ -206,15 +199,11 @@ else {
             {
                 return targetForces[l].AmountOfSpecialForces;
             }
-            else
-            {
-                return targetForces[l].AmountOfForces;
-            }
+
+            return targetForces[l].AmountOfForces;
         }
-        else
-        {
-            return 0;
-        }
+
+        return 0;
     }
 
     protected void TargetForceAmountButton(Location location, int amount, bool specialForces)

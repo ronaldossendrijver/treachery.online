@@ -6,9 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameComponent
 
 <div class="card p-1 mb-2">
@@ -51,9 +48,15 @@
         await Client.Host.Undo(undoEventId);
     }
 
-    private string DetermineEventDescription(int eventnumber, GameEvent e) => "" + eventnumber + ". " + e.GetShortMessage()?.ToString(Skin.Current);
+    private string DetermineEventDescription(int eventnumber, GameEvent e)
+    {
+        return "" + eventnumber + ". " + e.GetShortMessage()?.ToString(Skin.Current);
+    }
 
-    private string DetermineGroup(Moment m) => "Turn " + m.Turn + " - " + Skin.Current.Describe(m.Phase);
+    private string DetermineGroup(Moment m)
+    {
+        return "Turn " + m.Turn + " - " + Skin.Current.Describe(m.Phase);
+    }
 
     private Dictionary<string,Dictionary<int, GameEvent>> UndoableEvents
     {
@@ -61,7 +64,7 @@
         {
             var result = new Dictionary<string,Dictionary<int, GameEvent>>();
 
-            for (int i = Client.Game.History.Count - 1; i > 0; i--)
+            for (var i = Client.Game.History.Count - 1; i > 0; i--)
             {
                 var e = Client.Game.History[i];
                 if (!(e is AllyPermission) && !(e is BattleRevision))
@@ -69,7 +72,7 @@
                     var group = DetermineGroup(Client.Game.Moments[i-1]);
                     if (!result.ContainsKey(group))
                     {
-                        result.Add(group, new());
+                        result.Add(group, new Dictionary<int, GameEvent>());
                     }
 
                     var groupedEvents = result[group];

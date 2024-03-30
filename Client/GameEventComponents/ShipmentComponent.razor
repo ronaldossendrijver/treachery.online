@@ -1,13 +1,10 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Shipment>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>
 
@@ -254,8 +251,8 @@
     {
         get
         {
-            int direction = (shipmentType == SHIPMENT_BACK ? -1 : 1);
-            var from = (shipmentType == SHIPMENT_SITETOSITE ? shipmentFrom : null);
+            var direction = shipmentType == SHIPMENT_BACK ? -1 : 1;
+            var from = shipmentType == SHIPMENT_SITETOSITE ? shipmentFrom : null;
 
             return new Shipment(Game, Faction)
             {
@@ -270,12 +267,12 @@
                 Passed = false,
                 KarmaCard = karmaCard,
                 AllyContributionAmount = shipmentAllyContributionAmount,
-                UseWhiteSecretAlly = (shipmentType == SHIPMENT_SECRETALLY)
+                UseWhiteSecretAlly = shipmentType == SHIPMENT_SECRETALLY
             };
         }
     }
 
-    protected override Shipment PassedResult => new Shipment(Game, Faction) { Passed = true };
+    protected override Shipment PassedResult => new(Game, Faction) { Passed = true };
 
     protected override void OnAfterRender(bool firstRender)
     {

@@ -20,7 +20,7 @@
 
     protected Faction Faction => Client.Faction;
 
-    private string _id = null;
+    private string _id;
     protected string Id
     {
         get
@@ -44,7 +44,7 @@
         await Client.HostProxy.Request(e);
     }
 
-    private bool _redrawCycleStarted = false;
+    private bool _redrawCycleStarted;
     protected void StartRedrawCycle(int interval)
     {
         if (!_redrawCycleStarted && interval > 0)
@@ -91,7 +91,7 @@
         await Task.Delay(0).ContinueWith(e => StateHasChanged());
     }
 
-    private bool _timerCycleStarted = false;
+    private bool _timerCycleStarted;
     protected void StartTimerCycle(int interval)
     {
         if (!_timerCycleStarted && interval > 0)
@@ -143,7 +143,10 @@
         return items.Select(i => i != null ? Name(i) : labelIfNull);
     }
 
-    protected static string Name(object o) => Skin.Current.Describe(o);
+    protected static string Name(object o)
+    {
+        return Skin.Current.Describe(o);
+    }
 
     protected static string GetImage(TreacheryCardType type)
     {
@@ -161,19 +164,15 @@
         {
             return "";
         }
-        else 
-        {
-            var valueAsIdentifiable = value as IIdentifiable;
 
-            if (valueAsIdentifiable != null)
-            {
-                return valueAsIdentifiable.Id.ToString();
-            }
-            else
-            {
-                return Skin.Current.Describe(value);
-            }
+        var valueAsIdentifiable = value as IIdentifiable;
+
+        if (valueAsIdentifiable != null)
+        {
+            return valueAsIdentifiable.Id.ToString();
         }
+
+        return Skin.Current.Describe(value);
     }
 }
 

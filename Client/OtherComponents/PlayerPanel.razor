@@ -6,7 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-@using Treachery.Client.GenericComponents;
 @inherits GameComponent
 
 @if (Player != null && Client.CurrentPhase >= Phase.TradingFactions)
@@ -144,7 +143,7 @@
 
                         @if (ShownPlayer.Faction == Faction.Cyan && Client.CurrentPhase > Phase.BluePredicting)
                         {
-                            var style = $"color:white;{@Support.TextBorder(1, "#289caa")}";
+                            var style = $"color:white;{Support.TextBorder(1, "#289caa")}";
 
                             <div>
                             Available Terror:
@@ -222,48 +221,34 @@
                     {
                         return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, ShownPlayer.ResourcesAfterBidding, ShownPlayer.BankedResources, MainPhase.Contemplate);
                     }
-                    else
-                    {
-                        return Skin.Current.Format("{0}, {1} at {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, MainPhase.Contemplate, ShownPlayer.BankedResources, MainPhase.Contemplate);
-                    }
+
+                    return Skin.Current.Format("{0}, {1} at {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, MainPhase.Contemplate, ShownPlayer.BankedResources, MainPhase.Contemplate);
                 }
-                else
+
+                if (ShownPlayer.ResourcesAfterBidding > 0)
                 {
-                    if (ShownPlayer.ResourcesAfterBidding > 0)
-                    {
-                        return Skin.Current.Format("{0}, {1} at end of {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding, ShownPlayer.BankedResources, MainPhase.Contemplate);
-                    }
-                    else
-                    {
-                        return Skin.Current.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.BankedResources, MainPhase.Contemplate);
-                    }
+                    return Skin.Current.Format("{0}, {1} at end of {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding, ShownPlayer.BankedResources, MainPhase.Contemplate);
                 }
+
+                return Skin.Current.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.BankedResources, MainPhase.Contemplate);
             }
-            else
+
+            if (ShownPlayer.Bribes + ShownPlayer.Extortion > 0)
             {
-                if (ShownPlayer.Bribes + ShownPlayer.Extortion > 0)
+                if (ShownPlayer.ResourcesAfterBidding > 0)
                 {
-                    if (ShownPlayer.ResourcesAfterBidding > 0)
-                    {
-                        return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, ShownPlayer.ResourcesAfterBidding);
-                    }
-                    else
-                    {
-                        return Skin.Current.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, MainPhase.Contemplate);
-                    }
+                    return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, ShownPlayer.ResourcesAfterBidding);
                 }
-                else
-                {
-                    if (ShownPlayer.ResourcesAfterBidding > 0)
-                    {
-                        return Skin.Current.Format("{0}, {1} at end of {2}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding);
-                    }
-                    else
-                    {
-                        return Skin.Current.Format("{0}", ShownPlayer.Resources);
-                    }
-                }
+
+                return Skin.Current.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, MainPhase.Contemplate);
             }
+
+            if (ShownPlayer.ResourcesAfterBidding > 0)
+            {
+                return Skin.Current.Format("{0}, {1} at end of {2}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding);
+            }
+
+            return Skin.Current.Format("{0}", ShownPlayer.Resources);
         }
     }
 }

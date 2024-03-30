@@ -5,16 +5,15 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 using System;
 
-namespace Treachery.Client
-{
-    public class ServerSettings
-    {
-        public DateTime ScheduledMaintenance { get; set; }
+namespace Treachery.Client;
 
-        public string AdminName { get; set; }
-    }
+public class ServerSettings
+{
+    public DateTime ScheduledMaintenance { get; set; }
+
+    public string AdminName { get; set; }
 }

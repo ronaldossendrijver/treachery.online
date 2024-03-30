@@ -5,79 +5,73 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class PerformHmsPlacement : GameEvent
 {
-    public class PerformHmsPlacement : GameEvent
+    #region Construction
+
+    public PerformHmsPlacement(Game game, Faction initiator) : base(game, initiator)
     {
-        #region Construction
-
-        public PerformHmsPlacement(Game game, Faction initiator) : base(game, initiator)
-        {
-        }
-
-        public PerformHmsPlacement()
-        {
-        }
-
-        #endregion Construction
-
-        #region Properties
-
-        public int _targetId;
-
-        [JsonIgnore]
-        public Location Target
-        {
-            get => Game.Map.LocationLookup.Find(_targetId);
-            set => _targetId = Game.Map.LocationLookup.GetId(value);
-        }
-
-        #endregion Properties
-
-        #region Validation
-
-        public override Message Validate()
-        {
-            if (!ValidLocations(Game, Player).Contains(Target)) return Message.Express("Invalid location");
-
-            return null;
-        }
-
-        public static IEnumerable<Location> ValidLocations(Game g, Player p)
-        {
-            if (p.Faction != Faction.Grey)
-            {
-                return g.Map.Locations(false).Where(l => !l.Territory.IsStronghold);
-            }
-            else
-            {
-                return g.Map.Locations(false).Where(l => !l.Territory.IsStronghold && l.Sector != g.SectorInStorm);
-            }
-        }
-
-        #endregion Validation
-
-        #region Execution
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.Map.HiddenMobileStronghold.PointAt(Game, Target);
-            Log();
-            Game.EndStormPhase();
-            Game.Stone(Milestone.HmsMovement);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " position the ", Game.Map.HiddenMobileStronghold, " above ", Target);
-        }
-
-        #endregion Execution
     }
+
+    public PerformHmsPlacement()
+    {
+    }
+
+    #endregion Construction
+
+    #region Properties
+
+    public int _targetId;
+
+    [JsonIgnore]
+    public Location Target
+    {
+        get => Game.Map.LocationLookup.Find(_targetId);
+        set => _targetId = Game.Map.LocationLookup.GetId(value);
+    }
+
+    #endregion Properties
+
+    #region Validation
+
+    public override Message Validate()
+    {
+        if (!ValidLocations(Game, Player).Contains(Target)) return Message.Express("Invalid location");
+
+        return null;
+    }
+
+    public static IEnumerable<Location> ValidLocations(Game g, Player p)
+    {
+        if (p.Faction != Faction.Grey)
+            return g.Map.Locations(false).Where(l => !l.Territory.IsStronghold);
+        return g.Map.Locations(false).Where(l => !l.Territory.IsStronghold && l.Sector != g.SectorInStorm);
+    }
+
+    #endregion Validation
+
+    #region Execution
+
+    protected override void ExecuteConcreteEvent()
+    {
+        Game.Map.HiddenMobileStronghold.PointAt(Game, Target);
+        Log();
+        Game.EndStormPhase();
+        Game.Stone(Milestone.HmsMovement);
+    }
+
+    public override Message GetMessage()
+    {
+        return Message.Express(Initiator, " position the ", Game.Map.HiddenMobileStronghold, " above ", Target);
+    }
+
+    #endregion Execution
 }

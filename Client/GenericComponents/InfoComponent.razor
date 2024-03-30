@@ -32,11 +32,5 @@
     [Parameter]
     public int Size { get; set; } = 16;
 
-    private string FormattedContents
-    {
-        get
-        {
-            return string.Format("<div class='{0}'>{1}</div>", ContentsClass, Contents);
-        }
-    }
+    private string FormattedContents => string.Format("<div class='{0}'>{1}</div>", ContentsClass, Contents);
 }

@@ -1,90 +1,77 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class ObjectCounter<T>
 {
-    public class ObjectCounter<T>
+    private readonly Dictionary<T, int> counters = new();
+
+    public void Count(T obj)
     {
-        private readonly Dictionary<T, int> counters = new();
-
-        public void Count(T obj)
+        lock (counters)
         {
-            lock (counters)
-            {
-                if (counters.ContainsKey(obj))
-                {
-                    counters[obj]++;
-                }
-                else
-                {
-                    counters.Add(obj, 1);
-                }
-            }
+            if (counters.ContainsKey(obj))
+                counters[obj]++;
+            else
+                counters.Add(obj, 1);
         }
+    }
 
-        public void Count2(T obj)
+    public void Count2(T obj)
+    {
+        lock (counters)
         {
-            lock (counters)
-            {
-                if (counters.ContainsKey(obj))
-                {
-                    counters[obj] += 2;
-                }
-                else
-                {
-                    counters.Add(obj, 2);
-                }
-            }
+            if (counters.ContainsKey(obj))
+                counters[obj] += 2;
+            else
+                counters.Add(obj, 2);
         }
+    }
 
-        public void CountN(T obj, int n)
+    public void CountN(T obj, int n)
+    {
+        lock (counters)
         {
-            lock (counters)
-            {
-                if (counters.ContainsKey(obj))
-                {
-                    counters[obj] += n;
-                }
-                else
-                {
-                    counters.Add(obj, n);
-                }
-            }
-        }
-
-        public void SetToN(T obj, int n)
-        {
-            lock (counters)
-            {
-                counters.Remove(obj);
+            if (counters.ContainsKey(obj))
+                counters[obj] += n;
+            else
                 counters.Add(obj, n);
-            }
         }
+    }
 
-        public int CountOf(T obj)
+    public void SetToN(T obj, int n)
+    {
+        lock (counters)
         {
-            if (counters.TryGetValue(obj, out int value))
-            {
-                return value;
-            }
-
-            return 0;
+            counters.Remove(obj);
+            counters.Add(obj, n);
         }
+    }
 
-        public IEnumerable<T> Counted => counters.Keys;
+    public int CountOf(T obj)
+    {
+        if (counters.TryGetValue(obj, out var value)) return value;
 
-        public IEnumerable<T> GetHighest(int amountOfItems) => counters.OrderByDescending(c => c.Value).Take(amountOfItems).Select(c => c.Key);
+        return 0;
+    }
 
-        public T Highest
+    public IEnumerable<T> Counted => counters.Keys;
+
+    public IEnumerable<T> GetHighest(int amountOfItems)
+    {
+        return counters.OrderByDescending(c => c.Value).Take(amountOfItems).Select(c => c.Key);
+    }
+
+    public T Highest
+    {
+        get
         {
-            get
-            {
-                if (counters.Count == 0) return default;
+            if (counters.Count == 0) return default;
 
-                var bestValue = counters.Max(c => c.Value);
-                var best = counters.FirstOrDefault(c => c.Value == bestValue);
-                return best.Key;
-            }
+            var bestValue = counters.Max(c => c.Value);
+            var best = counters.FirstOrDefault(c => c.Value == bestValue);
+            return best.Key;
         }
     }
 }

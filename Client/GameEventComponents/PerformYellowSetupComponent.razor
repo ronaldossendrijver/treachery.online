@@ -6,20 +6,17 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<PerformYellowSetup>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Distribute @(10 - forces.Sum(fl => fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces)) forces on @Skin.Current.Describe(Game.Map.SietchTabr), @Skin.Current.Describe(Game.Map.FalseWallSouth), and @Skin.Current.Describe(Game.Map.FalseWallWest).</Header>
     <Body>
 
-        <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="true" FixedMaxForces="10" FixedMaxSpecialForces="@(Player.HasSpecialForces ? 10 : 0)" AllowMultipleTerritories="true" />
+        <ForceSelectionComponent Game="Game" Player="Player" OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="true" FixedMaxForces="10" FixedMaxSpecialForces="@(Player.HasSpecialForces ? 10 : 0)" AllowMultipleTerritories="true" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
         <div>You can use the planet map:</div>
         <div>Add @Skin.Current.Describe(Player.Force): <ClickHintComponent Button="ClickHintButton.LMB" /></div>
@@ -40,9 +37,9 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Yellow;
 
-    private Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
+    private Dictionary<Location, Battalion> forces = new();
 
-    protected override PerformYellowSetup ConfirmedResult => new PerformYellowSetup(Game, Faction) { ForceLocations = forces };
+    protected override PerformYellowSetup ConfirmedResult => new(Game, Faction) { ForceLocations = forces };
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -124,15 +121,11 @@
             {
                 return forces[l].AmountOfSpecialForces;
             }
-            else
-            {
-                return forces[l].AmountOfForces;
-            }
+
+            return forces[l].AmountOfForces;
         }
-        else
-        {
-            return 0;
-        }
+
+        return 0;
     }
 
     protected void ForceAmountButton(Location location, int amount, bool specialForces)

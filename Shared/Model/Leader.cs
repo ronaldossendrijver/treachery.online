@@ -5,85 +5,80 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class Leader : IHero
 {
-    public class Leader : IHero
+    public int Id { get; }
+
+    public Faction Faction { get; set; }
+
+    public int Value { get; set; }
+
+    public Leader(int id)
     {
-        public int Id { get; private set; }
+        Id = id;
+    }
 
-        public Faction Faction { get; set; }
+    public HeroType HeroType { get; set; }
 
-        public int Value { get; set; }
+    public bool Is(Faction f)
+    {
+        return Faction == f;
+    }
 
-        public Leader(int id)
+    public int ValueInCombatAgainst(IHero opposingHero)
+    {
+        if (HeroType == HeroType.VariableValue)
         {
-            Id = id;
+            if (opposingHero == null)
+                return 0;
+            return opposingHero.Value;
         }
 
-        public HeroType HeroType { get; set; }
+        return Value;
+    }
 
-        public bool Is(Faction f) => Faction == f;
-
-        public int ValueInCombatAgainst(IHero opposingHero)
+    public int CostToRevive
+    {
+        get
         {
             if (HeroType == HeroType.VariableValue)
-            {
-                if (opposingHero == null)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return opposingHero.Value;
-                }
-            }
-            else
-            {
-                return Value;
-            }
+                return 6;
+            if (HeroType == HeroType.Vidal)
+                return 5;
+            return Value;
         }
+    }
 
-        public int CostToRevive
-        {
-            get
-            {
-                if (HeroType == HeroType.VariableValue)
-                {
-                    return 6;
-                }
-                else if (HeroType == HeroType.Vidal)
-                {
-                    return 5;
-                }
-                else
-                {
-                    return Value;
-                }
-            }
-        }
+    public int SkinId => Id;
 
-        public int SkinId => Id;
+    public override bool Equals(object obj)
+    {
+        return obj is Leader l && l.Id == Id;
+    }
 
-        public override bool Equals(object obj) => (obj is Leader l && l.Id == Id);
+    public override int GetHashCode()
+    {
+        return Id.GetHashCode();
+    }
 
-        public override int GetHashCode() => Id.GetHashCode();
+    public bool IsTraitor(IHero hero)
+    {
+        return hero == this;
+    }
 
-        public bool IsTraitor(IHero hero) => hero == this;
+    public bool IsFaceDancer(IHero hero)
+    {
+        return hero == this;
+    }
 
-        public bool IsFaceDancer(IHero hero) => hero == this;
-
-        public override string ToString()
-        {
-            if (Message.DefaultDescriber != null)
-            {
-                return Message.DefaultDescriber.Describe(this) + "*";
-            }
-            else
-            {
-                return base.ToString();
-            }
-        }
+    public override string ToString()
+    {
+        if (Message.DefaultDescriber != null)
+            return Message.DefaultDescriber.Describe(this) + "*";
+        return base.ToString();
     }
 }

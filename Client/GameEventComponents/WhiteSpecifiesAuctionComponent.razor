@@ -6,12 +6,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<WhiteSpecifiesAuction>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Define the auction</Header>
     <Body>
@@ -23,19 +20,19 @@
 
         @if (WhiteSpecifiesAuction.MaySpecifyTypeOfAuction(Game, Player))
         {
-            <RadioComponent @bind-Value="auctionType" Values="new AuctionType[] { AuctionType.WhiteOnceAround, AuctionType.WhiteSilent }" ValueLabels="@(new string[] { "Once Around", "Silent"})">
+            <RadioComponent @bind-Value="auctionType" Values="new[] { AuctionType.WhiteOnceAround, AuctionType.WhiteSilent }" ValueLabels="@(new[] { "Once Around", "Silent"})">
                 <Label>Type of auction</Label>
             </RadioComponent>
 
             @if (auctionType == AuctionType.WhiteOnceAround)
             {
-                <RadioComponent @bind-Value=direction Values="new int[] { 1, -1 }" ValueLabels="@(new string[] { "Counter-clockwise", "Clockwise"})">
+                <RadioComponent @bind-Value=direction Values="new[] { 1, -1 }" ValueLabels="@(new[] { "Counter-clockwise", "Clockwise"})">
                     <Label>Bidding direction</Label>
                 </RadioComponent>
             }
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Start Auction" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Start Auction" ConfirmError="@Validation" />
 
     </Body>
 
@@ -51,5 +48,5 @@
     private AuctionType auctionType = AuctionType.WhiteOnceAround;
     private int direction = 1;
 
-    protected override WhiteSpecifiesAuction ConfirmedResult => new WhiteSpecifiesAuction(Game, Faction) { Card = card, AuctionType = auctionType, Direction = direction };
+    protected override WhiteSpecifiesAuction ConfirmedResult => new(Game, Faction) { Card = card, AuctionType = auctionType, Direction = direction };
 }

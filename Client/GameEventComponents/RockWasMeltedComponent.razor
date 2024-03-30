@@ -6,16 +6,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<RockWasMelted>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Rockmelter) to kill or to reduce leader strength to zero?</Header>
     <Body>
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Kill" ConfirmError=@Validation Other="Other" OtherText="Reduce to 0"/>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Kill" ConfirmError="@Validation" Other="Other" OtherText="Reduce to 0"/>
     </Body>
 
 </GameEventComponentLayout>
@@ -29,7 +26,7 @@
 
     protected override bool IsUrgent => true;
 
-    protected override RockWasMelted ConfirmedResult => new RockWasMelted(Game, Faction) { Kill = true };
+    protected override RockWasMelted ConfirmedResult => new(Game, Faction) { Kill = true };
 
-    protected override RockWasMelted OtherResult => new RockWasMelted(Game, Faction) { Kill = false };
+    protected override RockWasMelted OtherResult => new(Game, Faction) { Kill = false };
 }

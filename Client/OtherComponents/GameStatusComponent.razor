@@ -6,9 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<EndPhase>
 
 <div class="card p-0 mb-2" style="background-color:#e8dba6ee;animation:fadeIn 1s">
@@ -32,13 +29,13 @@
 
                     @if (IsBiddingPhase && ToBid.Count() > 0)
                     {
-                        bool showTurnInSequence = Client.Game.CurrentPhase == Phase.BlackMarketBidding || Client.Game.CurrentPhase == Phase.Bidding || Client.Game.CurrentPhase == Phase.BiddingReport;
+                        var showTurnInSequence = Client.Game.CurrentPhase == Phase.BlackMarketBidding || Client.Game.CurrentPhase == Phase.Bidding || Client.Game.CurrentPhase == Phase.BiddingReport;
                         var hasTurn = Client.Status.WaitingForPlayers.Count() == 1 && !showTurnInSequence ? Client.Status.WaitingForPlayers.First() : null;
 
                         foreach (var se in ToBid)
                         {
                             <div class="col" style="filter:drop-shadow(1px 1px 1px black)">
-                                <NumberComponent Value="Game.CardsOwnedBy(se.Player).Count()" Size="@(se.Player == hasTurn || showTurnInSequence && se.HasTurn ? 36 : 28)"
+                                <NumberComponent Value="Game.CardsOwnedBy(se.Player).Count()" Size="@(se.Player == hasTurn || (showTurnInSequence && se.HasTurn) ? 36 : 28)"
                                                 SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)"
                                                 BehindNumberSRC="@Skin.Current.CardBack_TreacheryCard_URL"
                                                 Title="@PlayerWithCardsTitle(se.Player)"
@@ -196,14 +193,14 @@
 
     private bool CancelAutoConfirm =>
         Game.Players.Any(p => !p.IsBot) && (
-        Game.CurrentPhase == Phase.AllianceA && _previousPhase != Phase.AllianceA ||
-        Game.CurrentPhase == Phase.AllianceB && _previousPhase != Phase.AllianceB ||
-        Game.CurrentPhase == Phase.ClaimingCharity && _previousPhase != Phase.ClaimingCharity ||
-        Game.CurrentTurn > 1 && Game.CurrentPhase == Phase.Resurrection && _previousPhase != Phase.Resurrection ||
-        Game.CurrentPhase == Phase.ResurrectionReport && Game.IsPlaying(Faction.Pink) ||
-        Game.CurrentPhase == Phase.Contemplate && (Game.IsPlaying(Faction.Brown) || Game.IsPlaying(Faction.Cyan)));
+        (Game.CurrentPhase == Phase.AllianceA && _previousPhase != Phase.AllianceA) ||
+        (Game.CurrentPhase == Phase.AllianceB && _previousPhase != Phase.AllianceB) ||
+        (Game.CurrentPhase == Phase.ClaimingCharity && _previousPhase != Phase.ClaimingCharity) ||
+        (Game.CurrentTurn > 1 && Game.CurrentPhase == Phase.Resurrection && _previousPhase != Phase.Resurrection) ||
+        (Game.CurrentPhase == Phase.ResurrectionReport && Game.IsPlaying(Faction.Pink)) ||
+        (Game.CurrentPhase == Phase.Contemplate && (Game.IsPlaying(Faction.Brown) || Game.IsPlaying(Faction.Cyan))));
 
-    protected override EndPhase ConfirmedResult => new EndPhase(Game, Faction) {  };
+    protected override EndPhase ConfirmedResult => new(Game, Faction);
 
     private IEnumerable<SequenceElement> ToBid
     {
@@ -213,10 +210,8 @@
             {
                 return BlackMarketBid.PlayersToBid(Client.Game);
             }
-            else
-            {
-                return Bid.PlayersToBid(Client.Game);
-            }
+
+            return Bid.PlayersToBid(Client.Game);
         }
     }
 
@@ -228,7 +223,10 @@
 
     private string StatusStyle => Client.Status.WaitingForMe(Player, Client.IsHost) ? Support.TextBorder(1, "#FF000016") : "";
 
-    private string PlayerWithCardsTitle(Player player) => player.Name;
+    private string PlayerWithCardsTitle(Player player)
+    {
+        return player.Name;
+    }
 
     protected string TimerText(GameEvent timedEvent)
     {
@@ -236,7 +234,7 @@
 
         var elapsed = DateTime.Now.Subtract(timedEvent.Time);
 
-        string result = "";
+        var result = "";
 
         if (elapsed.TotalSeconds >= 1)
         {
@@ -258,15 +256,18 @@
         return result;
     }
 
-    protected string TimerColor(bool hasTurn) => hasTurn ? "red" : "black";
+    protected string TimerColor(bool hasTurn)
+    {
+        return hasTurn ? "red" : "black";
+    }
 
     private int TimerStepUp
     {
         get
         {
             if (timeLimit < 20) return 5;
-            else if (timeLimit < 60) return 10;
-            else return 30;
+            if (timeLimit < 60) return 10;
+            return 30;
         }
     }
 
@@ -275,8 +276,8 @@
         get
         {
             if (timeLimit > 60) return 30;
-            else if (timeLimit > 20) return 10;
-            else return 5;
+            if (timeLimit > 20) return 10;
+            return 5;
         }
     }
 }

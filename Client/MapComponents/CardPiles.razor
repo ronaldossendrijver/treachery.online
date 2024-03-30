@@ -6,24 +6,22 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
 @inherits MapComponent
 
 @{
 
-    double cardWidth = Skin.Current.CardSize.X;
-    double cardHeight = Skin.Current.CardSize.Y;
+    var cardWidth = Skin.Current.CardSize.X;
+    var cardHeight = Skin.Current.CardSize.Y;
 
-    double x = Skin.Current.SpiceDeckLocation.X;
-    double y = 1.02f * Skin.Current.SpiceDeckLocation.Y;
+    var x = Skin.Current.SpiceDeckLocation.X;
+    var y = 1.02f * Skin.Current.SpiceDeckLocation.Y;
 
     double cardspacing = 1f;
 
     //Resource cards
     @if (!Game.ResourceCardDeck.IsEmpty)
     {
-        string cardImageToShow = Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(h.Player) ? Skin.Current.GetImageURL(Game.ResourceCardDeck.Top) : Skin.Current.CardBack_ResourceCard_URL;
+        var cardImageToShow = Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(h.Player) ? Skin.Current.GetImageURL(Game.ResourceCardDeck.Top) : Skin.Current.CardBack_ResourceCard_URL;
         <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@cardImageToShow" 
            ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="2" 
            Popover="@IntelOfResourceCardPile()"/>
@@ -131,7 +129,7 @@
 
     private string IntelOfTreacheryDiscardPile()
     {
-        string result = "";
+        var result = "";
 
         result += Skin.Current.Format("<h4>Discard pile: {0} cards</h4>", h.Game.TreacheryDiscardPile.Items.Count);
 
@@ -141,7 +139,7 @@
             result += "<div class=\"row row-cols-6 mt-1\">";
             foreach (var c in h.Game.TreacheryDiscardPile.Items)
             {
-                string imgUrl = known.Contains(c) ? Skin.Current.GetImageURL(c) : Skin.Current.CardBack_TreacheryCard_URL;
+                var imgUrl = known.Contains(c) ? Skin.Current.GetImageURL(c) : Skin.Current.CardBack_TreacheryCard_URL;
                 result += string.Format("<img src=\"{0}\" class=\"img-fluid p-1\"/>", imgUrl);
             }
             result += "</div>";
@@ -157,7 +155,7 @@
 
     private string GetCardImages<T>(IEnumerable<T> items)
     {
-        string result = "<div class=\"row row-cols-6 mt-1\">";
+        var result = "<div class=\"row row-cols-6 mt-1\">";
         foreach (var c in items)
         {
             result += string.Format("<img src=\"{0}\" class=\"img-fluid p-1\"/>", Skin.Current.GetImageURL(c));
@@ -169,7 +167,7 @@
 
     private string IntelOfWhiteCardPile()
     {
-        string result = "";
+        var result = "";
         if (h.Game.WhiteCache.Count > 0)
         {
             result += Skin.Current.Format("<h4>{0} cards: {1} on deck</h4>", Faction.White, h.Game.WhiteCache.Count);
@@ -185,7 +183,7 @@
 
     private string IntelOfResourceCardPile()
     {
-        string result = "";
+        var result = "";
 
         result += Skin.Current.Format("<h4>{0} Cards: {1} on deck</h4>", Concept.Resource, h.Game.ResourceCardDeck.Items.Count);
 
@@ -200,7 +198,7 @@
 
     private string IntelOfResourceDiscardPileA()
     {
-        string result = "";
+        var result = "";
         var pileName = h.Game.Applicable(Rule.IncreasedResourceFlow) ? " A" : "";
 
         result += $"<h4>Discard pile{pileName}: {h.Game.ResourceCardDiscardPileA.Items.Count} cards</h4>";
@@ -221,7 +219,7 @@
 
     private string IntelOfResourceDiscardPileB()
     {
-        string result = "";
+        var result = "";
 
         if (h.Game.Applicable(Rule.IncreasedResourceFlow))
         {

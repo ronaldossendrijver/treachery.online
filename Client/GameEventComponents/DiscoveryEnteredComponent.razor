@@ -1,12 +1,9 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<DiscoveryEntered>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Enter a discovered stronghold?</Header>
     <Body>
@@ -28,7 +25,7 @@
             <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces=@forces Locations=@DiscoveryEntered.ValidSources(Player, toLocation) />
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
 
     </Body>
 
@@ -36,11 +33,11 @@
 
 @code {
 
-    private Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
+    private Dictionary<Location, Battalion> forces = new();
 
     private DiscoveredLocation toLocation;
 
-    override protected DiscoveryEntered ConfirmedResult => new DiscoveryEntered(Game, Faction) { ForceLocations = forces, To = toLocation, Passed = false };
+    protected override DiscoveryEntered ConfirmedResult => new(Game, Faction) { ForceLocations = forces, To = toLocation, Passed = false };
 
-    override protected DiscoveryEntered PassedResult => new DiscoveryEntered(Game, Faction) { Passed = true };
+    protected override DiscoveryEntered PassedResult => new(Game, Faction) { Passed = true };
 }

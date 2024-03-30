@@ -53,23 +53,15 @@
     [Parameter]
     public bool Printable { get; set; } = false;
 
-    private string LabelId
-    {
-        get
-        {
-            return Id + "Label";
-        }
-    }
+    private string LabelId => Id + "Label";
 
-    private string BodyId
-    {
-        get
-        {
-            return Id + "Body";
-        }
-    }
+    private string BodyId => Id + "Body";
 
     private string ScrollClass => Scrolling ? "overflow-auto" : "";
 
-    private async Task Print() => await Browser.Print(BodyId);
+    private async Task Print()
+    {
+        await Browser.Print(BodyId);
+    }
+
 }

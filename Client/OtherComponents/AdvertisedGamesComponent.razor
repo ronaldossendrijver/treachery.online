@@ -6,11 +6,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-@using Treachery.Client.GenericComponents;
 @inherits GameComponent;
 @inject IJSRuntime JSRuntime;
 
-<HoverPanel Height=300 HandleWidth=20 BackgroundColor="#e8dba6dd" Position="HoverPanel.HoverPanelPosition.Top">
+<HoverPanel Height="300" HandleWidth="20" BackgroundColor="#e8dba6dd" Position="HoverPanel.HoverPanelPosition.Top">
 
     <div class="p-2">
 
@@ -44,12 +43,12 @@
 
 @code {
 
-    private Dictionary<int, string> joinPWD = new Dictionary<int, string>();
+    private Dictionary<int, string> joinPWD = new();
 
     private async Task JoinGameAsPlayer(int hostID, string pwd)
     {
         Client.Reset();
         Client.JoinErrors[hostID] = "";
-        await Client.Request(hostID, new PlayerJoined() { HashedPassword = Support.GetHash(pwd), Name = Client.PlayerName });
+        await Client.Request(hostID, new PlayerJoined { HashedPassword = Support.GetHash(pwd), Name = Client.PlayerName });
     }
 }

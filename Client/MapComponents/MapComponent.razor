@@ -1,4 +1,5 @@
-﻿@*
+﻿@using System.Globalization
+@*
  * Copyright (C) 2020-2024 Ronald Ossendrijver (admin@treachery.online)
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
@@ -6,9 +7,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using System.Globalization;
 
 @code {
 
@@ -88,11 +86,17 @@
 
     protected Player Player => h.Player;
 
-    protected string Px(double x) => Round(x) + "px";
+    protected string Px(double x)
+    {
+        return Round(x) + "px";
+    }
 
-    protected string Round(double x) => Math.Round(x, 3).ToString(CultureInfo.InvariantCulture);
+    protected string Round(double x)
+    {
+        return Math.Round(x, 3).ToString(CultureInfo.InvariantCulture);
+    }
 
-    private string _id = null;
+    private string _id;
     protected string Id
     {
         get
@@ -106,7 +110,7 @@
         }
     }
 
-    private static int nextId = 0;
+    private static int nextId;
     protected string GenerateId()
     {
         return (nextId++).ToString();
@@ -125,7 +129,7 @@
     protected static PointD PlayerTokenPosition(Game game, int positionAtTable)
     {
         var positionSector = Math.Floor((float)positionAtTable * Map.NUMBER_OF_SECTORS / game.MaximumNumberOfPlayers);
-        double angle = (4.5 - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
+        var angle = (4.5 - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
         var x = Skin.Current.PlanetCenter.X + (float)(Skin.Current.MapRadius * Math.Cos(angle));
         var y = Skin.Current.PlanetCenter.Y + (float)(Skin.Current.MapRadius * Math.Sin(angle));
         return new PointD(x, y);
@@ -143,7 +147,7 @@
 
             if (fontDefinitionPart.Contains("px")) {
 
-                if (float.TryParse(fontDefinitionPart.Remove(fontDefinitionPart.IndexOf("px")), out float fontsizeNumber))
+                if (float.TryParse(fontDefinitionPart.Remove(fontDefinitionPart.IndexOf("px")), out var fontsizeNumber))
                 {
                     result += " " + Px(scale * fontsizeNumber);
                 }
@@ -163,7 +167,7 @@
 
     protected string Intel(Location intelligenceLocation)
     {
-        string result = "<div style='width:300px'>";
+        var result = "<div style='width:300px'>";
 
         if (Game.StrongholdOwnership.TryGetValue(intelligenceLocation, out var owner))
         {
@@ -210,7 +214,7 @@
             {
                 if (intelligenceLocation == Game.Map.Arrakeen || intelligenceLocation == Game.Map.Carthag || intelligenceLocation == Game.Map.TueksSietch)
                 {
-                    int bonus = (intelligenceLocation == Game.Map.Arrakeen || intelligenceLocation == Game.Map.Carthag) ? 2 : 1;
+                    var bonus = intelligenceLocation == Game.Map.Arrakeen || intelligenceLocation == Game.Map.Carthag ? 2 : 1;
                     result += Skin.Current.Format("<p>Yields <strong>{0} {1}</strong> at end of turn when occupied.</p>", bonus, Concept.Resource);
                 }
             }
@@ -249,7 +253,7 @@
                 Game.ResourcesOnPlanet[intelligenceLocation]);
         }
 
-        if (Game.ForcesOnPlanetExcludingEmptyLocations(false).ContainsKey(intelligenceLocation))
+        if (Game.ForcesOnPlanetExcludingEmptyLocations().ContainsKey(intelligenceLocation))
         {
             foreach (var b in Game.BattalionsIn(intelligenceLocation))
             {
@@ -304,12 +308,12 @@
         return result;
     }
 
-    protected string ProtectedFromMonsterText(Treachery.Shared.Location l)
+    protected string ProtectedFromMonsterText(Location l)
     {
         return l.Territory.IsProtectedFromWorm ? "Protected" : "NOT protected";
     }
 
-    protected string ProtectedFromStormText(Treachery.Shared.Location l)
+    protected string ProtectedFromStormText(Location l)
     {
         return h.Game.IsProtectedFromStorm(l) ? "Protected" : "NOT protected";
     }

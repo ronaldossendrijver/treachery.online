@@ -6,21 +6,18 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<KarmaRevivalPrevention>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to prevent revival</Header>
     <Body>
 
-        <SelectFromImageComponent @bind-Value="target" Values="KarmaRevivalPrevention.GetValidTargets(Game, Player)" Required=true ImageWidth="40">
+        <SelectFromImageComponent @bind-Value="target" Values="KarmaRevivalPrevention.GetValidTargets(Game, Player)" Required="true" ImageWidth="40">
             <Label>Target</Label>
         </SelectFromImageComponent>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Prevent Revival" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Prevent Revival" ConfirmError="@Validation" />
 
     </Body>
 
@@ -32,5 +29,5 @@
 
     private Faction target;
 
-    protected override KarmaRevivalPrevention ConfirmedResult => new KarmaRevivalPrevention(Game, Faction) { Target = target };
+    protected override KarmaRevivalPrevention ConfirmedResult => new(Game, Faction) { Target = target };
 }

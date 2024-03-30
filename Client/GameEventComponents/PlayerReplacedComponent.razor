@@ -6,19 +6,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<PlayerReplaced>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType() Collapsed=CollapseState.Collapsed>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsed="CollapseState.Collapsed">
 
     <Header>Replace a player with a Bot (or vice versa)</Header>
     <Body>
 
-        <SelectFromImageComponent @bind-Value="toReplace" Values="PlayerReplaced.ValidTargets(Game)" Required=true ImageWidth="40" />
+        <SelectFromImageComponent @bind-Value="toReplace" Values="PlayerReplaced.ValidTargets(Game)" Required="true" ImageWidth="40" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@Validation" />
 
     </Body>
 
@@ -28,7 +25,7 @@
 
     private Faction toReplace;
 
-    protected override PlayerReplaced ConfirmedResult => new PlayerReplaced(Game, Faction) { ToReplace = toReplace };
+    protected override PlayerReplaced ConfirmedResult => new(Game, Faction) { ToReplace = toReplace };
 
     private string ConfirmLabel => Game.GetPlayer(toReplace) != null && Game.GetPlayer(toReplace).IsBot ? "Replace by a human" : "Replace by a bot";
 }

@@ -1,9 +1,9 @@
-﻿<!--
+﻿@using System.Collections
+<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-@using System.Collections;
 
-@for (int elementnr = 0; elementnr < Expression.Elements.Length; elementnr++)
+@for (var elementnr = 0; elementnr < Expression.Elements.Length; elementnr++)
 {
     var part = Expression.Elements[elementnr];
 
@@ -21,7 +21,7 @@
             {
                 var elts = DetermineElements(e);
 
-                for (int i = 0; i < elts.Count; i++)
+                for (var i = 0; i < elts.Count; i++)
                 {
                     <ExpressionComponent Expression=elts[i] Size=@Size Game=Game TextBorder=@TextBorder/>
                 }
@@ -99,8 +99,8 @@
     private List<Expression> DetermineElements(IEnumerable e)
     {
         var result = new List<Expression>();
-        bool useSeparators = false;
-        bool firstItem = true;
+        var useSeparators = false;
+        var firstItem = true;
 
         foreach (var elt in e)
         {
@@ -124,5 +124,9 @@
         return result;
     }
 
-    private bool ShowWithSeparator(object e) => !(e is Faction || e is MessagePart || e is FactionForce || e is FactionSpecialForce || e is Leader);
+    private bool ShowWithSeparator(object e)
+    {
+        return !(e is Faction || e is MessagePart || e is FactionForce || e is FactionSpecialForce || e is Leader);
+    }
+
 }

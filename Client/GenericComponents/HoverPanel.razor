@@ -7,12 +7,7 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-@using Treachery.Client;
-
-<div 
-    style=@Style
-    @onmouseover=@(e => {_shown = true;})
-    @onmouseout=@(e => {_shown = false;})>
+<div style="@Style" @onmouseover="@(e => {_shown = true;})" @onmouseout="@(e => {_shown = false;})">
 
     @ChildContent
 
@@ -60,7 +55,7 @@
         
     }
 
-    private Dimensions _dims = new Dimensions() { Width = 640, Height = 480 };
+    private Dimensions _dims = new() { Width = 640, Height = 480 };
     private bool _shown = false;
 
     private string Style
@@ -105,7 +100,7 @@
         }
     }
 
-    public enum HoverPanelPosition : int
+    public enum HoverPanelPosition
     {
         None = 0,
         Left = 4,

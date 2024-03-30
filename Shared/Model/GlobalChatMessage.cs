@@ -5,36 +5,23 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class GlobalChatMessage : ChatMessage
 {
-    public class GlobalChatMessage : ChatMessage
+    public override Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g, bool contextIsGlobal)
     {
-        public override Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g, bool contextIsGlobal)
+        if (contextIsGlobal)
         {
-            if (contextIsGlobal)
-            {
-                if (SourcePlayerName == receivingPlayerName)
-                {
-                    return Message.Express("You: ", Body);
-                }
-                else
-                {
-                    return Message.Express(SourcePlayerName, ": ", Body);
-                }
-            }
-            else
-            {
-                if (SourcePlayerName == receivingPlayerName)
-                {
-                    return Message.Express("You: ", Body, " ⇒ GLOBAL");
-                }
-                else
-                {
-                    return Message.Express(SourcePlayerName, ": ", Body, " ⇒ GLOBAL");
-                }
-            }
+            if (SourcePlayerName == receivingPlayerName)
+                return Message.Express("You: ", Body);
+            return Message.Express(SourcePlayerName, ": ", Body);
         }
+
+        if (SourcePlayerName == receivingPlayerName)
+            return Message.Express("You: ", Body, " ⇒ GLOBAL");
+        return Message.Express(SourcePlayerName, ": ", Body, " ⇒ GLOBAL");
     }
 }

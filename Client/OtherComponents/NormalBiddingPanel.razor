@@ -6,7 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-@using Treachery.Client.GenericComponents;
 @inherits BiddingPanel<Bid>
 
 @{
@@ -15,7 +14,7 @@
 
 @code {
 
-    protected override Bid ConfirmedResult => new Bid(Game, Faction) { 
+    protected override Bid ConfirmedResult => new(Game, Faction) { 
         Passed = false, 
         Amount = amount, 
         KarmaBid = false, 
@@ -24,9 +23,9 @@
         AllyContributionAmount = allyContributionAmount, 
         RedContributionAmount = redContributionAmount };
 
-    protected override Bid OtherResult => new Bid(Game, Faction) { Passed = false, KarmaBid = true, KarmaCard = karmaCard };
+    protected override Bid OtherResult => new(Game, Faction) { Passed = false, KarmaBid = true, KarmaCard = karmaCard };
 
-    protected override Bid PassedResult => new Bid(Game, Faction) { Passed = true, KarmaBid = false };
+    protected override Bid PassedResult => new(Game, Faction) { Passed = true, KarmaBid = false };
 
     protected override bool ShowRepeatAutoPass => true;
 
@@ -40,16 +39,15 @@
 
     protected override string AuctionDescription {
 
-        get {
+        get
+        {
 
             if (Game.CurrentAuctionType == AuctionType.Normal)
             {
                 return string.Format("Card {0} of {1}", Game.CardNumber, Game.NumberOfCardsOnRegularAuction);
             }
-            else
-            {
-                return Skin.Current.Format("{0} Card ({1})", Faction.White, Game.CurrentAuctionType);
-            }
+
+            return Skin.Current.Format("{0} Card ({1})", Faction.White, Game.CurrentAuctionType);
         }
     }
 }

@@ -5,41 +5,38 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public partial class Game
 {
-    public partial class Game
+    public List<DealOffered> DealOffers { get; } = new();
+
+    public List<Deal> Deals { get; } = new();
+
+    internal void StartDeal(Deal deal)
     {
-        public List<DealOffered> DealOffers { get; } = new();
+        Deals.Add(deal);
+    }
 
-        public List<Deal> Deals { get; } = new();
+    public bool HasDeal(Faction f, DealType type)
+    {
+        return Deals.Any(Deal => Deal.ConsumingFaction == f && Deal.Type == type);
+    }
 
-        internal void StartDeal(Deal deal)
-        {
-            Deals.Add(deal);
-        }
+    private void RemoveEndedDeals(Phase phase)
+    {
+        foreach (var deal in Deals.ToArray())
+            if (deal.End == phase) Deals.Remove(deal);
+    }
 
-        public bool HasDeal(Faction f, DealType type)
-        {
-            return Deals.Any(Deal => Deal.ConsumingFaction == f && Deal.Type == type);
-        }
-
-        private void RemoveEndedDeals(Phase phase)
-        {
-            foreach (var deal in Deals.ToArray())
-            {
-                if (deal.End == phase)
-                {
-                    Deals.Remove(deal);
-                }
-            }
-        }
-
-        public bool IsGhola(IHero l) => l.Faction != Faction.Purple && IsPlaying(Faction.Purple) && GetPlayer(Faction.Purple).Leaders.Contains(l);
+    public bool IsGhola(IHero l)
+    {
+        return l.Faction != Faction.Purple && IsPlaying(Faction.Purple) &&
+               GetPlayer(Faction.Purple).Leaders.Contains(l);
     }
 }

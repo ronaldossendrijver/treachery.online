@@ -9,16 +9,16 @@
 @inherits MapComponent;
 @implements IDisposable;
 
-<div @ref=@element @attributes=_attributes style=@($"position:absolute;left:{Px(X)};top:{Px(Y)};")>
+<div @ref="@element" @attributes="_attributes" style=@($"position:absolute;left:{Px(X)};top:{Px(Y)};")>
 
-    @for (int i = 0; i < Amount; i++)
+    @for (var i = 0; i < Amount; i++)
     {
         <img style=@($"{PointerType};position:absolute;left:{Px(-0.07 * i * Diameter)};top:{Px(-0.08 * i * Diameter)};width:{Diameter}px;opacity:{Opacity};filter:drop-shadow({Px(ShadowSize)} {Px(ShadowSize)} {Px(ShadowBlur)} {ShadowColor})") src=@ForceURL />
     }
 
 </div>
 
-@if (!(Faction == Faction.White && Special || Amount == 0))
+@if (!((Faction == Faction.White && Special) || Amount == 0))
 {
     <MapText ToShow="@Amount.ToString()" X=@(X + 0.5f * Diameter) Y=@(Y + 0.5f * Diameter) Font=@Font BorderWidth=@BorderWidth BorderColor=@BorderColor />
 }
@@ -54,7 +54,7 @@
         if (Diameter == 0) Diameter = 2 * Skin.Current.FORCETOKEN_RADIUS;
         if (Font == "") Font = Skin.Current.FORCETOKEN_FONT;
 
-        _attributes = new();
+        _attributes = new Dictionary<string, object>();
 
         if (ShowPopover) 
         {

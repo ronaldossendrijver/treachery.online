@@ -6,7 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-@using Treachery.Client.GenericComponents;
 @inherits BiddingPanel<BlackMarketBid>
 
 @{
@@ -15,9 +14,9 @@
 
 @code {
 
-    protected override BlackMarketBid ConfirmedResult => new BlackMarketBid(Game, Faction) { Passed = false, Amount = amount, AllyContributionAmount = allyContributionAmount, RedContributionAmount = redContributionAmount };
+    protected override BlackMarketBid ConfirmedResult => new(Game, Faction) { Passed = false, Amount = amount, AllyContributionAmount = allyContributionAmount, RedContributionAmount = redContributionAmount };
 
-    protected override BlackMarketBid PassedResult => new BlackMarketBid(Game, Faction) { Passed = true };
+    protected override BlackMarketBid PassedResult => new(Game, Faction) { Passed = true };
 
     protected override bool ShowRepeatAutoPass => false;
 

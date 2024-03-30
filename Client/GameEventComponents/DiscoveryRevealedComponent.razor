@@ -1,12 +1,9 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<DiscoveryRevealed>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Reveal a Discovery?</Header>
     <Body>
@@ -28,7 +25,7 @@
             <div class="label-info">@Skin.Current.GetDiscoveryTokenDescription(Game.DiscoveriesOnPlanet[_selectedLocation].Token)</div>
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation Pass="Pass" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" Pass="Pass" />
 
     </Body>
 
@@ -38,7 +35,7 @@
 
     private Location _selectedLocation;
 
-    protected override DiscoveryRevealed ConfirmedResult => new DiscoveryRevealed(Game, Faction) { Location = _selectedLocation };
+    protected override DiscoveryRevealed ConfirmedResult => new(Game, Faction) { Location = _selectedLocation };
 
-    protected override DiscoveryRevealed PassedResult => new DiscoveryRevealed(Game, Faction) { Passed = true };
+    protected override DiscoveryRevealed PassedResult => new(Game, Faction) { Passed = true };
 }

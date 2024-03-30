@@ -1,16 +1,15 @@
-﻿namespace Treachery.Client.GenericComponents
-{
-    public enum ClickHintButton : int
-    {
-        None = 0,
-        LMB = 1,
-        RMB = 2,
-    }
+﻿namespace Treachery.Client.GenericComponents;
 
-    public enum ClickHintModifier : int
-    {
-        None = 0,
-        SHIFT = 1,
-        CTRL = 2
-    }
+public enum ClickHintButton
+{
+    None = 0,
+    LMB = 1,
+    RMB = 2
+}
+
+public enum ClickHintModifier
+{
+    None = 0,
+    SHIFT = 1,
+    CTRL = 2
 }

@@ -6,17 +6,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Donated>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType() Collapsed=CollapseState.Collapsed>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsed="CollapseState.Collapsed">
 
     <Header>Give @Skin.Current.Describe(Concept.Resource) to a faction</Header>
     <Body>
 
-        <SelectFromImageComponent @bind-Value="target" Values="Targets" Required=true ImageWidth="40" />
+        <SelectFromImageComponent @bind-Value="target" Values="Targets" Required="true" ImageWidth="40" />
 
         <div class="mt-1">
             <SelectResourcesComponent @bind-Value="resources" Min="MinAmount" Max="MaxAmount" />
@@ -44,7 +41,7 @@
             fromBank = false;
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Gift" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Gift" ConfirmError="@Validation" />
 
     </Body>
 
@@ -57,7 +54,7 @@
     private TreacheryCard card;
     private bool fromBank;
 
-    protected override Donated ConfirmedResult => new Donated(Game, Faction) { Target = target, Resources = resources, Card = card, FromBank = fromBank };
+    protected override Donated ConfirmedResult => new(Game, Faction) { Target = target, Resources = resources, Card = card, FromBank = fromBank };
 
     private IEnumerable<Faction> Targets
     {
@@ -67,10 +64,8 @@
             {
                 return Donated.ValidTargets(Game, Player);
             }
-            else
-            {
-                return Game.Players.Select(p => p.Faction);
-            }
+
+            return Game.Players.Select(p => p.Faction);
         }
     }
 

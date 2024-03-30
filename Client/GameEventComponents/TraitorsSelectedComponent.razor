@@ -6,18 +6,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<TraitorsSelected>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Select which leader to keep as your traitor</Header>
     <Body>
 
         <SelectFromImageComponent Game="Game" @bind-Value="traitor" Values="Player.Traitors" ImageWidth="80"/>
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Keep {0}", traitor)" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Keep {0}", traitor)" ConfirmError="@Validation" />
 
     </Body>
 
@@ -29,5 +26,5 @@
 
     private IHero traitor;
 
-    protected override TraitorsSelected ConfirmedResult => new TraitorsSelected(Game, Faction) { SelectedTraitor = traitor };
+    protected override TraitorsSelected ConfirmedResult => new(Game, Faction) { SelectedTraitor = traitor };
 }

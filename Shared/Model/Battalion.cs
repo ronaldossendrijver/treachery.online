@@ -5,93 +5,87 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 using System;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class Battalion : ICloneable
 {
-    public class Battalion : ICloneable
+    public Faction Faction { get; set; }
+
+    public Location Location { get; set; }
+
+    public int AmountOfForces { get; set; }
+
+    public int AmountOfSpecialForces { get; set; }
+
+    public Battalion(Faction faction, int amountOfForces, int amountOfSpecialForces, Location location)
     {
-        public Faction Faction { get; set; }
+        Faction = faction;
+        AmountOfForces = amountOfForces;
+        AmountOfSpecialForces = amountOfSpecialForces;
+        Location = location;
+    }
 
-        public Location Location { get; set; }
+    public bool Is(Faction f)
+    {
+        return Faction == f;
+    }
 
-        public int AmountOfForces { get; set; }
+    public bool CanOccupy => AmountOfForces > 0 || (Faction != Faction.Blue && AmountOfSpecialForces > 0);
 
-        public int AmountOfSpecialForces { get; set; }
+    public int TotalAmountOfForces => AmountOfForces + AmountOfSpecialForces;
 
-        public Battalion(Faction faction, int amountOfForces, int amountOfSpecialForces, Location location)
+    public void ChangeForces(int amount)
+    {
+        if (AmountOfForces + amount >= 0) AmountOfForces += amount;
+    }
+
+    public void ChangeSpecialForces(int amount)
+    {
+        if (AmountOfSpecialForces + amount >= 0) AmountOfSpecialForces += amount;
+    }
+
+    public void Clear()
+    {
+        AmountOfForces = 0;
+        AmountOfSpecialForces = 0;
+    }
+
+    public Battalion TakeHalf()
+    {
+        return new Battalion(Faction, (int)Math.Ceiling(0.5 * AmountOfForces), (int)Math.Ceiling(0.5 * AmountOfSpecialForces), Location);
+    }
+
+    public Battalion Take(int amount, bool preferSpecial)
+    {
+        if (amount >= TotalAmountOfForces)
         {
-            Faction = faction;
-            AmountOfForces = amountOfForces;
-            AmountOfSpecialForces = amountOfSpecialForces;
-            Location = location;
+            return this;
         }
 
-        public bool Is(Faction f) => Faction == f;
-
-        public bool CanOccupy => AmountOfForces > 0 || (Faction != Faction.Blue && AmountOfSpecialForces > 0);
-
-        public int TotalAmountOfForces => AmountOfForces + AmountOfSpecialForces;
-
-        public void ChangeForces(int amount)
+        if (preferSpecial)
         {
-            if (AmountOfForces + amount >= 0)
-            {
-                AmountOfForces += amount;
-            }
+            var toTake = amount;
+            var specialAmountToTake = Math.Min(AmountOfSpecialForces, toTake);
+            toTake -= specialAmountToTake;
+            var normalAmountToTake = Math.Min(AmountOfForces, toTake);
+            return new Battalion(Faction, normalAmountToTake, specialAmountToTake, Location);
         }
-
-        public void ChangeSpecialForces(int amount)
+        else
         {
-            if (AmountOfSpecialForces + amount >= 0)
-            {
-                AmountOfSpecialForces += amount;
-            }
+            var toTake = amount;
+            var normalAmountToTake = Math.Min(AmountOfForces, toTake);
+            toTake -= normalAmountToTake;
+            var specialAmountToTake = Math.Min(AmountOfSpecialForces, toTake);
+            return new Battalion(Faction, normalAmountToTake, specialAmountToTake, Location);
         }
+    }
 
-        public void Clear()
-        {
-            AmountOfForces = 0;
-            AmountOfSpecialForces = 0;
-        }
-
-        public Battalion TakeHalf()
-        {
-            return new Battalion(Faction, (int)Math.Ceiling(0.5 * AmountOfForces), (int)Math.Ceiling(0.5 * AmountOfSpecialForces), Location);
-        }
-
-        public Battalion Take(int amount, bool preferSpecial)
-        {
-            if (amount >= TotalAmountOfForces)
-            {
-                return this;
-            }
-            else
-            {
-                if (preferSpecial)
-                {
-                    int toTake = amount;
-                    int specialAmountToTake = Math.Min(AmountOfSpecialForces, toTake);
-                    toTake -= specialAmountToTake;
-                    int normalAmountToTake = Math.Min(AmountOfForces, toTake);
-                    return new Battalion(Faction, normalAmountToTake, specialAmountToTake, Location);
-                }
-                else
-                {
-                    int toTake = amount;
-                    int normalAmountToTake = Math.Min(AmountOfForces, toTake);
-                    toTake -= normalAmountToTake;
-                    int specialAmountToTake = Math.Min(AmountOfSpecialForces, toTake);
-                    return new Battalion(Faction, normalAmountToTake, specialAmountToTake, Location);
-                }
-            }
-        }
-
-        public object Clone()
-        {
-            return MemberwiseClone();
-        }
+    public object Clone()
+    {
+        return MemberwiseClone();
     }
 }

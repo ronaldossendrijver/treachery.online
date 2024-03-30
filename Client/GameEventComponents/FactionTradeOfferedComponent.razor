@@ -6,19 +6,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<FactionTradeOffered>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Offer to trade factions</Header>
     <Body>
 
-        <SelectFromImageComponent @bind-Value="target" Values="FactionTradeOffered.ValidTargets(Game, Player)" Required=true ImageWidth="40"/>
+        <SelectFromImageComponent @bind-Value="target" Values="FactionTradeOffered.ValidTargets(Game, Player)" Required="true" ImageWidth="40"/>
         
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmText" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmText" ConfirmError="@Validation" />
 
     </Body>
 
@@ -28,7 +25,7 @@
 
     private Faction target;
 
-    protected override FactionTradeOffered ConfirmedResult => new FactionTradeOffered(Game, Faction) { Target = target };
+    protected override FactionTradeOffered ConfirmedResult => new(Game, Faction) { Target = target };
 
     private string ConfirmText => Game.Players.Any(p => p.Faction == target) ? Skin.Current.Format("Offer Trade with {0}", target) : Skin.Current.Format("Pick {0}", target);
 }

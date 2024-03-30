@@ -7,18 +7,16 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-@using Treachery.Client.GenericComponents;
-
 <ModalComponent Id="@Id" Title="The story of this game..." Size="modal-xl" Scrolling="true" Printable="true">
 
     @{
-        Phase previousPhase = Phase.AwaitingPlayers;
-        MainPhase previousMainPhase = MainPhase.Started;
+        var previousPhase = Phase.AwaitingPlayers;
+        var previousMainPhase = MainPhase.Started;
         IBid previousWinningBid = null;
 
-        var replayBase = new Treachery.Shared.Game(Game.Version);
+        var replayBase = new Game(Game.Version);
 
-        for (int i = 0; i < Game.History.Count; i++)
+        for (var i = 0; i < Game.History.Count; i++)
         {
             var evt = Game.History[i].Clone();
             evt.Initialize(replayBase);
@@ -226,11 +224,11 @@
     private bool IsMilestone(GameEvent evt)
     {
         return
-            evt is FaceDanced fd && fd.FaceDancerCalled ||
-            evt is FaceDancerRevealed fdr && !fdr.Passed ||
-            evt is TreacheryCalled tc && tc.TraitorCalled ||
-            evt is GreySwappedCardOnBid gscob && !gscob.Passed ||
-            evt is TerrorRevealed tr && tr.Type == TerrorType.Atomics ||
+            (evt is FaceDanced fd && fd.FaceDancerCalled) ||
+            (evt is FaceDancerRevealed fdr && !fdr.Passed) ||
+            (evt is TreacheryCalled tc && tc.TraitorCalled) ||
+            (evt is GreySwappedCardOnBid gscob && !gscob.Passed) ||
+            (evt is TerrorRevealed tr && tr.Type == TerrorType.Atomics) ||
             evt is PoisonToothCancelled ||
             evt is ReplacedCardWon ||
             evt is Voice ||

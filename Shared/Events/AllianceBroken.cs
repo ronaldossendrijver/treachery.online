@@ -5,49 +5,48 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class AllianceBroken : GameEvent
 {
-    public class AllianceBroken : GameEvent
+    #region Construction
+
+    public AllianceBroken(Game game, Faction initiator) : base(game, initiator)
     {
-        #region Construction
-
-        public AllianceBroken(Game game, Faction initiator) : base(game, initiator)
-        {
-        }
-
-        public AllianceBroken()
-        {
-        }
-
-        #endregion Construction
-
-        #region Validation
-
-        public override Message Validate()
-        {
-            if (!Player.HasAlly) return Message.Express("You currently have no ally");
-
-            return null;
-        }
-
-        #endregion Validation
-
-        #region Execution
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Log();
-            Game.BreakAlliance(Initiator);
-            Game.LetFactionsDiscardSurplusCards();
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " end their alliance");
-        }
-
-        #endregion Execution
     }
+
+    public AllianceBroken()
+    {
+    }
+
+    #endregion Construction
+
+    #region Validation
+
+    public override Message Validate()
+    {
+        if (!Player.HasAlly) return Message.Express("You currently have no ally");
+
+        return null;
+    }
+
+    #endregion Validation
+
+    #region Execution
+
+    protected override void ExecuteConcreteEvent()
+    {
+        Log();
+        Game.BreakAlliance(Initiator);
+        Game.LetFactionsDiscardSurplusCards();
+    }
+
+    public override Message GetMessage()
+    {
+        return Message.Express(Initiator, " end their alliance");
+    }
+
+    #endregion Execution
 }

@@ -5,80 +5,68 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 using System.Collections.Generic;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class Location : IIdentifiable
 {
-    public class Location : IIdentifiable
+    public virtual int Sector { get; set; }
+
+    private Territory _territory;
+
+    public virtual Territory Territory
     {
-        public virtual int Sector { get; set; }
-
-        private Territory _territory = null;
-
-        public virtual Territory Territory
+        get => _territory;
+        set
         {
-            get
-            {
-                return _territory;
-            }
-            set
-            {
-                _territory = value;
+            _territory = value;
 
-                if (value != null)
-                {
-                    _territory.AddLocation(this);
-                }
-            }
+            if (value != null) _territory.AddLocation(this);
         }
+    }
 
-        public virtual bool Visible => true;
+    public virtual bool Visible => true;
 
-        public virtual List<Location> Neighbours { get; set; } = new List<Location>();
+    public virtual List<Location> Neighbours { get; set; } = new();
 
-        public string Orientation { get; set; } = "";
+    public string Orientation { get; set; } = "";
 
-        public virtual int SpiceBlowAmount { get; set; } = 0;
+    public virtual int SpiceBlowAmount { get; set; } = 0;
 
-        public virtual DiscoveryTokenType DiscoveryTokenType { get; set; } = DiscoveryTokenType.None;
+    public virtual DiscoveryTokenType DiscoveryTokenType { get; set; } = DiscoveryTokenType.None;
 
-        public Location(int id)
-        {
-            Id = id;
-        }
+    public Location(int id)
+    {
+        Id = id;
+    }
 
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        public bool IsStronghold => Territory.IsStronghold;
+    public bool IsStronghold => Territory.IsStronghold;
 
-        public bool IsHomeworld => Territory.IsHomeworld;
+    public bool IsHomeworld => Territory.IsHomeworld;
 
-        public bool IsProtectedFromStorm => Territory.IsProtectedFromStorm;
+    public bool IsProtectedFromStorm => Territory.IsProtectedFromStorm;
 
-        public StrongholdAdvantage Advantage => Territory.Advantage;
+    public StrongholdAdvantage Advantage => Territory.Advantage;
 
-        public override bool Equals(object obj)
-        {
-            return obj is Location l && l.Id == Id;
-        }
+    public override bool Equals(object obj)
+    {
+        return obj is Location l && l.Id == Id;
+    }
 
-        public override int GetHashCode()
-        {
-            return Id;
-        }
+    public override int GetHashCode()
+    {
+        return Id;
+    }
 
-        public override string ToString()
-        {
-            if (Message.DefaultDescriber != null)
-            {
-                return Message.DefaultDescriber.Describe(this) + "*";
-            }
-            else
-            {
-                return base.ToString();
-            }
-        }
+    public override string ToString()
+    {
+        if (Message.DefaultDescriber != null)
+            return Message.DefaultDescriber.Describe(this) + "*";
+        return base.ToString();
     }
 }

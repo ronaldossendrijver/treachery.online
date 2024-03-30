@@ -1,19 +1,16 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<RequestPurpleRevival>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Request @Skin.Current.Describe(Faction.Purple) Revival of one of your leaders?</Header>
     <Body>
 
         <SelectFromImageComponent Game="Game" @bind-Value="hero" Values="RequestPurpleRevival.ValidTargets(Game, Player)" ImageWidth="80"/>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Request" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Request" ConfirmError="@Validation" />
 
     </Body>
 
@@ -25,5 +22,5 @@
 
     private IHero hero;
 
-    protected override RequestPurpleRevival ConfirmedResult => new RequestPurpleRevival(Game, Faction) { Hero = hero };
+    protected override RequestPurpleRevival ConfirmedResult => new(Game, Faction) { Hero = hero };
 }

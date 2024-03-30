@@ -6,13 +6,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
-@using System.Linq;
 @inherits GameEventComponent<Voice>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Use Voice</Header>
     <Body>
@@ -22,11 +18,11 @@
             <div class="text-info small mb-2">Note: Voice should be used before Prescience.</div>
         }
 
-        <RadioComponent @bind-Value="mustUse" Values="@(new bool[] {true,false})" ValueLabels="@(new string[] {"Force the use of...","Deny the use of..."})" />
+        <RadioComponent @bind-Value="mustUse" Values="@(new[] {true,false})" ValueLabels="@(new[] {"Force the use of...","Deny the use of..."})" />
 
         <SelectComponent @bind-Value="type" Values="ValidTypes" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Use Voice" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Use Voice" ConfirmError="@Validation" />
 
     </Body>
 
@@ -39,7 +35,7 @@
     private bool mustUse = true;
     private TreacheryCardType type;
 
-    protected override Voice ConfirmedResult => new Voice(Game, Faction) { Must = mustUse, Type = type };
+    protected override Voice ConfirmedResult => new(Game, Faction) { Must = mustUse, Type = type };
 
     private IEnumerable<TreacheryCardType> ValidTypes => Voice.ValidTypes(Game).OrderBy(t => Name(t));
 }

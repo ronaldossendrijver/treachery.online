@@ -5,43 +5,42 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class WhiteRevealedNoField : GameEvent
 {
-    public class WhiteRevealedNoField : GameEvent
+    #region Construction
+
+    public WhiteRevealedNoField(Game game, Faction initiator) : base(game, initiator) { }
+
+    public WhiteRevealedNoField()
     {
-        #region Construction
-
-        public WhiteRevealedNoField(Game game, Faction initiator) : base(game, initiator) { }
-
-        public WhiteRevealedNoField()
-        {
-        }
-
-        #endregion Construction
-
-        #region Validation
-
-        public override Message Validate()
-        {
-            return null;
-        }
-
-        #endregion Validation
-
-        #region Execution
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.RevealCurrentNoField(Player);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " reveal a ", FactionSpecialForce.White);
-        }
-
-        #endregion Execution
     }
+
+    #endregion Construction
+
+    #region Validation
+
+    public override Message Validate()
+    {
+        return null;
+    }
+
+    #endregion Validation
+
+    #region Execution
+
+    protected override void ExecuteConcreteEvent()
+    {
+        Game.RevealCurrentNoField(Player);
+    }
+
+    public override Message GetMessage()
+    {
+        return Message.Express(Initiator, " reveal a ", FactionSpecialForce.White);
+    }
+
+    #endregion Execution
 }

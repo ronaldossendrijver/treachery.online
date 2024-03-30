@@ -1,13 +1,10 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Revival>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Select forces and/or leaders to revive</Header>
     <Body>
@@ -73,8 +70,8 @@
                 specialForcesPaidByRed = 0;
             }
 
-            int maxForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfForcesThatMayBePlacedOnPlanet(Game, Player, useRedSecretAlly, amountOfForces + forcesPaidByRed) : 0;
-            int maxSpecialForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, amountOfSpecialForces + specialForcesPaidByRed) : 0;
+            var maxForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfForcesThatMayBePlacedOnPlanet(Game, Player, useRedSecretAlly, amountOfForces + forcesPaidByRed) : 0;
+            var maxSpecialForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, amountOfSpecialForces + specialForcesPaidByRed) : 0;
 
             if (maxForcesPlacedOnPlanet > 0)
             {
@@ -113,7 +110,7 @@
 
             if (hero != null && Revival.MayAssignSkill(Game, Player, hero))
             {
-                <RadioComponent @bind-Value="assignSkill" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"No","Yes"})">
+                <RadioComponent @bind-Value="assignSkill" Values="@(new[] {false,true})" ValueLabels="@(new[] {"No","Yes"})">
                     <Label>Do you wish to assign a skill to this leader?</Label>
                 </RadioComponent>
             }
@@ -162,7 +159,7 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override Revival ConfirmedResult => new Revival(Game, Faction)
+    protected override Revival ConfirmedResult => new(Game, Faction)
     {
         AmountOfForces = amountOfForces, 
         AmountOfSpecialForces = amountOfSpecialForces, 
@@ -180,6 +177,6 @@
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid<Location, Location>(ref location, Revival.ValidRevivedForceLocations(Game, Player), l);
+        SetIfValid(ref location, Revival.ValidRevivedForceLocations(Game, Player), l);
     }
 }

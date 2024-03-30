@@ -1,19 +1,16 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<RedDiscarded>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>You may discard cards for 2 @Name(Concept.Resource) each</Header>
     <Body>
 
-        <SelectFromImageComponent @bind-Value="card" Values=Player.TreacheryCards Required="true" ImageWidth="80" />
+        <SelectFromImageComponent @bind-Value="card" Values="Player.TreacheryCards" Required="true" ImageWidth="80" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Discard {0}", card)" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Discard {0}", card)" ConfirmError="@Validation" />
 
     </Body>
 
@@ -26,5 +23,5 @@
 
     private TreacheryCard card;
 
-    protected override RedDiscarded ConfirmedResult => new RedDiscarded(Game, Faction) { Card = card };
+    protected override RedDiscarded ConfirmedResult => new(Game, Faction) { Card = card };
 }

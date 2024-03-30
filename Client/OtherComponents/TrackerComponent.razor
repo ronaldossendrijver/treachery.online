@@ -1,18 +1,16 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-@using System.Linq;
-@using Treachery.Client.GenericComponents;
 @inherits GameComponent
 
 <CardPickerComponent Tracker="this" Id="picker" />
 
 <div class="card mb-2" style="animation:fadeIn 1s;">
 
-    <div class="card-header" @onclick=@(e => _collapsed = !_collapsed) style="cursor:pointer">
+    <div class="card-header" @onclick="@(e => _collapsed = !_collapsed)" style="cursor:pointer">
         Card Tracker
         <InfoComponent Contents="@InfoMessage" />
-        <CollapseButton Collapsed=@_collapsed />
+        <CollapseButton Collapsed="@_collapsed" />
     </div>
 
     @if (!_collapsed) {
@@ -22,16 +20,16 @@
 
                 @foreach (var p in Players)
                 {
-                    <button class="btn @ButtonStyle(p) p-1" @onclick="(e => Toggle(p))" data-bs-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
+                    <button class="btn @ButtonStyle(p) p-1" @onclick="e => Toggle(p)" data-bs-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
                         <img class="img-fluid" width="29" height="29" src="@Skin.Current.GetFactionTableImageURL(p.Faction)" />
                     </button>
                 }
 
-                <button class="btn @ButtonStyle(Client.Game.TreacheryDiscardPile) p-1" @onclick="(e => Toggle(Client.Game.TreacheryDiscardPile))" data-bs-toggle="tooltip" title="Discarded Treachery Cards">
+                <button class="btn @ButtonStyle(Client.Game.TreacheryDiscardPile) p-1" @onclick="e => Toggle(Client.Game.TreacheryDiscardPile)" data-bs-toggle="tooltip" title="Discarded Treachery Cards">
                     <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Skin.Current.CardBack_TreacheryCard_URL" />
                 </button>
 
-                <button class="btn @ButtonStyle(Client.Game.ResourceCardDeck) p-1" @onclick="(e => Toggle(Client.Game.ResourceCardDeck))" data-bs-toggle="tooltip" title="Discarded Spice Cards">
+                <button class="btn @ButtonStyle(Client.Game.ResourceCardDeck) p-1" @onclick="e => Toggle(Client.Game.ResourceCardDeck)" data-bs-toggle="tooltip" title="Discarded Spice Cards">
                     <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Skin.Current.CardBack_ResourceCard_URL" />
                 </button>
 
@@ -44,10 +42,10 @@
                 <div>Treachery cards</div>
                 <div class="row row-cols-4 m-0">
 
-                    @for (int i = 0; i < p.MaximumNumberOfCards; i++)
+                    @for (var i = 0; i < p.MaximumNumberOfCards; i++)
                     {
-                        int selIndex = i;
-                        int cardId = Info.TrackedTreacheryCards[p.Faction][selIndex];
+                        var selIndex = i;
+                        var cardId = Info.TrackedTreacheryCards[p.Faction][selIndex];
 
                         <a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#picker" @onmousedown="e => InitiatePick(p.Faction, selIndex)" title=@DeterminePopup(Info.TrackedTreacheryCards[p.Faction][selIndex])>
                             @if (cardId == TreacheryCard.NONE)
@@ -80,7 +78,7 @@
                 else if (p.Faction != Faction.Purple)
                 {
                     <div>Revealed @(p.NumberOfTraitors > 1 ? "Traitors" : "Traitor")</div>
-                    @for (int i = 0; i < p.NumberOfTraitors; i++)
+                    @for (var i = 0; i < p.NumberOfTraitors; i++)
                     {
                         var selIndex = i;
                         var faction = p.Faction;
@@ -90,7 +88,7 @@
                 else
                 {
                     <div>Revealed Face Dancers</div>
-                    @for (int i = 0; i < p.NumberOfFacedancers; i++)
+                    @for (var i = 0; i < p.NumberOfFacedancers; i++)
                     {
                         var selIndex = i;
                         var faction = p.Faction;
@@ -198,7 +196,10 @@
         }
     }
 
-    private IHero GetSelectedTraitor(Faction f, int nr) => LeaderManager.HeroLookup.Find(Info.GetSelectedTraitor(f, nr));
+    private IHero GetSelectedTraitor(Faction f, int nr)
+    {
+        return LeaderManager.HeroLookup.Find(Info.GetSelectedTraitor(f, nr));
+    }
 
     private void SetSelectedTraitor(Faction f, int nr, IHero hero)
     {
@@ -208,7 +209,10 @@
         }
     }
 
-    private IHero GetDiscardedTraitor(int nr) => @LeaderManager.HeroLookup.Find(Info.GetDiscardedTraitor(nr));
+    private IHero GetDiscardedTraitor(int nr)
+    {
+        return LeaderManager.HeroLookup.Find(Info.GetDiscardedTraitor(nr));
+    }
 
     private void SetDiscardedTraitor(int nr, IHero hero)
     {
@@ -238,10 +242,8 @@
             {
                 return Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId];
             }
-            else
-            {
-                return TreacheryCard.NONE;
-            }
+
+            return TreacheryCard.NONE;
         }
     }
 
@@ -291,14 +293,13 @@
         {
             return "Unknown";
         }
-        else if (cardID == -2)
+
+        if (cardID == -2)
         {
             return "None";
         }
-        else
-        {
-            return "";
-        }
+
+        return "";
     }
 
     private string DetermineImageSrc(int cardID)
@@ -333,7 +334,10 @@
 
     private IList<ResourceCard> AllSpiceCards { get; set; }
 
-    private ResourceCard SpiceCard(string name) => AllSpiceCards.FirstOrDefault(c => Skin.Current.Describe(c) == name);
+    private ResourceCard SpiceCard(string name)
+    {
+        return AllSpiceCards.FirstOrDefault(c => Skin.Current.Describe(c) == name);
+    }
 
     private IEnumerable<Player> Players => Client.Game.Players.OrderBy(p => Name(p.Faction));
 
@@ -359,9 +363,7 @@
         {
             return "btn-primary";
         }
-        else
-        {
-            return "btn-outline-primary";
-        }
+
+        return "btn-outline-primary";
     }
 }

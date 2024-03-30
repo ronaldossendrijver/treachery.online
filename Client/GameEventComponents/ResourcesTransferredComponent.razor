@@ -6,21 +6,18 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<ResourcesTransferred>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Transfer @Skin.Current.Describe(Concept.Resource) to your ally?</Header>
     <Body>
 
         <div class="mt-1">
-            <SelectResourcesComponent @bind-Value="resources" Min=0 Max=ResourcesTransferred.MaxAmount(Player) />
+            <SelectResourcesComponent @bind-Value="resources" Min="0" Max="ResourcesTransferred.MaxAmount(Player)" />
         </div>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
 
     </Body>
 
@@ -30,5 +27,5 @@
 
     private int resources;
 
-    protected override ResourcesTransferred ConfirmedResult => new ResourcesTransferred(Game, Faction) { Resources = resources };
+    protected override ResourcesTransferred ConfirmedResult => new(Game, Faction) { Resources = resources };
 }

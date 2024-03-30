@@ -6,13 +6,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<PerformBluePlacement>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Place one peaceful advisor in any territory of your choice. If you are alone in the territory, it is flipped to a fighter.</Header>
     <Body>
@@ -21,7 +18,7 @@
             <Label>To</Label>
         </SelectComponent>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
     </Body>
 
@@ -48,7 +45,7 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override PerformBluePlacement ConfirmedResult => new PerformBluePlacement(Game, Faction) { Target = target };
+    protected override PerformBluePlacement ConfirmedResult => new(Game, Faction) { Target = target };
 
     private void HandleLocationSelected(object sender, Location l)
     {

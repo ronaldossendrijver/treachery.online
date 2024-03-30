@@ -6,12 +6,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<TakeLosses>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Please choose how to distribute a storm loss total of at least <strong>@TakeLosses.LossesToTake(Game).Amount</strong> over your forces in <strong>@Name(TakeLosses.LossesToTake(Game).Location)</strong></Header>
     <Body>
@@ -56,9 +53,9 @@
     private int forceAmount;
     private int specialForceAmount;
 
-    protected override TakeLosses ConfirmedResult => new TakeLosses(Game, Faction) { ForceAmount = forceAmount, SpecialForceAmount = specialForceAmount, UseUselessCard = false };
+    protected override TakeLosses ConfirmedResult => new(Game, Faction) { ForceAmount = forceAmount, SpecialForceAmount = specialForceAmount, UseUselessCard = false };
 
-    protected override TakeLosses OtherResult => new TakeLosses(Game, Faction) { ForceAmount = forceAmount, SpecialForceAmount = specialForceAmount, UseUselessCard = true };
+    protected override TakeLosses OtherResult => new(Game, Faction) { ForceAmount = forceAmount, SpecialForceAmount = specialForceAmount, UseUselessCard = true };
 
     private string UseUselessLabel => Skin.Current.Format("Use {0} to prevent losses", TakeLosses.ValidUselessCardToPreventLosses(Game, Player));
 }

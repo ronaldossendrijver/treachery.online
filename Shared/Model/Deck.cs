@@ -5,103 +5,94 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 using System;
 using System.Collections.Generic;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class Deck<T>
 {
-    public class Deck<T>
+    public List<T> Items { get; set; } = new();
+
+    public Random Random { get; set; }
+
+    public Deck(IEnumerable<T> items, Random random)
     {
-        public List<T> Items { get; set; } = new List<T>();
+        Items = new List<T>(items);
+        Random = random;
+    }
 
-        public Random Random { get; set; }
+    public Deck(Random random)
+    {
+        Random = random;
+    }
 
-        public Deck(IEnumerable<T> items, Random random)
+    public void PutOnTop(T item)
+    {
+        Items.Insert(0, item);
+    }
+
+    public void PutOnTop(IEnumerable<T> items)
+    {
+        foreach (var item in items) PutOnTop(item);
+    }
+
+    public void PutOnBottom(T item)
+    {
+        Items.Add(item);
+    }
+
+    public T Draw()
+    {
+        if (Items.Count > 0)
         {
-            Items = new List<T>(items);
-            Random = random;
+            var result = Top;
+            Items.RemoveAt(0);
+            return result;
         }
 
-        public Deck(Random random)
-        {
-            Random = random;
-        }
+        throw new InvalidOperationException("Cannot draw from an empty deck");
+    }
 
-        public void PutOnTop(T item)
-        {
-            Items.Insert(0, item);
-        }
+    public void Shuffle()
+    {
+        Shuffle(Items, Random);
+    }
 
-        public void PutOnTop(IEnumerable<T> items)
+    public static void Shuffle(List<T> items, Random random)
+    {
+        var n = items.Count;
+        while (n > 1)
         {
-            foreach (var item in items)
-            {
-                PutOnTop(item);
-            }
+            n--;
+            var k = random.Next(n + 1);
+            (items[n], items[k]) = (items[k], items[n]);
         }
+    }
 
-        public void PutOnBottom(T item)
-        {
-            Items.Add(item);
-        }
+    public static List<T> Randomize(IEnumerable<T> toRandomize)
+    {
+        var deck = new Deck<T>(toRandomize, new Random());
+        deck.Shuffle();
+        return deck.Items;
+    }
 
-        public T Draw()
+    public bool IsEmpty => Items.Count == 0;
+
+    public T Top
+    {
+        get
         {
             if (Items.Count > 0)
-            {
-                var result = Top;
-                Items.RemoveAt(0);
-                return result;
-            }
-
-            throw new InvalidOperationException("Cannot draw from an empty deck");
+                return Items[0];
+            return default;
         }
+    }
 
-        public void Shuffle()
-        {
-            Shuffle(Items, Random);
-        }
-
-        public static void Shuffle(List<T> items, Random random)
-        {
-            int n = items.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = random.Next(n + 1);
-                (items[n], items[k]) = (items[k], items[n]);
-            }
-        }
-
-        public static List<T> Randomize(IEnumerable<T> toRandomize)
-        {
-            var deck = new Deck<T>(toRandomize, new Random());
-            deck.Shuffle();
-            return deck.Items;
-        }
-
-        public bool IsEmpty => Items.Count == 0;
-
-        public T Top
-        {
-            get
-            {
-                if (Items.Count > 0)
-                {
-                    return Items[0];
-                }
-                else
-                {
-                    return default;
-                }
-            }
-        }
-
-        public void Clear()
-        {
-            Items.Clear();
-        }
+    public void Clear()
+    {
+        Items.Clear();
     }
 }

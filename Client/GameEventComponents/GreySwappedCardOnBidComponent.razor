@@ -6,17 +6,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<GreySwappedCardOnBid>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Swap the next card on auction with a card from your hand? You can do this once per Bidding round.</Header>
     <Body>
         <SelectFromImageComponent @bind-Value="card" Values="Player.TreacheryCards" ImageWidth="80" />
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Swap {0}", card)" ConfirmError=@Validation Pass="Pass" PassText="Pass" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Swap {0}", card)" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
     </Body>
 
 </GameEventComponentLayout>
@@ -28,7 +25,7 @@
 
     private TreacheryCard card;
 
-    protected override GreySwappedCardOnBid ConfirmedResult => new GreySwappedCardOnBid(Game, Faction) { Passed = false, Card = card };
+    protected override GreySwappedCardOnBid ConfirmedResult => new(Game, Faction) { Passed = false, Card = card };
 
-    protected override GreySwappedCardOnBid PassedResult => new GreySwappedCardOnBid(Game, Faction) { Passed = true };
+    protected override GreySwappedCardOnBid PassedResult => new(Game, Faction) { Passed = true };
 }

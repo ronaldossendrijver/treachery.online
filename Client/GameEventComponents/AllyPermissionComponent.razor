@@ -6,12 +6,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<AllyPermission>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType() Collapsed=CollapseState.Collapsed>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsed="CollapseState.Collapsed">
 
     <Header>Manage your Alliance with &nbsp;<img width="32" src="@Skin.Current.GetImageURL(Player.Ally)" /></Header>
 
@@ -62,7 +59,7 @@
         }
 
         <div class="mt-1">
-            <SelectResourcesComponent @bind-Value="spice" Min="0" Max="Player.Resources" OnChanged=SetEdited Label=@WillingToPayLabel/>
+            <SelectResourcesComponent @bind-Value="spice" Min="0" Max="Player.Resources" OnChanged="SetEdited" Label="@WillingToPayLabel"/>
         </div>
 
         @if (Karma.CanKarma(Game, Player))
@@ -162,7 +159,7 @@
 
         }
 
-        <ButtonRowComponent Confirm="ConfirmAndSetUnedited" ConfirmText="Confirm Changes" ConfirmError=@Validation Disabled="@(!Dirty)"/>
+        <ButtonRowComponent Confirm="ConfirmAndSetUnedited" ConfirmText="Confirm Changes" ConfirmError="@Validation" Disabled="@(!Dirty)"/>
 
     </Body>
 
@@ -320,7 +317,7 @@
 
     protected override AllyPermission ConfirmedResult =>
 
-        new AllyPermission(Game, Faction)
+        new(Game, Faction)
         {
             RedWillPayForExtraRevival = emperorWillPayForExtraRevival,
             YellowAllowsThreeFreeRevivals = fremenAllowsThreeFreeRevivals,

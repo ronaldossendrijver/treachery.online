@@ -6,12 +6,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<LoserConcluded>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Please conclude the battle you lost</Header>
 
@@ -33,8 +30,8 @@
             var assassinated = LoserConcluded.TargetOfAssassination(Game, Player);
 
             <RadioComponent @bind-Value=_assassinate 
-                Values=@(new bool[] {true, false}) 
-                ValueLabels="@(new string[] {"Yes","No"})">
+                Values=@(new[] {true, false}) 
+                ValueLabels="@(new[] {"Yes","No"})">
                 <Label>
                     <div>Execute an assassination mission by revealing <Image Shown=@assassinated Popover=@Popup.Get(assassinated, Game) Class="img-float" Width=50 /> as your traitor?</div>
                 </Label>
@@ -59,16 +56,16 @@
             }
             else
             {
-                _cardsToForceKeepOrDiscard = new();
+                _cardsToForceKeepOrDiscard = new List<TreacheryCard>();
             }
         }
         else
         {
             _karmaDecision = LoserConcluded.KARMA_NO;
-            _cardsToForceKeepOrDiscard = new();
+            _cardsToForceKeepOrDiscard = new List<TreacheryCard>();
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
 
     </Body>
 
@@ -82,11 +79,11 @@
 
     private int _karmaDecision = LoserConcluded.KARMA_NO;
 
-    protected override LoserConcluded ConfirmedResult => new LoserConcluded(Game, Faction) { KeptCard = _cardToKeep, Assassinate = _assassinate, KarmaForcedKeptCardDecision = _karmaDecision, ForcedKeptOrDiscardedCards = _cardsToForceKeepOrDiscard };
+    protected override LoserConcluded ConfirmedResult => new(Game, Faction) { KeptCard = _cardToKeep, Assassinate = _assassinate, KarmaForcedKeptCardDecision = _karmaDecision, ForcedKeptOrDiscardedCards = _cardsToForceKeepOrDiscard };
 
-    private IEnumerable<int> DecisionValues => new int[] { LoserConcluded.KARMA_NO, LoserConcluded.KARMA_KEEP, LoserConcluded.KARMA_DISCARD };
+    private IEnumerable<int> DecisionValues => new[] { LoserConcluded.KARMA_NO, LoserConcluded.KARMA_KEEP, LoserConcluded.KARMA_DISCARD };
 
-    private IEnumerable<string> DecisionValueLabels => new string[] { "No", "Force keeping...", "Force discarding..." };
+    private IEnumerable<string> DecisionValueLabels => new[] { "No", "Force keeping...", "Force discarding..." };
 
     private List<TreacheryCard> _cardsToForceKeepOrDiscard = new();
 }

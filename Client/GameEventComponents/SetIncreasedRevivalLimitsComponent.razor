@@ -6,19 +6,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<SetIncreasedRevivalLimits>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Which factions may have their revival limit increased to 5?</Header>
     <Body>
 
-        <SelectFromImageComponent Selected="factions" Values="SetIncreasedRevivalLimits.ValidTargets(Game, Player)" T=Faction OnChanged=StateHasChanged Required=true ImageWidth="40" />
+        <SelectFromImageComponent Selected="factions" Values="SetIncreasedRevivalLimits.ValidTargets(Game, Player)" T="Faction" OnChanged="StateHasChanged" Required="true" ImageWidth="40" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Set increased limits" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Set increased limits" ConfirmError="@Validation" />
 
     </Body>
 
@@ -28,12 +25,12 @@
 
     protected override Faction IsFactionSpecific => Faction.Purple;
 
-    private List<Faction> factions = new List<Faction>();
+    private List<Faction> factions = new();
 
     protected override void OnInitialized()
     {
         factions.AddRange(Game.FactionsWithIncreasedRevivalLimits);
     }
 
-    protected override SetIncreasedRevivalLimits ConfirmedResult => new SetIncreasedRevivalLimits(Game, Faction) { Factions = factions.ToArray() };
+    protected override SetIncreasedRevivalLimits ConfirmedResult => new(Game, Faction) { Factions = factions.ToArray() };
 }

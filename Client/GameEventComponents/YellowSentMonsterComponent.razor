@@ -6,20 +6,17 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<YellowSentMonster>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Select where to make @Skin.Current.Describe(Concept.Monster) appear</Header>
     <Body>
 
         <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="YellowSentMonster.ValidTargets(Game).OrderBy(t => Name(t))"/>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Appear in {0}", target)" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Appear in {0}", target)" ConfirmError="@Validation" />
 
     </Body>
 
@@ -32,7 +29,7 @@
 
     public Territory target;
 
-    protected override YellowSentMonster ConfirmedResult => new YellowSentMonster(Game, Faction) { Territory = target };
+    protected override YellowSentMonster ConfirmedResult => new(Game, Faction) { Territory = target };
 
     protected override void OnAfterRender(bool firstRender)
     {

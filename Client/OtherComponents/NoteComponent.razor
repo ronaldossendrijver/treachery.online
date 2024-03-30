@@ -1,15 +1,13 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-@using Treachery.Client.GenericComponents;
-@using System.Linq;
 @inherits GameComponent
 
-<div @ref=@element class="card mb-2">
+<div @ref="@element" class="card mb-2">
 
-    <div class="card-header" @onclick=@(e => _collapsed = !_collapsed) style="cursor:pointer">
+    <div class="card-header" @onclick="@(e => _collapsed = !_collapsed)" style="cursor:pointer">
         Mentat: Notekeeping Assistant
-        <CollapseButton Collapsed=@_collapsed />
+        <CollapseButton Collapsed="@_collapsed" />
     </div>
 
     @if (!_collapsed) {
@@ -19,7 +17,7 @@
 
                 @foreach (var p in Players.Where(p => p != Client.Player))
                 {
-                    <button class="btn @ButtonStyle(p) p-1" @onclick="(e => Toggle(p))" data-bs-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
+                    <button class="btn @ButtonStyle(p) p-1" @onclick="e => Toggle(p)" data-bs-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
                         <img class="img-fluid" width="29" height="29" src="@Skin.Current.GetFactionTableImageURL(p.Faction)" />
                     </button>
                 }
@@ -61,7 +59,7 @@
 
                         @foreach (var c in cards)
                         {
-                            bool isKnown = IsKnownCard(c);
+                            var isKnown = IsKnownCard(c);
                             var popover = isKnown ? Popup.Get(c) : "<div class='p-1 small' style='color:black;background-color:white;border: 1px solid black;'>Unknown</div>";
 
                             <Hoverable Class="card border-0 p-1" Popover=@popover>
@@ -183,10 +181,8 @@
         {
             return "btn-primary";
         }
-        else
-        {
-            return "btn-outline-primary";
-        }
+
+        return "btn-outline-primary";
     }
 
     private string ResourcesText(Player p)
@@ -198,21 +194,15 @@
             {
                 return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding", p.Resources, p.Bribes, p.ResourcesAfterBidding);
             }
-            else
-            {
-                return Skin.Current.Format("{0}, {1} at {2}", p.Resources, p.Bribes, MainPhase.Contemplate);
-            }
+
+            return Skin.Current.Format("{0}, {1} at {2}", p.Resources, p.Bribes, MainPhase.Contemplate);
         }
-        else
+
+        if (p.ResourcesAfterBidding > 0)
         {
-            if (p.ResourcesAfterBidding > 0)
-            {
-                return Skin.Current.Format("{0}, {1} at end of {2}", p.Resources, p.ResourcesAfterBidding, MainPhase.Bidding);
-            }
-            else
-            {
-                return Skin.Current.Format("{0}", p.Resources);
-            }
+            return Skin.Current.Format("{0}, {1} at end of {2}", p.Resources, p.ResourcesAfterBidding, MainPhase.Bidding);
         }
+
+        return Skin.Current.Format("{0}", p.Resources);
     }
 }

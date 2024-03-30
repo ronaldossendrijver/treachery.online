@@ -6,9 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using System.Linq
 @inherits MapComponent
  
 <defs>
@@ -87,18 +84,18 @@
         var fromX = From.X - MarginX - Radius;
         var fromY = From.Y - MarginY - Radius;
         var fromZ = (int)Math.Pow(Radius * Radius - fromX * fromX - fromY * fromY, 0.5);
-        var fromAsArray = new double[] { fromX, fromY, fromZ };
+        var fromAsArray = new[] { fromX, fromY, fromZ };
 
         var toX = To.X - MarginX - Radius;
         var toY = To.Y - MarginY - Radius;
         var toZ = (int)Math.Pow(Radius * Radius - toX * toX - toY * toY, 0.5);
-        var toAsArray = new double[] { toX, toY, toZ };
+        var toAsArray = new[] { toX, toY, toZ };
 
         var u = fromAsArray.Select(a => a / Radius).ToArray();
         var w = Cross(fromAsArray, toAsArray);
         var v = Cross(u, w).Select(a => a / Length(w)).ToArray();
         var tMax = Math.Acos(Inner(fromAsArray, toAsArray) / Length(fromAsArray) / Length(toAsArray));
-        var n = (int)Math.Round((50d * tMax) / Math.PI);
+        var n = (int)Math.Round(50d * tMax / Math.PI);
 
         ArrowTemplateId = "arrowtemplate" + Id;
         ArrowShadowId = "arrowshadow" + Id;
@@ -106,7 +103,7 @@
         
         arrows = new ArrowDef[n];
 
-        for (int i = 1; i <= n; i++)
+        for (var i = 1; i <= n; i++)
         {
             var iAsDouble = (double)i;
             var t = -tMax * (iAsDouble / n);
@@ -117,7 +114,7 @@
             var x2 = Radius * (u[0] * Math.Cos(t2) + v[0] * Math.Sin(t2));
             var y2 = Radius * (u[1] * Math.Cos(t2) + v[1] * Math.Sin(t2));
 
-            var alpha = -Math.Atan2((x2 - x), (y2 - y)) / Math.PI * 180 + 90;
+            var alpha = -Math.Atan2(x2 - x, y2 - y) / Math.PI * 180 + 90;
 
             ArrowDef arrowDef;
             arrowDef.TranslateX = Round(x + Radius);
@@ -128,11 +125,15 @@
         }
     }
 
-    private double[] Cross(double[] a, double[] b) => new double[] {
-        a[1] * b[2] - a[2] * b[1],
-        a[2] * b[0] - a[0] * b[2],
-        a[0] * b[1] - a[1] * b[0]
-    };
+    private double[] Cross(double[] a, double[] b)
+    {
+        return new[]
+        {
+            a[1] * b[2] - a[2] * b[1],
+            a[2] * b[0] - a[0] * b[2],
+            a[0] * b[1] - a[1] * b[0]
+        };
+    }
 
     private double Inner(double[] v1, double[] v2)
     {
@@ -140,7 +141,10 @@
         return v1.Zip(v2, (x, y) => x * y).Sum();
     }
 
-    private double Length(double[] vector) => Math.Sqrt(vector.Select(v => v * v).Sum());
+    private double Length(double[] vector)
+    {
+        return Math.Sqrt(vector.Select(v => v * v).Sum());
+    }
 
     private struct ArrowDef
     {

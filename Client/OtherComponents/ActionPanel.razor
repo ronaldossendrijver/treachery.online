@@ -6,10 +6,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GameEventComponents;
-@using Treachery.Client.GenericComponents;
+@using Treachery.Client.GameEventComponents
 @inherits GameComponent;
 
 @if (!Client.IsHost && Client.CurrentPhase == Phase.AwaitingPlayers)
@@ -228,7 +225,7 @@
             break;
         case "BattleClaimed":
             {
-                string title = Faction == Faction.Pink ? 
+                var title = Faction == Faction.Pink ? 
                     Skin.Current.Format("Do you wish to fight in {0}? Otherwise, your ally will.", Game.BattleAboutToStart.Territory) : 
                     Skin.Current.Format("Should {0} fight the battle in {1}?", Faction.Pink, Game.BattleAboutToStart.Territory);
 
@@ -522,7 +519,7 @@
             break;
         case "ExtortionPrevented":
             {
-                var title = @Skin.Current.Format("Pay 3 to prevent {0} regaining their {1} token?", Faction.Cyan, TerrorType.Extortion);
+                var title = Skin.Current.Format("Pay 3 to prevent {0} regaining their {1} token?", Faction.Cyan, TerrorType.Extortion);
                 <SimpleActionComponent GameEventType="ExtortionPrevented" Client="@Client" Title=@title ConfirmLabel="Yes" Alert="false" />
             }
             break;
@@ -720,7 +717,7 @@
     }
 }
 
-@if (DealAccepted.CurrentDeals(Client.Game).Any() || Client.IsPlayer && (DealAccepted.AcceptableDeals(Client.Game, Client.Player).Any() || DealAccepted.CancellableDeals(Client.Game, Client.Player).Any()))
+@if (DealAccepted.CurrentDeals(Client.Game).Any() || (Client.IsPlayer && (DealAccepted.AcceptableDeals(Client.Game, Client.Player).Any() || DealAccepted.CancellableDeals(Client.Game, Client.Player).Any())))
 {
     <DealComponent Client="@Client" />
 }
@@ -735,7 +732,7 @@
     <TrackerComponent Client="@Client" />
 }
 
-@if (Client.Game.CurrentPhase == Phase.GameEnded && Client.IsHost && !Client.StatisticsSent && Client.Game.Players.Count() >= 4 && Client.Game.Players.Count(p => !(p.IsBot)) > Client.Game.Players.Count(p => p.IsBot))
+@if (Client.Game.CurrentPhase == Phase.GameEnded && Client.IsHost && !Client.StatisticsSent && Client.Game.Players.Count() >= 4 && Client.Game.Players.Count(p => !p.IsBot) > Client.Game.Players.Count(p => p.IsBot))
 {
     <UploadStatisticsComponent Client="@Client" />
 }

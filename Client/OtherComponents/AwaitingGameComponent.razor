@@ -6,9 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameComponent
 
 @if (CurrentGame != null)
@@ -87,7 +84,10 @@
 
 @code {
 
-    private string StyleDef(Faction f) => string.Format("color:{0}", Skin.Current.GetFactionColor(f));
+    private string StyleDef(Faction f)
+    {
+        return string.Format("color:{0}", Skin.Current.GetFactionColor(f));
+    }
 
     private string DetermineRuleClass(bool applicable)
     {
@@ -95,10 +95,8 @@
         {
             return "color:white";
         }
-        else
-        {
-            return "color:grey";
-        }
+
+        return "color:grey";
     }
 
     private GameInfo CurrentGame => Client.RunningGames.FirstOrDefault(info => info.HostID == Client.HostProxy.HostID);

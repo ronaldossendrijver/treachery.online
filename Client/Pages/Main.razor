@@ -8,10 +8,8 @@
 *@
 
 @page "/"
-@using Treachery.Client.GenericComponents;
-@using Treachery.Client.OtherComponents;
-@using Treachery.Client.MapComponents;
-
+@using Treachery.Client.OtherComponents
+@using Treachery.Client.MapComponents
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
@@ -62,7 +60,7 @@ else
 
         <!--Map Column-->
         <div id="mapdiv" class="@MapGrid">
-            <Board h="Client" OnLocationClick="@Client.LocationClick" />
+            <GameBoard h="@Client" OnLocationClick="@Client.LocationClick" />
         </div>
 
         <!--Action Column-->
@@ -130,7 +128,7 @@ else
 
             @if (!Client.IsObserver && Client.CurrentPhase > Phase.TradingFactions && Client.Player.Faction == Faction.None)
             {
-                foreach (Player p in Client.Game.Players)
+                foreach (var p in Client.Game.Players)
                 {
                     <PlayerPanel Client="Client" ShownPlayer="p" ShowHeader="true" />
                 }
@@ -157,7 +155,7 @@ else
             </HoverPanel>
         }
 
-        @if (Client.JoinableAdvertisedGames.Any() && (Client.IsObserver || Client.Game != null && Client.Game.NumberOfHumanPlayers <= 1))
+        @if (Client.JoinableAdvertisedGames.Any() && (Client.IsObserver || (Client.Game != null && Client.Game.NumberOfHumanPlayers <= 1)))
         {
             <AdvertisedGamesComponent Client="@Client" />
         }
@@ -181,7 +179,7 @@ else
         await LoadSkinDataIfSaved();
     }
 
-    private bool isFullscreen = false;
+    private bool isFullscreen;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         var checkFullscreen = await Browser.IsFullScreen();
@@ -224,9 +222,9 @@ else
 
     private string Scrollbars => isFullscreen? "vh-100 overflow-auto" : "";
 
-    private string MapGrid => !Client.IsConnected || Client.PlayerName == "" || Client.HostProxy == null && Client.Host == null ? "col-sm-12 col-lg-5" : "col-sm-12 col-lg-6";
+    private string MapGrid => !Client.IsConnected || Client.PlayerName == "" || (Client.HostProxy == null && Client.Host == null) ? "col-sm-12 col-lg-5" : "col-sm-12 col-lg-6";
 
-    private string ActionGrid => !Client.IsConnected || Client.PlayerName == "" || Client.HostProxy == null && Client.Host == null ? "col-sm-12 col-lg-4" : "col-sm-12 col-lg-3";
+    private string ActionGrid => !Client.IsConnected || Client.PlayerName == "" || (Client.HostProxy == null && Client.Host == null) ? "col-sm-12 col-lg-4" : "col-sm-12 col-lg-3";
 
     private bool GameStarted => Client.HostProxy != null && Client.Game.CurrentPhase > Phase.AwaitingPlayers;
 }

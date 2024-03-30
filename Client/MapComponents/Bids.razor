@@ -6,8 +6,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
 @inherits MapComponent
 
 @if (h.Game.CurrentPhase == Phase.Bidding || h.Game.CurrentPhase == Phase.BlackMarketBidding)
@@ -18,8 +16,8 @@
         if (!h.Status.PlayerShouldBeHighlighted(p))
         {
             var y = position.Y + Skin.Current.PlayerTokenRadius;
-            string bidText = "";
-            string bidColor = "white";
+            var bidText = "";
+            var bidColor = "white";
 
             if (!p.HasRoomForCards)
             {
@@ -50,9 +48,7 @@
         {
             return bid.Passed ? "PASS" : string.Format("BID {0}", bid.TotalAmount);
         }
-        else
-        {
-            return "READY";
-        }
+
+        return "READY";
     }
 }

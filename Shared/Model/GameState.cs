@@ -5,73 +5,66 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class GameState
 {
-    public class GameState
+    public int Version { get; set; }
+
+    public GameEvent[] _events;
+
+    [JsonIgnore]
+    public IEnumerable<GameEvent> Events
     {
-        public int Version { get; set; }
+        get => _events;
+        set => _events = value.ToArray();
+    }
 
-        public GameEvent[] _events = null;
+    public static GameState Load(string data)
+    {
+        var fixedStateData = FixGameStateString(data);
+        var serializer = JsonSerializer.CreateDefault();
+        serializer.TypeNameHandling = TypeNameHandling.All;
+        var textReader = new StringReader(fixedStateData);
+        var jsonReader = new JsonTextReader(textReader);
+        var result = serializer.Deserialize<GameState>(jsonReader);
+        return result;
+    }
 
-        [JsonIgnore]
-        public IEnumerable<GameEvent> Events
+    public static string GetStateAsString(Game g)
+    {
+        //https://wellsb.com/csharp/aspnet/blazor-jsinterop-save-file/
+        var serializer = JsonSerializer.CreateDefault();
+        serializer.TypeNameHandling = TypeNameHandling.All;
+        var writer = new StringWriter();
+
+        /*
+         * Check if there are problems serializing one of the GameEvents
+         *
+        var testlist = new List<GameEvent>();
+        foreach (var e in g.History)
         {
-            get
-            {
-                return _events;
-            }
-            set
-            {
-                _events = value.ToArray();
-            }
-        }
+            var testwriter = new StringWriter();
+            testlist.Add(e);
+            var teststate = new GameState() { Version = g.Version, Events = testlist };
+            serializer.Serialize(testwriter, teststate);
+        }*/
 
-        public static GameState Load(string data)
-        {
-            var fixedStateData = FixGameStateString(data);
-            var serializer = JsonSerializer.CreateDefault();
-            serializer.TypeNameHandling = TypeNameHandling.All;
-            var textReader = new StringReader(fixedStateData);
-            var jsonReader = new JsonTextReader(textReader);
-            var result = serializer.Deserialize<GameState>(jsonReader);
-            return result;
-        }
+        var state = new GameState { Version = g.Version, Events = g.History };
+        serializer.Serialize(writer, state);
+        writer.Close();
+        return writer.ToString();
+    }
 
-        public static string GetStateAsString(Game g)
-        {
-            //https://wellsb.com/csharp/aspnet/blazor-jsinterop-save-file/
-            var serializer = JsonSerializer.CreateDefault();
-            serializer.TypeNameHandling = TypeNameHandling.All;
-            var writer = new StringWriter();
-
-            /*
-             * Check if there are problems serializing one of the GameEvents
-             * 
-            var testlist = new List<GameEvent>();
-            foreach (var e in g.History)
-            {
-                var testwriter = new StringWriter();
-                testlist.Add(e);
-                var teststate = new GameState() { Version = g.Version, Events = testlist };
-                serializer.Serialize(testwriter, teststate);
-            }*/
-
-            var state = new GameState() { Version = g.Version, Events = g.History };
-            serializer.Serialize(writer, state);
-            writer.Close();
-            return writer.ToString();
-        }
-
-        private static string FixGameStateString(string state)
-        {
-            return state.Replace("Treachery.online", "Treachery");
-        }
+    private static string FixGameStateString(string state)
+    {
+        return state.Replace("Treachery.online", "Treachery");
     }
 }

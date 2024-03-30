@@ -6,27 +6,24 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<TerrorPlanted>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>You may now place a Terror Token in a Stronghold</Header>
     <Body>
 
         @if (TerrorPlanted.MayRemoveTokens(Game, Player))
         {
-            <RadioComponent @bind-Value=_remove Values="new bool[] {false, true}" ValueLabels=@ValueLabels />
+            <RadioComponent @bind-Value=_remove Values="new[] {false, true}" ValueLabels=@ValueLabels />
         }
         else
         {
             _remove = false;
         }
 
-        <SelectComponent @bind-Value="_type" Values=@TerrorPlanted.ValidTerrorTypes(Game, _remove)>
+        <SelectComponent @bind-Value="_type" Values="@TerrorPlanted.ValidTerrorTypes(Game, _remove)">
             <Label>Token</Label>
         </SelectComponent>
 
@@ -41,7 +38,7 @@
             </SelectComponent>
         }
 
-        <ButtonRowComponent Pass="Pass" Confirm="Confirm" ConfirmText=@ConfirmLabel ConfirmError=@Validation />
+        <ButtonRowComponent Pass="Pass" Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@Validation" />
 
     </Body>
 
@@ -63,13 +60,13 @@
         }
     }
 
-    protected override TerrorPlanted ConfirmedResult => new TerrorPlanted(Game, Faction) { Type = _type, Stronghold = _remove ? null : _stronghold };
+    protected override TerrorPlanted ConfirmedResult => new(Game, Faction) { Type = _type, Stronghold = _remove ? null : _stronghold };
 
-    protected override TerrorPlanted PassedResult => new TerrorPlanted(Game, Faction) { Passed = true };
+    protected override TerrorPlanted PassedResult => new(Game, Faction) { Passed = true };
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid<Territory, Territory>(ref _stronghold, TerrorPlanted.ValidStrongholds(Game, Player), l.Territory);
+        SetIfValid(ref _stronghold, TerrorPlanted.ValidStrongholds(Game, Player), l.Territory);
     }
 
     public override void Dispose()
@@ -78,7 +75,7 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    private string[] ValueLabels => new string[] { "Place or move a token", Skin.Current.Format("Remove a token to gain 4 ", Concept.Resource) };
+    private string[] ValueLabels => new[] { "Place or move a token", Skin.Current.Format("Remove a token to gain 4 ", Concept.Resource) };
 
-    private string ConfirmLabel => _remove ? "Remove token" : (Game.UnplacedTerrorTokens.Contains(_type) ? "Place token" : "Move token");
+    private string ConfirmLabel => _remove ? "Remove token" : Game.UnplacedTerrorTokens.Contains(_type) ? "Place token" : "Move token";
 }

@@ -6,16 +6,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-
-@using Treachery.Shared
-@using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BlueFlip>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Choose to be fighters or advisors in @Name(BlueFlip.GetTerritory(Game)).</Header>
     <Body>
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Fighters" ConfirmError=@Validation Other="Other" OtherText="Advisors"/>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Fighters" ConfirmError="@Validation" Other="Other" OtherText="Advisors"/>
     </Body>
 
 </GameEventComponentLayout>
@@ -25,7 +22,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Blue;
 
-    protected override BlueFlip ConfirmedResult => new BlueFlip(Game, Faction) { AsAdvisors = false };
+    protected override BlueFlip ConfirmedResult => new(Game, Faction) { AsAdvisors = false };
 
-    protected override BlueFlip OtherResult => new BlueFlip(Game, Faction) { AsAdvisors = true };
+    protected override BlueFlip OtherResult => new(Game, Faction) { AsAdvisors = true };
 }

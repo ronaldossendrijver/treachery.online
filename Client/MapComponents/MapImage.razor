@@ -90,7 +90,7 @@ else
             _popoverNeedsRefresh = true;
         }
 
-        _attributes = new();
+        _attributes = new Dictionary<string, object>();
 
         if (Popover != null && !PopoverAsTooltip)
         {
@@ -100,12 +100,12 @@ else
             _attributes.Add("data-bs-animation", "false");
             _attributes.Add("data-bs-delay", "100");
             _attributes.Add("data-container", "body");
-            _attributes.Add("data-bs-content", @Popover);
-            _attributes.Add("data-bs-template", @PopoverTemplate);
+            _attributes.Add("data-bs-content", Popover);
+            _attributes.Add("data-bs-template", PopoverTemplate);
         }
         else
         {
-            _attributes.Add("title", @Popover);
+            _attributes.Add("title", Popover);
         }
 
         _attributes.Add("style", Style);

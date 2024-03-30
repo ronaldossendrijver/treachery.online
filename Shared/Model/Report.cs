@@ -5,46 +5,45 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 using System.Collections.Generic;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class Report
 {
-    public class Report
+    public MainPhase About { private set; get; }
+
+    public Report(MainPhase about)
     {
-        public MainPhase About { private set; get; }
+        About = about;
+    }
 
-        public Report(MainPhase about)
-        {
-            About = about;
-        }
+    public LinkedList<Message> Messages = new();
 
-        public LinkedList<Message> Messages = new();
+    public void Express(params object[] list)
+    {
+        Add(Message.Express(list));
+    }
 
-        public void Express(params object[] list)
-        {
-            Add(Message.Express(list));
-        }
+    public void ExpressTo(Faction to, params object[] list)
+    {
+        Add(Message.ExpressTo(to, list));
+    }
 
-        public void ExpressTo(Faction to, params object[] list)
-        {
-            Add(Message.ExpressTo(to, list));
-        }
+    public void Express(Message m)
+    {
+        Add(m);
+    }
 
-        public void Express(Message m)
-        {
-            Add(m);
-        }
+    public void Express(GameEvent e)
+    {
+        Messages.AddLast(e.GetMessage());
+    }
 
-        public void Express(GameEvent e)
-        {
-            Messages.AddLast(e.GetMessage());
-        }
-
-        private void Add(Message m)
-        {
-            Messages.AddLast(m);
-        }
+    private void Add(Message m)
+    {
+        Messages.AddLast(m);
     }
 }

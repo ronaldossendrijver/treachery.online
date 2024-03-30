@@ -5,46 +5,48 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public class Messiah : IHero
 {
-    public class Messiah : IHero
+    public int Value => 2;
+
+    public int ValueInCombatAgainst(IHero opposingHero)
     {
-        public Messiah()
-        {
-        }
+        return Value;
+    }
 
-        public int Value => 2;
+    public Faction Faction => Faction.Green;
 
-        public int ValueInCombatAgainst(IHero opposingHero) => Value;
+    public HeroType HeroType => HeroType.Messiah;
 
-        public Faction Faction => Faction.Green;
+    public bool Is(Faction f)
+    {
+        return Faction == f;
+    }
 
-        public HeroType HeroType => HeroType.Messiah;
+    public int CostToRevive => Value;
 
-        public bool Is(Faction f) => Faction == f;
+    public int Id { get; set; }
 
-        public int CostToRevive => Value;
+    public int SkinId { get; set; }
 
-        public int Id { get; set; }
+    public bool IsTraitor(IHero hero)
+    {
+        return false;
+    }
 
-        public int SkinId { get; set; }
+    public bool IsFaceDancer(IHero hero)
+    {
+        return false;
+    }
 
-        public bool IsTraitor(IHero hero) => false;
-
-        public bool IsFaceDancer(IHero hero) => false;
-
-        public override string ToString()
-        {
-            if (Message.DefaultDescriber != null)
-            {
-                return Message.DefaultDescriber.Describe(this) + "*";
-            }
-            else
-            {
-                return base.ToString();
-            }
-        }
+    public override string ToString()
+    {
+        if (Message.DefaultDescriber != null)
+            return Message.DefaultDescriber.Describe(this) + "*";
+        return base.ToString();
     }
 }

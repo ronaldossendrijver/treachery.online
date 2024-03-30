@@ -17,182 +17,203 @@
 /// </summary>
 /// 
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public abstract class GameEvent
 {
-    public abstract class GameEvent
+    #region Construction
+
+    public GameEvent()
     {
-        #region Construction
+    }
 
-        public GameEvent()
+    public GameEvent(Game game, Faction initiator)
+    {
+        Initialize(game, initiator);
+    }
+
+    public GameEvent(Game game, string playername)
+    {
+        Initialize(game, playername);
+    }
+
+    #endregion Construction
+
+    #region Properties
+
+    private const char IDSTRINGSEPARATOR = ';';
+
+    public Faction Initiator { get; set; }
+
+    public DateTime Time { get; set; }
+
+    [JsonIgnore]
+    public Game Game { get; private set; }
+
+    [JsonIgnore]
+    public Player Player { get; private set; }
+
+    #endregion Properties
+
+    #region Validation
+
+    public abstract Message Validate();
+
+    [JsonIgnore]
+    public bool IsValid => Validate() == null;
+
+    public virtual bool IsApplicable(bool isHost)
+    {
+        if (Game == null) throw new ArgumentException("Cannot check applicability of a GameEvent without a Game.");
+
+        return Game.GetApplicableEvents(Player, isHost).Contains(GetType());
+    }
+
+    #endregion Validation
+
+    #region Execution
+
+    public void Initialize(Game game, Faction initiator)
+    {
+        Game = game;
+        Initiator = initiator;
+        Player = game.GetPlayer(initiator);
+    }
+
+    public void Initialize(Game game, string playername)
+    {
+        Game = game;
+        Player = game.GetPlayer(playername);
+    }
+
+    public void Initialize(Game game)
+    {
+        Initialize(game, Initiator);
+    }
+
+    public virtual void ExecuteWithoutValidation()
+    {
+        Execute(false, false);
+    }
+
+    public virtual Message Execute(bool performValidation, bool isHost)
+    {
+        if (Game == null) throw new ArgumentException("Cannot execute a GameEvent without a Game.");
+
+        try
         {
-        }
+            var momentJustBeforeEvent = Game.CurrentMoment;
 
-        public GameEvent(Game game, Faction initiator)
-        {
-            Initialize(game, initiator);
-        }
+            Message result = null;
 
-        public GameEvent(Game game, string playername)
-        {
-            Initialize(game, playername);
-        }
-
-        #endregion Construction
-
-        #region Properties
-
-        private const char IDSTRINGSEPARATOR = ';';
-
-        public Faction Initiator { get; set; }
-
-        public DateTime Time { get; set; }
-
-        [JsonIgnore]
-        public Game Game { get; private set; }
-
-        [JsonIgnore]
-        public Player Player { get; private set; }
-
-        #endregion Properties
-
-        #region Validation
-
-        public abstract Message Validate();
-
-        [JsonIgnore]
-        public bool IsValid => Validate() == null;
-
-        public virtual bool IsApplicable(bool isHost)
-        {
-            if (Game == null)
+            if (performValidation)
             {
-                throw new ArgumentException("Cannot check applicability of a GameEvent without a Game.");
+                if (!IsApplicable(isHost)) return Message.Express("Event '", GetMessage(), "' is not applicable");
+
+                result = Validate();
             }
 
-            return Game.GetApplicableEvents(Player, isHost).Contains(GetType());
-        }
-
-        #endregion Validation
-
-        #region Execution
-
-        public void Initialize(Game game, Faction initiator)
-        {
-            Game = game;
-            Initiator = initiator;
-            Player = game.GetPlayer(initiator);
-        }
-
-        public void Initialize(Game game, string playername)
-        {
-            Game = game;
-            Player = game.GetPlayer(playername);
-        }
-
-        public void Initialize(Game game)
-        {
-            Initialize(game, Initiator);
-        }
-
-        public virtual void ExecuteWithoutValidation()
-        {
-            Execute(false, false);
-        }
-
-        public virtual Message Execute(bool performValidation, bool isHost)
-        {
-            if (Game == null)
+            if (result == null)
             {
-                throw new ArgumentException("Cannot execute a GameEvent without a Game.");
-            }
-
-            try
-            {
-                var momentJustBeforeEvent = Game.CurrentMoment;
-
-                Message result = null;
-
-                if (performValidation)
-                {
-                    if (!IsApplicable(isHost))
-                    {
-                        return Message.Express("Event '", GetMessage(), "' is not applicable");
-                    }
-
-                    result = Validate();
-                }
-
-                if (result == null)
-                {
-                    Game.RecentMilestones.Clear();
-                    Game.PerformPreEventTasks(this);
-                    ExecuteConcreteEvent();
-                    Game.PerformPostEventTasks(this, momentJustBeforeEvent != MainPhaseMoment.Start && Game.CurrentMoment == MainPhaseMoment.Start);
-                }
-
-                return result;
-            }
-            catch (Exception e)
-            {
-                return Message.Express("Game Error: ", e.Message, ". Technical description: ", e, ".");
-            }
-        }
-
-        protected abstract void ExecuteConcreteEvent();
-
-        public virtual Message GetMessage() => Message.Express(GetType().Name, " by ", Initiator);
-
-        public virtual Message GetShortMessage() => GetMessage();
-
-        #endregion Execution
-
-        #region Support
-
-        public static List<T> IdStringToObjects<T>(string ids, IFetcher<T> lookup)
-        {
-            var result = new List<T>();
-
-            if (ids != null && ids.Length > 0)
-            {
-                foreach (var id in ids.Split(IDSTRINGSEPARATOR))
-                {
-                    result.Add(lookup.Find(Convert.ToInt32(id)));
-                }
+                Game.RecentMilestones.Clear();
+                Game.PerformPreEventTasks(this);
+                ExecuteConcreteEvent();
+                Game.PerformPostEventTasks(this, momentJustBeforeEvent != MainPhaseMoment.Start && Game.CurrentMoment == MainPhaseMoment.Start);
             }
 
             return result;
         }
-
-        public static string ObjectsToIdString<T>(IEnumerable<T> objs, IFetcher<T> lookup)
+        catch (Exception e)
         {
-            return string.Join(IDSTRINGSEPARATOR, objs.Select(pj => Convert.ToString(lookup.GetId(pj))));
+            return Message.Express("Game Error: ", e.Message, ". Technical description: ", e, ".");
         }
-
-        public bool By(Faction f) => Initiator == f;
-
-        public bool ByAllyOf(Faction f) => Player.Ally == f;
-
-        public bool By(Player p) => Player == p;
-
-        public GameEvent Clone() => (GameEvent)MemberwiseClone();
-
-        protected void Log() => Game.CurrentReport.Express(GetMessage());
-
-        protected void Log(params object[] expression) => Game.Log(expression);
-
-        protected void LogIf(bool condition, params object[] expression) => Game.LogIf(condition, expression);
-
-        protected void LogTo(Faction faction, params object[] expression) => Game.LogTo(faction, expression);
-
-        protected Player GetPlayer(Faction f) => Game.GetPlayer(f);
-
-        protected bool IsPlaying(Faction f) => Game.IsPlaying(f);
-
-        #endregion Support
     }
+
+    protected abstract void ExecuteConcreteEvent();
+
+    public virtual Message GetMessage()
+    {
+        return Message.Express(GetType().Name, " by ", Initiator);
+    }
+
+    public virtual Message GetShortMessage()
+    {
+        return GetMessage();
+    }
+
+    #endregion Execution
+
+    #region Support
+
+    public static List<T> IdStringToObjects<T>(string ids, IFetcher<T> lookup)
+    {
+        var result = new List<T>();
+
+        if (ids != null && ids.Length > 0)
+            foreach (var id in ids.Split(IDSTRINGSEPARATOR)) result.Add(lookup.Find(Convert.ToInt32(id)));
+
+        return result;
+    }
+
+    public static string ObjectsToIdString<T>(IEnumerable<T> objs, IFetcher<T> lookup)
+    {
+        return string.Join(IDSTRINGSEPARATOR, objs.Select(pj => Convert.ToString(lookup.GetId(pj))));
+    }
+
+    public bool By(Faction f)
+    {
+        return Initiator == f;
+    }
+
+    public bool ByAllyOf(Faction f)
+    {
+        return Player.Ally == f;
+    }
+
+    public bool By(Player p)
+    {
+        return Player == p;
+    }
+
+    public GameEvent Clone()
+    {
+        return (GameEvent)MemberwiseClone();
+    }
+
+    protected void Log()
+    {
+        Game.CurrentReport.Express(GetMessage());
+    }
+
+    protected void Log(params object[] expression)
+    {
+        Game.Log(expression);
+    }
+
+    protected void LogIf(bool condition, params object[] expression)
+    {
+        Game.LogIf(condition, expression);
+    }
+
+    protected void LogTo(Faction faction, params object[] expression)
+    {
+        Game.LogTo(faction, expression);
+    }
+
+    protected Player GetPlayer(Faction f)
+    {
+        return Game.GetPlayer(f);
+    }
+
+    protected bool IsPlaying(Faction f)
+    {
+        return Game.IsPlaying(f);
+    }
+
+    #endregion Support
 }

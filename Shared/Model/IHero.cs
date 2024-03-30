@@ -5,28 +5,27 @@
  * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
-namespace Treachery.Shared
+namespace Treachery.Shared;
+
+public interface IHero : IIdentifiable
 {
-    public interface IHero : IIdentifiable
-    {
-        public int Value { get; }
+    public int Value { get; }
 
-        public int ValueInCombatAgainst(IHero opposingHero);
+    public int ValueInCombatAgainst(IHero opposingHero);
 
-        public int SkinId { get; }
+    public int SkinId { get; }
 
-        public Faction Faction { get; }
+    public Faction Faction { get; }
 
-        public int CostToRevive { get; }
+    public int CostToRevive { get; }
 
-        public bool IsTraitor(IHero hero);
+    public bool IsTraitor(IHero hero);
 
-        public bool IsFaceDancer(IHero hero);
+    public bool IsFaceDancer(IHero hero);
 
-        public bool Is(Faction f);
+    public bool Is(Faction f);
 
-        public HeroType HeroType { get; }
-    }
+    public HeroType HeroType { get; }
 }
