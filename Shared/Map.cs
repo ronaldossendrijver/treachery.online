@@ -128,6 +128,8 @@ public class Map
 
     public IEnumerable<Location> Strongholds => _locations.Where(l => l.Territory.IsStronghold);
 
+    public Homeworld GetHomeWorld(World w) => Homeworlds.FirstOrDefault(hw => hw.World == w);
+    
     public static IEnumerable<ResourceCard> GetResourceCardsInAndOutsidePlay(Map m)
     {
         var result = new List<ResourceCard>();
@@ -1941,4 +1943,6 @@ public class Map
             return obj.Id;
         }
     }
+
+    
 }

@@ -171,15 +171,47 @@ public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlace
 
     public static IEnumerable<Location> ValidMoveToTargets(Game g, Player p, Location from, IEnumerable<Battalion> moved)
     {
-        var maximumDistance = g.DetermineMaximumMoveDistance(p, moved);
-        var mayMoveIntoStorm = p.Faction == Faction.Yellow && g.Applicable(Rule.YellowMayMoveIntoStorm) && g.Applicable(Rule.YellowStormLosses);
-        var neighbours = g.Map.FindNeighbours(from, maximumDistance, mayMoveIntoStorm, p.Faction, g);
-        return neighbours;
+        if (p.Is(Faction.Red) && from is Homeworld hw && g.Applicable(Rule.RedSpecialForces))
+        {
+            if (hw.World is World.Red)
+            {
+                var redStar = g.Map.GetHomeWorld(World.RedStar);
+                if (redStar != null)
+                    return [redStar];
+            }
+            
+            if (hw.World is World.RedStar)
+            {
+                var red = g.Map.GetHomeWorld(World.Red);
+                if (red != null)
+                    return [red];
+            }
+        }
+        else
+        {
+            var maximumDistance = g.DetermineMaximumMoveDistance(p, moved);
+            var mayMoveIntoStorm = p.Faction == Faction.Yellow && g.Applicable(Rule.YellowMayMoveIntoStorm) && g.Applicable(Rule.YellowStormLosses);
+            return g.Map.FindNeighbours(from, maximumDistance, mayMoveIntoStorm, p.Faction, g);
+        }
+        
+        return [];
     }
 
-    public static IEnumerable<Territory> TerritoriesWithAnyForcesNotInStorm(Game g, Player p)
+    public static IEnumerable<Territory> ValidMovementSources(Game g, Player p)
     {
-        return g.Map.Territories(false).Where(t => t.Locations.Any(l => l.Sector != g.SectorInStorm && p.AnyForcesIn(l) > 0));
+        var res = g.Map.Territories(false).Where(t => t.Locations.Any(l => l.Sector != g.SectorInStorm && p.AnyForcesIn(l) > 0)).ToList();
+        if (p.Is(Faction.Red) && g.Applicable(Rule.RedSpecialForces))
+        {
+            var redStar = g.Map.GetHomeWorld(World.RedStar);
+            if (redStar != null && p.AnyForcesIn(redStar) > 0)
+                res.Add(redStar.Territory);
+            
+            var red = g.Map.GetHomeWorld(World.Red);
+            if (red != null && p.AnyForcesIn(red) > 0)
+                res.Add(red.Territory);
+        }
+
+        return res;
     }
 
     #endregion Validation

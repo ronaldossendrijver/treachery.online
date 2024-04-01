@@ -315,7 +315,7 @@ public partial class Player
 
         var messiah = lowestAvailableHero != null && Battle.MessiahMayBeUsedInBattle(Game, this);
 
-        if (Battle.MustPayForForcesInBattle(Game, this))
+        if (Battle.MustPayForAnyForcesInBattle(Game, this))
         {
             var strongholdFreeForces = Game.HasStrongholdAdvantage(Faction, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory) ? 2 : 0;
             var specialAtFull = Math.Min(strongholdFreeForces, Battle.MaxForces(Game, this, true));
@@ -449,7 +449,7 @@ public partial class Player
 
         LogInfo("DetermineValidForcesInBattle: {0} {1} {2} {3}", dialNeeded, spiceLeft, costPerSpecialForce, costPerForce);
 
-        if (Battle.MustPayForForcesInBattle(Game, this))
+        if (Battle.MustPayForAnyForcesInBattle(Game, this))
         {
             specialForcesAtFullStrength = 0;
             while (dialNeeded > normalStrength && specialForcesAvailable >= 1 && spiceLeft >= costPerSpecialForce)

@@ -18,7 +18,7 @@ public partial class Game
     #region Settings
 
     public const int LowestSupportedVersion = 100;
-    public const int LatestVersion = 163;
+    public const int LatestVersion = 164;
 
     public const int ExpansionLevel = 3;
     public bool BotInfologging = false;

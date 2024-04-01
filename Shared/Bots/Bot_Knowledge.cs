@@ -576,7 +576,7 @@ public partial class Player
 
     #region BattleInformation_Dial
 
-    protected virtual bool IMustPayForForcesInBattle => Battle.MustPayForForcesInBattle(Game, this);
+    protected virtual bool IMustPayForForcesInBattle => Battle.MustPayForAnyForcesInBattle(Game, this);
 
     protected virtual float MaxDial(Player p, Territory t, Player opponent, bool ignoreSpiceDialing = false)
     {
@@ -598,7 +598,7 @@ public partial class Player
 
     protected virtual float MaxDial(int resources, int forces, int specialForces, Player player, Faction opponentFaction)
     {
-        var spice = Battle.MustPayForForcesInBattle(Game, player) ? resources : 99;
+        var spice = Battle.MustPayForAnyForcesInBattle(Game, player) ? resources : 99;
 
         var specialForcesAtFullStrength = Math.Min(specialForces, spice);
         spice -= specialForcesAtFullStrength;

@@ -112,7 +112,7 @@
         StateHasChanged();
     }
 
-    protected virtual IEnumerable<Territory> ValidSources => PlacementEvent.TerritoriesWithAnyForcesNotInStorm(Game, Player);
+    protected virtual IEnumerable<Territory> ValidSources => PlacementEvent.ValidMovementSources(Game, Player);
 
     protected virtual IEnumerable<Location> ValidTargets
     {

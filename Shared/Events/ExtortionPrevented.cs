@@ -44,6 +44,11 @@ public class ExtortionPrevented : GameEvent
         Log();
         Game.ExtortionToBeReturned = false;
         Player.Resources -= 3;
+
+        if (Game.Version >= 164)
+        {
+            GetPlayer(Faction.Cyan).Resources += 3;            
+        }
     }
 
     public override Message GetMessage()

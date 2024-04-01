@@ -217,7 +217,7 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
 
     public static IEnumerable<Territory> ValidYellowSources(Game g, Player p)
     {
-        return PlacementEvent.TerritoriesWithAnyForcesNotInStorm(g, p);
+        return PlacementEvent.ValidMovementSources(g, p);
     }
 
     public static IEnumerable<Location> ValidYellowTargets(Game g, Player p)

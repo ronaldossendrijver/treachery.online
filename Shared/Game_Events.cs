@@ -265,7 +265,7 @@ public partial class Game
                 {
                     if (OrangeMayDelay) result.Add(typeof(OrangeDelay));
                     result.Add(typeof(Shipment));
-                    if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan) && PlacementEvent.TerritoriesWithAnyForcesNotInStorm(this, player).Any()) result.Add(typeof(Caravan));
+                    if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan) && PlacementEvent.ValidMovementSources(this, player).Any()) result.Add(typeof(Caravan));
                 }
                 if (Version < 103 && Version <= 96 && player.Has(TreacheryCardType.Amal) && HasActedOrPassed.Count == 0) result.Add(typeof(AmalPlayed));
                 if (Version < 103 && Version >= 97 && player.Has(TreacheryCardType.Amal) && BeginningOfShipmentAndMovePhase) result.Add(typeof(AmalPlayed));

@@ -514,8 +514,8 @@ public partial class Player
         var normalStrength = Battle.DetermineNormalForceStrength(Game, Faction);
         var specialStrength = Battle.DetermineSpecialForceStrength(Game, Faction, opponent);
         var spiceAvailable = ResourcesIncludingAllyContribution - minResourcesToKeep;
-        var noSpiceForForceModifier = Battle.MustPayForForcesInBattle(Game, this) ? 0.5f : 1;
-        var costPerForceInBattle = diallingForBattle && Battle.MustPayForForcesInBattle(Game, this) ? 1 : 0;
+        var noSpiceForForceModifier = Battle.MustPayForAnyForcesInBattle(Game, this) ? 0.5f : 1;
+        var costPerForceInBattle = diallingForBattle && Battle.MustPayForAnyForcesInBattle(Game, this) ? 1 : 0;
         var maxForcesWithNoField = Shipment.ValidNoFieldValues(Game, this).Any() ? Shipment.ValidNoFieldValues(Game, this).Max() : -1;
 
         var shortage = DetermineForcesInShipment(dialNeeded, location, forcesAvailable, specialForcesAvailable, ref forces, ref specialForces, maxUnsupportedForces, preferSpecialForces, normalStrength, specialStrength, spiceAvailable, noSpiceForForceModifier, costPerForceInBattle);

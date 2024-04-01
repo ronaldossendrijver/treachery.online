@@ -197,12 +197,21 @@ public partial class Player : ICloneable
     {
         if (Faction == Faction.Red && Game.Applicable(Rule.RedSpecialForces))
         {
-            var homeworld = Homeworlds.FirstOrDefault(hw => hw.World == World.RedStar);
-            var hasLessThanThreshold = homeworld != null && AnyForcesIn(homeworld) < homeworld.Threshold;
+            var homeWorld = Homeworlds.FirstOrDefault(hw => hw.World == World.RedStar);
+
+            if (homeWorld == null)
+                return;
+            
+            var hasLessThanThreshold = Game.Version <= 163 ? AnyForcesIn(homeWorld) < homeWorld.Threshold : SpecialForcesIn(homeWorld) < homeWorld.Threshold;
 
             if (hasLessThanThreshold && !RedStarHomeworldIsOnLowThreshold)
+            {
                 RedStarHomeworldIsOnLowThreshold = true;
-            else if (!hasLessThanThreshold && RedStarHomeworldIsOnLowThreshold) RedStarHomeworldIsOnLowThreshold = false;
+            }
+            else if (!hasLessThanThreshold && RedStarHomeworldIsOnLowThreshold)
+            {
+                RedStarHomeworldIsOnLowThreshold = false;
+            }
         }
     }
 

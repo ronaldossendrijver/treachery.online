@@ -6,6 +6,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
+@using System.Globalization
 @inherits GameEventComponent<Battle>
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" TimedEvent="Game.LatestEvent(typeof(BattleInitiated))">
@@ -155,7 +156,7 @@
                     specialForces = 0;
                 }
 
-                if (forces + specialForces > 0 && Battle.MustPayForForcesInBattle(Game, Player))
+                if (forces + specialForces > 0 && Battle.MustPayForAnyForcesInBattle(Game, Player))
                 {
                     var maxResources = Battle.MaxResources(Game, Player, forces, specialForces);
                     var maxAllyResources = Battle.MaxAllyResources(Game, Player, forces, specialForces);
@@ -358,7 +359,7 @@
         {
             case PrescienceAspect.Defense: return plan.Defense == null || (!showEverything && !plan.Defense.IsDefense) ? "None" : Name(plan.Defense);
             case PrescienceAspect.Weapon: return plan.Weapon == null || (!showEverything && !plan.Weapon.IsWeapon) ? "None" : Name(plan.Weapon);
-            case PrescienceAspect.Dial: return plan.Dial(Game, Faction).ToString();
+            case PrescienceAspect.Dial: return plan.Dial(Game, Faction).ToString(CultureInfo.InvariantCulture);
             case PrescienceAspect.Leader: return plan.Hero == null ? "None" : Name(plan.Hero);
         }
 

@@ -237,6 +237,128 @@ public class Battle : GameEvent
         return Cost(g, Player, Forces, SpecialForces, out paidByArrakeen);
     }
 
+    public static BattleOutcome DetermineBattleOutcome(Battle agg, Battle def, Territory territory, Game game)
+    {
+        var result = new BattleOutcome
+        {
+            Aggressor = agg.Player,
+            Defender = def.Player
+        };
+
+        //Determine result
+
+        agg.ActivateDynamicWeapons(def.Weapon, agg.Hero, def.Defense);
+        def.ActivateDynamicWeapons(agg.Weapon, def.Hero, agg.Defense);
+
+        var poisonToothUsed = !game.PoisonToothCancelled && (agg.HasPoisonTooth || def.HasPoisonTooth);
+        var artilleryUsed = agg.HasArtillery || def.HasArtillery;
+        var rockMelterUsed = agg.HasRockMelter || def.HasRockMelter;
+        var rockMelterUsedToKill = game.CurrentRockWasMelted != null && game.CurrentRockWasMelted.Kill;
+
+        result.AggHeroKilled = false;
+        result.AggHeroCauseOfDeath = TreacheryCardType.None;
+
+        DetermineCauseOfDeath(
+            agg, def, agg.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, game.IsProtectedByCarthagAdvantage(agg, territory),
+            ref result.AggHeroKilled, ref result.AggHeroCauseOfDeath, ref result.AggSavedByCarthag);
+
+        result.DefHeroKilled = false;
+        result.DefHeroCauseOfDeath = TreacheryCardType.None;
+        DetermineCauseOfDeath(
+            def, agg, def.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, game.IsProtectedByCarthagAdvantage(def, territory),
+            ref result.DefHeroKilled, ref result.DefHeroCauseOfDeath, ref result.DefSavedByCarthag);
+
+        var heroStrengthCountsToTotal = !artilleryUsed && !(game.Version >= 145 && rockMelterUsed && !rockMelterUsedToKill);
+
+        result.AggHeroEffectiveStrength = agg.Hero != null && heroStrengthCountsToTotal ? agg.Hero.ValueInCombatAgainst(def.Hero) : 0;
+        result.DefHeroEffectiveStrength = def.Hero != null && heroStrengthCountsToTotal ? def.Hero.ValueInCombatAgainst(agg.Hero) : 0;
+
+        if (heroStrengthCountsToTotal)
+        {
+            result.AggHeroSkillBonus = DetermineSkillBonus(game, agg, ref result.AggActivatedBonusSkill);
+            result.AggBattlePenalty = !result.DefHeroKilled ? DetermineSkillPenalty(game, def, result.Aggressor, ref result.DefActivatedPenaltySkill) : 0;
+            result.AggMessiahContribution = agg.Messiah && agg.Hero != null ? 2 : 0;
+
+            result.DefHeroSkillBonus = DetermineSkillBonus(game, def, ref result.DefActivatedBonusSkill);
+            result.DefBattlePenalty = !result.AggHeroKilled ? DetermineSkillPenalty(game, agg, result.Defender, ref result.AggActivatedPenaltySkill) : 0;
+            result.DefMessiahContribution = def.Messiah && def.Hero != null ? 2 : 0;
+        }
+
+        var aggHeroContribution = result.AggHeroKilled || (game.Version < 145 && rockMelterUsed) ? 0 : result.AggHeroEffectiveStrength + result.AggHeroSkillBonus + result.AggMessiahContribution - result.AggBattlePenalty;
+        var defHeroContribution = result.DefHeroKilled || (game.Version < 145 && rockMelterUsed) ? 0 : result.DefHeroEffectiveStrength + result.DefHeroSkillBonus + result.DefMessiahContribution - result.DefBattlePenalty;
+
+        var aggPinkKarmaContribution = agg.Initiator == Faction.Pink ? game.PinkKarmaBonus : 0;
+        var defPinkKarmaContribution = def.Initiator == Faction.Pink ? game.PinkKarmaBonus : 0;
+
+        var aggForceSupplier = DetermineForceSupplier(game, result.Aggressor);
+        result.AggUndialedForces = aggForceSupplier.AnyForcesIn(territory) - agg.TotalForces;
+
+        var defForceSupplier = DetermineForceSupplier(game, result.Defender);
+        result.DefUndialedForces = defForceSupplier.AnyForcesIn(territory) - def.TotalForces;
+
+        if (!rockMelterUsed)
+        {
+            result.AggReinforcementsContribution = agg.HasReinforcements ? 2 : 0;
+            result.DefReinforcementsContribution = def.HasReinforcements ? 2 : 0;
+
+            result.AggHomeworldContribution = agg.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
+            result.DefHomeworldContribution = def.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
+
+            result.AggTotal = agg.Dial(game, result.Defender.Faction) + aggHeroContribution + aggPinkKarmaContribution + result.AggHomeworldContribution + result.AggReinforcementsContribution;
+            result.DefTotal = def.Dial(game, result.Aggressor.Faction) + defHeroContribution + defPinkKarmaContribution + result.DefHomeworldContribution + result.DefReinforcementsContribution;
+        }
+        else
+        {
+            result.AggTotal = result.AggUndialedForces;
+            if (result.Aggressor.Faction == game.CurrentPinkOrAllyFighter) result.AggTotal += (int)Math.Ceiling(0.5f * game.GetPlayer(Faction.Pink).AnyForcesIn(territory));
+
+            result.DefTotal = result.DefUndialedForces;
+            if (result.Defender.Faction == game.CurrentPinkOrAllyFighter) result.DefTotal += (int)Math.Ceiling(0.5f * game.GetPlayer(Faction.Pink).AnyForcesIn(territory));
+        }
+
+        agg.DeactivateDynamicWeapons();
+        def.DeactivateDynamicWeapons();
+
+        var aggressorWinsTies = true;
+        if (game.HasStrongholdAdvantage(result.Defender.Faction, StrongholdAdvantage.WinTies, territory)) aggressorWinsTies = false;
+
+        if (BattleInitiated.IsAggressorByJuice(game, result.Defender.Faction) && !game.HasStrongholdAdvantage(result.Aggressor.Faction, StrongholdAdvantage.WinTies, territory)) aggressorWinsTies = false;
+
+        if (aggressorWinsTies)
+            result.Winner = result.AggTotal >= result.DefTotal ? result.Aggressor : result.Defender;
+        else
+            result.Winner = result.DefTotal >= result.AggTotal ? result.Defender : result.Aggressor;
+
+        result.WinnerBattlePlan = result.Winner == result.Aggressor ? agg : def;
+        result.Loser = result.Winner == result.Aggressor ? result.Defender : result.Aggressor;
+        result.LoserBattlePlan = result.Loser == result.Aggressor ? agg : def;
+
+        return result;
+    }
+
+    private static void DetermineCauseOfDeath(Battle playerPlan, Battle opponentPlan, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, bool isProtectedByCarthagAdvantage, ref bool heroDies, ref TreacheryCardType causeOfDeath, ref bool savedByCarthag)
+    {
+        heroDies = false;
+        causeOfDeath = TreacheryCardType.None;
+        savedByCarthag = isProtectedByCarthagAdvantage && opponentPlan.HasPoison && !playerPlan.HasAntidote;
+
+        DetermineDeathBy(theHero, TreacheryCardType.Rockmelter, rockMelterWasUsedToKill, ref heroDies, ref causeOfDeath);
+        DetermineDeathBy(theHero, TreacheryCardType.ArtilleryStrike, artilleryUsed && !playerPlan.HasShield, ref heroDies, ref causeOfDeath);
+        DetermineDeathBy(theHero, TreacheryCardType.PoisonTooth, poisonToothUsed && !playerPlan.HasNonAntidotePoisonDefense, ref heroDies, ref causeOfDeath);
+        DetermineDeathBy(theHero, TreacheryCardType.Laser, opponentPlan.HasLaser, ref heroDies, ref causeOfDeath);
+        DetermineDeathBy(theHero, TreacheryCardType.Poison, opponentPlan.HasPoison && !(playerPlan.HasAntidote || isProtectedByCarthagAdvantage), ref heroDies, ref causeOfDeath);
+        DetermineDeathBy(theHero, TreacheryCardType.Projectile, opponentPlan.HasProjectile && !playerPlan.HasProjectileDefense, ref heroDies, ref causeOfDeath);
+    }
+
+    private static void DetermineDeathBy(IHero hero, TreacheryCardType byWeapon, bool weaponHasEffect, ref bool heroIsKilled, ref TreacheryCardType causeOfDeath)
+    {
+        if (!heroIsKilled && hero != null && weaponHasEffect)
+        {
+            heroIsKilled = true;
+            causeOfDeath = byWeapon;
+        }
+    }
+    
     #endregion Execution
 
     #region Validation
@@ -346,10 +468,15 @@ public class Battle : GameEvent
         return 0.5f;
     }
 
-    public static bool MustPayForForcesInBattle(Game g, Player p)
+    public static bool MustPayForAnyForcesInBattle(Game g, Player p)
     {
         return g.Applicable(Rule.AdvancedCombat) &&
                (g.Prevented(FactionAdvantage.YellowNotPayingForBattles) || p.Faction != Faction.Yellow);
+    }
+    
+    public static bool MustPayForSpecialForcesInBattle(Game g, Player p)
+    {
+        return MustPayForAnyForcesInBattle(g,p) && !(p.Is(Faction.Red) || g.HasHighThreshold(Faction.Red, World.RedStar));
     }
 
     public static bool MessiahMayBeUsedInBattle(Game g, Player p)
@@ -371,7 +498,7 @@ public class Battle : GameEvent
 
     public static int NormalForceCost(Game g, Player p)
     {
-        if (MustPayForForcesInBattle(g, p))
+        if (MustPayForAnyForcesInBattle(g, p))
         {
             if (p.Faction == Faction.Grey)
                 return 0;
@@ -383,7 +510,7 @@ public class Battle : GameEvent
 
     public static int SpecialForceCost(Game g, Player p)
     {
-        if (MustPayForForcesInBattle(g, p))
+        if (MustPayForAnyForcesInBattle(g, p))
             return 1;
         return 0;
     }
@@ -607,14 +734,26 @@ public class Battle : GameEvent
 
     public static void DetermineForces(Game g, Player p, int forces, int specialForces, int resources, out int forcesFull, out int forcesHalf, out int specialForcesFull, out int specialForcesHalf)
     {
-        if (MustPayForForcesInBattle(g, p))
+        if (MustPayForAnyForcesInBattle(g, p))
         {
             var effectiveResources = CostReduction(g, p) + resources;
-            specialForcesFull = Math.Min(specialForces, effectiveResources);
-            specialForcesHalf = specialForces - specialForcesFull;
+            
+            if (MustPayForSpecialForcesInBattle(g, p) || g.Version <= 163)
+            {
+                specialForcesFull = Math.Min(specialForces, effectiveResources);
+                specialForcesHalf = specialForces - specialForcesFull;
 
-            forcesFull = Math.Min(forces, effectiveResources - specialForcesFull);
-            forcesHalf = forces - forcesFull;
+                forcesFull = Math.Min(forces, effectiveResources - specialForcesFull);
+                forcesHalf = forces - forcesFull;
+            }
+            else
+            {
+                specialForcesFull = specialForces;
+                specialForcesHalf = 0;
+
+                forcesFull = Math.Min(forces, effectiveResources);
+                forcesHalf = forces - forcesFull;
+            }
         }
         else
         {
@@ -753,126 +892,4 @@ public class Battle : GameEvent
     }
 
     #endregion Validation
-
-    public static BattleOutcome DetermineBattleOutcome(Battle agg, Battle def, Territory territory, Game game)
-    {
-        var result = new BattleOutcome
-        {
-            Aggressor = agg.Player,
-            Defender = def.Player
-        };
-
-        //Determine result
-
-        agg.ActivateDynamicWeapons(def.Weapon, agg.Hero, def.Defense);
-        def.ActivateDynamicWeapons(agg.Weapon, def.Hero, agg.Defense);
-
-        var poisonToothUsed = !game.PoisonToothCancelled && (agg.HasPoisonTooth || def.HasPoisonTooth);
-        var artilleryUsed = agg.HasArtillery || def.HasArtillery;
-        var rockMelterUsed = agg.HasRockMelter || def.HasRockMelter;
-        var rockMelterUsedToKill = game.CurrentRockWasMelted != null && game.CurrentRockWasMelted.Kill;
-
-        result.AggHeroKilled = false;
-        result.AggHeroCauseOfDeath = TreacheryCardType.None;
-
-        DetermineCauseOfDeath(
-            agg, def, agg.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, game.IsProtectedByCarthagAdvantage(agg, territory),
-            ref result.AggHeroKilled, ref result.AggHeroCauseOfDeath, ref result.AggSavedByCarthag);
-
-        result.DefHeroKilled = false;
-        result.DefHeroCauseOfDeath = TreacheryCardType.None;
-        DetermineCauseOfDeath(
-            def, agg, def.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, game.IsProtectedByCarthagAdvantage(def, territory),
-            ref result.DefHeroKilled, ref result.DefHeroCauseOfDeath, ref result.DefSavedByCarthag);
-
-        var heroStrengthCountsToTotal = !artilleryUsed && !(game.Version >= 145 && rockMelterUsed && !rockMelterUsedToKill);
-
-        result.AggHeroEffectiveStrength = agg.Hero != null && heroStrengthCountsToTotal ? agg.Hero.ValueInCombatAgainst(def.Hero) : 0;
-        result.DefHeroEffectiveStrength = def.Hero != null && heroStrengthCountsToTotal ? def.Hero.ValueInCombatAgainst(agg.Hero) : 0;
-
-        if (heroStrengthCountsToTotal)
-        {
-            result.AggHeroSkillBonus = DetermineSkillBonus(game, agg, ref result.AggActivatedBonusSkill);
-            result.AggBattlePenalty = !result.DefHeroKilled ? DetermineSkillPenalty(game, def, result.Aggressor, ref result.DefActivatedPenaltySkill) : 0;
-            result.AggMessiahContribution = agg.Messiah && agg.Hero != null ? 2 : 0;
-
-            result.DefHeroSkillBonus = DetermineSkillBonus(game, def, ref result.DefActivatedBonusSkill);
-            result.DefBattlePenalty = !result.AggHeroKilled ? DetermineSkillPenalty(game, agg, result.Defender, ref result.AggActivatedPenaltySkill) : 0;
-            result.DefMessiahContribution = def.Messiah && def.Hero != null ? 2 : 0;
-        }
-
-        var aggHeroContribution = result.AggHeroKilled || (game.Version < 145 && rockMelterUsed) ? 0 : result.AggHeroEffectiveStrength + result.AggHeroSkillBonus + result.AggMessiahContribution - result.AggBattlePenalty;
-        var defHeroContribution = result.DefHeroKilled || (game.Version < 145 && rockMelterUsed) ? 0 : result.DefHeroEffectiveStrength + result.DefHeroSkillBonus + result.DefMessiahContribution - result.DefBattlePenalty;
-
-        var aggPinkKarmaContribution = agg.Initiator == Faction.Pink ? game.PinkKarmaBonus : 0;
-        var defPinkKarmaContribution = def.Initiator == Faction.Pink ? game.PinkKarmaBonus : 0;
-
-        var aggForceSupplier = DetermineForceSupplier(game, result.Aggressor);
-        result.AggUndialedForces = aggForceSupplier.AnyForcesIn(territory) - agg.TotalForces;
-
-        var defForceSupplier = DetermineForceSupplier(game, result.Defender);
-        result.DefUndialedForces = defForceSupplier.AnyForcesIn(territory) - def.TotalForces;
-
-        if (!rockMelterUsed)
-        {
-            result.AggReinforcementsContribution = agg.HasReinforcements ? 2 : 0;
-            result.DefReinforcementsContribution = def.HasReinforcements ? 2 : 0;
-
-            result.AggHomeworldContribution = agg.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
-            result.DefHomeworldContribution = def.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
-
-            result.AggTotal = agg.Dial(game, result.Defender.Faction) + aggHeroContribution + aggPinkKarmaContribution + result.AggHomeworldContribution + result.AggReinforcementsContribution;
-            result.DefTotal = def.Dial(game, result.Aggressor.Faction) + defHeroContribution + defPinkKarmaContribution + result.DefHomeworldContribution + result.DefReinforcementsContribution;
-        }
-        else
-        {
-            result.AggTotal = result.AggUndialedForces;
-            if (result.Aggressor.Faction == game.CurrentPinkOrAllyFighter) result.AggTotal += (int)Math.Ceiling(0.5f * game.GetPlayer(Faction.Pink).AnyForcesIn(territory));
-
-            result.DefTotal = result.DefUndialedForces;
-            if (result.Defender.Faction == game.CurrentPinkOrAllyFighter) result.DefTotal += (int)Math.Ceiling(0.5f * game.GetPlayer(Faction.Pink).AnyForcesIn(territory));
-        }
-
-        agg.DeactivateDynamicWeapons();
-        def.DeactivateDynamicWeapons();
-
-        var aggressorWinsTies = true;
-        if (game.HasStrongholdAdvantage(result.Defender.Faction, StrongholdAdvantage.WinTies, territory)) aggressorWinsTies = false;
-
-        if (BattleInitiated.IsAggressorByJuice(game, result.Defender.Faction) && !game.HasStrongholdAdvantage(result.Aggressor.Faction, StrongholdAdvantage.WinTies, territory)) aggressorWinsTies = false;
-
-        if (aggressorWinsTies)
-            result.Winner = result.AggTotal >= result.DefTotal ? result.Aggressor : result.Defender;
-        else
-            result.Winner = result.DefTotal >= result.AggTotal ? result.Defender : result.Aggressor;
-
-        result.WinnerBattlePlan = result.Winner == result.Aggressor ? agg : def;
-        result.Loser = result.Winner == result.Aggressor ? result.Defender : result.Aggressor;
-        result.LoserBattlePlan = result.Loser == result.Aggressor ? agg : def;
-
-        return result;
-    }
-
-    private static void DetermineCauseOfDeath(Battle playerPlan, Battle opponentPlan, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, bool isProtectedByCarthagAdvantage, ref bool heroDies, ref TreacheryCardType causeOfDeath, ref bool savedByCarthag)
-    {
-        heroDies = false;
-        causeOfDeath = TreacheryCardType.None;
-        savedByCarthag = isProtectedByCarthagAdvantage && opponentPlan.HasPoison && !playerPlan.HasAntidote;
-
-        DetermineDeathBy(theHero, TreacheryCardType.Rockmelter, rockMelterWasUsedToKill, ref heroDies, ref causeOfDeath);
-        DetermineDeathBy(theHero, TreacheryCardType.ArtilleryStrike, artilleryUsed && !playerPlan.HasShield, ref heroDies, ref causeOfDeath);
-        DetermineDeathBy(theHero, TreacheryCardType.PoisonTooth, poisonToothUsed && !playerPlan.HasNonAntidotePoisonDefense, ref heroDies, ref causeOfDeath);
-        DetermineDeathBy(theHero, TreacheryCardType.Laser, opponentPlan.HasLaser, ref heroDies, ref causeOfDeath);
-        DetermineDeathBy(theHero, TreacheryCardType.Poison, opponentPlan.HasPoison && !(playerPlan.HasAntidote || isProtectedByCarthagAdvantage), ref heroDies, ref causeOfDeath);
-        DetermineDeathBy(theHero, TreacheryCardType.Projectile, opponentPlan.HasProjectile && !playerPlan.HasProjectileDefense, ref heroDies, ref causeOfDeath);
-    }
-
-    private static void DetermineDeathBy(IHero hero, TreacheryCardType byWeapon, bool weaponHasEffect, ref bool heroIsKilled, ref TreacheryCardType causeOfDeath)
-    {
-        if (!heroIsKilled && hero != null && weaponHasEffect)
-        {
-            heroIsKilled = true;
-            causeOfDeath = byWeapon;
-        }
-    }
 }
