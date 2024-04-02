@@ -90,15 +90,20 @@ public partial class Game
                (player.Is(Faction.Brown) && player.HasLowThreshold() && OccupierOf(World.Brown) == null);
     }
 
-    public int GetRevivalLimit(Game g, Player p)
+    public int GetRevivalLimit(Game g, Player p, bool redSecretAllyUsed)
     {
+        int nrOfFreeRevivals = g.FreeRevivals(p, redSecretAllyUsed);
+        
         if (p.Is(Faction.Purple) || (p.Is(Faction.Brown) && !g.Prevented(FactionAdvantage.BrownRevival)))
-            return 100;
+            return Math.Max(100, nrOfFreeRevivals);
+        
         if (CurrentRecruitsPlayed != null)
-            return 7;
+            return Math.Max(7, nrOfFreeRevivals);
+        
         if (FactionsWithIncreasedRevivalLimits.Contains(p.Faction))
-            return 5;
-        return 3;
+            return Math.Max(5, nrOfFreeRevivals);
+        
+        return Math.Max(3, nrOfFreeRevivals);
     }
 
     private bool FreeRevivalPrevented(Faction f)

@@ -92,7 +92,7 @@ public class Revival : GameEvent, ILocationEvent
 
         if (Game.Version >= 124)
         {
-            var limit = Game.GetRevivalLimit(Game, p);
+            var limit = Game.GetRevivalLimit(Game, p, UsesRedSecretAlly);
             if (UsesRedSecretAlly) limit += 3;
             if (AmountOfForces + AmountOfSpecialForces > limit) return Message.Express("You can't revive more than your limit of ", limit);
 
@@ -102,7 +102,7 @@ public class Revival : GameEvent, ILocationEvent
         else
         {
             var emperorRevivals = ValidMaxRevivalsByRed(Game, p);
-            var limit = Game.GetRevivalLimit(Game, p);
+            var limit = Game.GetRevivalLimit(Game, p, UsesRedSecretAlly);
             if (AmountOfForces + AmountOfSpecialForces > limit + emperorRevivals) Message.Express("You can't revive that many");
         }
 
@@ -285,10 +285,10 @@ public class Revival : GameEvent, ILocationEvent
         return result;
     }
 
-    public static int ValidMaxRevivals(Game g, Player p, bool specialForces, bool usingRedCunning)
+    public static int ValidMaxRevivals(Game g, Player p, bool specialForces, bool usingRedSecretAlly)
     {
-        var increasedRevivalDueToRedCunning = usingRedCunning ? 3 : 0;
-        var normalForceRevivalLimit = g.GetRevivalLimit(g, p) + increasedRevivalDueToRedCunning;
+        var increasedRevivalDueToRedSecretAlly = usingRedSecretAlly ? 3 : 0;
+        var normalForceRevivalLimit = g.GetRevivalLimit(g, p, usingRedSecretAlly) + increasedRevivalDueToRedSecretAlly;
 
         if (g.Version >= 124)
         {
@@ -301,6 +301,7 @@ public class Revival : GameEvent, ILocationEvent
 
         if (!specialForces)
             return Math.Min(normalForceRevivalLimit + amountPaidByEmperor, p.ForcesKilled);
+        
         return Math.Min(p.Is(Faction.Grey) ? normalForceRevivalLimit + amountPaidByEmperor : g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction) ? 0 : 1, p.SpecialForcesKilled);
     }
 

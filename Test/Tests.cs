@@ -32,23 +32,15 @@ public class Tests
 
     private void SaveSpecialCases(Game g, GameEvent e)
     {
-        var blue = g.GetPlayer(Faction.Blue);
-        if (blue != null)
+        var yellow = g.GetPlayer(Faction.Yellow);
+        if (yellow != null)
         {
-            if (g.CurrentPhase == Phase.TerrorTriggeredByBlueAccompaniesOrangeShip && g.TerrorIn(g.LastShipmentOrMovement?.To.Territory).Contains(TerrorType.Assassination))
+            if (g.CurrentPhase == Phase.Resurrection && yellow.HasLowThreshold() && yellow.ForcesKilled > 4 && !g.IsPlaying(Faction.Purple))
             {
-                gameId = g.Seed;
-                terrorEventId = g.History.Count;
-                nrOfBgDeadLeaders = blue.Leaders.Count(l => !g.IsAlive(l));
+                WriteSavegameIfApplicable(g, yellow, "yellow uses low threshold");
             }
 
-            if (g.Seed == gameId && e is TerrorRevealed tr && tr.Type == TerrorType.Assassination && g.History.Count == terrorEventId + 1)
-            {
-                if (blue.Leaders.Count(l => !g.IsAlive(l)) != nrOfBgDeadLeaders + 1)
-                    WriteSavegameIfApplicable(g, e.Player, "Failed Assassination");
-                else
-                    WriteSavegameIfApplicable(g, e.Player, "Assassination");
-            }
+            
         }
     }
 
