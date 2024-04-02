@@ -39,8 +39,6 @@ public class Tests
             {
                 WriteSavegameIfApplicable(g, yellow, "yellow uses low threshold");
             }
-
-            
         }
     }
 

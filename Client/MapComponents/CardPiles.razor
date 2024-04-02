@@ -172,7 +172,7 @@
         {
             result += Skin.Current.Format("<h4>{0} cards: {1} on deck</h4>", Faction.White, h.Game.WhiteCache.Count);
 
-            if (h.Faction == Faction.White || h.Game.AssistedNotekeepingEnabled(Player))
+            if (h.Faction == Faction.White)
             {
                 result += GetCardImages(h.Game.WhiteCache);
             }
