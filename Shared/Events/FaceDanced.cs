@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace Treachery.Shared;
@@ -157,7 +155,7 @@ public class FaceDanced : PlacementEvent
             winner.ForcesToReserves(Game.CurrentBattle.Territory);
             coocupyingPlayer?.ForcesToReserves(Game.CurrentBattle.Territory);
 
-            Player.RemoveForcesFromReserves(ForcesFromReserve);
+            Player.AddForcesToReserves(-ForcesFromReserve);
             foreach (var fl in ForceLocations)
             {
                 var location = fl.Key;

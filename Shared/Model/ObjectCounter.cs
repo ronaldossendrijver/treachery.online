@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Treachery.Shared;
+﻿namespace Treachery.Shared;
 
 public class ObjectCounter<T>
 {

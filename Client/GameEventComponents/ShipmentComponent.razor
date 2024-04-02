@@ -112,6 +112,14 @@
 
         @if (Faction is not Faction.White || nofieldValue < 0 || Game.HasHighThreshold(Faction.White))
         {
+            var worldsToShipForcesFrom = Shipment.HomeworldsToShipFrom(Player, false);
+            var selectNormalForceSources = worldsToShipForcesFrom.Count() > 1;
+            
+            var worldsToShipSpecialForcesFrom = Shipment.HomeworldsToShipFrom(Player, true);
+            var selectSpecialForceSources = worldsToShipSpecialForcesFrom.Count() > 1;
+
+            var worldsToShipFrom = worldsToShipForcesFrom.Union(worldsToShipSpecialForcesFrom).ToArray();
+                    
             <div class="mt-1">
 
                 @if (ValidShipmentForces > 0)
@@ -122,7 +130,7 @@
                 {
                     shipmentForceAmount = 0;
                 }
-
+                
                 @if (ValidShipmentSpecialForces > 0 && Faction != Faction.White)
                 {
                     <SelectForcesComponent @bind-Value="shipmentSpecialForceAmount" Min="0" Max="ValidShipmentSpecialForces" Faction="Faction" Special="true" />
@@ -132,6 +140,13 @@
                     shipmentSpecialForceAmount = nofieldValue < 0 ? 0 : 1;
                 }
 
+                <div class="mt-1">Select from which worlds to ship these forces:</div>
+                @if (shipmentForceAmount + shipmentSpecialForceAmount > 0 && worldsToShipFrom.Count() > 1)
+                {
+                    <ForceSelectionComponent Game=Game Player=Player Locations="@worldsToShipFrom" 
+                                             OnChanged="@StateHasChanged" Forces="forceOrigins" AllowMultipleTerritories="true" ShowNormalForces="@selectNormalForceSources" ShowSpecialForces="@selectSpecialForceSources"/>
+                }
+                
             </div>
         }
         else
@@ -178,6 +193,7 @@
 
         @if (Player.Ally != Faction.None && Cost > 0 && Game.ResourcesYourAllyCanPay(Player) > 0)
         {
+            <div class="mt-1">Let your ally support this shipment?</div>
             <div class="mt-1">
                 <SelectResourcesFromFactionComponent @bind-Value="shipmentAllyContributionAmount" Min="0" Max="Game.ResourcesYourAllyCanPay(Player)" Faction="Player.Ally" Title=@Skin.Current.Format("{0} paid by your ally", Concept.Resource) />
             </div>
@@ -246,6 +262,7 @@
     private int cunningNofieldValue = -1;
     private int smuggledForceAmount;
     private int smuggledSpecialForceAmount;
+    private Dictionary<Location, Battalion> forceOrigins = new();
 
     protected override Shipment ConfirmedResult
     {
@@ -267,7 +284,8 @@
                 Passed = false,
                 KarmaCard = karmaCard,
                 AllyContributionAmount = shipmentAllyContributionAmount,
-                UseWhiteSecretAlly = shipmentType == SHIPMENT_SECRETALLY
+                UseWhiteSecretAlly = shipmentType == SHIPMENT_SECRETALLY,
+                ForceLocations = forceOrigins
             };
         }
     }

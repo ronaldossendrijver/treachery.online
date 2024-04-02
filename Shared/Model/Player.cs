@@ -8,10 +8,8 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace Treachery.Shared;
+namespace Treachery.Shared.Model;
 
 public partial class Player : ICloneable
 {
@@ -62,35 +60,35 @@ public partial class Player : ICloneable
 
     public int TransferrableResources { get; set; }
 
-    public List<TreacheryCard> TreacheryCards { get; set; } = new();
+    public List<TreacheryCard> TreacheryCards { get; set; } = [];
 
-    public List<TreacheryCard> KnownCards { get; set; } = new();
+    public List<TreacheryCard> KnownCards { get; } = [];
 
-    public List<IHero> Traitors { get; set; } = new();
+    public List<IHero> Traitors { get; set; } = [];
 
-    public List<IHero> RevealedTraitors { get; set; } = new();
+    public List<IHero> RevealedTraitors { get; set; } = [];
 
-    public List<IHero> ToldTraitors { get; set; } = new();
+    public List<IHero> ToldTraitors { get; set; } = [];
 
-    public List<IHero> ToldNonTraitors { get; set; } = new();
+    public List<IHero> ToldNonTraitors { get; } = [];
 
-    public List<IHero> KnownNonTraitors { get; set; } = new();
+    public List<IHero> KnownNonTraitors { get; } = [];
 
-    public List<IHero> DiscardedTraitors { get; set; } = new();
+    public List<IHero> DiscardedTraitors { get; set; } = [];
 
-    public List<IHero> FaceDancers { get; set; } = new();
+    public List<IHero> FaceDancers { get; set; } = [];
 
-    public List<IHero> RevealedDancers { get; set; } = new();
+    public List<IHero> RevealedDancers { get; set; } = [];
 
-    public List<IHero> ToldFacedancers { get; set; } = new();
+    public List<IHero> ToldFacedancers { get; set; } = [];
 
-    public List<IHero> ToldNonFacedancers { get; set; } = new();
+    public List<IHero> ToldNonFacedancers { get; set; } = [];
 
-    public List<Leader> Leaders { get; set; } = new();
+    public List<Leader> Leaders { get; set; } = [];
 
-    public int ForcesInReserve => Homeworlds.Sum(w => ForcesIn(w));
+    public int ForcesInReserve => Homeworlds.Sum(ForcesIn);
 
-    public int SpecialForcesInReserve => Homeworlds.Sum(w => SpecialForcesIn(w));
+    public int SpecialForcesInReserve => Homeworlds.Sum(SpecialForcesIn);
 
     public int AnyForcesInReserves => ForcesInReserve + SpecialForcesInReserve;
 
@@ -98,9 +96,7 @@ public partial class Player : ICloneable
 
     public Dictionary<Location, Battalion> ForcesOnPlanet => ForcesInLocations.Where(kvp => kvp.Key is not Homeworld).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-    public IEnumerable<Battalion> BattalionsOnPlanet => ForcesInLocations.Where(kvp => kvp.Key is not Homeworld).Select(kvp => kvp.Value);
-
-    public List<Ambassador> Ambassadors { get; set; } = new();
+    public List<Ambassador> Ambassadors { get; set; } = [];
 
     public Faction PredictedFaction { get; set; }
 
@@ -110,21 +106,21 @@ public partial class Player : ICloneable
 
     public int SpecialForcesKilled { get; set; }
 
-    public int TotalForcesKilledInBattle { get; set; }
+    public int TotalForcesKilledInBattle { get; private set; }
 
     public Faction Ally { get; set; }
 
     public bool SpecialKarmaPowerUsed { get; set; }
 
-    public List<TechToken> TechTokens { get; private set; } = new();
+    public List<TechToken> TechTokens { get; private set; } = [];
 
     public bool NoFieldIsActive => Faction == Faction.White && ForcesInLocations.Any(locationWithForces => locationWithForces.Value.AmountOfSpecialForces > 0);
 
     public Leader MostRecentlyRevivedLeader { get; set; }
 
-    public List<LeaderSkill> SkillsToChooseFrom { get; set; } = new();
+    public List<LeaderSkill> SkillsToChooseFrom { get; } = [];
 
-    public List<Homeworld> Homeworlds { get; set; } = new();
+    public List<Homeworld> Homeworlds { get; } = [];
 
     public Faction Nexus { get; set; } = Faction.None;
 
@@ -164,7 +160,7 @@ public partial class Player : ICloneable
     {
         if (fromReserves)
         {
-            var sourceWorld = Homeworlds.FirstOrDefault(w => w.IsHomeOfNormalForces);
+            var sourceWorld = Homeworlds.FirstOrDefault(w => ForcesIn(w) >= nrOfForces);
             if (sourceWorld != null) MoveForces(sourceWorld, location, nrOfForces);
         }
         else
@@ -172,12 +168,12 @@ public partial class Player : ICloneable
             ChangeForces(location, nrOfForces);
         }
     }
-
+    
     public void AddSpecialForces(Location location, int nrOfForces, bool fromReserves)
     {
         if (fromReserves)
         {
-            var sourceWorld = Homeworlds.FirstOrDefault(w => w.IsHomeOfSpecialForces);
+            var sourceWorld = Homeworlds.FirstOrDefault(w => SpecialForcesIn(w) >= nrOfForces);
             if (sourceWorld != null) MoveSpecialForces(sourceWorld, location, nrOfForces);
         }
         else
@@ -229,16 +225,6 @@ public partial class Player : ICloneable
     public void RemoveSpecialForces(Location location, int nrOfForces)
     {
         ChangeSpecialForces(location, -nrOfForces);
-    }
-
-    public void RemoveForcesFromReserves(int nrOfForces)
-    {
-        AddForcesToReserves(-nrOfForces);
-    }
-
-    public void RemoveSpecialForcesFromReserves(int nrOfForces)
-    {
-        AddSpecialForcesToReserves(-nrOfForces);
     }
 
     public int ForcesIn(Location location)
@@ -418,21 +404,43 @@ public partial class Player : ICloneable
         AddSpecialForcesToReserves(amount);
     }
 
-    public void ShipForces(Location l, int amount)
+    public void ShipForces(Location to, int amount)
     {
-        AddForces(l, amount, true);
+        AddForces(to, amount, true);
     }
 
-    public void ShipSpecialForces(Location l, int amount)
+    public void ShipForces(Location to, Homeworld from, int amount)
     {
-        if (Faction != Faction.White) RemoveSpecialForcesFromReserves(amount);
-
-        ChangeSpecialForces(l, amount);
+        MoveForces(from, to, amount);
+    }
+    
+    public void ShipSpecialForces(Location to, int amount)
+    {
+        if (Faction is Faction.White)
+        {
+            ChangeSpecialForces(to, amount);
+        }
+        else
+        {
+            AddSpecialForces(to, amount, true);
+        }
+    }
+    
+    public void ShipSpecialForces(Location to, Homeworld from, int amount)
+    {
+        if (Faction is Faction.White)
+        {
+            ChangeSpecialForces(to, amount);
+        }
+        else
+        {
+            MoveSpecialForces(from, to, amount);
+        }
     }
 
     public void ShipAdvisors(Location l, int amount)
     {
-        RemoveForcesFromReserves(amount);
+        AddForcesToReserves(-amount);
         ChangeSpecialForces(l, amount);
     }
 

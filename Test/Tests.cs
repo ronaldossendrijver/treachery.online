@@ -19,6 +19,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Treachery.Client;
 using Treachery.Shared;
+using Treachery.Shared.Model;
 
 namespace Treachery.Test;
 

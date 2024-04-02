@@ -8,8 +8,6 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Treachery.Shared;
 
@@ -192,13 +190,13 @@ public partial class Game
         if (plan.HasReinforcements)
         {
             var forcesToRemove = Math.Min(3, plan.Player.ForcesInReserve);
-            plan.Player.RemoveForcesFromReserves(forcesToRemove);
+            plan.Player.AddForcesToReserves(-forcesToRemove);
             plan.Player.ForcesKilled += forcesToRemove;
 
             var specialForcesToRemove = 3 - forcesToRemove;
             if (specialForcesToRemove > 0)
             {
-                plan.Player.RemoveSpecialForcesFromReserves(specialForcesToRemove);
+                plan.Player.AddSpecialForcesToReserves(-specialForcesToRemove);
                 plan.Player.SpecialForcesKilled += specialForcesToRemove;
             }
 

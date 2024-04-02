@@ -8,8 +8,6 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace Treachery.Shared;
@@ -110,6 +108,15 @@ public class Shipment : PassableGameEvent, ILocationEvent
     public int SpecialForcesAddedToLocation => UseWhiteSecretAlly ? 0 : SpecialForceAmount + SmuggledSpecialAmount;
 
     public bool UseWhiteSecretAlly { get; set; }
+    
+    public string _forceLocations = "";
+
+    [JsonIgnore]
+    public Dictionary<Location, Battalion> ForceLocations
+    {
+        get => ParseForceLocations(Game, Player.Faction, _forceLocations);
+        set => _forceLocations = ForceLocationsString(Game, value);
+    }
 
     public int DetermineOrangeProfits(Game game)
     {
@@ -124,6 +131,28 @@ public class Shipment : PassableGameEvent, ILocationEvent
         if (g.Version <= 106)
             return DetermineCost(Game, Player, ForceAmount + SpecialForceAmount, To, IsUsingKarma, IsBackToReserves, IsNoField, false) - AllyContributionAmount;
         return DetermineCost(Game, Player, this) - AllyContributionAmount;
+    }
+    
+    private static string ForceLocationsString(Game g, Dictionary<Location, Battalion> forceLocations)
+    {
+        return string.Join(',', forceLocations.Select(x => g.Map.LocationLookup.GetId(x.Key) + ":" + x.Value.AmountOfForces + "|" + x.Value.AmountOfSpecialForces));
+    }
+
+    private static Dictionary<Location, Battalion> ParseForceLocations(Game g, Faction f, string forceLocations)
+    {
+        var result = new Dictionary<Location, Battalion>();
+        if (forceLocations != null && forceLocations.Length > 0)
+            foreach (var locationAmountPair in forceLocations.Split(','))
+            {
+                var locationAndAmounts = locationAmountPair.Split(':');
+                var location = g.Map.LocationLookup.Find(Convert.ToInt32(locationAndAmounts[0]));
+                var amounts = locationAndAmounts[1].Split('|');
+                var amountOfNormalForces = Convert.ToInt32(amounts[0]);
+                var amountOfNormalSpecialForces = Convert.ToInt32(amounts[1]);
+                result.Add(location, new Battalion(f, amountOfNormalForces, amountOfNormalSpecialForces, location));
+            }
+
+        return result;
     }
 
     #endregion Properties
@@ -186,8 +215,20 @@ public class Shipment : PassableGameEvent, ILocationEvent
         if (UseWhiteSecretAlly && !MayUseWhiteSecretAllly(Game, Player)) return Message.Express(Faction.White, " are not your secret ally");
         if (UseWhiteSecretAlly && ForceAmount + SpecialForceAmount > 5) return Message.Express("You can't ship that much using ", Faction.White, " as your secret ally");
 
+        if (Game.Version >= 164 && HomeworldsToShipFrom(Player, false).Count() > 1 && ForceLocations.Sum(fl => fl.Value.AmountOfForces) != ForcesAddedToLocation) 
+            return Message.Express("Please specify where to ship your ", p.Force, " from");
+
+        if (Game.Version >= 164 && HomeworldsToShipFrom(Player, true).Count() > 1 && ForceLocations.Sum(fl => fl.Value.AmountOfSpecialForces) != SpecialForcesAddedToLocation) 
+            return Message.Express("Please specify where to ship your ", p.SpecialForce, " from");
+
         return null;
     }
+
+    public static IEnumerable<Homeworld> HomeworldsToShipFrom(Player p, bool special)
+    {
+        return special ? p.Homeworlds.Where(hw => p.SpecialForcesIn(hw) > 0) : p.Homeworlds.Where(hw => p.ForcesIn(hw) > 0);
+    }
+        
 
     private static List<Location> YellowSpawnLocations(Game g, Player p)
     {
@@ -530,8 +571,33 @@ public class Shipment : PassableGameEvent, ILocationEvent
     {
         Game.BlueMayAccompany = (forceAmount > 0 || specialForceAmount > 0) && initiator.Faction != Faction.Yellow && initiator.Faction != Faction.Blue;
 
-        initiator.ShipForces(to, forceAmount);
-        initiator.ShipSpecialForces(to, specialForceAmount);
+        if (HomeworldsToShipFrom(Player, false).Count() > 1 && ForceLocations.Any())
+        {
+            foreach (var fl in ForceLocations.Where(x => x.Value.AmountOfForces > 0))
+            {
+                if (fl.Key is Homeworld hw)
+                    initiator.ShipForces(to, hw, fl.Value.AmountOfForces);
+            }
+        }
+        else
+        {
+            initiator.ShipForces(to, forceAmount);
+        }
+    
+        if (HomeworldsToShipFrom(Player, true).Count() > 1 && ForceLocations.Any())
+        {
+            foreach (var fl in ForceLocations.Where(x => x.Value.AmountOfSpecialForces > 0))
+            {
+                if (fl.Key is Homeworld hw)
+                {
+                    initiator.ShipSpecialForces(to, hw, fl.Value.AmountOfSpecialForces);
+                }
+            }
+        }
+        else
+        {
+            initiator.ShipSpecialForces(to, specialForceAmount);
+        }
 
         if (initiator.Is(Faction.Yellow) && Game.IsInStorm(to))
         {

@@ -21,12 +21,12 @@
 
                 @if (MaySelectFromStorm || !Game.IsInStorm(l)) {
 
-                    if (Max(l) > 0) 
+                    if (Max(l) > 0 && ShowNormalForces) 
                     {
                         <td class="ps-0 bg-transparent"><SelectForcesComponent Value=@Forces[l].AmountOfForces OnDown="e => ChangeForceAmount(l, -1, false)" OnUp="e => ChangeForceAmount(l, 1, false)" Min="Min" Max="Max(l)" Faction="Player.Faction" Special="false" /></td>
                     }
 
-                    if (MaxSpecial(l) > 0) 
+                    if (MaxSpecial(l) > 0 && ShowSpecialForces) 
                     {
                         <td class="ps-0 bg-transparent"><SelectForcesComponent Value=@Forces[l].AmountOfSpecialForces OnDown="e => ChangeForceAmount(l, -1, true)" OnUp="e => ChangeForceAmount(l, 1, true)" Min="Min" Max="MaxSpecial(l)" Faction="Player.Faction" Special="true" /></td>
                     }
@@ -67,9 +67,15 @@
 
     [Parameter]
     public int FixedMaxForces { get; set; } = -1;
+    
+    [Parameter]
+    public bool ShowNormalForces { get; set; } = true;
 
     [Parameter]
     public int FixedMaxSpecialForces { get; set; } = -1;
+    
+    [Parameter]
+    public bool ShowSpecialForces { get; set; } = true;
 
     [Parameter]
     public EventCallback OnChanged { get; set; }

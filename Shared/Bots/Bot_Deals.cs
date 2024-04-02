@@ -8,9 +8,8 @@
  */
 
 using System;
-using System.Linq;
 
-namespace Treachery.Shared;
+namespace Treachery.Shared.Model;
 
 public partial class Player
 {

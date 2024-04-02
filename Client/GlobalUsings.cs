@@ -8,4 +8,5 @@
  */
 
 global using Treachery.Shared;
+global using Treachery.Shared.Model;
 global using Treachery.Client.GenericComponents;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace Treachery.Shared;
 #pragma warning disable IDE1006 // Naming Styles

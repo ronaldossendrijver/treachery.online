@@ -16,7 +16,7 @@
             style="position: absolute; left:0px; top:0px; height: 100%; width: 100%;"
             pointer-events="none">
 
-        @foreach (var move in h.Game.RecentMoves)
+        @foreach (var move in h.Game.RecentMoves.Where(m => m.To is not Homeworld))
         {
             foreach (var origin in move.ForceLocations.Keys)
             {
