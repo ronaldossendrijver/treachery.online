@@ -33,12 +33,9 @@ public class Tests
     private void SaveSpecialCases(Game g, GameEvent e)
     {
         var yellow = g.GetPlayer(Faction.Yellow);
-        if (yellow != null)
+        if (g.CurrentPhase is Phase.BeginningOfCollection && g.OccupierOf(World.Yellow) != null && g.ResourcesOnPlanet.Any(kvp => kvp.Value > 1 && yellow.AnyForcesIn(kvp.Key) > 0))
         {
-            if (g.CurrentPhase == Phase.Resurrection && yellow.HasLowThreshold() && yellow.ForcesKilled > 4 && !g.IsPlaying(Faction.Purple))
-            {
-                WriteSavegameIfApplicable(g, yellow, "yellow uses low threshold");
-            }
+            WriteSavegameIfApplicable(g, yellow, "yellow collects while occupied");
         }
     }
 
@@ -375,12 +372,9 @@ public class Tests
     {
         BattleOutcome previousBattleOutcome = null;
 
-        var game = new Game
-        {
-            BotInfologging = infoLogging
-        };
-
+        var game = new Game();
         var timer = new TimedTest(game, timeout);
+        
         timer.Elapsed += HandleElapsedTestTime;
         timedTests.Add(timer);
 

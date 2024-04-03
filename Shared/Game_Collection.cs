@@ -57,20 +57,23 @@ public partial class Game
         if (faction == Faction.Black && !from.IsStronghold && !from.IsProtectedFromWorm) ResourcesCollectedByBlackFromDesertOrHomeworld += amount;
     }
 
-    internal void ModifyIncomeBasedOnThresholdOrOccupation(Player from, ref int receivedAmount)
+    internal void ModifyIncomeBecauseOfLowThresholdOrOccupation(Player from, ref int receivedAmount)
     {
         if (receivedAmount > 1 && Applicable(Rule.Homeworlds))
         {
             var homeworld = from.Homeworlds.First();
             var occupier = OccupierOf(homeworld.World);
 
-            var amountToOccupier = (!from.Is(Faction.White) || occupier != null) && from.HasLowThreshold() ? (int)(0.5f * receivedAmount) : 0;
-            receivedAmount -= amountToOccupier;
+            var amountLost = Version >= 164 ?
+                (occupier != null || from.Is(Faction.Red) || from.Is(Faction.Orange)) && from.HasLowThreshold() ? (int)(0.5f * receivedAmount) : 0 :
+                (!from.Is(Faction.White) || occupier != null) && from.HasLowThreshold() ? (int)(0.5f * receivedAmount) : 0;
+            
+            receivedAmount -= amountLost;
 
             if (occupier != null)
             {
-                occupier.Resources += amountToOccupier;
-                Log(Payment.Of(amountToOccupier), " received by ", from.Faction, " goes to ", occupier.Faction);
+                occupier.Resources += amountLost;
+                Log(Payment.Of(amountLost), " received by ", from.Faction, " goes to ", occupier.Faction, " due to occupation");
             }
         }
     }
@@ -171,7 +174,7 @@ public partial class Game
         if (yellow != null)
         {
             var receivedAmountByYellowAfterTakingIntoAccountOccupation = ResourcesCollectedByYellow;
-            ModifyIncomeBasedOnThresholdOrOccupation(yellow, ref receivedAmountByYellowAfterTakingIntoAccountOccupation);
+            ModifyIncomeBecauseOfLowThresholdOrOccupation(yellow, ref receivedAmountByYellowAfterTakingIntoAccountOccupation);
 
             if (Version >= 162) yellow.Resources -= ResourcesCollectedByYellow - receivedAmountByYellowAfterTakingIntoAccountOccupation;
         }

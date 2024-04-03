@@ -13,6 +13,8 @@ namespace Treachery.Shared.Model;
 
 public partial class Player
 {
+    public const bool BotInfologging = true;
+    
     #region PublicInterface
 
     public BotParameters Param { get; set; }
@@ -243,7 +245,7 @@ public partial class Player
 
     protected void LogInfo(string msg, params object[] pars)
     {
-        if (Game.BotInfologging)
+        if (BotInfologging)
         {
             if (Message.DefaultDescriber != null)
                 Console.WriteLine(Name + ": " + Message.DefaultDescriber.Format(msg, pars));
@@ -254,7 +256,7 @@ public partial class Player
 
     protected void LogInfo(Message message)
     {
-        if (Game.BotInfologging && message != null)
+        if (BotInfologging && message != null)
         {
             if (Message.DefaultDescriber != null)
                 Console.WriteLine(Name + ": " + message.ToString(Message.DefaultDescriber));

@@ -348,6 +348,8 @@ public class GameStatus
 
             Phase.TerrorTriggeredByBlueAccompaniesNonOrangeShip or
                 Phase.TerrorTriggeredByBlueAccompaniesOrangeShip or
+                Phase.TerrorTriggeredByYellowRidingMonsterA or
+                Phase.TerrorTriggeredByYellowRidingMonsterB or
                 Phase.TerrorTriggeredByOrangeShip or
                 Phase.TerrorTriggeredByNonOrangeShip or
                 Phase.TerrorTriggeredByNonOrangeShip or
@@ -367,6 +369,8 @@ public class GameStatus
 
             Phase.AmbassadorTriggeredByBlueAccompaniesNonOrangeShip or
                 Phase.AmbassadorTriggeredByBlueAccompaniesOrangeShip or
+                Phase.AmbassadorTriggeredByYellowRidingMonsterA or
+                Phase.AmbassadorTriggeredByYellowRidingMonsterB or
                 Phase.AmbassadorTriggeredByOrangeShip or
                 Phase.AmbassadorTriggeredByNonOrangeShip or
                 Phase.AmbassadorTriggeredByNonOrangeShip or
@@ -386,6 +390,8 @@ public class GameStatus
 
             Phase.BlueIntrudedByNonOrangeShip or
                 Phase.BlueIntrudedByOrangeShip or
+                Phase.BlueIntrudedByYellowRidingMonsterA or
+                Phase.BlueIntrudedByYellowRidingMonsterB or
                 Phase.BlueIntrudedByNonOrangeMove or
                 Phase.BlueIntrudedByOrangeMove or
                 Phase.BlueIntrudedByCaravan or 

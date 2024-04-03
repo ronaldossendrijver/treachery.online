@@ -212,7 +212,7 @@ public partial class Game
             else
             {
                 receiverProfit = totalAmount;
-                ModifyIncomeBasedOnThresholdOrOccupation(receiver, ref receiverProfit);
+                ModifyIncomeBecauseOfLowThresholdOrOccupation(receiver, ref receiverProfit);
                 receiver.Resources += receiverProfit;
                 receiver.ResourcesAfterBidding += bidRedContributionAmount;
                 message = MessagePart.Express(" → ", receiver.Faction, " get ", Payment.Of(receiverProfit),

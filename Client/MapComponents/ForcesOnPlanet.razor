@@ -96,7 +96,7 @@
                 (Player.Faction == Faction.Yellow && discovery.TokenType == DiscoveryTokenType.Yellow) || (Player.Faction == Faction.Orange && discovery.TokenType == DiscoveryTokenType.Orange) ?
                 $"{Skin.Current.Describe(discovery.Token)} - {Skin.Current.GetDiscoveryTokenDescription(discovery.Token)}" : Skin.Current.Describe(discovery.TokenType);
 
-            <MapImage X=@(pos.X - 3 * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 3 * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS)
+            <MapImage X=@(pos.X - 1.25f * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 1.25f * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2.5f * Skin.Current.FORCETOKEN_RADIUS)
                 Src=@Skin.Current.GetImageURL(discovery.TokenType) Popover=@popoverToShow PopoverAsTooltip=true
                 Opacity="0.9f" ShadowX=1 ShadowY=1 />
         }

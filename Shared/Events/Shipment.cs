@@ -537,7 +537,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
             {
                 if (!Game.Prevented(FactionAdvantage.OrangeReceiveShipment))
                 {
-                    Game.ModifyIncomeBasedOnThresholdOrOccupation(orange, ref receiverProfit);
+                    Game.ModifyIncomeBecauseOfLowThresholdOrOccupation(orange, ref receiverProfit);
                     orange.Resources += receiverProfit;
 
                     if (receiverProfit > 0)

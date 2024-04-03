@@ -19,8 +19,7 @@ public partial class Game
     public const int LatestVersion = 164;
 
     public const int ExpansionLevel = 3;
-    public bool BotInfologging = false;
-
+    
     #endregion Settings
 
     #region GameState
