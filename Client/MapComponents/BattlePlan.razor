@@ -1,6 +1,7 @@
 ﻿<!--
 * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
+@using System.Security.Cryptography
 @inherits MapComponent
 
 @if (showPlan) {
@@ -49,7 +50,7 @@
         {
             var homeworld = Game.CurrentBattle.Territory.Locations.First() as Homeworld;
 
-            <MapImage X=@(dialBonusX - Skin.Current.RESOURCETOKEN_RADIUS) Y=@(forceY - Skin.Current.RESOURCETOKEN_RADIUS)
+            <MapImage X=@(dialBonusX - Skin.Current.PlayerTokenRadius) Y=@(forceY - Skin.Current.PlayerTokenRadius)
                    Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                    Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" />
 
@@ -58,7 +59,7 @@
             <MapText ToShow=@homeworldBonusText
                     X=@dialBonusX Y=@forceY
                     Popover="Homeworld Bonus"
-                    Font="@Skin.Current.WHEEL_FONT" FontColor="green"
+                    Font="@Skin.Current.CARDPILE_FONT" FontColor="green"
                     BorderWidth="Skin.Current.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Skin.Current.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Skin.Current.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
                     Align="@TextAlignment.Center" />
 
@@ -159,8 +160,10 @@
                 var penalty = Battle.DetermineSkillPenalty(Game, OpponentPlan, Plan.Player, ref usedSkill);
                 if (penalty != 0)
                 {
+                    var tip = $"{Skin.Current.Describe(usedSkill)} penalty";
                     <MapText ToShow="@("-" + penalty)"
-                                X="@(X + Skin.Current.BattleScreenHeroX + 0.9f * Skin.Current.BattleWheelHeroWidth)" Y="@(Y + Skin.Current.BattleScreenHeroY + 0.75f * Skin.Current.BattleWheelHeroWidth)"
+                             X="@(X + Skin.Current.BattleScreenHeroX + 0.9f * Skin.Current.BattleWheelHeroWidth)" Y="@(Y + Skin.Current.BattleScreenHeroY + 0.75f * Skin.Current.BattleWheelHeroWidth)"
+                             Popover="@tip"
                                 Font="@Skin.Current.CARDPILE_FONT" FontColor="red"
                                 BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
                                 Align="@TextAlignment.Right" />
@@ -253,7 +256,7 @@ else
 <MapImage X="@(X + Skin.Current.BattleWheelForcesX - 0.5f * Skin.Current.FORCETOKEN_RADIUS)" Y="@(Y + 0.25f * Skin.Current.FORCETOKEN_RADIUS)"
     Diameter="@Skin.Current.FORCETOKEN_RADIUS"
     Src="@(showPlan ? Skin.Current.EyeSlash_URL : Skin.Current.Eye_URL)"
-    OnClick="OnShowPlanClick"
+    OnClick="@OnShowPlanClick"
     ShadowColor="black" ShadowX="1" ShadowY="1" ShadowBlur="0"
     Popover="@(showPlan ? "Hide Wheel" : "Show Wheel")" PopoverAsTooltip="true"/>
 
@@ -261,23 +264,17 @@ else
 
     private bool showPlan = true;
 
-    [Parameter]
-    public Battle Plan { get; set; }
+    [Parameter] public Battle Plan { get; set; }
 
-    [Parameter]
-    public Battle OpponentPlan { get; set; }
+    [Parameter] public Battle OpponentPlan { get; set; }
 
-    [Parameter]
-    public bool TraitorCalled { get; set; }
+    [Parameter] public bool TraitorCalled { get; set; }
 
-    [Parameter]
-    public bool Facedanced { get; set; }
+    [Parameter] public bool Facedanced { get; set; }
 
-    [Parameter]
-    public bool IsAggressor { get; set; }
+    [Parameter] public bool IsAggressor { get; set; }
 
-    [Parameter]
-    public bool ShowEntirePlan { get; set; } = false;
+    [Parameter] public bool ShowEntirePlan { get; set; } = false;
 
     private static bool PassiveSkillIsRelevantForBattlePlan(LeaderSkill skill)
     {
