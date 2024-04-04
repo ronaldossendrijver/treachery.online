@@ -547,9 +547,11 @@ public partial class Game
         if (bg != null)
         {
             var pink = GetPlayer(Faction.Pink);
-            var territoriesWhereAdvisorsAreInSinkOrAloneOrWithPink = Map.Territories(true).Where(t => bg.SpecialForcesIn(t) > 0 &&
-                ((Version >= 160 && t == Map.PolarSink.Territory) || !Players.Any(p => p.Faction != Faction.Blue && p.AnyForcesIn(t) > 0) || (bg.Ally == Faction.Pink && pink.AnyForcesIn(t) > 0)));
 
+            var territoriesWhereAdvisorsAreInSinkOrAloneOrWithPink = Map.Territories(true).Where(t => bg.SpecialForcesIn(t) > 0 &&
+                (Version >= 160 && t == Map.PolarSink.Territory || 
+                 !Players.Any(p => p.Faction != Faction.Blue && p.AnyForcesIn(t) > 0)));
+            
             foreach (var t in territoriesWhereAdvisorsAreInSinkOrAloneOrWithPink)
             {
                 bg.FlipForces(t, false);

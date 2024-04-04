@@ -487,17 +487,17 @@ public partial class Player : ICloneable
 
     public bool Occupies(Location l)
     {
-        return OccupyingForces(l) > 0;
+        return OccupyingForces(l) > 0 || Game.Version >= 164 && Ally is Faction.Pink && AnyForcesIn(l) > 0 && AlliedPlayer.OccupyingForces(l) > 0;
     }
 
     public bool Occupies(Territory t)
     {
-        return t.Locations.Any(l => Occupies(l));
+        return t.Locations.Any(Occupies);
     }
 
-    public IEnumerable<Location> OccupiedLocations => Game.Map.Locations(true).Where(l => Occupies(l));
+    public IEnumerable<Location> OccupiedLocations => Game.Map.Locations(true).Where(Occupies);
 
-    public IEnumerable<Territory> OccupiedTerritories => Game.Map.Territories(true).Where(t => Occupies(t));
+    public IEnumerable<Territory> OccupiedTerritories => Game.Map.Territories(true).Where(Occupies);
 
     public bool Controls(Game g, Location l, bool contestedStongholdsCountAsControlled)
     {

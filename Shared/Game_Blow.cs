@@ -383,12 +383,21 @@ public partial class Game
             EnterNexusCardPhase();
         else
             EndBlowPhase();
+
+        if (Version >= 164)
+        {
+            NexusHasOccured = false;
+        }
     }
 
 
     private void EnterNexusCardPhase()
     {
-        NexusHasOccured = false;
+        if (Version < 164)
+        {
+            NexusHasOccured = false;
+        }
+        
         FactionsThatMayDrawNexusCard = Players.Where(p => !p.HasAlly).Select(p => p.Faction).ToList();
         FactionsThatDrewNexusCard.Clear();
         Enter(Phase.NexusCards);

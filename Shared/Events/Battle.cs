@@ -440,7 +440,8 @@ public class Battle : GameEvent
             return 1;
         if (player == Faction.Grey && g.Prevented(FactionAdvantage.GreySpecialForceBonus))
             return 1;
-        if (player == Faction.Blue) return 0;
+        if (player == Faction.Blue) 
+            return 1;
 
         return 2;
     }

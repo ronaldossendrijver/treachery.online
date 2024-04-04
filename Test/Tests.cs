@@ -32,10 +32,10 @@ public class Tests
 
     private void SaveSpecialCases(Game g, GameEvent e)
     {
-        var yellow = g.GetPlayer(Faction.Yellow);
-        if (g.CurrentPhase is Phase.BeginningOfCollection && g.OccupierOf(World.Yellow) != null && g.ResourcesOnPlanet.Any(kvp => kvp.Value > 1 && yellow.AnyForcesIn(kvp.Key) > 0))
+        var blue = g.GetPlayer(Faction.Blue);
+        if (blue != null && g.Map.Shrine != null && blue.Has(TreacheryCardType.Useless) && blue.ForcesIn(g.Map.Shrine) > 0)
         {
-            WriteSavegameIfApplicable(g, yellow, "yellow collects while occupied");
+            WriteSavegameIfApplicable(g, blue, "has forces in Shrine");
         }
     }
 
@@ -315,7 +315,7 @@ public class Tests
         _cardcount = new ObjectCounter<int>();
         _leadercount = new ObjectCounter<int>();
 
-        var nrOfGames = 200;
+        var nrOfGames = 500;
         var nrOfTurns = 12;
         var nrOfPlayers = 7;
 

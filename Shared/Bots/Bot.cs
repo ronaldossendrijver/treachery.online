@@ -13,7 +13,7 @@ namespace Treachery.Shared.Model;
 
 public partial class Player
 {
-    public const bool BotInfologging = true;
+    public const bool BotInfologging = false;
     
     #region PublicInterface
 

@@ -214,11 +214,18 @@ public class ClairVoyancePlayed : GameEvent
     {
         get
         {
-            if (Player.Has(TreacheryCardType.Clairvoyance))
-                return Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Clairvoyance);
-            if (Player.Occupies(Game.Map.Cistern)) return Karma.ValidKarmaCards(Game, Player).FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
+            TreacheryCard result = null;
 
-            return null;
+            if (Player.Occupies(Game.Map.Shrine))
+                result = Karma.ValidKarmaCards(Game, Player).FirstOrDefault(c => c.Type == TreacheryCardType.Useless);
+            
+            if (result == null)
+                result = Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Clairvoyance);
+            
+            if (result == null && Player.Occupies(Game.Map.Shrine))
+                result = Karma.ValidKarmaCards(Game, Player).FirstOrDefault();
+
+            return result;
         }
     }
 
