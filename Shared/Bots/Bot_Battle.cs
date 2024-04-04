@@ -1156,14 +1156,30 @@ public partial class Player
 
     protected Retreat DetermineRetreat()
     {
-        var forcesToRetreat = Retreat.MaxForces(Game, this);
-        var specialForcesToRetreat = Retreat.MaxSpecialForces(Game, this);
+        int forcesToRetreat = Retreat.MaxForces(Game, this);
+        int specialForcesToRetreat = Retreat.MaxSpecialForces(Game, this);
+        int maxForces = Retreat.MaxTotalForces(Game, this);
+        while (forcesToRetreat + specialForcesToRetreat > maxForces)
+        {
+            if (forcesToRetreat > 0)
+            {
+                forcesToRetreat--;
+            }
+            else
+            {
+                specialForcesToRetreat--;
+            }
+        }
+            
         var to = Retreat.ValidTargets(Game, this).Where(l => ResourcesIn(l) > 0).HighestOrDefault(l => ResourcesIn(l));
 
         if (to == null) to = Retreat.ValidTargets(Game, this).FirstOrDefault(l => l.IsProtectedFromStorm);
         if (to == null) to = Retreat.ValidTargets(Game, this).FirstOrDefault();
 
-        if (forcesToRetreat > 0 || specialForcesToRetreat > 0) return new Retreat(Game, Faction) { Location = to, Forces = forcesToRetreat, SpecialForces = specialForcesToRetreat };
+        if (forcesToRetreat > 0 || specialForcesToRetreat > 0)
+        {
+            return new Retreat(Game, Faction) { Location = to, Forces = forcesToRetreat, SpecialForces = specialForcesToRetreat };
+        }
 
         return null;
     }

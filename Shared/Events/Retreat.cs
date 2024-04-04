@@ -50,7 +50,7 @@ public class Retreat : GameEvent
         if (!ValidTargets(Game, Player).Contains(Location)) return Message.Express("Invalid location");
         if (Forces > MaxForces(Game, Player)) return Message.Express("You selected too many ", Player.Force);
         if (SpecialForces > MaxSpecialForces(Game, Player)) return Message.Express("You selected too many ", Player.SpecialForce);
-
+        if (Game.Version >= 164 && Forces + SpecialForces > MaxTotalForces(Game, Player)) return Message.Express("You selected too many forces");
         return null;
     }
 
@@ -58,6 +58,13 @@ public class Retreat : GameEvent
     {
         var battalions = p.BattalionsIn(g.CurrentBattle.Territory);
         return PlacementEvent.ValidTargets(g, p, battalions).Where(t => !g.AnyForcesIn(t.Territory) && !t.IsStronghold);
+    }
+    
+    public static int MaxTotalForces(Game g, Player p)
+    {
+        var plan = g.CurrentBattle.PlanOf(p);
+        var opponentPlan = g.CurrentBattle.PlanOfOpponent(p);
+        return plan.Hero.ValueInCombatAgainst(opponentPlan.Hero);
     }
 
     public static int MaxForces(Game g, Player p)
