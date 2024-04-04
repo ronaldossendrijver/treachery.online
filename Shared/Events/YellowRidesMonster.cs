@@ -47,9 +47,6 @@ public class YellowRidesMonster : PlacementEvent
         if (To == null) return Message.Express("Target location not selected");
         if (!ValidTargets(Game, Player).Contains(To)) return Message.Express("Invalid target location");
 
-        var forceAmount = ForceLocations.Values.Sum(b => b.AmountOfForces);
-        var specialForceAmount = ForceLocations.Values.Sum(b => b.AmountOfSpecialForces);
-
         var tooManyForces = ForceLocations.Any(bl => bl.Value.AmountOfForces > Player.ForcesIn(bl.Key));
         if (tooManyForces) return Message.Express("Invalid amount of forces");
 
