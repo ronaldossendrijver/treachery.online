@@ -282,8 +282,8 @@ public class Battle : GameEvent
             result.DefMessiahContribution = def.Messiah && def.Hero != null ? 2 : 0;
         }
         
-        var aggHeroContribution = result.AggHeroKilled || (game.Version < 145 && rockMelterUsed) ? 0 : result.AggHeroEffectiveStrength + result.AggHeroSkillBonus + result.AggMessiahContribution/* - (result.AggBattlePenalty)*/;
-        var defHeroContribution = result.DefHeroKilled || (game.Version < 145 && rockMelterUsed) ? 0 : result.DefHeroEffectiveStrength + result.DefHeroSkillBonus + result.DefMessiahContribution/* - (result.DefBattlePenalty)*/;
+        var aggHeroContribution = result.AggHeroKilled || (game.Version < 145 && rockMelterUsed) ? 0 : result.AggHeroEffectiveStrength + result.AggHeroSkillBonus + result.AggMessiahContribution - (game.Version < 164 ? result.AggBattlePenalty : 0);
+        var defHeroContribution = result.DefHeroKilled || (game.Version < 145 && rockMelterUsed) ? 0 : result.DefHeroEffectiveStrength + result.DefHeroSkillBonus + result.DefMessiahContribution - (game.Version < 164 ? result.DefBattlePenalty : 0);
 
         var aggPinkKarmaContribution = agg.Initiator == Faction.Pink ? game.PinkKarmaBonus : 0;
         var defPinkKarmaContribution = def.Initiator == Faction.Pink ? game.PinkKarmaBonus : 0;
@@ -302,8 +302,8 @@ public class Battle : GameEvent
             result.AggHomeworldContribution = agg.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
             result.DefHomeworldContribution = def.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
 
-            result.AggTotal = agg.Dial(game, result.Defender.Faction) + aggHeroContribution + aggPinkKarmaContribution + result.AggHomeworldContribution + result.AggReinforcementsContribution - result.AggBattlePenalty;
-            result.DefTotal = def.Dial(game, result.Aggressor.Faction) + defHeroContribution + defPinkKarmaContribution + result.DefHomeworldContribution + result.DefReinforcementsContribution - result.DefBattlePenalty;
+            result.AggTotal = agg.Dial(game, result.Defender.Faction) + aggHeroContribution + aggPinkKarmaContribution + result.AggHomeworldContribution + result.AggReinforcementsContribution - (game.Version >= 164 ? result.AggBattlePenalty : 0);
+            result.DefTotal = def.Dial(game, result.Aggressor.Faction) + defHeroContribution + defPinkKarmaContribution + result.DefHomeworldContribution + result.DefReinforcementsContribution - (game.Version >= 164 ? result.DefBattlePenalty : 0);
         }
         else
         {

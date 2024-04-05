@@ -234,7 +234,7 @@ public class BattleConcluded : GameEvent
                     MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, specialForcesToSaveInTerritory, forceSupplierOfWinner.SpecialForce),
                     MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || specialForcesToSaveInTerritory > 0, " in ", territory),
 
-                    MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || (specialForcesToSaveInTerritory > 0 && forcesToSaveToReserves > 0) || specialForcesToSaveToReserves > 0, " and "),
+                    MessagePart.ExpressIf(forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " and "),
                     MessagePart.ExpressIf(forcesToSaveToReserves > 0, forcesToSaveToReserves, forceSupplierOfWinner.Force),
                     MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, specialForcesToSaveToReserves, forceSupplierOfWinner.SpecialForce),
                     MessagePart.ExpressIf(forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " to reserves"));

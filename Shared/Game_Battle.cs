@@ -657,7 +657,10 @@ public partial class Game
         var specialForcesToSaveInTerritory = 0;
         var forcesToSaveInTerritory = 0;
 
-        if (!MaySubstituteForceLosses(forceSupplier))
+        var nrOfSpecialForceLossesThatCanBeReplacedByRemainingNormalForces = Math.Min(specialForcesToLose,
+            forceSupplier.ForcesIn(territory) - plan.Forces - plan.ForcesAtHalfStrength);
+        
+        if (!MaySubstituteForceLosses(forceSupplier) || Version >= 164 && nrOfSpecialForceLossesThatCanBeReplacedByRemainingNormalForces == 0)
         {
             if (SkilledAs(plan.Hero, LeaderSkill.Graduate))
             {
