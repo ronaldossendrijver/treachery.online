@@ -36,7 +36,7 @@ public partial class Game
     internal Phase KarmaHandSwapPausedPhase { get; set; }
 
     private AuctionType BlackMarketAuctionType { get; set; }
-    internal TreacheryCard CardSoldOnBlackMarket { get; set; }
+    public TreacheryCard CardSoldOnBlackMarket { get; set; }
     internal bool WhiteAuctionShouldStillHappen { get; set; }
     public bool WhiteBiddingJustFinished { get; private set; }
     public bool WhiteOccupierSpecifiedCard { get; internal set; }
@@ -316,7 +316,7 @@ public partial class Game
 
         if (mightReplace && winner != null)
         {
-            if (winner.Ally == Faction.Grey && GreyAllowsReplacingCards)
+            if (winner.Ally == Faction.Grey && GreyAllowsReplacingCards && !(Version >= 164 && (CurrentAuctionType is AuctionType.WhiteSilent or AuctionType.WhiteOnceAround)))
             {
                 if (!Prevented(FactionAdvantage.GreyAllyDiscardingCard))
                 {

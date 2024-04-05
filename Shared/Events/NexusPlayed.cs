@@ -231,7 +231,9 @@ public class NexusPlayed : GameEvent, ILocationEvent
             Faction.Brown when betrayal => true,
             Faction.Brown when secretAlly => (g.CurrentMainPhase == MainPhase.Collection && ValidBrownCards(p).Any()) || (g.CurrentPhase == Phase.BattleConclusion && g.CurrentBattle != null && p.Faction == g.BattleWinner),
 
-            Faction.White when betrayal => g.CurrentMainPhase == MainPhase.Bidding && g.WhiteBiddingJustFinished && g.CardJustWon != null,
+            Faction.White when betrayal => g.CurrentMainPhase == MainPhase.Bidding 
+                && (g.WhiteBiddingJustFinished || g.CardSoldOnBlackMarket != null) 
+                && (g.StoredRecentlyPaid.Any(x => x.To == Faction.White) || g.GetPlayer(Shared.Faction.White).Has(g.CardJustWon)),
 
             Faction.Pink when betrayal => g.CurrentMainPhase < MainPhase.ShipmentAndMove && ValidPinkTerritories(g).Any(),
             Faction.Pink when cunning || secretAlly => true,

@@ -26,37 +26,37 @@ namespace Treachery.Test;
 [TestClass]
 public class Tests
 {
-    private int gameId;
-    private int terrorEventId;
-    private int nrOfBgDeadLeaders;
-
     private void SaveSpecialCases(Game g, GameEvent e)
     {
-        var blue = g.GetPlayer(Faction.Blue);
-        if (blue != null && g.Map.Shrine != null && blue.Has(TreacheryCardType.Useless) && blue.ForcesIn(g.Map.Shrine) > 0)
+        var player = g.Players.FirstOrDefault(p => p.Nexus is Faction.White && NexusPlayed.CanUseBetrayal(g, p));
+        
+        if (player != null && g.CurrentAuctionType is AuctionType.WhiteSilent or AuctionType.WhiteOnceAround && g.CardJustWon != null)
         {
-            WriteSavegameIfApplicable(g, blue, "has forces in Shrine");
+            WriteSaveGameIfApplicable(g, player, "white nexus can be used on white card");
+        }
+        
+        if (player != null && g.CurrentAuctionType is AuctionType.BlackMarketNormal or AuctionType.BlackMarketSilent or AuctionType.BlackMarketOnceAround && g.CardSoldOnBlackMarket != null)
+        {
+            WriteSaveGameIfApplicable(g, player, "white nexus can be used on black market card");
         }
     }
 
-    private readonly List<string> WrittenCases = new();
-    private void WriteSavegameIfApplicable(Game g, Player playerWithAction, string c)
+    private readonly List<string> _writtenCases = new();
+    private void WriteSaveGameIfApplicable(Game g, Player playerWithAction, string c)
     {
-        if (!WrittenCases.Contains(c))
-            lock (WrittenCases)
-            {
-                var id = playerWithAction == null ? "x" : playerWithAction.Name.Replace('*', 'X');
-                File.WriteAllText(c + "-" + id + ".special.json", GameState.GetStateAsString(g));
-                WrittenCases.Add(c);
-            }
+        lock (_writtenCases)
+        {
+            if (_writtenCases.Contains(c)) return;
+            var id = playerWithAction == null ? "x" : playerWithAction.Name.Replace('*', 'X');
+            File.WriteAllText(c + "-" + id + ".special.json", GameState.GetStateAsString(g));
+            _writtenCases.Add(c);
+        }
     }
 
-    private ObjectCounter<int> _cardcount;
-    private ObjectCounter<int> _leadercount;
+    private ObjectCounter<int> _cardCount;
+    private ObjectCounter<int> _leaderCount;
     private string TestIllegalCases(Game g, GameEvent e)
     {
-        var p = g.GetPlayer(e.Initiator);
-
         if (!g.Applicable(Rule.AdvisorsDontConflictWithAlly) && e is BattleConcluded)
         {
             var battleLoser = g.GetPlayer(g.BattleLoser);
@@ -67,36 +67,36 @@ public class Tests
             }
         }
 
-        p = g.Players.FirstOrDefault(p => p.ForcesInReserve < 0 || p.SpecialForcesInReserve < 0);
+        var p = g.Players.FirstOrDefault(x => x.ForcesInReserve < 0 || x.SpecialForcesInReserve < 0);
         if (p != null) return "Negative forces " + p.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
 
-        p = g.Players.FirstOrDefault(p => p.Faction == Faction.White && (p.SpecialForcesInReserve != 0 || p.SpecialForcesKilled != 0));
+        p = g.Players.FirstOrDefault(x => x.Faction == Faction.White && (x.SpecialForcesInReserve != 0 || x.SpecialForcesKilled != 0));
         if (p != null) return "Invalid forces " + p.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
 
         if (g.CurrentTurn > 1 || g.CurrentMainPhase > MainPhase.Storm)
         {
-            p = g.Players.FirstOrDefault(p => p.ForcesInLocations.Keys.Any(l => l is AttachedLocation al && al.AttachedToLocation == null));
+            p = g.Players.FirstOrDefault(x => x.ForcesInLocations.Keys.Any(l => l is AttachedLocation al && al.AttachedToLocation == null));
             if (p != null) return "Forces in unattached location - " + p.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
         }
 
         if (g.Version >= 142)
         {
-            p = g.Players.FirstOrDefault(p => p.Resources < 0);
+            p = g.Players.FirstOrDefault(x => x.Resources < 0);
             if (p != null) return "Negative spice " + p.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
         }
 
         if (g.CurrentTurn >= 1)
         {
-            p = g.Players.FirstOrDefault(p =>
-                p.ForcesKilled + p.ForcesInLocations.Sum(b => b.Value.AmountOfForces) +
-                (p.Faction != Faction.White ? p.SpecialForcesKilled + p.ForcesInLocations.Sum(b => b.Value.AmountOfSpecialForces) : 0) != 20);
+            p = g.Players.FirstOrDefault(x =>
+                x.ForcesKilled + x.ForcesInLocations.Sum(b => b.Value.AmountOfForces) +
+                (x.Faction != Faction.White ? x.SpecialForcesKilled + x.ForcesInLocations.Sum(b => b.Value.AmountOfSpecialForces) : 0) != 20);
 
             if (p != null && (g.Version >= 157 || !p.Is(Faction.Purple))) return "Illegal number of forces " + p.Faction + " - " + g.History.Count;
         }
 
-        if (g.Players.Any(p => p.Leaders.Count(l => g.IsInFrontOfShield(l)) > 1)) return "More than 1 leader in front of shield after " + e.GetType().Name + " - " + g.History.Count;
+        if (g.Players.Any(x => x.Leaders.Count(g.IsInFrontOfShield) > 1)) return "More than 1 leader in front of shield after " + e.GetType().Name + " - " + g.History.Count;
 
-        if (g.Version >= 147 && g.Players.Any(p => p.Leaders.Any(l => g.IsInFrontOfShield(l) && l.Faction != p.Faction))) return "Foreign leader in front of shield after " + e.GetType().Name + " - " + g.History.Count;
+        if (g.Version >= 147 && g.Players.Any(x => x.Leaders.Any(l => g.IsInFrontOfShield(l) && l.Faction != x.Faction))) return "Foreign leader in front of shield after " + e.GetType().Name + " - " + g.History.Count;
 
         if (e is SkillAssigned sa && sa.Leader == null) return "Assigning skill to null leader after " + e.GetType().Name + " - " + g.History.Count;
 
@@ -109,7 +109,7 @@ public class Tests
 
         if (g.CurrentTurn >= 1)
         {
-            var previousNumberOfCardsInPlay = _cardcount.CountOf(g.Seed);
+            var previousNumberOfCardsInPlay = _cardCount.CountOf(g.Seed);
             var currentNumberOfCards =
                 g.Players.Sum(player => player.TreacheryCards.Count)
                 + g.TreacheryDeck.Items.Count
@@ -120,10 +120,10 @@ public class Tests
                 + g.RemovedTreacheryCards.Count;
 
             if (previousNumberOfCardsInPlay == 0)
-                lock (_cardcount)
+                lock (_cardCount)
                 {
 
-                    _cardcount.SetToN(g.Seed, currentNumberOfCards);
+                    _cardCount.SetToN(g.Seed, currentNumberOfCards);
                 }
             else if (currentNumberOfCards != previousNumberOfCardsInPlay)
                 return string.Format("Total number of cards has changed from {0} to {1} - " + g.History.Count,
@@ -133,12 +133,12 @@ public class Tests
 
         if (g.CurrentTurn >= 1)
         {
-            var previousNumberOfLeadersInPlay = _leadercount.CountOf(g.Seed);
+            var previousNumberOfLeadersInPlay = _leaderCount.CountOf(g.Seed);
             var currentNumberOfLeaders = g.Players.Sum(player => player.Leaders.Where(l => l.HeroType != HeroType.Vidal).Count());
             if (previousNumberOfLeadersInPlay == 0)
-                lock (_leadercount)
+                lock (_leaderCount)
                 {
-                    _leadercount.SetToN(g.Seed, currentNumberOfLeaders);
+                    _leaderCount.SetToN(g.Seed, currentNumberOfLeaders);
                 }
             else if (currentNumberOfLeaders != previousNumberOfLeadersInPlay)
                 return string.Format("Total number of leaders has changed from {0} to {1} - " + g.History.Count,
@@ -149,7 +149,7 @@ public class Tests
 
         if (g.TreacheryDeck != null)
         {
-            var allCards = g.TreacheryDeck.Items.Concat(g.TreacheryDiscardPile.Items).Concat(g.Players.SelectMany(p => p.TreacheryCards)).ToArray();
+            var allCards = g.TreacheryDeck.Items.Concat(g.TreacheryDiscardPile.Items).Concat(g.Players.SelectMany(x => x.TreacheryCards)).ToArray();
             if (allCards.Any(item => allCards.Count(c => c == item) > 1)) return "Duplicate card in Treachery Card Deck" + " after " + e.GetType().Name + " - " + g.History.Count;
         }
 
@@ -164,13 +164,13 @@ public class Tests
 
         var blue = g.GetPlayer(Faction.Blue);
         if (blue != null &&
-            blue.ForcesInLocations.Any(bat => bat.Value.AmountOfSpecialForces > 0 && !g.Players.Any(p => p.Occupies(bat.Key.Territory))))
+            blue.ForcesInLocations.Any(bat => bat.Value.AmountOfSpecialForces > 0 && !g.Players.Any(x => x.Occupies(bat.Key.Territory))))
             return "Lonely advisor - " + g.History.Count;
 
         if (g.Version >= 148 && blue != null && g.Map.Territories(true).Any(t => blue.ForcesIn(t) > 0 && blue.SpecialForcesIn(t) > 0)) return "Advisor and fighter together - " + g.History.Count;
 
 
-        if (g.Players.Any(p => p.Leaders.Any(l => l.HeroType != HeroType.Vidal && l.Faction != p.Faction && p.Faction != Faction.Purple && !g.CapturedLeaders.ContainsKey(l)))) return "Lost Leader - " + g.History.Count;
+        if (g.Players.Any(x => x.Leaders.Any(l => l.HeroType != HeroType.Vidal && l.Faction != x.Faction && x.Faction != Faction.Purple && !g.CapturedLeaders.ContainsKey(l)))) return "Lost Leader - " + g.History.Count;
 
         if (g.CurrentPhase == Phase.BeginningOfCollection)
         {
@@ -291,8 +291,8 @@ public class Tests
         Parallel.For(0, nrOfGames, po,
             i =>
             {
-                var game = LetBotsPlay(rules, nrOfPlayers, nrOfTurns, p, false, false, null, 30, f);
-                var playerToCheck = game.Players.Single(p => p.Faction == f);
+                var game = LetBotsPlay(rules, nrOfPlayers, nrOfTurns, p, false, null, 30, f);
+                var playerToCheck = game.Players.Single(x => x.Faction == f);
                 if (game.Winners.Contains(playerToCheck)) countWins++;
                 countSpice += playerToCheck.Resources;
                 countPoints += game.NumberOfVictoryPoints(playerToCheck, true);
@@ -312,8 +312,8 @@ public class Tests
 
         Message.DefaultDescriber = Skin.Current;
 
-        _cardcount = new ObjectCounter<int>();
-        _leadercount = new ObjectCounter<int>();
+        _cardCount = new ObjectCounter<int>();
+        _leaderCount = new ObjectCounter<int>();
 
         var nrOfGames = 500;
         var nrOfTurns = 12;
@@ -337,8 +337,7 @@ public class Tests
             MaxDegreeOfParallelism = Environment.ProcessorCount
         };
 
-        Parallel.For(0, nrOfGames, po,
-            index =>
+        Parallel.For(0, nrOfGames, po, _ =>
             {
                 PlayGameAndRecordResults(nrOfPlayers, nrOfTurns, rulesAsArray, wincounter, statistics, timeout);
             });
@@ -348,12 +347,12 @@ public class Tests
         statistics?.Output(Skin.Current);
     }
 
-    private void PlayGameAndRecordResults(int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> wincounter, Statistics statistics, int timeout)
+    private void PlayGameAndRecordResults(int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> winCounter, Statistics statistics, int timeout)
     {
-        var game = LetBotsPlay(rulesAsArray, nrOfPlayers, nrOfTurns, null, false, true, statistics, timeout);
+        var game = LetBotsPlay(rulesAsArray, nrOfPlayers, nrOfTurns, null, true, statistics, timeout);
 
         Console.WriteLine("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
-            string.Join(",", game.Winners.Select(p => DetermineName(p))),
+            string.Join(",", game.Winners.Select(DetermineName)),
             Skin.Current.Describe(game.WinMethod),
             game.CurrentTurn,
             game.History.Count,
@@ -363,12 +362,11 @@ public class Tests
             game.Players.Sum(p => p.Resources),
             Skin.Current.Join(game.TreacheryDiscardPile.Items));
 
-        foreach (var winner in game.Winners) wincounter.Count(winner.Faction);
+        foreach (var winner in game.Winners) winCounter.Count(winner.Faction);
     }
 
-    private readonly List<TimedTest> timedTests = new();
-    private readonly List<Game> failedGames = new();
-    private Game LetBotsPlay(Rule[] rules, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests, Statistics statistics, int timeout, Faction mustPlay = Faction.None)
+    private readonly List<Game> failedGames = [];
+    private Game LetBotsPlay(Rule[] rules, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool performTests, Statistics statistics, int timeout, Faction mustPlay = Faction.None)
     {
         BattleOutcome previousBattleOutcome = null;
 
@@ -376,7 +374,6 @@ public class Tests
         var timer = new TimedTest(game, timeout);
         
         timer.Elapsed += HandleElapsedTestTime;
-        timedTests.Add(timer);
 
         List<Faction> factions;
         if (mustPlay != Faction.None)
@@ -438,20 +435,17 @@ public class Tests
         catch
         {
             timer.Stop();
-            timedTests.Remove(timer);
             throw;
         }
 
         timer.Stop();
-        timedTests.Remove(timer);
-
         return game;
     }
 
     private void HandleElapsedTestTime(object sender, ElapsedEventArgs e)
     {
         var game = sender as Game;
-        File.WriteAllText("timeout" + game.Seed + ".json", GameState.GetStateAsString(game));
+        File.WriteAllText("timeout" + game?.Seed + ".json", GameState.GetStateAsString(game));
         failedGames.Add(game);
     }
 
@@ -546,8 +540,8 @@ public class Tests
 
         ProfileGames();
 
-        _cardcount = new ObjectCounter<int>();
-        _leadercount = new ObjectCounter<int>();
+        _cardCount = new ObjectCounter<int>();
+        _leaderCount = new ObjectCounter<int>();
 
         try
         {
@@ -576,15 +570,8 @@ public class Tests
             
         statistics?.Output(Skin.Current);
             
-        var firstLine = true;
         foreach (var item in centralStyleStatistics)
         {
-            if (!firstLine)
-            {
-                File.AppendAllText("CentralStyleStatistics.json", ",\r\n");
-                firstLine = false;
-            }
-
             File.AppendAllText("CentralStyleStatistics.json", item);
         }
 
@@ -618,12 +605,13 @@ public class Tests
             Assert.IsNull(result, fileName + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + result);
 
             var actualValues = DetermineTestvalues(game);
-            tc.Testvalues[valueId].Equals(actualValues);
-            if (!tc.Testvalues[valueId].Equals(actualValues)) File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
+            if (!tc.Testvalues[valueId].Equals(actualValues)) 
+                File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
+            
             Assert.AreEqual(tc.Testvalues[valueId], actualValues, fileName + ", " + previousPhase + " - " + game.CurrentPhase + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + Testvalues.Difference);
 
             var strangeCase = TestIllegalCases(game, evt);
-            if (strangeCase != "") File.WriteAllText("illegalcase_" + game.EventCount + "_" + strangeCase + ".json", GameState.GetStateAsString(game));
+            if (strangeCase != "") File.WriteAllText("illegalCase_" + game.EventCount + "_" + strangeCase + ".json", GameState.GetStateAsString(game));
             Assert.AreEqual("", strangeCase, fileName + ", " + strangeCase);
 
             SaveSpecialCases(game, evt);
@@ -713,7 +701,7 @@ public class Tests
             {
                 statistics.Karamas.Count(karma.Prevented);
             }
-            else if (game.Applicable(Rule.AdvancedCombat) && latest is Battle battle && game.AggressorPlan != null && game.DefenderPlan != null)
+            else if (game.Applicable(Rule.AdvancedCombat) && latest is Battle && game.AggressorPlan != null && game.DefenderPlan != null)
             {
                 if (!game.AggressorPlan.Player.IsBot)
                 {
@@ -853,57 +841,23 @@ public class Tests
         File.WriteAllText(filename, skinData);
     }
 
-
-    [TestMethod]
-    public void TestShuffleMethod()
-    {
-        var counters = new int[100];
-
-        for (var run = 0; run < 100000; run++)
-        {
-            var deck = new Deck<int>(Enumerable.Range(0, 100), new Random());
-            deck.Shuffle();
-            counters[deck.Draw()]++;
-        }
-
-        Console.WriteLine("Average times any item is on top: {0}", counters.Average());
-        Console.WriteLine("Standard deviation in the times any item is on top: {0}", CalculateStandardDeviation(counters.Select(c => (double)c)));
-
-        for (var i = 0; i < 100; i++) Console.WriteLine("Times {0} was on top: {1}", i, counters[i]);
-    }
-
-    private static double CalculateStandardDeviation(IEnumerable<double> values)
-    {
-        double standardDeviation = 0;
-
-        if (values.Any())
-        {
-            // Compute the average.     
-            var avg = values.Average();
-
-            // Perform the Sum of (value-avg)_2_2.      
-            var sum = values.Sum(d => Math.Pow(d - avg, 2));
-
-            // Put it all together.      
-            standardDeviation = Math.Sqrt(sum / (values.Count() - 1));
-        }
-
-        return standardDeviation;
-    }
-
-
     [TestMethod]
     public void ScanForUndecoratedGetOnlyProperties()
     {
-        foreach (var type in Assembly.GetAssembly(typeof(GameEvent)).GetTypes()
-                     .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(GameEvent))))
-        foreach (var prop in type.GetProperties())
-            if (!prop.CanWrite)
+        var assembly = Assembly.GetAssembly(typeof(GameEvent));
+        if (assembly == null)
+            return;
+        
+        foreach (var type in assembly.GetTypes().Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(GameEvent))))
+        {
+            foreach (var prop in type.GetProperties().Where(x => !x.CanWrite))
             {
                 var att = prop.GetCustomAttribute(typeof(JsonIgnoreAttribute));
                 //if (att == null) Console.WriteLine($"Get-only property {prop} of class {type} does not have the JsonIgnore attribute");
-                Assert.IsTrue(att != null, $"Get-only property {prop} of class {type} does not have the JsonIgnore attribute");
+                Assert.IsTrue(att != null,
+                    $"Get-only property {prop} of class {type} does not have the JsonIgnore attribute");
             }
+        }
     }
 
     [TestMethod]
