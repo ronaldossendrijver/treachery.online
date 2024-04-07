@@ -9,7 +9,7 @@
 @inherits MapComponent
 
 @{
-    var pos = Skin.Current.GetCenter(Location).Translate(-(int)(0.5f * Diameter), 0);
+    var pos = Skin.Current.GetCenter(Location, h.Game.Map).Translate(-(int)(0.5f * Diameter), 0);
     double yOffset = 0;
 
     if (Battalions.TryGetValue(Location, out var battalionInLocation))
@@ -51,9 +51,9 @@
 
 @code {
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public Location Location { get; set; }
-
+    
     [Parameter]
     public Dictionary<Location, List<Battalion>> Battalions { get; set; }
 }

@@ -120,7 +120,7 @@ public partial class Game
     {
         UpdateTimers(e);
 
-        if (!(e is AllyPermission || e is PlayerReplaced))
+        if (!(e is AllyPermission || e is PlayerReplaced || e is NexusPlayed np && np.IsBetrayal && np.Faction is Faction.White))
         {
             ClearRecentPayments();
 
@@ -770,6 +770,19 @@ public partial class Game
     public bool HasRecentPaymentFor(Type t)
     {
         return RecentlyPaid.Any(p => p.Reason != null && p.Reason.GetType() == t);
+    }
+    
+    public bool HasQuiteRecentPaymentTo(Faction f)
+    {
+        return RecentlyPaid.Any(p => p.To == f) ||
+               StoredRecentlyPaid.Any(p => p.To == f);
+    }
+    
+    public Payment QuiteRecentPaymentTo(Faction f)
+    {
+        var res = RecentlyPaid.FirstOrDefault(p => p.To == f) ??
+                          StoredRecentlyPaid.FirstOrDefault(p => p.To == f);
+        return res;
     }
 
     public int RecentlyPaidTotalAmount => RecentlyPaid.Sum(p => p.Amount);

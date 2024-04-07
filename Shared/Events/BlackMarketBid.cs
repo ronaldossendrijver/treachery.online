@@ -90,7 +90,7 @@ public class BlackMarketBid : PassableGameEvent, IBid
                     winningBid.Initiator != Faction.White ? Faction.White : Faction.Red,
                     Game.CardsOnAuction, false);
 
-                FinishBlackMarketBid(winningBid.Player, card);
+                FinishBlackMarketBid(winningBid.Player, winningBid, card);
             }
             else if (winningBid == null && Game.Bids.Count >= Game.PlayersThatCanBid.Count())
             {
@@ -123,7 +123,7 @@ public class BlackMarketBid : PassableGameEvent, IBid
                     highestBid.Initiator != Faction.White ? Faction.White : Faction.Red,
                     Game.CardsOnAuction, false);
 
-                FinishBlackMarketBid(highestBid.Player, card);
+                FinishBlackMarketBid(highestBid.Player, highestBid, card);
             }
             else
             {
@@ -134,14 +134,18 @@ public class BlackMarketBid : PassableGameEvent, IBid
         }
     }
 
-    private void FinishBlackMarketBid(Player winner, TreacheryCard card)
+    private void FinishBlackMarketBid(Player winner, IBid winningBid, TreacheryCard card)
     {
         Game.CardJustWon = card;
-        Game.WinningBid = Game.CurrentBid;
+        Game.WinningBid = winningBid;
         Game.CardSoldOnBlackMarket = card;
+        Game.CurrentBid = null;
         Game.FactionThatMayReplaceBoughtCard = Faction.None;
+        
+        Game.Bids.Clear();
 
-        var enterReplacingCardJustWon = winner != null && Game.Version > 150 && Game.Players.Any(p => p.Nexus != Faction.None);
+        var enterReplacingCardJustWon = winner != null && Game.Version > 150 && 
+            ((Game.Version < 164 && Game.Players.Any(p => p.Nexus != Faction.None)) || (Game.Version >= 164 && winner?.Nexus != Faction.None));
 
         if (winner != null)
         {
@@ -159,8 +163,8 @@ public class BlackMarketBid : PassableGameEvent, IBid
                     if (Game.NexusAllowsReplacingBoughtCards(winner))
                     {
                         Game.FactionThatMayReplaceBoughtCard = winner.Faction;
-                        Game.ReplacingBoughtCardUsingNexus = true;
                         enterReplacingCardJustWon = true;
+                        Game.ReplacingBoughtCardUsingNexus = true;
                     }
                 }
             }

@@ -242,14 +242,16 @@ public class Skin : IDescriber
         return Join(itemsAsObjects);
     }
 
-    public PointD GetCenter(Location location)
+    public PointD GetCenter(Location location, Map map)
     {
         if (location is HiddenMobileStronghold hms)
         {
             if (hms.AttachedToLocation != null)
             {
-                var attachedToCenter = GetCenter(hms.AttachedToLocation);
-                return new PointD(attachedToCenter.X + (int)HmsDX, attachedToCenter.Y);
+                var dX = hms.AttachedToLocation.Territory == map.RockOutcroppings ? 22 : 0;
+                var dY = hms.AttachedToLocation.Territory == map.RockOutcroppings ? -10 : 0;
+                var attachedToCenter = GetCenter(hms.AttachedToLocation, map);
+                return new PointD(attachedToCenter.X + (int)HmsDX + dX, attachedToCenter.Y + dY);
             }
 
             return new PointD((int)HmsDX, (int)HmsDX);
@@ -259,7 +261,7 @@ public class Skin : IDescriber
         {
             if (ds.AttachedToLocation != null)
             {
-                var attachedToCenter = GetCenter(ds.AttachedToLocation);
+                var attachedToCenter = GetCenter(ds.AttachedToLocation, map);
                 return new PointD(attachedToCenter.X - 1.5f * FORCETOKEN_RADIUS, attachedToCenter.Y - 1.5f * FORCETOKEN_RADIUS);
             }
 

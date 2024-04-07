@@ -44,12 +44,12 @@ public class WhiteKeepsUnsoldCard : PassableGameEvent
         {
             Player.TreacheryCards.Add(card);
             LogTo(Initiator, "You get: ", card);
-            Game.FinishBid(Player, card, Game.Version < 152);
+            Game.FinishBid(Player, null, card, Game.Version < 152);
         }
         else
         {
             Game.RemovedTreacheryCards.Add(card);
-            Game.FinishBid(null, card, Game.Version < 152);
+            Game.FinishBid(null, null, card, Game.Version < 152);
         }
     }
 

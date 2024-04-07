@@ -269,6 +269,7 @@ public class EndPhase : GameEvent
 
     private void EnterRevivalPhase()
     {
+        Game.CardJustWon = null;
         Game.MainPhaseStart(MainPhase.Resurrection);
         Game.Allow(FactionAdvantage.BlackFreeCard);
         Game.Allow(FactionAdvantage.RedReceiveBid);

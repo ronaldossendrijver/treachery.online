@@ -183,7 +183,7 @@ public class Bid : PassableGameEvent, IBid
             {
                 //Immediate Karma
                 var card = WinWithKarma(this);
-                Game.FinishBid(Player, card, true);
+                Game.FinishBid(Player, this, card, true);
             }
             else if (Game.CurrentBid != null && Game.BidSequence.CurrentFaction == Game.CurrentBid.Initiator)
             {
@@ -194,7 +194,7 @@ public class Bid : PassableGameEvent, IBid
                     //Karma was used to bid any amount
                     ReturnKarmaCardUsedForBid();
                     var card = WinWithKarma(winningBid);
-                    Game.FinishBid(winningBid.Player, card, true);
+                    Game.FinishBid(winningBid.Player, winningBid, card, true);
                 }
                 else
                 {
@@ -209,7 +209,7 @@ public class Bid : PassableGameEvent, IBid
                         Game.CardsOnAuction,
                         winningBid.UsesRedSecretAlly);
 
-                    Game.FinishBid(winningBid.Player, card, true);
+                    Game.FinishBid(winningBid.Player, winningBid, card, true);
                 }
             }
             else if (Game.CurrentBid == null && Game.Bids.Count >= Game.PlayersThatCanBid.Count())
@@ -220,7 +220,7 @@ public class Bid : PassableGameEvent, IBid
         else if (Game.BidSequence.CurrentFaction == Initiator)
         {
             var card = BidWonByOnlyPlayer(this, Faction.Red, Game.CardsOnAuction);
-            Game.FinishBid(Game.CurrentBid.Player, card, true);
+            Game.FinishBid(Game.CurrentBid.Player, this, card, true);
         }
     }
 
@@ -321,7 +321,7 @@ public class Bid : PassableGameEvent, IBid
                     highestBid.Initiator != Faction.White ? Faction.White : Faction.Red,
                     Game.CardsOnAuction, false);
 
-                Game.FinishBid(highestBid.Player, card, true);
+                Game.FinishBid(highestBid.Player, highestBid, card, true);
             }
             else
             {
@@ -337,7 +337,7 @@ public class Bid : PassableGameEvent, IBid
                     Game.RemovedTreacheryCards.Add(card);
                     Game.RegisterWonCardAsKnown(card);
                     Log(card, " was removed from the game");
-                    Game.FinishBid(null, card, Game.Version < 152);
+                    Game.FinishBid(null, null, card, Game.Version < 152);
                 }
             }
         }

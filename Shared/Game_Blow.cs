@@ -451,7 +451,7 @@ public partial class Game
 
     public bool SandTroutOccured => SandTrout != null;
 
-    private static string Natural(int count)
+    public static string Natural(int count)
     {
         return count switch
         {

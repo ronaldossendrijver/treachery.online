@@ -30,7 +30,7 @@
                         if (from != null && (to == move.To || to.Territory != from.Territory))
                         {
                             <Arrow FillColor="@Skin.Current.FactionColor[move.Initiator]" StrokeColor=@Skin.Current.GetFactionColorTransparant(move.Initiator, "bb")
-                                    MarginX="0" MarginY="0" Radius="@(1.2f * Skin.Current.PlanetRadius)" From=@Skin.Current.GetCenter(from) To=@Skin.Current.GetCenter(to) ArrowScale="0.05f" />
+                                    MarginX="0" MarginY="0" Radius="@(1.2f * Skin.Current.PlanetRadius)" From=@Skin.Current.GetCenter(from, h.Game.Map) To=@Skin.Current.GetCenter(to, h.Game.Map) ArrowScale="0.05f" />
                         }
 
                         if (from == null || to.Territory != from.Territory)
@@ -43,7 +43,7 @@
                 {
 
                     <Arrow FillColor="@Skin.Current.FactionColor[move.Initiator]" StrokeColor=@Skin.Current.GetFactionColorTransparant(move.Initiator, "bb")
-                            MarginX="0" MarginY="0" Radius="@(1.2f * Skin.Current.PlanetRadius)" From=@Skin.Current.GetCenter(origin) To=@Skin.Current.GetCenter(move.To) ArrowScale="0.05f" />
+                            MarginX="0" MarginY="0" Radius="@(1.2f * Skin.Current.PlanetRadius)" From=@Skin.Current.GetCenter(origin, h.Game.Map) To=@Skin.Current.GetCenter(move.To, h.Game.Map) ArrowScale="0.05f" />
                 }
             }
         }
