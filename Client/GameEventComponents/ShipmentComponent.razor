@@ -145,9 +145,9 @@
                     shipmentSpecialForceAmount = nofieldValue < 0 ? 0 : 1;
                 }
 
-                <div class="mt-1">Select from which worlds to ship these forces:</div>
                 @if (shipmentForceAmount + shipmentSpecialForceAmount > 0 && worldsToShipFrom.Count() > 1)
                 {
+                    <div class="mt-1">Select from which worlds to ship these forces:</div>
                     <ForceSelectionComponent Game=Game Player=Player Locations="@worldsToShipFrom" 
                                              OnChanged="@StateHasChanged" Forces="forceOrigins" AllowMultipleTerritories="true" ShowNormalForces="@selectNormalForceSources" ShowSpecialForces="@selectSpecialForceSources"/>
                 }

@@ -111,7 +111,14 @@
                 location = null;
             }
 
-            <SelectFromImageComponent Game="Game" @bind-Value="hero" Values="Revival.ValidRevivalHeroes(Game, Player)" Required="false" ImageWidth="80"/>
+            @if (Revival.ValidRevivalHeroes(Game, Player).Any())
+            {
+                <SelectFromImageComponent Game="Game" @bind-Value="hero" Values="Revival.ValidRevivalHeroes(Game, Player)" Required="false" ImageWidth="80"/>                
+            }
+            else
+            {
+                hero = null;
+            }
 
             if (hero != null && Revival.MayAssignSkill(Game, Player, hero))
             {

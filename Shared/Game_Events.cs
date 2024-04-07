@@ -453,7 +453,11 @@ public partial class Game
             case Phase.Extortion:
                 if (ExtortionPrevented.CanBePlayed(this, player)) result.Add(typeof(ExtortionPrevented));
                 break;
-
+            
+            case Phase.BeginningOfCollection or Phase.CollectionReport:
+                if (faction == Faction.Cyan && TerrorPlanted.IsApplicable(this, player)) result.Add(typeof(TerrorPlanted));
+                break;
+            
             case Phase.Contemplate:
                 if (Version < 103 && player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
                 if (faction == Faction.Brown && !Prevented(FactionAdvantage.BrownEconomics) && EconomicsStatus == BrownEconomicsStatus.None) result.Add(typeof(BrownEconomics));

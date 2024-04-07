@@ -202,6 +202,24 @@ public partial class Game
         var receiverAndAllyAreWhite = initiator.Ally == Faction.White && paymentReceiver == Faction.White;
         var totalAmount = bidAmount + (Version >= 139 && receiverAndAllyAreWhite ? 0 : bidAllyContributionAmount);
 
+        var red = GetPlayer(Faction.Red);
+        var totalAmountReceivedByRedInsteadOfWhite =
+            Version >= 165 && receiverAndAllyAreWhite && red != null && !Prevented(FactionAdvantage.RedReceiveBid) ? bidAllyContributionAmount : 0;
+
+        var redReceivedInsteadMessage = MessagePart.Express();
+        if (totalAmountReceivedByRedInsteadOfWhite > 0)
+        {
+            ModifyIncomeBecauseOfLowThresholdOrOccupation(receiver, ref totalAmountReceivedByRedInsteadOfWhite);
+            red.Resources += totalAmountReceivedByRedInsteadOfWhite;
+            redReceivedInsteadMessage = MessagePart.Express(" and ", Faction.Red, " get ", Payment.Of(totalAmountReceivedByRedInsteadOfWhite));
+
+            if (totalAmountReceivedByRedInsteadOfWhite >= 5)
+                //This should also take into account payments received by an occupier
+                BiddingTriggeredBureaucracy = new TriggeredBureaucracy { PaymentFrom = Faction.White, PaymentTo = Faction.Red };
+
+            SetRecentPayment(receiverProfit, initiator.Faction, receiver.Faction, (GameEvent)bid);
+        }
+        
         if (receiver != null && initiator.Faction != paymentReceiver)
         {
             if (paymentReceiver == Faction.Red && Prevented(FactionAdvantage.RedReceiveBid))
@@ -216,6 +234,7 @@ public partial class Game
                 receiver.Resources += receiverProfit;
                 receiver.ResourcesAfterBidding += bidRedContributionAmount;
                 message = MessagePart.Express(" → ", receiver.Faction, " get ", Payment.Of(receiverProfit),
+                    redReceivedInsteadMessage,
                     MessagePart.ExpressIf(bidRedContributionAmount > 0, " immediately and ", Payment.Of(bidRedContributionAmount), " at the end of the bidding phase"));
 
                 if (receiverProfit >= 5)
@@ -225,8 +244,12 @@ public partial class Game
                 SetRecentPayment(receiverProfit, initiator.Faction, receiver.Faction, (GameEvent)bid);
             }
         }
+        else if (totalAmountReceivedByRedInsteadOfWhite > 0)
+        {
+            message = MessagePart.Express(" → ", Faction.Red, " get ", Payment.Of(totalAmountReceivedByRedInsteadOfWhite));
+        }
 
-        if (totalAmount - receiverProfit >= 4) ActivateBanker(initiator);
+        if (totalAmount - receiverProfit - totalAmountReceivedByRedInsteadOfWhite >= 4) ActivateBanker(initiator);
     }
 
     internal void GivePlayerExtraCardIfApplicable(Player winner)

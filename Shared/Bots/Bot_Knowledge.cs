@@ -273,7 +273,13 @@ public partial class Player
 
     protected bool AllyDoesntBlock(Territory t)
     {
-        return Ally == Faction.None || Faction == Faction.Pink || Ally == Faction.Pink || AlliedPlayer.AnyForcesIn(t) == 0;
+        return Ally is Faction.None or Faction.Pink ||
+               Faction is Faction.Pink ||
+               AlliedPlayer.AnyForcesIn(t) == 0 ||
+               (Faction is Faction.Blue && Game.Applicable(Rule.AdvisorsDontConflictWithAlly) &&
+                SpecialForcesIn(t) > 0) ||
+               (Ally is Faction.Blue && Game.Applicable(Rule.AdvisorsDontConflictWithAlly) &&
+                AlliedPlayer.SpecialForcesIn(t) > 0);
     }
 
     protected bool AllyDoesntBlock(Location l)

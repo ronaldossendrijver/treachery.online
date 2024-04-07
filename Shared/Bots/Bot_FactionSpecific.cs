@@ -958,6 +958,9 @@ public partial class Player
 
     protected virtual TerrorPlanted DetermineTerrorPlanted()
     {
+        if (Game.CurrentMainPhase is not MainPhase.Contemplate)
+            return null;
+        
         var availableToPlace = TerrorPlanted.ValidTerrorTypes(Game, false).Where(t => !Game.TerrorOnPlanet.ContainsKey(t));
 
         if (availableToPlace.Any())

@@ -59,8 +59,9 @@ public class TerrorPlanted : PassableGameEvent
 
     public static IEnumerable<Territory> ValidStrongholds(Game g, Player p)
     {
-        var ally = g.GetPlayer(p.Ally);
-
+        if (g.CurrentMainPhase is not MainPhase.Contemplate)
+            return [];
+        
         return g.Map.Territories(false).Where(t =>
             t.IsVisible &&
             t.IsStronghold &&
@@ -70,7 +71,7 @@ public class TerrorPlanted : PassableGameEvent
 
     public static bool MayRemoveTokens(Game g, Player p)
     {
-        return p.HasHighThreshold(World.Cyan) && g.TerrorOnPlanet.Any();
+        return g.CurrentMainPhase is MainPhase.Collection && p.HasHighThreshold(World.Cyan) && g.TerrorOnPlanet.Any();
     }
 
     public static bool MayPlaceAtExistingToken(Player p)
@@ -82,16 +83,20 @@ public class TerrorPlanted : PassableGameEvent
     {
         if (toRemove)
             return g.TerrorOnPlanet.Keys;
+        
         return g.UnplacedTerrorTokens.Union(g.TerrorOnPlanet.Keys);
     }
 
     public static bool IsApplicable(Game g, Player p)
     {
-        return g.CurrentPhase == Phase.Contemplate &&
-               !g.CyanHasPlantedTerror &&
-               !g.Prevented(FactionAdvantage.CyanPlantingTerror) &&
+        return g.CurrentMainPhase is MainPhase.Collection &&
+               ValidTerrorTypes(g, true).Any()
+               || 
+               g.CurrentPhase is Phase.Contemplate &&
                ValidTerrorTypes(g, false).Any() &&
-               ValidStrongholds(g, p).Any();
+               ValidStrongholds(g, p).Any() &&
+               !g.CyanHasPlantedTerror &&
+               !g.Prevented(FactionAdvantage.CyanPlantingTerror);
     }
 
     #endregion Validation
@@ -105,7 +110,6 @@ public class TerrorPlanted : PassableGameEvent
         if (!Passed)
         {
             Game.Stone(Milestone.TerrorPlanted);
-            Game.CyanHasPlantedTerror = true;
 
             if (Stronghold == null)
             {
@@ -115,6 +119,8 @@ public class TerrorPlanted : PassableGameEvent
             }
             else
             {
+                Game.CyanHasPlantedTerror = true;
+                
                 if (Game.TerrorIn(Stronghold).Any() && !Player.HasHighThreshold(World.Cyan)) Game.PlayNexusCard(Player, "Cunning", "to plant additional Terror in ", Stronghold);
 
                 if (Game.UnplacedTerrorTokens.Contains(Type))
