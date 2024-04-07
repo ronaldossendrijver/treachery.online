@@ -575,7 +575,7 @@ public class Skin : IDescriber
             FactionAdvantage.PurpleIncreasingRevivalLimits => Format("{0} increasing revival limits", Faction.Purple),
             FactionAdvantage.PurpleReceiveRevive => Format("{0} receiving {1} for revival", Faction.Purple, Concept.Resource),
             FactionAdvantage.PurpleEarlyLeaderRevive => Format("{0} allowing early revival of a leader*", Faction.Purple),
-            FactionAdvantage.PurpleReviveGhola => Format("{0} reviving a leader as a Ghola*", Faction.Purple),
+            FactionAdvantage.PurpleReviveGhola => Format("{0} reviving a leader as a Ghola", Faction.Purple),
             FactionAdvantage.GreyMovingHMS => Format("{0} moving the Hidden Mobile Stronghold", Faction.Grey),
             FactionAdvantage.GreySpecialForceBonus => Format("{0} counting {1} bonus in this battle", Faction.Grey, FactionSpecialForce.Grey),
             FactionAdvantage.GreySelectingCardsOnAuction => Format("{0} selecting a card to go on top or bottom (play before they draw cards on auction)", Faction.Grey),

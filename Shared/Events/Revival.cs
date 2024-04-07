@@ -221,7 +221,7 @@ public class Revival : GameEvent, ILocationEvent
         var livingLeaders = p.Leaders.Count(l => g.IsAlive(l));
         if (g.Version >= 139) livingLeaders += g.Players.Where(player => player != p).SelectMany(player => player.Leaders.Where(l => l.Faction == p.Faction)).Count();
 
-        if (p.Is(Faction.Purple) && g.Applicable(Rule.PurpleGholas) && livingLeaders < 5)
+        if (p.Is(Faction.Purple) && g.Applicable(Rule.PurpleGholas) && livingLeaders < 5 && (g.Version < 164 || !g.Prevented(FactionAdvantage.PurpleReviveGhola)))
             result.AddRange(
                 g.LeaderState.Where(leaderAndState =>
                     leaderAndState.Key.Faction != Faction.Purple &&

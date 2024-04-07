@@ -8,6 +8,7 @@
  */
 
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Treachery.Shared;
 
@@ -288,6 +289,7 @@ public class EndPhase : GameEvent
 
     private void EndResurrectionPhase()
     {
+        Game.Allow(FactionAdvantage.PurpleReviveGhola);
         if (Game.RevivalTechTokenIncome) Game.ReceiveTechIncome(TechToken.Graveyard);
         Game.CurrentKarmaRevivalPrevention = null;
         Game.CurrentYellowSecretAlly = null;
