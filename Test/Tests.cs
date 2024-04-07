@@ -28,17 +28,9 @@ public class Tests
 {
     private void SaveSpecialCases(Game g, GameEvent e)
     {
-        var player = g.Players.FirstOrDefault(p => p.Nexus is Faction.White && NexusPlayed.CanUseBetrayal(g, p));
         
-        if (player != null && g.CurrentAuctionType is AuctionType.WhiteSilent or AuctionType.WhiteOnceAround && g.CardJustWon != null)
-        {
-            WriteSaveGameIfApplicable(g, player, "white nexus can be used on white card");
-        }
         
-        if (player != null && g.CurrentAuctionType is AuctionType.BlackMarketNormal or AuctionType.BlackMarketSilent or AuctionType.BlackMarketOnceAround && g.CardSoldOnBlackMarket != null)
-        {
-            WriteSaveGameIfApplicable(g, player, "white nexus can be used on black market card");
-        }
+
     }
 
     private readonly List<string> _writtenCases = new();
