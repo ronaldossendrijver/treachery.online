@@ -16,8 +16,13 @@
 
         @if (Game.CurrentRevivalRequests.Any())
         {
+            @if (Game.CurrentRevivalRequests.Any(req => req.Player.IsBot))
+            {
+                <div class="text-warning mb-1">Bots are awaiting your decision before starting to revive...</div>
+            }
+            
             <div>Early revival requests:</div>
-            <SelectFromImageComponent Game=Game Required=true @bind-Value=offerHero Values=@Game.CurrentRevivalRequests.Select(req => req.Hero) ImageWidth="80"/>
+            <SelectFromImageComponent Game=Game Required=true @bind-Value=@offerHero Values=@Game.CurrentRevivalRequests.Select(req => req.Hero) ImageWidth="80"/>
             <SelectResourcesComponent @bind-Value="price" Min=0 Max=50 Label="Price" />
             <ButtonRowComponent Alignment="" Pass="Pass" PassText="Deny all" Confirm="Confirm" ConfirmText=@OfferLabel Other=Other OtherText=@DenyLabel ConfirmError=@Validation />
         }

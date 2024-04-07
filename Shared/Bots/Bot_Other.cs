@@ -857,7 +857,7 @@ public partial class Player
 
     protected virtual Revival DetermineRevival()
     {
-        if (Game.CurrentRevivalRequests.Any()) return null;
+        if (Game.CurrentRevivalRequests.Any(r => r.By(Faction))) return null;
 
         var nrOfLivingLeaders = Leaders.Count(l => Game.IsAlive(l));
         var minimumValue = Faction == Faction.Purple && nrOfLivingLeaders > 2 ? 4 : 0;
