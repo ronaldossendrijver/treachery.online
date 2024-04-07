@@ -673,6 +673,7 @@ public partial class Game
 
     public bool CurrentPhaseIsUnInterruptable =>
         CurrentMainPhase == MainPhase.Ended ||
+        CurrentPhase == Phase.Discarding ||
         CurrentPhase == Phase.AssigningSkill ||
         CurrentPhase == Phase.Clairvoyance ||
         CurrentPhase == Phase.Thought ||
