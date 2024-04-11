@@ -7,6 +7,28 @@
 //  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 // */
 
-global using System.Linq;
-global using System.Collections.Generic;
-global using Treachery.Shared.Model;
+using System.ComponentModel.DataAnnotations;
+
+namespace Treachery.Server.Data;
+
+public class User
+{
+    public int Id { get; init; }
+    
+    [MaxLength(4000)]
+    public string Name { get; set; }
+    
+    [MaxLength(4000)]
+    public string Email { get; set; }
+    
+    [MaxLength(4000)]
+    public string HashedPassword { get; set; }
+
+    [MaxLength(4000)]
+    public string PasswordResetToken { get; set; }
+    
+    public DateTime PasswordResetTokenCreated { get; set; }
+    
+    [MaxLength(4000)]
+    public string PlayerName { get; set; }
+}

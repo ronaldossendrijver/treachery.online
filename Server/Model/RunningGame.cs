@@ -7,6 +7,13 @@
 //  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 // */
 
-global using System.Linq;
-global using System.Collections.Generic;
-global using Treachery.Shared.Model;
+using Treachery.Shared;
+
+namespace Treachery.Server;
+
+public class RunningGame
+{
+    public Guid Id { get; set; }
+    
+    public Game Game { get; set; }
+}

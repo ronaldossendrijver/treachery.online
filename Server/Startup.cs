@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using Treachery.Server.Data;
 
 namespace Treachery.Server;
 
@@ -41,6 +42,7 @@ public class Startup
                 signalRoptions.PayloadSerializerSettings.TypeNameHandling = TypeNameHandling.All;
             });
         services.AddAuthentication().AddCookie();
+        services.AddDbContext<TreacheryContext>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -642,6 +642,7 @@ public partial class Player : ICloneable
     public IEnumerable<IHero> UnrevealedFaceDancers => FaceDancers.Where(f => !RevealedDancers.Contains(f));
 
     public bool MessiahAvailable => Game.Applicable(Rule.GreenMessiah) && Is(Faction.Green) && TotalForcesKilledInBattle >= 7 && Game.IsAlive(LeaderManager.Messiah);
+    public bool SeatIsAvailable { get; set; }
 
     public bool HasKarma(Game g)
     {

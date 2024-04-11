@@ -7,6 +7,47 @@
 //  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 // */
 
-global using System.Linq;
-global using System.Collections.Generic;
-global using Treachery.Shared.Model;
+using Newtonsoft.Json;
+
+namespace Treachery.Shared;
+
+public class GameAdmission : GameEvent
+{
+    #region Construction
+
+    public GameAdmission(Game game, Faction initiator) : base(game, initiator)
+    {
+    }
+
+    public GameAdmission()
+    {
+    }
+
+    #endregion Construction
+
+    #region Properties
+
+    public string Username { get; set; }
+    public string GamePassword { get; set; }
+    public string ConnectionId { get; set; }
+
+    #endregion Properties
+
+    #region Validation
+
+    public override Message Validate()
+    {
+        return null;
+    }
+
+    #endregion Validation
+
+    #region Execution
+
+    protected override void ExecuteConcreteEvent()
+    {
+        Log();
+    }
+
+    #endregion Execution
+}

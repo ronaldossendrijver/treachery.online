@@ -1,29 +1,174 @@
-﻿using System;
+﻿using System.Collections.Concurrent;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Treachery.Client;
+using Treachery.Server.Data;
 using Treachery.Shared;
+using Treachery.Shared.Services;
 
 namespace Treachery.Server;
 
-public class GameHub : Hub
+public class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfiguration configuration) : Hub /*Hub<IGameClient>, IGameServer*/
 {
-    private static readonly bool logging = false;
+    private ConcurrentDictionary<string,Game> GamesByToken = [];
+    private ConcurrentDictionary<Guid,string> TokensById = [];
 
-    private readonly IConfiguration Configuration;
-
-    public GameHub(IConfiguration configuration)
+    public async Task<string> RequestCreateUser(string userName, string hashedPassword, string email, string playerName)
     {
-        Configuration = configuration;
+        await using var db = GetDbContext();
+        if (db.Users.Any(x => x.Name.Trim().ToLower().Equals(userName.Trim().ToLower())))
+        {
+            return "This username already exists";
+        }
+
+        await db.AddAsync(new User()
+            { Name = userName, HashedPassword = hashedPassword, Email = email, PlayerName = playerName });
+
+        return null;
+    }
+    
+    public async Task<string> RequestPasswordReset(string email)
+    {
+        await using var db = GetDbContext();
+        
+        var user = await db.Users.FirstOrDefaultAsync(x => x.Email.Trim().ToLower().Equals(email.Trim().ToLower()));
+        
+        if (user == null)
+            return "Unknown email address";
+
+        if ((DateTime.Now - user.PasswordResetTokenCreated).TotalMinutes < 15)
+            return "You already recently requested a password reset";
+
+        var token = GenerateToken();
+        user.PasswordResetToken = token;
+        user.PasswordResetTokenCreated = DateTime.Now;
+
+        await db.SaveChangesAsync();
+
+        var from = configuration["GameEndEmailFrom"];
+
+        MailMessage mailMessage = new()
+        {
+            From = new MailAddress(from),
+            Subject = "Password Reset",
+            IsBodyHtml = true,
+            Body = $"""
+                    You have requested a password reset for user: {user.Name}
+                    
+                    You can use this token to reset your password: {token}
+                    """
+        };
+
+        mailMessage.To.Add(new MailAddress(user.Email));
+
+        SendMail(mailMessage);
+        return null;
+    }
+    
+    public async Task<string> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword)
+    {
+        await using var db = GetDbContext();
+
+        var user = await db.Users.FirstOrDefaultAsync(x =>
+            x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()));
+        
+        if (user == null)
+            return "Unknown user name";
+
+        if (string.IsNullOrEmpty(user.PasswordResetToken) || user.PasswordResetToken.Trim() != passwordResetToken)
+            return "Invalid password reset token";
+        
+        if ((DateTime.Now - user.PasswordResetTokenCreated).TotalMinutes > 60)
+            return "Your password reset token has expired";
+
+        user.HashedPassword = newHashedPassword;
+        user.PasswordResetToken = null;
+        user.PasswordResetTokenCreated = default;
+
+        await db.SaveChangesAsync();
+
+        return null;
     }
 
+    public async Task<string> RequestCreateGame(int version, string userName, string hashedPassword, string settings)
+    {
+        if (version != Game.LatestVersion)
+            return "Invalid game version";
+
+        await using var db = GetDbContext();
+        
+        var user = await db.Users.FirstOrDefaultAsync(x =>
+            x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()) && x.HashedPassword == hashedPassword);
+        
+        if (user == null)
+            return "Invalid user name or password";
+        
+        var gameToken = GenerateToken();
+        var game = new Game(); //apply settings here
+        
+        GamesByToken[gameToken] = game; 
+        TokensById[Guid.NewGuid()] = gameToken;
+
+        await AddToChannel("host", gameToken, Context.ConnectionId);
+
+        return gameToken;
+    }
+    
+    public async Task<string> RequestAdmission(int version, string gameToken, GameAdmission admission)
+    {
+        if (version != Game.LatestVersion)
+            return "Invalid game version";
+
+        if (!GamesByToken.TryGetValue(gameToken, out var game))
+            return "Game not found";
+        
+        await AddToChannel("player", gameToken, Context.ConnectionId);
+
+        return gameToken;
+    }
+    
+    public async Task<string> RequestJoinGame(int version, string userName, string hashedPassword, Guid gameId, Faction faction)
+    {
+        if (version != Game.LatestVersion)
+            return "Invalid game version";
+        
+        await using var db = GetDbContext();
+
+        var user = await db.Users.FirstOrDefaultAsync(x =>
+            x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()) && x.HashedPassword == hashedPassword);
+        
+        if (user == null)
+            return "Invalid user name or password";
+        
+        if (!TokensById.TryGetValue(gameId, out var gameToken) || !GamesByToken.TryGetValue(gameToken, out var game))
+            return "Game not found";
+        
+        if (!game.HasRoomFor(faction))
+            return "Seat is not available";
+        
+        //TODO: create this method on the client
+        await Channel("host", gameToken).SendAsync("NotifyJoinGame", Context.ConnectionId, userName, faction);
+
+        return gameToken;
+    }
+    
+    /*
+    public async Task<int> RequestCreateGame(int hostId)
+    {
+        var 
+        AddToChannel()
+    }
+    */
+    
     #region MessagesFromPlayersToHost
 
     /*
@@ -192,7 +337,6 @@ public class GameHub : Hub
 
     private async Task Request<GameEventType>(int hostID, GameEventType e) where GameEventType : GameEvent
     {
-        Log("Request<" + e.GetType().Name + ">", hostID, e);
         await Channel("host", hostID).SendAsync("ReceiveRequest_" + typeof(GameEventType).Name, e);
     }
 
@@ -238,7 +382,6 @@ public class GameHub : Hub
 
     public async Task RespondPlayerRejoined(int gameID, string playerConnectionID, int hostID, string deniedMessage)
     {
-        Log("RespondPlayerRejoined", gameID, playerConnectionID, hostID, deniedMessage);
         if (deniedMessage == "")
         {
             await AddToChannel("players", gameID, playerConnectionID);
@@ -306,7 +449,7 @@ public class GameHub : Hub
 
     public void GameFinished(string state, GameInfo info)
     {
-        SendMail(state, info);
+        SendEndOfGameMail(state, info);
     }
 
     public async Task UploadStatistics(string state)
@@ -317,12 +460,12 @@ public class GameHub : Hub
 
     public ServerSettings GetServerSettings()
     {
-        var maintenanceDateTime = Configuration["GameMaintenanceDateTime"] ?? DateTime.MinValue.ToString();
+        var maintenanceDateTime = configuration["GameMaintenanceDateTime"] ?? DateTime.MinValue.ToString();
 
         var result = new ServerSettings
         {
             ScheduledMaintenance = DateTime.Parse(maintenanceDateTime),
-            AdminName = Configuration["GameAdminUsername"]
+            AdminName = configuration["GameAdminUsername"]
         };
 
         return result;
@@ -332,49 +475,58 @@ public class GameHub : Hub
 
     #region Support
 
-    private void Log(string method, params object[] prs)
+    private IClientProxy Channel(string channelType, int id)
     {
-        if (logging) Console.WriteLine("ConnectionId: " + Context.ConnectionId + ", " + method + "(" + string.Join(",", prs) + ")");
+        return Clients.Group(channelType + id);
     }
 
-    private IClientProxy Channel(string type, int id)
+    private async Task AddToChannel(string channelType, int channelId, string connectionId)
     {
-        return Clients.Group(type + id);
+        await Groups.AddToGroupAsync(connectionId, channelType + channelId);
+    }
+    
+    private IClientProxy Channel(string channelType, string gameToken)
+    {
+        return Clients.Group(channelType + gameToken);
+    }
+    
+    private async Task AddToChannel(string channelType, string gameToken, string connectionId)
+    {
+        await Groups.AddToGroupAsync(connectionId, channelType + gameToken);
     }
 
-    private async Task AddToChannel(string channelType, int channelID, string connectionId)
-    {
-        await Groups.AddToGroupAsync(connectionId, channelType + channelID);
-    }
-
-    private void SendMail(string content, GameInfo info)
+    private void SendEndOfGameMail(string content, GameInfo info)
     {
         var ruleset = Game.DetermineApproximateRuleset(info.FactionsInPlay, info.Rules, info.ExpansionLevel);
         var subject = string.Format("{0} ({1} Players, {2} Bots, Turn {3} - {4})", info.GameName, info.Players.Length, info.NumberOfBots, info.CurrentTurn, ruleset);
+        var from = configuration["GameEndEmailFrom"];
+        var to = configuration["GameEndEmailTo"];
 
+        var saveGameToAttach = new Attachment(GenerateStreamFromString(content), "savegame" + DateTime.Now.ToString("yyyyMMdd.HHmm") + ".json");
+        
+        MailMessage mailMessage = new()
+        {
+            From = new MailAddress(from),
+            Subject = subject,
+            IsBodyHtml = true,
+            Body = "Game finished!",
+            Priority = info.NumberOfBots < 0.5f * info.Players.Length ? MailPriority.Normal : MailPriority.Low
+        };
+
+        mailMessage.To.Add(new MailAddress(to));
+        mailMessage.Attachments.Add(saveGameToAttach);
+
+        SendMail(mailMessage);
+    }
+    
+    private void SendMail(MailMessage mail)
+    {
         try
         {
-            var username = Configuration["GameEndEmailUsername"];
-
+            var username = configuration["GameEndEmailUsername"];
             if (username != "")
             {
-                var password = Configuration["GameEndEmailPassword"];
-                var from = Configuration["GameEndEmailFrom"];
-                var to = Configuration["GameEndEmailTo"];
-
-                MailMessage mailMessage = new()
-                {
-                    From = new MailAddress(from),
-                    Subject = subject,
-                    IsBodyHtml = true,
-                    Body = "Game finished!",
-                    Priority = info.NumberOfBots < 0.5f * info.Players.Length ? MailPriority.Normal : MailPriority.Low
-                };
-
-                mailMessage.To.Add(new MailAddress(to));
-
-                var savegameToAttach = new Attachment(GenerateStreamFromString(content), "savegame" + DateTime.Now.ToString("yyyyMMdd.HHmm") + ".json");
-                mailMessage.Attachments.Add(savegameToAttach);
+                var password = configuration["GameEndEmailPassword"];
 
                 SmtpClient client = new()
                 {
@@ -383,7 +535,7 @@ public class GameHub : Hub
                     EnableSsl = true
                 };
 
-                client.Send(mailMessage);
+                client.Send(mail);
             }
         }
         catch (Exception e)
@@ -430,4 +582,9 @@ public class GameHub : Hub
     }
 
     #endregion Support
+
+    private TreacheryContext GetDbContext() => new TreacheryContext(dbContextOptions, configuration);
+
+    private string GenerateToken() => Convert.ToBase64String(Guid.NewGuid().ToByteArray())[..10];
 }
+

@@ -317,8 +317,7 @@ public class Battle : GameEvent
         agg.DeactivateDynamicWeapons();
         def.DeactivateDynamicWeapons();
 
-        var aggressorWinsTies = true;
-        if (game.HasStrongholdAdvantage(result.Defender.Faction, StrongholdAdvantage.WinTies, territory)) aggressorWinsTies = false;
+        var aggressorWinsTies = !game.HasStrongholdAdvantage(result.Defender.Faction, StrongholdAdvantage.WinTies, territory);
 
         if (BattleInitiated.IsAggressorByJuice(game, result.Defender.Faction) && !game.HasStrongholdAdvantage(result.Aggressor.Faction, StrongholdAdvantage.WinTies, territory)) aggressorWinsTies = false;
 
@@ -483,11 +482,14 @@ public class Battle : GameEvent
         return MessiahAvailableForBattle(g, p);
     }
 
-    public static int Cost(Game g, Player p, int AmountOfForcesAtFullStrength, int AmountOfSpecialForcesAtFullStrength, out int paidByArrakeen)
+    public static int Cost(Game g, Player p, int amountOfForcesAtFullStrength, int amountOfSpecialForcesAtFullStrength, out int paidByArrakeen)
     {
-        var cost = AmountOfForcesAtFullStrength * NormalForceCost(g, p) + AmountOfSpecialForcesAtFullStrength * SpecialForceCost(g, p);
+        var cost = amountOfForcesAtFullStrength * NormalForceCost(g, p) + amountOfSpecialForcesAtFullStrength * SpecialForceCost(g, p);
         paidByArrakeen = Math.Min(CostReduction(g, p), cost);
-        return cost - paidByArrakeen;
+        var specialForcesSupportedByRedStarPlanet = g.Version >= 165 && p.Is(Faction.Red) && p.HasHighThreshold(World.RedStar)
+            ? amountOfSpecialForcesAtFullStrength
+            : 0;
+        return cost - paidByArrakeen - specialForcesSupportedByRedStarPlanet;
     }
 
     public static int CostReduction(Game g, Player p)

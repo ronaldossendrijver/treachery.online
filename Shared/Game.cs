@@ -1046,4 +1046,17 @@ public partial class Game
     }
 
     #endregion Information
+
+    public bool HasRoomFor(Faction faction)
+    {
+        if (faction is not Faction.None)
+        {
+            var player = GetPlayer(faction);
+            return player != null && (player.IsBot || player.SeatIsAvailable);
+        }
+        else
+        {
+            return Players.Any(p => p.IsBot || p.SeatIsAvailable);
+        }
+    }
 }
