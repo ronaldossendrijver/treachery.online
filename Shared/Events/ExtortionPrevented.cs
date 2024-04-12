@@ -32,7 +32,7 @@ public class ExtortionPrevented : GameEvent
 
     public static bool CanBePlayed(Game g, Player p)
     {
-        return p.Faction != Faction.Cyan && p.Resources >= 3;
+        return p.Faction != Faction.Cyan && p.Resources >= 3 && (g.Version < 166 || g.ExtortionToBeReturned);
     }
 
     #endregion Validation

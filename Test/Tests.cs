@@ -28,13 +28,7 @@ public class Tests
 {
     private void SaveSpecialCases(Game g, GameEvent e)
     {
-        var cyan = g.GetPlayer(Faction.Cyan);
-        if (cyan != null && TerrorPlanted.MayRemoveTokens(g, cyan))
-        {
-            WriteSaveGameIfApplicable(g, cyan, "Cyan may remove tokens");
-        }
         
-
     }
 
     private readonly List<string> _writtenCases = new();

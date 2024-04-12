@@ -61,13 +61,21 @@ public partial class Game
     {
         if (receivedAmount > 1 && Applicable(Rule.Homeworlds))
         {
-            var homeworld = from.Homeworlds.First();
+            var homeworld = Version >= 166 ? from.PrimaryHomeworld : from.Homeworlds.First();
             var occupier = OccupierOf(homeworld.World);
 
-            var amountLost = Version >= 164 ?
-                (occupier != null || from.Is(Faction.Red) || from.Is(Faction.Orange)) && from.HasLowThreshold() ? (int)(0.5f * receivedAmount) : 0 :
-                (!from.Is(Faction.White) || occupier != null) && from.HasLowThreshold() ? (int)(0.5f * receivedAmount) : 0;
-            
+            var halfIsLost = (Version) switch
+            {
+                >= 166 when (occupier != null || from.Is(Faction.Red) || from.Is(Faction.Orange)) &&
+                            from.HasLowThreshold(homeworld.World) => true,
+                >= 164 when (occupier != null || from.Is(Faction.Red) || from.Is(Faction.Orange)) &&
+                            from.HasLowThreshold() => true,
+                <  164 when (!from.Is(Faction.White) || occupier != null) && from.HasLowThreshold() => true,
+                _ => false
+            };
+
+            var amountLost = halfIsLost ? (int)(0.5f * receivedAmount) : 0;
+
             receivedAmount -= amountLost;
 
             if (occupier != null)
