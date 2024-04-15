@@ -36,6 +36,19 @@ public class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfi
         return null;
     }
     
+    public async Task<string> RequestLogin(string userName, string hashedPassword)
+    {
+        await using var db = GetDbContext();
+        
+        var user = await db.Users.FirstOrDefaultAsync(x =>
+            x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()) && x.HashedPassword == hashedPassword);
+        
+        if (user == null)
+            return "Invalid user name or password";
+
+        return null;
+    }
+    
     public async Task<string> RequestPasswordReset(string email)
     {
         await using var db = GetDbContext();

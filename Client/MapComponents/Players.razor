@@ -87,7 +87,7 @@
                     <MapImage X=homeworldXY.X Y=@homeworldXY.Y
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
-                       Popover=@Skin.Current.Format("{0} Reserves", homeworld.Faction) PopoverAsTooltip=true />
+                       Popover=@Skin.Current.Format("{0} Reserves", homeworld.Faction) PopoverAsTooltip="true"/>
                 }
 
                 if (h.Status.HighlightedTerritories.Contains(homeworld.Territory))
@@ -137,7 +137,7 @@
                 <MapImage XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(Game.PinkLoyalLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
-                Popover=@Skin.Current.Format("{0} is Loyal to {1}", Game.PinkLoyalLeader, Faction.Pink) PopoverAsTooltip=true/>
+                Popover=@Skin.Current.Format("{0} is Loyal to {1}", Game.PinkLoyalLeader, Faction.Pink) PopoverAsTooltip="true"/>
             }
                         
             foreach (var skilledLeader in Game.GetSkilledLeaders(p).Where(l => Game.IsInFrontOfShield(l))) {
@@ -170,7 +170,7 @@
                               Y=@(ambassadorXY.Y + yOffset)
                               Diameter=@(Skin.Current.PlayerTokenRadius)
                               Src="@Skin.Current.GetImageURL(a)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
-                              Popover=@Skin.Current.GetAmbassadorDescription(a) PopoverAsTooltip=true />
+                              Popover=@Skin.Current.GetAmbassadorDescription(a) PopoverAsTooltip="true"/>
 
                     yOffset += 0.2f * Skin.Current.PlayerTokenRadius;
                     xOffset = xOffset == 0 ? 0.5f * Skin.Current.PlayerTokenRadius : 0;
@@ -183,7 +183,7 @@
 
                 <MapImage XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) Src="@Skin.Current.FactionSpecialForceImage_URL[Faction.White]"
                        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
-                       Popover="@Skin.Current.Format("Latest revealed No-Field: {0}", Game.LatestRevealedNoFieldValue)" PopoverAsTooltip=true/>
+                       Popover="@Skin.Current.Format("Latest revealed No-Field: {0}", Game.LatestRevealedNoFieldValue)" PopoverAsTooltip="true"/>
 
                 <MapText ToShow="@Game.LatestRevealedNoFieldValue.ToString()"
                          XY=@Pos(positionOnCircle)

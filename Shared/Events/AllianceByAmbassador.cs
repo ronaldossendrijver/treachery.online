@@ -44,7 +44,8 @@ public class AllianceByAmbassador : PassableGameEvent
 
             if (Game.CurrentAmbassadorActivated.PinkGiveVidalToAlly)
                 Game.TakeVidal(Player, VidalMoment.EndOfTurn);
-            else if (Game.CurrentAmbassadorActivated.PinkTakeVidal) Game.TakeVidal(Game.CurrentAmbassadorActivated.Player, VidalMoment.AfterUsedInBattle);
+            else if (Game.CurrentAmbassadorActivated.PinkTakeVidal) 
+                Game.TakeVidal(Game.CurrentAmbassadorActivated.Player, VidalMoment.Never);
 
             if (Game.HasActedOrPassed.Contains(Initiator) && Game.HasActedOrPassed.Contains(Game.CurrentAmbassadorActivated.Initiator)) Game.CheckIfForcesShouldBeDestroyedByAllyPresence(Player);
 

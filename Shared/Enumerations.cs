@@ -826,7 +826,8 @@ public enum VidalMoment
     None = 0,
     AfterUsedInBattle = 10,
     EndOfTurn = 20,
-    WhilePinkWorldIsOccupied = 30
+    WhilePinkWorldIsOccupied = 30,
+    Never = 40
 }
 
 public enum ClairVoyanceAnswer

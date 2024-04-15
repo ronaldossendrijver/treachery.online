@@ -39,7 +39,10 @@ public class Client
     public ServerSettings ServerSettings { get; private set; }
     public Dictionary<int, string> JoinErrors { get; } = new();
     public DateTime Disconnected { get; private set; }
-
+    
+    private string ValidatedUsername { get; set; }
+    private string ValidatedHashedPassword { get; set; }
+    
     //Sound and camera
     public float CurrentEffectVolume { get; set; } = -1;
     public float CurrentChatVolume { get; set; } = -1;
@@ -692,6 +695,8 @@ public class Client
     public IEnumerable<Type> Actions => Game.GetApplicableEvents(Player, IsHost);
 
     public bool IsConnected => _connection.State == HubConnectionState.Connected;
+    
+    public bool IsAuthenticated => ValidatedUsername != null;
 
     public bool IsHost => Host != null;
 
@@ -770,4 +775,46 @@ public class Client
     }
 
     #endregion
+
+    public async Task<string> RequestLogin(string userName, string hashedPassword)
+    {
+        var result = await _connection.InvokeAsync<string>("RequestLogin", userName, hashedPassword);
+
+        if (result == null)
+        {
+            ValidatedUsername = userName;
+            ValidatedHashedPassword = hashedPassword;
+        }
+
+        return result;
+    }
+    
+    public async Task<string> RequestCreateUser(string userName, string hashedPassword, string email, string playerName)
+    {
+        var result = await _connection.InvokeAsync<string>("RequestCreateUser", userName, hashedPassword, email, playerName);
+
+        if (result == null)
+        {
+            ValidatedUsername = userName;
+            ValidatedHashedPassword = hashedPassword;
+        }
+
+        return result;
+    }
+
+    public async Task<string> RequestPasswordReset(string email) => await _connection.InvokeAsync<string>("RequestPasswordReset", email);
+    
+    public async Task<string> RequestSetPassword(string userName, string passwordResetToken, string hashedPassword)
+    {
+        var result = await _connection.InvokeAsync<string>("RequestSetPassword", userName, passwordResetToken, hashedPassword);
+
+        if (result == null)
+        {
+            ValidatedUsername = userName;
+            ValidatedHashedPassword = hashedPassword;
+        }
+
+        return result;
+    }
+    
 }

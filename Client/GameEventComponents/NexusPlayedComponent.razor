@@ -32,7 +32,7 @@
                     break;
 
                 case Faction.Black when betrayal: 
-                    <div>Cancel the revealed <FactionComponent Faction=@Faction.Black Diameter=20/> traitor?</div>
+                    <div>Cancel the revealed <FactionComponent Faction=@Faction.Black Diameter="20"/> traitor?</div>
                     break;
 
                 case Faction.Black when cunning:
@@ -44,11 +44,11 @@
                     break;
 
                 case Faction.Yellow when betrayal && Game.CurrentMainPhase == MainPhase.Blow:
-                    <div>Prevent <FactionComponent Faction=@Faction.Yellow Diameter=20 /> from riding @Name(Concept.Monster)?</div>
+                    <div>Prevent <FactionComponent Faction=@Faction.Yellow Diameter="20"/> from riding @Name(Concept.Monster)?</div>
                     break;
 
                 case Faction.Yellow when betrayal && Game.CurrentMainPhase == MainPhase.ShipmentAndMove:
-                    <div>Prevent <FactionComponent Faction=@Faction.Yellow Diameter=20 /> moving 2 territories?</div>
+                    <div>Prevent <FactionComponent Faction=@Faction.Yellow Diameter="20"/> moving 2 territories?</div>
                     break;
 
                 case Faction.Yellow when cunning:
@@ -64,15 +64,15 @@
                     break;
 
                 case Faction.Red when betrayal && Game.CurrentMainPhase == MainPhase.Bidding:
-                    <div>Force <FactionComponent Faction=@Faction.Red Diameter=20 /> to pay for the next card their ally buys?</div>
+                    <div>Force <FactionComponent Faction=@Faction.Red Diameter="20"/> to pay for the next card their ally buys?</div>
                     break;
 
                 case Faction.Red when betrayal && Game.CurrentMainPhase == MainPhase.Battle:
-                    <div>Let <Image Shown=FactionSpecialForce.Red Width=20 /> count as <Image Shown=FactionForce.Red Width=20 /> in this battle?</div>
+                    <div>Let <Image Shown=FactionSpecialForce.Red Width="20"/> count as <Image Shown=FactionForce.Red Width="20"/> in this battle?</div>
                     break;
 
                 case Faction.Red when cunning:
-                    <div>Let up to 5 <Image Shown=FactionForce.Red Width=20 /> count as <Image Shown=FactionSpecialForce.Red Width=20 /> in this battle?</div>
+                    <div>Let up to 5 <Image Shown=FactionForce.Red Width="20"/> count as <Image Shown=FactionSpecialForce.Red Width="20"/> in this battle?</div>
                     break;
 
                 case Faction.Orange when betrayal:
@@ -84,7 +84,7 @@
                     break;
 
                 case Faction.Orange when secretAlly:
-                    <div>Ship at <Image Shown=FactionForce.Orange Width=20 /> rates or perform a shipment cross-planet or to reserves?</div>
+                    <div>Ship at <Image Shown=FactionForce.Orange Width="20"/> rates or perform a shipment cross-planet or to reserves?</div>
                     break;
 
                 case Faction.Blue when betrayal:
@@ -104,11 +104,11 @@
                     break;
 
                 case Faction.Grey when cunning:
-                    <div>Let all <Image Shown=FactionForce.Grey Width=20 /> in this battle count full strength?</div>
+                    <div>Let all <Image Shown=FactionForce.Grey Width="20"/> in this battle count full strength?</div>
                     break;
 
                 case Faction.Purple when betrayal:
-                    <div>Cancel the revealed <FactionComponent Faction=@Faction.Purple Diameter=20 /> face dancer?</div>
+                    <div>Cancel the revealed <FactionComponent Faction=@Faction.Purple Diameter="20"/> face dancer?</div>
                     break;
 
                 case Faction.Purple when cunning:
@@ -139,7 +139,7 @@
                     if (maxSpecialForcesPlacedOnPlanet > 0)
                     {
                         <div>
-                            <SelectForcesComponent Label="Place forces on the planet?" @bind-Value="purpleAmountOfSpecialForcesToLocation" Min=0 Max=maxSpecialForcesPlacedOnPlanet Faction=Faction Special=true />
+                            <SelectForcesComponent Label="Place forces on the planet?" @bind-Value="purpleAmountOfSpecialForcesToLocation" Min=0 Max=maxSpecialForcesPlacedOnPlanet Faction=Faction Special="true"/>
                         </div>
                     }
                     else
@@ -176,7 +176,7 @@
                     break;
 
                 case Faction.Brown when betrayal:
-                    <div>Force <FactionComponent Faction=@Faction.Brown Diameter=20 /> to discard a random card from their hand?</div>
+                    <div>Force <FactionComponent Faction=@Faction.Brown Diameter="20"/> to discard a random card from their hand?</div>
                     break;
 
                 case Faction.Brown when secretAlly && Game.CurrentMainPhase == MainPhase.Collection:
@@ -191,16 +191,16 @@
                 case Faction.White when betrayal:
                     if (Game.GetPlayer(Faction.White).TreacheryCards.Contains(Game.CardJustWon))
                     {
-                        <div>Force <FactionComponent Faction=@Faction.White Diameter=20 /> to discard the <FactionComponent Faction=@Faction.White Diameter=20 /> they just bought?</div>
+                        <div>Force <FactionComponent Faction=@Faction.White Diameter="20"/> to discard the <FactionComponent Faction=@Faction.White Diameter="20"/> they just bought?</div>
                     }
                     else
                     {
-                        <div>Prevent <FactionComponent Faction=@Faction.White Diameter=20 /> from getting paid for the they just sold?</div>
+                        <div>Prevent <FactionComponent Faction=@Faction.White Diameter="20"/> from getting paid for the they just sold?</div>
                     }
                     break;
 
                 case Faction.Pink when betrayal:
-                    <div>Return all <FactionComponent Faction=@Faction.Pink Diameter=20 /> in a territory they occupy with their ally to reserves?</div>
+                    <div>Return all <FactionComponent Faction=@Faction.Pink Diameter="20"/> in a territory they occupy with their ally to reserves?</div>
                     <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value=pinkTerritory Values=@NexusPlayed.ValidPinkTerritories(Game)>
                         <Label>Territory</Label>
                     </SelectComponent>
@@ -212,7 +212,7 @@
 
                 case Faction.Pink when secretAlly:
                     <div>Force a faction to reveal whether or not they have any of your leaders as traitor?</div>
-                    <SelectFromImageComponent @bind-Value=pinkFaction Values=@NexusPlayed.ValidPinkFactions(Game) ImageWidth="40" Required=true/>
+                    <SelectFromImageComponent @bind-Value=pinkFaction Values=@NexusPlayed.ValidPinkFactions(Game) ImageWidth="40" Required="true"/>
                     break;
 
                 case Faction.Cyan when betrayal:

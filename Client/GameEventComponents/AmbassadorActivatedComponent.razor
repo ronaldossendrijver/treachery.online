@@ -33,7 +33,7 @@
             {
                 case Ambassador.Green:
 
-                    <div>See the <Image Shown=@victim Width=30/> hand?</div>
+                    <div>See the <Image Shown=@victim Width="30"/> hand?</div>
                     break;
 
                 case Ambassador.Brown:
@@ -46,20 +46,20 @@
 
                 case Ambassador.Pink:
                 
-                    if (AmbassadorActivated.AllianceCanBeOffered(Game, Player))
-                    {
-                        <CheckboxComponent @bind-Value="_pinkOfferAlliance">Offer an alliance to @Name(victim)</CheckboxComponent>
+                    if (AmbassadorActivated.VidalCanBeTaken(Game, Player)) {
+
+                        <CheckboxComponent @bind-Value="_pinkTakeVidal">Take @Name(Game.Vidal)</CheckboxComponent>
                     }
                     else
                     {
-                        _pinkOfferAlliance = false;
+                        _pinkTakeVidal = false;
                     }
-
-                    if (AmbassadorActivated.VidalCanBeTaken(Game)) {
-
-                        <CheckboxComponent @bind-Value="_pinkTakeVidal">Take @Name(Game.Vidal)</CheckboxComponent>
-
-                        if (_pinkTakeVidal && _pinkOfferAlliance)
+                    
+                    if (!_pinkTakeVidal && AmbassadorActivated.AllianceCanBeOffered(Game, Player))
+                    {
+                        <CheckboxComponent @bind-Value="_pinkOfferAlliance">Offer an alliance to @Name(victim)</CheckboxComponent>
+                        
+                        if (_pinkOfferAlliance && AmbassadorActivated.VidalCanBeOfferedToNewAlly(Game, Player))
                         {
                             <CheckboxComponent @bind-Value="_pinkGiveVidal">Give @Name(Game.Vidal) to @Name(victim) if they agree to ally</CheckboxComponent>
                         }
@@ -70,10 +70,9 @@
                     }
                     else
                     {
-                        _pinkTakeVidal = false;
+                        _pinkOfferAlliance = false;
                         _pinkGiveVidal = false;
                     }
-
                     break;
 
                 case Ambassador.Red:
@@ -94,7 +93,7 @@
                                 <Label>From</Label>
                             </SelectComponent>
 
-                            <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="_yellowForces" Locations="Player.LocationsWithAnyForcesInTerritory(_yellowFromTerritory)" InitializeToMaximum=true />
+                            <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="_yellowForces" Locations="Player.LocationsWithAnyForcesInTerritory(_yellowFromTerritory)" InitializeToMaximum="true"/>
 
                             <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="_yellowOrOrangeToLocation" Values=@AmbassadorActivated.ValidYellowTargets(Game, Player)>
                                 <Label>To</Label>
@@ -115,15 +114,15 @@
                     
                     if (victim == Faction.Black)
                     {
-                        <div>See one of the <Image Shown=@victim Width=30 /> traitors?</div>
+                        <div>See one of the <Image Shown=@victim Width="30"/> traitors?</div>
                     }
                     else if (victim == Faction.Purple)
                     {
-                        <div>See one of the <Image Shown=@victim Width=30 /> unrevealed Face Dancers?</div>
+                        <div>See one of the <Image Shown=@victim Width="30"/> unrevealed Face Dancers?</div>
                     }
                     else {
 
-                        <div>See the <Image Shown=@victim Width=30 /> traitor?</div>
+                        <div>See the <Image Shown=@victim Width="30"/> traitor?</div>
                     }
                     break;
 

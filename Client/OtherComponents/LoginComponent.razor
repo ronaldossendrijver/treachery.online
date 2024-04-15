@@ -1,0 +1,143 @@
+﻿@*
+ * Copyright (C) 2020-2024 Ronald Ossendrijver (admin@treachery.online)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
+ * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
+ * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+*@
+@inherits GameComponent
+
+<div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeIn90 3s;">
+    <div class="card-header">Welcome to treachery.online!</div>
+    <div class="card-body">
+        
+        <h3 class="h3">Please enter your username and password</h3>
+        <input @ref="usernameField" class="form-control" @bind-value="username" @bind-value:event="oninput" maxlength="80" placeholder="Your name" @onkeyup="@(e => KeyUp(e, Login))"/>
+        <input type="password" class="form-control" @bind-value="password" @bind-value:event="oninput" maxlength="80" placeholder="Password" @onkeyup="@(e => KeyUp(e, Login))"/>
+        <label class="alert-danger">@loginMessage</label>
+        <button class="btn btn-primary mt-1" disabled="@(!ValidateLogin())" @onclick="Login">Log in</button>
+        
+        <h3 class="h3">Create new account?</h3>
+        <div>If need an account, you can create one for free</div>
+        <input class="form-control" @bind-value="newUsername" @bind-value:event="oninput" maxlength="80" placeholder="Your name" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
+        <input class="form-control" @bind-value="newEmail" @bind-value:event="oninput" maxlength="80" placeholder="E-mail address" @onkeyup="@(e => KeyUp(e, PasswordReset))"/>
+        <input type="password" class="form-control" @bind-value="newPassword" @bind-value:event="oninput" maxlength="80" placeholder="Password" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
+        <input type="password" class="form-control" @bind-value="newPasswordConfirm" @bind-value:event="oninput" maxlength="80" placeholder="Repeat password" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
+        <label class="alert-danger">@newAccountMessage</label>
+        <button class="btn btn-primary mt-1" disabled="@(!ValidateNewAccount())" @onclick="NewAccount">Create account</button>
+
+        <h3 class="h3">Forgot your password?</h3>
+        <div>If you forgot your password, a password reset token will be sent to the e-mail address associated to your account.</div>
+        <input class="form-control" @bind-value="passwordResetEmail" @bind-value:event="oninput" maxlength="80" placeholder="E-mail address" @onkeyup="@(e => KeyUp(e, PasswordReset))"/>
+        <label class="alert-danger">@passwordResetMessage</label>
+        <button class="btn btn-primary mt-1" disabled="@(!ValidatePasswordReset())" @onclick="PasswordReset">Request password reset</button>
+        <div>Enter the username and password reset token you receive by e-mail and your new password below:</div>
+        <input class="form-control" @bind-value="resetToken" @bind-value:event="oninput" maxlength="80" placeholder="Your name" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
+        <input class="form-control" @bind-value="resetUsername" @bind-value:event="oninput" maxlength="80" placeholder="Your name" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
+        <input type="password" class="form-control" @bind-value="resetPassword" @bind-value:event="oninput" maxlength="80" placeholder="Password" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
+        <input type="password" class="form-control" @bind-value="resetPasswordConfirm" @bind-value:event="oninput" maxlength="80" placeholder="Repeat password" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
+        <label class="alert-danger">@resetPasswordMessage</label>
+        <button class="btn btn-primary mt-1" disabled="@(!ValidateNewPassword())" @onclick="NewPassword">Set new password</button>
+
+    </div>
+    <div class="card-footer">Version @Game.LatestVersion (April 12, 2024)</div>
+</div>
+
+@code {
+
+    private ElementReference usernameField;
+    
+    private string username;
+    private string password;
+    private string loginMessage;
+    
+    private string newUsername;
+    private string newPassword;
+    private string newPasswordConfirm;
+    private string newEmail;
+    private string newAccountMessage;
+    
+    private string passwordResetEmail;
+    private string passwordResetMessage;
+    
+    private string resetToken;
+    private string resetUsername;
+    private string resetPassword;
+    private string resetPasswordConfirm;
+    private string resetPasswordMessage;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await usernameField.FocusAsync();
+        }
+    }
+
+    private async Task KeyUp(KeyboardEventArgs e, Func<Task> action)
+    {
+        if (e.Code is "Enter" or "NumpadEnter")
+        {
+            await action();
+        }
+    }
+
+    private bool ValidateLogin()
+    {
+        return string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password);
+    }
+    
+    private bool ValidateNewAccount()
+    {
+        var result = PlayerJoined.ValidName(newUsername);
+        if (!string.IsNullOrEmpty(result)) newAccountMessage = result;
+        else if (string.IsNullOrEmpty(newPassword) || newPassword.Length < 6) newAccountMessage = "Password must be at least 6 characters";
+        else if (!newPassword.Equals(newPasswordConfirm)) newAccountMessage = "Confirmed password does not match";
+        else if (string.IsNullOrEmpty(newEmail) || !newEmail.Contains('@') || !newEmail.Contains('.')) newAccountMessage = "Enter a valid e-mail address";
+        else newAccountMessage = null;
+
+        return newAccountMessage == null;
+    }
+    
+    private bool ValidatePasswordReset()
+    {
+        if (string.IsNullOrEmpty(passwordResetEmail) || !passwordResetEmail.Contains('@') || !passwordResetEmail.Contains('.')) passwordResetMessage = "Enter a valid e-mail address";
+        else passwordResetMessage = null;
+
+        return passwordResetMessage == null;
+    }
+    
+    private bool ValidateNewPassword()
+    {
+        var result = PlayerJoined.ValidName(resetUsername);
+        
+        if (string.IsNullOrEmpty(resetToken) || resetToken.Length < 6) resetPasswordMessage = "Enter the reset token sent to your e-mail address";
+        else if (!string.IsNullOrEmpty(result)) resetPasswordMessage = result;
+        else if (string.IsNullOrEmpty(resetPassword) || resetPassword.Length < 6) resetPasswordMessage = "Password must be at least 6 characters";
+        else if (!resetPassword.Equals(resetPasswordConfirm)) resetPasswordMessage = "Confirmed password does not match";
+        else resetPasswordMessage = null;
+
+        return resetPasswordMessage == null;
+    }
+
+    private async Task NewAccount()
+    {
+        loginMessage = await Client.RequestCreateUser(newUsername, Support.GetHash(newPassword), newEmail, newUsername);
+    }
+    
+    private async Task PasswordReset()
+    {
+        loginMessage = await Client.RequestPasswordReset(passwordResetEmail);
+    }
+    
+    private async Task NewPassword()
+    {
+        loginMessage = await Client.RequestSetPassword(resetUsername, resetToken, Support.GetHash(resetPassword));
+    }
+    
+    private async Task Login()
+    {
+        loginMessage = await Client.RequestLogin(username, Support.GetHash(password));
+    }
+}

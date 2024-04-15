@@ -28,7 +28,7 @@
         {
             var popover = Player.Faction == Faction.Cyan ? Skin.Current.Format("{0} - {1}", terr, Skin.Current.GetTerrorTypeDescription(terr)) : "Terror";
             <MapImage X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetFactionTableImageURL(Faction.Cyan)
-                ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover PopoverAsTooltip=true />
+                ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover PopoverAsTooltip="true"/>
 
             y += Skin.Current.PlayerTokenRadius;
         }
@@ -38,7 +38,7 @@
         {
             var popover = $"{Skin.Current.Describe(ambassador)} Ambassador - {Skin.Current.GetAmbassadorDescription(ambassador)}";
             <MapImage X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetImageURL(ambassador)
-            ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover PopoverAsTooltip=true />
+            ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover PopoverAsTooltip="true"/>
 
             y += Skin.Current.PlayerTokenRadius;
         }
@@ -79,7 +79,7 @@
                Src="@(showHMS ? Skin.Current.Eye_URL : Skin.Current.EyeSlash_URL)"
                ShadowColor="black" ShadowX="1" ShadowY="1" ShadowBlur="0"
                OnClick="OnShowHmsClick"
-               Popover="@(showHMS ? "Hide HMS" : "Show HMS")" PopoverAsTooltip=true/>
+               Popover="@(showHMS ? "Hide HMS" : "Show HMS")" PopoverAsTooltip="true"/>
         }
         else if (location is DiscoveredLocation ds)
         {

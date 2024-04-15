@@ -584,6 +584,11 @@ public partial class Player : ICloneable
     {
         return TreacheryCards.Any(c => c.Type == cardtype);
     }
+    
+    public bool Has(Leader leader)
+    {
+        return Leaders.Contains(leader);
+    }
 
     public bool Is(Faction f)
     {

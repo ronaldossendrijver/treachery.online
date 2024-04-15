@@ -1074,7 +1074,7 @@ public partial class Player
 
             case Ambassador.Pink:
                 var offerAlliance = AmbassadorActivated.AllianceCanBeOffered(Game, this) && PlayerStanding(victimPlayer) > 0.33 * PlayerStanding(this);
-                var takeVidal = AmbassadorActivated.VidalCanBeTaken(Game);
+                var takeVidal = AmbassadorActivated.VidalCanBeTaken(Game, this);
                 var offerVidal = takeVidal && HeroesForBattle(this, true).Count() >= 3 && HeroesForBattle(victimPlayer, true).Count() < 3;
 
                 if (offerAlliance || takeVidal || offerVidal)
