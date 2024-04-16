@@ -16,7 +16,7 @@ public partial class Game
     #region Settings
 
     public const int LowestSupportedVersion = 100;
-    public const int LatestVersion = 166;
+    public const int LatestVersion = 167;
 
     public const int ExpansionLevel = 3;
     

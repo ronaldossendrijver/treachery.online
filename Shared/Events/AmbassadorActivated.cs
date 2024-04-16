@@ -130,7 +130,7 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
                 case Ambassador.Pink:
                     if (PinkOfferAlliance && !AllianceCanBeOffered(Game, player)) return Message.Express("You can't offer an alliance");
                     if (PinkTakeVidal && !VidalCanBeTaken(Game, Player)) return Message.Express("You can't take ", Game.Vidal);
-                    if (PinkTakeVidal && PinkGiveVidalToAlly) return Message.Express("You don't have ", Game.Vidal, " yet");
+                    if (Game.Version >= 167 && PinkTakeVidal && PinkGiveVidalToAlly) return Message.Express("You don't have ", Game.Vidal, " yet");
                     break;
 
                 case Ambassador.Yellow:
@@ -201,8 +201,7 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
 
     public static bool VidalCanBeTaken(Game g, Player p)
     {
-        //return g.VidalIsAlive && !g.VidalIsCapturedOrGhola && g.OccupierOf(World.Pink) == null;
-        return !p.Has(g.Vidal) && g.VidalIsAlive && !g.VidalIsCapturedOrGhola && g.OccupierOf(World.Pink) == null;
+        return (g.Version < 167 || !p.Has(g.Vidal)) && g.VidalIsAlive && !g.VidalIsCapturedOrGhola && g.OccupierOf(World.Pink) == null;
     }
 
     public static IEnumerable<Ambassador> GetValidBlueAmbassadors(Game g)
@@ -360,8 +359,10 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
                 }
                 else 
                 {
-                    //if (Game.CurrentAmbassadorActivated.PinkTakeVidal) Game.TakeVidal(Player, VidalMoment.AfterUsedInBattle);
-                    if (Game.CurrentAmbassadorActivated.PinkTakeVidal) Game.TakeVidal(Player, VidalMoment.Never);
+                    if (Game.CurrentAmbassadorActivated.PinkTakeVidal)
+                    {
+                        Game.TakeVidal(Player, Game.Version >= 167 ? VidalMoment.Never : VidalMoment.AfterUsedInBattle);
+                    }
 
                     Game.DetermineNextShipmentAndMoveSubPhase();
                 }

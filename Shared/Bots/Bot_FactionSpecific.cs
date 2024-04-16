@@ -1075,7 +1075,7 @@ public partial class Player
             case Ambassador.Pink:
                 var offerAlliance = AmbassadorActivated.AllianceCanBeOffered(Game, this) && PlayerStanding(victimPlayer) > 0.33 * PlayerStanding(this);
                 var takeVidal = AmbassadorActivated.VidalCanBeTaken(Game, this);
-                var offerVidal = takeVidal && HeroesForBattle(this, true).Count() >= 3 && HeroesForBattle(victimPlayer, true).Count() < 3;
+                var offerVidal = offerAlliance && AmbassadorActivated.VidalCanBeOfferedToNewAlly(Game, this) && takeVidal && HeroesForBattle(this, true).Count() >= 3 && HeroesForBattle(victimPlayer, true).Count() < 3;
 
                 if (offerAlliance || takeVidal || offerVidal)
                     return new AmbassadorActivated(Game, Faction) { BlueSelectedAmbassador = blueSelectedAmbassador, PinkOfferAlliance = offerAlliance, PinkTakeVidal = takeVidal, PinkGiveVidalToAlly = offerVidal };
