@@ -129,7 +129,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
     public int DetermineCostToInitiator(Game g)
     {
         if (g.Version <= 106)
-            return DetermineCost(Game, Player, ForceAmount + SpecialForceAmount, To, IsUsingKarma, IsBackToReserves, IsNoField, false) - AllyContributionAmount;
+            return DetermineCost(Game, Player, ForceAmount, SpecialForceAmount, To, IsUsingKarma, IsBackToReserves, false, IsNoField, false) - AllyContributionAmount;
         return DetermineCost(Game, Player, this) - AllyContributionAmount;
     }
     
@@ -243,25 +243,32 @@ public class Shipment : PassableGameEvent, ILocationEvent
     {
         if (s.To == null) return 0;
 
-        return DetermineCost(g, p, Math.Abs(s.ForceAmount) + Math.Abs(s.SpecialForceAmount), s.To, s.IsUsingKarma, s.IsBackToReserves, s.IsSiteToSite, s.IsNoField || s.UseWhiteSecretAlly);
+        return DetermineCost(g, p, Math.Abs(s.ForceAmount), Math.Abs(s.SpecialForceAmount), s.To, s.IsUsingKarma, s.IsBackToReserves, s.IsSiteToSite, s.IsWhiteNoField, s.IsNonWhiteNoField);
     }
+    
+    private bool IsWhiteNoField => Initiator is Faction.White && IsNoField;
+    private bool IsNonWhiteNoField => Initiator is not Faction.White && IsNoField || UseWhiteSecretAlly;
 
-    public static int DetermineCost(Game g, Player p, int amount, Location to, bool karamaShipment, bool backToReserves, bool siteToSite, bool noFieldOrSecretAlly)
+    public static int DetermineCost(Game g, Player p, int forces, int specialForces, Location to, bool karamaShipment, bool backToReserves, bool siteToSite, bool noFieldByWhite, bool noFieldByNonWhite)
     {
-        var amountToPayFor = amount;
+        var totalForces = forces + specialForces;
+        var noFieldOrSecretAlly = noFieldByWhite || noFieldByNonWhite;
 
-        if (g.Version < 139 && amountToPayFor > 1 && g.SkilledAs(p, LeaderSkill.Smuggler) && !g.AnyForcesIn(to.Territory))
-            amountToPayFor--;
-        else if (noFieldOrSecretAlly) amountToPayFor = Math.Min(amount, 1);
+        if (g.Version < 139 && totalForces > 1 && g.SkilledAs(p, LeaderSkill.Smuggler) && !g.AnyForcesIn(to.Territory))
+            totalForces--;
+        else if (g.Version < 167 && noFieldOrSecretAlly || noFieldByNonWhite) 
+            totalForces = Math.Min(forces + specialForces, 1);
+        else if (g.Version >= 167 && noFieldByWhite) 
+            totalForces = Math.Max(forces, 1);
+        
+        if (backToReserves) return (int)Math.Ceiling(0.5f * totalForces);
 
+        if ((g.Version < 154 || !siteToSite) && p.Is(Faction.Yellow) && YellowSpawnLocations(g, p).Contains(to) && (g.Version < 159 || !noFieldOrSecretAlly)) return 0;
 
-        if (backToReserves) return (int)Math.Ceiling(0.5f * amountToPayFor);
+        double costOfShipment = Math.Abs(totalForces) * (to.Territory.HasReducedShippingCost ? 1 : 2);
 
-        if ((g.Version < 154 || (!siteToSite && !backToReserves)) && p.Is(Faction.Yellow) && YellowSpawnLocations(g, p).Contains(to) && (g.Version < 159 || !noFieldOrSecretAlly)) return 0;
-
-        double costOfShipment = Math.Abs(amountToPayFor) * (to.Territory.HasReducedShippingCost ? 1 : 2);
-
-        if (MayShipWithDiscount(g, p) || karamaShipment || (siteToSite && g.HasShipmentPermission(p, ShipmentPermission.OrangeRate)) || (backToReserves && g.HasShipmentPermission(p, ShipmentPermission.OrangeRate))) costOfShipment /= 2;
+        if (MayShipWithDiscount(g, p) || karamaShipment || siteToSite && g.HasShipmentPermission(p, ShipmentPermission.OrangeRate)) 
+            costOfShipment /= 2;
 
         return (int)Math.Ceiling(costOfShipment);
     }

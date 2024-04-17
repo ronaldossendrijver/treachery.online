@@ -518,7 +518,7 @@ public partial class Player
 
         var shortage = DetermineForcesInShipment(dialNeeded, location, forcesAvailable, specialForcesAvailable, ref forces, ref specialForces, maxUnsupportedForces, preferSpecialForces, normalStrength, specialStrength, spiceAvailable, noSpiceForForceModifier, costPerForceInBattle);
 
-        if (maxForcesWithNoField >= 0 && Shipment.DetermineCost(Game, this, 2, location, false, false, false, false) != 0 && spiceAvailable > 0)
+        if (maxForcesWithNoField >= 0 && Shipment.DetermineCost(Game, this, 2, 0, location, false, false, false, false, false) != 0 && spiceAvailable > 0)
         {
             int availableSpecialForcesNoField;
             int availableForcesNoField;
@@ -576,7 +576,7 @@ public partial class Player
                 dialNeeded > 0 &&
                 (dialNeeded > normalStrength || forcesAvailable == 0) &&
                 specialForcesAvailable >= 1 &&
-                (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false, false)) <= spiceAvailable &&
+                (shipcost = Shipment.DetermineCost(Game, this, forces, specialForces + 1, location, false, false, false, false, false)) <= spiceAvailable &&
                 shipcost + costOfBattle - spiceAvailable < maxUnsupportedForces)
             {
                 specialForces++;
@@ -590,7 +590,7 @@ public partial class Player
         while (
             dialNeeded > 0 &&
             forcesAvailable >= 1 &&
-            (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false, false)) <= spiceAvailable &&
+            (shipcost = Shipment.DetermineCost(Game, this, forces, specialForces + 1, location, false, false, false, false, false)) <= spiceAvailable &&
             shipcost + costOfBattle - spiceAvailable < maxUnsupportedForces)
         {
             forces++;
@@ -603,7 +603,7 @@ public partial class Player
 
         while (dialNeeded > 0 &&
                specialForcesAvailable >= 1 &&
-               (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false, false)) <= spiceAvailable &&
+               (shipcost = Shipment.DetermineCost(Game, this, forces, specialForces + 1, location, false, false, false, false, false)) <= spiceAvailable &&
                shipcost + costOfBattle - spiceAvailable < maxUnsupportedForces)
         {
             specialForces++;
