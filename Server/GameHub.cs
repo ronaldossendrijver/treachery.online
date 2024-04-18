@@ -33,6 +33,8 @@ public class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfi
         await db.AddAsync(new User()
             { Name = userName, HashedPassword = hashedPassword, Email = email, PlayerName = playerName });
 
+        await db.SaveChangesAsync();
+        
         return null;
     }
     

@@ -784,6 +784,8 @@ public class Client
         {
             ValidatedUsername = userName;
             ValidatedHashedPassword = hashedPassword;
+            PlayerName = userName;
+            Refresh();
         }
 
         return result;

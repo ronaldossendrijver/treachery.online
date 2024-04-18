@@ -116,6 +116,7 @@ public class BlueAccompanies : GameEvent, ILocationEvent
     {
         var result = new List<Location>();
         if (g.LastShipmentOrMovement.To != g.Map.PolarSink &&
+            (g.Version < 167 || g.LastShipmentOrMovement.To is not Homeworld) &&
             g.LastShipmentOrMovement.To.Territory != g.AtomicsAftermath &&
             !p.Occupies(g.LastShipmentOrMovement.To.Territory) &&
             BlueMayAccompanyToShipmentLocation(g) &&

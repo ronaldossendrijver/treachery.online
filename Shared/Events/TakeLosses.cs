@@ -43,7 +43,8 @@ public class TakeLosses : GameEvent
         if (UseUselessCard) return null;
 
         var valueToBeKilled = LossesToTake(Game).Amount;
-        if (ForceAmount + 2 * SpecialForceAmount < valueToBeKilled) return Message.Express("Select a total value of at least ", valueToBeKilled, " to be killed");
+        var specialForceBonus = Game.Version < 167 ? 2 : 1;
+        if (ForceAmount + specialForceBonus * SpecialForceAmount < valueToBeKilled) return Message.Express("Select a total value of at least ", valueToBeKilled, " to be killed");
 
         if (Game.Version >= 120)
         {

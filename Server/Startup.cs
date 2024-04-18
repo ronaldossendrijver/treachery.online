@@ -9,6 +9,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -72,5 +73,9 @@ public class Startup
             endpoints.MapHub<GameHub>("/gameHub");
             endpoints.MapFallbackToFile("index.html");
         });
+
+        using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
+        var context = serviceScope.ServiceProvider.GetService<TreacheryContext>();
+        context.Database.Migrate();
     }
 }

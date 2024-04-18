@@ -11,7 +11,6 @@ public partial class TreacheryContext(DbContextOptions<TreacheryContext> options
     public DbSet<PlayedGame> Games { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-
         => optionsBuilder.UseSqlite(configuration.GetConnectionString("TreacheryDatabase"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
