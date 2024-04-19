@@ -186,7 +186,7 @@ else
     {
         Message.DefaultDescriber = Skin.Current;
         Browser.Initialize(JsRuntime);
-        Client = new Client(NavigationManager.ToAbsoluteUri("/gameHub"));
+        Client = new Client(NavigationManager);
         await Client.Start();
         await LoadSkinDataIfSaved();
     }

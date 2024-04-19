@@ -11,14 +11,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Treachery.Shared.Services;
 
 namespace Treachery.Client;
 
-public class Client
+public class Client : IGameService
 {
     #region FieldsAndConstructor
 
@@ -64,10 +66,10 @@ public class Client
 
     private readonly HubConnection _connection;
 
-    public Client(Uri uri)
+    public Client(NavigationManager navigationManager)
     {
         _connection = new HubConnectionBuilder()
-            .WithUrl(uri)
+            .WithUrl(navigationManager.ToAbsoluteUri("/gameHub"))
             .WithAutomaticReconnect(new RetryPolicy())
             .AddNewtonsoftJsonProtocol(configuration =>
             {
@@ -156,7 +158,7 @@ public class Client
     private readonly Dictionary<GameInfo, DateTime> _advertisedGames = new();
     private void ReceiveGameAvailable(GameInfo info)
     {
-        if (HostProxy != null && info.HostID == HostProxy.HostID) hostLastSeen = DateTime.Now;
+        if (HostProxy != null && info.HostID == HostProxy.HostID) HostLastSeen = DateTime.Now;
 
         if (_availableGames.ContainsKey(info)) _availableGames.Remove(info);
 
@@ -244,7 +246,7 @@ public class Client
         {
             HostProxy = new HostProxy(hostID, _connection);
             IsObserver = false;
-            hostLastSeen = DateTime.Now;
+            HostLastSeen = DateTime.Now;
 
             var _ = Heartbeat(GameInProgressHostId);
         }
@@ -262,7 +264,7 @@ public class Client
         {
             HostProxy = new HostProxy(hostID, _connection);
             IsObserver = true;
-            hostLastSeen = DateTime.Now;
+            HostLastSeen = DateTime.Now;
             var _ = Heartbeat(GameInProgressHostId);
         }
         else
@@ -281,7 +283,7 @@ public class Client
         else if (howThisObserverRejoined != null) await Request(HostProxy.HostID, howThisObserverRejoined);
     }
 
-    public DateTime hostLastSeen = DateTime.Now;
+    public DateTime HostLastSeen { get; private set; } = DateTime.Now;
     private int nrOfHeartbeats;
     private string oldConnectionId = "";
 
@@ -319,7 +321,7 @@ public class Client
 
     private bool CheckDisconnect()
     {
-        if (_connection.State == HubConnectionState.Disconnected || DateTime.Now.Subtract(hostLastSeen).TotalMilliseconds > DISCONNECT_TIMEOUT)
+        if (_connection.State == HubConnectionState.Disconnected || DateTime.Now.Subtract(HostLastSeen).TotalMilliseconds > DISCONNECT_TIMEOUT)
         {
             Disconnected = DateTime.Now;
             Refresh();
@@ -329,7 +331,7 @@ public class Client
         return false;
     }
 
-    public Dictionary<int, GameEvent> _pending = new();
+    private readonly Dictionary<int, GameEvent> _pending = new();
     private async Task HandleEvent(int newEventNumber, GameEvent e)
     {
         try
@@ -506,7 +508,7 @@ public class Client
         }
     }
 
-    public LinkedList<ChatMessage> Messages = new();
+    public LinkedList<ChatMessage> Messages { get; } = [];
 
     private async Task HandleChatMessage(GameChatMessage m)
     {

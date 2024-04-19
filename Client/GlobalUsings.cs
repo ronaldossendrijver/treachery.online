@@ -7,6 +7,9 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+global using System;
+global using System.Threading.Tasks;
+global using System.Collections.Generic;
 global using Treachery.Shared;
 global using Treachery.Shared.Model;
 global using Treachery.Client.GenericComponents;
