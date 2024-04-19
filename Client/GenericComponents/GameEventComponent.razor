@@ -7,7 +7,7 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 @inherits GameComponent
-@typeparam GameEventType
+@typeparam T
  
 @code {
 
@@ -23,8 +23,6 @@
     }
 
     protected virtual string Background { get; set; } = "";
-
-    protected string validationError = "";
 
     protected async Task Confirm()
     {
@@ -57,11 +55,6 @@
                 return Message.Express("Validation failed");
             }
         }
-    }
-
-    protected List<string> ValidValues<T>(IEnumerable<T> values)
-    {
-        return values.Select(o => Name(o)).ToList();
     }
 
     protected void SetIfValid<DisplayType, OriginalType>(ref DisplayType field, IEnumerable<OriginalType> validValues, OriginalType newValue)

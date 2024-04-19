@@ -112,16 +112,6 @@
         await Browser.SaveSetting("treachery.online;setting.music", DesiredMusicVolume);
         await Browser.SaveSetting("treachery.online;setting.effect", DesiredEffectVolume);
         await Browser.SaveSetting("treachery.online;setting.chatvolume", DesiredChatVolume);
-
-        if (Client.AudioDevice != null)
-        {
-            await Browser.SaveSetting("treachery.online;setting.audiodevice", Client.AudioDevice.DeviceId);
-        }
-
-        if (Client.VideoDevice != null)
-        {
-            await Browser.SaveSetting("treachery.online;setting.videodevice", Client.VideoDevice.DeviceId);
-        }
     }
 
     private async Task LoadSettings()

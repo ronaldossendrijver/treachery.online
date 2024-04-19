@@ -7,7 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 @inherits MapComponent;
-@implements IDisposable;
 
 <div @ref="@element" @attributes="_attributes" style=@($"position:absolute;left:{Px(X)};top:{Px(Y)};")>
 
@@ -96,8 +95,9 @@
 
     private string PointerType => ShowPopover ? "" : "pointer-events:none";
 
-    public void Dispose()
+    public new void Dispose()
     {
         _ = Browser.RemovePopover(element);
+        base.Dispose();
     }
 }

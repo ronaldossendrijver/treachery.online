@@ -7,191 +7,181 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace Treachery.Client;
 
-public static class Browser
+public class Browser(IJSRuntime jsRuntime)
 {
-    private static IJSRuntime _runtime;
+    private LocalStorage Storage { get; set; } = new LocalStorage(jsRuntime);
 
-    public static LocalStorage Storage { get; private set; }
-
-    public static void Initialize(IJSRuntime runtime)
-    {
-        _runtime = runtime;
-        Storage = new LocalStorage(runtime);
-    }
-    public static async Task EnablePopover(ElementReference element)
+    public async Task EnablePopover(ElementReference element)
     {
         if (!element.Equals(default(ElementReference))) await JsInvoke("EnablePopover", element);
     }
 
-    public static async Task EnablePopovers(ElementReference element)
+    public async Task EnablePopovers(ElementReference element)
     {
         if (!element.Equals(default(ElementReference))) await JsInvoke("EnablePopovers", element);
     }
 
-    public static async Task RemovePopover(ElementReference element)
+    public async Task RemovePopover(ElementReference element)
     {
         if (!element.Equals(default(ElementReference))) await JsInvoke("RemovePopover", element);
     }
 
-    public static async Task RemovePopovers(ElementReference element)
+    public async Task RemovePopovers(ElementReference element)
     {
         if (!element.Equals(default(ElementReference))) await JsInvoke("RemovePopovers", element);
     }
 
-    public static async Task RefreshPopover(ElementReference element)
+    public async Task RefreshPopover(ElementReference element)
     {
         if (!element.Equals(default(ElementReference))) await JsInvoke("RefreshPopover", element);
     }
 
-    public static async Task RefreshPopovers(ElementReference element)
+    public async Task RefreshPopovers(ElementReference element)
     {
         if (!element.Equals(default(ElementReference))) await JsInvoke("RefreshPopovers", element);
     }
 
-    public static async Task RemoveFocusFromButtons()
+    public async Task RemoveFocusFromButtons()
     {
         await JsInvoke("RemoveFocusFromButtons");
     }
 
-    public static async Task HideModal(string modalId)
+    public async Task HideModal(string modalId)
     {
         await JsInvoke("HideModal", modalId);
     }
 
-    public static async Task Save(string filename, string data)
+    public async Task Save(string filename, string data)
     {
         await JsInvoke<object>("saveFile", filename, data);
     }
 
-    public static async Task<string> LoadFile(object fileDialogRef)
+    public async Task<string> LoadFile(object fileDialogRef)
     {
         return await JsInvoke<string>("readFile", fileDialogRef);
     }
 
-    public static async Task ClearFileInput(string fileDialogId)
+    public async Task ClearFileInput(string fileDialogId)
     {
         await JsInvoke<object>("Clear", fileDialogId);
     }
 
-    public static async Task<bool> UrlExists(string url)
+    public async Task<bool> UrlExists(string url)
     {
         return await JsInvoke<bool>("UrlExists", url);
     }
 
-    public static async Task SetPlanetMapScale()
+    public async Task SetPlanetMapScale()
     {
         await JsInvoke("SetPlanetMapScale");
     }
 
-    public static async Task<Dimensions> GetWindowDimensions()
+    public async Task<Dimensions> GetWindowDimensions()
     {
         return await JsInvoke<Dimensions>("GetWindowDimensions");
     }
 
-    public static async Task<Dimensions> GetScreenDimensions()
+    public async Task<Dimensions> GetScreenDimensions()
     {
         return await JsInvoke<Dimensions>("GetScreenDimensions");
     }
 
-    public static async Task<Dimensions> GetImageDimensions(string imgUrl)
+    public async Task<Dimensions> GetImageDimensions(string imgUrl)
     {
         return await JsInvoke<Dimensions>("GetImageDimensions", imgUrl);
     }
 
-    public static async Task PlaySound(string sound, float volume = 100f, bool loop = false)
+    public async Task PlaySound(string sound, float volume = 100f, bool loop = false)
     {
         if (IsValidSound(sound)) await JsInvoke("PlaySound", sound, 0, CalculateVolume(volume), loop);
     }
 
-    public static async Task ChangeSoundVolume(string sound, float volume)
+    public async Task ChangeSoundVolume(string sound, float volume)
     {
         if (IsValidSound(sound)) await JsInvoke("ChangeSoundVolume", sound, CalculateVolume(volume));
     }
 
-    public static async Task StopSound(string sound)
+    public async Task StopSound(string sound)
     {
         if (IsValidSound(sound)) await JsInvoke("StopSound", sound, 3000);
     }
 
-    public static async Task StopSounds()
+    public async Task StopSounds()
     {
         await JsInvoke("StopSounds", null, 0);
     }
 
-    private static float CalculateVolume(float volumeOnLinearScaleFrom0to100)
+    private static float CalculateVolume(float volumeOnLinearScaleFrom0To100)
     {
-        if (volumeOnLinearScaleFrom0to100 <= 0)
+        if (volumeOnLinearScaleFrom0To100 <= 0)
             return 0;
-        if (volumeOnLinearScaleFrom0to100 >= 100)
+        if (volumeOnLinearScaleFrom0To100 >= 100)
             return 1;
-        return (float)(Math.Exp(0.05f * volumeOnLinearScaleFrom0to100 - 4) / Math.E);
+        return (float)(Math.Exp(0.05f * volumeOnLinearScaleFrom0To100 - 4) / Math.E);
     }
 
     private static bool IsValidSound(string sound)
     {
-        return sound != null && sound != "" && sound != "?";
+        return !string.IsNullOrEmpty(sound) && sound != "?";
     }
 
-
-    public static async Task SaveSetting(string name, object value)
+    public async Task SaveSetting(string name, object value)
     {
         await Storage.SetAsync(name, value);
     }
 
-    public static async Task ClearSettingsStartingWith(string startOfName)
+    public async Task ClearSettingsStartingWith(string startOfName)
     {
         var keys = await Storage.GetKeys();
         foreach (var key in keys.Where(k => k.StartsWith(startOfName))) await ClearSetting(key);
     }
 
-    public static async Task ClearSetting(string name)
+    private async Task ClearSetting(string name)
     {
         await Storage.RemoveAsync(name);
     }
 
-    public static async Task SaveStringSetting(string name, string value)
+    public async Task SaveStringSetting(string name, string value)
     {
         await Storage.SetStringAsync(name, value);
     }
 
-    public static async Task<T> LoadSetting<T>(string name)
+    public async Task<T> LoadSetting<T>(string name)
     {
         return await Storage.GetAsync<T>(name);
     }
 
-    public static async Task<string> LoadStringSetting(string name)
+    public async Task<string> LoadStringSetting(string name)
     {
         return await Storage.GetStringAsync(name);
     }
 
-    public static async Task ToggleFullScreen()
+    public async Task ToggleFullScreen()
     {
         await JsInvoke("ToggleFullScreen");
     }
 
-    public static async Task<bool> IsFullScreen()
+    public async Task<bool> IsFullScreen()
     {
         return await JsInvoke<bool>("IsFullScreen");
     }
 
-    public static async Task Print(string elementName)
+    public async Task Print(string elementName)
     {
         await JsInvoke("Print", elementName);
     }
 
-    private static async Task<T> JsInvoke<T>(string method, params object[] args)
+    private async Task<T> JsInvoke<T>(string method, params object[] args)
     {
         try
         {
-            return await _runtime.InvokeAsync<T>(method, args);
+            return await jsRuntime.InvokeAsync<T>(method, args);
         }
         catch (Exception e)
         {
@@ -200,11 +190,11 @@ public static class Browser
         }
     }
 
-    private static async Task JsInvoke(string method, params object[] args)
+    private async Task JsInvoke(string method, params object[] args)
     {
         try
         {
-            await _runtime.InvokeVoidAsync(method, args);
+            await jsRuntime.InvokeVoidAsync(method, args);
         }
         catch (Exception e)
         {

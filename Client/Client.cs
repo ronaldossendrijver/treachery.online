@@ -7,16 +7,12 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Treachery.Shared.Services;
 
 namespace Treachery.Client;
 
@@ -48,8 +44,6 @@ public class Client : IGameService
     //Sound and camera
     public float CurrentEffectVolume { get; set; } = -1;
     public float CurrentChatVolume { get; set; } = -1;
-    public CaptureDevice AudioDevice { get; set; }
-    public CaptureDevice VideoDevice { get; set; }
 
     //Settings
     public Battle BattleUnderConstruction { get; set; } = null;
@@ -65,9 +59,12 @@ public class Client : IGameService
     public event Action RefreshPopoverHandler;
 
     private readonly HubConnection _connection;
-
-    public Client(NavigationManager navigationManager)
+    private Browser Browser { get; set; }
+    
+    public Client(NavigationManager navigationManager, Browser browser)
     {
+        Browser = browser;
+        
         _connection = new HubConnectionBuilder()
             .WithUrl(navigationManager.ToAbsoluteUri("/gameHub"))
             .WithAutomaticReconnect(new RetryPolicy())

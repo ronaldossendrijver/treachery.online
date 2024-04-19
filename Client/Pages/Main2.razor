@@ -10,8 +10,7 @@
 @page "/new"
 @using Treachery.Client.OtherComponents
 @using Treachery.Client.MapComponents
-@inject NavigationManager NavigationManager
-@inject IJSRuntime JsRuntime
+@implements IDisposable
 
 @if (Client.InScheduledMaintenance)
 {
@@ -34,7 +33,7 @@ else if (!Client.IsAuthenticated)
         <div class="col-sm-12 col-lg-3"></div>
         <div class="col-sm-12 col-lg-6">
             <div class="d-flex justify-content-center">
-                <LoginComponent Client="@Client" />
+                <LoginComponent  />
             </div>
         </div>
         <div class="col-sm-12 col-lg-3"></div>
@@ -51,16 +50,16 @@ else if (!GameStarted)
             @if (Client.PlayerName == "")
             {
                 <div class="d-flex justify-content-center">
-                    <PlayerNameComponent Client="@Client" />
+                    <PlayerNameComponent  />
                 </div>
             }
             else if (Client.HostProxy == null && Client.Host == null)
             {
-                <HostOrJoinGameComponent Client="@Client" />
+                <HostOrJoinGameComponent  />
             }
             else
             {
-                <ActionPanel Client="@Client" />
+                <ActionPanel  />
             }
         </div>
         <div class="col-sm-12 col-lg-@fillerSize"></div>
@@ -72,7 +71,7 @@ else
 
         <!--Map Column-->
         <div id="mapdiv" class="@MapGrid">
-            <GameBoard h="@Client" OnLocationClick="@Client.LocationClick" />
+            <GameBoard  OnLocationClick="@Client.LocationClick" />
         </div>
 
         <!--Action Column-->
@@ -80,14 +79,14 @@ else
         {
             <div class="@ActionGrid @Scrollbars">
 
-                <GameStatusComponent Client="@Client" CanEndPhase="Client.Actions.Contains(typeof(EndPhase))" />
+                <GameStatusComponent  CanEndPhase="Client.Actions.Contains(typeof(EndPhase))" />
 
                 @if (Client.CurrentPhase == Phase.GameEnded)
                 {
-                    <WinnerPanel Client="Client" />
+                    <WinnerPanel  />
                 }
 
-                <ActionPanel Client="@Client" />
+                <ActionPanel  />
 
             </div>
         }
@@ -97,52 +96,52 @@ else
 
             @if (!Client.IsObserver)
             {
-                <MenuComponent Client="@Client" />
+                <MenuComponent  />
 
                 if (Client.Player.Faction != Faction.None)
                 {
-                    <PlayerPanel Client="Client" ShownPlayer="Client.Player" />
+                    <PlayerPanel  ShownPlayer="Client.Player" />
                 }
                 else if (Client.PlayerName != "")
                 {
-                    <ChatComponent Client="@Client" BackgroundColor="#e8dba6dd" />
+                    <ChatComponent  BackgroundColor="#e8dba6dd" />
                 }
             }
             else if (Client.IsObserver)
             {
-                <GameStatusComponent Client="@Client" />
+                <GameStatusComponent  />
 
                 @if (Client.CurrentPhase == Phase.GameEnded)
                 {
-                    <WinnerPanel Client="Client" />
+                    <WinnerPanel  />
                 }
 
                 @if (Client.Game.CurrentPhase == Phase.Bidding)
                 {
-                    <NormalBiddingPanel Client="Client" CanBid="Client.Actions.Contains(typeof(Bid))" />
+                    <NormalBiddingPanel  CanBid="Client.Actions.Contains(typeof(Bid))" />
                 }
 
                 @if (Client.Game.CurrentPhase == Phase.BlackMarketBidding)
                 {
-                    <BlackMarketBiddingPanel Client="Client" CanBid="Client.Actions.Contains(typeof(BlackMarketBid))" />
+                    <BlackMarketBiddingPanel  CanBid="Client.Actions.Contains(typeof(BlackMarketBid))" />
                 }
 
                 @if (DealAccepted.CurrentDeals(Client.Game).Any())
                 {
-                    <DealComponent Client="@Client" />
+                    <DealComponent  />
                 }
             }
 
             @if (Client.Game.CurrentReport != null)
             {
-                <ReportComponent Client="@Client" Report="Client.Game.CurrentReport" />
+                <ReportComponent  Report="Client.Game.CurrentReport" />
             }
 
             @if (!Client.IsObserver && Client.CurrentPhase > Phase.TradingFactions && Client.Player.Faction == Faction.None)
             {
                 foreach (var p in Client.Game.Players)
                 {
-                    <PlayerPanel Client="Client" ShownPlayer="p" ShowHeader="true" />
+                    <PlayerPanel  ShownPlayer="p" ShowHeader="true" />
                 }
             }
 
@@ -153,8 +152,8 @@ else
         {
             <div class="col-sm-12 col-lg-3">
 
-                <MenuComponent Client="@Client" />
-                <ChatComponent Client="@Client" BackgroundColor="#e8dba6dd" />
+                <MenuComponent  />
+                <ChatComponent  BackgroundColor="#e8dba6dd" />
 
             </div>
         }
@@ -163,31 +162,32 @@ else
         @if (!Client.IsObserver && Client.CurrentPhase > Phase.AwaitingPlayers)
         {
             <HoverPanel Width=400 HandleWidth=12 BackgroundColor="#e8dba6dd">
-                <ChatComponent Client="@Client" />
+                <ChatComponent  />
             </HoverPanel>
         }
 
         @if (Client.JoinableAdvertisedGames.Any() && (Client.IsObserver || (Client.Game != null && Client.Game.NumberOfHumanPlayers <= 1)))
         {
-            <AdvertisedGamesComponent Client="@Client" />
+            <AdvertisedGamesComponent  />
         }
 
-        <ImageFlashComponent Client="@Client" />
+        <ImageFlashComponent  />
 
     </div>
 }
 
 @code {
 
-    private Client Client { get; set; }
     protected ElementReference element;
 
     protected override async Task OnInitializedAsync()
     {
-        Message.DefaultDescriber = Skin.Current;
-        Browser.Initialize(JsRuntime);
-        Client = new Client(NavigationManager);
+        Client.RefreshHandler += Refresh;
+        Client.RefreshPopoverHandler += RefreshPopovers;
         await Client.Start();
+        
+        Message.DefaultDescriber = Skin.Current;
+        
         await LoadSkinDataIfSaved();
     }
 
@@ -203,12 +203,6 @@ else
         else
         {
             await Browser.SetPlanetMapScale();
-        }
-
-        if (firstRender) {
-
-            Client.RefreshHandler += Refresh;
-            Client.RefreshPopoverHandler += RefreshPopovers;
         }
     }
 
@@ -239,4 +233,11 @@ else
     private string ActionGrid => !Client.IsConnected || Client.PlayerName == "" || (Client.HostProxy == null && Client.Host == null) ? "col-sm-12 col-lg-4" : "col-sm-12 col-lg-3";
 
     private bool GameStarted => Client.HostProxy != null && Client.Game.CurrentPhase > Phase.AwaitingPlayers;
+
+    public void Dispose()
+    {
+        Client.RefreshHandler -= Refresh;
+        Client.RefreshPopoverHandler -= RefreshPopovers;
+    }
+
 }

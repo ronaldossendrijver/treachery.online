@@ -9,16 +9,16 @@
 @inherits MapComponent
 
 @{
-    foreach (var stronghold in h.Game.Map.Strongholds)
+    foreach (var stronghold in Client.Game.Map.Strongholds)
     {
-        var center = Skin.Current.GetCenter(stronghold, h.Game.Map);
+        var center = Skin.Current.GetCenter(stronghold, Client.Game.Map);
         var x = stronghold == Game.Map.HiddenMobileStronghold ? center.X - 1.6f * Skin.Current.PlayerTokenRadius : center.X - 2.2f * Skin.Current.PlayerTokenRadius;
         var y = center.Y - Skin.Current.PlayerTokenRadius;
 
-        if (h.Game.StrongholdOwnership.TryGetValue(stronghold, out var owner))
+        if (Client.Game.StrongholdOwnership.TryGetValue(stronghold, out var owner))
         {
             var opacity = stronghold == Game.Map.HiddenMobileStronghold && !showHMS ? 0.2f : 1f;
-            <MapImage X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src="@Skin.Current.GetFactionTableImageURL(h.Game.StrongholdOwnership[stronghold])"
+            <MapImage X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src="@Skin.Current.GetFactionTableImageURL(Client.Game.StrongholdOwnership[stronghold])"
                Opacity=opacity Popover=@Popup.Get((StrongholdAdvantage)stronghold.Advantage, owner) PopoverStyle=""/>
 
             y += Skin.Current.PlayerTokenRadius;
@@ -46,9 +46,9 @@
 
     var forceLocations = Game.ForcesOnPlanetExcludingEmptyLocations();
 
-    foreach (var location in Game.Map.Locations(false).Where(l => l.Visible).OrderBy(l => Skin.Current.GetCenter(l, h.Game.Map).Y))
+    foreach (var location in Game.Map.Locations(false).Where(l => l.Visible).OrderBy(l => Skin.Current.GetCenter(l, Client.Game.Map).Y))
     {
-        var pos = Skin.Current.GetCenter(location, h.Game.Map);
+        var pos = Skin.Current.GetCenter(location, Client.Game.Map);
         var showForces = true;
         float forceDiameter = 2 * Skin.Current.FORCETOKEN_RADIUS;
 
@@ -67,7 +67,7 @@
                Popover=@Intel(location)
                OnClick=@(e => OnClick(e, location)) />
 
-            @if (showHMS && h.Status.HighlightedTerritories.Contains(location.Territory))
+            @if (showHMS && Client.Status.HighlightedTerritories.Contains(location.Territory))
             {
                 <Circle X="pos.X + 0.3f * Skin.Current.HmsRadius" Y="pos.Y" Radius="0.85f * Skin.Current.HmsRadius"
                     FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
@@ -90,7 +90,7 @@
                 ShadowX=1 ShadowY=1
                 OnClick=@(e => OnClick(e, location)) />
 
-            @if (h.Status.HighlightedTerritories.Contains(location.Territory))
+            @if (Client.Status.HighlightedTerritories.Contains(location.Territory))
             {
                 <Circle X=pos.X Y=pos.Y Radius=@(1.25f * Skin.Current.FORCETOKEN_RADIUS)
                     FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
@@ -109,7 +109,7 @@
 
         if (showForces)
         {
-            <ForcesInLocation h=@h Location=@location Battalions=@forceLocations Diameter=@forceDiameter />
+            <ForcesInLocation Location=@location Battalions=@forceLocations Diameter=@forceDiameter />
         }
     }
 }

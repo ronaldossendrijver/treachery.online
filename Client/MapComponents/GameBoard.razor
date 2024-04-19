@@ -14,23 +14,23 @@
 
         <BackgroundImage X="0" Y="0" Width="@Skin.Current.MapDimensions.X" Height="@Skin.Current.MapDimensions.Y" Src="@Skin.Current.Map_URL"/>
 
-        @if (h.Game.CurrentPhase > Phase.AwaitingPlayers)
+        @if (Client.Game.CurrentPhase > Phase.AwaitingPlayers)
         {
             <div style="width:100%; height:100%;">
 
-                <SSW h="h" />
-                <ResourcesOnPlanet h="h" />
-                <Monsters h="h" />
-                <Phases h="h" />
-                <CardPiles h="h" />
-                <Planet h="h" OnLocationClick="@OnLocationClick"/>
-                <RecentMoves h="h" />
-                <ForcesOnPlanet h="h" OnLocationClick="@OnLocationClick" />
-                <Players h="h" OnLocationClick="@OnLocationClick" />
-                <Bids h="h" />
-                <Tanks h="h" />
-                <Disconnection h="h" />
-                <BattlePlans h="h" />
+                <SSW  />
+                <ResourcesOnPlanet  />
+                <Monsters  />
+                <Phases  />
+                <CardPiles  />
+                <Planet  OnLocationClick="@OnLocationClick"/>
+                <RecentMoves  />
+                <ForcesOnPlanet  OnLocationClick="@OnLocationClick" />
+                <Players  OnLocationClick="@OnLocationClick" />
+                <Bids  />
+                <Tanks  />
+                <Disconnection  />
+                <BattlePlans  />
 
             </div>
         }

@@ -9,7 +9,7 @@
 
 namespace Treachery.Client.GenericComponents;
 
-public partial class GameEventComponent<GameEventType> where GameEventType : GameEvent, new()
+public partial class GameEventComponent<T> where T : GameEvent, new()
 {
 
 }

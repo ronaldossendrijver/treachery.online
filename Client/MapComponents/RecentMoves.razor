@@ -9,14 +9,14 @@
 @inherits MapComponent
 
 
-@if (Skin.Current.ShowArrowsForRecentMoves && h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
+@if (Skin.Current.ShowArrowsForRecentMoves && Client.Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
 {
     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
             width="@(Skin.Current.PlanetRadius * 2)" height="@(Skin.Current.PlanetRadius * 2)" 
             style="position: absolute; left:0px; top:0px; height: 100%; width: 100%;"
             pointer-events="none">
 
-        @foreach (var move in h.Game.RecentMoves.Where(m => m.To is not Homeworld))
+        @foreach (var move in Client.Game.RecentMoves.Where(m => m.To is not Homeworld))
         {
             foreach (var origin in move.ForceLocations.Keys)
             {
@@ -30,7 +30,7 @@
                         if (from != null && (to == move.To || to.Territory != from.Territory))
                         {
                             <Arrow FillColor="@Skin.Current.FactionColor[move.Initiator]" StrokeColor=@Skin.Current.GetFactionColorTransparant(move.Initiator, "bb")
-                                    MarginX="0" MarginY="0" Radius="@(1.2f * Skin.Current.PlanetRadius)" From=@Skin.Current.GetCenter(from, h.Game.Map) To=@Skin.Current.GetCenter(to, h.Game.Map) ArrowScale="0.05f" />
+                                    MarginX="0" MarginY="0" Radius="@(1.2f * Skin.Current.PlanetRadius)" From=@Skin.Current.GetCenter(from, Client.Game.Map) To=@Skin.Current.GetCenter(to, Client.Game.Map) ArrowScale="0.05f" />
                         }
 
                         if (from == null || to.Territory != from.Territory)
@@ -43,7 +43,7 @@
                 {
 
                     <Arrow FillColor="@Skin.Current.FactionColor[move.Initiator]" StrokeColor=@Skin.Current.GetFactionColorTransparant(move.Initiator, "bb")
-                            MarginX="0" MarginY="0" Radius="@(1.2f * Skin.Current.PlanetRadius)" From=@Skin.Current.GetCenter(origin, h.Game.Map) To=@Skin.Current.GetCenter(move.To, h.Game.Map) ArrowScale="0.05f" />
+                            MarginX="0" MarginY="0" Radius="@(1.2f * Skin.Current.PlanetRadius)" From=@Skin.Current.GetCenter(origin, Client.Game.Map) To=@Skin.Current.GetCenter(move.To, Client.Game.Map) ArrowScale="0.05f" />
                 }
             }
         }

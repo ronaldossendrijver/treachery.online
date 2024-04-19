@@ -10,8 +10,7 @@
 @page "/"
 @using Treachery.Client.OtherComponents
 @using Treachery.Client.MapComponents
-@inject NavigationManager NavigationManager
-@inject IJSRuntime JSRuntime
+@implements IDisposable
 
 @if (Client.InScheduledMaintenance)
 {
@@ -35,16 +34,16 @@
                 @if (Client.PlayerName == "")
                 {
                     <div class="d-flex justify-content-center">
-                        <PlayerNameComponent Client="@Client" />
+                        <PlayerNameComponent  />
                     </div>
                 }
                 else if (Client.HostProxy == null && Client.Host == null)
                 {
-                    <HostOrJoinGameComponent Client="@Client" />
+                    <HostOrJoinGameComponent  />
                 }
                 else
                 {
-                    <ActionPanel Client="@Client" />
+                    <ActionPanel  />
                 }
 
             </div>
@@ -59,123 +58,123 @@ else
     <div @ref=@element class="row">
 
         <!--Map Column-->
-        <div id="mapdiv" class="@MapGrid">
-            <GameBoard h="@Client" OnLocationClick="@Client.LocationClick" />
-        </div>
-
-        <!--Action Column-->
-        @if (!Client.IsObserver)
-        {
-            <div class="@ActionGrid @Scrollbars">
-
-                <GameStatusComponent Client="@Client" CanEndPhase="Client.Actions.Contains(typeof(EndPhase))" />
-
-                @if (Client.CurrentPhase == Phase.GameEnded)
-                {
-                    <WinnerPanel Client="Client" />
-                }
-
-                <ActionPanel Client="@Client" />
-
+            <div id="mapdiv" class="@MapGrid">
+                <GameBoard OnLocationClick="@Client.LocationClick"/>
             </div>
-        }
 
-        <!--Information Column-->
-        <div class="col-sm-12 col-lg-3 cursor-hand @Scrollbars">
-
+            <!--Action Column-->
             @if (!Client.IsObserver)
             {
-                <MenuComponent Client="@Client" />
+                <div class="@ActionGrid @Scrollbars">
 
-                if (Client.Player.Faction != Faction.None)
-                {
-                    <PlayerPanel Client="Client" ShownPlayer="Client.Player" />
-                }
-                else if (Client.PlayerName != "")
-                {
-                    <ChatComponent Client="@Client" BackgroundColor="#e8dba6dd" />
-                }
-            }
-            else if (Client.IsObserver)
-            {
-                <GameStatusComponent Client="@Client" />
+                    <GameStatusComponent CanEndPhase="Client.Actions.Contains(typeof(EndPhase))"/>
 
-                @if (Client.CurrentPhase == Phase.GameEnded)
-                {
-                    <WinnerPanel Client="Client" />
-                }
+                    @if (Client.CurrentPhase == Phase.GameEnded)
+                    {
+                        <WinnerPanel/>
+                    }
 
-                @if (Client.Game.CurrentPhase == Phase.Bidding)
-                {
-                    <NormalBiddingPanel Client="Client" CanBid="Client.Actions.Contains(typeof(Bid))" />
-                }
+                    <ActionPanel/>
 
-                @if (Client.Game.CurrentPhase == Phase.BlackMarketBidding)
-                {
-                    <BlackMarketBiddingPanel Client="Client" CanBid="Client.Actions.Contains(typeof(BlackMarketBid))" />
-                }
-
-                @if (DealAccepted.CurrentDeals(Client.Game).Any())
-                {
-                    <DealComponent Client="@Client" />
-                }
+                </div>
             }
 
-            @if (Client.Game.CurrentReport != null)
-            {
-                <ReportComponent Client="@Client" Report="Client.Game.CurrentReport" />
-            }
+            <!--Information Column-->
+            <div class="col-sm-12 col-lg-3 cursor-hand @Scrollbars">
 
-            @if (!Client.IsObserver && Client.CurrentPhase > Phase.TradingFactions && Client.Player.Faction == Faction.None)
-            {
-                foreach (var p in Client.Game.Players)
+                @if (!Client.IsObserver)
                 {
-                    <PlayerPanel Client="Client" ShownPlayer="p" ShowHeader="true" />
+                    <MenuComponent/>
+
+                    if (Client.Player.Faction != Faction.None)
+                    {
+                        <PlayerPanel ShownPlayer="Client.Player"/>
+                    }
+                    else if (Client.PlayerName != "")
+                    {
+                        <ChatComponent BackgroundColor="#e8dba6dd"/>
+                    }
                 }
-            }
+                else if (Client.IsObserver)
+                {
+                    <GameStatusComponent/>
 
-        </div>
+                    @if (Client.CurrentPhase == Phase.GameEnded)
+                    {
+                        <WinnerPanel/>
+                    }
 
-        <!--Chat window for observers-->
-        @if (Client.IsObserver)
-        {
-            <div class="col-sm-12 col-lg-3">
+                    @if (Client.Game.CurrentPhase == Phase.Bidding)
+                    {
+                        <NormalBiddingPanel CanBid="Client.Actions.Contains(typeof(Bid))"/>
+                    }
 
-                <MenuComponent Client="@Client" />
-                <ChatComponent Client="@Client" BackgroundColor="#e8dba6dd" />
+                    @if (Client.Game.CurrentPhase == Phase.BlackMarketBidding)
+                    {
+                        <BlackMarketBiddingPanel CanBid="Client.Actions.Contains(typeof(BlackMarketBid))"/>
+                    }
+
+                    @if (DealAccepted.CurrentDeals(Client.Game).Any())
+                    {
+                        <DealComponent/>
+                    }
+                }
+
+                @if (Client.Game.CurrentReport != null)
+                {
+                    <ReportComponent Report="Client.Game.CurrentReport"/>
+                }
+
+                @if (!Client.IsObserver && Client.CurrentPhase > Phase.TradingFactions && Client.Player.Faction == Faction.None)
+                {
+                    foreach (var p in Client.Game.Players)
+                    {
+                        <PlayerPanel ShownPlayer="p" ShowHeader="true"/>
+                    }
+                }
 
             </div>
-        }
 
-        <!--Global Components-->
-        @if (!Client.IsObserver && Client.CurrentPhase > Phase.AwaitingPlayers)
-        {
-            <HoverPanel Width=400 HandleWidth=12 BackgroundColor="#e8dba6dd">
-                <ChatComponent Client="@Client" />
-            </HoverPanel>
-        }
+            <!--Chat window for observers-->
+            @if (Client.IsObserver)
+            {
+                <div class="col-sm-12 col-lg-3">
 
-        @if (Client.JoinableAdvertisedGames.Any() && (Client.IsObserver || (Client.Game != null && Client.Game.NumberOfHumanPlayers <= 1)))
-        {
-            <AdvertisedGamesComponent Client="@Client" />
-        }
+                    <MenuComponent/>
+                    <ChatComponent BackgroundColor="#e8dba6dd"/>
 
-        <ImageFlashComponent Client="@Client" />
+                </div>
+            }
 
+            <!--Global Components-->
+            @if (!Client.IsObserver && Client.CurrentPhase > Phase.AwaitingPlayers)
+            {
+                <HoverPanel Width=400 HandleWidth=12 BackgroundColor="#e8dba6dd">
+                    <ChatComponent/>
+                </HoverPanel>
+            }
+
+            @if (Client.JoinableAdvertisedGames.Any() && (Client.IsObserver || (Client.Game != null && Client.Game.NumberOfHumanPlayers <= 1)))
+            {
+                <AdvertisedGamesComponent/>
+            }
+
+            <ImageFlashComponent/>
     </div>
 }
 
 @code {
 
-    private Client Client { get; set; }
-    protected ElementReference element;
+    private ElementReference element;
 
     protected override async Task OnInitializedAsync()
     {
-        Message.DefaultDescriber = Skin.Current;
-        Browser.Initialize(JSRuntime);
-        Client = new Client(NavigationManager);
+        Client.RefreshHandler += StateHasChanged;
+        Client.RefreshPopoverHandler += RefreshPopovers;
         await Client.Start();
+        
+        Message.DefaultDescriber = Skin.Current;
+        
         await LoadSkinDataIfSaved();
     }
 
@@ -192,12 +191,6 @@ else
         {
             await Browser.SetPlanetMapScale();
         }
-
-        if (firstRender) {
-
-            Client.RefreshHandler += Refresh;
-            Client.RefreshPopoverHandler += RefreshPopovers;
-        }
     }
 
     private async Task LoadSkinDataIfSaved()
@@ -208,11 +201,6 @@ else
             Skin.Current = Skin.Load(existingSkinData);
             Message.DefaultDescriber = Skin.Current;
         }
-    }
-
-    public void Refresh()
-    {
-        StateHasChanged();
     }
 
     public void RefreshPopovers() {
@@ -227,4 +215,11 @@ else
     private string ActionGrid => !Client.IsConnected || Client.PlayerName == "" || (Client.HostProxy == null && Client.Host == null) ? "col-sm-12 col-lg-4" : "col-sm-12 col-lg-3";
 
     private bool GameStarted => Client.HostProxy != null && Client.Game.CurrentPhase > Phase.AwaitingPlayers;
+    
+    public void Dispose()
+    {
+        Client.RefreshHandler -= StateHasChanged;
+        Client.RefreshPopoverHandler -= RefreshPopovers;
+    }
+
 }

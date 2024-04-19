@@ -24,8 +24,8 @@ public interface IGameService
     public DateTime Disconnected { get; }
     
     //Client State
-    public float CurrentEffectVolume { get; }
-    public float CurrentChatVolume { get; }
+    public float CurrentEffectVolume { get; set;  }
+    public float CurrentChatVolume { get; set; }
     public Battle BattleUnderConstruction { get; set; }
     public int BidAutoPassThreshold { get; set; }
     public bool Autopass { get; set; }

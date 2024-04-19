@@ -36,8 +36,8 @@
         }
 
         @{
-            var green = Tracker.Client.Game.GetPlayer(Faction.Green);
-            var lastWonCardName = Tracker.Client.Game.CardJustWon != null && Tracker.Client.Game.KnownCards(green).Contains(Tracker.Client.Game.CardJustWon) ? Name(Tracker.Client.Game.CardJustWon) : "";
+            var green = Client.Game.GetPlayer(Faction.Green);
+            var lastWonCardName = Client.Game.CardJustWon != null && Client.Game.KnownCards(green).Contains(Client.Game.CardJustWon) ? Name(Client.Game.CardJustWon) : "";
 
             @foreach (var v in Tracker.CardsToPick)
             {

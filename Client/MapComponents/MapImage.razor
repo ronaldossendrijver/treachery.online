@@ -164,11 +164,13 @@ else
 
     private string ShadowFilter => ShadowX > 0 || ShadowY > 0 ? string.Format("drop-shadow({0} {1} {2} {3})", Px(ShadowX), Px(ShadowY), Px(ShadowBlur), ShadowColor) : "";
 
-    public void Dispose()
+    public new void Dispose()
     {
         if (Popover != null && !PopoverAsTooltip)
         {
             _ = Browser.RemovePopover(element);
         }
+        
+        base.Dispose();
     }
 }

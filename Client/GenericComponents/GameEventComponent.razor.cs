@@ -9,11 +9,11 @@
 
 namespace Treachery.Client.GenericComponents;
 
-public abstract partial class GameEventComponent<GameEventType> where GameEventType : GameEvent, new()
+public abstract partial class GameEventComponent<T> where T : GameEvent, new()
 {
-    protected abstract GameEventType ConfirmedResult { get; }
+    protected abstract T ConfirmedResult { get; }
 
-    protected virtual GameEventType PassedResult { get; }
+    protected virtual T PassedResult { get; }
 
-    protected virtual GameEventType OtherResult { get; }
+    protected virtual T OtherResult { get; }
 }

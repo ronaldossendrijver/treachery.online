@@ -146,7 +146,7 @@
 
 @if (IsVisible(HOST))
 {
-    <UndoComponent Client="@Client" />
+    <UndoComponent  />
 }
 else if (IsVisible(HELP))
 {
@@ -182,8 +182,8 @@ else if (IsVisible(RESTART))
     </div>
 }
 
-<MusicComponent Client="@Client" Visible="IsVisible(VOLUME)" />
-<MentatComponent Id="mentatModal" Client="@Client" />
+<MusicComponent  Visible="IsVisible(VOLUME)" />
+<MentatComponent Id="mentatModal"  />
 <CreditComponent Id="creditModal" />
 <TutorialComponent Id="tutorialModal" />
 

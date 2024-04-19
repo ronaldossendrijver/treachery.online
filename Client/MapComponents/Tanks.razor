@@ -8,7 +8,7 @@
 *@
 @inherits MapComponent
 
-@if (h.Game.CurrentPhase >= Phase.MetheorAndStormSpell)
+@if (Client.Game.CurrentPhase >= Phase.MetheorAndStormSpell)
 {
     var y = 1.75f * Skin.Current.FORCETOKEN_RADIUS;
     var x = 1.5f * Skin.Current.FORCETOKEN_RADIUS;
@@ -16,7 +16,7 @@
     var leaderPctHeight = .25f * leaderDiameter * Skin.Current.BattleWheelHeroHeight / Skin.Current.BattleWheelHeroWidth;
     var spacing = 0.85f;
 
-    foreach (var p in h.Game.Players)
+    foreach (var p in Client.Game.Players)
     {
         var color = Skin.Current.GetFactionColor(p.Faction);
 
@@ -37,8 +37,8 @@
         }
 
         var corpses = p.Leaders
-            .Where(l => !h.Game.IsAlive(l))
-            .Select(l => new Tuple<Leader, LeaderState>(l, h.Game.LeaderState[l]))
+            .Where(l => !Client.Game.IsAlive(l))
+            .Select(l => new Tuple<Leader, LeaderState>(l, Client.Game.LeaderState[l]))
             .OrderBy(l => l.Item2.TimeOfDeath).Select(l => l.Item1);
 
         var corpseNr = 0;
@@ -51,7 +51,7 @@
             {
                 var l = new PointD(x, y - dy);
 
-                if (h.Game.LeaderState[leader].IsFaceDownDead)
+                if (Client.Game.LeaderState[leader].IsFaceDownDead)
                 {
                     <MapImage X="@(l.X + displaceX)" Y="@(l.Y)" Diameter="@(leaderDiameter)"
                            Src="@Skin.Current.GetFactionFacedownImageURL(p.Faction)"
@@ -60,7 +60,7 @@
                 }
                 else
                 {
-                    <MapLeader h="h" ToShow="leader" X=@(l.X + displaceX) Y=@(l.Y) Diameter="leaderDiameter"/>
+                    <MapLeader  ToShow="leader" X=@(l.X + displaceX) Y=@(l.Y) Diameter="leaderDiameter"/>
                 }
 
                 displaceX *= -1;
@@ -71,7 +71,7 @@
             y += spacing * leaderDiameter;
         }
 
-        if (p.Faction == Faction.Green && !h.Game.MessiahIsAlive)
+        if (p.Faction == Faction.Green && !Client.Game.MessiahIsAlive)
         {
             var l = new PointD(x, y);
             <MapImage X="@(x)" Y="@(y)" Diameter="@(0.5f * leaderDiameter)"

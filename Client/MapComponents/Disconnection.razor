@@ -8,7 +8,7 @@
 *@
 @inherits MapComponent
 
-@if (h.IsDisconnected)
+@if (Client.IsDisconnected)
 {
     <MapText ToShow="You were disconnected from the game."
              X="@(Skin.Current.PlanetCenter.X)" Y="@(Skin.Current.PlanetCenter.Y)"
@@ -17,7 +17,7 @@
              Align="@TextAlignment.Center" />
 
     string message;
-    if ((DateTime.Now - h.Disconnected).TotalSeconds < 60)
+    if ((DateTime.Now - Client.Disconnected).TotalSeconds < 60)
     {
         message = "Please wait while the game is trying to reconnect...";
     }

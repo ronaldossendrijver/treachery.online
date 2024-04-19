@@ -13,7 +13,7 @@
 
     if (Game.CurrentTurn >= 1)
     {
-        <MapText ToShow="@string.Format("Turn {0} of {1}", h.Game.CurrentTurn, h.Game.MaximumNumberOfTurns)"
+        <MapText ToShow="@string.Format("Turn {0} of {1}", Client.Game.CurrentTurn, Client.Game.MaximumNumberOfTurns)"
                  X="x"
                  Y=@(0.3f * turnFontHeight)
                  Font="@Skin.Current.TURN_FONT"
@@ -24,7 +24,7 @@
                  Align="@TextAlignment.Right"/>
     }
 
-    if (h.Host != null && h.Host.JoinedObservers.Count(o => o != h.ServerSettings.AdminName) > 0)
+    if (Client.Host != null && Client.Host.JoinedObservers.Count(o => o != Client.ServerSettings.AdminName) > 0)
     {
         <MapText ToShow="@string.Format("observers: {0}", Observers.Count())"
                  X="@(Skin.Current.PlanetCenter.X)"
@@ -104,7 +104,7 @@
 
     private string ObserverPopover => string.Join(", ", Observers);
 
-    private IEnumerable<string> Observers => h.Host.JoinedObservers.Where(o => o != h.ServerSettings.AdminName);
+    private IEnumerable<string> Observers => Client.Host.JoinedObservers.Where(o => o != Client.ServerSettings.AdminName);
 
     private string TurnPopover
     {

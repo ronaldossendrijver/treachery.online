@@ -10,8 +10,8 @@
 
 @if (Game.CurrentMainPhase == MainPhase.Battle && Game.CurrentPhase != Phase.BattleReport)
 {
-    var MaySeeAggressorBattlePlan = Game.AggressorPlan != null && (Game.AggressorPlan.Initiator == h.Faction || (Game.GreenKarma && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.AggressorPlan.Player));
-    var MaySeeDefenderBattlePlan = Game.DefenderPlan != null && (Game.DefenderPlan.Initiator == h.Faction || (Game.GreenKarma && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.DefenderPlan.Player));
+    var MaySeeAggressorBattlePlan = Game.AggressorPlan != null && (Game.AggressorPlan.Initiator == Client.Faction || (Game.GreenKarma && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.AggressorPlan.Player));
+    var MaySeeDefenderBattlePlan = Game.DefenderPlan != null && (Game.DefenderPlan.Initiator == Client.Faction || (Game.GreenKarma && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.DefenderPlan.Player));
 
     var MaySeeBothBattlePlans = Game.AggressorPlan != null && Game.DefenderPlan != null;
     
@@ -34,15 +34,15 @@
 
     if (MaySeeAggressorBattlePlan || MaySeeBothBattlePlans)
     {
-        <BattlePlan h="h" Plan="Game.AggressorPlan" ShowEntirePlan=true OpponentPlan="Game.DefenderPlan" Facedanced="AggressorWasFacedanced" TraitorCalled="DefenderCallsTraitor" IsAggressor="true" X="x" Y="y" />
+        <BattlePlan  Plan="Game.AggressorPlan" ShowEntirePlan=true OpponentPlan="Game.DefenderPlan" Facedanced="AggressorWasFacedanced" TraitorCalled="DefenderCallsTraitor" IsAggressor="true" X="x" Y="y" />
     }
     else if (MaySeeAggressorBattlePlanUnderConstruction)
     {
-        <BattlePlan h="h" Plan="h.BattleUnderConstruction" ShowEntirePlan=true OpponentPlan="Game.DefenderPlan" Facedanced="AggressorWasFacedanced" TraitorCalled="false" IsAggressor="true" X="x" Y="y" />
+        <BattlePlan  Plan="Client.BattleUnderConstruction" ShowEntirePlan=true OpponentPlan="Game.DefenderPlan" Facedanced="AggressorWasFacedanced" TraitorCalled="false" IsAggressor="true" X="x" Y="y" />
     }
     else if (AggressorIsAffectedByPartialPrescience)
     {
-        <BattlePlan h="h" Plan="Game.AggressorPlan" ShowEntirePlan=false OpponentPlan="Game.DefenderPlan" Facedanced="AggressorWasFacedanced" TraitorCalled="false" IsAggressor="true" X="x" Y="y" Opacity="0.5f" />
+        <BattlePlan  Plan="Game.AggressorPlan" ShowEntirePlan=false OpponentPlan="Game.DefenderPlan" Facedanced="AggressorWasFacedanced" TraitorCalled="false" IsAggressor="true" X="x" Y="y" Opacity="0.5f" />
     }
 
     x = 0.4f * Skin.Current.MapDimensions.X;
@@ -50,21 +50,21 @@
 
     if (MaySeeDefenderBattlePlan || MaySeeBothBattlePlans)
     {
-        <BattlePlan h="h" Plan="Game.DefenderPlan" ShowEntirePlan=true OpponentPlan="Game.AggressorPlan" Facedanced="DefenderWasFacedanced" TraitorCalled="AggressorCallsTraitor" IsAggressor="false" X="x" Y="y" />
+        <BattlePlan  Plan="Game.DefenderPlan" ShowEntirePlan=true OpponentPlan="Game.AggressorPlan" Facedanced="DefenderWasFacedanced" TraitorCalled="AggressorCallsTraitor" IsAggressor="false" X="x" Y="y" />
     }
     else if (MaySeeDefenderBattlePlanUnderConstruction)
     {
-        <BattlePlan h="h" Plan="h.BattleUnderConstruction" ShowEntirePlan=true OpponentPlan="Game.AggressorPlan" Facedanced="DefenderWasFacedanced" TraitorCalled="false" IsAggressor="false" X="x" Y="y" />
+        <BattlePlan  Plan="Client.BattleUnderConstruction" ShowEntirePlan=true OpponentPlan="Game.AggressorPlan" Facedanced="DefenderWasFacedanced" TraitorCalled="false" IsAggressor="false" X="x" Y="y" />
     }
     else if (DefenderIsAffectedByPartialPrescience)
     {
-        <BattlePlan h="h" Plan="Game.DefenderPlan" ShowEntirePlan=false OpponentPlan="Game.AggressorPlan" Facedanced="DefenderWasFacedanced" TraitorCalled="false" IsAggressor="false" X="x" Y="y" Opacity="0.5f" />
+        <BattlePlan  Plan="Game.DefenderPlan" ShowEntirePlan=false OpponentPlan="Game.AggressorPlan" Facedanced="DefenderWasFacedanced" TraitorCalled="false" IsAggressor="false" X="x" Y="y" Opacity="0.5f" />
     }
 }
 
 @code {
 
-    private bool MaySeeAggressorBattlePlanUnderConstruction => h.BattleUnderConstruction != null && Game.AggressorPlan == null && Game.CurrentBattle != null && Game.CurrentBattle.Aggressor == h.Faction;
+    private bool MaySeeAggressorBattlePlanUnderConstruction => Client.BattleUnderConstruction != null && Game.AggressorPlan == null && Game.CurrentBattle != null && Game.CurrentBattle.Aggressor == Client.Faction;
 
-    private bool MaySeeDefenderBattlePlanUnderConstruction => h.BattleUnderConstruction != null && Game.DefenderPlan == null && Game.CurrentBattle != null && Game.CurrentBattle.Defender == h.Faction;
+    private bool MaySeeDefenderBattlePlanUnderConstruction => Client.BattleUnderConstruction != null && Game.DefenderPlan == null && Game.CurrentBattle != null && Game.CurrentBattle.Defender == Client.Faction;
 }

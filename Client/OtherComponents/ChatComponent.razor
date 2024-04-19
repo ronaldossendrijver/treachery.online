@@ -6,8 +6,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
+
 @inherits GameComponent;
-@inject IJSRuntime JSRuntime;
 
 <div class="card border-none" style="background-color:@BackgroundColor;border:none;">
 
@@ -83,12 +83,9 @@
 
     private string message;
     private string playername;
-    private static Client currentHandler;
 
     protected override void OnInitialized()
     {
-        currentHandler = Client;
-
         if (ShowGameChat)
         {
             if (Client.Game.Players.Where(p => p.Name != Client.MyName).Any())
@@ -120,29 +117,28 @@
         message = "";
     }
 
-    [JSInvokable("SendMessage")]
-    public static async Task SendMessage(string msg, string target)
+    public async Task SendMessage(string msg, string target)
     {
-        var sourcePlayer = currentHandler.Player;
+        var sourcePlayer = Client.Player;
 
         if (target == LABEL_GLOBAL_CHAT)
         {
-            await currentHandler.Request(
+            await Client.Request(
                 new GlobalChatMessage
                 {
-                        SourcePlayerName = sourcePlayer != null ? currentHandler.Player.Name : "",
+                        SourcePlayerName = sourcePlayer != null ? Client.Player.Name : "",
                         Body = msg
                     });
 
         }
         else {
 
-            var targetPlayer = target == LABEL_GLOBAL_CHAT || target == LABEL_ALL_PLAYERS_IN_GAME ? null : currentHandler.Game.GetPlayer(target);
+            var targetPlayer = target == LABEL_GLOBAL_CHAT || target == LABEL_ALL_PLAYERS_IN_GAME ? null : Client.Game.GetPlayer(target);
 
-            await currentHandler.HostProxy.Request(
+            await Client.HostProxy.Request(
                 new GameChatMessage
                 {
-                    SourcePlayerName = sourcePlayer != null ? currentHandler.Player.Name : "",
+                    SourcePlayerName = sourcePlayer != null ? Client.Player.Name : "",
                     TargetPlayerName = targetPlayer != null ? targetPlayer.Name : "",
                     Body = msg
                 });

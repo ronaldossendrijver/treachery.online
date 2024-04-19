@@ -1,4 +1,6 @@
 ﻿@using System.Globalization
+@implements IDisposable
+
 @*
  * Copyright (C) 2020-2024 Ronald Ossendrijver (admin@treachery.online)
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
@@ -10,8 +12,10 @@
 
 @code {
 
-    [Parameter]
-    public Client h { get; set; }
+    protected override void OnInitialized()
+    {
+        Client.RefreshHandler += StateHasChanged;
+    }
 
     private double _x;
     [Parameter]
@@ -82,9 +86,9 @@
 
     protected const float TWOPI = 6.2831853072f;
 
-    protected Game Game => h.Game;
+    protected Game Game => Client.Game;
 
-    protected Player Player => h.Player;
+    protected Player Player => Client.Player;
 
     protected string Px(double x)
     {
@@ -271,7 +275,7 @@
                     {
                         result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
                             Skin.Current.GetFactionSpecialForceImageURL(p.Faction),
-                            b.Faction == Faction.White && h.Faction != Faction.White ? "?" : "" + (b.Faction == Faction.White ? Game.CurrentNoFieldValue : b.AmountOfSpecialForces));
+                            b.Faction == Faction.White && Client.Faction != Faction.White ? "?" : "" + (b.Faction == Faction.White ? Game.CurrentNoFieldValue : b.AmountOfSpecialForces));
                     }
                 }
             }
@@ -315,8 +319,13 @@
 
     protected string ProtectedFromStormText(Location l)
     {
-        return h.Game.IsProtectedFromStorm(l) ? "Protected" : "NOT protected";
+        return Client.Game.IsProtectedFromStorm(l) ? "Protected" : "NOT protected";
     }
 
     protected ElementReference element;
+    
+    public void Dispose()
+    {
+        Client.RefreshHandler -= StateHasChanged;
+    }
 }

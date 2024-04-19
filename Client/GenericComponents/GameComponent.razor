@@ -11,9 +11,6 @@
 
 @code {
 
-    [Parameter]
-    public Client Client { get; set; }
-
     protected Game Game => Client.Game;
 
     protected Player Player => Client.Player;
@@ -34,8 +31,14 @@
         }
     }
 
+    protected override void OnInitialized()
+    {
+        Client.RefreshHandler += StateHasChanged;
+    }
+
     public virtual void Dispose()
     {
+        Client.RefreshHandler -= StateHasChanged;
         _redrawCycleStarted = false;
     }
 

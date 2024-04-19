@@ -115,11 +115,13 @@ else
         }
     }
 
-    public void Dispose()
+    public new void Dispose()
     {
         if (Popover != null && !PopoverAsTooltip)
         {
             _ = Browser.RemovePopover(element);
         }
+        
+        base.Dispose();
     }
 }

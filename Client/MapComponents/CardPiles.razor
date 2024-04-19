@@ -21,7 +21,7 @@
     //Resource cards
     @if (!Game.ResourceCardDeck.IsEmpty)
     {
-        var cardImageToShow = Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(h.Player) ? Skin.Current.GetImageURL(Game.ResourceCardDeck.Top) : Skin.Current.CardBack_ResourceCard_URL;
+        var cardImageToShow = Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(Client.Player) ? Skin.Current.GetImageURL(Game.ResourceCardDeck.Top) : Skin.Current.CardBack_ResourceCard_URL;
         <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@cardImageToShow" 
            ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="2" 
            Popover="@IntelOfResourceCardPile()"/>
@@ -124,20 +124,20 @@
 
     private string IntelOfTreacheryCardPile()
     {
-        return Skin.Current.Format("<h4>Treachery Cards: {0} on deck</h4>", h.Game.TreacheryDeck.Items.Count); ;
+        return Skin.Current.Format("<h4>Treachery Cards: {0} on deck</h4>", Client.Game.TreacheryDeck.Items.Count); ;
     }
 
     private string IntelOfTreacheryDiscardPile()
     {
         var result = "";
 
-        result += Skin.Current.Format("<h4>Discard pile: {0} cards</h4>", h.Game.TreacheryDiscardPile.Items.Count);
+        result += Skin.Current.Format("<h4>Discard pile: {0} cards</h4>", Client.Game.TreacheryDiscardPile.Items.Count);
 
-        if (h.Game.AssistedNotekeepingEnabled(Player))
+        if (Client.Game.AssistedNotekeepingEnabled(Player))
         {
             var known = Game.KnownCards(Player).ToArray();
             result += "<div class=\"row row-cols-6 mt-1\">";
-            foreach (var c in h.Game.TreacheryDiscardPile.Items)
+            foreach (var c in Client.Game.TreacheryDiscardPile.Items)
             {
                 var imgUrl = known.Contains(c) ? Skin.Current.GetImageURL(c) : Skin.Current.CardBack_TreacheryCard_URL;
                 result += string.Format("<img src=\"{0}\" class=\"img-fluid p-1\"/>", imgUrl);
@@ -145,9 +145,9 @@
             result += "</div>";
 
         }
-        else if (h.Game.TreacheryDiscardPile.Top != null)
+        else if (Client.Game.TreacheryDiscardPile.Top != null)
         {
-            result += Popup.Get(h.Game.TreacheryDiscardPile.Top);
+            result += Popup.Get(Client.Game.TreacheryDiscardPile.Top);
         }
 
         return result;
@@ -168,13 +168,13 @@
     private string IntelOfWhiteCardPile()
     {
         var result = "";
-        if (h.Game.WhiteCache.Count > 0)
+        if (Client.Game.WhiteCache.Count > 0)
         {
-            result += Skin.Current.Format("<h4>{0} cards: {1} on deck</h4>", Faction.White, h.Game.WhiteCache.Count);
+            result += Skin.Current.Format("<h4>{0} cards: {1} on deck</h4>", Faction.White, Client.Game.WhiteCache.Count);
 
-            if (h.Faction == Faction.White)
+            if (Client.Faction == Faction.White)
             {
-                result += GetCardImages(h.Game.WhiteCache);
+                result += GetCardImages(Client.Game.WhiteCache);
             }
         }
 
@@ -185,12 +185,12 @@
     {
         var result = "";
 
-        result += Skin.Current.Format("<h4>{0} Cards: {1} on deck</h4>", Concept.Resource, h.Game.ResourceCardDeck.Items.Count);
+        result += Skin.Current.Format("<h4>{0} Cards: {1} on deck</h4>", Concept.Resource, Client.Game.ResourceCardDeck.Items.Count);
 
-        if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && h.Game.HasResourceDeckPrescience(h.Player) && h.Game.ResourceCardDeck.Top != null)
+        if (Client.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Client.Game.HasResourceDeckPrescience(Client.Player) && Client.Game.ResourceCardDeck.Top != null)
         {
             result += "<p>Top Card:</p>";
-            result += Popup.Get(h.Game.ResourceCardDeck.Top);
+            result += Popup.Get(Client.Game.ResourceCardDeck.Top);
         }
 
         return result;
@@ -199,18 +199,18 @@
     private string IntelOfResourceDiscardPileA()
     {
         var result = "";
-        var pileName = h.Game.Applicable(Rule.IncreasedResourceFlow) ? " A" : "";
+        var pileName = Client.Game.Applicable(Rule.IncreasedResourceFlow) ? " A" : "";
 
-        result += $"<h4>Discard pile{pileName}: {h.Game.ResourceCardDiscardPileA.Items.Count} cards</h4>";
-        if (h.Game.LatestSpiceCardA != null)
+        result += $"<h4>Discard pile{pileName}: {Client.Game.ResourceCardDiscardPileA.Items.Count} cards</h4>";
+        if (Client.Game.LatestSpiceCardA != null)
         {
-            if (h.Game.AssistedNotekeepingEnabled(Player))
+            if (Client.Game.AssistedNotekeepingEnabled(Player))
             {
-                result += GetCardImages(h.Game.ResourceCardDiscardPileA.Items);
+                result += GetCardImages(Client.Game.ResourceCardDiscardPileA.Items);
             }
             else
             {
-                result += Popup.Get(h.Game.LatestSpiceCardA);
+                result += Popup.Get(Client.Game.LatestSpiceCardA);
             }
         }
 
@@ -221,18 +221,18 @@
     {
         var result = "";
 
-        if (h.Game.Applicable(Rule.IncreasedResourceFlow))
+        if (Client.Game.Applicable(Rule.IncreasedResourceFlow))
         {
-            result += Skin.Current.Format("<h4>Discard pile B: {0} cards</h4>", h.Game.ResourceCardDiscardPileB.Items.Count);
-            if (h.Game.LatestSpiceCardB != null)
+            result += Skin.Current.Format("<h4>Discard pile B: {0} cards</h4>", Client.Game.ResourceCardDiscardPileB.Items.Count);
+            if (Client.Game.LatestSpiceCardB != null)
             {
-                if (h.Game.AssistedNotekeepingEnabled(Player))
+                if (Client.Game.AssistedNotekeepingEnabled(Player))
                 {
-                    result += GetCardImages(h.Game.ResourceCardDiscardPileB.Items); 
+                    result += GetCardImages(Client.Game.ResourceCardDiscardPileB.Items); 
                 }
                 else
                 {
-                    result += Popup.Get(h.Game.LatestSpiceCardB);
+                    result += Popup.Get(Client.Game.LatestSpiceCardB);
                 }
             }
         }

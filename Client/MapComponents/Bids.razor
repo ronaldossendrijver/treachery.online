@@ -8,12 +8,12 @@
 *@
 @inherits MapComponent
 
-@if (h.Game.CurrentPhase == Phase.Bidding || h.Game.CurrentPhase == Phase.BlackMarketBidding)
+@if (Client.Game.CurrentPhase is Phase.Bidding or Phase.BlackMarketBidding)
 {
-    foreach (var p in h.Game.Players)
+    foreach (var p in Client.Game.Players)
     {
-        var position = PlayerTokenPosition(h.Game, p.PositionAtTable);
-        if (!h.Status.PlayerShouldBeHighlighted(p))
+        var position = PlayerTokenPosition(Client.Game, p.PositionAtTable);
+        if (!Client.Status.PlayerShouldBeHighlighted(p))
         {
             var y = position.Y + Skin.Current.PlayerTokenRadius;
             var bidText = "";
@@ -24,9 +24,9 @@
                 bidText = "FULL";
                 bidColor = "rgb(200,200,200)";
             }
-            else if (h.Game.Bids.ContainsKey(p.Faction))
+            else if (Client.Game.Bids.ContainsKey(p.Faction))
             {
-                var bid = h.Game.Bids[p.Faction];
+                var bid = Client.Game.Bids[p.Faction];
                 bidText = DetermineBidText(bid);
                 bidColor = bid.Passed ? "rgb(255,200,200)" : "rgb(200,255,200)";
             }

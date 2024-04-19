@@ -17,7 +17,7 @@
             var forcesToDraw = new List<MapForce>();
 
             float radiusModifier = 1;
-            if (h.Status.PlayerShouldBeHighlighted(p))
+            if (Client.Status.PlayerShouldBeHighlighted(p))
             {
                 radiusModifier = 1.5f;
             }
@@ -90,7 +90,7 @@
                        Popover=@Skin.Current.Format("{0} Reserves", homeworld.Faction) PopoverAsTooltip="true"/>
                 }
 
-                if (h.Status.HighlightedTerritories.Contains(homeworld.Territory))
+                if (Client.Status.HighlightedTerritories.Contains(homeworld.Territory))
                 {
                     <Circle X=@(homeworldXY.X + Skin.Current.PlayerTokenRadius) Y=@(homeworldXY.Y + Skin.Current.PlayerTokenRadius) Radius=@Skin.Current.PlayerTokenRadius 
                             FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" StrokeWidth="1" StrokeColor="red"/>
@@ -147,14 +147,14 @@
                 <MapImage XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
                         Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                         Src="@Skin.Current.GetImageURL(skilledLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                        Popover="@Popup.Get(skilledLeader, h.Game.Skill(skilledLeader))" PopoverStyle=""/>
+                        Popover="@Popup.Get(skilledLeader, Client.Game.Skill(skilledLeader))" PopoverStyle=""/>
 
                 <MapText ToShow="@Skin.Current.Describe(Game.Skill(skilledLeader))"
                         XY=@Pos(positionOnCircle)
                         Font="@Skin.Current.SKILL_FONT" FontColor="@Skin.Current.SKILL_FONTCOLOR"
                         BorderWidth="@Skin.Current.SKILL_FONT_BORDERWIDTH" BorderColor="@Skin.Current.SKILL_FONT_BORDERCOLOR"
                         Align="@TextAlignment.Center" MaxWidth="3f * Skin.Current.PlayerTokenRadius"
-                        Popover="@Popup.Get(skilledLeader, h.Game.Skill(skilledLeader))" PopoverStyle="" />
+                        Popover="@Popup.Get(skilledLeader, Client.Game.Skill(skilledLeader))" PopoverStyle="" />
             }
 
             if (p.Faction == Faction.Pink && p.Ambassadors.Any())
@@ -265,8 +265,6 @@
         return situation.RequiresUpdate(Game);
     }
 
-    private bool EnableCameras => h.VideoDevice != null && Game.Players.Count(p => !p.IsBot) > 1 && h.Player != null;
-
     private string Intel(Player p)
     {
         var result = Skin.Current.Format("<p><strong>{0} plays {1}</strong></p>", p.Name, p.Faction);
@@ -280,7 +278,7 @@
 
         result += "</div>";
 
-        result += "<div class=\"mt-1 text-start\">" + Skin.Current.GetFactionInfo_HTML(h.Game, p.Faction) + "</div>";
+        result += "<div class=\"mt-1 text-start\">" + Skin.Current.GetFactionInfo_HTML(Client.Game, p.Faction) + "</div>";
         return result;
     }
 
