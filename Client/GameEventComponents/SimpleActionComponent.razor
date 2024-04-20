@@ -76,6 +76,8 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
+        
         autoConfirm = GetAutoConfirmSetting();
 
         if (autoConfirm)

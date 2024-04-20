@@ -86,6 +86,8 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
+        
         if (ShowGameChat)
         {
             if (Client.Game.Players.Where(p => p.Name != Client.MyName).Any())

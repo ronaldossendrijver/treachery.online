@@ -34,6 +34,7 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         foreach (var f in ValidTargets)
         {
             amounts.Add(f, Game.SpiceForBidsRedCanPay(f));
