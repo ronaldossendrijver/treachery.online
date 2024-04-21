@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Treachery.Shared;
 
@@ -31,9 +32,12 @@ public class Statistics
     public ObjectCounter<string> FacedancedLeaders { get; } = new();
     public ObjectCounter<string> UsedWeapons { get; } = new();
     public ObjectCounter<string> UsedDefenses { get; } = new();
-    public List<Tuple<Faction, float>> SpiceUsed { get; } = new();
-    public List<Tuple<Faction, float>> ForceTokensUsed { get; } = new();
-    public List<Tuple<Faction, float>> TotalDialUsed { get; } = new();
+    public List<Tuple<Faction, int, float>> BattleSpiceUsed { get; } = new();
+    public List<Tuple<Faction, int, float>> BattleForceTokensUsed { get; } = new();
+    public List<Tuple<Faction, int, float>> BattleTotalDialUsed { get; } = new();
+    public List<Tuple<Faction, int, float>> BidSpiceUsed { get; } = new();
+    public List<Tuple<Faction, int, float>> ShipSpiceUsed { get; } = new();
+    public List<Tuple<Faction, int, float>> ReviveSpiceUsed { get; } = new();
 
     public ObjectCounter<Faction> FactionsOccupyingArrakeen { get; } = new();
     public ObjectCounter<Faction> FactionsOccupyingCarthag { get; } = new();
@@ -106,16 +110,31 @@ public class Statistics
         OutputCounter("Karamas", Karamas, describer);
         OutputCounter("AcceptedDeals", AcceptedDeals, describer, 50);
 
-        Console.WriteLine("*** Spice used per battle ***");
-        Console.WriteLine("Faction;Battles;Total Spice;Average Spice;Average Dial;Average Force Tokens");
-        foreach (var faction in GamePlayingFactions.Counted)
+        Console.WriteLine("*** Spice used per battle per turn***");
+        Console.WriteLine("Turn;Faction;Battles;Total Spice;Average Spice;Average Dial;Average Force Tokens");
+        for (int turn = 1; turn <= 10; turn++)
         {
-            var spiceRecords = SpiceUsed.Where(v => v.Item1 == faction).ToList();
-            var dialRecords = TotalDialUsed.Where(v => v.Item1 == faction).ToList();
-            var forceRecords = ForceTokensUsed.Where(v => v.Item1 == faction).ToList();
-            if (spiceRecords.Count > 0) Console.WriteLine($"{describer.Describe(faction)};{spiceRecords.Count};{spiceRecords.Sum(x => x.Item2)};{spiceRecords.Average(x => x.Item2)};{dialRecords.Average(x => x.Item2)};{forceRecords.Average(x => x.Item2)}");
+            foreach (var faction in GamePlayingFactions.Counted)
+            {
+                var spiceRecords = BattleSpiceUsed.Where(v => v.Item2 == turn && v.Item1 == faction).ToList();
+                var dialRecords = BattleTotalDialUsed.Where(v => v.Item2 == turn && v.Item1 == faction).ToList();
+                var forceRecords = BattleForceTokensUsed.Where(v => v.Item2 == turn && v.Item1 == faction).ToList();
+                if (spiceRecords.Count > 0) Console.WriteLine($"{turn};{describer.Describe(faction)};{spiceRecords.Count};{spiceRecords.Sum(x => x.Item3)};{spiceRecords.Average(x => x.Item3).ToString(CultureInfo.InvariantCulture)};{dialRecords.Average(x => x.Item3).ToString(CultureInfo.InvariantCulture)};{forceRecords.Average(x => x.Item3).ToString(CultureInfo.InvariantCulture)}");
+            }            
         }
-
+        
+        Console.WriteLine("*** Spice used for bidding, revival and shipping***");
+        Console.WriteLine("Turn;Faction;Cards bought;Average Spice per bought card;Average spice spent on revival;Average spice spent on shipment");
+        for (int turn = 1; turn <= 10; turn++)
+        {
+            foreach (var faction in GamePlayingFactions.Counted)
+            {
+                var bidRecords = BidSpiceUsed.Where(v => v.Item2 == turn && v.Item1 == faction).ToList();
+                var reviveRecords = ReviveSpiceUsed.Where(v => v.Item2 == turn && v.Item1 == faction).ToList();
+                var shipRecords = ShipSpiceUsed.Where(v => v.Item2 == turn && v.Item1 == faction).ToList();
+                if (bidRecords.Count + reviveRecords.Count + shipRecords.Count > 0) Console.WriteLine($"{turn};{describer.Describe(faction)};{bidRecords.Count};{bidRecords.Select(x => x.Item3).DefaultIfEmpty(0).Average().ToString(CultureInfo.InvariantCulture)};{reviveRecords.Select(x => x.Item3).DefaultIfEmpty(0).Average().ToString(CultureInfo.InvariantCulture)};{shipRecords.Select(x => x.Item3).DefaultIfEmpty(0).Average().ToString(CultureInfo.InvariantCulture)}");
+            }            
+        }
     }
 
     private static void OutputCounter<T>(string title, ObjectCounter<T> c, IDescriber describer, int topX = -1)

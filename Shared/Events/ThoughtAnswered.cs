@@ -69,6 +69,7 @@ public class ThoughtAnswered : GameEvent
         else
         {
             LogTo(Game.CurrentThought.Initiator, "In response, ", Initiator, " show you: ", Card);
+            Log("In response, ", Initiator, " show ", Game.CurrentThought.Initiator, " a card");
             Game.RegisterKnown(Game.CurrentThought.Initiator, Card);
         }
 

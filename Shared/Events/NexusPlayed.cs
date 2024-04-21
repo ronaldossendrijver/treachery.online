@@ -349,8 +349,18 @@ public class NexusPlayed : GameEvent, ILocationEvent
             case Faction.Yellow:
                 Game.PlayNexusCard(Player);
                 if (Game.CurrentMainPhase == MainPhase.Blow)
+                {
                     Game.Prevent(Initiator, FactionAdvantage.YellowRidesMonster);
-                else if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove) Game.Prevent(Initiator, FactionAdvantage.YellowExtraMove);
+                    if (Game.CurrentPhase is Phase.YellowRidingMonsterA or Phase.YellowRidingMonsterB)
+                    {
+                        Game.DetermineNextShipmentAndMoveSubPhase();
+                    }
+                }
+                else if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
+                {
+                    Game.Prevent(Initiator, FactionAdvantage.YellowExtraMove);
+                }
+
                 break;
 
             case Faction.Red:

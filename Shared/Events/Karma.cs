@@ -252,13 +252,18 @@ public class Karma : GameEvent
         Log();
         Game.Stone(Milestone.Karma);
 
-        if (Prevented != FactionAdvantage.None) Game.Prevent(Initiator, Prevented);
+        if (Prevented is not FactionAdvantage.None) Game.Prevent(Initiator, Prevented);
 
         RevokeBattlePlansIfNeeded();
 
-        if (Prevented == FactionAdvantage.BlueUsingVoice) Game.CurrentVoice = null;
+        if (Prevented is FactionAdvantage.BlueUsingVoice) Game.CurrentVoice = null;
 
-        if (Prevented == FactionAdvantage.GreenBattlePlanPrescience) Game.CurrentPrescience = null;
+        if (Prevented is FactionAdvantage.GreenBattlePlanPrescience) Game.CurrentPrescience = null;
+        
+        if (Prevented is FactionAdvantage.YellowRidesMonster && Game.CurrentPhase is Phase.YellowRidingMonsterA or Phase.YellowRidingMonsterB)
+        {
+            Game.DetermineNextShipmentAndMoveSubPhase();
+        }
     }
 
     private void RevokeBattlePlansIfNeeded()

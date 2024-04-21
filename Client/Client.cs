@@ -350,10 +350,10 @@ public class Client : IGameService
                     expectedEventNumber++;
                 }
             }
-            else if (!_pending.ContainsKey(newEventNumber))
+            else
             {
                 //This is not the expected event. Store this one for now.
-                _pending.Add(newEventNumber, e);
+                _pending.TryAdd(newEventNumber, e);
             }
         }
         catch (Exception ex)

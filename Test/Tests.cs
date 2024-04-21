@@ -359,6 +359,7 @@ public class Tests
     private Game LetBotsPlay(Rule[] rules, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool performTests, Statistics statistics, int timeout, Faction mustPlay = Faction.None)
     {
         BattleOutcome previousBattleOutcome = null;
+        IBid previousWinningBid = null;
 
         var game = new Game();
         var timer = new TimedTest(game, timeout);
@@ -419,7 +420,7 @@ public class Tests
                     SaveSpecialCases(game, evt);
                 }
 
-                GatherStatistics(statistics, game, ref previousBattleOutcome);
+                GatherStatistics(statistics, game, ref previousBattleOutcome, ref previousWinningBid);
             }
         }
         catch
@@ -583,6 +584,7 @@ public class Tests
         var valueId = 0;
 
         BattleOutcome previousBattleOutcome = null;
+        IBid previousWinningBid = null;
         var gatherStatistics = false;
 
         foreach (var evt in state.Events)
@@ -610,7 +612,7 @@ public class Tests
 
             if (!gatherStatistics && statistics != null && evt is EstablishPlayers && game.Players.Count > 1 && game.Players.Count > 2 * game.Players.Count(p => p.IsBot)) gatherStatistics = true;
 
-            if (gatherStatistics) GatherStatistics(statistics, game, ref previousBattleOutcome);
+            if (gatherStatistics) GatherStatistics(statistics, game, ref previousBattleOutcome, ref previousWinningBid);
         }
 
         var centralStyleStats = GameStatistics.GetStatistics(game);
@@ -629,7 +631,7 @@ public class Tests
         return writer.ToString();
     }
 
-    private static void GatherStatistics(Statistics statistics, Game game, ref BattleOutcome previousBattleOutcome)
+    private static void GatherStatistics(Statistics statistics, Game game, ref BattleOutcome previousBattleOutcome, ref IBid previousWinningBid)
     {
         lock (statistics)
         {
@@ -695,18 +697,32 @@ public class Tests
             {
                 if (!game.AggressorPlan.Player.IsBot)
                 {
-                    statistics.SpiceUsed.Add(new Tuple<Faction, float>(game.AggressorPlan.Initiator, game.AggressorPlan.Cost(game)));
-                    statistics.TotalDialUsed.Add(new Tuple<Faction, float>(game.AggressorPlan.Initiator, game.AggressorPlan.Dial(game, game.DefenderPlan.Initiator)));
-                    statistics.ForceTokensUsed.Add(new Tuple<Faction, float>(game.AggressorPlan.Initiator, game.AggressorPlan.TotalForces));
+                    statistics.BattleSpiceUsed.Add(new Tuple<Faction, int, float>(game.AggressorPlan.Initiator, game.CurrentTurn, game.AggressorPlan.Cost(game)));
+                    statistics.BattleTotalDialUsed.Add(new Tuple<Faction, int, float>(game.AggressorPlan.Initiator, game.CurrentTurn, game.AggressorPlan.Dial(game, game.DefenderPlan.Initiator)));
+                    statistics.BattleForceTokensUsed.Add(new Tuple<Faction, int, float>(game.AggressorPlan.Initiator, game.CurrentTurn, game.AggressorPlan.TotalForces));
                 }
 
                 if (!game.DefenderPlan.Player.IsBot)
                 {
-                    statistics.SpiceUsed.Add(new Tuple<Faction, float>(game.DefenderPlan.Initiator, game.DefenderPlan.Cost(game)));
-                    statistics.TotalDialUsed.Add(new Tuple<Faction, float>(game.DefenderPlan.Initiator, game.DefenderPlan.Dial(game, game.AggressorPlan.Initiator)));
-                    statistics.ForceTokensUsed.Add(new Tuple<Faction, float>(game.DefenderPlan.Initiator, game.DefenderPlan.TotalForces));
+                    statistics.BattleSpiceUsed.Add(new Tuple<Faction, int, float>(game.DefenderPlan.Initiator, game.CurrentTurn, game.DefenderPlan.Cost(game)));
+                    statistics.BattleTotalDialUsed.Add(new Tuple<Faction, int, float>(game.DefenderPlan.Initiator, game.CurrentTurn, game.DefenderPlan.Dial(game, game.AggressorPlan.Initiator)));
+                    statistics.BattleForceTokensUsed.Add(new Tuple<Faction, int, float>(game.DefenderPlan.Initiator, game.CurrentTurn, game.DefenderPlan.TotalForces));
 
                 }
+            }
+            else if (latest is Shipment ship)
+            {
+                statistics.ShipSpiceUsed.Add(new Tuple<Faction, int, float>(ship.Initiator, game.CurrentTurn, Shipment.DetermineCost(game, ship.Player, ship)));
+            }
+            else if (latest is Revival revive)
+            {
+                statistics.ReviveSpiceUsed.Add(new Tuple<Faction, int, float>(revive.Initiator, game.CurrentTurn, Revival.DetermineCost(game, revive.Player, revive.Hero, revive.AmountOfForces, revive.AmountOfSpecialForces, revive.ExtraForcesPaidByRed, revive.ExtraSpecialForcesPaidByRed, revive.UsesRedSecretAlly).TotalCost));
+            }
+            
+            if (game.WinningBid != null && game.WinningBid != previousWinningBid)
+            {
+                previousWinningBid = game.WinningBid;
+                statistics.BidSpiceUsed.Add(new Tuple<Faction, int, float>(game.WinningBid.Initiator, game.CurrentTurn, game.WinningBid.KarmaCard == null ? game.WinningBid.TotalAmount : 0));
             }
                 
             if (game.BattleOutcome != null && previousBattleOutcome != game.BattleOutcome)
