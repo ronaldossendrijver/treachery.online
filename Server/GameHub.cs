@@ -13,7 +13,6 @@ using Newtonsoft.Json;
 using Treachery.Client;
 using Treachery.Server.Data;
 using Treachery.Shared;
-using Treachery.Shared.Services;
 
 namespace Treachery.Server;
 
@@ -24,16 +23,44 @@ public class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfi
 
     public async Task<string> RequestCreateUser(string userName, string hashedPassword, string email, string playerName)
     {
+        var trimmedUsername = userName.Trim().ToLower();
+        
+        if (trimmedUsername.Trim().Length <= 3)
+        {
+            return "Username must be more than 3 characters";
+        }
+        
         await using var db = GetDbContext();
-        if (db.Users.Any(x => x.Name.Trim().ToLower().Equals(userName.Trim().ToLower())))
+        
+        if (db.Users.Any(x => x.Name.Trim().ToLower().Equals(trimmedUsername)))
         {
             return "This username already exists";
         }
+        
+        if (db.Users.Any(x => x.Email.Trim().ToLower().Equals(trimmedUsername)))
+        {
+            return "This e-mail address is already in use";
+        }
 
         await db.AddAsync(new User()
-            { Name = userName, HashedPassword = hashedPassword, Email = email, PlayerName = playerName });
+            { Name = trimmedUsername, HashedPassword = hashedPassword, Email = email, PlayerName = playerName });
 
         await db.SaveChangesAsync();
+        
+        MailMessage mailMessage = new()
+        {
+            From = new MailAddress("noreply@treachery.online"),
+            Subject = "Welcome to treachery.online",
+            IsBodyHtml = true,
+            Body = $"""
+                    Welcome to treachery.online, {trimmedUsername}!
+                    {Environment.NewLine}{Environment.NewLine}
+                    If you ever need to reset your password, a reset token will be sent to this e-mail address.
+                    """
+        };
+
+        mailMessage.To.Add(new MailAddress(email));
+        SendMail(mailMessage);
         
         return null;
     }
@@ -60,8 +87,8 @@ public class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfi
         if (user == null)
             return "Unknown email address";
 
-        if ((DateTime.Now - user.PasswordResetTokenCreated).TotalMinutes < 15)
-            return "You already recently requested a password reset";
+        if ((DateTime.Now - user.PasswordResetTokenCreated).TotalMinutes < 10)
+            return "Please wait at least 10 minutes before requesting another password reset";
 
         var token = GenerateToken();
         user.PasswordResetToken = token;
@@ -69,23 +96,21 @@ public class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfi
 
         await db.SaveChangesAsync();
 
-        var from = configuration["GameEndEmailFrom"];
-
         MailMessage mailMessage = new()
         {
-            From = new MailAddress(from),
+            From = new MailAddress("noreply@treachery.online"),
             Subject = "Password Reset",
             IsBodyHtml = true,
             Body = $"""
                     You have requested a password reset for user: {user.Name}
-                    
+                    {Environment.NewLine}{Environment.NewLine}
                     You can use this token to reset your password: {token}
                     """
         };
 
         mailMessage.To.Add(new MailAddress(user.Email));
-
         SendMail(mailMessage);
+        
         return null;
     }
     
@@ -513,7 +538,8 @@ public class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfi
     private void SendEndOfGameMail(string content, GameInfo info)
     {
         var ruleset = Game.DetermineApproximateRuleset(info.FactionsInPlay, info.Rules, info.ExpansionLevel);
-        var subject = string.Format("{0} ({1} Players, {2} Bots, Turn {3} - {4})", info.GameName, info.Players.Length, info.NumberOfBots, info.CurrentTurn, ruleset);
+        var subject =
+            $"{info.GameName} ({info.Players.Length} Players, {info.NumberOfBots} Bots, Turn {info.CurrentTurn} - {ruleset})";
         var from = configuration["GameEndEmailFrom"];
         var to = configuration["GameEndEmailTo"];
 

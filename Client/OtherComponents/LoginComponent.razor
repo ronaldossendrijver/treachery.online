@@ -35,7 +35,7 @@
         else if (State is LoginComponentState.NewAccount)
         {
             <input class="form-control mt-1" @bind-value="newUsername" @bind-value:event="oninput" maxlength="80" placeholder="User name" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
-            <input class="form-control mt-1" @bind-value="newEmail" @bind-value:event="oninput" maxlength="80" placeholder="E-mail address (in case you ever need to reset your password)" @onkeyup="@(e => KeyUp(e, PasswordReset))"/>
+            <input class="form-control mt-1" @bind-value="newEmail" @bind-value:event="oninput" maxlength="80" placeholder="E-mail address (in case you ever need to reset your password)" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
             <input type="password" class="form-control mt-1" @bind-value="newPassword" @bind-value:event="oninput" maxlength="80" placeholder="Password" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
             <input type="password" class="form-control mt-1" @bind-value="newPasswordConfirm" @bind-value:event="oninput" maxlength="80" placeholder="Repeat password" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
             <div class="text-danger small">@newAccountMessage</div>
@@ -52,7 +52,7 @@
         {
             <div>Enter the username and password reset token you receive by e-mail and your new password below:</div>
             <input class="form-control mt-1" @bind-value="resetToken" @bind-value:event="oninput" maxlength="80" placeholder="Reset token" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
-            <input class="form-control mt-1" @bind-value="resetUsername" @bind-value:event="oninput" maxlength="80" placeholder="Your name" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
+            <input class="form-control mt-1" @bind-value="resetUsername" @bind-value:event="oninput" maxlength="80" placeholder="User name" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
             <input type="password" class="form-control mt-1" @bind-value="resetPassword" @bind-value:event="oninput" maxlength="80" placeholder="Password" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
             <input type="password" class="form-control mt-1" @bind-value="resetPasswordConfirm" @bind-value:event="oninput" maxlength="80" placeholder="Repeat password" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
             <div class="text-danger small">@resetPasswordMessage</div>
@@ -112,8 +112,9 @@
     {
         var result = PlayerJoined.ValidName(newUsername);
         if (!string.IsNullOrEmpty(result)) newAccountMessage = result;
+        if (newUsername == null || newUsername.Trim().Length <= 3) newAccountMessage = "Username must be more than 3 characters";
         else if (string.IsNullOrEmpty(newPassword) || newPassword.Length < 6) newAccountMessage = "Password must be at least 6 characters";
-        else if (!newPassword.Equals(newPasswordConfirm)) newAccountMessage = "Confirmed password does not match";
+        else if (!newPassword.Equals(newPasswordConfirm)) newAccountMessage = "Passwords do not not match";
         else if (string.IsNullOrEmpty(newEmail) || !newEmail.Contains('@') || !newEmail.Contains('.')) newAccountMessage = "Enter a valid e-mail address";
         else newAccountMessage = null;
 
@@ -132,7 +133,7 @@
     {
         var result = PlayerJoined.ValidName(resetUsername);
         
-        if (string.IsNullOrEmpty(resetToken) || resetToken.Length < 6) resetPasswordMessage = "Enter the reset token sent to your e-mail address";
+        if (string.IsNullOrEmpty(resetToken)) resetPasswordMessage = "Enter the reset token sent to your e-mail address";
         else if (!string.IsNullOrEmpty(result)) resetPasswordMessage = result;
         else if (string.IsNullOrEmpty(resetPassword) || resetPassword.Length < 6) resetPasswordMessage = "Password must be at least 6 characters";
         else if (!resetPassword.Equals(resetPasswordConfirm)) resetPasswordMessage = "Passwords do not match";
