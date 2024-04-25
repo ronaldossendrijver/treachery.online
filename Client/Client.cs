@@ -555,10 +555,10 @@ public class Client : IGameService
         PerformEndOfTurnTasks();
 
         if (Game.CurrentMainPhase == MainPhase.Ended) await PerformEndOfGameTasks();
+        
+        Refresh();
 
         if (IsHost) PerformBotAction(e);
-
-        Refresh();
     }
 
     private void ResetAutopassThreshold()

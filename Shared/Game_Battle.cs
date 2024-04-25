@@ -473,6 +473,7 @@ public partial class Game
         var loserMayRetreat =
             !BattleOutcome.LoserHeroKilled &&
             SkilledAs(BattleOutcome.LoserBattlePlan.Hero, LeaderSkill.Diplomat) &&
+            Retreat.MaxTotalForces(this, BattleOutcome.Loser) > 0 &&
             (Retreat.MaxForces(this, BattleOutcome.Loser) > 0 || Retreat.MaxSpecialForces(this, BattleOutcome.Loser) > 0) &&
             Retreat.ValidTargets(this, BattleOutcome.Loser).Any();
 

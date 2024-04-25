@@ -486,10 +486,13 @@ public class Battle : GameEvent
     {
         var cost = amountOfForcesAtFullStrength * NormalForceCost(g, p) + amountOfSpecialForcesAtFullStrength * SpecialForceCost(g, p);
         paidByArrakeen = Math.Min(CostReduction(g, p), cost);
-        var specialForcesSupportedByRedStarPlanet = g.Version >= 165 && p.Is(Faction.Red) && p.HasHighThreshold(World.RedStar)
-            ? amountOfSpecialForcesAtFullStrength
-            : 0;
-        return cost - paidByArrakeen - specialForcesSupportedByRedStarPlanet;
+    /*       
+        if (cost - paidByArrakeen - specialForcesSupportedByRedStarPlanet < 0)
+        {
+            Console.WriteLine("Bingo!");
+        }*/
+
+    return cost - paidByArrakeen;// - specialForcesSupportedByRedStarPlanet;
     }
 
     public static int CostReduction(Game g, Player p)
@@ -511,8 +514,12 @@ public class Battle : GameEvent
 
     public static int SpecialForceCost(Game g, Player p)
     {
+        if (g.Version >= 165 && p.Is(Faction.Red) && p.HasHighThreshold(World.RedStar))
+            return 0;
+        
         if (MustPayForAnyForcesInBattle(g, p))
             return 1;
+        
         return 0;
     }
 

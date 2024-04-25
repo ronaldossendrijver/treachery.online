@@ -240,7 +240,7 @@ public partial class Player
 
             LogInfo("Leader: {0}, Weapon: {1}, Defense: {2}, Forces: {3} (supp) {4} (non-supp) {5} (spec supp) {6} (spec non-supp)", hero, weapon, defense, forcesAtFullStrength, forcesAtHalfStrength, specialForcesAtFullStrength, specialForcesAtHalfStrength);
 
-            var cost = Battle.Cost(Game, this, forcesAtFullStrength, specialForcesAtFullStrength, out var _);
+            var cost = Battle.Cost(Game, this, forcesAtFullStrength, specialForcesAtFullStrength, out var _ );
             return new Battle(Game, Faction)
             {
                 Hero = hero,
@@ -313,12 +313,12 @@ public partial class Player
 
         var messiah = lowestAvailableHero != null && Battle.MessiahMayBeUsedInBattle(Game, this);
 
-        if (Battle.MustPayForAnyForcesInBattle(Game, this))
+        var strongholdFreeForces = Game.HasStrongholdAdvantage(Faction, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory) ? 2 : 0;
+        var specialAtFull = Math.Min(strongholdFreeForces, Battle.MaxForces(Game, this, true));
+        var normalAtFull = Math.Min(strongholdFreeForces - specialAtFull, Battle.MaxForces(Game, this, false));
+        
+        if (Battle.MustPayForAnyForcesInBattle(Game, this) && (specialAtFull <= 0 || !Battle.MustPayForSpecialForcesInBattle(Game, this)))
         {
-            var strongholdFreeForces = Game.HasStrongholdAdvantage(Faction, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory) ? 2 : 0;
-            var specialAtFull = Math.Min(strongholdFreeForces, Battle.MaxForces(Game, this, true));
-            var normalAtFull = Math.Min(strongholdFreeForces - specialAtFull, Battle.MaxForces(Game, this, false));
-
             return new Battle(Game, Faction)
             {
                 Hero = lowestAvailableHero,

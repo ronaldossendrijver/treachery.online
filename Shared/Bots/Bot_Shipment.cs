@@ -372,8 +372,7 @@ public partial class Player
 
         if (target != null)
         {
-            var dialNeeded = MakeEvenIfEfficientForShipping(forcestrength);
-            if (DetermineShortageForShipment(dialNeeded, false, target, Faction.None, ForcesInReserve, SpecialForcesInReserve, out var nrOfForces, out var nrOfSpecialForces, out var noFieldValue, out var cunningNoFieldValue, minResourcesToKeep, maxUnsupportedForces, true) <= 2)
+            if (DetermineShortageForShipment(forcestrength, false, target, Faction.None, ForcesInReserve, SpecialForcesInReserve, out var nrOfForces, out var nrOfSpecialForces, out var noFieldValue, out var cunningNoFieldValue, minResourcesToKeep, maxUnsupportedForces, true) <= 0)
             {
                 LogInfo($"Shipping to: {target.Id} {target.Territory.Id} {target} {target.Territory}");
                 DoShipment(ShipmentDecision.Homeworld, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, target, true, true);

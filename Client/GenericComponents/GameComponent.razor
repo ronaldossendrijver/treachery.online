@@ -33,12 +33,12 @@
 
     protected override void OnInitialized()
     {
-        Client.RefreshHandler += StateHasChanged;
+        Client.RefreshHandler += Redraw;
     }
 
     public virtual void Dispose()
     {
-        Client.RefreshHandler -= StateHasChanged;
+        Client.RefreshHandler -= Redraw;
         _redrawCycleStarted = false;
     }
 
@@ -91,7 +91,7 @@
 
     protected virtual async Task RedrawAsync()
     {
-        await Task.Delay(0).ContinueWith(e => StateHasChanged());
+        await Task.Delay(10).ContinueWith(e => StateHasChanged());
     }
 
     private bool _timerCycleStarted;

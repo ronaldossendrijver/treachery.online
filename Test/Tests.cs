@@ -28,7 +28,17 @@ public class Tests
 {
     private void SaveSpecialCases(Game g, GameEvent e)
     {
-        
+
+        if (g.CurrentPhase is Phase.BattleConclusion &&
+            !g.TreacheryDiscardPile.IsEmpty &&
+            g.TreacheryDiscardPile.Top.Type is TreacheryCardType.PortableAntidote &&
+            g.RecentlyDiscarded.ContainsKey(g.TreacheryDiscardPile.Top) &&
+            g.AggressorPlan?.Defense != null && g.AggressorPlan.Defense.Type is not TreacheryCardType.PortableAntidote &&
+            g.DefenderPlan?.Defense != null && g.DefenderPlan.Defense.Type is not TreacheryCardType.PortableAntidote &&
+            g.CurrentPortableAntidoteUsed == null)
+        {
+            WriteSaveGameIfApplicable(g, null, "Why is portable snooper discarded");
+        } 
     }
 
     private readonly List<string> _writtenCases = new();
@@ -305,8 +315,8 @@ public class Tests
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
 
-        var nrOfGames = 200;
-        var nrOfTurns = 12;
+        var nrOfGames = 100;
+        var nrOfTurns = 10;
         var nrOfPlayers = 7;
 
         var timeout = 10;

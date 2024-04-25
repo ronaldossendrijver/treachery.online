@@ -517,16 +517,24 @@ public class Revival : GameEvent, ILocationEvent
 
         if (Location != null)
         {
-            if (NumberOfSpecialForcesInLocation > 0)
+            if (NumberOfSpecialForcesInLocation > 0 || NumberOfForcesInLocation > 0)
             {
-                Player.ShipSpecialForces(Location, NumberOfSpecialForcesInLocation);
-                Log(Initiator, " place ", NumberOfSpecialForcesInLocation, FactionSpecialForce.Yellow, " in ", Location);
-            }
-
-            if (NumberOfForcesInLocation > 0)
-            {
-                Player.ShipForces(Location, NumberOfForcesInLocation);
-                Log(Initiator, " place ", NumberOfForcesInLocation, FactionForce.Purple, " in ", Location);
+                var normalForceMessage = Message.Express();
+                if (NumberOfForcesInLocation > 0)
+                {
+                    Player.ShipForces(Location, NumberOfForcesInLocation);
+                    normalForceMessage = Message.Express(NumberOfForcesInLocation, Player.Force);
+                }
+                
+                var specialForceMessage = Message.Express();
+                if (NumberOfSpecialForcesInLocation > 0)
+                {
+                    Player.ShipSpecialForces(Location, NumberOfSpecialForcesInLocation);
+                    specialForceMessage = Message.Express(NumberOfSpecialForcesInLocation, Player.SpecialForce);
+                }
+                
+                Log(Initiator, " place ", normalForceMessage, specialForceMessage, " in ", Location);
+                Game.LastShipmentOrMovement = this;
             }
 
             if (Game.Version >= 161 && Game.CheckIntrusion(this))

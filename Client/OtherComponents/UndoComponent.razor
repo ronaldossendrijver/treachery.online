@@ -13,10 +13,11 @@
     <div class="card-header">Select up to (including) which action should be undone</div>
 
     <div class="card-body">
+
         <select class="form-select" @bind="undoEventId" id="undoEventNr">
 
-            @foreach (var group in UndoableEvents) {
-
+            @foreach (var group in UndoableEvents)
+            {
                 <optgroup label="@group.Key">
 
                     @foreach (var evt in group.Value)
@@ -28,6 +29,7 @@
             }
 
         </select>
+        
         <button class="btn btn-primary mt-1" @onclick="ConfirmUndo">Confirm</button>
     </div>
 </div>
@@ -36,11 +38,10 @@
 
     private int undoEventId;
 
-    protected override void OnParametersSet()
+    protected override void Redraw()
     {
-        base.OnParametersSet();
-
-        undoEventId = Client.Game.History.Count - 1;
+        undoEventId = Game.History.Count - 1;
+        base.Redraw();
     }
 
     private async Task ConfirmUndo()

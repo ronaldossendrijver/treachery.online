@@ -49,6 +49,8 @@ public class SkillAssigned : PassableGameEvent
         return null;
     }
 
+    public static bool PlayersMustChooseLeaderSkills(Game g) => g.Players.Any(p => p.SkillsToChooseFrom.Count != 0);
+
     public static IEnumerable<LeaderSkill> ValidSkills(Player p)
     {
         return p.SkillsToChooseFrom;
@@ -64,7 +66,7 @@ public class SkillAssigned : PassableGameEvent
     #endregion Validation
 
     #region Execution
-
+    
     protected override void ExecuteConcreteEvent()
     {
         Log();
@@ -74,7 +76,7 @@ public class SkillAssigned : PassableGameEvent
         Game.SkillDeck.PutOnTop(Player.SkillsToChooseFrom);
         Player.SkillsToChooseFrom.Clear();
 
-        if (!Game.Players.Any(p => p.SkillsToChooseFrom.Any()))
+        if (!PlayersMustChooseLeaderSkills(Game))
         {
             Game.SkillDeck.Shuffle();
             Game.Enter(Game.CurrentPhase != Phase.AssigningInitialSkills, Game.PhaseBeforeSkillAssignment, Game.TreacheryCardsBeforeTraitors, Game.DealTraitors, Game.SetupSpiceAndForces);

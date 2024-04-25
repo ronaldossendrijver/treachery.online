@@ -366,8 +366,21 @@ public partial class Game
             case Phase.BlueIntrudedByRevival:
             case Phase.TerrorTriggeredByRevival:
             case Phase.AmbassadorTriggeredByRevival:
-                Enter(PhaseBeforeRevivalCausedIntrusion);
+            {
+                //TODO This code is really ugly. Only way to solve this is to put ALL interrupting effects (including skill assignment) on one stack.
+                var nextPhase = PhaseBeforeRevivalCausedIntrusion;
+                if (PhaseBeforeRevivalCausedIntrusion is Phase.AssigningSkill && !SkillAssigned.PlayersMustChooseLeaderSkills(this))
+                {
+                    nextPhase = PhaseBeforeSkillAssignment;
+                    if (nextPhase == CurrentPhase)
+                    {
+                        nextPhase = Phase.Resurrection;
+                    }
+                }
+
+                Enter(nextPhase);
                 break;
+            }
 
         }
     }
