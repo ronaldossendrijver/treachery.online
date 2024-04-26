@@ -24,5 +24,11 @@
     <Folder Include="Migrations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Properties\PublishProfiles\treachery - Zip Deploy.pubxml" />
+    <None Include=".deployment\treachery-tst.run.xml" />
+    <None Include=".deployment\treachery.run.xml" />
+  </ItemGroup>
+
 
 </Project>

@@ -7,6 +7,7 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -74,8 +75,14 @@ public class Startup
             endpoints.MapFallbackToFile("index.html");
         });
 
+        
         using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
         var context = serviceScope.ServiceProvider.GetService<TreacheryContext>();
-        context.Database.Migrate();
+        
+        var pending = context.Database.GetPendingMigrations();
+        if (pending.Any())
+        {
+            context.Database.MigrateAsync();
+        }
     }
 }

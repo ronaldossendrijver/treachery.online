@@ -13,7 +13,6 @@ public partial class TreacheryContext(DbContextOptions<TreacheryContext> options
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var connectionString = configuration.GetConnectionString("TreacheryDatabase");
-        Console.WriteLine($"Using database: {connectionString}");
         optionsBuilder.UseSqlite(connectionString);
     }
 
