@@ -515,8 +515,16 @@ public partial class Player
     protected virtual ClairVoyancePlayed DetermineClairvoyance()
     {
         var imInBattle = Game.CurrentPhase == Phase.BattlePhase && Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(this);
+        var waitForPrescienceOrVoice = false;
+        if (imInBattle)
+        {
+            var opponent = Game.CurrentBattle.OpponentOf(this);
+            waitForPrescienceOrVoice = Game.CurrentBattle.PlanOf(opponent) == null &&
+                                       (Prescience.MayUsePrescience(Game, opponent) ||
+                                        Voice.MayUseVoice(Game, opponent));
+        }  
 
-        if (imInBattle && Game.LatestClairvoyanceBattle != Game.CurrentBattle)
+        if (imInBattle && !waitForPrescienceOrVoice && Game.LatestClairvoyanceBattle != Game.CurrentBattle)
         {
             var opponent = Game.CurrentBattle.OpponentOf(this);
 

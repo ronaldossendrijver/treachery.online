@@ -444,7 +444,8 @@ public class NexusPlayed : GameEvent, ILocationEvent
             case Faction.Cyan:
                 var terrorToRemove = Game.TerrorIn(CyanTerritory).RandomOrDefault(Game.Random);
                 Game.TerrorOnPlanet.Remove(terrorToRemove);
-                Game.PlayNexusCard(Player, "remove a terror token from ", CyanTerritory);
+                if (Game.Version >= 169) Game.UnplacedTerrorTokens.Add(terrorToRemove);
+                Game.PlayNexusCard(Player, "return a terror token from ", CyanTerritory, " to reserves");
                 break;
 
         }

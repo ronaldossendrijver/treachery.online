@@ -404,15 +404,15 @@ public class Battle : GameEvent
             : playerThatFights;
     }
 
-    public static float ForceValue(Game g, Faction player, Faction opponent, int Forces, int SpecialForces, int ForcesAtHalfStrength, int SpecialForcesAtHalfStrength)
+    public static float ForceValue(Game g, Faction player, Faction opponent, int forces, int specialForces, int forcesAtHalfStrength, int specialForcesAtHalfStrength)
     {
-        var nrOfForcesToCountAsSpecialDueToRedCunning = g.CurrentRedCunning != null && g.CurrentRedCunning.Initiator == player ? Math.Min(5, Forces) : 0;
-        var ForcesAdjustedForCunning = Forces - nrOfForcesToCountAsSpecialDueToRedCunning;
-        var SpecialForcesAdjustedForCunning = SpecialForces + nrOfForcesToCountAsSpecialDueToRedCunning;
+        var nrOfForcesToCountAsSpecialDueToRedCunning = g.CurrentRedCunning != null && g.CurrentRedCunning.Initiator == player ? Math.Min(5, forces) : 0;
+        var forcesAdjustedForCunning = forces - nrOfForcesToCountAsSpecialDueToRedCunning;
+        var specialForcesAdjustedForCunning = specialForces + nrOfForcesToCountAsSpecialDueToRedCunning;
 
-        var nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning = g.CurrentRedCunning != null && g.CurrentRedCunning.Initiator == player ? Math.Max(0, Math.Min(5, ForcesAtHalfStrength) - nrOfForcesToCountAsSpecialDueToRedCunning) : 0;
-        var ForcesAtHalfStrengthAdjustedForCunning = ForcesAtHalfStrength - nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning;
-        var SpecialForcesAtHalfStrengthAdjustedForCunning = SpecialForcesAtHalfStrength + nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning;
+        var nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning = g.CurrentRedCunning != null && g.CurrentRedCunning.Initiator == player ? Math.Max(0, Math.Min(5, forcesAtHalfStrength) - nrOfForcesToCountAsSpecialDueToRedCunning) : 0;
+        var forcesAtHalfStrengthAdjustedForCunning = forcesAtHalfStrength - nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning;
+        var specialForcesAtHalfStrengthAdjustedForCunning = specialForcesAtHalfStrength + nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning;
 
         var specialForceStrength = DetermineSpecialForceStrength(g, player, opponent);
         var specialForceNoSpiceFactor = DetermineSpecialForceNoSpiceFactor(g, player);
@@ -420,10 +420,10 @@ public class Battle : GameEvent
         var normalForceNoSpiceFactor = DetermineNormalForceNoSpiceFactor(player);
 
         return
-            normalForceStrength * ForcesAdjustedForCunning +
-            specialForceStrength * SpecialForcesAdjustedForCunning +
-            normalForceNoSpiceFactor * normalForceStrength * ForcesAtHalfStrengthAdjustedForCunning +
-            specialForceNoSpiceFactor * specialForceStrength * SpecialForcesAtHalfStrengthAdjustedForCunning;
+            normalForceStrength * forcesAdjustedForCunning +
+            specialForceStrength * specialForcesAdjustedForCunning +
+            normalForceNoSpiceFactor * normalForceStrength * forcesAtHalfStrengthAdjustedForCunning +
+            specialForceNoSpiceFactor * specialForceStrength * specialForcesAtHalfStrengthAdjustedForCunning;
     }
 
     public static bool IsUsingPortableAntidote(Game g, Faction faction)
@@ -468,8 +468,11 @@ public class Battle : GameEvent
 
     public static bool MustPayForAnyForcesInBattle(Game g, Player p)
     {
-        return g.Applicable(Rule.AdvancedCombat) &&
-               (g.Prevented(FactionAdvantage.YellowNotPayingForBattles) || p.Faction != Faction.Yellow);
+        bool doesNotNeedToSupportForces = !g.Prevented(FactionAdvantage.YellowNotPayingForBattles) &&
+                                          (p.Faction is Faction.Yellow ||
+                                           g.Version >= 169 && p.Faction is Faction.Pink && p.Ally is Faction.Yellow);
+
+        return g.Applicable(Rule.AdvancedCombat) && !doesNotNeedToSupportForces;
     }
     
     public static bool MustPayForSpecialForcesInBattle(Game g, Player p)
@@ -486,13 +489,7 @@ public class Battle : GameEvent
     {
         var cost = amountOfForcesAtFullStrength * NormalForceCost(g, p) + amountOfSpecialForcesAtFullStrength * SpecialForceCost(g, p);
         paidByArrakeen = Math.Min(CostReduction(g, p), cost);
-    /*       
-        if (cost - paidByArrakeen - specialForcesSupportedByRedStarPlanet < 0)
-        {
-            Console.WriteLine("Bingo!");
-        }*/
-
-    return cost - paidByArrakeen;// - specialForcesSupportedByRedStarPlanet;
+        return cost - paidByArrakeen;
     }
 
     public static int CostReduction(Game g, Player p)
