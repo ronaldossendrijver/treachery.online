@@ -121,7 +121,7 @@ public class BrownRemoveForce : GameEvent
         else
             target.ForcesToReserves(Location, 1);
 
-        Game.FlipBeneGesseritWhenAloneOrWithPinkAlly();
+        Game.FlipBeneGesseritWhenAlone();
         Game.Stone(Milestone.SpecialUselessPlayed);
     }
 

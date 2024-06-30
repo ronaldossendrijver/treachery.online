@@ -16,8 +16,7 @@ public partial class Game
     #region Settings
 
     public const int LowestSupportedVersion = 100;
-    public const int LatestVersion = 169;
-
+    public const int LatestVersion = 170;
     public const int ExpansionLevel = 3;
     
     #endregion Settings
@@ -53,7 +52,7 @@ public partial class Game
     public Deck<ResourceCard> ResourceCardDiscardPileB { get; internal set; }
     public int SectorInStorm { get; internal set; } = -1;
     public int NextStormMoves { get; internal set; } = -1;
-    public bool ShieldWallDestroyed { get; internal set; } = false;
+    public bool ShieldWallDestroyed { get; internal set; }
     public Dictionary<Location, int> ResourcesOnPlanet { get; } = new();
     public Dictionary<Player, Timer<MainPhase>> Timers { get; } = new();
 
@@ -69,7 +68,7 @@ public partial class Game
 
     public Dictionary<TerrorType, Territory> TerrorOnPlanet { get; private set; } = new();
     public Deck<Ambassador> UnassignedAmbassadors { get; internal set; }
-    public Territory AtomicsAftermath { get; internal set; } = null;
+    public Territory AtomicsAftermath { get; internal set; }
     public List<Ambassador> AmbassadorsSetAside { get; } = new();
     public Deck<DiscoveryToken> YellowDiscoveryTokens { get; set; }
     public Deck<DiscoveryToken> OrangeDiscoveryTokens { get; set; }
@@ -541,13 +540,11 @@ public partial class Game
 
     #region Support
 
-    internal void FlipBeneGesseritWhenAloneOrWithPinkAlly()
+    internal void FlipBeneGesseritWhenAlone()
     {
         var bg = GetPlayer(Faction.Blue);
         if (bg != null)
         {
-            var pink = GetPlayer(Faction.Pink);
-
             var territoriesWhereAdvisorsAreInSinkOrAloneOrWithPink = Map.Territories(true).Where(t => bg.SpecialForcesIn(t) > 0 &&
                 (Version >= 160 && t == Map.PolarSink.Territory || 
                  !Players.Any(p => p.Faction != Faction.Blue && p.AnyForcesIn(t) > 0)));
@@ -560,7 +557,7 @@ public partial class Game
         }
     }
 
-    private void AllowAllPreventedFactionAdvantages(IEnumerable<FactionAdvantage> exceptions)
+    private void AllowAllPreventedFactionAdvantages(List<FactionAdvantage> exceptions)
     {
         foreach (var adv in Enumerations.GetValuesExceptDefault(typeof(FactionAdvantage), FactionAdvantage.None))
             if (exceptions == null || !exceptions.Contains(adv)) Allow(adv);
@@ -635,20 +632,15 @@ public partial class Game
         WhenToSetAsideVidal = VidalMoment.None;
     }
 
-    internal TreacheryCard Discard(Player player, TreacheryCardType cardType)
+    internal void Discard(Player player, TreacheryCardType cardType)
     {
-        TreacheryCard card = null;
+        TreacheryCard card;
         if (cardType == TreacheryCardType.Karma && player.Is(Faction.Blue))
             card = player.TreacheryCards.First(x => x.Type == TreacheryCardType.Karma || x.Type == TreacheryCardType.Useless);
         else
             card = player.TreacheryCards.First(x => x.Type == cardType);
 
-        if (card != null)
-            Discard(player, card);
-        else
-            Log(cardType, " card not found");
-
-        return card;
+        Discard(player, card);
     }
 
     internal void Discard(TreacheryCard card)
@@ -698,7 +690,7 @@ public partial class Game
                 var message = e.Execute(performValidation, isHost);
                 if (message != null)
                 {
-                    return Message.Express(e.GetType().Name, "(", nr, "):", message); ;
+                    return Message.Express(e.GetType().Name, "(", nr, "):", message); 
                 }
                 nr++;
             }
@@ -863,7 +855,7 @@ public partial class Game
 
     public bool ContainsConflictingAlly(Player initiator, Location to)
     {
-        if (initiator.Ally == Faction.None || to == Map.PolarSink || initiator.Faction == Faction.Pink || initiator.Ally == Faction.Pink || to == null) return false;
+        if (initiator.Ally == Faction.None || Map.PolarSink.Equals(to) || initiator.Faction == Faction.Pink || initiator.Ally == Faction.Pink || to == null) return false;
 
         var ally = initiator.AlliedPlayer;
 
@@ -1021,8 +1013,7 @@ public partial class Game
             Occupies(p.Faction, World.Green) ||
             Occupies(p.Ally, World.Green) ||
 
-            (p != null &&
-             !Prevented(FactionAdvantage.GreenBiddingPrescience) &&
+            (!Prevented(FactionAdvantage.GreenBiddingPrescience) &&
              (p.Faction == Faction.Green || (p.Ally == Faction.Green && GreenSharesPrescience) || HasDeal(p.Faction, DealType.ShareBiddingPrescience)));
     }
 

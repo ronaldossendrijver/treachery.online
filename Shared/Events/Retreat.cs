@@ -105,7 +105,7 @@ public class Retreat : GameEvent
 
         Log();
         Game.HandleLosses();
-        Game.FlipBeneGesseritWhenAloneOrWithPinkAlly();
+        Game.FlipBeneGesseritWhenAlone();
         Game.DetermineHowToProceedAfterRevealingBattlePlans();
     }
 

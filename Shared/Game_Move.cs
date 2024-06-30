@@ -78,7 +78,7 @@ public partial class Game
         }
 
         Stone(Milestone.Move);
-        FlipBeneGesseritWhenAloneOrWithPinkAlly();
+        FlipBeneGesseritWhenAlone();
     }
 
     private void CheckSandmaster(Player initiator, Location to, int dist, KeyValuePair<Location, Battalion> fl)

@@ -498,7 +498,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
 
             if (totalCost - receivedPayment >= 4) Game.ActivateBanker(Player);
 
-            Game.FlipBeneGesseritWhenAloneOrWithPinkAlly();
+            Game.FlipBeneGesseritWhenAlone();
             Game.DetermineOccupation(To);
         }
         else

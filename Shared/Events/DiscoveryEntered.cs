@@ -66,7 +66,7 @@ public class DiscoveryEntered : PlacementEvent
                 if (totalNumberOfForces > 0 || totalNumberOfSpecialForces > 0)
                 {
                     Game.LogMove(Player, fromTerritory, To, totalNumberOfForces, totalNumberOfSpecialForces, false, false);
-                    Game.FlipBeneGesseritWhenAloneOrWithPinkAlly();
+                    Game.FlipBeneGesseritWhenAlone();
                 }
             }
     }

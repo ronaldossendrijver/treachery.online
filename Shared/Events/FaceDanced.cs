@@ -132,7 +132,7 @@ public class FaceDanced : PlacementEvent
             if (!Player.UnrevealedFaceDancers.Any()) ReplaceFacedancers();
 
             ReplaceForces();
-            Game.FlipBeneGesseritWhenAloneOrWithPinkAlly();
+            Game.FlipBeneGesseritWhenAlone();
         }
         else
         {

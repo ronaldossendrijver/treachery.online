@@ -170,7 +170,7 @@ public class YellowRidesMonster : PlacementEvent
                     To);
             }
 
-            Game.FlipBeneGesseritWhenAloneOrWithPinkAlly();
+            Game.FlipBeneGesseritWhenAlone();
             Game.CheckIntrusion(this);
         }
         else
