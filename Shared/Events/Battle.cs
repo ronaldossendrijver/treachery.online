@@ -477,7 +477,8 @@ public class Battle : GameEvent
     
     public static bool MustPayForSpecialForcesInBattle(Game g, Player p)
     {
-        return MustPayForAnyForcesInBattle(g,p) && !(p.Is(Faction.Red) || g.HasHighThreshold(Faction.Red, World.RedStar));
+        return MustPayForAnyForcesInBattle(g,p) && 
+               !(p.Is(Faction.Red) && g.HasHighThreshold(Faction.Red, World.RedStar));
     }
 
     public static bool MessiahMayBeUsedInBattle(Game g, Player p)
