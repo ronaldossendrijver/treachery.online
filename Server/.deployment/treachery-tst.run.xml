@@ -14,7 +14,7 @@
     <option name="AZURE_WEB_APP_SERVICE_PLAN_ID" value="/subscriptions/b4d71196-1959-47cb-b8e5-70bdafe9a056/resourceGroups/treachery/providers/Microsoft.Web/serverfarms/ASP-treachery-b9bb" />
     <option name="AZURE_WEB_APP_SERVICE_PLAN_NAME" value="appsp-240425215908" />
     <option name="AZURE_WEB_APP_LOCATION" value="eastus" />
-    <option name="AZURE_WEB_APP_PRICING_TIER" value="B1" />
+    <option name="AZURE_WEB_APP_PRICING_TIER" value="" />
     <option name="AZURE_WEB_APP_NET_FRAMEWORK" value="4.7" />
     <option name="AZURE_WEB_APP_NET_CORE_RUNTIME" value="DOTNETCORE 8.0" />
     <option name="AZURE_WEB_APP_IS_DEPLOY_TO_SLOT" value="0" />

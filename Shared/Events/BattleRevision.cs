@@ -38,7 +38,8 @@ public class BattleRevision : GameEvent
     {
         if (By(Game.CurrentBattle.Aggressor))
             Game.AggressorPlan = null;
-        else if (By(Game.CurrentBattle.Defender)) Game.DefenderPlan = null;
+        else if (By(Game.CurrentBattle.Defender)) 
+            Game.DefenderPlan = null;
     }
 
     public override Message GetMessage()
