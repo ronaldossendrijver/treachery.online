@@ -13,7 +13,7 @@ namespace Treachery.Shared;
 
 public partial class Game
 {
-    public IList<Type> GetApplicableEvents(Player player, bool isHost)
+    public List<Type> GetApplicableEvents(Player player, bool isHost)
     {
         List<Type> result = new();
 

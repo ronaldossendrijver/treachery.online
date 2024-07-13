@@ -478,8 +478,9 @@ public class Tests
     {
         var bots = Deck<Player>.Randomize(game.Players.Where(p => p.IsBot));
 
-        var botEvents = new Dictionary<Player, IEnumerable<Type>>();
-        foreach (var bot in bots) botEvents.Add(bot, game.GetApplicableEvents(bot, true));
+        var botEvents = new Dictionary<Player, List<Type>>();
+        foreach (var bot in bots) 
+            botEvents.Add(bot, game.GetApplicableEvents(bot, true));
 
         foreach (var bot in bots)
         {
