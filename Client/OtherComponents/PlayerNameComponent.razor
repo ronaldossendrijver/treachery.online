@@ -14,7 +14,7 @@
         <input @ref="inputField" class="form-control" @bind-value="playername" @bind-value:event="oninput" maxlength="24" placeholder="Your name" @onkeyup="@KeyUp"/>
         <button class="btn btn-primary mt-1" disabled="@(!IsValid)" @onclick="Confirm">Confirm</button>
     </div>
-    <div class="card-footer">Version @Game.LatestVersion (April 21, 2024)</div>
+    <div class="card-footer">Version @Game.LatestVersion (July 2024)</div>
 </div>
 
 @code {
