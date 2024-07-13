@@ -1274,7 +1274,7 @@ public class Skin : IDescriber
                Advantage("Bidding",
                    "Before Bidding, one extra card is drawn and you see them all and put one of those cards on top or on the bottom of the Treachery Card deck. The remaining cards are shuffled for the bidding round.") +
                Advantage(FactionSpecialForce.Grey,
-                   "Your 7 {33}s are each worth 2 normal forces in battle, are able to move 2 territories instead of 1 and can collect 3 {16}. Your {33} forces ship normally, but each costs 3 to revive.") +
+                   "Your 7 {33} are each worth 2 normal forces in battle, are able to move 2 territories instead of 1 and can collect 3 {16}. Your {33} forces ship normally, but each costs 3 to revive.") +
                Advantage(FactionForce.Grey,
                    "Your 13 {32} ship normally but are worth ½ in battle. {32} can be used to absorb losses after a battle. After battle losses are calculated, any of your surviving {32} in that territory can be exchanged for {33} you lost in that battle. {32} can control strongholds and collect {16}. {32} move 2 if accompanied by a {33}, or 1 if they are not.") +
                Advantage("Hidden Mobile Stronghold",

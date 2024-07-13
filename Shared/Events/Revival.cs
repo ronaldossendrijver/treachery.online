@@ -440,7 +440,9 @@ public class Revival : GameEvent, ILocationEvent
         }
         Player.Resources -= cost.TotalCostForPlayer;
 
-        var highThresholdBonus = Initiator == Faction.Grey && Player.HasHighThreshold() ? Math.Max(0, Math.Min(2, Player.ForcesKilled - AmountOfForces - ExtraForcesPaidByRed)) : 0;
+        var highThresholdBonus = Initiator == Faction.Grey && Player.HasHighThreshold() && (Game.Version < 169 || cost.IncludesCostsForSpecialForces) ? 
+            Math.Max(0, Math.Min(2, Player.ForcesKilled - AmountOfForces - ExtraForcesPaidByRed)) : 
+            0;
 
         //Force revival
         Player.ReviveForces(AmountOfForces + ExtraForcesPaidByRed + highThresholdBonus);

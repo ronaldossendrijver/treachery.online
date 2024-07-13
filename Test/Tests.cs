@@ -40,28 +40,19 @@ public class Tests
             WriteSaveGameIfApplicable(g, null, "Why is portable snooper discarded");
         }
         */
-
+/*
         if (g.Version > 165 && g.CurrentRecruitsPlayed == null)
         {
             var ix = g.GetPlayer(Faction.Grey);
             if (ix != null &&
-                ix.Ally is not Faction.Yellow &&
-                g.CurrentYellowSecretAlly?.Player != ix &&
                 g.CurrentPhase is Phase.Resurrection &&
-                !g.HasActedOrPassed.Contains(Faction.Grey) &&
-                Revival.GetPriceOfForceRevival(g, ix, 2, 1, false, out _, out _) == 0)
+                ix.HasHighThreshold() &&
+                ix.Resources > 2 &&
+                ix.SpecialForcesKilled > 2 &&
+                ix.ForcesKilled > 0 &&
+                !g.HasActedOrPassed.Contains(Faction.Grey))
             {
-                WriteSaveGameIfApplicable(g, null, "Free revival for Ix");
-            }
-
-            if (ix != null &&
-                ix.Ally is not Faction.Yellow &&
-                g.CurrentYellowSecretAlly?.Player != ix &&
-                g.CurrentPhase is Phase.Resurrection &&
-                !g.HasActedOrPassed.Contains(Faction.Grey) &&
-                g.FreeRevivals(ix, false) > 2)
-            {
-                WriteSaveGameIfApplicable(g, null, "More than 2 free revival for Ix");
+                WriteSaveGameIfApplicable(g, null, "Ix gets high threshold revival");
             }
         }
 
@@ -71,7 +62,7 @@ public class Tests
             Revival.DetermineCost(g, r.Player, r.Hero, r.AmountOfForces, r.AmountOfSpecialForces, 0, 0, false).TotalCost == 0)
         {
             WriteSaveGameIfApplicable(g, null, "Is this correct free revival for Ix");
-        }
+        }*/
     }
 
     private readonly List<string> _writtenCases = new();
