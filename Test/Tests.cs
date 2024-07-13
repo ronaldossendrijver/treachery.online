@@ -28,7 +28,7 @@ public class Tests
 {
     private void SaveSpecialCases(Game g, GameEvent e)
     {
-
+        /*
         if (g.CurrentPhase is Phase.BattleConclusion &&
             !g.TreacheryDiscardPile.IsEmpty &&
             g.TreacheryDiscardPile.Top.Type is TreacheryCardType.PortableAntidote &&
@@ -38,7 +38,40 @@ public class Tests
             g.CurrentPortableAntidoteUsed == null)
         {
             WriteSaveGameIfApplicable(g, null, "Why is portable snooper discarded");
-        } 
+        }
+        */
+
+        if (g.Version > 165 && g.CurrentRecruitsPlayed == null)
+        {
+            var ix = g.GetPlayer(Faction.Grey);
+            if (ix != null &&
+                ix.Ally is not Faction.Yellow &&
+                g.CurrentYellowSecretAlly?.Player != ix &&
+                g.CurrentPhase is Phase.Resurrection &&
+                !g.HasActedOrPassed.Contains(Faction.Grey) &&
+                Revival.GetPriceOfForceRevival(g, ix, 2, 1, false, out _, out _) == 0)
+            {
+                WriteSaveGameIfApplicable(g, null, "Free revival for Ix");
+            }
+
+            if (ix != null &&
+                ix.Ally is not Faction.Yellow &&
+                g.CurrentYellowSecretAlly?.Player != ix &&
+                g.CurrentPhase is Phase.Resurrection &&
+                !g.HasActedOrPassed.Contains(Faction.Grey) &&
+                g.FreeRevivals(ix, false) > 2)
+            {
+                WriteSaveGameIfApplicable(g, null, "More than 2 free revival for Ix");
+            }
+        }
+
+        if (e is Revival r &&
+            r.By(Faction.Grey) &&
+            r.AmountOfForces + r.AmountOfSpecialForces >= 3 &&
+            Revival.DetermineCost(g, r.Player, r.Hero, r.AmountOfForces, r.AmountOfSpecialForces, 0, 0, false).TotalCost == 0)
+        {
+            WriteSaveGameIfApplicable(g, null, "Is this correct free revival for Ix");
+        }
     }
 
     private readonly List<string> _writtenCases = new();

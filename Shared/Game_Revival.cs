@@ -18,7 +18,7 @@ public partial class Game
     internal bool RevivalTechTokenIncome { get; set; }
     public List<Faction> FactionsThatTookFreeRevival { get; } = new();
     internal bool PurpleStartedRevivalWithLowThreshold { get; set; }
-    internal RecruitsPlayed CurrentRecruitsPlayed { get; set; }
+    public RecruitsPlayed CurrentRecruitsPlayed { get; set; }
     public List<Faction> FactionsThatRevivedSpecialForcesThisTurn { get; } = new();
     public Faction[] FactionsWithIncreasedRevivalLimits { get; internal set; } = Array.Empty<Faction>();
     public List<RequestPurpleRevival> CurrentRevivalRequests { get; set; } = new();
