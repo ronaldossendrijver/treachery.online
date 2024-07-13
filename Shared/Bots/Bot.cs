@@ -23,7 +23,7 @@ public partial class Player
 
     public bool AllyIsBot => Ally != Faction.None && AlliedPlayer.IsBot;
 
-    public GameEvent DetermineHighestPrioInPhaseAction(IEnumerable<Type> evts)
+    public GameEvent DetermineHighestPrioInPhaseAction(List<Type> evts)
     {
         GameEvent action = null;
 
