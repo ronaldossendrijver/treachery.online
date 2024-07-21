@@ -168,7 +168,7 @@ public partial class Game
     {
         if (Applicable(Rule.LeaderSkills))
         {
-            SkillDeck = new Deck<LeaderSkill>(Enumerations.GetValuesExceptDefault(typeof(LeaderSkill), LeaderSkill.None), Random);
+            SkillDeck = new Deck<LeaderSkill>(Enumerations.GetValuesExceptDefault(LeaderSkill.None), Random);
             SkillDeck.Shuffle();
             Stone(Milestone.Shuffled);
 

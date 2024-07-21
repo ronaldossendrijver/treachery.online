@@ -317,7 +317,7 @@ public partial class Player
         var specialAtFull = Math.Min(strongholdFreeForces, Battle.MaxForces(Game, this, true));
         var normalAtFull = Math.Min(strongholdFreeForces - specialAtFull, Battle.MaxForces(Game, this, false));
         
-        if (Battle.MustPayForAnyForcesInBattle(Game, this) && (specialAtFull <= 0 || !Battle.MustPayForSpecialForcesInBattle(Game, this)))
+        if (Battle.MustPayForAnyForcesInBattle(Game, this) && (specialAtFull <= 0 || Battle.MustPayForSpecialForcesInBattle(Game, this)))
         {
             return new Battle(Game, Faction)
             {
@@ -574,7 +574,7 @@ public partial class Player
             return 0;
         }
 
-        if (chosenWeapon != null && chosenWeapon.IsRockmelter)
+        if (chosenWeapon != null && chosenWeapon.IsRockMelter)
         {
             mostEffectiveDefense = null;
             return 0;
@@ -956,7 +956,7 @@ public partial class Player
             prescience == PrescienceAspect.Weapon && opponentPlan != null ? opponentPlan.Weapon : null,
             prescience == PrescienceAspect.Defense && opponentPlan != null ? opponentPlan.Defense : null);
 
-        stoneBurnerDetected = (bestWeapon != null && bestWeapon.IsRockmelter) || (prescience == PrescienceAspect.Weapon && opponentPlan != null && opponentPlan.Weapon != null && opponentPlan.Weapon.IsRockmelter);
+        stoneBurnerDetected = (bestWeapon != null && bestWeapon.IsRockMelter) || (prescience == PrescienceAspect.Weapon && opponentPlan != null && opponentPlan.Weapon != null && opponentPlan.Weapon.IsRockMelter);
 
         var myMessiahBonus = 0;
         if (Battle.MessiahAvailableForBattle(Game, inBattle) && !lasgunShieldDetected)

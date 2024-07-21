@@ -24,7 +24,7 @@ public partial class Game
     #region Nexus
 
     internal List<AllianceOffered> CurrentAllianceOffers { get; } = new();
-    internal bool NexusHasOccured { get; set; } = false;
+    internal bool NexusHasOccured { get; set; }
 
     internal Dictionary<Faction, int> PermittedUseOfAllySpice { get; } = new();
     internal Dictionary<Faction, int> PermittedUseOfRedSpice { get; set; } = new();

@@ -30,13 +30,13 @@ public partial class Game
     public Faction CurrentPinkOrAllyFighter { get; internal set; }
     public int CurrentPinkBattleContribution { get; internal set; }
 
-    public Voice CurrentVoice { get; internal set; } = null;
-    public Prescience CurrentPrescience { get; internal set; } = null;
+    public Voice CurrentVoice { get; internal set; }
+    public Prescience CurrentPrescience { get; internal set; }
     public Thought CurrentThought { get; internal set; }
-    public StrongholdAdvantage ChosenHMSAdvantage { get; internal set; }
+    public StrongholdAdvantage ChosenHmsAdvantage { get; internal set; }
 
     public PortableAntidoteUsed CurrentPortableAntidoteUsed { get; internal set; }
-    internal bool PoisonToothCancelled { get; set; } = false;
+    internal bool PoisonToothCancelled { get; set; }
     internal RockWasMelted CurrentRockWasMelted { get; set; }
 
     public List<IHero> TraitorsDeciphererCanLookAt { get; } = new();
@@ -60,7 +60,7 @@ public partial class Game
     internal void InitiateBattle()
     {
         CurrentBattle = BattleAboutToStart;
-        ChosenHMSAdvantage = StrongholdAdvantage.None;
+        ChosenHmsAdvantage = StrongholdAdvantage.None;
         BattleOutcome = null;
         NrOfBattlesFought++;
 
@@ -226,7 +226,7 @@ public partial class Game
         if (plan.Weapon != null)
             if (plan.Weapon.IsArtillery ||
                 plan.Weapon.IsMirrorWeapon ||
-                plan.Weapon.IsRockmelter ||
+                plan.Weapon.IsRockMelter ||
                 (plan.Weapon.IsPoisonTooth && !PoisonToothCancelled) ||
                 !(plan.Weapon.IsWeapon || plan.Weapon.IsDefense || plan.Weapon.IsUseless) ||
                 (CurrentDiplomacy != null && plan.Initiator == CurrentDiplomacy.Initiator && plan.Weapon == CurrentDiplomacy.Card))

@@ -126,7 +126,7 @@ public class ClairVoyancePlayed : GameEvent
 
     public static IEnumerable<ClairvoyanceQuestion> ValidQuestions(Game g, Faction target)
     {
-        var allValues = Enumerations.GetValues<ClairvoyanceQuestion>(typeof(ClairvoyanceQuestion));
+        var allValues = Enumerations.GetValues<ClairvoyanceQuestion>();
         var targetPlayer = g.GetPlayer(target);
         if (targetPlayer == null || !targetPlayer.IsBot)
             return allValues;

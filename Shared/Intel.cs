@@ -59,7 +59,7 @@ internal class Intel
 
         return
             !(c.IsWeapon || c.IsDefense || c.IsUseless) ||
-            c.IsArtillery || c.IsMirrorWeapon || c.IsRockmelter || c.IsPoisonTooth || c.IsPortableAntidote;
+            c.IsArtillery || c.IsMirrorWeapon || c.IsRockMelter || c.IsPoisonTooth || c.IsPortableAntidote;
     }
 
 

@@ -68,7 +68,7 @@ public class Voice : GameEvent
             result.Add(TreacheryCardType.WeirdingWay);
         }
 
-        if (g.Applicable(Rule.ExpansionTreacheryCardsPBandSS))
+        if (g.Applicable(Rule.ExpansionTreacheryCardsPBandSs))
         {
             result.Add(TreacheryCardType.ProjectileAndPoison);
             result.Add(TreacheryCardType.ShieldAndAntidote);

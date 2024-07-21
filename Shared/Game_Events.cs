@@ -38,7 +38,7 @@ public partial class Game
                 result.Add(typeof(PerformSetup));
                 break;
             case Phase.HmsPlacement:
-                if (!IsPlaying(Faction.Grey) && Applicable(Rule.HMSwithoutGrey)) result.Add(typeof(PerformHmsPlacement));
+                if (!IsPlaying(Faction.Grey) && Applicable(Rule.HmSwithoutGrey)) result.Add(typeof(PerformHmsPlacement));
                 break;
             case Phase.SelectingFactions:
             case Phase.TradingFactions:

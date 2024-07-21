@@ -60,7 +60,7 @@
         <h5 class="mt-2">Leader Skill Cards</h5>
         <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
 
-            @foreach (var v in Enumerations.GetValuesExceptDefault(typeof(LeaderSkill), LeaderSkill.None))
+            @foreach (var v in Enumerations.GetValuesExceptDefault(LeaderSkill.None))
             {
                 <div class="card">
                     <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
@@ -77,7 +77,7 @@
         <h5 class="mt-2">Stronghold Cards</h5>
         <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
 
-            @foreach (var v in Enumerations.GetValuesExceptDefault(typeof(StrongholdAdvantage), StrongholdAdvantage.None))
+            @foreach (var v in Enumerations.GetValuesExceptDefault(StrongholdAdvantage.None))
             {
                 <div class="card">
                     <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
@@ -94,7 +94,7 @@
         <h5 class="mt-2">Nexus Cards</h5>
         <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
 
-            @foreach (var f in Enumerations.GetValuesExceptDefault(typeof(Faction), Faction.None))
+            @foreach (var f in Enumerations.GetValuesExceptDefault(Faction.None))
             {
                 <div class="card">
                     <Hoverable Class="card-img-top" Popover=@Popup.GetNexusCard(f)>
@@ -128,7 +128,7 @@
         <h5 class="mt-2">Ambassador Tokens</h5>
         <div class="row row-cols-6 row-cols-md-12 ms-1 me-1">
 
-            @foreach (var t in Enumerations.GetValuesExceptDefault(typeof(Ambassador), Ambassador.None))
+            @foreach (var t in Enumerations.GetValuesExceptDefault(Ambassador.None))
             {
                 if (t != Ambassador.Cyan)
                 {
@@ -147,7 +147,7 @@
         <div>
 
             <ul>
-                @foreach (var t in Enumerations.GetValuesExceptDefault(typeof(TerrorType), TerrorType.None))
+                @foreach (var t in Enumerations.GetValuesExceptDefault(TerrorType.None))
                 {
                     <li><strong>@Name(t) -</strong> @Skin.Current.GetTerrorTypeDescription(t)</li>
                 }
@@ -162,7 +162,7 @@
         <div>
 
             <ul>
-            @foreach (var t in Enumerations.GetValuesExceptDefault(typeof(DiscoveryToken), DiscoveryToken.None))
+            @foreach (var t in Enumerations.GetValuesExceptDefault(DiscoveryToken.None))
             {
                 <li><strong>@Name(t) -</strong> @Skin.Current.GetDiscoveryTokenDescription(t)</li>
             }

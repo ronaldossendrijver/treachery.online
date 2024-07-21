@@ -83,7 +83,7 @@ public class StormDialled : GameEvent
 
         if (Game.UseStormDeck) Game.NextStormMoves = Game.DetermineLaterStormWithStormDeck();
 
-        Game.Enter(IsPlaying(Faction.Grey) || Game.Applicable(Rule.HMSwithoutGrey), Phase.HmsPlacement, Game.EndStormPhase);
+        Game.Enter(IsPlaying(Faction.Grey) || Game.Applicable(Rule.HmSwithoutGrey), Phase.HmsPlacement, Game.EndStormPhase);
     }
 
     private void AssignTechTokens()

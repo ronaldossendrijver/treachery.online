@@ -9,100 +9,75 @@
 
 namespace Treachery.Shared;
 
-public class TreacheryCard : IHero, IIdentifiable
+public class TreacheryCard(int id, int skinId, TreacheryCardType type, Rule[] rules)
+    : IHero
 {
-    public const int NONE = -2;
-    public const int UNKNOWN = -1;
+    public const int None = -2;
+    public const int Unknown = -1;
 
-    public TreacheryCard(int id, int skinId, TreacheryCardType type, Rule[] rules)
-    {
-        Id = id;
-        Type = type;
-        Rules = rules;
-        SkinId = skinId;
-    }
-
-    public TreacheryCard(int id, int skinId, TreacheryCardType type, Rule rule) : this(id, skinId, type, new[] { rule })
+    public TreacheryCard(int id, int skinId, TreacheryCardType type, Rule rule) : this(id, skinId, type, [rule])
     {
     }
 
-    public int Id { get; }
+    public int Id { get; } = id;
 
-    public int SkinId { get; }
+    public int SkinId { get; } = skinId;
 
     public int Value => 0;
 
-    public bool Is(Faction f)
-    {
-        return Faction == f;
-    }
+    public bool Is(Faction f) => false;
 
-    public int ValueInCombatAgainst(IHero opposingHero)
-    {
-        return Value;
-    }
+    public int ValueInCombatAgainst(IHero opposingHero) => 0;
 
     public Faction Faction => Faction.None;
 
-    public int CostToRevive => Value;
+    public int CostToRevive => 0;
 
-    public bool IsTraitor(IHero hero)
-    {
-        return hero != null && hero is TreacheryCard;
-    }
+    public bool IsTraitor(IHero hero) => hero is TreacheryCard;
 
-    public bool IsFaceDancer(IHero hero)
-    {
-        return hero != null && hero is TreacheryCard;
-    }
+    public bool IsFaceDancer(IHero hero) => hero is TreacheryCard;
 
-    public Rule[] Rules { get; private set; }
+    public Rule[] Rules { get; private set; } = rules;
 
-    public TreacheryCardType Type { get; }
+    public TreacheryCardType Type { get; } = type;
 
     public HeroType HeroType => HeroType.Mercenary;
 
-    public override bool Equals(object obj)
-    {
-        return obj is TreacheryCard c && c.Id == Id;
-    }
+    public override bool Equals(object obj) => obj is TreacheryCard c && c.Id == Id;
 
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
-    }
+    public override int GetHashCode() => Id.GetHashCode();
 
-    public bool IsPoisonWeapon => Type == TreacheryCardType.Poison || Type == TreacheryCardType.Chemistry || Type == TreacheryCardType.ProjectileAndPoison;
+    public bool IsPoisonWeapon => Type is TreacheryCardType.Poison or TreacheryCardType.Chemistry or TreacheryCardType.ProjectileAndPoison;
 
-    public bool IsProjectileWeapon => Type == TreacheryCardType.Projectile || Type == TreacheryCardType.WeirdingWay || Type == TreacheryCardType.ProjectileAndPoison;
+    public bool IsProjectileWeapon => Type is TreacheryCardType.Projectile or TreacheryCardType.WeirdingWay or TreacheryCardType.ProjectileAndPoison;
 
-    public bool IsPoisonDefense => Type == TreacheryCardType.Chemistry || Type == TreacheryCardType.Antidote || Type == TreacheryCardType.ShieldAndAntidote || Type == TreacheryCardType.PortableAntidote;
+    public bool IsPoisonDefense => Type is TreacheryCardType.Chemistry or TreacheryCardType.Antidote or TreacheryCardType.ShieldAndAntidote or TreacheryCardType.PortableAntidote;
 
-    public bool IsNonAntidotePoisonDefense => Type == TreacheryCardType.Chemistry;
+    public bool IsNonAntidotePoisonDefense => Type is TreacheryCardType.Chemistry;
 
-    public bool IsShield => Type == TreacheryCardType.Shield || Type == TreacheryCardType.ShieldAndAntidote;
+    public bool IsShield => Type is TreacheryCardType.Shield or TreacheryCardType.ShieldAndAntidote;
 
-    public bool IsProjectileDefense => Type == TreacheryCardType.Shield || Type == TreacheryCardType.WeirdingWay || Type == TreacheryCardType.ShieldAndAntidote;
+    public bool IsProjectileDefense => Type is TreacheryCardType.Shield or TreacheryCardType.WeirdingWay or TreacheryCardType.ShieldAndAntidote;
 
-    public bool IsLaser => Type == TreacheryCardType.Laser;
+    public bool IsLaser => Type is TreacheryCardType.Laser;
 
-    public bool IsPoisonTooth => Type == TreacheryCardType.PoisonTooth;
+    public bool IsPoisonTooth => Type is TreacheryCardType.PoisonTooth;
 
-    public bool IsArtillery => Type == TreacheryCardType.ArtilleryStrike;
+    public bool IsArtillery => Type is TreacheryCardType.ArtilleryStrike;
 
-    public bool IsRockmelter => Type == TreacheryCardType.Rockmelter;
+    public bool IsRockMelter => Type is TreacheryCardType.Rockmelter;
 
-    public bool IsMirrorWeapon => Type == TreacheryCardType.MirrorWeapon;
+    public bool IsMirrorWeapon => Type is TreacheryCardType.MirrorWeapon;
 
-    public bool IsPortableAntidote => Type == TreacheryCardType.PortableAntidote;
+    public bool IsPortableAntidote => Type is TreacheryCardType.PortableAntidote;
 
-    public bool IsWeapon => IsLaser || IsPoisonWeapon || IsProjectileWeapon || IsPoisonTooth || IsArtillery || IsMirrorWeapon || IsRockmelter;
+    public bool IsWeapon => IsPoisonWeapon || IsProjectileWeapon || IsLaser || IsPoisonTooth || IsArtillery || IsMirrorWeapon || IsRockMelter;
 
     public bool IsDefense => IsPoisonDefense || IsProjectileDefense;
 
-    public bool IsUseless => Type == TreacheryCardType.Useless;
+    public bool IsUseless => Type is TreacheryCardType.Useless;
 
-    public bool IsMercenary => Type == TreacheryCardType.Mercenary;
+    public bool IsMercenary => Type is TreacheryCardType.Mercenary;
 
     public bool IsGreen => !(IsWeapon || IsDefense || IsUseless || IsMercenary);
 
@@ -110,19 +85,21 @@ public class TreacheryCard : IHero, IIdentifiable
     {
         if (Type == TreacheryCardType.MirrorWeapon)
             return combinedWithWeapon == null || combinedWithWeapon.CounteredBy(defense, combinedWithWeapon);
+        
         return
-            (Type == TreacheryCardType.PoisonTooth && defense.IsNonAntidotePoisonDefense) ||
-            (Type == TreacheryCardType.Poison && defense.IsPoisonDefense) ||
-            (Type == TreacheryCardType.Chemistry && defense.IsPoisonDefense) ||
-            (Type == TreacheryCardType.Projectile && defense.IsProjectileDefense) ||
-            (Type == TreacheryCardType.WeirdingWay && defense.IsProjectileDefense) ||
-            (Type == TreacheryCardType.ProjectileAndPoison && defense.Type == TreacheryCardType.ShieldAndAntidote);
+            (Type is TreacheryCardType.PoisonTooth && defense.IsNonAntidotePoisonDefense) ||
+            (Type is TreacheryCardType.Poison && defense.IsPoisonDefense) ||
+            (Type is TreacheryCardType.Chemistry && defense.IsPoisonDefense) ||
+            (Type is TreacheryCardType.Projectile && defense.IsProjectileDefense) ||
+            (Type is TreacheryCardType.WeirdingWay && defense.IsProjectileDefense) ||
+            (Type is TreacheryCardType.ProjectileAndPoison && defense.Type is TreacheryCardType.ShieldAndAntidote);
     }
 
     public override string ToString()
     {
         if (Message.DefaultDescriber != null)
             return Message.DefaultDescriber.Describe(this) + "*";
+        
         return base.ToString();
     }
 }

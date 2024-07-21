@@ -38,7 +38,7 @@ public class HMSAdvantageChosen : GameEvent
 
     public static bool CanBePlayed(Game g, Player p)
     {
-        return g.ChosenHMSAdvantage == StrongholdAdvantage.None && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p) && g.CurrentBattle.Territory == g.Map.HiddenMobileStronghold.Territory && g.OwnsStronghold(p.Faction, g.Map.HiddenMobileStronghold) && ValidAdvantages(g, p).Any();
+        return g.ChosenHmsAdvantage == StrongholdAdvantage.None && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p) && g.CurrentBattle.Territory == g.Map.HiddenMobileStronghold.Territory && g.OwnsStronghold(p.Faction, g.Map.HiddenMobileStronghold) && ValidAdvantages(g, p).Any();
     }
 
     public static IEnumerable<StrongholdAdvantage> ValidAdvantages(Game g, Player p)
@@ -59,7 +59,7 @@ public class HMSAdvantageChosen : GameEvent
     protected override void ExecuteConcreteEvent()
     {
         Log();
-        Game.ChosenHMSAdvantage = Advantage;
+        Game.ChosenHmsAdvantage = Advantage;
     }
 
     public override Message GetMessage()

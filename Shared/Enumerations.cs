@@ -13,33 +13,11 @@ namespace Treachery.Shared;
 
 public static class Enumerations
 {
-    public static IEnumerable<T> GetValues<T>(Type t)
-    {
-        var values = t.GetEnumValues();
-        var result = new List<T>();
+    public static IEnumerable<T> GetValues<T>() where T : struct, Enum => 
+        Enum.GetValues<T>();
 
-        for (var i = 0; i < values.Length; i++)
-        {
-            var value = (T)values.GetValue(i);
-            result.Add(value);
-        }
-
-        return result;
-    }
-
-    public static IEnumerable<T> GetValuesExceptDefault<T>(Type t, T defaultValue)
-    {
-        var values = t.GetEnumValues();
-        var result = new List<T>();
-
-        for (var i = 0; i < values.Length; i++)
-        {
-            var value = (T)values.GetValue(i);
-            if (!defaultValue.Equals(value)) result.Add(value);
-        }
-
-        return result;
-    }
+    public static IEnumerable<T> GetValuesExceptDefault<T>(T defaultValue) where T : struct, Enum =>
+        GetValues<T>().Where(v => !v.Equals(defaultValue));
 }
 
 public enum Faction
@@ -392,7 +370,7 @@ public enum FactionAdvantage
     PurpleEarlyLeaderRevive = 125, //*
     PurpleReviveGhola = 126, //*
 
-    GreyMovingHMS = 130,
+    GreyMovingHms = 130,
     GreySpecialForceBonus = 131,
     GreySelectingCardsOnAuction = 132,
     GreyCyborgExtraMove = 133,
@@ -537,7 +515,7 @@ public enum Rule
     TechTokens = 200,
     ExpansionTreacheryCards = 209,
     ExpansionTreacheryCardsExceptPBandSSandAmal = 210,
-    ExpansionTreacheryCardsPBandSS = 211,
+    ExpansionTreacheryCardsPBandSs = 211,
     ExpansionTreacheryCardsAmal = 212,
     CheapHeroTraitor = 220,
     SandTrout = 230,
@@ -584,8 +562,8 @@ public enum Rule
     //House Rules
     CustomInitialForcesAndResources = 100,
     CustomDecks = 101,
-    HMSwithoutGrey = 104,
-    SSW = 105,
+    HmSwithoutGrey = 104,
+    Ssw = 105,
     BlackMulligan = 106,
     FullPhaseKarma = 107,
     YellowMayMoveIntoStorm = 108,

@@ -66,12 +66,12 @@ public static class TreacheryCardManager
         Items.Add(new TreacheryCard(CARD_TRIPTOGAMONT, CARD_TRIPTOGAMONT, TreacheryCardType.Useless, Rule.BasicTreacheryCards));
 
         //Grey & Purple Expansion Treachery Cards
-        Items.Add(new TreacheryCard(33, 33, TreacheryCardType.ProjectileAndPoison, Rule.ExpansionTreacheryCardsPBandSS));
+        Items.Add(new TreacheryCard(33, 33, TreacheryCardType.ProjectileAndPoison, Rule.ExpansionTreacheryCardsPBandSs));
         Items.Add(new TreacheryCard(34, 34, TreacheryCardType.Projectile, Rule.ExpansionTreacheryCardsExceptPBandSSandAmal));
         Items.Add(new TreacheryCard(35, 35, TreacheryCardType.Poison, Rule.ExpansionTreacheryCardsExceptPBandSSandAmal));
         Items.Add(new TreacheryCard(36, 36, TreacheryCardType.WeirdingWay, Rule.ExpansionTreacheryCardsExceptPBandSSandAmal));
         Items.Add(new TreacheryCard(37, 37, TreacheryCardType.PoisonTooth, new[] { Rule.ExpansionTreacheryCardsExceptPBandSSandAmal, Rule.Expansion2TreacheryCards }));
-        Items.Add(new TreacheryCard(38, 38, TreacheryCardType.ShieldAndAntidote, Rule.ExpansionTreacheryCardsPBandSS));
+        Items.Add(new TreacheryCard(38, 38, TreacheryCardType.ShieldAndAntidote, Rule.ExpansionTreacheryCardsPBandSs));
         Items.Add(new TreacheryCard(39, 9, TreacheryCardType.Shield, Rule.ExpansionTreacheryCardsExceptPBandSSandAmal));
         Items.Add(new TreacheryCard(40, 13, TreacheryCardType.Antidote, Rule.ExpansionTreacheryCardsExceptPBandSSandAmal));
         Items.Add(new TreacheryCard(41, 39, TreacheryCardType.Chemistry, Rule.ExpansionTreacheryCardsExceptPBandSSandAmal));

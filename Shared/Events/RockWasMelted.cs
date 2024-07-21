@@ -39,7 +39,7 @@ public class RockWasMelted : GameEvent
     public static bool CanBePlayed(Game g, Player p)
     {
         var plan = g.CurrentBattle.PlanOf(p);
-        return plan != null && plan.Weapon != null && plan.Weapon.IsRockmelter;
+        return plan != null && plan.Weapon != null && plan.Weapon.IsRockMelter;
     }
 
     #endregion Validation

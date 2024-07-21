@@ -13,19 +13,19 @@
     <div class="row row-cols-3 row-cols-md-6 m-0">
 
         <div class="card p-1 m-0 border-0">
-            <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="card-img" alt="Unknown" @onclick="e => Pick(TreacheryCard.UNKNOWN)" title="Set as unknown card" style="cursor:pointer;">
+            <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="card-img" alt="Unknown" @onclick="e => Pick(TreacheryCard.Unknown)" title="Set as unknown card" style="cursor:pointer;">
         </div>
 
-        @if (Tracker.CurrentCard != TreacheryCard.NONE)
+        @if (Tracker.CurrentCard != TreacheryCard.None)
         {
             <div class="card p-1 m-0 border-0" title="Set to 'none'" style="cursor:pointer;">
-                <svg viewBox="0 0 16 22.5" xmlns="http://www.w3.org/2000/svg" @onclick="e => Pick(TreacheryCard.NONE)">
+                <svg viewBox="0 0 16 22.5" xmlns="http://www.w3.org/2000/svg" @onclick="e => Pick(TreacheryCard.None)">
                     <rect width="16" height="22.5" rx="2" style="fill:rgb(64,64,64);stroke-width:1;stroke:rgb(200,200,200)" />
                 </svg>
             </div>
         }
 
-        @if (Tracker.CurrentCard != TreacheryCard.NONE && Tracker.CurrentCard != TreacheryCard.UNKNOWN)
+        @if (Tracker.CurrentCard != TreacheryCard.None && Tracker.CurrentCard != TreacheryCard.Unknown)
         {
             <div class="card p-1 m-0 border-0" title="Discard this card" style="cursor:pointer;">
                 <svg viewBox="0 0 16 22.5" xmlns="http://www.w3.org/2000/svg" @onclick="e => Discard()">

@@ -40,9 +40,9 @@ public class GreenIntelligence
 
     private static int DefaultSelectedCard(Faction p, int cardnr)
     {
-        if (cardnr == 0) return TreacheryCard.UNKNOWN;
-        if (cardnr == 1 && p == Faction.Black) return TreacheryCard.UNKNOWN;
-        return TreacheryCard.NONE;
+        if (cardnr == 0) return TreacheryCard.Unknown;
+        if (cardnr == 1 && p == Faction.Black) return TreacheryCard.Unknown;
+        return TreacheryCard.None;
     }
 
     public IEnumerable<TreacheryCard> DiscardedCards => discardedCards.Select(id => TreacheryCardManager.Lookup.Find(id));
@@ -108,7 +108,7 @@ public class GreenIntelligence
     public void Discard(Faction f, int cardNumber)
     {
         var current = TreacheryCardManager.Lookup.Find(TrackedTreacheryCards[f][cardNumber]);
-        TrackedTreacheryCards[f][cardNumber] = TreacheryCard.NONE;
+        TrackedTreacheryCards[f][cardNumber] = TreacheryCard.None;
 
         if (current.Type == TreacheryCardType.Metheor)
             removedCards.Add(current.Id);

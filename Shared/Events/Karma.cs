@@ -145,7 +145,7 @@ public class Karma : GameEvent
 
         if (p.Faction != Faction.Grey && g.IsPlaying(Faction.Grey))
         {
-            if (In(g, MainPhase.Storm)) result.Add(FactionAdvantage.GreyMovingHMS);
+            if (In(g, MainPhase.Storm)) result.Add(FactionAdvantage.GreyMovingHms);
 
             if (In(g, MainPhase.Bidding))
             {

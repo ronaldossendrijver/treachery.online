@@ -109,7 +109,7 @@ public class Battle : GameEvent
     public TreacheryCard OriginalDefense { get; set; }
 
     [JsonIgnore]
-    public bool HasRockMelter => Weapon != null && Weapon.IsRockmelter;
+    public bool HasRockMelter => Weapon != null && Weapon.IsRockMelter;
 
     [JsonIgnore]
     public bool HasUseless => (Weapon != null && Weapon.IsUseless) || (Defense != null && Defense.IsUseless);

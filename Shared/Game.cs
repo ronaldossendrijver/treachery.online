@@ -41,12 +41,12 @@ public partial class Game
     public MainPhase CurrentMainPhase { get; internal set; } = MainPhase.Started;
     public MainPhaseMoment CurrentMoment { get; private set; } = MainPhaseMoment.None;
     public Phase CurrentPhase { get; private set; } = Phase.None;
-    public List<Faction> HasActedOrPassed { get; } = new();
-    public List<Player> Players { get; private set; } = new();
+    public List<Faction> HasActedOrPassed { get; } = [];
+    public List<Player> Players { get; private set; } = [];
     public Report CurrentReport { get; internal set; }
     public Deck<TreacheryCard> TreacheryDeck { get; internal set; }
     public Deck<TreacheryCard> TreacheryDiscardPile { get; internal set; }
-    public List<TreacheryCard> RemovedTreacheryCards { get; internal set; } = new();
+    public List<TreacheryCard> RemovedTreacheryCards { get; } = [];
     public Deck<ResourceCard> ResourceCardDeck { get; internal set; }
     public Deck<ResourceCard> ResourceCardDiscardPileA { get; internal set; }
     public Deck<ResourceCard> ResourceCardDiscardPileB { get; internal set; }
@@ -54,13 +54,13 @@ public partial class Game
     public int NextStormMoves { get; internal set; } = -1;
     public bool ShieldWallDestroyed { get; internal set; }
     public Dictionary<Location, int> ResourcesOnPlanet { get; } = new();
-    public Dictionary<Player, Timer<MainPhase>> Timers { get; } = new();
+    private Dictionary<Player, Timer<MainPhase>> Timers { get; } = new();
 
     public Dictionary<TreacheryCard, Faction> RecentlyDiscarded { get; } = new();
-    internal Phase PhaseBeforeDiscarding { get; set; }
-    public List<Faction> FactionsThatMustDiscard { get; internal set; } = new();
-    public List<Payment> RecentlyPaid { get; private set; } = new();
-    internal List<Payment> StoredRecentlyPaid { get; private set; } = new();
+    internal Phase PhaseBeforeDiscarding { get; private set; }
+    public List<Faction> FactionsThatMustDiscard { get; } = [];
+    public List<Payment> RecentlyPaid { get; private set; } = [];
+    internal List<Payment> StoredRecentlyPaid { get; private set; } = [];
 
     public Deck<LeaderSkill> SkillDeck { get; private set; }
     public List<TreacheryCard> WhiteCache { get; internal set; } = new();
@@ -69,21 +69,21 @@ public partial class Game
     public Dictionary<TerrorType, Territory> TerrorOnPlanet { get; private set; } = new();
     public Deck<Ambassador> UnassignedAmbassadors { get; internal set; }
     public Territory AtomicsAftermath { get; internal set; }
-    public List<Ambassador> AmbassadorsSetAside { get; } = new();
+    public List<Ambassador> AmbassadorsSetAside { get; } = [];
     public Deck<DiscoveryToken> YellowDiscoveryTokens { get; set; }
     public Deck<DiscoveryToken> OrangeDiscoveryTokens { get; set; }
     public Dictionary<Location, Discovery> DiscoveriesOnPlanet { get; } = new();
     public Dictionary<Territory, Ambassador> AmbassadorsOnPlanet { get; private set; } = new();
     public Deck<Faction> NexusCardDeck { get; internal set; }
-    public List<Faction> NexusDiscardPile { get; } = new();
-    public Dictionary<Homeworld, Faction> HomeworldOccupation { get; private set; } = new();
+    public List<Faction> NexusDiscardPile { get; } = [];
+    private Dictionary<Homeworld, Faction> HomeworldOccupation { get; set; } = new();
     internal Phase PhaseBeforeDiscardingTraitor { get; set; }
     internal Faction FactionThatMustDiscardTraitor { get; set; }
     internal int NumberOfTraitorsToDiscard { get; set; }
 
     public List<Faction> FactionsInPlay { get; internal set; }
-    public List<TerrorType> UnplacedTerrorTokens { get; internal set; } = new();
-    internal Deck<IHero> TraitorDeck { get; set; }
+    public List<TerrorType> UnplacedTerrorTokens { get; internal set; } = [];
+    internal Deck<IHero> TraitorDeck { get; private set; }
     public Leader PinkLoyalLeader { get; private set; }
 
     #endregion GameState
@@ -338,19 +338,19 @@ public partial class Game
 
     #region CardKnowledge
 
-    public IEnumerable<TreacheryCard> KnownCards(Player p)
+    public List<TreacheryCard> KnownCards(Player p)
     {
         var result = new List<TreacheryCard>(p.TreacheryCards);
         result.AddRange(p.KnownCards);
 
-        if (p.Ally != Faction.None)
+        if (p.HasAlly)
         {
             var ally = GetPlayer(p.Ally);
             result.AddRange(ally.TreacheryCards);
             result.AddRange(ally.KnownCards);
         }
 
-        return result.Distinct();
+        return result.Distinct().ToList();
     }
 
     internal void RegisterKnown(TreacheryCard c)
@@ -528,7 +528,7 @@ public partial class Game
     public Faction GetAlly(Faction f)
     {
         var player = GetPlayer(f);
-        return player != null ? player.Ally : Faction.None;
+        return player?.Ally ?? Faction.None;
     }
 
     public IEnumerable<Faction> PlayersOtherThan(Player p)
@@ -559,7 +559,7 @@ public partial class Game
 
     private void AllowAllPreventedFactionAdvantages(List<FactionAdvantage> exceptions)
     {
-        foreach (var adv in Enumerations.GetValuesExceptDefault(typeof(FactionAdvantage), FactionAdvantage.None))
+        foreach (var adv in Enumerations.GetValuesExceptDefault(FactionAdvantage.None))
             if (exceptions == null || !exceptions.Contains(adv)) Allow(adv);
     }
 

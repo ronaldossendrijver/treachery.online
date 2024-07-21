@@ -235,7 +235,7 @@ public class EstablishPlayers : GameEvent
         if (Game.Applicable(Rule.ExpansionTreacheryCards))
         {
             if (!Game.Rules.Contains(Rule.ExpansionTreacheryCardsExceptPBandSSandAmal)) Game.Rules.Add(Rule.ExpansionTreacheryCardsExceptPBandSSandAmal);
-            if (!Game.Rules.Contains(Rule.ExpansionTreacheryCardsPBandSS)) Game.Rules.Add(Rule.ExpansionTreacheryCardsPBandSS);
+            if (!Game.Rules.Contains(Rule.ExpansionTreacheryCardsPBandSs)) Game.Rules.Add(Rule.ExpansionTreacheryCardsPBandSs);
             if (!Game.Rules.Contains(Rule.ExpansionTreacheryCardsAmal)) Game.Rules.Add(Rule.ExpansionTreacheryCardsAmal);
         }
 

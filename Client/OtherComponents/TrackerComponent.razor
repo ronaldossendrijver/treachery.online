@@ -53,13 +53,13 @@
                         var cardId = Info.TrackedTreacheryCards[p.Faction][selIndex];
 
                         <a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#picker" @onmousedown="e => InitiatePick(p.Faction, selIndex)" title=@DeterminePopup(Info.TrackedTreacheryCards[p.Faction][selIndex])>
-                            @if (cardId == TreacheryCard.NONE)
+                            @if (cardId == TreacheryCard.None)
                             {
                                 <svg class="img-fluid w-100" viewBox="0 0 268 372" xmlns="http://www.w3.org/2000/svg">
                                     <rect width="268" height="372" rx="20" style="fill:rgb(64,64,64);stroke-width:3;stroke:rgb(200,200,200)" />
                                 </svg>
                             }
-                            else if (cardId == TreacheryCard.UNKNOWN)
+                            else if (cardId == TreacheryCard.Unknown)
                             {
                                 <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="img-fluid" />
                             }
@@ -248,7 +248,7 @@
                 return Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId];
             }
 
-            return TreacheryCard.NONE;
+            return TreacheryCard.None;
         }
     }
 
@@ -270,7 +270,7 @@
     {
         try
         {
-            if (Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId] != TreacheryCard.NONE && Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId] != TreacheryCard.UNKNOWN)
+            if (Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId] != TreacheryCard.None && Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId] != TreacheryCard.Unknown)
             {
                 Info.Discard(currentlyPickedFaction, currentlyPickedCardId);
                 popoversNeedUpdate = true;

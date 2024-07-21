@@ -412,7 +412,7 @@ public partial class Game
 
     public bool HasStrongholdAdvantage(Faction f, StrongholdAdvantage advantage, Territory battleTerritory)
     {
-        if (battleTerritory == Map.HiddenMobileStronghold.Territory && OwnsStronghold(f, Map.HiddenMobileStronghold) && ChosenHMSAdvantage == advantage) return true;
+        if (battleTerritory == Map.HiddenMobileStronghold.Territory && OwnsStronghold(f, Map.HiddenMobileStronghold) && ChosenHmsAdvantage == advantage) return true;
 
         return battleTerritory.Advantage == advantage && battleTerritory.Locations.Any(l => OwnsStronghold(f, l));
     }
@@ -424,7 +424,7 @@ public partial class Game
 
     public bool IsSpecialStronghold(Territory t)
     {
-        return t == Map.ShieldWall && Applicable(Rule.SSW) && NumberOfMonsters >= 4;
+        return t == Map.ShieldWall && Applicable(Rule.Ssw) && NumberOfMonsters >= 4;
     }
 
     public IEnumerable<TerrorType> TerrorIn(Territory t)

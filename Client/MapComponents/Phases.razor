@@ -42,7 +42,7 @@
         var posX = x;
         double posY = 0.7f * turnFontHeight;
 
-        foreach (var phase in Enumerations.GetValues<MainPhase>(typeof(MainPhase)).Where(p => p >= MainPhase.Storm && p <= MainPhase.Contemplate))
+        foreach (var phase in Enumerations.GetValues<MainPhase>().Where(p => p >= MainPhase.Storm && p <= MainPhase.Contemplate))
         {
             if (phase == Game.CurrentMainPhase)
             {

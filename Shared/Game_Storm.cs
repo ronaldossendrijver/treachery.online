@@ -55,15 +55,15 @@ public partial class Game
     {
         if (IsPlaying(Faction.Grey) && GetPlayer(Faction.Grey).AnyForcesIn(Map.HiddenMobileStronghold) > 0)
         {
-            if (Prevented(FactionAdvantage.GreyMovingHMS))
+            if (Prevented(FactionAdvantage.GreyMovingHms))
             {
-                LogPreventionByKarma(FactionAdvantage.GreyMovingHMS);
-                if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyMovingHMS);
+                LogPreventionByKarma(FactionAdvantage.GreyMovingHms);
+                if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyMovingHms);
                 DetermineStorm();
             }
             else if (HasLowThreshold(Faction.Grey))
             {
-                LogPreventionByLowThreshold(FactionAdvantage.GreyMovingHMS);
+                LogPreventionByLowThreshold(FactionAdvantage.GreyMovingHms);
                 DetermineStorm();
             }
             else
