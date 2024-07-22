@@ -6,10 +6,20 @@
 //  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
 //  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 // */
-namespace Treachery.Client;
 
-public interface IGameService
+using System.Threading.Tasks;
+using Treachery.Shared;
+
+namespace Treachery.Server;
+
+public interface IGameClient
 {
+    
+    public Task HandleGlobalChatMessage(GlobalChatMessage message);
+
+    public Task HandleGameEvent<TEvent>(TEvent evt) where TEvent : GameEvent;
+    
+    /*
     public Game Game { get; }
     public GameStatus Status { get; }
     public int GameInProgressHostId { get; }
@@ -102,4 +112,11 @@ public interface IGameService
     public Task<string> RequestSetPassword(string userName, string passwordResetToken, string hashedPassword);
     
     public Task<string> GetRunningGames(string userToken);
+    */
+
+
+    Task HandleChatMessage(GameChatMessage gameChatMessage);
+    Task HandleSetTimer(int value);
+    Task HandleSetSkin(string skin);
+    Task HandleUndo(int untilEventNr);
 }

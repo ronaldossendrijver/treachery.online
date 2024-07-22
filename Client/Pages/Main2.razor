@@ -41,28 +41,15 @@ else if (!Client.IsAuthenticated)
 }
 else if (!GameStarted)
 {
-    var centerSize = Client.PlayerName != "" && Client.HostProxy == null && Client.Host == null ? 6 : 4;
-    var fillerSize = 0.5f * (12 - centerSize);
-
     <div class="row d-flex align-items-center" style="min-height: 97vh; background-image: url('../art/planet.png'); background-size: 1024px; background-position-x: center; background-position-y: -50px; background-repeat: no-repeat;">
-        <div class="col-sm-12 col-lg-@fillerSize"></div>
-        <div class="col-sm-12 col-lg-@centerSize">
-            @if (Client.PlayerName == "")
-            {
-                <div class="d-flex justify-content-center">
-                    <PlayerNameComponent  />
-                </div>
-            }
-            else if (Client.HostProxy == null && Client.Host == null)
-            {
-                <HostOrJoinGameComponent  />
-            }
-            else
-            {
-                <ActionPanel  />
-            }
+        <div class="col-sm-12 col-lg-1"></div>
+        <div class="col-sm-12 col-lg-5">
+            <RunningGamesComponent/>
         </div>
-        <div class="col-sm-12 col-lg-@fillerSize"></div>
+        <div class="col-sm-12 col-lg-5">
+            <OwnGamesComponent/>
+        </div>
+        <div class="col-sm-12 col-lg-1"></div>
     </div>
 }
 else
