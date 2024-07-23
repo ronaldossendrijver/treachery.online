@@ -7,16 +7,29 @@
 //  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 // */
 
-namespace Treachery.Server.Data;
+using System;
+using System.ComponentModel.DataAnnotations;
 
-public class PlayedGame
+namespace Treachery.Shared;
+
+public class User
 {
     public int Id { get; init; }
+    
+    [MaxLength(4000)]
+    public string Name { get; set; }
+    
+    [MaxLength(4000)]
+    public string Email { get; set; }
+    
+    [MaxLength(4000)]
+    public string HashedPassword { get; set; }
 
-    public User Host { get; set; }
-
-    public DateTime LastChanged { get; set; }
-
-    // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
-    public string State { get; set; }
+    [MaxLength(4000)]
+    public string PasswordResetToken { get; set; }
+    
+    public DateTime PasswordResetTokenCreated { get; set; }
+    
+    [MaxLength(4000)]
+    public string PlayerName { get; set; }
 }

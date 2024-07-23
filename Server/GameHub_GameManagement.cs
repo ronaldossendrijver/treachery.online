@@ -18,7 +18,7 @@ public partial class GameHub
     
     private async Task<Result<string>> CreateOrLoadGame(string playerToken, string hashedPassword, string settings, string stateData)
     {
-        if (!playerIdsByToken.TryGetValue(playerToken, out var playerId))
+        if (!usersByPlayerToken.TryGetValue(playerToken, out var player))
             return Error<string>("Player not found");
 
         Game game;
@@ -40,23 +40,24 @@ public partial class GameHub
         var managedGame = new ManagedGame
         {
             Game = game, //TODO apply settings here
-            Players = [playerId],
-            Hosts = [playerId]
+            Players = [player],
+            Hosts = [player],
+            HashedPassword = hashedPassword
         };
         var gameToken = GenerateToken();
-        var gameId = Guid.NewGuid();
-        gamesByToken[gameToken] = managedGame; 
+        var gameId = Guid.NewGuid().ToString();
+        gamesByGameToken[gameToken] = managedGame; 
         gameTokensByGameId[gameId] = gameToken;
 
         return await Task.FromResult(Success(gameToken));
     }
     
-    public async Task<Result<string>> RequestJoinGame(string playerToken, Guid gameId, string hashedPassword, Faction faction)
+    public async Task<Result<string>> RequestJoinGame(string playerToken, string gameId, string hashedPassword, Faction faction)
     {
-        if (!playerIdsByToken.TryGetValue(playerToken, out var playerId))
+        if (!usersByPlayerToken.TryGetValue(playerToken, out var player))
             return Error<string>("Player not found");
 
-        if (!gameTokensByGameId.TryGetValue(gameId, out var gameToken) || !gamesByToken.TryGetValue(gameToken, out var game))
+        if (!gameTokensByGameId.TryGetValue(gameId, out var gameToken) || !gamesByGameToken.TryGetValue(gameToken, out var game))
             return Error<string>("Game not found");
         
         if (game.HashedPassword != null && !game.HashedPassword.Equals(hashedPassword))
@@ -65,16 +66,17 @@ public partial class GameHub
         if (!game.HasRoomFor(faction))
             return Error<string>("Seat is not available");
     
-        game.Players.Add(playerId);        
+        game.Players.Add(player);
+        await Groups.AddToGroupAsync(Context.ConnectionId, gameToken);
         return await Task.FromResult(Success(gameToken));
     }
     
-    public async Task<Result<string>> RequestObserveGame(string playerToken, Guid gameId, string hashedPassword, Faction faction)
+    public async Task<Result<string>> RequestObserveGame(string playerToken, string gameId, string hashedPassword)
     {
-        if (!playerIdsByToken.TryGetValue(playerToken, out var playerId))
+        if (!usersByPlayerToken.TryGetValue(playerToken, out var player))
             return Error<string>("Player not found");
 
-        if (!gameTokensByGameId.TryGetValue(gameId, out var gameToken) || !gamesByToken.TryGetValue(gameToken, out var game))
+        if (!gameTokensByGameId.TryGetValue(gameId, out var gameToken) || !gamesByGameToken.TryGetValue(gameToken, out var game))
             return Error<string>("Game not found");
         
         /*
@@ -82,16 +84,26 @@ public partial class GameHub
             return Error<string>("Incorrect password");
         */
         
-        game.Observers.Add(playerId);        
+        game.Observers.Add(player);
+        await Groups.AddToGroupAsync(Context.ConnectionId, gameToken);
         return await Task.FromResult(Success(gameToken));
     }
-    
+
+    public async Task<VoidResult> RequestReconnectGame(string playerToken, string gameToken)
+    {
+        if (!AreValid(playerToken, gameToken, out _, out _, out var error))
+            return error;
+        
+        await Groups.AddToGroupAsync(Context.ConnectionId, gameToken);
+        return Success();
+    }
+
     public async Task<VoidResult> RequestSetSkin(string playerToken, string gameToken, string skin)
     {
-        if (!AreValid(playerToken, gameToken, out var playerId, out var game, out var error))
+        if (!AreValid(playerToken, gameToken, out var player, out var game, out var error))
             return error;
 
-        if (!game.IsHost(playerId))
+        if (!game.IsHost(player))
             return Error("You are not the host");
 
         await Clients.Group(gameToken).HandleSetSkin(skin);
@@ -112,12 +124,13 @@ public partial class GameHub
     
     private void SendEndOfGameMail(string content, GameInfo info)
     {
-        var ruleset = Game.DetermineApproximateRuleset(info.FactionsInPlay, info.Rules, info.ExpansionLevel);
-        var subject =
-            $"{info.GameName} ({info.Players.Length} Players, {info.NumberOfBots} Bots, Turn {info.CurrentTurn} - {ruleset})";
         var from = configuration["GameEndEmailFrom"];
         var to = configuration["GameEndEmailTo"];
-
+        if (from == null || to == null)
+            return;
+        
+        var ruleset = Game.DetermineApproximateRuleset(info.FactionsInPlay, info.Rules, info.ExpansionLevel);
+        var subject = $"{info.GameName} ({info.Players.Length} Players, {info.NumberOfBots} Bots, Turn {info.CurrentTurn} - {ruleset})";
         var saveGameToAttach = new Attachment(GenerateStreamFromString(content), "savegame" + DateTime.Now.ToString("yyyyMMdd.HHmm") + ".json");
         
         MailMessage mailMessage = new()
@@ -143,7 +156,7 @@ public partial class GameHub
             var httpClient = new HttpClient();
             var data = GetStatisticsAsString(statistics);
             var json = new StringContent(data, Encoding.UTF8, "application/json");
-            var result = await httpClient.PostAsync("https://dune.games/.netlify/functions/plays-add", json);
+            await httpClient.PostAsync("https://dune.games/.netlify/functions/plays-add", json);
         }
         catch (Exception e)
         {

@@ -7,6 +7,7 @@
 //  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 // */
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Treachery.Shared;
 
@@ -19,6 +20,13 @@ public interface IGameClient
 
     public Task HandleGameEvent<TEvent>(TEvent evt) where TEvent : GameEvent;
     
+    
+    Task HandleChatMessage(GameChatMessage gameChatMessage);
+    Task HandleSetTimer(int value);
+    Task HandleSetSkin(string skin);
+    Task HandleUndo(int untilEventNr);
+
+    Task HandleListOfGames(List<GameInfo> games);
     /*
     public Game Game { get; }
     public GameStatus Status { get; }
@@ -32,7 +40,7 @@ public interface IGameClient
     public ServerSettings ServerSettings { get; }
     public Dictionary<int, string> JoinErrors { get; }
     public DateTime Disconnected { get; }
-    
+
     //Client State
     public float CurrentEffectVolume { get; set;  }
     public float CurrentChatVolume { get; set; }
@@ -77,7 +85,7 @@ public interface IGameClient
     public Faction Faction { get; }
 
     public bool IAm(Faction f);
-    
+
     public LinkedList<ChatMessage> Messages { get; }
 
     public bool InScheduledMaintenance { get; }
@@ -110,13 +118,9 @@ public interface IGameClient
     public Task<string> RequestPasswordReset(string email);
 
     public Task<string> RequestSetPassword(string userName, string passwordResetToken, string hashedPassword);
-    
+
     public Task<string> GetRunningGames(string userToken);
     */
 
 
-    Task HandleChatMessage(GameChatMessage gameChatMessage);
-    Task HandleSetTimer(int value);
-    Task HandleSetSkin(string skin);
-    Task HandleUndo(int untilEventNr);
 }

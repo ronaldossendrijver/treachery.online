@@ -2,7 +2,6 @@
 using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Treachery.Server.Data;
 using Treachery.Shared;
 
 namespace Treachery.Server;
@@ -68,7 +67,7 @@ public partial class GameHub
 
         var playerToken = GenerateToken();
 
-        playerIdsByToken.TryAdd(playerToken, user.Id);
+        usersByPlayerToken.TryAdd(playerToken, user);
 
         return Success(playerToken);
     }

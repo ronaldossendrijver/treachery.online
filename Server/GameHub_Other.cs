@@ -1,16 +1,16 @@
-﻿using Treachery.Client;
+﻿using Treachery.Shared;
 
 namespace Treachery.Server;
 
 public partial class GameHub
 {
-    public void ProcessHeartbeat(string playerToken)
+    /*public void ProcessHeartbeat(string playerToken)
     {
-        if (playerIdsByToken.ContainsKey(playerToken))
+        if (usersByPlayerToken.ContainsKey(playerToken))
         {
             playerTokensLastSeen[playerToken] = DateTime.Now;
         }
-    }
+    }*/
 
     public Result<ServerSettings> GetServerSettings()
     {

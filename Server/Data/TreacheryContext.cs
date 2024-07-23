@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 //using Treachery.Server.Migrations;
 
-namespace Treachery.Server.Data;
+namespace Treachery.Shared;
 
 public partial class TreacheryContext(DbContextOptions<TreacheryContext> options, IConfiguration configuration)
     : DbContext(options)

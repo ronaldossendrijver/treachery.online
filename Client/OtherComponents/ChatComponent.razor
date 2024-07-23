@@ -125,7 +125,7 @@
 
         if (target == LABEL_GLOBAL_CHAT)
         {
-            await Client.Request(
+            await Client.RequestSendGlobalChatMessage(
                 new GlobalChatMessage
                 {
                         SourcePlayerName = sourcePlayer != null ? Client.Player.Name : "",

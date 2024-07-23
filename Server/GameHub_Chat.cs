@@ -14,7 +14,14 @@ public partial class GameHub
         return Success();
     }
 
-    public async Task SendGlobalChatMessage(GlobalChatMessage message) 
-        => await Clients.All.HandleGlobalChatMessage(message);
+    public async Task<VoidResult> SendGlobalChatMessage(string playerToken, GlobalChatMessage message)
+    {
+        if (!usersByPlayerToken.TryGetValue(playerToken, out _))
+            return Error("Player not found");
+        
+        await Clients.All.HandleGlobalChatMessage(message);
+        return Success();
+    }
+        
 }
 

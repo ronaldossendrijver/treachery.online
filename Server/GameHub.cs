@@ -1,26 +1,19 @@
 ﻿using System.Collections.Concurrent;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Treachery.Client;
-using Treachery.Server.Data;
 using Treachery.Shared;
 
 namespace Treachery.Server;
 
 public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfiguration configuration) : Hub<IGameClient>, IGameHub
 {
-    private readonly ConcurrentDictionary<string,ManagedGame> gamesByToken = [];
-    private readonly ConcurrentDictionary<Guid,string> gameTokensByGameId = [];
-    private readonly ConcurrentDictionary<string,int> playerIdsByToken = [];
+    private readonly ConcurrentDictionary<string,ManagedGame> gamesByGameToken = [];
+    private readonly ConcurrentDictionary<string,string> gameTokensByGameId = [];
+    private readonly ConcurrentDictionary<string,User> usersByPlayerToken = [];
     private readonly ConcurrentDictionary<string,Game> finishedGames = [];
     private readonly ConcurrentDictionary<string,DateTime> playerTokensLastSeen = [];
     //private readonly ConcurrentDictionary<int, Game> gamesByPlayerId = [];
@@ -39,19 +32,19 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     
     private Result<TResult> Success<TResult>(TResult contents) => new() { Success = true, Contents = contents };
 
-    private bool AreValid<TResult>(string playerToken, string gameToken, out int playerId, out ManagedGame game, out Result<TResult> result)
+    private bool AreValid<TResult>(string playerToken, string gameToken, out User user, out ManagedGame game, out Result<TResult> result)
     {
-        playerId = -1;
+        user = null;
         game = null;
         result = null;
         
-        if (!playerIdsByToken.TryGetValue(playerToken, out playerId))
+        if (!usersByPlayerToken.TryGetValue(playerToken, out user))
         {
             result = Error<TResult>("Player not found");
             return false;
         }
 
-        if (!gamesByToken.TryGetValue(gameToken, out game))
+        if (!gamesByGameToken.TryGetValue(gameToken, out game))
         {
             result = Error<TResult>("Game not found");
             return false;
@@ -59,19 +52,19 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
 
         return true;
     }    
-    private bool AreValid(string playerToken, string gameToken, out int playerId, out ManagedGame game, out VoidResult result)
+    private bool AreValid(string playerToken, string gameToken, out User user, out ManagedGame game, out VoidResult result)
     {
-        playerId = -1;
+        user = null;
         game = null;
         result = null;
         
-        if (!playerIdsByToken.TryGetValue(playerToken, out playerId))
+        if (!usersByPlayerToken.TryGetValue(playerToken, out user))
         {
             result = Error("Player not found");
             return false;
         }
 
-        if (!gamesByToken.TryGetValue(gameToken, out game))
+        if (!gamesByGameToken.TryGetValue(gameToken, out game))
         {
             result = Error("Game not found");
             return false;

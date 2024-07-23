@@ -20,7 +20,7 @@ public interface IGameService
     public Host Host { get; }
     public bool IsObserver { get; }
     public ServerSettings ServerSettings { get; }
-    public Dictionary<int, string> JoinErrors { get; }
+    public Dictionary<Guid, string> JoinErrors { get; }
     public DateTime Disconnected { get; }
     
     //Client State
@@ -53,7 +53,7 @@ public interface IGameService
 
     public Task Request(int hostID, ObserverRejoined e);
 
-    public Task Request(GlobalChatMessage message);
+    public Task RequestSendGlobalChatMessage(GlobalChatMessage message);
 
     public void Reset();
 

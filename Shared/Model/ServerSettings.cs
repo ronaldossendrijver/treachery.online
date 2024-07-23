@@ -9,7 +9,7 @@
 
 using System;
 
-namespace Treachery.Client;
+namespace Treachery.Shared;
 
 public class ServerSettings
 {

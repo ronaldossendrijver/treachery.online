@@ -13,33 +13,38 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Treachery.Shared.Services;
 
 namespace Treachery.Client;
 
-public class Client : IGameService
+public class Client : IGameService, IGameClient
 {
     #region FieldsAndConstructor
 
-    public const int HEARTBEAT_DELAY = 10000;
-    private const int MAX_HEARTBEATS = 17280;  //17280 heartbeats of 10 seconds each = 48 hours
-    private const int DISCONNECT_TIMEOUT = 25000;
+    //public const int HEARTBEAT_DELAY = 10000;
+    //private const int MAX_HEARTBEATS = 17280;  //17280 heartbeats of 10 seconds each = 48 hours
+    private const int DisconnectTimeout = 25000;
 
+    //Logged in player
+    public string PlayerToken { get; set; }
+    
     //Game in progress
+    public string GameToken { get; set; }
     public Game Game { get; private set; }
     public GameStatus Status { get; private set; }
-    public int GameInProgressHostId { get; private set; }
+    //public int GameInProgressHostId { get; private set; }
 
     //Player and Host
-    public string PlayerName { get; private set; } = "";
-    public HostProxy HostProxy { get; private set; }
-    public Host Host { get; private set; }
+    //public string PlayerName { get; private set; } = "";
+    //public HostProxy HostProxy { get; private set; }
+    //public Host Host { get; private set; }
     public bool IsObserver { get; private set; }
     public ServerSettings ServerSettings { get; private set; }
-    public Dictionary<int, string> JoinErrors { get; } = new();
+    public Dictionary<Guid, string> JoinErrors { get; } = new();
     public DateTime Disconnected { get; private set; }
     
-    private string ValidatedUsername { get; set; }
-    private string ValidatedHashedPassword { get; set; }
+    //private string ValidatedUsername { get; set; }
+    //private string ValidatedHashedPassword { get; set; }
     
     //Sound and camera
     public float CurrentEffectVolume { get; set; } = -1;
@@ -50,8 +55,8 @@ public class Client : IGameService
     public int BidAutoPassThreshold { get; set; } = 0;
     public bool Autopass { get; set; }
     public bool KeepAutopassSetting { get; set; } = false;
-    public bool StatisticsSent { get; set; } = false;
-    public bool BotsArePaused { get; set; }
+    //public bool StatisticsSent { get; set; } = false;
+    //public bool BotsArePaused { get; set; }
     public int Timer { get; set; } = -1;
     public bool MuteGlobalChat { get; set; } = false;
 
@@ -75,11 +80,12 @@ public class Client : IGameService
             })
             .Build();
 
-        Game = new Game();
-        UpdateStatus(Game, Player, IsPlayer);
-        RegisterHandlers();
+        //Game = new Game();
+        //UpdateStatus(Game, Player, IsPlayer);
+        //RegisterHandlers();
     }
 
+    //TODO: check this
     public bool IsDisconnected
     {
         get => Disconnected != default;
@@ -109,6 +115,7 @@ public class Client : IGameService
         await GetServerSettings();
     }
 
+    /*
     public async Task StartHost(string hostPWD, string loadedGameData, Game loadedGame)
     {
         Host = new Host(PlayerName, hostPWD, this, loadedGameData, loadedGame, _connection);
@@ -124,11 +131,12 @@ public class Client : IGameService
             await Task.Delay(5000).ContinueWith(e => LetHostJoin());
         }
     }
+    */
 
     #endregion FieldsAndConstructor
 
     #region HostMessageHandlers
-    private void RegisterHandlers()
+    /*private void RegisterHandlers()
     {
         _connection.On<GameInfo>("GameAvailable", info => ReceiveGameAvailable(info));
         _connection.On<int, string>("HandleJoinAsPlayer", (hostID, denyMessage) => HandleJoinAsPlayer(hostID, denyMessage));
@@ -141,79 +149,8 @@ public class Client : IGameService
         _connection.On<int>("UpdateTimer", value => UpdateTimer(value));
         _connection.On<GlobalChatMessage>("ReceiveGlobalChatMessage", message => HandleGlobalChatMessage(message));
     }
-
-    private void UpdateTimer(int value)
-    {
-        Timer = value;
-    }
-
-    //Process information about a currently running game on treachery.online
-    public IEnumerable<GameInfo> RunningGames => _availableGames.Where(gameAndDate => DateTime.Now.Subtract(gameAndDate.Value).TotalSeconds < 15).Select(gameAndDate => gameAndDate.Key);
-    private readonly Dictionary<GameInfo, DateTime> _availableGames = new();
-
-    public IEnumerable<GameInfo> JoinableAdvertisedGames => _advertisedGames.Where(gameAndDate => gameAndDate.Key.CurrentPhase == Phase.AwaitingPlayers && DateTime.Now.Subtract(gameAndDate.Value).TotalSeconds < 15).Select(gameAndDate => gameAndDate.Key);
-    private readonly Dictionary<GameInfo, DateTime> _advertisedGames = new();
-    private void ReceiveGameAvailable(GameInfo info)
-    {
-        if (HostProxy != null && info.HostID == HostProxy.HostID) HostLastSeen = DateTime.Now;
-
-        if (_availableGames.ContainsKey(info)) _availableGames.Remove(info);
-
-        if (_advertisedGames.ContainsKey(info)) _advertisedGames.Remove(info);
-
-        if (HostProxy == null || Game.CurrentPhase == Phase.AwaitingPlayers)
-        {
-            _availableGames.Add(info, DateTime.Now);
-            Refresh();
-        }
-        else if (info.InviteOthers && (IsObserver || (Game != null && Game.NumberOfHumanPlayers <= 1)))
-        {
-            _advertisedGames.Add(info, DateTime.Now);
-            Refresh();
-        }
-    }
-
-    private PlayerJoined howThisPlayerJoined;
-    public async Task Request(int hostID, PlayerJoined e)
-    {
-        howThisPlayerJoined = e;
-        await _connection.SendAsync("RequestPlayerJoined", hostID, e);
-    }
-
-    private ObserverJoined howThisObserverJoined;
-    public async Task Request(int hostID, ObserverJoined e)
-    {
-        howThisObserverJoined = e;
-        await _connection.SendAsync("RequestObserverJoined", hostID, e);
-    }
-
-    private PlayerRejoined howThisPlayerRejoined;
-    public async Task Request(int hostID, PlayerRejoined e)
-    {
-        howThisPlayerRejoined = e;
-        await _connection.SendAsync("RequestPlayerRejoined", hostID, e);
-    }
-
-    private ObserverRejoined howThisObserverRejoined;
-    public async Task Request(int hostID, ObserverRejoined e)
-    {
-        howThisObserverRejoined = e;
-        await _connection.SendAsync("RequestObserverRejoined", hostID, e);
-    }
-
-    public async Task Request(GlobalChatMessage message)
-    {
-        if (message.Body != null && message.Body.Length > 0)
-            try
-            {
-                await _connection.SendAsync("SendGlobalChatMessage", message);
-            }
-            catch (Exception)
-            {
-                Support.Log("Disconnected...");
-            }
-    }
-
+    */
+    
     public void Reset()
     {
         GameInProgressHostId = 0;
@@ -236,49 +173,71 @@ public class Client : IGameService
         _ = Browser.StopSounds();
         Refresh();
     }
+    
+    //IGameClient methods
+    
+    public Task HandleGlobalChatMessage(GlobalChatMessage message);
 
-    private void HandleJoinAsPlayer(int hostID, string denyMessage)
+    public Task HandleGameEvent<TEvent>(TEvent evt) where TEvent : GameEvent;
+    
+    
+    Task HandleChatMessage(GameChatMessage gameChatMessage);
+    
+    Task HandleSetSkin(string skin);
+    Task HandleUndo(int untilEventNr);
+    
+    private void HandleSetTimer(int value)
     {
-        if (denyMessage == "")
+        Timer = value;
+    }
+
+    //Process information about a currently running game on treachery.online
+    public List<GameInfo> RunningGames { get; private set; } = [];
+
+    //public IEnumerable<GameInfo> JoinableAdvertisedGames => _advertisedGames.Where(gameAndDate => gameAndDate.Key.CurrentPhase == Phase.AwaitingPlayers && DateTime.Now.Subtract(gameAndDate.Value).TotalSeconds < 15).Select(gameAndDate => gameAndDate.Key);
+    //private readonly Dictionary<GameInfo, DateTime> _advertisedGames = new();
+    public void HandleListOfGames(List<GameInfo> games)
+    {
+        RunningGames = games;
+        if (Game == null)
         {
-            HostProxy = new HostProxy(hostID, _connection);
+            Refresh();
+        }
+    }
+    
+    //IGameService methods
+
+    public async Task RequestJoinGame(Guid gameId, string hashedPassword, Faction faction)
+    {
+        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.RequestJoinGame), PlayerToken, gameId, hashedPassword, faction);
+        if (!result.Success)
+        {
+            JoinErrors[gameId] = result.Message;
+        }
+        else
+        {
             IsObserver = false;
-            HostLastSeen = DateTime.Now;
+            GameToken = result.Contents;
+        }
+    }
 
-            var _ = Heartbeat(GameInProgressHostId);
+    public async Task RequestObserveGame(Guid gameId, string hashedPassword)
+    {
+        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.RequestObserveGame), PlayerToken, gameId, hashedPassword);
+        if (!result.Success)
+        {
+            JoinErrors[gameId] = result.Message;
         }
         else
         {
-            if (JoinErrors.ContainsKey(hostID)) JoinErrors[hostID] = denyMessage;
+            IsObserver = false;
+            GameToken = result.Contents;
         }
-
-        Refresh();
     }
+    
+    public async Task RequestSendGlobalChatMessage(GlobalChatMessage message) =>
+        await _connection.SendAsync(nameof(IGameHub.SendGlobalChatMessage), PlayerToken, message);
 
-    private void HandleJoinAsObserver(int hostID, string denyMessage)
-    {
-        if (denyMessage == "")
-        {
-            HostProxy = new HostProxy(hostID, _connection);
-            IsObserver = true;
-            HostLastSeen = DateTime.Now;
-            var _ = Heartbeat(GameInProgressHostId);
-        }
-        else
-        {
-            if (JoinErrors.ContainsKey(hostID)) JoinErrors[hostID] = denyMessage;
-        }
-
-        Refresh();
-    }
-
-    private async Task TryToReconnect()
-    {
-        if (howThisPlayerJoined != null) await Request(HostProxy.HostID, new PlayerRejoined { Name = howThisPlayerJoined.Name, HashedPassword = howThisPlayerJoined.HashedPassword });
-        else if (howThisPlayerRejoined != null) await Request(HostProxy.HostID, howThisPlayerRejoined);
-        else if (howThisObserverJoined != null) await Request(HostProxy.HostID, new ObserverRejoined { Name = howThisObserverJoined.Name, HashedPassword = howThisObserverJoined.HashedPassword });
-        else if (howThisObserverRejoined != null) await Request(HostProxy.HostID, howThisObserverRejoined);
-    }
 
     public DateTime HostLastSeen { get; private set; } = DateTime.Now;
     private int nrOfHeartbeats;
@@ -318,7 +277,7 @@ public class Client : IGameService
 
     private bool CheckDisconnect()
     {
-        if (_connection.State == HubConnectionState.Disconnected || DateTime.Now.Subtract(HostLastSeen).TotalMilliseconds > DISCONNECT_TIMEOUT)
+        if (_connection.State == HubConnectionState.Disconnected || DateTime.Now.Subtract(HostLastSeen).TotalMilliseconds > DisconnectTimeout)
         {
             Disconnected = DateTime.Now;
             Refresh();
@@ -817,5 +776,6 @@ public class Client : IGameService
 
         return result;
     }
+    
     
 }

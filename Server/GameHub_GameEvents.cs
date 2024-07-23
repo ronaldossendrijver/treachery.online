@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Treachery.Shared;
 
 namespace Treachery.Server;
@@ -171,7 +170,7 @@ public partial class GameHub
         if (game.Game.CurrentMainPhase is MainPhase.Ended && !finishedGames.ContainsKey(gameToken))
         {
             finishedGames.TryAdd(gameToken, game.Game);
-            await SendMailAndStatistics<TEvent>(gameToken, game);
+            await SendMailAndStatistics(game);
         }
 
         await Clients.Group(gameToken).HandleGameEvent(e);
@@ -179,18 +178,10 @@ public partial class GameHub
         return Success();
     }
 
-    private async Task SendMailAndStatistics<TEvent>(string gameToken, ManagedGame game) where TEvent : GameEvent
+    private async Task SendMailAndStatistics(ManagedGame game)
     {
-        var info = new GameInfo
-        {
-            Players = game.Game.Players.Select(p => p.Name).ToArray(),
-            FactionsInPlay = game.Game.Players.Select(p => p.Faction).ToList(),
-            NumberOfBots = game.Game.Players.Count(p => p.IsBot),
-            Rules = game.Game.Rules.ToList(),
-            LastAction = game.Game.History.Last().Time
-        };
         var state = GameState.GetStateAsString(game.Game);
-        SendEndOfGameMail(state, info);
+        SendEndOfGameMail(state, game.Info);
         await SendGameStatistics(game.Game);
     }
 }

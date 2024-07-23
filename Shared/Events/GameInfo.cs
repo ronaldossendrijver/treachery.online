@@ -25,10 +25,12 @@ public class GameInfo
     public int MaximumNumberOfTurns;
     public List<Faction> FactionsInPlay;
     public string[] Players;
+    public string[] Observers { get; set; }
     public int NumberOfBots;
     public List<Rule> Rules;
     public bool InviteOthers;
     public DateTime? LastAction;
+    
 
     public override bool Equals(object obj)
     {

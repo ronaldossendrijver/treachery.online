@@ -1,8 +1,7 @@
-﻿using System.Threading.Tasks;
-using Treachery.Client;
-using Treachery.Shared;
+﻿using System;
+using System.Threading.Tasks;
 
-namespace Treachery.Server;
+namespace Treachery.Shared;
 
 public interface IGameHub
 {
@@ -17,8 +16,10 @@ public interface IGameHub
     
     Task<Result<string>> RequestCreateGame(string playerToken, string hashedPassword, string settings);
     //Task<VoidResult> RequestAdmission(int version, string gameToken, GameAdmission admission);
-    Task<Result<string>> RequestJoinGame(string playerToken, Guid gameId, string hashedPassword, Faction faction);
-    Task<Result<string>> RequestObserveGame(string playerToken, Guid gameId, string hashedPassword, Faction faction);
+    Task<Result<string>> RequestJoinGame(string playerToken, string gameId, string hashedPassword, Faction faction);
+    Task<Result<string>> RequestObserveGame(string playerToken, string gameId, string hashedPassword);
+    Task<VoidResult> RequestReconnectGame(string playerToken, string gameToken);
+    
    // Task RequestPlayerJoined(int hostID, PlayerJoined e);
     //Task RequestPlayerRejoined(int hostID, PlayerRejoined e);
     //Task RequestObserverJoined(int hostID, ObserverJoined e);
@@ -171,12 +172,12 @@ public interface IGameHub
     //Chat
     
     Task<VoidResult> RequestChatMessage(string playerToken, string gameToken, GameChatMessage e);
-    Task SendGlobalChatMessage(GlobalChatMessage message);
+    Task<VoidResult> SendGlobalChatMessage(string playerToken, GlobalChatMessage message);
 
     //Other
     
     Result<ServerSettings> GetServerSettings();
-    void ProcessHeartbeat(string playerToken);
+    //void ProcessHeartbeat(string playerToken);
 }
 
 public class Result<T>
