@@ -61,7 +61,7 @@ public partial class Game
     {
         if (receivedAmount > 1 && Applicable(Rule.Homeworlds))
         {
-            var homeworld = Version >= 166 ? from.PrimaryHomeworld : from.Homeworlds.First();
+            var homeworld = Version >= 166 ? from.PrimaryHomeworld : from.HomeWorlds.First();
             var occupier = OccupierOf(homeworld.World);
 
             bool halfIsLost = false;
@@ -112,7 +112,7 @@ public partial class Game
             if (occupier != null)
             {
                 GainCollectedResources(occupier.Faction, homeworld.Territory, homeworld.ResourceAmount);
-                occupier.TransferrableResources += homeworld.ResourceAmount;
+                occupier.TransferableResources += homeworld.ResourceAmount;
             }
         }
     }

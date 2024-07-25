@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Treachery.Shared;
+
 //using Treachery.Server.Migrations;
 
-namespace Treachery.Shared;
+namespace Treachery.Server.Data;
 
 public partial class TreacheryContext(DbContextOptions<TreacheryContext> options, IConfiguration configuration)
     : DbContext(options)

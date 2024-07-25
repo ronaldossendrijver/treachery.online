@@ -366,8 +366,8 @@ public partial class Player
 
         var validHomeworlds = ValidShipmentLocations(false).Where(l => l is Homeworld hw).Cast<Homeworld>();
 
-        var target = WinningOpponentsIWishToAttack(99, false).SelectMany(p => p.Homeworlds).FirstOrDefault(w => validHomeworlds.Contains(w));
-        if (target == null) target = WinningOpponentsIWishToAttack(99, true).SelectMany(p => p.Homeworlds).FirstOrDefault(w => validHomeworlds.Contains(w));
+        var target = WinningOpponentsIWishToAttack(99, false).SelectMany(p => p.HomeWorlds).FirstOrDefault(w => validHomeworlds.Contains(w));
+        if (target == null) target = WinningOpponentsIWishToAttack(99, true).SelectMany(p => p.HomeWorlds).FirstOrDefault(w => validHomeworlds.Contains(w));
         if (target == null && !WinningOpponentsIWishToAttack(99, true).Any()) target = validHomeworlds.Where(l => NotOccupied(l)).RandomOrDefault();
 
         if (target != null)

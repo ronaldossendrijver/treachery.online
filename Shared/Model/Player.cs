@@ -15,25 +15,22 @@ public partial class Player : ICloneable
 {
     #region Construction
 
-    public Player(Game game, string name)
+    public Player(Game game)
     {
         Game = game;
-        Name = name;
     }
 
-    public Player(Game game, string name, Faction faction, bool isBot = false)
+    public Player(Game game, Faction faction)
     {
         Game = game;
-        Name = name;
         Faction = faction;
-        IsBot = isBot;
     }
 
     #endregion Construction
 
     #region Properties
-
-    public string Name { get; set; }
+    
+    private Game Game { get; set; }
 
     private Faction _faction = Faction.None;
     public Faction Faction
@@ -58,7 +55,7 @@ public partial class Player : ICloneable
 
     public int BankedResources { get; set; }
 
-    public int TransferrableResources { get; set; }
+    public int TransferableResources { get; set; }
 
     public List<TreacheryCard> TreacheryCards { get; set; } = [];
 
@@ -66,33 +63,33 @@ public partial class Player : ICloneable
 
     public List<IHero> Traitors { get; set; } = [];
 
-    public List<IHero> RevealedTraitors { get; set; } = [];
+    public List<IHero> RevealedTraitors { get; } = [];
 
-    public List<IHero> ToldTraitors { get; set; } = [];
+    public List<IHero> ToldTraitors { get; } = [];
 
     public List<IHero> ToldNonTraitors { get; } = [];
 
     public List<IHero> KnownNonTraitors { get; } = [];
 
-    public List<IHero> DiscardedTraitors { get; set; } = [];
+    public List<IHero> DiscardedTraitors { get; } = [];
 
-    public List<IHero> FaceDancers { get; set; } = [];
+    public List<IHero> FaceDancers { get; private set; } = [];
 
-    public List<IHero> RevealedDancers { get; set; } = [];
+    public List<IHero> RevealedDancers { get; private set; } = [];
 
-    public List<IHero> ToldFacedancers { get; set; } = [];
+    public List<IHero> ToldFaceDancers { get; } = [];
 
-    public List<IHero> ToldNonFacedancers { get; set; } = [];
+    public List<IHero> ToldNonFaceDancers { get; } = [];
 
-    public List<Leader> Leaders { get; set; } = [];
+    public List<Leader> Leaders { get; private set; } = [];
 
-    public int ForcesInReserve => Homeworlds.Sum(ForcesIn);
+    public int ForcesInReserve => HomeWorlds.Sum(ForcesIn);
 
-    public int SpecialForcesInReserve => Homeworlds.Sum(SpecialForcesIn);
+    public int SpecialForcesInReserve => HomeWorlds.Sum(SpecialForcesIn);
 
     public int AnyForcesInReserves => ForcesInReserve + SpecialForcesInReserve;
 
-    public Dictionary<Location, Battalion> ForcesInLocations { get; set; } = new();
+    public Dictionary<Location, Battalion> ForcesInLocations { get; private set; } = [];
 
     public Dictionary<Location, Battalion> ForcesOnPlanet => ForcesInLocations.Where(kvp => kvp.Key is not Homeworld).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
@@ -120,11 +117,11 @@ public partial class Player : ICloneable
 
     public List<LeaderSkill> SkillsToChooseFrom { get; } = [];
 
-    public List<Homeworld> Homeworlds { get; } = [];
+    public List<Homeworld> HomeWorlds { get; } = [];
 
     public Faction Nexus { get; set; } = Faction.None;
 
-    protected Game Game { get; set; }
+    
 
     #endregion Properties
 
@@ -132,11 +129,11 @@ public partial class Player : ICloneable
 
     private Battalion GetAndCreateIfNeeded(Location location)
     {
-        if (!ForcesInLocations.TryGetValue(location, out var result))
-        {
-            result = new Battalion(Faction, 0, 0, location);
-            ForcesInLocations.Add(location, result);
-        }
+        if (ForcesInLocations.TryGetValue(location, out var result)) 
+            return result;
+        
+        result = new Battalion(Faction, 0, 0, location);
+        ForcesInLocations.Add(location, result);
 
         return result;
     }
@@ -160,7 +157,7 @@ public partial class Player : ICloneable
     {
         if (fromReserves)
         {
-            var sourceWorld = Homeworlds.FirstOrDefault(w => ForcesIn(w) >= nrOfForces);
+            var sourceWorld = HomeWorlds.FirstOrDefault(w => ForcesIn(w) >= nrOfForces);
             if (sourceWorld != null) MoveForces(sourceWorld, location, nrOfForces);
         }
         else
@@ -173,7 +170,7 @@ public partial class Player : ICloneable
     {
         if (fromReserves)
         {
-            var sourceWorld = Homeworlds.FirstOrDefault(w => SpecialForcesIn(w) >= nrOfForces);
+            var sourceWorld = HomeWorlds.FirstOrDefault(w => SpecialForcesIn(w) >= nrOfForces);
             if (sourceWorld != null) MoveSpecialForces(sourceWorld, location, nrOfForces);
         }
         else
@@ -184,7 +181,7 @@ public partial class Player : ICloneable
 
     public void AddForcesToReserves(int nrOfForces)
     {
-        var sourceWorld = Homeworlds.FirstOrDefault(w => w.IsHomeOfNormalForces);
+        var sourceWorld = HomeWorlds.FirstOrDefault(w => w.IsHomeOfNormalForces);
         if (sourceWorld != null) ChangeForces(sourceWorld, nrOfForces);
     }
 
@@ -193,7 +190,7 @@ public partial class Player : ICloneable
     {
         if (Faction == Faction.Red && Game.Applicable(Rule.RedSpecialForces))
         {
-            var homeWorld = Homeworlds.FirstOrDefault(hw => hw.World == World.RedStar);
+            var homeWorld = HomeWorlds.FirstOrDefault(hw => hw.World == World.RedStar);
 
             if (homeWorld == null)
                 return;
@@ -213,7 +210,7 @@ public partial class Player : ICloneable
 
     public void AddSpecialForcesToReserves(int nrOfForces)
     {
-        var sourceWorld = Homeworlds.FirstOrDefault(w => w.IsHomeOfSpecialForces);
+        var sourceWorld = HomeWorlds.FirstOrDefault(w => w.IsHomeOfSpecialForces);
         if (sourceWorld != null) ChangeSpecialForces(sourceWorld, nrOfForces);
     }
 
@@ -248,30 +245,21 @@ public partial class Player : ICloneable
         return 0;
     }
 
-    public int ForcesIn(Territory t)
-    {
-        return t.Locations.Sum(l => ForcesIn(l));
-    }
+    public int ForcesIn(Territory t) => t.Locations.Sum(ForcesIn);
 
-    public int SpecialForcesIn(Territory t)
-    {
-        return t.Locations.Sum(l => SpecialForcesIn(l));
-    }
+    public int SpecialForcesIn(Territory t) => t.Locations.Sum(SpecialForcesIn);
 
-    public int AnyForcesIn(Territory t)
-    {
-        return t.Locations.Sum(l => AnyForcesIn(l));
-    }
+    public int AnyForcesIn(Territory t) => t.Locations.Sum(AnyForcesIn);
 
-    public void ForcesToReserves(Location location)
+    private void ForcesToReserves(Location location)
     {
-        var battaltion = ForcesInLocations[location];
+        var battalion = ForcesInLocations[location];
 
-        AddForcesToReserves(battaltion.AmountOfForces);
+        AddForcesToReserves(battalion.AmountOfForces);
 
         if (Faction == Faction.Blue)
-            AddForcesToReserves(battaltion.AmountOfSpecialForces);
-        else if (Faction != Faction.White) AddSpecialForcesToReserves(battaltion.AmountOfSpecialForces);
+            AddForcesToReserves(battalion.AmountOfSpecialForces);
+        else if (Faction != Faction.White) AddSpecialForcesToReserves(battalion.AmountOfSpecialForces);
 
         ForcesInLocations.Remove(location);
         CheckIfRedStarThresholdWasPassed();
@@ -328,12 +316,12 @@ public partial class Player : ICloneable
 
     public int KillAllForces(Location location, bool inBattle)
     {
-        if (ForcesInLocations.TryGetValue(location, out var battallion))
+        if (ForcesInLocations.TryGetValue(location, out var battalion))
         {
-            var killCount = battallion.AmountOfForces;
+            var killCount = battalion.AmountOfForces;
             ForcesKilled += killCount;
 
-            var specialKillCount = battallion.AmountOfSpecialForces;
+            var specialKillCount = battalion.AmountOfSpecialForces;
             if (Faction == Faction.Blue)
                 ForcesKilled += specialKillCount;
             else
@@ -499,16 +487,16 @@ public partial class Player : ICloneable
 
     public IEnumerable<Territory> OccupiedTerritories => Game.Map.Territories(true).Where(Occupies);
 
-    public bool Controls(Game g, Location l, bool contestedStongholdsCountAsControlled)
+    public bool Controls(Game g, Location l, bool contestedStrongholdsCountAsControlled)
     {
-        if (contestedStongholdsCountAsControlled)
+        if (contestedStrongholdsCountAsControlled)
             return Occupies(l);
         return Occupies(l) && g.NrOfOccupantsExcludingFaction(l, Faction) == 0;
     }
 
-    public bool Controls(Game g, Territory t, bool contestedStongholdsCountAsOccupied)
+    public bool Controls(Game g, Territory t, bool contestedStrongholdsCountAsOccupied)
     {
-        if (contestedStongholdsCountAsOccupied)
+        if (contestedStrongholdsCountAsOccupied)
             return Occupies(t);
         return Occupies(t) && g.NrOfOccupantsExcludingFaction(t, Faction) == 0;
     }
@@ -580,9 +568,9 @@ public partial class Player : ICloneable
         return TreacheryCards.Contains(card);
     }
 
-    public bool Has(TreacheryCardType cardtype)
+    public bool Has(TreacheryCardType cardType)
     {
-        return TreacheryCards.Any(c => c.Type == cardtype);
+        return TreacheryCards.Any(c => c.Type == cardType);
     }
     
     public bool Has(Leader leader)
@@ -625,7 +613,7 @@ public partial class Player : ICloneable
 
     public int NumberOfTraitors => Faction == Faction.Black ? 4 : 1;
 
-    public int NumberOfFacedancers => Faction == Faction.Purple ? 3 : 0;
+    public int NumberOfFaceDancers => Faction == Faction.Purple ? 3 : 0;
 
     public void AssignLeaders(Game g)
     {
@@ -642,17 +630,13 @@ public partial class Player : ICloneable
         return TreacheryCards.FirstOrDefault(c => c.Type == type);
     }
 
-    public IEnumerable<IHero> UnrevealedTraitors => Traitors.Where(f => !RevealedTraitors.Contains(f));
+    private IEnumerable<IHero> UnrevealedTraitors => Traitors.Where(f => !RevealedTraitors.Contains(f));
 
     public IEnumerable<IHero> UnrevealedFaceDancers => FaceDancers.Where(f => !RevealedDancers.Contains(f));
 
     public bool MessiahAvailable => Game.Applicable(Rule.GreenMessiah) && Is(Faction.Green) && TotalForcesKilledInBattle >= 7 && Game.IsAlive(LeaderManager.Messiah);
-    public bool SeatIsAvailable { get; set; }
 
-    public bool HasKarma(Game g)
-    {
-        return Karma.ValidKarmaCards(g, this).Any();
-    }
+    public bool HasKarma(Game g) => Karma.ValidKarmaCards(g, this).Any();
 
     public void InitializeHomeworld(Homeworld world, int initialNormalForces, int initialSpecialForces)
     {
@@ -661,71 +645,56 @@ public partial class Player : ICloneable
 
         RedStarHomeworldIsOnLowThreshold = world.World == World.RedStar && initialSpecialForces < world.Threshold;
 
-        Homeworlds.Add(world);
-    }
-
-    public override string ToString()
-    {
-        return Name;
+        HomeWorlds.Add(world);
     }
 
     public bool HasHighThreshold(World w)
     {
         if (!Game.Applicable(Rule.Homeworlds)) return false;
 
-        var homeworld = Homeworlds.FirstOrDefault(hw => hw.World == w);
+        var homeworld = HomeWorlds.FirstOrDefault(hw => hw.World == w);
 
         if (homeworld == null)
             return false;
 
         if (homeworld.World == World.RedStar) return !RedStarHomeworldIsOnLowThreshold;
 
-        return homeworld != null && AnyForcesIn(homeworld) >= homeworld.Threshold;
+        return AnyForcesIn(homeworld) >= homeworld.Threshold;
     }
 
     public bool HasHighThreshold()
     {
         if (!Game.Applicable(Rule.Homeworlds)) return false;
-        return Homeworlds.Any(w => HasHighThreshold(w.World));
+        return HomeWorlds.Any(w => HasHighThreshold(w.World));
     }
 
     public bool HasLowThreshold(World w)
     {
         if (!Game.Applicable(Rule.Homeworlds)) return false;
 
-        var homeworld = Homeworlds.FirstOrDefault(hw => hw.World == w);
+        var homeworld = HomeWorlds.FirstOrDefault(hw => hw.World == w);
+
+        if (homeworld == null)
+            return false;
 
         if (homeworld.World == World.RedStar) return RedStarHomeworldIsOnLowThreshold;
 
-        return homeworld != null && AnyForcesIn(homeworld) < homeworld.Threshold;
+        return AnyForcesIn(homeworld) < homeworld.Threshold;
     }
 
-    public bool HasLowThreshold()
-    {
-        if (!Game.Applicable(Rule.Homeworlds)) return false;
-        return Homeworlds.Any(w => HasLowThreshold(w.World));
-    }
+    public bool HasLowThreshold() => Game.Applicable(Rule.Homeworlds) && HomeWorlds.Any(w => HasLowThreshold(w.World));
 
 
-    public bool Initiated(GameEvent e)
-    {
-        return e != null && e.Initiator == Faction;
-    }
+    public bool Initiated(GameEvent e) => e != null && e.Initiator == Faction;
 
-    public bool IsNative(Territory territory)
-    {
-        return territory.Locations.Any(l => l is Homeworld hw && IsNative(hw));
-    }
+    public bool IsNative(Territory territory) => territory.Locations.Any(l => l is Homeworld hw && IsNative(hw));
 
-    public bool IsNative(Homeworld hw)
-    {
-        return Homeworlds.Contains(hw);
-    }
+    public bool IsNative(Homeworld hw) => HomeWorlds.Contains(hw);
 
-    public bool HaveForcesOnEachOthersHomeworlds(Player other)
+    public bool HaveForcesOnEachOthersHomeWorlds(Player other)
     {
-        return ForcesInLocations.Keys.Any(l => other.Homeworlds.Contains(l)) ||
-               other.ForcesInLocations.Keys.Any(l => Homeworlds.Contains(l));
+        return ForcesInLocations.Keys.Any(l => other.HomeWorlds.Contains(l)) ||
+               other.ForcesInLocations.Keys.Any(l => HomeWorlds.Contains(l));
     }
 
     public int GetHomeworldBattleContributionAndLasgunShieldLimit(Territory whereBattleHappens)
@@ -734,9 +703,10 @@ public partial class Player : ICloneable
 
         var homeworld = whereBattleHappens.Locations.First() as Homeworld;
 
-        if (HasHighThreshold(homeworld.World))
-            return homeworld.BattleBonusAndLasgunShieldLimitAtHighThreshold;
-        return homeworld.BattleBonusAndLasgunShieldLimitAtLowThreshold;
+        if (homeworld == null)
+            return 0;
+
+        return HasHighThreshold(homeworld.World) ? homeworld.BattleBonusAndLasgunShieldLimitAtHighThreshold : homeworld.BattleBonusAndLasgunShieldLimitAtLowThreshold;
     }
 
     #endregion Information
@@ -747,13 +717,13 @@ public partial class Player : ICloneable
     {
         var result = (Player)MemberwiseClone();
 
-        result.TreacheryCards = new List<TreacheryCard>(TreacheryCards);
-        result.Traitors = new List<IHero>(Traitors);
-        result.FaceDancers = new List<IHero>(FaceDancers);
-        result.RevealedDancers = new List<IHero>(RevealedDancers);
-        result.Leaders = new List<Leader>(Leaders);
+        result.TreacheryCards = [..TreacheryCards];
+        result.Traitors = [..Traitors];
+        result.FaceDancers = [..FaceDancers];
+        result.RevealedDancers = [..RevealedDancers];
+        result.Leaders = [..Leaders];
         result.ForcesInLocations = Utilities.CloneObjectDictionary(ForcesInLocations);
-        result.TechTokens = new List<TechToken>(TechTokens);
+        result.TechTokens = [..TechTokens];
 
         return result;
     }

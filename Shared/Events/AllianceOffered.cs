@@ -40,7 +40,7 @@ public class AllianceOffered : GameEvent
 
     public static IEnumerable<Faction> ValidTargets(Game g, Player p)
     {
-        return g.Players.Where(other => p != other && !p.HaveForcesOnEachOthersHomeworlds(other))
+        return g.Players.Where(other => p != other && !p.HaveForcesOnEachOthersHomeWorlds(other))
             .Select(other => other.Faction);
     }
 

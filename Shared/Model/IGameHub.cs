@@ -7,26 +7,28 @@ public interface IGameHub
 {
     //Authentication
     
-    Task<VoidResult> RequestCreateUser(string userName, string hashedPassword, string email, string playerName);
+    Task<Result<string>> RequestCreateUser(string userName, string hashedPassword, string email, string playerName);
     Task<Result<string>> RequestLogin(int version, string userName, string hashedPassword);
     Task<VoidResult> RequestPasswordReset(string email);
-    Task<VoidResult> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword);
+    Task<Result<string>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword);
     
     //Game Management
     
-    Task<Result<string>> RequestCreateGame(string playerToken, string hashedPassword, string settings);
+    Task<Result<JoinInfo>> RequestCreateGame(string playerToken, string hashedPassword, string settings);
     //Task<VoidResult> RequestAdmission(int version, string gameToken, GameAdmission admission);
-    Task<Result<string>> RequestJoinGame(string playerToken, string gameId, string hashedPassword, Faction faction);
-    Task<Result<string>> RequestObserveGame(string playerToken, string gameId, string hashedPassword);
-    Task<VoidResult> RequestReconnectGame(string playerToken, string gameToken);
+    Task<Result<JoinInfo>> RequestJoinGame(string playerToken, string gameId, string hashedPassword, Faction faction);
+    Task<Result<JoinInfo>> RequestObserveGame(string playerToken, string gameId, string hashedPassword);
+    Task<Result<JoinInfo>> RequestReconnectGame(string playerToken, string gameToken);
     
    // Task RequestPlayerJoined(int hostID, PlayerJoined e);
     //Task RequestPlayerRejoined(int hostID, PlayerRejoined e);
     //Task RequestObserverJoined(int hostID, ObserverJoined e);
     //Task RequestObserverRejoined(string playerToken, string gameToken, ObserverRejoined e);
-    Task<Result<string>> RequestLoadGame(string playerToken, string hashedPassword, string state, string skin);
+    Task<Result<JoinInfo>> RequestLoadGame(string playerToken, string hashedPassword, string state, string skin);
     Task<VoidResult> RequestSetSkin(string playerToken, string gameToken, string skin);
     Task<VoidResult> RequestUndo(string playerToken, string gameToken, int untilEventNr);
+    Task<Result<string>> RequestGameState(string playerToken, string gameToken);
+    Task<VoidResult> RequestPauseBots(string playerToken, string gameToken);
     
     //Game Events
     

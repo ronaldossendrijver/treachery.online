@@ -12,12 +12,9 @@ public interface IGameService
 {
     public Game Game { get; }
     public GameStatus Status { get; }
-    public int GameInProgressHostId { get; }
 
     //Player and Host
     public string PlayerName { get; }
-    public HostProxy HostProxy { get; }
-    public Host Host { get; }
     public bool IsObserver { get; }
     public ServerSettings ServerSettings { get; }
     public Dictionary<Guid, string> JoinErrors { get; }
@@ -28,10 +25,9 @@ public interface IGameService
     public float CurrentChatVolume { get; set; }
     public Battle BattleUnderConstruction { get; set; }
     public int BidAutoPassThreshold { get; set; }
-    public bool Autopass { get; set; }
-    public bool KeepAutopassSetting { get; set; }
-    public bool StatisticsSent { get; set; }
-    public bool BotsArePaused { get; set; }
+    public bool AutoPass { get; set; }
+    public bool KeepAutoPassSetting { get; set; }
+    public bool BotsArePaused { get; }
     public int Timer { get; set; }
     public bool MuteGlobalChat { get; set; }
 
@@ -42,31 +38,29 @@ public interface IGameService
     public void RefreshPopovers();
     public string MyName { get; }
     public Task Start();
-    public Task StartHost(string hostPWD, string loadedGameData, Game loadedGame);
-
-    public IEnumerable<GameInfo> RunningGames { get; }
-    public IEnumerable<GameInfo> JoinableAdvertisedGames { get; }
-
-    public Task Request(int hostID, PlayerJoined e);
+    
+    public List<GameInfo> RunningGames { get; }
+    
+    /*
+    public Task Request(int hostId, PlayerJoined e);
     public Task Request(int hostID, ObserverJoined e);
     public Task Request(int hostID, PlayerRejoined e);
 
     public Task Request(int hostID, ObserverRejoined e);
+    */
 
     public Task RequestSendGlobalChatMessage(GlobalChatMessage message);
 
     public void Reset();
 
-    public DateTime HostLastSeen { get; }
+   // public DateTime HostLastSeen { get; }
 
-    public Task Heartbeat(int gameInProgressHostId);
+    //public Task Heartbeat(int gameInProgressHostId);
     public bool IsPlayer { get; }
 
     public Player Player { get; }
 
     public Faction Faction { get; }
-
-    public bool IAm(Faction f);
     
     public LinkedList<ChatMessage> Messages { get; }
 
@@ -81,9 +75,7 @@ public interface IGameService
     public bool IsHost { get; }
 
     public Phase CurrentPhase { get; }
-
-    public Task SetPlayerName(string name);
-
+    
     public Task ToggleBotPause();
 
     public event EventHandler<Location> OnLocationSelected;
@@ -101,5 +93,4 @@ public interface IGameService
 
     public Task<string> RequestSetPassword(string userName, string passwordResetToken, string hashedPassword);
     
-    public Task<string> GetRunningGames(string userToken);
 }

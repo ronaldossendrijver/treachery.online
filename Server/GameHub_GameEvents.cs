@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Treachery.Shared;
+using Treachery.Shared.Model;
 
 namespace Treachery.Server;
 
@@ -162,10 +164,18 @@ public partial class GameHub
             return error;
         
         e.Initialize(game.Game);
-        var validationResult = e.Execute(true, game.Hosts.Contains(playerId));
+        return await ValidateAndExecute(gameToken, e, game, game.Hosts.Contains(playerId));
+    }
+
+    private async Task<VoidResult> ValidateAndExecute<TEvent>(string gameToken, TEvent e, ManagedGame game, bool isHost)
+        where TEvent : GameEvent
+    {
+        var validationResult = e.Execute(true, isHost);
         
         if (validationResult != null)
+        {
             return Error(validationResult.ToString());
+        }
 
         if (game.Game.CurrentMainPhase is MainPhase.Ended && !finishedGames.ContainsKey(gameToken))
         {
@@ -173,9 +183,83 @@ public partial class GameHub
             await SendMailAndStatistics(game);
         }
 
-        await Clients.Group(gameToken).HandleGameEvent(e);
-
+        await Clients.Group(gameToken).HandleGameEvent(e, game.Game.History.Count);
+        
+        var botDelay = DetermineBotDelay(game.Game.CurrentMainPhase, e);
+        _ = Task.Delay(botDelay).ContinueWith(e => PerformBotEvent(gameToken, game));
+        
         return Success();
+    }
+
+    private async Task PerformBotEvent(string gameToken, ManagedGame managedGame)
+    {
+        var game = managedGame.Game;
+        
+        if (!managedGame.BotsArePaused && game.CurrentPhase > Phase.AwaitingPlayers)
+        {
+            var bots = Deck<Player>.Randomize(game.Players.Where(p => p.IsBot));
+
+            foreach (var bot in bots)
+            {
+                var events = game.GetApplicableEvents(bot, false);
+                var evt = bot.DetermineHighestPrioInPhaseAction(events);
+
+                if (evt != null)
+                {
+                    await ValidateAndExecute(gameToken, evt, managedGame, false);
+                    return;
+                }
+            }
+
+            foreach (var bot in bots)
+            {
+                var evts = game.GetApplicableEvents(bot, false);
+                var evt = bot.DetermineHighPrioInPhaseAction(evts);
+
+                if (evt != null)
+                {
+                    await ValidateAndExecute(gameToken, evt, managedGame, false);
+                    return;
+                }
+            }
+
+            foreach (var bot in bots)
+            {
+                var evts = game.GetApplicableEvents(bot, false);
+                var evt = bot.DetermineMiddlePrioInPhaseAction(evts);
+
+                if (evt != null)
+                {
+                    await ValidateAndExecute(gameToken, evt, managedGame, false);
+                    return;
+                }
+            }
+
+            foreach (var bot in bots)
+            {
+                var evts = game.GetApplicableEvents(bot, false);
+                var evt = bot.DetermineLowPrioInPhaseAction(evts);
+
+                if (evt != null)
+                {
+                    await ValidateAndExecute(gameToken, evt, managedGame, false);
+                    return;
+                }
+            }
+        }
+    }
+    
+    private static int DetermineBotDelay(MainPhase phase, GameEvent e)
+    {
+        if (phase == MainPhase.Resurrection || phase == MainPhase.Charity || e is AllyPermission || e is DealOffered || e is SetShipmentPermission)
+            return 300;
+        if (e is Bid)
+            return 800;
+        if (phase == MainPhase.ShipmentAndMove)
+            return 3200;
+        if (phase == MainPhase.Battle)
+            return 3200;
+        return 1600;
     }
 
     private async Task SendMailAndStatistics(ManagedGame game)
@@ -184,5 +268,7 @@ public partial class GameHub
         SendEndOfGameMail(state, game.Info);
         await SendGameStatistics(game.Game);
     }
+    
+    
 }
 

@@ -45,14 +45,14 @@
 
                 @if (!Client.IsObserver && Client.Player.Faction != Faction.None)
                 {
-                    <CheckboxComponent @bind-Value="@Client.Autopass" OnChanged="AutoPassChanged">Auto-pass</CheckboxComponent>
-                    @if (Client.Autopass)
+                    <CheckboxComponent @bind-Value="@Client.AutoPass" OnChanged="AutoPassChanged">Auto-pass</CheckboxComponent>
+                    @if (Client.AutoPass)
                     {
                         <SelectResourcesComponent @bind-Value="@Client.BidAutoPassThreshold" Min="0" Max="50" Label="When above:" />
 
                         @if (ShowRepeatAutoPass)
                         {
-                            <CheckboxComponent @bind-Value="@Client.KeepAutopassSetting">Repeat auto-pass every round</CheckboxComponent>
+                            <CheckboxComponent @bind-Value="@Client.KeepAutoPassSetting">Repeat auto-pass every round</CheckboxComponent>
                         }
                     }
 
@@ -171,8 +171,8 @@
 
         if (!_canBid && CanBid)
         {
-            if ((Game.CurrentBid != null && Client.Autopass && Game.CurrentBid.TotalAmount + 1 > Client.BidAutoPassThreshold) ||
-                (Game.CurrentBid == null && Client.Autopass && Client.BidAutoPassThreshold == 0))
+            if ((Game.CurrentBid != null && Client.AutoPass && Game.CurrentBid.TotalAmount + 1 > Client.BidAutoPassThreshold) ||
+                (Game.CurrentBid == null && Client.AutoPass && Client.BidAutoPassThreshold == 0))
                 {
                 _ = Task.Delay(800 + Random.Shared.Next(1600)).ContinueWith(e => AutoPass());
             }
@@ -207,7 +207,7 @@
 
     private async Task AutoPass()
     {
-        if (CanBid && Client.Autopass)
+        if (CanBid && Client.AutoPass)
         {
             await Pass();
         }
@@ -215,9 +215,9 @@
 
     private void ResetAutopassThreshold()
     {
-        if (Game.CurrentMainPhase == MainPhase.Bidding && Game.RecentMilestones.Contains(Milestone.AuctionWon) && (!Client.KeepAutopassSetting || Game.CurrentPhase == Phase.BiddingReport))
+        if (Game.CurrentMainPhase == MainPhase.Bidding && Game.RecentMilestones.Contains(Milestone.AuctionWon) && (!Client.KeepAutoPassSetting || Game.CurrentPhase == Phase.BiddingReport))
         {
-            Client.Autopass = false;
+            Client.AutoPass = false;
         }
     }
 

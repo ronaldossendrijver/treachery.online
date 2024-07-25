@@ -102,11 +102,11 @@ public class ClairVoyanceAnswered : GameEvent
 
             if (Answer == ClairVoyanceAnswer.Yes)
             {
-                if (!Player.ToldFacedancers.Contains(hero)) Player.ToldFacedancers.Add(hero);
+                if (!Player.ToldFaceDancers.Contains(hero)) Player.ToldFaceDancers.Add(hero);
             }
             else if (Answer == ClairVoyanceAnswer.No)
             {
-                if (!Player.ToldNonFacedancers.Contains(hero)) Player.ToldNonFacedancers.Add(hero);
+                if (!Player.ToldNonFaceDancers.Contains(hero)) Player.ToldNonFaceDancers.Add(hero);
             }
         }
 

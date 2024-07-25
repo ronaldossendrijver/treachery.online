@@ -7,24 +7,23 @@
 //  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 // */
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Treachery.Shared;
 
-namespace Treachery.Server;
+namespace Treachery.Shared;
 
 public interface IGameClient
 {
     
     public Task HandleGlobalChatMessage(GlobalChatMessage message);
 
-    public Task HandleGameEvent<TEvent>(TEvent evt) where TEvent : GameEvent;
+    public Task HandleGameEvent<TEvent>(TEvent evt, int newEventNumber) where TEvent : GameEvent;
     
     
     Task HandleChatMessage(GameChatMessage gameChatMessage);
     Task HandleSetTimer(int value);
     Task HandleSetSkin(string skin);
     Task HandleUndo(int untilEventNr);
+    Task HandlePing();
 
     Task HandleListOfGames(List<GameInfo> games);
     /*
@@ -123,4 +122,5 @@ public interface IGameClient
     */
 
 
+    Task UpdateParticipation(GameParticipation participation);
 }

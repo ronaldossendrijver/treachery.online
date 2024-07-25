@@ -5,6 +5,7 @@ using System.Net.Mail;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Treachery.Server.Data;
 using Treachery.Shared;
 
 namespace Treachery.Server;

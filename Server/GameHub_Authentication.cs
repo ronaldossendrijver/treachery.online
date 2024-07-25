@@ -8,31 +8,37 @@ namespace Treachery.Server;
 
 public partial class GameHub
 {
-    public async Task<VoidResult> RequestCreateUser(string userName, string hashedPassword, string email, string playerName)
+    public async Task<Result<string>> RequestCreateUser(string userName, string hashedPassword, string email, string playerName)
     {
         var trimmedUsername = userName.Trim().ToLower();
         
         if (trimmedUsername.Trim().Length <= 3)
         {
-            return Error("Username must be more than 3 characters");
+            return Error<string>("Username must be more than 3 characters");
         }
         
         await using var db = GetDbContext();
         
         if (db.Users.Any(x => x.Name.Trim().ToLower().Equals(trimmedUsername)))
         {
-            return Error("This username already exists");
+            return Error<string>("This username already exists");
         }
         
         if (db.Users.Any(x => x.Email.Trim().ToLower().Equals(trimmedUsername)))
         {
-            return Error("This e-mail address is already in use");
+            return Error<string>("This e-mail address is already in use");
         }
 
-        await db.AddAsync(new User()
+        db.Add(new User
             { Name = trimmedUsername, HashedPassword = hashedPassword, Email = email, PlayerName = playerName });
 
         await db.SaveChangesAsync();
+        
+        var user = await db.Users.FirstOrDefaultAsync(x =>
+            x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()) && x.HashedPassword == hashedPassword);
+        
+        if (user == null)
+            return Error<string>("User creation failed");
         
         MailMessage mailMessage = new()
         {
@@ -49,7 +55,9 @@ public partial class GameHub
         mailMessage.To.Add(new MailAddress(email));
         SendMail(mailMessage);
         
-        return null;
+        var playerToken = GenerateToken();
+        usersByPlayerToken.TryAdd(playerToken, user);
+        return Success(playerToken);
     }
     
     public async Task<Result<string>> RequestLogin(int version, string userName, string hashedPassword)
@@ -66,9 +74,7 @@ public partial class GameHub
             return Error<string>("Invalid user name or password");
 
         var playerToken = GenerateToken();
-
         usersByPlayerToken.TryAdd(playerToken, user);
-
         return Success(playerToken);
     }
     
@@ -108,7 +114,7 @@ public partial class GameHub
         return null;
     }
     
-    public async Task<VoidResult> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword)
+    public async Task<Result<string>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword)
     {
         await using var db = GetDbContext();
 
@@ -116,21 +122,23 @@ public partial class GameHub
             x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()));
         
         if (user == null)
-            return Error("Unknown user name");
+            return Error<string>("Unknown user name");
 
         if (string.IsNullOrEmpty(user.PasswordResetToken) || user.PasswordResetToken.Trim() != passwordResetToken)
-            return Error("Invalid password reset token");
+            return Error<string>("Invalid password reset token");
         
         if ((DateTime.Now - user.PasswordResetTokenCreated).TotalMinutes > 60)
-            return Error("Your password reset token has expired");
+            return Error<string>("Your password reset token has expired");
 
         user.HashedPassword = newHashedPassword;
         user.PasswordResetToken = null;
         user.PasswordResetTokenCreated = default;
 
         await db.SaveChangesAsync();
-
-        return null;
+        
+        var playerToken = GenerateToken();
+        usersByPlayerToken.TryAdd(playerToken, user);
+        return Success(playerToken);
     }
 }
 

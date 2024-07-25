@@ -53,7 +53,7 @@ public class ResourcesTransferred : GameEvent
 
     public static int MaxAmount(Player p)
     {
-        return Math.Min(p.TransferrableResources, p.Resources);
+        return Math.Min(p.TransferableResources, p.Resources);
     }
 
     #endregion Validation
@@ -64,7 +64,7 @@ public class ResourcesTransferred : GameEvent
     {
         Log();
         Player.Resources -= Resources;
-        Player.TransferrableResources -= Resources;
+        Player.TransferableResources -= Resources;
         Player.AlliedPlayer.Resources += Resources;
     }
 

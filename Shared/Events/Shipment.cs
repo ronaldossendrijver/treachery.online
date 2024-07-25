@@ -226,7 +226,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
 
     public static IEnumerable<Homeworld> HomeworldsToShipFrom(Player p, bool special)
     {
-        return special ? p.Homeworlds.Where(hw => p.SpecialForcesIn(hw) > 0) : p.Homeworlds.Where(hw => p.ForcesIn(hw) > 0);
+        return special ? p.HomeWorlds.Where(hw => p.SpecialForcesIn(hw) > 0) : p.HomeWorlds.Where(hw => p.ForcesIn(hw) > 0);
     }
         
 

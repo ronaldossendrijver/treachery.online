@@ -41,8 +41,8 @@ public class ResourcesAudited : GameEvent
     {
         return game.Players.Where(opp => opp != player &&
                                          !game.ResourceAuditedFactions.Contains(opp.Faction) &&
-                                         (player.Homeworlds.Any(hw => opp.AnyForcesIn(hw) > 0) ||
-                                          opp.Homeworlds.Any(hw => player.AnyForcesIn(hw) > 0))
+                                         (player.HomeWorlds.Any(hw => opp.AnyForcesIn(hw) > 0) ||
+                                          opp.HomeWorlds.Any(hw => player.AnyForcesIn(hw) > 0))
         ).Select(p => p.Faction);
     }
 

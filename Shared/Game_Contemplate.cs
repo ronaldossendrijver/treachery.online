@@ -25,7 +25,7 @@ public partial class Game
 
     internal void EnterContemplatePhase()
     {
-        foreach (var player in Players) player.TransferrableResources = 0;
+        foreach (var player in Players) player.TransferableResources = 0;
 
         MainPhaseStart(MainPhase.Contemplate, Version >= 103);
         AllowAllPreventedFactionAdvantages(null);

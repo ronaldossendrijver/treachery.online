@@ -24,11 +24,24 @@ public class ManagedGame
         LastAction = Game.History.Last().Time
     };
 
+    public bool BotsArePaused { get; set; }
+
     public bool IsHost(User user) => Hosts.Contains(user);
 
     public bool HasRoomFor(Faction faction)
     {
         //TODO implement
         return true;
+    }
+
+    public GameParticipation GetParticipation()
+    {
+        return new GameParticipation
+        {
+            PlayerNames = Players.ToDictionary(user => user.Id, user => user.PlayerName),
+            ObserverNames = Observers.ToDictionary(user => user.Id, user => user.PlayerName),
+            Hosts = Hosts.Select(user => user.Id).ToList(),
+            BotsArePaused = BotsArePaused
+        };
     }
 }

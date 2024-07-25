@@ -96,7 +96,7 @@ public class TerrorRevealed : PassableGameEvent, ILocationEvent
         var victim = g.GetPlayer(GetVictim(g));
         var cyan = g.GetPlayer(Faction.Cyan);
 
-        return !g.AllianceByTerrorWasOffered && !g.Prevented(FactionAdvantage.CyanEnemyOfEnemy) && !victim.Is(Faction.Pink) && !cyan.HaveForcesOnEachOthersHomeworlds(victim);
+        return !g.AllianceByTerrorWasOffered && !g.Prevented(FactionAdvantage.CyanEnemyOfEnemy) && !victim.Is(Faction.Pink) && !cyan.HaveForcesOnEachOthersHomeWorlds(victim);
     }
 
     public static Territory GetTerritory(Game g)

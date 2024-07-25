@@ -19,8 +19,6 @@ public partial class Player
 
     public BotParameters Param { get; set; }
 
-    public bool IsBot { get; set; }
-
     public bool AllyIsBot => Ally != Faction.None && AlliedPlayer.IsBot;
 
     public GameEvent DetermineHighestPrioInPhaseAction(List<Type> evts)
