@@ -784,6 +784,22 @@ public partial class Game
 
     #region Information
 
+    public Player PlayerAtSeat(int seatNr)
+    {
+        return seatNr > 0 && Players.Count > seatNr ? Players[seatNr] : null;
+    }
+    
+    public int SeatOf(Faction f)
+    {
+        for (var i = 0; i < Players.Count; i++)
+        {
+            if (Players[i].Is(f))
+                return i;
+        }
+
+        return -1;
+    }
+    
     public bool Occupies(Faction f, World w)
     {
         if (f != Faction.None)
@@ -1037,4 +1053,6 @@ public partial class Game
     }
 
     #endregion Information
+    
+    
 }

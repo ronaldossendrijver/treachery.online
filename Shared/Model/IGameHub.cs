@@ -7,10 +7,10 @@ public interface IGameHub
 {
     //Authentication
     
-    Task<Result<string>> RequestCreateUser(string userName, string hashedPassword, string email, string playerName);
-    Task<Result<string>> RequestLogin(int version, string userName, string hashedPassword);
+    Task<Result<LoginInfo>> RequestCreateUser(string userName, string hashedPassword, string email, string playerName);
+    Task<Result<LoginInfo>> RequestLogin(int version, string userName, string hashedPassword);
     Task<VoidResult> RequestPasswordReset(string email);
-    Task<Result<string>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword);
+    Task<Result<LoginInfo>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword);
     
     //Game Management
     

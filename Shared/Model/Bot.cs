@@ -7,29 +7,9 @@
 //  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 // */
 
-using System;
-using System.ComponentModel.DataAnnotations;
-
 namespace Treachery.Shared;
 
-public class User: ISeatable
+public class Bot : ISeatable
 {
-    public int Id { get; init; }
     
-    [MaxLength(4000)]
-    public string Name { get; set; }
-    
-    [MaxLength(4000)]
-    public string Email { get; set; }
-    
-    [MaxLength(4000)]
-    public string HashedPassword { get; set; }
-
-    [MaxLength(4000)]
-    public string PasswordResetToken { get; set; }
-    
-    public DateTime PasswordResetTokenCreated { get; set; }
-    
-    [MaxLength(4000)]
-    public string PlayerName { get; set; }
 }

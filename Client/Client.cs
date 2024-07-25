@@ -92,7 +92,7 @@ public class Client : IGameService, IGameClient
         Support.Log(e.ErrorContext.Error.ToString());
     }
 
-    public string MyName => Player != null ? Player.Name : string.Empty;
+    public string MyName => Participation.PlayerNames.GetValueOrDefault(UserId);
     
     public void Reset()
     {
@@ -279,21 +279,11 @@ public class Client : IGameService, IGameClient
 
     public bool IsPlayer => Player != null && Player.Faction != Faction.None;
 
-    public Player Player
-    {
-        get
-        {
-            var result = Game.Players.SingleOrDefault(p => p.Name.ToLower().Trim() == PlayerName.ToLower().Trim());
-
-            if (result == null) result = new Player(Game, PlayerName) { Faction = Faction.None };
-
-            return result;
-        }
-    }
+    public Player Player => Game.PlayerAtSeat(Participation.SeatedUsers.GetValueOrDefault(UserId));
 
     public Faction Faction => Player?.Faction ?? Faction.None;
 
-    private async Task HandleLoadGame(string stateData, string targetPlayerName, string skinData)
+    public async Task HandleLoadGame(string stateData, string targetPlayerName, string skinData)
     {
         var resultMessage = LoadGame(stateData);
         if (resultMessage == null)
@@ -312,7 +302,6 @@ public class Client : IGameService, IGameClient
         try
         {
             Game = Game.Undo(untilEventNr);
-            _pending.Clear();
             await PerformPostEventTasks(null);
         }
         catch (Exception ex)
@@ -366,12 +355,7 @@ public class Client : IGameService, IGameClient
         if (Game.CurrentMainPhase == MainPhase.Bidding) ResetAutopassThreshold();
 
         PerformEndOfTurnTasks();
-
-        if (Game.CurrentMainPhase == MainPhase.Ended) await PerformEndOfGameTasks();
-        
         Refresh();
-
-        if (IsHost) PerformBotAction(e);
     }
 
     private void ResetAutopassThreshold()
@@ -406,16 +390,6 @@ public class Client : IGameService, IGameClient
         foreach (var m in Game.RecentMilestones) await Browser.PlaySound(Skin.Current.GetSound(m), CurrentEffectVolume);
     }
 
-    private bool savegameSent;
-    private async Task PerformEndOfGameTasks()
-    {
-        if (IsHost && Game.RecentMilestones.Contains(Milestone.GameWon) && !savegameSent && Game.Players.Count(p => p.IsBot) < Game.Players.Count(p => !p.IsBot))
-        {
-            savegameSent = true;
-            await Host.HandleGameFinished(Game);
-        }
-    }
-
     private Phase previousPhase;
     private void PerformEndOfTurnTasks()
     {
@@ -428,8 +402,7 @@ public class Client : IGameService, IGameClient
     {
         if (!IsObserver)
         {
-            await Browser.SaveSetting(string.Format("treachery.online;currentgame;{0};hostid", PlayerName.ToLower().Trim()), HostProxy.HostID);
-            await Browser.SaveSetting(string.Format("treachery.online;currentgame;{0};time", PlayerName.ToLower().Trim()), DateTime.Now);
+            await Browser.SaveSetting($"treachery.online;currentgame;{PlayerName.ToLower().Trim()};time", DateTime.Now);
         }
     }
 
@@ -444,7 +417,7 @@ public class Client : IGameService, IGameClient
 
                 try
                 {
-                    await Browser.SaveSetting(string.Format("treachery.online;latestgame;{0}", PlayerName.ToLower().Trim()), GameState.GetStateAsString(Game));
+                    await Browser.SaveSetting($"treachery.online;latestgame;{PlayerName.ToLower().Trim()}", GameState.GetStateAsString(Game));
                 }
                 catch (Exception)
                 {
@@ -477,7 +450,7 @@ public class Client : IGameService, IGameClient
     
     public bool IsAuthenticated => PlayerToken != null;
 
-    public bool IsHost => Host != null;
+    public bool IsHost => Participation.Hosts.Contains(UserId);
 
     public Phase CurrentPhase => Game.CurrentPhase;
 
@@ -538,11 +511,11 @@ public class Client : IGameService, IGameClient
 
     public async Task<string> RequestLogin(string userName, string hashedPassword)
     {
-        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.RequestLogin), userName, hashedPassword);
+        var result = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestLogin), userName, hashedPassword);
 
         if (result.Success)
         {
-            PlayerToken = result.Contents;
+            LoginInfo = result.Contents;
             //TODO: offer this service
             //await CheckIfPlayerCanReconnect();
             Refresh();
@@ -554,11 +527,11 @@ public class Client : IGameService, IGameClient
     
     public async Task<string> RequestCreateUser(string userName, string hashedPassword, string email, string playerName)
     {
-        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.RequestCreateUser), userName, email, hashedPassword, playerName);
+        var result = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestCreateUser), userName, email, hashedPassword, playerName);
 
         if (result.Success)
         {
-            PlayerToken = result.Contents;
+            LoginInfo = result.Contents;
             Refresh();
             return null;
         }
@@ -571,11 +544,11 @@ public class Client : IGameService, IGameClient
     
     public async Task<string> RequestSetPassword(string userName, string passwordResetToken, string hashedPassword)
     {
-        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.RequestSetPassword), userName, passwordResetToken, hashedPassword);
+        var result = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestSetPassword), userName, passwordResetToken, hashedPassword);
 
         if (result.Success)
         {
-            PlayerToken = result.Contents;
+            LoginInfo = result.Contents;
             Refresh();
             return null;
         }
