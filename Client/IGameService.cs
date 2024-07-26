@@ -14,6 +14,7 @@ public interface IGameService
     public GameStatus Status { get; }
 
     //Player and Host
+    public bool LoggedIn { get; }
     public string PlayerName { get; }
     public bool IsObserver { get; }
     public ServerSettings ServerSettings { get; }

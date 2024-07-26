@@ -821,7 +821,7 @@ public class Tests
             {
                 faction = p.Faction,
                 ally = p.Ally,
-                position = p.PositionAtTable,
+                position = p.Seat,
                 resources = p.Resources,
                 bribes = p.Bribes,
                 forcesinreserve = p.ForcesInReserve,

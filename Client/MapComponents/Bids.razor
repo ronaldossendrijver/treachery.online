@@ -12,7 +12,7 @@
 {
     foreach (var p in Client.Game.Players)
     {
-        var position = PlayerTokenPosition(Client.Game, p.PositionAtTable);
+        var position = PlayerTokenPosition(Client.Game, p.Seat);
         if (!Client.Status.PlayerShouldBeHighlighted(p))
         {
             var y = position.Y + Skin.Current.PlayerTokenRadius;

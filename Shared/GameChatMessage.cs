@@ -11,40 +11,40 @@ namespace Treachery.Shared;
 
 public class GameChatMessage : ChatMessage
 {
-    public string TargetPlayerName { get; set; }
+    public int TargetUserId { get; init; }
 
-    public override Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g, bool contextIsGlobal)
+    public override Message GetBodyIncludingPlayerInfo(int receivingUserId, Game game, GameParticipation participation, bool contextIsGlobal)
     {
-        if (SourcePlayerName == receivingPlayerName)
+        if (SourceUserId == receivingUserId)
         {
-            if (TargetPlayerName == "")
-                return Message.Express("You: ", Body, " ⇒ ALL");
-            return Message.Express("You: ", Body, " ⇒ ", GetTargetFaction(g));
+            return TargetUserId < 0 ? 
+                Message.Express("You: ", Body, " ⇒ ALL") : 
+                Message.Express("You: ", Body, " ⇒ ", GetTargetFaction(game, participation));
         }
 
-        var sourceFaction = GetSourceFaction(g);
+        var sourceFaction = GetSourceFaction(game, participation);
 
-        if (TargetPlayerName == "")
+        if (TargetUserId < 0)
         {
-            if (sourceFaction != Faction.None)
-                return Message.Express(GetSourceFaction(g), " (to ALL) ", Body);
-            return Message.Express(SourcePlayerName, " (to ALL) ", Body);
+            return sourceFaction != Faction.None ? 
+                Message.Express(GetSourceFaction(game, participation), " (to ALL) ", Body) : 
+                Message.Express(SourceUserId, " (to ALL) ", Body);
         }
 
-        if (sourceFaction != Faction.None)
-            return Message.Express(GetSourceFaction(g), Body);
-        return Message.Express(SourcePlayerName, Body);
+        return Message.Express(sourceFaction != Faction.None ? 
+            GetSourceFaction(game, participation) : 
+            participation.GetPlayerName(SourceUserId), Body);
     }
 
-    public Faction GetSourceFaction(Game g)
+    public Faction GetSourceFaction(Game game, GameParticipation participation)
     {
-        var p = g.GetPlayer(SourcePlayerName);
-        return p == null ? Faction.None : p.Faction;
+        var player = participation.GetPlayer(SourceUserId, game);
+        return player?.Faction ?? Faction.None;
     }
 
-    public Faction GetTargetFaction(Game g)
+    public Faction GetTargetFaction(Game game, GameParticipation participation)
     {
-        var p = g.GetPlayer(TargetPlayerName);
-        return p == null ? Faction.None : p.Faction;
+        var player = participation.GetPlayer(TargetUserId, game);
+        return player?.Faction ?? Faction.None;
     }
 }

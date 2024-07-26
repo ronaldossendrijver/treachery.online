@@ -33,6 +33,7 @@ public class ManagedGame
     {
         Seats = Seats.Where(seat => seat.Value is User).ToDictionary(seat => seat.Key, seat => ((User)seat.Value).Id),
         SeatedUsers = Seats.Where(seat => seat.Value is User).ToDictionary(seat => ((User)seat.Value).Id, seat => seat.Key),
+        SeatedBots = Seats.Where(seat => seat.Value is Bot).Select(seat => seat.Key).ToHashSet(),
         PlayerNames = Players.ToDictionary(user => user.Id, user => user.PlayerName),
         ObserverNames = Observers.ToDictionary(user => user.Id, user => user.PlayerName),
         Hosts = Hosts.Select(user => user.Id).ToList(),

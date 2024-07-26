@@ -22,11 +22,11 @@
                 radiusModifier = 1.5f;
             }
 
-            var position = PlayerTokenPosition(Game, p.PositionAtTable);
+            var position = PlayerTokenPosition(Game, p.Seat);
             var x = position.X - radiusModifier * Skin.Current.PlayerTokenRadius;
             var y = position.Y - radiusModifier * Skin.Current.PlayerTokenRadius;
             var factionTokenDiameter = radiusModifier * Skin.Current.PlayerTokenRadius * 2;
-            var positionSector = (float)Math.Floor((float)p.PositionAtTable * Map.NUMBER_OF_SECTORS / Game.MaximumNumberOfPlayers);
+            var positionSector = (float)Math.Floor((float)p.Seat * Map.NUMBER_OF_SECTORS / Game.MaximumNumberOfPlayers);
 
             <Circle X="@position.X" Y="@position.Y" Radius="@(1.35f * Skin.Current.PlayerTokenRadius)" FillColor="@Skin.Current.TABLEPOSITION_BACKGROUNDCOLOR" />
 
@@ -294,7 +294,7 @@
 
     private string DetermineVideoStreamId(Player p)
     {
-        return "video" + p.PositionAtTable;
+        return "video" + p.Seat;
     }
 
     private async Task OnClick(MouseEventArgs e, Location l)

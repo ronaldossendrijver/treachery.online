@@ -15,7 +15,7 @@ public partial class Game
 {
     #region Settings
 
-    public const int LowestSupportedVersion = 100;
+    private const int LowestSupportedVersion = 100;
     public const int LatestVersion = 169;
     public const int ExpansionLevel = 3;
     
@@ -27,6 +27,7 @@ public partial class Game
     internal Random Random { get; set; }
     public int MaximumNumberOfTurns { get; internal set; }
     public int MaximumNumberOfPlayers { get; internal set; }
+    public GameParticipation Participation { get; } = new();
     public string Name { get; internal set; }
     public List<Milestone> RecentMilestones { get; } = new();
     public int Version { get; }
@@ -143,7 +144,7 @@ public partial class Game
         for (var i = 0; i < maxEventNr; i++)
         {
             History[i].Initialize(result);
-            History[i].ExecuteWithoutValidation();
+            History[i].Execute(false, false);
         }
 
         return result;
@@ -515,15 +516,12 @@ public partial class Game
         return Players.Any(p => p.Faction == faction);
     }
 
-    public Player GetPlayer(string name)
-    {
-        return Players.FirstOrDefault(p => p.Name == name);
-    }
-
     public Player GetPlayer(Faction? f)
     {
         return Players.FirstOrDefault(p => p.Faction == f);
     }
+
+    public bool IsBot(Player p) => Participation.SeatedBots.Contains(p.Seat);
 
     public Faction GetAlly(Faction f)
     {
@@ -784,21 +782,9 @@ public partial class Game
 
     #region Information
 
-    public Player PlayerAtSeat(int seatNr)
-    {
-        return seatNr > 0 && Players.Count > seatNr ? Players[seatNr] : null;
-    }
+    public Player PlayerAtSeat(int seatNr) => Players.FirstOrDefault(p => p.Seat == seatNr);
     
-    public int SeatOf(Faction f)
-    {
-        for (var i = 0; i < Players.Count; i++)
-        {
-            if (Players[i].Is(f))
-                return i;
-        }
-
-        return -1;
-    }
+    public int SeatOf(Faction f) => GetPlayer(f)?.Seat ?? -1;
     
     public bool Occupies(Faction f, World w)
     {
@@ -899,8 +885,6 @@ public partial class Game
     {
         return StrongholdOwnership.TryGetValue(stronghold, out var value) ? GetPlayer(value) : null;
     }
-
-    public int NumberOfHumanPlayers => Players.Count(p => !p.IsBot);
 
     public int NrOfOccupantsExcludingFaction(Location l, Faction toExclude)
     {

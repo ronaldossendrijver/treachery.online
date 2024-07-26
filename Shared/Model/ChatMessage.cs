@@ -13,11 +13,10 @@ namespace Treachery.Shared;
 
 public abstract class ChatMessage
 {
-    public string SourcePlayerName { get; set; }
+   
+    public int SourceUserId { get; init; }
 
-    public string Body { get; set; }
+    public string Body { get; init; }
 
-    public DateTime DateTimeReceived { get; set; }
-
-    public abstract Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g, bool contextIsGlobal);
+    public abstract Message GetBodyIncludingPlayerInfo(int receivingUserId, Game game, GameParticipation participation, bool contextIsGlobal);
 }

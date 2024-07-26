@@ -35,25 +35,30 @@ public partial class Player
     protected virtual AllianceOffered DetermineAllianceOffered()
     {
         var nrOfPlayers = Game.Players.Count;
-        var nrOfBots = Game.Players.Count(p => p.IsBot);
-        var nrOfUnalliedBots = Game.Players.Count(p => p.IsBot && p.Ally == Faction.None);
+        var nrOfUnAlliedBots = Game.Players.Count(p => Game.IsBot(p) && !p.HasAlly);
+        var nrOfUnalliedHumans = Game.Players.Count(p => !Game.IsBot(p) && !p.HasAlly);
+        var offer = Game.CurrentAllianceOffers
+            .Where(offer => offer.Target == Faction && !Game.IsBot(offer.Player))
+            .HighestOrDefault(offer => PlayerStanding(offer.Player));
+        if (offer == null) offer = Game.CurrentAllianceOffers
+            .Where(allianceOffered => allianceOffered.Target == Faction)
+            .HighestOrDefault(allianceOffered => PlayerStanding(allianceOffered.Player));
 
-        var nrOfUnalliedHumans = Game.Players.Count(p => !p.IsBot && p.Ally == Faction.None);
-
-        var offer = Game.CurrentAllianceOffers.Where(offer => offer.Target == Faction && !offer.Player.IsBot).HighestOrDefault(offer => PlayerStanding(offer.Player));
-        if (offer == null) offer = Game.CurrentAllianceOffers.Where(offer => offer.Target == Faction).HighestOrDefault(offer => PlayerStanding(offer.Player));
-
-        if (offer != null) return new AllianceOffered(Game, Faction) { Target = offer.Initiator };
+        if (offer != null) 
+            return new AllianceOffered(Game, Faction) { Target = offer.Initiator };
 
         if (
             nrOfPlayers > 2 &&
             !Game.Applicable(Rule.BotsCannotAlly) &&
-            (nrOfUnalliedHumans == 0 || nrOfUnalliedHumans < nrOfUnalliedBots - 1) &&
+            (nrOfUnalliedHumans == 0 || nrOfUnalliedHumans < nrOfUnAlliedBots - 1) &&
             !Game.CurrentAllianceOffers.Any(o => o.Initiator == Faction && Game.GetPlayer(o.Target).Ally == Faction.None))
         {
-            var mostInterestingOpponentBotWithoutAlly = Game.Players.Where(p => p != this && p.IsBot && p.Ally == Faction.None).HighestOrDefault(p => PlayerStanding(p));
+            var mostInterestingOpponentBotWithoutAlly = Game.Players
+                .Where(p => p != this && Game.IsBot(p) && !p.HasAlly)
+                .HighestOrDefault(p => PlayerStanding(p));
 
-            if (mostInterestingOpponentBotWithoutAlly != null) return new AllianceOffered(Game, Faction) { Target = mostInterestingOpponentBotWithoutAlly.Faction };
+            if (mostInterestingOpponentBotWithoutAlly != null) 
+                return new AllianceOffered(Game, Faction) { Target = mostInterestingOpponentBotWithoutAlly.Faction };
         }
 
         return null;
@@ -72,7 +77,9 @@ public partial class Player
 
     protected virtual AllianceBroken DetermineAllianceBroken()
     {
-        var offer = Game.CurrentAllianceOffers.Where(offer => offer.Target == Faction && !offer.Player.IsBot).HighestOrDefault(offer => PlayerStanding(offer.Player));
+        var offer = Game.CurrentAllianceOffers
+            .Where(offer => offer.Target == Faction && !Game.IsBot(offer.Player))
+            .HighestOrDefault(offer => PlayerStanding(offer.Player));
 
         if (offer != null && PlayerStanding(offer.Player) > PlayerStanding(AlliedPlayer)) return new AllianceBroken(Game, Faction);
 

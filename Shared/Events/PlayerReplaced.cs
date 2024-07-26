@@ -48,8 +48,7 @@ public class PlayerReplaced : GameEvent
     protected override void ExecuteConcreteEvent()
     {
         var player = GetPlayer(ToReplace);
-        player.IsBot = !player.IsBot;
-        Log(ToReplace, " will now be played by a ", player.IsBot ? "Bot" : "Human");
+        Log(ToReplace, " will now be played by a ", Game.IsBot(player) ? "Bot" : "Human");
     }
 
     public override Message GetMessage()

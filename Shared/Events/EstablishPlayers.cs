@@ -322,19 +322,15 @@ public class EstablishPlayers : GameEvent
 
     private void AddPlayersToGame()
     {
-        if (Game.Version < 113) AddBots();
+        if (Game.Version < 113) 
+            AddBots();
 
         foreach (var newPlayer in Players)
         {
-            var p = new Player(Game, newPlayer);
+            var p = Game.Version < 170 ? new Player(Game, newPlayer) : new Player(Game);
             if (!Game.Players.Contains(p))
             {
                 Game.Players.Add(p);
-                Log(p.Name, " joined the game");
-            }
-            else
-            {
-                Log(p.Name, " is already in the game");
             }
         }
     }
@@ -342,14 +338,14 @@ public class EstablishPlayers : GameEvent
     private void AddBots()
     {
         //Can be removed later, this was replaced by filling empty seats with bots.
-        if (Game.Applicable(Rule.OrangeBot)) Game.Players.Add(new Player(Game, UniquePlayerName("Edric*"), Faction.Orange, true));
-        if (Game.Applicable(Rule.RedBot)) Game.Players.Add(new Player(Game, UniquePlayerName("Shaddam IV*"), Faction.Red, true));
-        if (Game.Applicable(Rule.BlackBot)) Game.Players.Add(new Player(Game, UniquePlayerName("The Baron*"), Faction.Black, true));
-        if (Game.Applicable(Rule.PurpleBot)) Game.Players.Add(new Player(Game, UniquePlayerName("Scytale*"), Faction.Purple, true));
-        if (Game.Applicable(Rule.BlueBot)) Game.Players.Add(new Player(Game, UniquePlayerName("Mother Mohiam*"), Faction.Blue, true));
-        if (Game.Applicable(Rule.GreenBot)) Game.Players.Add(new Player(Game, UniquePlayerName("Paul Atreides*"), Faction.Green, true));
-        if (Game.Applicable(Rule.YellowBot)) Game.Players.Add(new Player(Game, UniquePlayerName("Liet Kynes*"), Faction.Yellow, true));
-        if (Game.Applicable(Rule.GreyBot)) Game.Players.Add(new Player(Game, UniquePlayerName("Prince Rhombur*"), Faction.Grey, true));
+        if (Game.Applicable(Rule.OrangeBot)) Game.Players.Add(new Player(Game, Faction.Orange));
+        if (Game.Applicable(Rule.RedBot)) Game.Players.Add(new Player(Game, Faction.Red));
+        if (Game.Applicable(Rule.BlackBot)) Game.Players.Add(new Player(Game, Faction.Black));
+        if (Game.Applicable(Rule.PurpleBot)) Game.Players.Add(new Player(Game, Faction.Purple));
+        if (Game.Applicable(Rule.BlueBot)) Game.Players.Add(new Player(Game, Faction.Blue));
+        if (Game.Applicable(Rule.GreenBot)) Game.Players.Add(new Player(Game, Faction.Green));
+        if (Game.Applicable(Rule.YellowBot)) Game.Players.Add(new Player(Game, Faction.Yellow));
+        if (Game.Applicable(Rule.GreyBot)) Game.Players.Add(new Player(Game,  Faction.Grey));
     }
 
     private string UniquePlayerName(string name)
@@ -393,19 +389,19 @@ public class EstablishPlayers : GameEvent
                 {
                     var bot = available.Draw() switch
                     {
-                        Faction.Black => new Player(Game, UniquePlayerName("The Baron*"), Faction.Black, true),
-                        Faction.Blue => new Player(Game, UniquePlayerName("Mother Mohiam*"), Faction.Blue, true),
-                        Faction.Green => new Player(Game, UniquePlayerName("Paul Atreides*"), Faction.Green, true),
-                        Faction.Yellow => new Player(Game, UniquePlayerName("Liet Kynes*"), Faction.Yellow, true),
-                        Faction.Red => new Player(Game, UniquePlayerName("Shaddam IV*"), Faction.Red, true),
-                        Faction.Orange => new Player(Game, UniquePlayerName("Edric*"), Faction.Orange, true),
-                        Faction.Grey => new Player(Game, UniquePlayerName("Prince Rhombur*"), Faction.Grey, true),
-                        Faction.Purple => new Player(Game, UniquePlayerName("Scytale*"), Faction.Purple, true),
-                        Faction.Brown => new Player(Game, UniquePlayerName("Brown*"), Faction.Brown, true),
-                        Faction.White => new Player(Game, UniquePlayerName("White*"), Faction.White, true),
-                        Faction.Pink => new Player(Game, UniquePlayerName("Pink*"), Faction.Pink, true),
-                        Faction.Cyan => new Player(Game, UniquePlayerName("Cyan*"), Faction.Cyan, true),
-                        _ => new Player(Game, UniquePlayerName("The Baron*"), Faction.Black, true)
+                        Faction.Black => new Player(Game, Faction.Black),
+                        Faction.Blue => new Player(Game, Faction.Blue),
+                        Faction.Green => new Player(Game, Faction.Green),
+                        Faction.Yellow => new Player(Game, Faction.Yellow),
+                        Faction.Red => new Player(Game, Faction.Red),
+                        Faction.Orange => new Player(Game, Faction.Orange),
+                        Faction.Grey => new Player(Game, Faction.Grey),
+                        Faction.Purple => new Player(Game, Faction.Purple),
+                        Faction.Brown => new Player(Game, Faction.Brown),
+                        Faction.White => new Player(Game, Faction.White),
+                        Faction.Pink => new Player(Game, Faction.Pink),
+                        Faction.Cyan => new Player(Game, Faction.Cyan),
+                        _ => new Player(Game, Faction.Black)
                     };
 
                     Game.Players.Add(bot);
@@ -413,9 +409,8 @@ public class EstablishPlayers : GameEvent
             }
             else
             {
-                var botNr = 1;
-
-                while (Game.Players.Count < MaximumNumberOfPlayers) Game.Players.Add(new Player(Game, UniquePlayerName(string.Format("Bot{0}", botNr++)), Faction.None, true));
+                while (Game.Players.Count < MaximumNumberOfPlayers) 
+                    Game.Players.Add(new Player(Game, Faction.None));
             }
         }
     }

@@ -128,7 +128,7 @@ public class ClairVoyancePlayed : GameEvent
     {
         var allValues = Enumerations.GetValues<ClairvoyanceQuestion>();
         var targetPlayer = g.GetPlayer(target);
-        if (targetPlayer == null || !targetPlayer.IsBot)
+        if (targetPlayer == null || !g.IsBot(targetPlayer))
             return allValues;
         return allValues.Where(v => AppliesToBot(v, g, targetPlayer));
     }

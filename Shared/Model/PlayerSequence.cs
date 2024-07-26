@@ -29,7 +29,7 @@ public class PlayerSequence
         _round = 1;
         _fullyCircled = 0;
 
-        Players = _game.Players.OrderBy(p => _direction * p.PositionAtTable).ToList();
+        Players = _game.Players.OrderBy(p => _direction * p.Seat).ToList();
         FirstPlayer = toStartWith;
 
         if (beginNextToThatPlayer && NumberOfPlayersThatMayGetTurn > 1) FirstPlayer = PlayerAfter(FirstPlayer);
@@ -214,7 +214,7 @@ public class PlayerSequence
         var position = (g.MaximumNumberOfPlayers + startLookingInSector) % g.MaximumNumberOfPlayers;
         for (var i = 0; i < g.MaximumNumberOfPlayers; i++)
         {
-            result = g.Players.FirstOrDefault(p => p.PositionAtTable == position);
+            result = g.Players.FirstOrDefault(p => p.Seat == position);
             if (result != null)
                 return result;
             position = Mod(g.MaximumNumberOfPlayers + position + 1, g.MaximumNumberOfPlayers);
@@ -234,11 +234,11 @@ public class PlayerSequence
 
         for (var i = 0; i < g.MaximumNumberOfPlayers; i++)
         {
-            var positionToCheck = (firstPlayer.PositionAtTable + i) % g.MaximumNumberOfPlayers;
+            var positionToCheck = (firstPlayer.Seat + i) % g.MaximumNumberOfPlayers;
 
-            if (positionToCheck == b.PositionAtTable)
+            if (positionToCheck == b.Seat)
                 return true;
-            if (positionToCheck == a.PositionAtTable) return false;
+            if (positionToCheck == a.Seat) return false;
         }
 
         return false;

@@ -26,18 +26,18 @@ public abstract class GameEvent
 {
     #region Construction
 
-    public GameEvent()
+    protected GameEvent()
     {
     }
 
-    public GameEvent(Game game, Faction initiator)
+    protected GameEvent(Game game, int seat)
+    {
+        Initialize(game, seat);
+    }
+    
+    protected GameEvent(Game game, Faction initiator)
     {
         Initialize(game, initiator);
-    }
-
-    public GameEvent(Game game, string playername)
-    {
-        Initialize(game, playername);
     }
 
     #endregion Construction
@@ -65,7 +65,7 @@ public abstract class GameEvent
     [JsonIgnore]
     public bool IsValid => Validate() == null;
 
-    public virtual bool IsApplicable(bool isHost)
+    public bool IsApplicable(bool isHost)
     {
         if (Game == null) throw new ArgumentException("Cannot check applicability of a GameEvent without a Game.");
 
@@ -82,21 +82,17 @@ public abstract class GameEvent
         Initiator = initiator;
         Player = game.GetPlayer(initiator);
     }
-
-    public void Initialize(Game game, string playername)
+    
+    public void Initialize(Game game, int seat)
     {
         Game = game;
-        Player = game.GetPlayer(playername);
+        Initiator = Faction.None;
+        Player = game.PlayerAtSeat(seat);
     }
 
     public void Initialize(Game game)
     {
         Initialize(game, Initiator);
-    }
-
-    public virtual void ExecuteWithoutValidation()
-    {
-        Execute(false, false);
     }
 
     public virtual Message Execute(bool performValidation, bool isHost)
@@ -111,7 +107,8 @@ public abstract class GameEvent
 
             if (performValidation)
             {
-                if (!IsApplicable(isHost)) return Message.Express("Event '", GetMessage(), "' is not applicable");
+                if (!IsApplicable(isHost)) 
+                    return Message.Express("Event '", GetMessage(), "' is not applicable");
 
                 result = Validate();
             }

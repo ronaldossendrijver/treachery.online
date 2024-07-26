@@ -59,7 +59,7 @@ public class CardTraded : GameEvent
         var targetPlayer = Game.GetPlayer(Target);
         if (targetPlayer == null) return Message.Express("Invalid target player");
 
-        if (RequestedCard != null && !Player.AlliedPlayer.IsBot) return Message.Express("You can only select a card from a Bot ally");
+        if (RequestedCard != null && !Game.IsBot(Player.AlliedPlayer)) return Message.Express("You can only select a card from a Bot ally");
         if (RequestedCard != null && !ValidCards(Game.GetPlayer(Target)).Contains(RequestedCard)) return Message.Express("Invalid requested card");
 
         return null;

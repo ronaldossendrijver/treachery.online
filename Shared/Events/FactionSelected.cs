@@ -13,7 +13,7 @@ public class FactionSelected : GameEvent
 {
     #region Construction
 
-    public FactionSelected(Game game, string playername) : base(game, playername)
+    public FactionSelected(Game game, int seatId) : base(game, seatId)
     {
     }
 
@@ -26,6 +26,8 @@ public class FactionSelected : GameEvent
     #region Properties
 
     public string InitiatorPlayerName { get; set; }
+    
+    public int Seat { get; set; }
 
     public Faction Faction { get; set; }
 
@@ -51,7 +53,10 @@ public class FactionSelected : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        var initiator = Game.Players.FirstOrDefault(p => p.Name == InitiatorPlayerName);
+        var initiator = Game.Version < 170 ? 
+            Game.Players.FirstOrDefault(p => p.Name == InitiatorPlayerName) :
+            Game.PlayerAtSeat(Seat);
+        
         if (initiator != null && Game.FactionsInPlay.Contains(Faction))
         {
             initiator.Faction = Faction;

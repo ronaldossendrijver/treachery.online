@@ -125,7 +125,8 @@ public class DealAccepted : GameEvent
                 Game.Stone(Milestone.Bribe);
             }
 
-            if (offer.Player.IsBot) HandleAcceptedBotDeal(offer);
+            if (Game.IsBot(offer.Player)) 
+                HandleAcceptedBotDeal(offer);
         }
     }
 

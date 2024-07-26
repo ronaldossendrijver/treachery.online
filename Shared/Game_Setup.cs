@@ -53,7 +53,7 @@ public partial class Game
             for (var i = 0; i < MaximumNumberOfPlayers; i++) positions.PutOnTop(i);
             positions.Shuffle();
 
-            foreach (var p in Players) p.PositionAtTable = positions.Draw();
+            foreach (var p in Players) p.Seat = positions.Draw();
         }
         else
         {
@@ -73,8 +73,8 @@ public partial class Game
 
         CurrentTradeOffers.Clear();
 
-        HasBattleWheel.Add(Players.OrderBy(p => p.PositionAtTable).First().Faction);
-        HasBattleWheel.Add(Players.OrderBy(p => p.PositionAtTable).Last().Faction);
+        HasBattleWheel.Add(Players.OrderBy(p => p.Seat).First().Faction);
+        HasBattleWheel.Add(Players.OrderBy(p => p.Seat).Last().Faction);
 
         foreach (var p in Players) p.AssignLeaders(this);
 

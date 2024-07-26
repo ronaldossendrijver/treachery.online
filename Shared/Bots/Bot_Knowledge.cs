@@ -627,14 +627,14 @@ public partial class Player
     {
         if (opponent == null) return false;
 
-        var firstPlayerPosition = PlayerSequence.DetermineFirstPlayer(Game).PositionAtTable;
+        var firstPlayerPosition = PlayerSequence.DetermineFirstPlayer(Game).Seat;
 
         for (var i = 0; i < Game.MaximumNumberOfPlayers; i++)
         {
             var position = (firstPlayerPosition + i) % Game.MaximumNumberOfPlayers;
-            if (position == PositionAtTable)
+            if (position == Seat)
                 return true;
-            if (position == opponent.PositionAtTable) return false;
+            if (position == opponent.Seat) return false;
         }
 
         return false;

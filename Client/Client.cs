@@ -27,6 +27,7 @@ public class Client : IGameService, IGameClient
     
     //Logged in player
     public Dictionary<Guid, string> JoinErrors { get; } = new();
+    public bool LoggedIn => LoginInfo != null;
     public LoginInfo LoginInfo { get; set; }
     public string PlayerToken => LoginInfo.PlayerToken;
     public int UserId => LoginInfo.UserId;

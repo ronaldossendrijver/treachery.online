@@ -19,181 +19,179 @@ public partial class Player
 
     public BotParameters Param { get; set; }
 
-    public bool AllyIsBot => Ally != Faction.None && AlliedPlayer.IsBot;
-
-    public GameEvent DetermineHighestPrioInPhaseAction(List<Type> evts)
+    public GameEvent DetermineHighestPrioInPhaseAction(List<Type> events)
     {
         GameEvent action = null;
 
-        if (Do(DetermineNexusPlayed, ref action, evts) ||
-            Do(DetermineDealCancelled, ref action, evts) ||
-            Do(DetermineAcceptOrCancelPurpleRevival, ref action, evts) ||
-            Do(DetermineThoughtAnswered, ref action, evts) ||
-            Do(DetermineThought, ref action, evts)) return action;
+        if (Do(DetermineNexusPlayed, ref action, events) ||
+            Do(DetermineDealCancelled, ref action, events) ||
+            Do(DetermineAcceptOrCancelPurpleRevival, ref action, events) ||
+            Do(DetermineThoughtAnswered, ref action, events) ||
+            Do(DetermineThought, ref action, events)) return action;
 
         return null;
     }
 
-    public GameEvent DetermineHighPrioInPhaseAction(IEnumerable<Type> evts)
+    public GameEvent DetermineHighPrioInPhaseAction(List<Type> events)
     {
         GameEvent action = null;
 
-        if (Do(DetermineVoice, ref action, evts)
+        if (Do(DetermineVoice, ref action, events)
 
            ) return action;
 
         return null;
     }
 
-    public GameEvent DetermineMiddlePrioInPhaseAction(IEnumerable<Type> evts)
+    public GameEvent DetermineMiddlePrioInPhaseAction(List<Type> events)
     {
         GameEvent action = null;
 
-        if (Do(DetermineMetheorPlayed, ref action, evts) ||
-            Do(DetermineAmalPlayed, ref action, evts) ||
-            Do(DetermineRecruitsPlayed, ref action, evts) ||
-            Do(DetermineSetIncreasedRevivalLimits, ref action, evts) ||
-            Do(DetermineSetShipmentPermission, ref action, evts) ||
-            Do(DetermineDealAccepted, ref action, evts) ||
-            Do(DetermineRequestPurpleRevival, ref action, evts) ||
-            Do(DetermineDistransUsed, ref action, evts) ||
-            Do(DetermineJuicePlayed, ref action, evts) ||
-            Do(DeterminePortableAntidoteUsed, ref action, evts) ||
-            Do(DetermineDiplomacy, ref action, evts) ||
-            Do(DetermineSwitchedSkilledLeader, ref action, evts) ||
-            Do(DetermineRetreat, ref action, evts) ||
-            Do(DetermineHMSAdvantageChosen, ref action, evts) ||
-            Do(DeterminePlanetology, ref action, evts) ||
-            Do(DeterminePrescience, ref action, evts) ||
-            Do(DetermineCardGiven, ref action, evts) ||
-            Do(DetermineKarmaShipmentPrevention, ref action, evts)) return action;
+        if (Do(DetermineMetheorPlayed, ref action, events) ||
+            Do(DetermineAmalPlayed, ref action, events) ||
+            Do(DetermineRecruitsPlayed, ref action, events) ||
+            Do(DetermineSetIncreasedRevivalLimits, ref action, events) ||
+            Do(DetermineSetShipmentPermission, ref action, events) ||
+            Do(DetermineDealAccepted, ref action, events) ||
+            Do(DetermineRequestPurpleRevival, ref action, events) ||
+            Do(DetermineDistransUsed, ref action, events) ||
+            Do(DetermineJuicePlayed, ref action, events) ||
+            Do(DeterminePortableAntidoteUsed, ref action, events) ||
+            Do(DetermineDiplomacy, ref action, events) ||
+            Do(DetermineSwitchedSkilledLeader, ref action, events) ||
+            Do(DetermineRetreat, ref action, events) ||
+            Do(DetermineHMSAdvantageChosen, ref action, events) ||
+            Do(DeterminePlanetology, ref action, events) ||
+            Do(DeterminePrescience, ref action, events) ||
+            Do(DetermineCardGiven, ref action, events) ||
+            Do(DetermineKarmaShipmentPrevention, ref action, events)) return action;
 
         return null;
     }
 
-    public GameEvent DetermineLowPrioInPhaseAction(IEnumerable<Type> evts)
+    public GameEvent DetermineLowPrioInPhaseAction(List<Type> events)
     {
         GameEvent action = null;
 
-        if (Do(DetermineDealOffered, ref action, evts) ||
-            Do(DetermineFactionTradeOffered, ref action, evts) ||
-            Do(DetermineSkillAssigned, ref action, evts) ||
-            Do(DetermineStormDialled, ref action, evts) ||
-            Do(DetermineClairVoyanceAnswered, ref action, evts) ||
-            Do(DetermineTraitorsSelected, ref action, evts) ||
-            Do(DetermineStormSpellPlayed, ref action, evts) ||
-            Do(DetermineTestingStationUsed, ref action, evts) ||
-            Do(DetermineThumperPlayed, ref action, evts) ||
-            Do(DetermineHarvesterPlayed, ref action, evts) ||
-            Do(DetermineAllianceBroken, ref action, evts) ||
-            Do(DetermineAllianceOffered, ref action, evts) ||
-            Do(DetermineAlliancePermissions, ref action, evts) ||
-            Do(DetermineCharityClaimed, ref action, evts) ||
-            Do(DetermineBlackMarketBid, ref action, evts) ||
-            Do(DetermineBid, ref action, evts) ||
-            Do(DetermineRevival, ref action, evts) ||
-            Do(DetermineDelay, ref action, evts) ||
-            Do(DetermineRaiseDeadPlayed, ref action, evts) ||
-            Do(DetermineShipment, ref action, evts) ||
-            Do(DetermineCaravan, ref action, evts) ||
-            Do(DetermineMove, ref action, evts) ||
-            Do(DetermineBattleInitiated, ref action, evts) ||
-            Do(DetermineClairvoyance, ref action, evts) ||
-            Do(DetermineBattle, ref action, evts) ||
-            Do(DetermineTreacheryCalled, ref action, evts) ||
-            Do(DetermineBattleConcluded, ref action, evts) ||
-            Do(DetermineMulliganPerformed, ref action, evts) ||
-            Do(DetermineReplacedCardWon, ref action, evts) ||
-            Do(DetermineAudited, ref action, evts) ||
-            Do(DetermineAuditCancelled, ref action, evts) ||
-            Do(DetermineCardTraded, ref action, evts) ||
-            Do(DetermineRockWasMelted, ref action, evts) ||
-            Do(DetermineResidualPlayed, ref action, evts) ||
-            Do(DetermineFlightUsed, ref action, evts) ||
-            Do(DetermineFlightDiscoveryUsed, ref action, evts) ||
-            Do(DetermineDiscardedSearchedAnnounced, ref action, evts) ||
-            Do(DetermineDiscardedSearched, ref action, evts) ||
-            Do(DetermineDiscardedTaken, ref action, evts) ||
-            Do(DetermineBureaucracy, ref action, evts) ||
-            Do(DetermineNexusCardDrawn, ref action, evts) ||
-            Do(DetermineExtortionPrevented, ref action, evts) ||
-            Do(DetermineDiscarded, ref action, evts) ||
-            Do(DetermineTraitorDiscarded, ref action, evts) ||
-            Do(DetermineAllianceByTerror, ref action, evts) ||
-            Do(DetermineAllianceByAmbassador, ref action, evts) ||
-            Do(DetermineLoserConcluded, ref action, evts) ||
-            Do(DetermineDivideResources, ref action, evts) ||
-            Do(DetermineDivideResourcesAccepted, ref action, evts) ||
-            Do(DetermineBattleClaimed, ref action, evts) ||
-            Do(DetermineNexusVoted, ref action, evts) ||
-            Do(DetermineDiscoveryRevealed, ref action, evts) ||
-            Do(DetermineDiscoveryEntered, ref action, evts) ||
-            Do(DetermineResourcesTransferred, ref action, evts) ||
+        if (Do(DetermineDealOffered, ref action, events) ||
+            Do(DetermineFactionTradeOffered, ref action, events) ||
+            Do(DetermineSkillAssigned, ref action, events) ||
+            Do(DetermineStormDialled, ref action, events) ||
+            Do(DetermineClairVoyanceAnswered, ref action, events) ||
+            Do(DetermineTraitorsSelected, ref action, events) ||
+            Do(DetermineStormSpellPlayed, ref action, events) ||
+            Do(DetermineTestingStationUsed, ref action, events) ||
+            Do(DetermineThumperPlayed, ref action, events) ||
+            Do(DetermineHarvesterPlayed, ref action, events) ||
+            Do(DetermineAllianceBroken, ref action, events) ||
+            Do(DetermineAllianceOffered, ref action, events) ||
+            Do(DetermineAlliancePermissions, ref action, events) ||
+            Do(DetermineCharityClaimed, ref action, events) ||
+            Do(DetermineBlackMarketBid, ref action, events) ||
+            Do(DetermineBid, ref action, events) ||
+            Do(DetermineRevival, ref action, events) ||
+            Do(DetermineDelay, ref action, events) ||
+            Do(DetermineRaiseDeadPlayed, ref action, events) ||
+            Do(DetermineShipment, ref action, events) ||
+            Do(DetermineCaravan, ref action, events) ||
+            Do(DetermineMove, ref action, events) ||
+            Do(DetermineBattleInitiated, ref action, events) ||
+            Do(DetermineClairvoyance, ref action, events) ||
+            Do(DetermineBattle, ref action, events) ||
+            Do(DetermineTreacheryCalled, ref action, events) ||
+            Do(DetermineBattleConcluded, ref action, events) ||
+            Do(DetermineMulliganPerformed, ref action, events) ||
+            Do(DetermineReplacedCardWon, ref action, events) ||
+            Do(DetermineAudited, ref action, events) ||
+            Do(DetermineAuditCancelled, ref action, events) ||
+            Do(DetermineCardTraded, ref action, events) ||
+            Do(DetermineRockWasMelted, ref action, events) ||
+            Do(DetermineResidualPlayed, ref action, events) ||
+            Do(DetermineFlightUsed, ref action, events) ||
+            Do(DetermineFlightDiscoveryUsed, ref action, events) ||
+            Do(DetermineDiscardedSearchedAnnounced, ref action, events) ||
+            Do(DetermineDiscardedSearched, ref action, events) ||
+            Do(DetermineDiscardedTaken, ref action, events) ||
+            Do(DetermineBureaucracy, ref action, events) ||
+            Do(DetermineNexusCardDrawn, ref action, events) ||
+            Do(DetermineExtortionPrevented, ref action, events) ||
+            Do(DetermineDiscarded, ref action, events) ||
+            Do(DetermineTraitorDiscarded, ref action, events) ||
+            Do(DetermineAllianceByTerror, ref action, events) ||
+            Do(DetermineAllianceByAmbassador, ref action, events) ||
+            Do(DetermineLoserConcluded, ref action, events) ||
+            Do(DetermineDivideResources, ref action, events) ||
+            Do(DetermineDivideResourcesAccepted, ref action, events) ||
+            Do(DetermineBattleClaimed, ref action, events) ||
+            Do(DetermineNexusVoted, ref action, events) ||
+            Do(DetermineDiscoveryRevealed, ref action, events) ||
+            Do(DetermineDiscoveryEntered, ref action, events) ||
+            Do(DetermineResourcesTransferred, ref action, events) ||
 
             //Brown
-            Do(DetermineBrownEconomics, ref action, evts) ||
-            Do(DetermineBrownRemoveForce, ref action, evts) ||
-            Do(DetermineResourcesAudited, ref action, evts) ||
+            Do(DetermineBrownEconomics, ref action, events) ||
+            Do(DetermineBrownRemoveForce, ref action, events) ||
+            Do(DetermineResourcesAudited, ref action, events) ||
 
             //Black
-            Do(DetermineCaptured, ref action, evts) ||
-            Do(DetermineKarmaHandSwapInitiated, ref action, evts) ||
-            Do(DetermineKarmaHandSwap, ref action, evts) ||
+            Do(DetermineCaptured, ref action, events) ||
+            Do(DetermineKarmaHandSwapInitiated, ref action, events) ||
+            Do(DetermineKarmaHandSwap, ref action, events) ||
 
             //Blue
-            Do(DetermineBlueAccompanies, ref action, evts) ||
-            Do(DetermineBluePrediction, ref action, evts) ||
-            Do(DetermineBlueFlip, ref action, evts) ||
-            Do(DetermineBlueBattleAnnouncement, ref action, evts) ||
-            Do(DetermineBluePlacement, ref action, evts) ||
+            Do(DetermineBlueAccompanies, ref action, events) ||
+            Do(DetermineBluePrediction, ref action, events) ||
+            Do(DetermineBlueFlip, ref action, events) ||
+            Do(DetermineBlueBattleAnnouncement, ref action, events) ||
+            Do(DetermineBluePlacement, ref action, events) ||
 
             //Yellow
-            Do(DetermineYellowRidesMonster, ref action, evts) ||
-            Do(DetermineYellowSentMonster, ref action, evts) ||
-            Do(DeterminePerformYellowSetup, ref action, evts) ||
-            Do(DetermineTakeLosses, ref action, evts) ||
+            Do(DetermineYellowRidesMonster, ref action, events) ||
+            Do(DetermineYellowSentMonster, ref action, events) ||
+            Do(DeterminePerformYellowSetup, ref action, events) ||
+            Do(DetermineTakeLosses, ref action, events) ||
 
             //Grey
-            Do(DetermineGreyRemovedCardFromAuction, ref action, evts) ||
-            Do(DetermineGreySelectedStartingCard, ref action, evts) ||
-            Do(DetermineGreySwappedCardOnBid, ref action, evts) ||
-            Do(DeterminePerformHmsPlacement, ref action, evts) ||
-            Do(DeterminePerformHmsMovement, ref action, evts) ||
+            Do(DetermineGreyRemovedCardFromAuction, ref action, events) ||
+            Do(DetermineGreySelectedStartingCard, ref action, events) ||
+            Do(DetermineGreySwappedCardOnBid, ref action, events) ||
+            Do(DeterminePerformHmsPlacement, ref action, events) ||
+            Do(DeterminePerformHmsMovement, ref action, events) ||
 
             //Red
-            Do(DetermineKarmaFreeRevival, ref action, evts) ||
-            Do(DetermineRedDiscarded, ref action, evts) ||
+            Do(DetermineKarmaFreeRevival, ref action, events) ||
+            Do(DetermineRedDiscarded, ref action, events) ||
 
             //Cyan
-            Do(DetermineTerrorPlanted, ref action, evts) ||
-            Do(DetermineTerrorRevealed, ref action, evts) ||
-            Do(DeterminePerformCyanSetup, ref action, evts) ||
+            Do(DetermineTerrorPlanted, ref action, events) ||
+            Do(DetermineTerrorRevealed, ref action, events) ||
+            Do(DeterminePerformCyanSetup, ref action, events) ||
 
             //Pink
-            Do(DetermineAmbassadorPlaced, ref action, evts) ||
-            Do(DetermineAmbassadorActivated, ref action, evts) ||
+            Do(DetermineAmbassadorPlaced, ref action, events) ||
+            Do(DetermineAmbassadorActivated, ref action, events) ||
 
             //Purple
-            Do(DetermineFaceDancerRevealed, ref action, evts) ||
-            Do(DetermineFaceDanced, ref action, evts) ||
-            Do(DetermineFaceDancerReplaced, ref action, evts) ||
+            Do(DetermineFaceDancerRevealed, ref action, events) ||
+            Do(DetermineFaceDanced, ref action, events) ||
+            Do(DetermineFaceDancerReplaced, ref action, events) ||
 
             //White
-            Do(DetermineWhiteAnnouncesBlackMarket, ref action, evts) ||
-            Do(DetermineWhiteAnnouncesAuction, ref action, evts) ||
-            Do(DetermineWhiteSpecifiesAuction, ref action, evts) ||
-            Do(DetermineWhiteKeepsUnsoldCard, ref action, evts) ||
-            Do(DetermineWhiteRevealedNoField, ref action, evts)) return action;
+            Do(DetermineWhiteAnnouncesBlackMarket, ref action, events) ||
+            Do(DetermineWhiteAnnouncesAuction, ref action, events) ||
+            Do(DetermineWhiteSpecifiesAuction, ref action, events) ||
+            Do(DetermineWhiteKeepsUnsoldCard, ref action, events) ||
+            Do(DetermineWhiteRevealedNoField, ref action, events)) return action;
 
         return null;
     }
 
 
-    public GameEvent DetermineEndPhaseAction(IEnumerable<Type> evts)
+    public GameEvent DetermineEndPhaseAction(List<Type> events)
     {
         GameEvent action = null;
 
-        if (Do(DetermineEndPhase, ref action, evts)) return action;
+        if (Do(DetermineEndPhase, ref action, events)) return action;
 
 
         return null;
@@ -206,7 +204,7 @@ public partial class Player
 
     private bool Do<T>(Func<T> method, ref GameEvent action, IEnumerable<Type> allowedActions) where T : GameEvent
     {
-        if (typeof(T).Equals(typeof(GameEvent))) throw new ArgumentException("Illegally typed method: " + method);
+        if (typeof(T) == typeof(GameEvent)) throw new ArgumentException("Illegally typed method: " + method);
 
         if (action == null && allowedActions.Contains(typeof(T)))
         {
@@ -246,9 +244,9 @@ public partial class Player
         if (BotInfologging)
         {
             if (Message.DefaultDescriber != null)
-                Console.WriteLine(Name + ": " + Message.DefaultDescriber.Format(msg, pars));
+                Console.WriteLine(Faction + ": " + Message.DefaultDescriber.Format(msg, pars));
             else
-                Console.WriteLine(Name + ": " + string.Format(msg, pars));
+                Console.WriteLine(Faction + ": " + string.Format(msg, pars));
         }
     }
 
@@ -257,9 +255,9 @@ public partial class Player
         if (BotInfologging && message != null)
         {
             if (Message.DefaultDescriber != null)
-                Console.WriteLine(Name + ": " + message.ToString(Message.DefaultDescriber));
+                Console.WriteLine(Faction + ": " + message.ToString(Message.DefaultDescriber));
             else
-                Console.WriteLine(Name + ": " + message);
+                Console.WriteLine(Faction + ": " + message);
         }
     }
 

@@ -352,8 +352,8 @@ public partial class Player
     private BluePrediction DetermineBluePrediction()
     {
         Player predicted;
-        if (D(1, 2) == 1) predicted = Others.Where(p => !p.IsBot).RandomOrDefault();
-        predicted = Others.Where(p => !p.IsBot).RandomOrDefault();
+        if (D(1, 2) == 1) predicted = Others.Where(p => !Game.IsBot(p)).RandomOrDefault();
+        predicted = Others.Where(p => !Game.IsBot(p)).RandomOrDefault();
         predicted ??= Others.RandomOrDefault();
 
         int turn;

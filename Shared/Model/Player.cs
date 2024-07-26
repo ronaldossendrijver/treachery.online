@@ -25,6 +25,13 @@ public partial class Player : ICloneable
         Game = game;
         Faction = faction;
     }
+    
+    [Obsolete]
+    public Player(Game game, string name)
+    {
+        Game = game;
+        Name = name;
+    }
 
     #endregion Construction
 
@@ -43,7 +50,10 @@ public partial class Player : ICloneable
         }
     }
 
-    public int PositionAtTable { get; set; } = -1;
+    [Obsolete]
+    public string Name { get; set; } = string.Empty;
+
+    public int Seat { get; set; } = -1;
 
     public int Resources { get; set; }
 
@@ -635,6 +645,8 @@ public partial class Player : ICloneable
     public IEnumerable<IHero> UnrevealedFaceDancers => FaceDancers.Where(f => !RevealedDancers.Contains(f));
 
     public bool MessiahAvailable => Game.Applicable(Rule.GreenMessiah) && Is(Faction.Green) && TotalForcesKilledInBattle >= 7 && Game.IsAlive(LeaderManager.Messiah);
+    public bool IsBot => Game.IsBot(this);
+    public bool AllyIsBot => HasAlly && Game.IsBot(AlliedPlayer);
 
     public bool HasKarma(Game g) => Karma.ValidKarmaCards(g, this).Any();
 
