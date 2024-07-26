@@ -34,6 +34,7 @@ public class Client : IGameService, IGameClient
     private DateTime LastPing { get; set; }
     
     //Game in progress
+    public bool InGame => Game != null;
     public string GameToken { get; set; }
     public Game Game { get; private set; }
     public GameParticipation Participation { get; private set; }
@@ -315,7 +316,6 @@ public class Client : IGameService, IGameClient
     
     public async Task HandleGlobalChatMessage(GlobalChatMessage m)
     {
-        m.DateTimeReceived = DateTime.Now;
         Messages.AddFirst(m);
 
         if (!MuteGlobalChat)
@@ -327,10 +327,7 @@ public class Client : IGameService, IGameClient
 
     public async Task HandleChatMessage(GameChatMessage m)
     {
-        m.DateTimeReceived = DateTime.Now;
-
-        var me = PlayerName.ToLower().Trim();
-        if (m.TargetPlayerName == "" || m.SourcePlayerName == "" || m.SourcePlayerName.ToLower().Trim() == me || m.TargetPlayerName.ToLower().Trim() == me)
+        if (m.TargetUserId < 0 || m.SourceUserId < 0 || m.SourceUserId == UserId || m.TargetUserId == UserId)
         {
             Messages.AddFirst(m);
             await Browser.PlaySound(Skin.Current.Sound_Chatmessage_URL, CurrentChatVolume);

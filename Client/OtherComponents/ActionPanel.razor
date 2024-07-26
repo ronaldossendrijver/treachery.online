@@ -12,22 +12,22 @@
 
 @if (!Client.IsHost && Client.CurrentPhase == Phase.AwaitingPlayers)
 {
-    <AwaitingGameComponent  />
+    <AwaitingGameComponent/>
 }
 
 @if (Client.Actions.Contains(typeof(EstablishPlayers)))
 {
-    <EstablishPlayersComponent  />
+    <EstablishPlayersComponent/>
 }
 
 @if (Client.Game.CurrentPhase == Phase.Bidding)
 {
-    <NormalBiddingPanel  CanBid="Client.Actions.Contains(typeof(Bid))" />
+    <NormalBiddingPanel  CanBid="@Client.Actions.Contains(typeof(Bid))" />
 }
 
 @if (Client.Game.CurrentPhase == Phase.BlackMarketBidding)
 {
-    <BlackMarketBiddingPanel  CanBid="Client.Actions.Contains(typeof(BlackMarketBid))" />
+    <BlackMarketBiddingPanel  CanBid="@Client.Actions.Contains(typeof(BlackMarketBid))" />
 }
 
 @foreach (var a in Client.Actions)
@@ -36,72 +36,72 @@
     {
         case "FactionSelected":
             {
-                <FactionSelectedComponent  />
+                <FactionSelectedComponent/>
             }
             break;
         case "FactionTradeOffered":
             {
-                <FactionTradeOfferedComponent  />
+                <FactionTradeOfferedComponent/>
             }
             break;
         case "SkillAssigned":
             {
-                <SkillAssignedComponent  />
+                <SkillAssignedComponent/>
             }
             break;
         case "DiscoveryEntered":
             {
-                <DiscoveryEnteredComponent  />
+                <DiscoveryEnteredComponent/>
             }
             break;
         case "StormDialled":
             {
-                <StormDialledComponent  />
+                <StormDialledComponent/>
             }
             break;
         case "TestingStationUsed":
             {
-                <TestingStationUsedComponent  />
+                <TestingStationUsedComponent/>
             }
             break;
         case "CardsDetermined":
             {
-                <CardsDeterminedComponent  />
+                <CardsDeterminedComponent/>
             }
             break;
         case "PerformSetup":
             {
-                <PerformSetupComponent  />
+                <PerformSetupComponent/>
             }
             break;
         case "PerformYellowSetup":
             {
-                <PerformYellowSetupComponent  />
+                <PerformYellowSetupComponent/>
             }
             break;
         case "BluePrediction":
             {
-                <BluePredictionComponent  />
+                <BluePredictionComponent/>
             }
             break;
         case "PerformBluePlacement":
             {
-                <PerformBluePlacementComponent  />
+                <PerformBluePlacementComponent/>
             }
             break;
         case "PerformCyanSetup":
             {
-                <PerformCyanSetupComponent  />
+                <PerformCyanSetupComponent/>
             }
             break;
         case "MulliganPerformed":
             {
-                <MulliganPerformedComponent  />
+                <MulliganPerformedComponent/>
             }
             break;
         case "TraitorsSelected":
             {
-                <TraitorsSelectedComponent  />
+                <TraitorsSelectedComponent/>
             }
             break;
         case "StormSpellPlayed":
@@ -116,7 +116,7 @@
             break;
         case "TakeLosses":
             {
-                <TakeLossesComponent  />
+                <TakeLossesComponent/>
             }
             break;
         case "NexusVoted":
@@ -126,17 +126,17 @@
             break;
         case "YellowSentMonster":
             {
-                <YellowSentMonsterComponent  />
+                <YellowSentMonsterComponent/>
             }
             break;
         case "YellowRidesMonster":
             {
-                <YellowRideComponent  />
+                <YellowRideComponent/>
             }
             break;
         case "AllianceOffered":
             {
-                <AllianceOfferedComponent  />
+                <AllianceOfferedComponent/>
             }
             break;
         case "AllianceBroken":
@@ -146,7 +146,7 @@
             break;
         case "NexusCardDrawn":
             {
-                <NexusCardDrawnComponent  />
+                <NexusCardDrawnComponent/>
             }
             break;
         case "CharityClaimed":
@@ -156,12 +156,12 @@
             break;
         case "Revival":
             {
-                <RevivalComponent  />
+                <RevivalComponent/>
             }
             break;
         case "Shipment":
             {
-                <ShipmentComponent  />
+                <ShipmentComponent/>
             }
             break;
         case "OrangeDelay":
@@ -171,22 +171,22 @@
             break;
         case "BlueAccompanies":
             {
-                <BlueAccompaniesComponent  />
+                <BlueAccompaniesComponent/>
             }
             break;
         case "BlueFlip":
             {
-                <BlueFlipComponent  />
+                <BlueFlipComponent/>
             }
             break;
         case "TerrorRevealed":
             {
-                <TerrorRevealedComponent  />
+                <TerrorRevealedComponent/>
             }
             break;
         case "AmbassadorActivated":
             {
-                <AmbassadorActivatedComponent  />
+                <AmbassadorActivatedComponent/>
             }
             break;
             case "AllianceByTerror":
@@ -201,17 +201,17 @@
             break;
         case "NexusPlayed":
             {
-                <NexusPlayedComponent  />
+                <NexusPlayedComponent/>
             }
             break;
         case "BlueBattleAnnouncement":
             {
-                <BlueBattleAnnouncementComponent  />
+                <BlueBattleAnnouncementComponent/>
             }
             break;
         case "Move":
             {
-                <MoveComponent  />
+                <MoveComponent/>
             }
             break;
         case "Caravan":
@@ -221,7 +221,7 @@
             break;
         case "BattleInitiated":
             {
-                <BattleInitiatedComponent  />
+                <BattleInitiatedComponent/>
             }
             break;
         case "BattleClaimed":
@@ -235,17 +235,17 @@
             break;
         case "Voice":
             {
-                <VoiceComponent  />
+                <VoiceComponent/>
             }
             break;
         case "Prescience":
             {
-                <PrescienceComponent  />
+                <PrescienceComponent/>
             }
             break;
         case "Battle":
             {
-                <BattleComponent  />
+                <BattleComponent/>
             }
             break;
         case "BattleRevision":
@@ -255,27 +255,27 @@
             break;
         case "TreacheryCalled":
             {
-                <TreacheryCalledComponent  />
+                <TreacheryCalledComponent/>
             }
             break;
         case "FaceDancerRevealed":
             {
-                <FaceDancerRevealedComponent  />
+                <FaceDancerRevealedComponent/>
             }
             break;
         case "BattleConcluded":
             {
-                <BattleConcludedComponent  />
+                <BattleConcludedComponent/>
             }
             break;
         case "LoserConcluded":
             {
-                <LoserConcludedComponent  />
+                <LoserConcludedComponent/>
             }
             break;
         case "DivideResources":
             {
-                <DivideResourcesComponent  />
+                <DivideResourcesComponent/>
             }
             break;
         case "DivideResourcesAccepted":
@@ -285,7 +285,7 @@
             break;
         case "DiscoveryRevealed":
             {
-                <DiscoveryRevealedComponent  />
+                <DiscoveryRevealedComponent/>
             }
             break;
         case "CardGiven":
@@ -300,22 +300,22 @@
             break;
         case "Donated":
             {
-                <DonatedComponent  />
+                <DonatedComponent/>
             }
             break;
         case "ResourcesTransferred":
             {
-                <ResourcesTransferredComponent  />
+                <ResourcesTransferredComponent/>
             }
             break;
         case "WhiteGaveCard":
             {
-                <WhiteGaveCardComponent  />
+                <WhiteGaveCardComponent/>
             }
             break;
         case "AllyPermission":
             {
-                <AllyPermissionComponent  />
+                <AllyPermissionComponent/>
             }
             break;
         case "ClairVoyancePlayed":
@@ -385,37 +385,37 @@
             break;
         case "FaceDanced":
             {
-                <FaceDancedComponent  />
+                <FaceDancedComponent/>
             }
             break;
         case "FaceDancerReplaced":
             {
-                <FaceDancerReplacedComponent  />
+                <FaceDancerReplacedComponent/>
             }
             break;
         case "SetIncreasedRevivalLimits":
             {
-                <SetIncreasedRevivalLimitsComponent  />
+                <SetIncreasedRevivalLimitsComponent/>
             }
             break;
         case "SetShipmentPermission":
             {
-                <SetShipmentPermissionComponent  />
+                <SetShipmentPermissionComponent/>
             }
             break;
         case "RedBidSupport":
             {
-                <RedBidSupportComponent  />
+                <RedBidSupportComponent/>
             }
             break;
         case "RequestPurpleRevival":
             {
-                <RequestPurpleRevivalComponent  />
+                <RequestPurpleRevivalComponent/>
             }
             break;
         case "AcceptOrCancelPurpleRevival":
             {
-                <AcceptOrCancelPurpleRevivalComponent  />
+                <AcceptOrCancelPurpleRevivalComponent/>
             }
             break;
         case "AmalPlayed":
@@ -430,32 +430,32 @@
             break;
         case "WhiteAnnouncesBlackMarket":
             {
-                <WhiteAnnouncesBlackMarketComponent  />
+                <WhiteAnnouncesBlackMarketComponent/>
             }
             break;
         case "GreyRemovedCardFromAuction":
             {
-                <GreyRemovedCardFromAuctionComponent  />
+                <GreyRemovedCardFromAuctionComponent/>
             }
             break;
         case "GreySelectedStartingCard":
             {
-                <GreySelectedStartingCardComponent  />
+                <GreySelectedStartingCardComponent/>
             }
             break;
         case "GreySwappedCardOnBid":
             {
-                <GreySwappedCardOnBidComponent  />
+                <GreySwappedCardOnBidComponent/>
             }
             break;
         case "PerformHmsMovement":
             {
-                <PerformHmsMovementComponent  />
+                <PerformHmsMovementComponent/>
             }
             break;
         case "PerformHmsPlacement":
             {
-                <PerformHmsPlacementComponent  />
+                <PerformHmsPlacementComponent/>
             }
             break;
         case "HarvesterPlayed":
@@ -470,7 +470,7 @@
             break;
         case "ReplacedCardWon":
             {
-                <ReplacedCardWonComponent  />
+                <ReplacedCardWonComponent/>
             }
             break;
         case "ThumperPlayed":
@@ -485,37 +485,37 @@
             break;
         case "DealOffered":
             {
-                <DealOfferedComponent  />
+                <DealOfferedComponent/>
             }
             break;
         case "Discarded":
             {
-                <DiscardedComponent  />
+                <DiscardedComponent/>
             }
             break;
         case "RedDiscarded":
             {
-                <RedDiscardedComponent  />
+                <RedDiscardedComponent/>
             }
             break;
         case "TraitorDiscarded":
             {
-                <TraitorDiscardedComponent  />
+                <TraitorDiscardedComponent/>
             }
             break;
         case "BrownDiscarded":
             {
-                <BrownDiscardedComponent  />
+                <BrownDiscardedComponent/>
             }
             break;
         case "TerrorPlanted":
             {
-                <TerrorPlantedComponent  />
+                <TerrorPlantedComponent/>
             }
             break;
         case "AmbassadorPlaced":
             {
-                <AmbassadorPlacedComponent  />
+                <AmbassadorPlacedComponent/>
             }
             break;
         case "ExtortionPrevented":
@@ -526,12 +526,12 @@
             break;
         case "BrownEconomics":
             {
-                <BrownEconomicsComponent  />
+                <BrownEconomicsComponent/>
             }
             break;
         case "CardTraded":
             {
-                <CardTradedComponent  />
+                <CardTradedComponent/>
             }
             break;
         case "KarmaBrownDiscard":
@@ -541,17 +541,17 @@
             break;
         case "AuditCancelled":
             {
-                <AuditCancelledComponent  />
+                <AuditCancelledComponent/>
             }
             break;
         case "Audited":
             {
-                <AuditedComponent  />
+                <AuditedComponent/>
             }
             break;
         case "ResourcesAudited":
             {
-                <ResourcesAuditedComponent  />
+                <ResourcesAuditedComponent/>
             }
             break;
         case "BrownExtraMove":
@@ -564,37 +564,37 @@
             break;
         case "BrownMovePrevention":
             {
-                <BrownMovePreventionComponent  />
+                <BrownMovePreventionComponent/>
             }
             break;
         case "BrownKarmaPrevention":
             {
-                <BrownKarmaPreventionComponent  />
+                <BrownKarmaPreventionComponent/>
             }
             break;
         case "BrownFreeRevivalPrevention":
             {
-                <BrownFreeRevivalPreventionComponent  />
+                <BrownFreeRevivalPreventionComponent/>
             }
             break;
         case "BrownRemoveForce":
             {
-                <BrownRemoveForceComponent  />
+                <BrownRemoveForceComponent/>
             }
             break;
         case "WhiteAnnouncesAuction":
             {
-                <WhiteAnnouncesAuctionComponent  />
+                <WhiteAnnouncesAuctionComponent/>
             }
             break;
         case "WhiteSpecifiesAuction":
             {
-                <WhiteSpecifiesAuctionComponent  />
+                <WhiteSpecifiesAuctionComponent/>
             }
             break;
         case "WhiteKeepsUnsoldCard":
             {
-                <WhiteKeepsUnsoldCardComponent  />
+                <WhiteKeepsUnsoldCardComponent/>
             }
             break;
         case "WhiteRevealedNoField":
@@ -615,7 +615,7 @@
             break;
         case "FlightUsed":
             {
-                <FlightUsedComponent  />
+                <FlightUsedComponent/>
             }
             break;
         case "FlightDiscoveryUsed":
@@ -625,17 +625,17 @@
             break;
         case "RockWasMelted":
             {
-                <RockWasMeltedComponent  />
+                <RockWasMeltedComponent/>
             }
             break;
         case "DistransUsed":
             {
-                <DistransUsedComponent  />
+                <DistransUsedComponent/>
             }
             break;
         case "DiscardedTaken":
             {
-                <DiscardedTakenComponent  />
+                <DiscardedTakenComponent/>
             }
             break;
         case "DiscardedSearchedAnnounced":
@@ -648,12 +648,12 @@
             break;
         case "DiscardedSearched":
             {
-                <DiscardedSearchedComponent  />
+                <DiscardedSearchedComponent/>
             }
             break;
         case "JuicePlayed":
             {
-                <JuicePlayedComponent  />
+                <JuicePlayedComponent/>
             }
             break;
         case "PortableAntidoteUsed":
@@ -676,7 +676,7 @@
             break;
         case "Diplomacy":
             {
-                <DiplomacyComponent  />
+                <DiplomacyComponent/>
             }
             break;
         case "SwitchedSkilledLeader":
@@ -692,27 +692,27 @@
             break;
         case "Thought":
             {
-                <ThoughtComponent  />
+                <ThoughtComponent/>
             }
             break;
         case "ThoughtAnswered":
             {
-                <ThoughtAnsweredComponent  />
+                <ThoughtAnsweredComponent/>
             }
             break;
         case "HMSAdvantageChosen":
             {
-                <HMSAdvantageChosenComponent  />
+                <HMSAdvantageChosenComponent/>
             }
             break;
         case "Retreat":
             {
-                <RetreatComponent  />
+                <RetreatComponent/>
             }
             break;
         case "Planetology":
             {
-                <PlanetologyComponent  />
+                <PlanetologyComponent/>
             }
             break;
     }
@@ -720,26 +720,21 @@
 
 @if (DealAccepted.CurrentDeals(Client.Game).Any() || (Client.IsPlayer && (DealAccepted.AcceptableDeals(Client.Game, Client.Player).Any() || DealAccepted.CancellableDeals(Client.Game, Client.Player).Any())))
 {
-    <DealComponent  />
+    <DealComponent/>
 }
 
 @if (Client.Game.AssistedNotekeepingEnabled(Player))
 {
-    <NoteComponent  />
+    <NoteComponent/>
 }
 
-@if (Client.IsPlayer && Client.CurrentPhase >= Phase.SelectingTraitors && Client.IAm(Faction.Green))
+@if (Client.IsPlayer && Client.CurrentPhase >= Phase.SelectingTraitors && Client.Faction is Faction.Green)
 {
-    <TrackerComponent  />
-}
-
-@if (Client.Game.CurrentPhase == Phase.GameEnded && Client.IsHost && !Client.StatisticsSent && Client.Game.Players.Count() >= 4 && Client.Game.Players.Count(p => !p.IsBot) > Client.Game.Players.Count(p => p.IsBot))
-{
-    <UploadStatisticsComponent  />
+    <TrackerComponent/>
 }
 
 @if (Client.Game.CurrentMainPhase != MainPhase.Ended && Client.Actions.Contains(typeof(PlayerReplaced)))
 {
-    <PlayerReplacedComponent  />
+    <PlayerReplacedComponent/>
 }
 

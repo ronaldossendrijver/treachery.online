@@ -25,7 +25,7 @@
 
         @if (Client.IsConnected)
         {
-            var centerSize = Client.PlayerName != "" && Client.HostProxy == null && Client.Host == null ? 6 : 4;
+            var centerSize = Client.PlayerName != "" && !Client.InGame && !Client.IsHost ? 6 : 4;
             var fillerSize = 0.5f * (12 - centerSize);
 
             <div class="col-sm-12 col-lg-@fillerSize"></div>
@@ -37,7 +37,7 @@
                         <PlayerNameComponent  />
                     </div>
                 }
-                else if (Client.HostProxy == null && Client.Host == null)
+                else if (!Client.InGame && !Client.IsHost)
                 {
                     <HostOrJoinGameComponent  />
                 }
@@ -154,11 +154,6 @@ else
                 </HoverPanel>
             }
 
-            @if (Client.JoinableAdvertisedGames.Any() && (Client.IsObserver || (Client.Game != null && Client.Game.NumberOfHumanPlayers <= 1)))
-            {
-                <AdvertisedGamesComponent/>
-            }
-
             <ImageFlashComponent/>
     </div>
 }
@@ -210,11 +205,11 @@ else
 
     private string Scrollbars => isFullscreen? "vh-100 overflow-auto" : "";
 
-    private string MapGrid => !Client.IsConnected || Client.PlayerName == "" || (Client.HostProxy == null && Client.Host == null) ? "col-sm-12 col-lg-5" : "col-sm-12 col-lg-6";
+    private string MapGrid => !Client.IsConnected || !Client.LoggedIn || !Client.InGame && !Client.IsHost ? "col-sm-12 col-lg-5" : "col-sm-12 col-lg-6";
 
-    private string ActionGrid => !Client.IsConnected || Client.PlayerName == "" || (Client.HostProxy == null && Client.Host == null) ? "col-sm-12 col-lg-4" : "col-sm-12 col-lg-3";
+    private string ActionGrid => !Client.IsConnected || !Client.LoggedIn ||!Client.InGame && !Client.IsHost ? "col-sm-12 col-lg-4" : "col-sm-12 col-lg-3";
 
-    private bool GameStarted => Client.HostProxy != null && Client.Game.CurrentPhase > Phase.AwaitingPlayers;
+    private bool GameStarted => Client.InGame && Client.Game.CurrentPhase > Phase.AwaitingPlayers;
     
     public void Dispose()
     {

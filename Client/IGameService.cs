@@ -12,7 +12,8 @@ public interface IGameService
 {
     public Game Game { get; }
     public GameStatus Status { get; }
-
+    public bool InGame { get; }
+    
     //Player and Host
     public bool LoggedIn { get; }
     public string PlayerName { get; }
