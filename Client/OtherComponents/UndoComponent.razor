@@ -46,7 +46,7 @@
 
     private async Task ConfirmUndo()
     {
-        await Client.Host.Undo(undoEventId);
+        await Client.RequestUndo(undoEventId);
     }
 
     private string DetermineEventDescription(int eventnumber, GameEvent e)

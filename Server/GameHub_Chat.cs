@@ -5,7 +5,7 @@ namespace Treachery.Server;
 
 public partial class GameHub
 {
-    public async Task<VoidResult> RequestChatMessage(string playerToken, string gameToken, GameChatMessage e)
+    public async Task<VoidResult> SendChatMessage(string playerToken, string gameToken, GameChatMessage e)
     {
         if (!AreValid(playerToken, gameToken, out var playerId, out var game, out var error))
             return error;

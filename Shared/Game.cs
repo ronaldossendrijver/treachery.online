@@ -16,7 +16,7 @@ public partial class Game
     #region Settings
 
     private const int LowestSupportedVersion = 100;
-    public const int LatestVersion = 169;
+    public const int LatestVersion = 170;
     public const int ExpansionLevel = 3;
     
     #endregion Settings
@@ -645,7 +645,7 @@ public partial class Game
 
     #region TechnicalSupport
 
-    public static Message TryLoad(GameState state, bool performValidation, bool isHost, out Game result)
+    public static Message TryLoad(GameState state, GameParticipation participation, bool performValidation, bool isHost, out Game result)
     {
         try
         {
@@ -663,6 +663,7 @@ public partial class Game
                 nr++;
             }
 
+            result.SetParticipation(participation);
             return null;
         }
         catch (Exception e)

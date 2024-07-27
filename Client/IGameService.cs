@@ -19,9 +19,8 @@ public interface IGameService
     public string PlayerName { get; }
     public bool IsObserver { get; }
     public ServerSettings ServerSettings { get; }
-    public Dictionary<Guid, string> JoinErrors { get; }
+    public Dictionary<string, string> JoinErrors { get; }
     public DateTime Disconnected { get; }
-    public bool InGame { get; }
     
     //Client State
     public float CurrentEffectVolume { get; set;  }
@@ -42,8 +41,6 @@ public interface IGameService
     public Task Start();
     
     public List<GameInfo> RunningGames { get; }
-
-    public Task RequestSendGlobalChatMessage(GlobalChatMessage message);
 
     public void Reset();
 
@@ -67,21 +64,44 @@ public interface IGameService
 
     public Phase CurrentPhase { get; }
     
-    public Task ToggleBotPause();
-
     public event EventHandler<Location> OnLocationSelected;
     public event EventHandler<Location> OnLocationSelectedWithCtrlOrAlt;
     public event EventHandler<Location> OnLocationSelectedWithShift;
     public event EventHandler<Location> OnLocationSelectedWithShiftAndWithCtrlOrAlt;
 
     public void LocationClick(LocationEventArgs e);
-
-    public Task<string> RequestLogin(string userName, string hashedPassword);
-
-    public Task<string> RequestCreateUser(string userName, string hashedPassword, string email, string playerName);
-
-    public Task<string> RequestPasswordReset(string email);
-
-    public Task<string> RequestSetPassword(string userName, string passwordResetToken, string hashedPassword);
     
+    //Authentication
+    
+    Task<string> RequestCreateUser(string userName, string hashedPassword, string email, string playerName);
+    Task<string> RequestLogin(string userName, string hashedPassword);
+    Task<string> RequestPasswordReset(string email);
+    Task<string> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword);
+    
+    //Game Management
+    
+    Task<string> RequestCreateGame(string hashedPassword, string settings, string stateData = null);
+    Task<string> RequestJoinGame(string gameId, string hashedPassword, int seat);
+    Task<string> RequestObserveGame(string gameId, string hashedPassword);
+    Task<string> RequestReconnectGame();
+    Task<string> RequestSetOrUnsetHost(int userId);
+    Task<string> RequestOpenOrCloseSeat(int seat);
+    Task<string> RequestSeatOrUnseatBot(int seat);
+    Task RequestLeaveGame();
+    Task<string> RequestKick(int userId);
+    
+    Task<string> RequestLoadGame(string state, string skin);
+    Task<string> RequestSetSkin(string skin);
+    Task<string> RequestUndo(int untilEventNr);
+    Task<string> RequestPauseBots();
+    
+    //Game Events
+    
+    Task<string> SetTimer(int value);
+    Task<string> RequestGameEvent<T>(T e) where T : GameEvent;
+    
+        
+    //Chat
+    Task SendChatMessage(GameChatMessage e);
+    Task SendGlobalChatMessage(GlobalChatMessage message);
 }

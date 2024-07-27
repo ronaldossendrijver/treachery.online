@@ -7,15 +7,13 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public partial class Game
 {
     public int MaximumNumberOfPlayers { get; internal set; }
     public List<Player> Players { get; private set; } = [];
-    private GameParticipation Participation { get; } = new();
+    public GameParticipation Participation { get; private set; } = new();
     
     public bool IsPlaying(Faction faction)
     {
@@ -125,6 +123,9 @@ public partial class Game
             .Select(idAndName => idAndName.Value);
 
     public bool IsHost(int userId) => Participation.Hosts.Contains(userId);
+    
+    public bool IsObserver(int userId) => Participation.Observers.Contains(userId);
+    
     public void SetOrUnsetHost(int userId)
     {
         if (IsHost(userId))
@@ -136,5 +137,10 @@ public partial class Game
             Participation.Hosts.Add(userId);
         }
         
+    }
+
+    private void SetParticipation(GameParticipation participation)
+    {
+        Participation = participation;
     }
 }

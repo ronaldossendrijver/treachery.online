@@ -14,21 +14,22 @@ public interface IGameHub
     
     //Game Management
     
-    Task<Result<JoinInfo>> RequestCreateGame(string userToken, string hashedPassword, string settings);
-    Task<Result<JoinInfo>> RequestJoinGame(string userToken, string gameId, string hashedPassword, int seat);
-    Task<Result<JoinInfo>> RequestObserveGame(string userToken, string gameId, string hashedPassword);
-    Task<Result<JoinInfo>> RequestReconnectGame(string userToken, string gameToken);
+    Task<Result<GameInitInfo>> RequestCreateGame(string userToken, string hashedPassword, string settings, string stateData);
+    Task<Result<GameInitInfo>> RequestJoinGame(string userToken, string gameId, string hashedPassword, int seat);
+    Task<Result<GameInitInfo>> RequestObserveGame(string userToken, string gameId, string hashedPassword);
+    Task<Result<GameInitInfo>> RequestReconnectGame(string userToken, string gameToken);
     Task<VoidResult> RequestSetOrUnsetHost(string userToken, string gameToken, int userId);
     Task<VoidResult> RequestOpenOrCloseSeat(string userToken, string gameToken, int seat);
     Task<VoidResult> RequestSeatOrUnseatBot(string userToken, string gameToken, int seat);
     Task<VoidResult> RequestLeaveGame(string userToken, string gameToken);
     Task<VoidResult> RequestKick(string userToken, string gameToken, int userId);
     
-    Task<Result<JoinInfo>> RequestLoadGame(string userToken, string hashedPassword, string state, string skin);
+    Task<VoidResult> RequestLoadGame(string userToken, string hashedPassword, string state, string skin = null);
     Task<VoidResult> RequestSetSkin(string userToken, string gameToken, string skin);
     Task<VoidResult> RequestUndo(string userToken, string gameToken, int untilEventNr);
-    Task<Result<string>> RequestGameState(string userToken, string gameToken);
+    Task<Result<GameInitInfo>> RequestGameState(string userToken, string gameToken);
     Task<VoidResult> RequestPauseBots(string userToken, string gameToken);
+    Task<VoidResult> RequestRegisterHeartbeat(string userToken);
     
     //Game Events
     
@@ -172,29 +173,9 @@ public interface IGameHub
     Task<VoidResult> RequestRecruitsPlayed(string userToken, string gameToken, RecruitsPlayed e);
     
     //Chat
-    
-    Task<VoidResult> RequestChatMessage(string userToken, string gameToken, GameChatMessage e);
+    Task<VoidResult> SendChatMessage(string userToken, string gameToken, GameChatMessage e);
     Task<VoidResult> SendGlobalChatMessage(string userToken, GlobalChatMessage message);
 
     //Other
-    
     Result<ServerSettings> GetServerSettings();
-    //void ProcessHeartbeat(string userToken);
-}
-
-public class Result<T>
-{
-    public bool Success { get; set; }
-    public string Message { get; set; }
-    public T Contents { get; set; }
-}
-
-public class VoidResult : Result<VoidContents>
-{
-    
-}
-
-public class VoidContents
-{
-    
 }

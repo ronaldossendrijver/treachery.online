@@ -42,9 +42,9 @@
         _redrawCycleStarted = false;
     }
 
-    protected async Task Request(GameEvent e)
+    protected async Task Request<T>(T e) where T : GameEvent
     {
-        await Client.HostProxy.Request(e);
+        await Client.RequestGameEvent(e);
     }
 
     private bool _redrawCycleStarted;

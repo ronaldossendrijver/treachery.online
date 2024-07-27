@@ -34,4 +34,5 @@ public interface IGameClient
     Task HandleSeatOrUnseatBot(int seat);
     Task HandleRemoveUser(int userId);
     Task HandleBotStatus(bool botsArePaused);
+    Task HandleLoadGame(string state, GameParticipation participation);
 }

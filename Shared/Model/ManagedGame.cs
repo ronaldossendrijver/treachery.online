@@ -5,11 +5,11 @@ namespace Treachery.Server;
 
 public class ManagedGame
 {
-    public Game Game { get; init; }
+    public Game Game { get; set; }
     
-    public string HashedPassword { get; set; }
+    public string HashedPassword { get; init; }
 
-    public bool ObserversRequirePassword { get; set; }
+    public bool ObserversRequirePassword { get; init; }
     
     public bool BotsArePaused { get; set; }
     
