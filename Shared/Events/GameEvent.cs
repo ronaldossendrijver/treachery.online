@@ -87,7 +87,7 @@ public abstract class GameEvent
     {
         Game = game;
         Initiator = Faction.None;
-        Player = game.PlayerAtSeat(seat);
+        Player = game.GetPlayerBySeat(seat);
     }
 
     public void Initialize(Game game)

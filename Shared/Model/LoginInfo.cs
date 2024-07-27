@@ -2,7 +2,9 @@
 
 public class LoginInfo
 {
-    public string PlayerToken { get; set; }
-    
     public int UserId { get; set; }
+    
+    public string UserToken { get; set; }
+    
+    public string PlayerName { get; set; }
 }

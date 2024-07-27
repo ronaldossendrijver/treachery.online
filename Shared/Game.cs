@@ -26,24 +26,21 @@ public partial class Game
     public int Seed { get; internal set; } = -1;
     internal Random Random { get; set; }
     public int MaximumNumberOfTurns { get; internal set; }
-    public int MaximumNumberOfPlayers { get; internal set; }
-    public GameParticipation Participation { get; } = new();
     public string Name { get; internal set; }
-    public List<Milestone> RecentMilestones { get; } = new();
+    public List<Milestone> RecentMilestones { get; } = [];
     public int Version { get; }
     public Map Map { get; } = new();
     public Ruleset Ruleset { get; internal set; }
-    public List<Rule> Rules { get; internal set; } = new();
-    public List<Rule> RulesForBots { get; internal set; } = new();
-    public List<Rule> AllRules { get; internal set; } = new();
-    public List<GameEvent> History { get; } = new();
-    public List<Moment> Moments { get; } = new();
+    public List<Rule> Rules { get; internal set; } = [];
+    public List<Rule> RulesForBots { get; internal set; } = [];
+    public List<Rule> AllRules { get; internal set; } = [];
+    public List<GameEvent> History { get; } = [];
+    public List<Moment> Moments { get; } = [];
     public int CurrentTurn { get; private set; }
     public MainPhase CurrentMainPhase { get; internal set; } = MainPhase.Started;
     public MainPhaseMoment CurrentMoment { get; private set; } = MainPhaseMoment.None;
     public Phase CurrentPhase { get; private set; } = Phase.None;
     public List<Faction> HasActedOrPassed { get; } = [];
-    public List<Player> Players { get; private set; } = [];
     public Report CurrentReport { get; internal set; }
     public Deck<TreacheryCard> TreacheryDeck { get; internal set; }
     public Deck<TreacheryCard> TreacheryDiscardPile { get; internal set; }
@@ -509,33 +506,6 @@ public partial class Game
 
     #endregion Resources
 
-    #region PlayersAndFactions
-
-    public bool IsPlaying(Faction faction)
-    {
-        return Players.Any(p => p.Faction == faction);
-    }
-
-    public Player GetPlayer(Faction? f)
-    {
-        return Players.FirstOrDefault(p => p.Faction == f);
-    }
-
-    public bool IsBot(Player p) => Participation.SeatedBots.Contains(p.Seat);
-
-    public Faction GetAlly(Faction f)
-    {
-        var player = GetPlayer(f);
-        return player?.Ally ?? Faction.None;
-    }
-
-    public IEnumerable<Faction> PlayersOtherThan(Player p)
-    {
-        return Players.Where(x => x.Faction != p.Faction).Select(x => x.Faction);
-    }
-
-    #endregion
-
     #region Support
 
     internal void FlipBeneGesseritWhenAlone()
@@ -782,10 +752,6 @@ public partial class Game
 
     #region Information
 
-    public Player PlayerAtSeat(int seatNr) => Players.FirstOrDefault(p => p.Seat == seatNr);
-    
-    public int SeatOf(Faction f) => GetPlayer(f)?.Seat ?? -1;
-    
     public bool Occupies(Faction f, World w)
     {
         if (f != Faction.None)

@@ -18,5 +18,5 @@ public abstract class ChatMessage
 
     public string Body { get; init; }
 
-    public abstract Message GetBodyIncludingPlayerInfo(int receivingUserId, Game game, GameParticipation participation, bool contextIsGlobal);
+    public abstract Message GetBodyIncludingPlayerInfo(int receivingUserId, Game game, bool contextIsGlobal);
 }

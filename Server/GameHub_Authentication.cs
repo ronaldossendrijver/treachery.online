@@ -8,25 +8,25 @@ namespace Treachery.Server;
 
 public partial class GameHub
 {
-    public async Task<Result<string>> RequestCreateUser(string userName, string hashedPassword, string email, string playerName)
+    public async Task<Result<LoginInfo>> RequestCreateUser(string userName, string hashedPassword, string email, string playerName)
     {
         var trimmedUsername = userName.Trim().ToLower();
         
         if (trimmedUsername.Trim().Length <= 3)
         {
-            return Error<string>("Username must be more than 3 characters");
+            return Error<LoginInfo>("Username must be more than 3 characters");
         }
         
         await using var db = GetDbContext();
         
         if (db.Users.Any(x => x.Name.Trim().ToLower().Equals(trimmedUsername)))
         {
-            return Error<string>("This username already exists");
+            return Error<LoginInfo>("This username already exists");
         }
         
         if (db.Users.Any(x => x.Email.Trim().ToLower().Equals(trimmedUsername)))
         {
-            return Error<string>("This e-mail address is already in use");
+            return Error<LoginInfo>("This e-mail address is already in use");
         }
 
         db.Add(new User
@@ -38,7 +38,7 @@ public partial class GameHub
             x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()) && x.HashedPassword == hashedPassword);
         
         if (user == null)
-            return Error<string>("User creation failed");
+            return Error<LoginInfo>("User creation failed");
         
         MailMessage mailMessage = new()
         {
@@ -55,15 +55,15 @@ public partial class GameHub
         mailMessage.To.Add(new MailAddress(email));
         SendMail(mailMessage);
         
-        var playerToken = GenerateToken();
-        usersByPlayerToken.TryAdd(playerToken, user);
-        return Success(playerToken);
+        var userToken = GenerateToken();
+        usersByUserToken.TryAdd(userToken, user);
+        return Success(new LoginInfo { UserId =user.Id, UserToken = userToken, PlayerName = user.PlayerName });
     }
     
-    public async Task<Result<string>> RequestLogin(int version, string userName, string hashedPassword)
+    public async Task<Result<LoginInfo>> RequestLogin(int version, string userName, string hashedPassword)
     {
         if (Game.LatestVersion != version)
-            return Error<string>("Invalid game version");
+            return Error<LoginInfo>("Invalid game version");
         
         await using var db = GetDbContext();
         
@@ -71,11 +71,11 @@ public partial class GameHub
             x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()) && x.HashedPassword == hashedPassword);
         
         if (user == null)
-            return Error<string>("Invalid user name or password");
+            return Error<LoginInfo>("Invalid user name or password");
 
-        var playerToken = GenerateToken();
-        usersByPlayerToken.TryAdd(playerToken, user);
-        return Success(playerToken);
+        var userToken = GenerateToken();
+        usersByUserToken.TryAdd(userToken, user);
+        return Success(new LoginInfo { UserId = user.Id, UserToken = userToken, PlayerName = user.PlayerName });
     }
     
     public async Task<VoidResult> RequestPasswordReset(string email)
@@ -114,7 +114,7 @@ public partial class GameHub
         return null;
     }
     
-    public async Task<Result<string>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword)
+    public async Task<Result<LoginInfo>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword)
     {
         await using var db = GetDbContext();
 
@@ -122,13 +122,13 @@ public partial class GameHub
             x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()));
         
         if (user == null)
-            return Error<string>("Unknown user name");
+            return Error<LoginInfo>("Unknown user name");
 
         if (string.IsNullOrEmpty(user.PasswordResetToken) || user.PasswordResetToken.Trim() != passwordResetToken)
-            return Error<string>("Invalid password reset token");
+            return Error<LoginInfo>("Invalid password reset token");
         
         if ((DateTime.Now - user.PasswordResetTokenCreated).TotalMinutes > 60)
-            return Error<string>("Your password reset token has expired");
+            return Error<LoginInfo>("Your password reset token has expired");
 
         user.HashedPassword = newHashedPassword;
         user.PasswordResetToken = null;
@@ -136,9 +136,9 @@ public partial class GameHub
 
         await db.SaveChangesAsync();
         
-        var playerToken = GenerateToken();
-        usersByPlayerToken.TryAdd(playerToken, user);
-        return Success(playerToken);
+        var userToken = GenerateToken();
+        usersByUserToken.TryAdd(userToken, user);
+        return Success(new LoginInfo { UserId = user.Id, UserToken = userToken, PlayerName = user.PlayerName });
     }
 }
 

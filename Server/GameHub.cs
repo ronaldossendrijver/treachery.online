@@ -14,9 +14,9 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
 {
     private readonly ConcurrentDictionary<string,ManagedGame> gamesByGameToken = [];
     private readonly ConcurrentDictionary<string,string> gameTokensByGameId = [];
-    private readonly ConcurrentDictionary<string,User> usersByPlayerToken = [];
+    private readonly ConcurrentDictionary<string,User> usersByUserToken = [];
     private readonly ConcurrentDictionary<string,Game> finishedGames = [];
-    private readonly ConcurrentDictionary<string,DateTime> playerTokensLastSeen = [];
+    private readonly ConcurrentDictionary<string,DateTime> userTokensLastSeen = [];
     //private readonly ConcurrentDictionary<int, Game> gamesByPlayerId = [];
 
     
@@ -39,7 +39,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         game = null;
         result = null;
         
-        if (!usersByPlayerToken.TryGetValue(playerToken, out user))
+        if (!usersByUserToken.TryGetValue(playerToken, out user))
         {
             result = Error<TResult>("Player not found");
             return false;
@@ -59,7 +59,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         game = null;
         result = null;
         
-        if (!usersByPlayerToken.TryGetValue(playerToken, out user))
+        if (!usersByUserToken.TryGetValue(playerToken, out user))
         {
             result = Error("Player not found");
             return false;

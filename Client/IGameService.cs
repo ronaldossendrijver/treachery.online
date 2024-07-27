@@ -21,6 +21,7 @@ public interface IGameService
     public ServerSettings ServerSettings { get; }
     public Dictionary<Guid, string> JoinErrors { get; }
     public DateTime Disconnected { get; }
+    public bool InGame { get; }
     
     //Client State
     public float CurrentEffectVolume { get; set;  }
@@ -38,26 +39,14 @@ public interface IGameService
     public bool IsDisconnected { get; }
     public void Refresh();
     public void RefreshPopovers();
-    public string MyName { get; }
     public Task Start();
     
     public List<GameInfo> RunningGames { get; }
-    
-    /*
-    public Task Request(int hostId, PlayerJoined e);
-    public Task Request(int hostID, ObserverJoined e);
-    public Task Request(int hostID, PlayerRejoined e);
-
-    public Task Request(int hostID, ObserverRejoined e);
-    */
 
     public Task RequestSendGlobalChatMessage(GlobalChatMessage message);
 
     public void Reset();
 
-   // public DateTime HostLastSeen { get; }
-
-    //public Task Heartbeat(int gameInProgressHostId);
     public bool IsPlayer { get; }
 
     public Player Player { get; }

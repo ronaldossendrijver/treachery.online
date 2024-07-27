@@ -13,38 +13,38 @@ public class GameChatMessage : ChatMessage
 {
     public int TargetUserId { get; init; }
 
-    public override Message GetBodyIncludingPlayerInfo(int receivingUserId, Game game, GameParticipation participation, bool contextIsGlobal)
+    public override Message GetBodyIncludingPlayerInfo(int receivingUserId, Game game, bool contextIsGlobal)
     {
         if (SourceUserId == receivingUserId)
         {
             return TargetUserId < 0 ? 
                 Message.Express("You: ", Body, " ⇒ ALL") : 
-                Message.Express("You: ", Body, " ⇒ ", GetTargetFaction(game, participation));
+                Message.Express("You: ", Body, " ⇒ ", GetTargetFaction(game));
         }
 
-        var sourceFaction = GetSourceFaction(game, participation);
+        var sourceFaction = GetSourceFaction(game);
 
         if (TargetUserId < 0)
         {
             return sourceFaction != Faction.None ? 
-                Message.Express(GetSourceFaction(game, participation), " (to ALL) ", Body) : 
+                Message.Express(GetSourceFaction(game), " (to ALL) ", Body) : 
                 Message.Express(SourceUserId, " (to ALL) ", Body);
         }
 
-        return Message.Express(sourceFaction != Faction.None ? 
-            GetSourceFaction(game, participation) : 
-            participation.GetPlayerName(SourceUserId), Body);
+        return Message.Express(
+            sourceFaction != Faction.None ? GetSourceFaction(game) : game.GetPlayerName(SourceUserId), 
+            Body);
     }
 
-    public Faction GetSourceFaction(Game game, GameParticipation participation)
+    public Faction GetSourceFaction(Game game)
     {
-        var player = participation.GetPlayer(SourceUserId, game);
+        var player = game.GetPlayerByUserId(SourceUserId);
         return player?.Faction ?? Faction.None;
     }
 
-    public Faction GetTargetFaction(Game game, GameParticipation participation)
+    public Faction GetTargetFaction(Game game)
     {
-        var player = participation.GetPlayer(TargetUserId, game);
+        var player = game.GetPlayerByUserId(TargetUserId);
         return player?.Faction ?? Faction.None;
     }
 }

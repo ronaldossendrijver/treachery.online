@@ -3,9 +3,9 @@
 public class GameParticipation
 {
     /// <summary>
-    /// For all seats taken by Users (not Bots), hold the User info
+    /// All Users that wish to participate while awaiting players (before the game has actually started)
     /// </summary>
-    public Dictionary<int, int> Seats { get; set; } = [];
+    public HashSet<int> StandingUsers { get; set; } = [];
     
     /// <summary>
     /// For all Users, hold their Seat
@@ -13,41 +13,31 @@ public class GameParticipation
     public Dictionary<int, int> SeatedUsers { get; set; } = [];
 
     /// <summary>
+    /// For each User (player or observer) in the game, hold the name
+    /// </summary>
+    public Dictionary<int, string> UserNames { get; set; } = [];
+
+    /// <summary>
     /// Holds the seats occupies by Bots
     /// </summary>
     public HashSet<int> SeatedBots { get; set; } = [];
     
     /// <summary>
-    /// For each User type player in the game, hold the player name
+    /// Observers
     /// </summary>
-    public Dictionary<int, string> PlayerNames { get; set; } = [];
-    
-    /// <summary>
-    /// For each Observer of the game, hold the player name
-    /// </summary>
-    public Dictionary<int, string> ObserverNames { get; set; }
+    public HashSet<int> Observers { get; set; }
     
     /// <summary>
     /// All Users that are Hosts
     /// </summary>
-    public List<int> Hosts { get; set; }
+    public HashSet<int> Hosts { get; set; }
     
     /// <summary>
     /// All Seats that may be taken by other players
     /// </summary>
-    public IEnumerable<Faction> AvailableSeats { get; set; }
+    public HashSet<int> AvailableSeats { get; set; }
     
     public bool BotsArePaused { get; set; }
-    public bool BotPositionsAreAvailable { get; set; }
     
-
-    public object GetPlayerName(int userId) => PlayerNames.GetValueOrDefault(userId);
-
-    public Player GetPlayer(int userId, Game game)
-    {
-        var seat = GetSeat(userId);
-        return game.PlayerAtSeat(seat);
-    }
-
-    private int GetSeat(int userId) => SeatedUsers.GetValueOrDefault(userId);
+    public bool BotPositionsAreAvailable { get; set; }
 }

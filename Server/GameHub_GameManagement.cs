@@ -10,16 +10,16 @@ namespace Treachery.Server;
 
 public partial class GameHub
 {
-    public async Task<Result<JoinInfo>> RequestCreateGame(string playerToken, string hashedPassword, string settings)
-        => await CreateOrLoadGame(playerToken, hashedPassword, settings, null);
+    public async Task<Result<JoinInfo>> RequestCreateGame(string userToken, string hashedPassword, string settings)
+        => await CreateOrLoadGame(userToken, hashedPassword, settings, null);
     
-    public async Task<Result<JoinInfo>> RequestLoadGame(string playerToken, string hashedPassword, string settings, string stateData)
-        => await CreateOrLoadGame(playerToken, hashedPassword, settings, stateData);
+    public async Task<Result<JoinInfo>> RequestLoadGame(string userToken, string hashedPassword, string settings, string stateData)
+        => await CreateOrLoadGame(userToken, hashedPassword, settings, stateData);
     
-    private async Task<Result<JoinInfo>> CreateOrLoadGame(string playerToken, string hashedPassword, string settings, string stateData)
+    private async Task<Result<JoinInfo>> CreateOrLoadGame(string userToken, string hashedPassword, string settings, string stateData)
     {
-        if (!usersByPlayerToken.TryGetValue(playerToken, out var player))
-            return Error<JoinInfo>("Player not found");
+        if (!usersByUserToken.TryGetValue(userToken, out var user))
+            return Error<JoinInfo>("User not found");
 
         Game game;
         if (stateData != null)
@@ -40,8 +40,6 @@ public partial class GameHub
         var managedGame = new ManagedGame
         {
             Game = game, //TODO apply settings here
-            Players = [player],
-            Hosts = [player],
             HashedPassword = hashedPassword
         };
         var gameToken = GenerateToken();
@@ -50,16 +48,21 @@ public partial class GameHub
         gameTokensByGameId[gameId] = gameToken;
 
         await Groups.AddToGroupAsync(Context.ConnectionId, gameToken);
-        await Clients.Group(gameToken).UpdateParticipation(managedGame.GetParticipation());
+
+        game.AddPlayer(user.Id, user.PlayerName, -1);
+        await Clients.Group(gameToken).HandleJoinGame(user.Id, user.PlayerName, -1);
+        
+        game.SetOrUnsetHost(user.Id);
+        await Clients.Group(gameToken).HandleSetOrUnsetHost(user.Id);
         
         return await Task.FromResult(Success(new JoinInfo { GameToken = gameToken, GameState = stateData ?? GameState.GetStateAsString(game) }));
         
     }
     
-    public async Task<Result<JoinInfo>> RequestJoinGame(string playerToken, string gameId, string hashedPassword, Faction faction)
+    public async Task<Result<JoinInfo>> RequestJoinGame(string userToken, string gameId, string hashedPassword, int seat)
     {
-        if (!usersByPlayerToken.TryGetValue(playerToken, out var player))
-            return Error<JoinInfo>("Player not found");
+        if (!usersByUserToken.TryGetValue(userToken, out var user))
+            return Error<JoinInfo>("User not found");
 
         if (!gameTokensByGameId.TryGetValue(gameId, out var gameToken) || !gamesByGameToken.TryGetValue(gameToken, out var game))
             return Error<JoinInfo>("Game not found");
@@ -67,86 +70,158 @@ public partial class GameHub
         if (game.HashedPassword != null && !game.HashedPassword.Equals(hashedPassword))
             return Error<JoinInfo>("Incorrect password");
         
-        if (!game.HasRoomFor(faction))
+        if (!game.Game.IsOpen(seat))
             return Error<JoinInfo>("Seat is not available");
     
-        game.Players.Add(player);
         await Groups.AddToGroupAsync(Context.ConnectionId, gameToken);
-        await Clients.Group(gameToken).UpdateParticipation(game.GetParticipation());
-        return await Task.FromResult(Success(new JoinInfo { GameToken = gameToken, GameState = GameState.GetStateAsString(game.Game) }));
+        game.Game.AddPlayer(user.Id, user.PlayerName, seat);
+        await Clients.Group(gameToken).HandleJoinGame(user.Id, user.PlayerName, seat);
+        return Success(new JoinInfo { GameToken = gameToken, GameState = GameState.GetStateAsString(game.Game) });
+    }
+
+    public async Task<VoidResult> RequestOpenOrCloseSeat(string userToken, string gameToken, int seat)
+    {
+        if (!AreValid(userToken, gameToken, out var user, out var game, out var error))
+            return error;
+        
+        if (!game.Game.IsHost(user.Id))
+            return Error("You are not a host");
+
+        game.Game.OpenOrCloseSeat(seat);
+        await Clients.Group(gameToken).HandleOpenOrCloseSeat(seat);
+        return Success();
     }
     
-    public async Task<Result<JoinInfo>> RequestObserveGame(string playerToken, string gameId, string hashedPassword)
+    public async Task<VoidResult> RequestSetOrUnsetHost(string userToken, string gameToken, int userId)
     {
-        if (!usersByPlayerToken.TryGetValue(playerToken, out var player))
-            return Error<JoinInfo>("Player not found");
+        if (!AreValid(userToken, gameToken, out var user, out var game, out var error))
+            return error;
+
+        if (!game.Game.IsHost(user.Id))
+            return Error("You are not a host");
+
+        if (game.Game.IsHost(userId) && game.Game.NumberOfHosts <= 1) 
+            return Error("You cannot remove the only remaining host from the game");
+        
+        game.Game.SetOrUnsetHost(userId);
+        await Clients.Group(gameToken).HandleSetOrUnsetHost(userId);
+        return Success();
+    }
+
+    public async Task<VoidResult> RequestSeatOrUnseatBot(string userToken, string gameToken, int seat)
+    {
+        if (!AreValid(userToken, gameToken, out var user, out var game, out var error))
+            return error;
+
+        if (!game.Game.IsHost(user.Id))
+            return Error("You are not a host");
+
+        game.Game.SeatOrUnseatBot(seat);
+        await Clients.Group(gameToken).HandleSeatOrUnseatBot(seat);
+        return Success();
+    }
+
+    public async Task<VoidResult> RequestLeaveGame(string userToken, string gameToken)
+    {
+        if (!AreValid(userToken, gameToken, out var user, out var game, out var error))
+            return error;
+
+        //TODO: remove from SignalR group?
+        game.Game.RemoveUser(user.Id);
+        await Clients.Group(gameToken).HandleRemoveUser(user.Id);
+        return Success();
+    }
+
+    public async Task<VoidResult> RequestKick(string userToken, string gameToken, int userId)
+    {
+        if (!AreValid(userToken, gameToken, out var user, out var game, out var error))
+            return error;
+
+        if (!game.Game.IsHost(user.Id))
+            return Error("You are not a host");
+        
+        //TODO: remove from SignalR group?
+        game.Game.RemoveUser(userId);
+        await Clients.Group(gameToken).HandleRemoveUser(userId);
+        return Success();
+    }
+
+    public async Task<Result<JoinInfo>> RequestObserveGame(string userToken, string gameId, string hashedPassword)
+    {
+        if (!usersByUserToken.TryGetValue(userToken, out var user))
+            return Error<JoinInfo>("User not found");
 
         if (!gameTokensByGameId.TryGetValue(gameId, out var gameToken) || !gamesByGameToken.TryGetValue(gameToken, out var game))
             return Error<JoinInfo>("Game not found");
         
-        /*
-        if (game.HashedPassword != null && !game.HashedPassword.Equals(hashedPassword))
-            return Error<string>("Incorrect password");
-        */
+        if (game.ObserversRequirePassword && game.HashedPassword != null && !game.HashedPassword.Equals(hashedPassword))
+            return Error<JoinInfo>("Incorrect password");
         
-        game.Observers.Add(player);
         await Groups.AddToGroupAsync(Context.ConnectionId, gameToken);
-        await Clients.Group(gameToken).UpdateParticipation(game.GetParticipation());
-        return await Task.FromResult(Success(new JoinInfo { GameToken = gameToken, GameState = GameState.GetStateAsString(game.Game) }));
+        game.Game.AddObserver(user.Id, user.PlayerName);
+        await Clients.Group(gameToken).HandleObserveGame(user.Id, user.PlayerName);
+        return Success(new JoinInfo { GameToken = gameToken, GameState = GameState.GetStateAsString(game.Game) });
     }
 
-    public async Task<Result<JoinInfo>> RequestReconnectGame(string playerToken, string gameToken)
+    public async Task<Result<JoinInfo>> RequestReconnectGame(string userToken, string gameToken)
     {
-        if (!AreValid<JoinInfo>(playerToken, gameToken, out _, out var game, out var error))
+        if (!AreValid<JoinInfo>(userToken, gameToken, out _, out var game, out var error))
             return error;
         
         await Groups.AddToGroupAsync(Context.ConnectionId, gameToken);
         return Success(new JoinInfo { GameToken = gameToken, GameState = GameState.GetStateAsString(game.Game) } );
     }
     
-    public async Task<Result<string>> RequestGameState(string playerToken, string gameToken)
+    public async Task<Result<string>> RequestGameState(string userToken, string gameToken)
     {
-        if (!AreValid<string>(playerToken, gameToken, out _, out var game, out var error))
+        if (!AreValid<string>(userToken, gameToken, out _, out var game, out var error))
             return error;
         
         return await Task.FromResult(Success(GameState.GetStateAsString(game.Game)));
     }
 
-    public async Task<VoidResult> RequestSetSkin(string playerToken, string gameToken, string skin)
+    public async Task<VoidResult> RequestSetSkin(string userToken, string gameToken, string skin)
     {
-        if (!AreValid(playerToken, gameToken, out var player, out var game, out var error))
+        if (!AreValid(userToken, gameToken, out var user, out var game, out var error))
             return error;
 
-        if (!game.IsHost(player))
-            return Error("You are not the host");
+        if (!game.Game.IsHost(user.Id))
+            return Error("You are not a host");
 
         await Clients.Group(gameToken).HandleSetSkin(skin);
         return Success();
     }
 
-    public async Task<VoidResult> RequestUndo(string playerToken, string gameToken, int untilEventNr)
+    public async Task<VoidResult> RequestUndo(string userToken, string gameToken, int untilEventNr)
     {
-        if (!AreValid(playerToken, gameToken, out var playerId, out var game, out var error))
+        if (!AreValid(userToken, gameToken, out var user, out var game, out var error))
             return error;
 
-        if (!game.IsHost(playerId))
-            return Error("You are not the host");
+        if (!game.Game.IsHost(user.Id))
+            return Error("You are not a host");
 
         game.Game.Undo(untilEventNr);
         await Clients.Group(gameToken).HandleUndo(untilEventNr);
         return Success();
     }
 
-    public async Task<VoidResult> RequestPauseBots(string playerToken, string gameToken)
+    public async Task<VoidResult> RequestPauseBots(string userToken, string gameToken)
     {
-        if (!AreValid(playerToken, gameToken, out var playerId, out var game, out var error))
+        if (!AreValid(userToken, gameToken, out var user, out var game, out var error))
             return error;
 
-        if (!game.IsHost(playerId))
+        if (!game.Game.IsHost(user.Id))
             return Error("You are not the host");
 
         game.BotsArePaused = !game.BotsArePaused;
-        return await Task.FromResult(Success());
+        Clients.All.HandleBotStatus(game.BotsArePaused);
+
+        if (!game.BotsArePaused)
+        {
+            await PerformBotEvent(gameToken, game);
+        }
+        
+        return Success();
     }
     
     private void SendEndOfGameMail(string content, GameInfo info)

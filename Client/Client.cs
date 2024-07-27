@@ -29,7 +29,7 @@ public class Client : IGameService, IGameClient
     public Dictionary<Guid, string> JoinErrors { get; } = new();
     public bool LoggedIn => LoginInfo != null;
     public LoginInfo LoginInfo { get; set; }
-    public string PlayerToken => LoginInfo.PlayerToken;
+    public string UserToken => LoginInfo.UserToken;
     public int UserId => LoginInfo.UserId;
     private DateTime LastPing { get; set; }
     
@@ -37,12 +37,11 @@ public class Client : IGameService, IGameClient
     public bool InGame => Game != null;
     public string GameToken { get; set; }
     public Game Game { get; private set; }
-    public GameParticipation Participation { get; private set; }
-    public string PlayerName => Participation.PlayerNames.GetValueOrDefault(UserId, "?");
+    public string PlayerName => LoginInfo.PlayerName;
     public GameStatus Status { get; private set; }
     public bool IsObserver { get; private set; }
     public DateTime Disconnected { get; private set; }
-    public bool BotsArePaused => Participation.BotsArePaused;
+    public bool BotsArePaused { get; private set; }
     
     //Sound and camera
     public float CurrentEffectVolume { get; set; } = -1;
@@ -94,8 +93,6 @@ public class Client : IGameService, IGameClient
         Support.Log(e.ErrorContext.Error.ToString());
     }
 
-    public string MyName => Participation.PlayerNames.GetValueOrDefault(UserId);
-    
     public void Reset()
     {
         GameToken = null;
@@ -109,10 +106,10 @@ public class Client : IGameService, IGameClient
     
     //IGameClient methods
 
-    public async Task HandleSetTimer(int value)
+    public Task HandleSetTimer(int value)
     {
         Timer = value;
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
     //Process information about a currently running game on treachery.online
@@ -120,27 +117,63 @@ public class Client : IGameService, IGameClient
 
     //public IEnumerable<GameInfo> JoinableAdvertisedGames => _advertisedGames.Where(gameAndDate => gameAndDate.Key.CurrentPhase == Phase.AwaitingPlayers && DateTime.Now.Subtract(gameAndDate.Value).TotalSeconds < 15).Select(gameAndDate => gameAndDate.Key);
     //private readonly Dictionary<GameInfo, DateTime> _advertisedGames = new();
-    public async Task HandleListOfGames(List<GameInfo> games)
+    
+    public Task HandleListOfGames(List<GameInfo> games)
     {
-        RunningGames = games;
-        if (Game == null)
+        if (!InGame)
         {
+            RunningGames = games;
             Refresh();
         }
-        await Task.CompletedTask;
     }
     
-    //IGameService methods
-
-    public Task UpdateParticipation(GameParticipation participation)
+    public Task HandleJoinGame(int userId, string userName, int seat)
     {
-        Participation = participation;
+        Game.AddPlayer(userId, userName, seat);
         return Task.CompletedTask;
     }
 
+    public Task HandleSetOrUnsetHost(int userId)
+    {
+        Game.SetOrUnsetHost(userId);
+        return Task.CompletedTask;
+    }
+
+    public Task HandleObserveGame(int userId, string userName)
+    {
+        Game.AddObserver(userId, userName);
+        return Task.CompletedTask;
+    }
+
+    public Task HandleOpenOrCloseSeat(int seat)
+    {
+        Game.OpenOrCloseSeat(seat);
+        return Task.CompletedTask;
+    }
+
+    public Task HandleSeatOrUnseatBot(int seat)
+    {
+        Game.SeatOrUnseatBot(seat);
+        return Task.CompletedTask;
+    }
+
+    public Task HandleRemoveUser(int userId)
+    {
+        Game.RemoveUser(userId);
+        return Task.CompletedTask;
+    }
+
+    public Task HandleBotStatus(bool paused)
+    {
+        BotsArePaused = paused;
+        return Task.CompletedTask;
+    }
+
+    //IGameService methods
+    
     public async Task RequestJoinGame(Guid gameId, string hashedPassword, Faction faction)
     {
-        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.RequestJoinGame), PlayerToken, gameId, hashedPassword, faction);
+        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.RequestJoinGame), UserToken, gameId, hashedPassword, faction);
         if (!result.Success)
         {
             JoinErrors[gameId] = result.Message;
@@ -154,7 +187,7 @@ public class Client : IGameService, IGameClient
 
     public async Task RequestObserveGame(Guid gameId, string hashedPassword)
     {
-        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.RequestObserveGame), PlayerToken, gameId, hashedPassword);
+        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.RequestObserveGame), UserToken, gameId, hashedPassword);
         if (!result.Success)
         {
             JoinErrors[gameId] = result.Message;
@@ -167,10 +200,10 @@ public class Client : IGameService, IGameClient
     }
     
     private async Task TryToReconnect() =>
-        await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestReconnectGame), PlayerToken, GameToken);
+        await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestReconnectGame), UserToken, GameToken);
     
     public async Task RequestSendGlobalChatMessage(GlobalChatMessage message) =>
-        await _connection.SendAsync(nameof(IGameHub.SendGlobalChatMessage), PlayerToken, message);
+        await _connection.SendAsync(nameof(IGameHub.SendGlobalChatMessage), UserToken, message);
 
 
     //public DateTime HostLastSeen { get; private set; } = DateTime.Now;
@@ -235,7 +268,7 @@ public class Client : IGameService, IGameClient
         else
         {
             //This is not the expected event. Request game state from the server.
-            var currentStateData = await _connection.InvokeAsync<string>(nameof(IGameHub.RequestGameState), PlayerToken, GameToken);
+            var currentStateData = await _connection.InvokeAsync<string>(nameof(IGameHub.RequestGameState), UserToken, GameToken);
             resultMessage = LoadGame(currentStateData);
         }
         
@@ -281,7 +314,7 @@ public class Client : IGameService, IGameClient
 
     public bool IsPlayer => Player != null && Player.Faction != Faction.None;
 
-    public Player Player => Game.PlayerAtSeat(Participation.SeatedUsers.GetValueOrDefault(UserId));
+    public Player Player => Game.GetPlayerByUserId(UserId);
 
     public Faction Faction => Player?.Faction ?? Faction.None;
 
@@ -327,7 +360,7 @@ public class Client : IGameService, IGameClient
 
     public async Task HandleChatMessage(GameChatMessage m)
     {
-        if (m.TargetUserId < 0 || m.SourceUserId < 0 || m.SourceUserId == UserId || m.TargetUserId == UserId)
+        if (m.TargetUserId == -1 || m.SourceUserId == -1 || m.SourceUserId == UserId || m.TargetUserId == UserId)
         {
             Messages.AddFirst(m);
             await Browser.PlaySound(Skin.Current.Sound_Chatmessage_URL, CurrentChatVolume);
@@ -446,9 +479,9 @@ public class Client : IGameService, IGameClient
 
     public bool IsConnected => _connection.State == HubConnectionState.Connected;
     
-    public bool IsAuthenticated => PlayerToken != null;
+    public bool IsAuthenticated => UserToken != null;
 
-    public bool IsHost => Participation.Hosts.Contains(UserId);
+    public bool IsHost => Game.IsHost(UserId);
 
     public Phase CurrentPhase => Game.CurrentPhase;
 
@@ -468,7 +501,7 @@ public class Client : IGameService, IGameClient
     */
 
     public async Task ToggleBotPause() =>
-        await _connection.SendAsync(nameof(IGameHub.RequestPauseBots), PlayerToken, GameToken);
+        await _connection.SendAsync(nameof(IGameHub.RequestPauseBots), UserToken, GameToken);
 
     private async Task GetServerSettings()
     {

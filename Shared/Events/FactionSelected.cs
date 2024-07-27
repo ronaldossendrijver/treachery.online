@@ -55,7 +55,7 @@ public class FactionSelected : GameEvent
     {
         var initiator = Game.Version < 170 ? 
             Game.Players.FirstOrDefault(p => p.Name == InitiatorPlayerName) :
-            Game.PlayerAtSeat(Seat);
+            Game.GetPlayerBySeat(Seat);
         
         if (initiator != null && Game.FactionsInPlay.Contains(Faction))
         {
