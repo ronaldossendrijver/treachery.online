@@ -17,7 +17,7 @@ namespace Treachery.Client;
 
 public class Client : IGameService, IGameClient
 {
-    public const int HeartbeatDelay = 10000;
+    private const int HeartbeatDelay = 10000;
     private const int MaxHeartbeats = 17280;
     private const int DisconnectTimeout = 25000;
 
@@ -25,7 +25,6 @@ public class Client : IGameService, IGameClient
     public ServerSettings ServerSettings { get; private set; }
     private int NrOfHeartbeats { get; set; }
     private string OldConnectionId { get; set; } = string.Empty;
-
     
     //Logged in player
     public Dictionary<string, string> JoinErrors { get; } = new();
@@ -400,8 +399,6 @@ public class Client : IGameService, IGameClient
 
     public bool IsConnected => _connection.State == HubConnectionState.Connected;
     
-    public bool IsAuthenticated => UserToken != null;
-
     public bool IsHost => Game.IsHost(UserId);
 
     public Phase CurrentPhase => Game.CurrentPhase;
@@ -448,7 +445,7 @@ public class Client : IGameService, IGameClient
     
     public async Task<string> RequestCreateUser(string userName, string hashedPassword, string email, string playerName)
     {
-        var result = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestCreateUser), userName, email, hashedPassword, playerName);
+        var result = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestCreateUser), userName, hashedPassword, email, playerName);
 
         if (result.Success)
         {

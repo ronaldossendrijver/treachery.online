@@ -60,8 +60,6 @@ public interface IGameService
 
     public bool IsConnected { get; }
 
-    public bool IsAuthenticated { get; }
-
     public bool IsHost { get; }
 
     public Phase CurrentPhase { get; }
