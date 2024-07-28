@@ -147,11 +147,11 @@ public partial class GameHub
     
     public async Task<VoidResult> SetTimer(string playerToken, string gameToken, int value)
     {
-        if (!AreValid(playerToken, gameToken, out var playerId, out var game, out var error))
+        if (!AreValid(playerToken, gameToken, out var user, out var game, out var error))
             return error;
 
-        if (!game.IsHost(playerId))
-            return Error("You are not the host");
+        if (!game.Game.IsHost(user.Id))
+            return Error("You are not a host");
         
         await Clients.Group(gameToken).HandleSetTimer(value);
         return Success();
@@ -160,11 +160,11 @@ public partial class GameHub
     
     private async Task<VoidResult> ProcessGameEvent<TEvent>(string playerToken, string gameToken, TEvent e) where TEvent : GameEvent
     {
-        if (!AreValid(playerToken, gameToken, out var playerId, out var game, out var error))
+        if (!AreValid(playerToken, gameToken, out var user, out var game, out var error))
             return error;
         
         e.Initialize(game.Game);
-        return await ValidateAndExecute(gameToken, e, game, game.Hosts.Contains(playerId));
+        return await ValidateAndExecute(gameToken, e, game, game.Game.IsHost(user.Id));
     }
 
     private async Task<VoidResult> ValidateAndExecute<TEvent>(string gameToken, TEvent e, ManagedGame game, bool isHost)
@@ -265,7 +265,7 @@ public partial class GameHub
     private async Task SendMailAndStatistics(ManagedGame game)
     {
         var state = GameState.GetStateAsString(game.Game);
-        SendEndOfGameMail(state, game.Info);
+        SendEndOfGameMail(state, GameInfo.Extract(game));
         await SendGameStatistics(game.Game);
     }
     

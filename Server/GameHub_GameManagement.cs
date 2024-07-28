@@ -11,7 +11,7 @@ namespace Treachery.Server;
 
 public partial class GameHub
 {
-    public async Task<Result<GameInitInfo>> RequestCreateGame(string userToken, string hashedPassword, string stateData = null)
+    public async Task<Result<GameInitInfo>> RequestCreateGame(string userToken, string hashedPassword, string stateData = null, string skin = null)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<GameInitInfo>("User not found");
@@ -34,9 +34,11 @@ public partial class GameHub
         {
             game = new Game();
         }
-        
+
+        var gameId = Guid.NewGuid().ToString();
         var managedGame = new ManagedGame
         {
+            GameId = gameId,
             Game = game,
             Settings = initialSettings,
             HashedPassword = hashedPassword,
@@ -44,7 +46,6 @@ public partial class GameHub
         };
         
         var gameToken = GenerateToken();
-        var gameId = Guid.NewGuid().ToString();
         GamesByGameToken[gameToken] = managedGame; 
         GameTokensByGameId[gameId] = gameToken;
 
@@ -56,6 +57,9 @@ public partial class GameHub
         game.SetOrUnsetHost(user.Id);
         await Clients.Group(gameToken).HandleSetOrUnsetHost(user.Id);
         
+        if (skin != null)
+            await Clients.Group(gameToken).HandleSetSkin(skin);
+        
         return Success(new GameInitInfo
         {
             GameToken = gameToken, 
@@ -63,7 +67,6 @@ public partial class GameHub
             Participation = game.Participation, 
             Settings = initialSettings
         });
-        
     }
     
     public async Task<VoidResult> RequestLoadGame(string userToken, string gameToken, string stateData, string skin = null)
@@ -342,26 +345,4 @@ public partial class GameHub
         writer.Close();
         return writer.ToString();
     }
-    
-    private static GameInfo GetGameInfo(string gameId, ManagedGame managedGame) => new()
-    {
-        GameId = gameId,
-        Players = managedGame.Game.PlayerNames.ToArray(),
-        Observers = managedGame.Game.ObserverNames.ToArray(),
-        FactionsInPlay = managedGame.Game.CurrentPhase <= Phase.SelectingFactions ? managedGame.Settings.FactionsInPlay : managedGame.Game.FactionsInPlay,
-        NumberOfBots = managedGame.Game.NumberOfBots,
-        Rules = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? managedGame.Settings.Rules.ToList() : managedGame.Game.Rules.ToList(),
-        LastAction = managedGame.Game.CurrentPhase > Phase.AwaitingPlayers ? managedGame.Game.History.Last().Time : DateTime.Now,
-        CurrentMainPhase = managedGame.Game.CurrentMainPhase,
-        CurrentPhase = managedGame.Game.CurrentPhase,
-        CurrentTurn = managedGame.Game.CurrentTurn,
-        ExpansionLevel = Game.ExpansionLevel,
-        GameName = managedGame.Game.Name,
-        HasPassword = managedGame.HashedPassword != null,
-        CreatorParticipates = true,
-        InviteOthers = true,
-        MaximumNumberOfPlayers = managedGame.Settings.MaximumNumberOfPlayers,
-        MaximumNumberOfTurns = managedGame.Settings.MaximumTurns,
-    };
 }
-

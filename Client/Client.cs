@@ -498,9 +498,9 @@ public class Client : IGameService, IGameClient
         return result.Message;
     }
 
-    public async Task<string> RequestCreateGame(string hashedPassword, string stateData = null)
+    public async Task<string> RequestCreateGame(string hashedPassword, string stateData = null, string skinData = null)
     {
-        var result = await _connection.InvokeAsync<Result<GameInitInfo>>(nameof(IGameHub.RequestCreateGame), UserToken, hashedPassword, stateData);
+        var result = await _connection.InvokeAsync<Result<GameInitInfo>>(nameof(IGameHub.RequestCreateGame), UserToken, hashedPassword, stateData, skinData);
         
         if (result.Success)
         {
@@ -514,7 +514,7 @@ public class Client : IGameService, IGameClient
         return result.Message;
     }
 
-    public async Task<string> RequestJoinGame(string gameId, string hashedPassword, int seat)
+    public async Task<string> RequestJoinGame(string gameId, string hashedPassword, int seat = -1)
     {
         var result = await _connection.InvokeAsync<Result<GameInitInfo>>(nameof(IGameHub.RequestJoinGame), UserToken, gameId, hashedPassword, seat);
         if (!result.Success)

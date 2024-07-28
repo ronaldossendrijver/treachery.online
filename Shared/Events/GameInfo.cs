@@ -34,4 +34,25 @@ public class GameInfo
     public override bool Equals(object obj) => obj is GameInfo info && info.GameId == GameId;
 
     public override int GetHashCode() => GameId.GetHashCode();
+    
+    public static GameInfo Extract(ManagedGame managedGame) => new()
+    {
+        GameId = managedGame.GameId,
+        Players = managedGame.Game.PlayerNames.ToArray(),
+        Observers = managedGame.Game.ObserverNames.ToArray(),
+        FactionsInPlay = managedGame.Game.CurrentPhase <= Phase.SelectingFactions ? managedGame.Settings.FactionsInPlay : managedGame.Game.FactionsInPlay,
+        NumberOfBots = managedGame.Game.NumberOfBots,
+        Rules = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? managedGame.Settings.Rules.ToList() : managedGame.Game.Rules.ToList(),
+        LastAction = managedGame.Game.CurrentPhase > Phase.AwaitingPlayers ? managedGame.Game.History.Last().Time : DateTime.Now,
+        CurrentMainPhase = managedGame.Game.CurrentMainPhase,
+        CurrentPhase = managedGame.Game.CurrentPhase,
+        CurrentTurn = managedGame.Game.CurrentTurn,
+        ExpansionLevel = Game.ExpansionLevel,
+        GameName = managedGame.Game.Name,
+        HasPassword = managedGame.HashedPassword != null,
+        CreatorParticipates = true,
+        InviteOthers = true,
+        MaximumNumberOfPlayers = managedGame.Settings.MaximumNumberOfPlayers,
+        MaximumNumberOfTurns = managedGame.Settings.MaximumTurns,
+    };
 }

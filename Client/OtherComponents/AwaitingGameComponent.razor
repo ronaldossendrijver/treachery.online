@@ -32,7 +32,7 @@
             <ul class="mt-0 mb-1">
                 @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvanced, Game.ExpansionLevel))
                 {
-                    <li class="small" style="@DetermineRuleClass(info.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
+                    <li class="small" style="@DetermineRuleClass(Client.Settings.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
                 }
             </ul>
 
@@ -72,7 +72,7 @@
             <ul class="mt-0 mb-1">
                 @foreach (var rule in Game.GetRulesInGroup(RuleGroup.House, Game.ExpansionLevel))
                 {
-                    <li class="small" style="@DetermineRuleClass(info.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
+                    <li class="small" style="@DetermineRuleClass(Client.Settings.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
                 }
             </ul>
 
