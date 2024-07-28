@@ -56,7 +56,7 @@ public partial class GameHub
         SendMail(mailMessage);
         
         var userToken = GenerateToken();
-        usersByUserToken.TryAdd(userToken, user);
+        UsersByUserToken.TryAdd(userToken, user);
         return Success(new LoginInfo { UserId =user.Id, UserToken = userToken, PlayerName = user.PlayerName });
     }
     
@@ -74,7 +74,7 @@ public partial class GameHub
             return Error<LoginInfo>("Invalid user name or password");
 
         var userToken = GenerateToken();
-        usersByUserToken.TryAdd(userToken, user);
+        UsersByUserToken.TryAdd(userToken, user);
         return Success(new LoginInfo { UserId = user.Id, UserToken = userToken, PlayerName = user.PlayerName });
     }
     
@@ -137,7 +137,7 @@ public partial class GameHub
         await db.SaveChangesAsync();
         
         var userToken = GenerateToken();
-        usersByUserToken.TryAdd(userToken, user);
+        UsersByUserToken.TryAdd(userToken, user);
         return Success(new LoginInfo { UserId = user.Id, UserToken = userToken, PlayerName = user.PlayerName });
     }
 }

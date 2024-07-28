@@ -39,6 +39,7 @@ public class Client : IGameService, IGameClient
     public bool InGame => Game != null;
     public string GameToken { get; set; }
     public Game Game { get; private set; }
+    public GameSettings Settings { get; private set; }
     public string PlayerName => LoginInfo.PlayerName;
     public GameStatus Status { get; private set; }
     public bool IsObserver => Game.IsObserver(UserId);
@@ -100,6 +101,7 @@ public class Client : IGameService, IGameClient
     {
         GameToken = null;
         Game = null;
+        Settings = null;
         Status = null;
         JoinErrors.Clear();
         _ = Browser.StopSounds();
@@ -131,7 +133,7 @@ public class Client : IGameService, IGameClient
         return Task.CompletedTask;
     }
     
-    public Task HandleJoinGame(int userId, string userName, int seat)
+    public Task HandleJoinGame(int userId, string userName, int seat = -1)
     {
         Game.AddPlayer(userId, userName, seat);
         return Task.CompletedTask;
@@ -236,7 +238,7 @@ public class Client : IGameService, IGameClient
         {
             //This is not the expected event. Request game state from the server.
             var gameInitInfo = await _connection.InvokeAsync<GameInitInfo>(nameof(IGameHub.RequestGameState), UserToken, GameToken);
-            resultMessage = await LoadGame(gameInitInfo.GameState, gameInitInfo.Participation);
+            resultMessage = await LoadGame(gameInitInfo);
         }
         
         if (resultMessage == null)
@@ -249,13 +251,14 @@ public class Client : IGameService, IGameClient
         }
     }
 
-    private async Task<Message> LoadGame(string stateData, GameParticipation participation)
+    private async Task<Message> LoadGame(GameInitInfo initInfo)
     {
-        var currentState = GameState.Load(stateData);
-        var resultMessage = Game.TryLoad(currentState, participation, true, IsHost, out var result);
+        var currentState = GameState.Load(initInfo.GameState);
+        var resultMessage = Game.TryLoad(currentState, initInfo.Participation, true, IsHost, out var result);
         if (resultMessage == null)
         {
             Game = result;
+            Settings = initInfo.Settings;
             await PerformPostEventTasks(Game.LatestEvent());
             RefreshPopovers();
         }
@@ -291,7 +294,7 @@ public class Client : IGameService, IGameClient
 
     public Faction Faction => Player?.Faction ?? Faction.None;
 
-    public async Task HandleLoadGame(string state, GameParticipation participation) => await LoadGame(state, participation);
+    public async Task HandleLoadGame(GameInitInfo initInfo) => await LoadGame(initInfo);
     
     public async Task HandleUndo(int untilEventNr)
     {
@@ -495,13 +498,13 @@ public class Client : IGameService, IGameClient
         return result.Message;
     }
 
-    public async Task<string> RequestCreateGame(string hashedPassword, string settings, string stateData = null)
+    public async Task<string> RequestCreateGame(string hashedPassword, string stateData = null)
     {
-        var result = await _connection.InvokeAsync<Result<GameInitInfo>>(nameof(IGameHub.RequestCreateGame), UserToken, hashedPassword, settings, stateData);
+        var result = await _connection.InvokeAsync<Result<GameInitInfo>>(nameof(IGameHub.RequestCreateGame), UserToken, hashedPassword, stateData);
         
         if (result.Success)
         {
-            var loadMessage = await LoadGame(result.Contents.GameState, result.Contents.Participation);
+            var loadMessage = await LoadGame(result.Contents);
             if (loadMessage != null)
                 return loadMessage.ToString();
 
@@ -520,7 +523,7 @@ public class Client : IGameService, IGameClient
         }
         else
         {
-            var loadMessage = await LoadGame(result.Contents.GameState, result.Contents.Participation);
+            var loadMessage = await LoadGame(result.Contents);
             if (loadMessage != null)
                 return loadMessage.ToString();
 
@@ -539,7 +542,7 @@ public class Client : IGameService, IGameClient
         }
         else
         {
-            var loadMessage = await LoadGame(result.Contents.GameState, result.Contents.Participation);
+            var loadMessage = await LoadGame(result.Contents);
             if (loadMessage != null)
                 return loadMessage.ToString();
 
@@ -554,7 +557,7 @@ public class Client : IGameService, IGameClient
         var result = await _connection.InvokeAsync<Result<GameInitInfo>>(nameof(IGameHub.RequestReconnectGame), UserToken, GameToken);
         if (result.Success)
         {
-            var loadMessage = await LoadGame(result.Contents.GameState, result.Contents.Participation);
+            var loadMessage = await LoadGame(result.Contents);
             if (loadMessage != null)
                 return loadMessage.ToString();
 

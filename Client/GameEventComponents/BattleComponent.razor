@@ -61,13 +61,13 @@
         }
 
         <div class="text-warning mt-1">
-            @if(Client.IAm(Game.CurrentBattle.Aggressor)) {
+            @if(Client.Faction == Game.CurrentBattle.Aggressor) {
 
                 <span>You are aggressor.</span>
             }
             else
             {
-                <span>Aggressor: </span><FactionComponent Faction=Game.CurrentBattle.Aggressor Diameter="30"/>
+                <span>Aggressor: </span><FactionComponent Faction="@Game.CurrentBattle.Aggressor" Diameter="30"/>
             }
         </div>
 

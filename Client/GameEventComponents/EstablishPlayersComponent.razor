@@ -13,24 +13,22 @@
     <Header>Please review your game configuration</Header>
     <Body>
 
-        <CheckboxComponent @bind-Value="info.HostParticipates">The host (you) will participate in this game</CheckboxComponent>
-
-        <CheckboxComponent @bind-Value="info.InviteOthers">Invite single players and observers in other games to join this game</CheckboxComponent>
+        <CheckboxComponent @bind-Value="@Client.Settings.CreatorParticipates">The host (you) will participate in this game</CheckboxComponent>
 
         <div class="mt-2"><strong>Players:</strong> @string.Join(", ", Players)</div>
 
-        <SelectNumberComponent Disabled="@Readonly" @bind-Value="info.MaximumNumberOfTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns:"/>
+        <SelectNumberComponent Disabled="@Readonly" @bind-Value="@Client.Settings.MaximumTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns:"/>
 
-        <SelectNumberComponent Disabled="@Readonly" @bind-Value="info.MaximumNumberOfPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Label="Maximum number of players:"/>
+        <SelectNumberComponent Disabled="@Readonly" @bind-Value="@Client.Settings.MaximumNumberOfPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Label="Maximum number of players:"/>
 
-        <SelectFromImageComponent Disabled="@Readonly" Selected="info.FactionsInPlay" Values="EstablishPlayers.AvailableFactions()" T="Faction" OnChanged="@StateHasChanged" ImageWidth="40" Required="false">
+        <SelectFromImageComponent Disabled="@Readonly" Selected="@Client.Settings.FactionsInPlay" Values="EstablishPlayers.AvailableFactions()" T="Faction" OnChanged="@StateHasChanged" ImageWidth="40" Required="false">
             <Label>Factions in play:</Label>
         </SelectFromImageComponent>
 
         <label class="mt-2 mb-0">AI Players:</label>
         @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots, Game.ExpansionLevel))
         {
-            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="StateHasChanged" />
+            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="Client.Settings.Rules" Callback="StateHasChanged" />
         }
 
         <SelectComponent Disabled="@Readonly" @bind-Value="@Ruleset" Values="@Game.GetAvailableRulesets()">
@@ -39,14 +37,7 @@
 
         <ButtonRowComponent Confirm="StartNewOrLoadedGame" ConfirmText="@StartButtonLabel" ConfirmError="@Validate" />
 
-        @if (Client.Host.LoadedGame == null)
-        {
-            <CheckboxComponent @bind-Value=_advancedOptions>Show advanced options</CheckboxComponent>
-        }
-        else
-        {
-            _advancedOptions = true;
-        }
+        <CheckboxComponent @bind-Value=_advancedOptions>Show advanced options</CheckboxComponent>
 
         @if (_advancedOptions)
         {
@@ -59,13 +50,13 @@
                     {
                         @if (IsNew(rule))
                         {
-                            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules">
+                            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="@Client.Settings.Rules">
                                 <span class="badge badge-info">new!</span>
                             </ChecklistItemComponent>
                         }
                         else
                         {
-                            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
+                            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="@Client.Settings.Rules" />
                         }
                     }
                 }
@@ -79,8 +70,6 @@
 @code {
 
     protected override bool IsUrgent => true;
-
-    private GameInfo info => Client.Host.GameBeingEstablished;
 
     private bool _advancedOptions = false;
 
@@ -155,7 +144,7 @@
             FactionsInPlay = info.FactionsInPlay
         };
 
-    private IEnumerable<string> Players => Client.Host.JoinedPlayers.Where(p => info.HostParticipates || p != Client.PlayerName);
+    private IEnumerable<string> Players => Client.Host.JoinedPlayers.Where(p => info.CreatorParticipates || p != Client.PlayerName);
 
     private string StyleDef(Faction f)
     {

@@ -12,7 +12,7 @@
 
     @if (Client.Game.EventCount > 0)
     {
-        if (Client.Host != null || Client.PlayerName == Client.ServerSettings.AdminName)
+        if (Client.IsHost || Client.PlayerName == Client.ServerSettings.AdminName)
         {
             <div class="col col-xs-auto p-0">
             <a class="btn btn-link p-1" title="Save game..." @onclick="Save">
@@ -24,7 +24,7 @@
             </div>
         }
 
-        if (!Client.IsObserver && Client.Host != null)
+        if (Client.IsHost && !Client.IsObserver)
         {
             <div class="col col-xs-auto p-0">
             <label class="btn btn-link p-1" title="Load game...">
@@ -46,12 +46,12 @@
             </label>
             </div>
 
-            @if (Client.Game.Players.Any(p => p.IsBot))
+            @if (Game.NumberOfBots > 0)
             {
                 <div class="col col-xs-auto p-0">
                     @if (Client.BotsArePaused)
                     {
-                        <a class="btn btn-link p-1" @onclick="e => Client.ToggleBotPause()" title="Unpause Bots">
+                        <a class="btn btn-link p-1" @onclick="e => Client.RequestPauseBots()" title="Unpause Bots">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-play-fill" viewBox="0 0 16 16">
                                 <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z" />
                             </svg>
@@ -59,7 +59,7 @@
                     }
                     else
                     {
-                        <a class="btn btn-link p-1" @onclick="e => Client.ToggleBotPause()" title="Pause Bots">
+                        <a class="btn btn-link p-1" @onclick="e => Client.RequestPauseBots()" title="Pause Bots">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-pause-fill" viewBox="0 0 16 16">
                                 <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z" />
                             </svg>
@@ -71,7 +71,7 @@
             @if (Client.Game.EventCount > 1)
             {
                 <div class="col col-xs-auto p-0">
-                <a class="btn btn-link p-1" @onclick="e => SetVisible(HOST)" title="Undo">
+                <a class="btn btn-link p-1" @onclick="e => SetVisible(Host)" title="Undo">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-skip-backward" viewBox="0 0 16 16">
                         <path d="M.5 3.5A.5.5 0 0 1 1 4v3.248l6.267-3.636c.52-.302 1.233.043 1.233.696v2.94l6.267-3.636c.52-.302 1.233.043 1.233.696v7.384c0 .653-.713.998-1.233.696L8.5 8.752v2.94c0 .653-.713.998-1.233.696L1 8.752V12a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5zm7 1.133L1.696 8 7.5 11.367V4.633zm7.5 0L9.196 8 15 11.367V4.633z" />
                     </svg>
@@ -82,7 +82,7 @@
     }
 
     <div class="col col-xs-auto p-0">
-    <a class="btn btn-link p-1" @onclick="e => SetVisible(HELP)" title="Help">
+    <a class="btn btn-link p-1" @onclick="e => SetVisible(Help)" title="Help">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-info-circle" viewBox="0 0 16 16">
             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
             <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
@@ -91,7 +91,7 @@
     </div>
 
     <div class="col col-xs-auto p-0">
-    <a class="btn btn-link p-1" @onclick="e => SetVisible(VOLUME)" title="Adjust music and sound volume">
+    <a class="btn btn-link p-1" @onclick="e => SetVisible(Volume)" title="Adjust music and sound volume">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-music-note-beamed" viewBox="0 0 16 16">
             <path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13c0-1.104 1.12-2 2.5-2s2.5.896 2.5 2zm9-2c0 1.105-1.12 2-2.5 2s-2.5-.895-2.5-2 1.12-2 2.5-2 2.5.895 2.5 2z" />
             <path fill-rule="evenodd" d="M14 11V2h1v9h-1zM6 3v10H5V3h1z" />
@@ -116,10 +116,10 @@
     </a>
     </div>
 
-    @if (Client.HostProxy != null)
+    @if (Client.InGame)
     {
         <div class="col col-xs-auto p-0">
-        <a class="btn btn-link p-1" @onclick="e => SetVisible(RESTART)" title="Exit Game">
+        <a class="btn btn-link p-1" @onclick="e => SetVisible(Restart)" title="Exit Game">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-box-arrow-left" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0v2z"/>
               <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
@@ -144,16 +144,16 @@
     <button class="btn btn-primary mt-1 btn-sm" @onclick="ClearValidationErrors">Clear errors</button>
 }
 
-@if (IsVisible(HOST))
+@if (IsVisible(Host))
 {
     <UndoComponent  />
 }
-else if (IsVisible(HELP))
+else if (IsVisible(Help))
 {
     <div class="card p-1 mb-2">
         <div class="card-body text-center">
 
-            @if (Client.HostProxy != null)
+            @if (Client.InGame)
             {
                 <button class="btn btn-primary mt-1 me-1" data-bs-toggle="modal" data-bs-target="#mentatModal">List of Cards</button>
             }
@@ -171,7 +171,7 @@ else if (IsVisible(HELP))
         </div>
     </div>
 }
-else if (IsVisible(RESTART))
+else if (IsVisible(Restart))
 {
     <div class="card p-1 mb-2">
         <div class="card-body text-center">
@@ -182,7 +182,7 @@ else if (IsVisible(RESTART))
     </div>
 }
 
-<MusicComponent  Visible="IsVisible(VOLUME)" />
+<MusicComponent  Visible="IsVisible(Volume)" />
 <MentatComponent Id="mentatModal"  />
 <CreditComponent Id="creditModal" />
 <TutorialComponent Id="tutorialModal" />
@@ -190,37 +190,30 @@ else if (IsVisible(RESTART))
 @code {
 
     private string _loadValidationError = "";
-    public object _fileInput;
-    public object _skinInput;
+    private object _fileInput;
+    private object _skinInput;
 
-    private const string HOST = "host";
-    private const string HELP = "help";
-    private const string VOLUME = "volume";
-    private const string RESTART = "restart";
+    private const string Host = "host";
+    private const string Help = "help";
+    private const string Volume = "volume";
+    private const string Restart = "restart";
 
-    private const int MAX_SAVEGAME_SIZE = 4194304;
-    private const int MAX_SKINFILE_SIZE = 262144;
+    private const int MaxSaveGameSize = 4194304;
+    private const int MaxSkinFileSize = 262144;
 
     [Parameter]
     public object Visible { get; set; } = null;
 
     private void RestartGame()
     {
-        SetVisible(RESTART);
+        SetVisible(Restart);
         Client.Reset();
         Client.Refresh();
     }
 
     private void SetVisible(object o)
     {
-        if (Visible == o)
-        {
-            Visible = null;
-        }
-        else
-        {
-            Visible = o;
-        }
+        Visible = Visible == o ? null : o;
     }
 
     private bool IsVisible(object o)
@@ -244,41 +237,22 @@ else if (IsVisible(RESTART))
     {
         try
         {
-
             _loadValidationError = "";
             var data = await Browser.LoadFile(_fileInput);
             await Browser.ClearFileInput("fileInput");
 
-            if (data.Length < MAX_SAVEGAME_SIZE)
+            if (data.Length < MaxSaveGameSize)
             {
-                var state = GameState.Load(data);
-
-                if (state.Version > 0)
-                {
-                    var result = Game.TryLoad(state, true, true, out var game);
-
-                    if (result != null)
-                    {
-                        _loadValidationError = string.Format("Error loading game ({0})", result.ToString(Skin.Current));
-                    }
-                    else
-                    {
-                        await Client.Host.LoadGame(data, game);
-                    }
-                }
-                else
-                {
-                    _loadValidationError = "Invalid savegame file....";
-                }
+                await Client.RequestLoadGame(data);
             }
             else
             {
-                _loadValidationError = "Savegame file is too big...";
+                _loadValidationError = "Saved Game file is too big...";
             }
         }
         catch (Exception e)
         {
-            _loadValidationError = string.Format("Error loading game ({0})", e.Message);
+            _loadValidationError = $"Error loading game ({e.Message})";
         }
     }
 
@@ -290,10 +264,9 @@ else if (IsVisible(RESTART))
             var data = await Browser.LoadFile(_skinInput);
             await Browser.ClearFileInput("skinInput");
 
-            if (data.Length < MAX_SKINFILE_SIZE)
+            if (data.Length < MaxSkinFileSize)
             {
-                var newSkin = Skin.Load(data);
-                await Client.Host.LoadSkin(newSkin.SkinToString());
+                await Client.RequestSetSkin(data);
             }
             else
             {
@@ -302,7 +275,7 @@ else if (IsVisible(RESTART))
         }
         catch (Exception e)
         {
-            _loadValidationError = string.Format("Error loading skin ({0})", e.Message);
+            _loadValidationError = $"Error loading skin ({e.Message})";
         }
     }
 

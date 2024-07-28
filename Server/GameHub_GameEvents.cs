@@ -177,9 +177,9 @@ public partial class GameHub
             return Error(validationResult.ToString());
         }
 
-        if (game.Game.CurrentMainPhase is MainPhase.Ended && !finishedGames.ContainsKey(gameToken))
+        if (game.Game.CurrentMainPhase is MainPhase.Ended && !FinishedGames.ContainsKey(gameToken))
         {
-            finishedGames.TryAdd(gameToken, game.Game);
+            FinishedGames.TryAdd(gameToken, game.Game);
             await SendMailAndStatistics(game);
         }
 

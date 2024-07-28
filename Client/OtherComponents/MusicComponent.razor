@@ -53,7 +53,7 @@
 
     private async Task UpdateMusicAndSound()
     {
-        if (Client.HostProxy != null)
+        if (Client.InGame)
         {
             var soundtrackToPlay = DetermineSoundtrack();
 
@@ -67,7 +67,7 @@
                 CurrentSoundtrack = soundtrackToPlay;
                 await Browser.PlaySound(soundtrackToPlay, DesiredMusicVolume, true);
             }
-            else if (CurrentMusicVolume != DesiredMusicVolume)
+            else if (Math.Abs(CurrentMusicVolume - DesiredMusicVolume) > 0.001f)
             {
                 CurrentMusicVolume = DesiredMusicVolume;
 

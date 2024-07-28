@@ -25,47 +25,48 @@
 
             @if (ShowGameChat)
             {
-                <select class="form-select" style="color:@SelectedFactionForegroundColor;background-color:@SelectedFactionColor" @bind="@playername">
+                <select class="form-select" style="color:@SelectedFactionForegroundColor;background-color:@SelectedFactionColor" @bind="@selectedPlayerName">
 
                     @if (!Client.MuteGlobalChat)
                     {
-                        <option style="color:red;font-weight:bold;background-color:white" value="@LABEL_GLOBAL_CHAT">@LABEL_GLOBAL_CHAT</option>
+                        <option style="color:red;font-weight:bold;background-color:white" value="@LabelGlobalChat">@LabelGlobalChat</option>
                     }
 
-                    <option style="color:red;font-weight:bold;background-color:white" value="@LABEL_ALL_PLAYERS_IN_GAME">@LABEL_ALL_PLAYERS_IN_GAME</option>
+                    <option style="color:red;font-weight:bold;background-color:white" value="@LabelAllPlayersInGame">@LabelAllPlayersInGame</option>
 
-                    @foreach (var p in Client.Game.Players.Where(p => p.Name != Client.MyName))
+                    @foreach (var p in Game.Players.Where(p => p != Client.Player))
                     {
-                        <option style="color:@Skin.Current.GetFactionColor(p.Faction);background-color:white" value="@p.Name">@p.Name</option>
+                        var name = Game.GetPlayerName(p);
+                        <option style="color:@Skin.Current.GetFactionColor(p.Faction);background-color:white" value="@name">@name</option>
                     }
 
                 </select>
             }
             else
             {
-                playername = LABEL_GLOBAL_CHAT;
+                selectedPlayerName = LabelGlobalChat;
             }
 
         </div>
 
-        @foreach (var m in Client.Messages.Where(message => !Client.MuteGlobalChat || message is not GlobalChatMessage))
+        @foreach (var m in Client.Messages.Where(msg => !Client.MuteGlobalChat || msg is not GlobalChatMessage))
         {
-            var bgcolor = m switch
+            var color = m switch
             {
                 GameChatMessage gcm => Skin.Current.GetFactionColor(gcm.GetSourceFaction(Client.Game)),
                 GlobalChatMessage gcm => "grey",
                 _ => "grey"
             };
 
-            <div class='text-break p-1 mt-1 small' style="background-color:@bgcolor">
-                <ExpressionComponent Game=Game Expression=@m.GetBodyIncludingPlayerInfo(Client.MyName, Client.Game, Client.HostProxy == null).Expression Size=20/>
+            <div class='text-break p-1 mt-1 small' style="background-color:@color">
+                <ExpressionComponent Game="@Game" Expression="@m.GetBodyIncludingPlayerInfo(Client.UserId, Client.Game, !Client.InGame).Expression" Size="20"/>
             </div>
         }
 
         @if (ShowGameChat)
         {
             <div class="mt-1" style="color:black">
-                <CheckboxComponent @bind-Value="Client.MuteGlobalChat">Hide global chat messages</CheckboxComponent>
+                <CheckboxComponent @bind-Value="@Client.MuteGlobalChat">Hide global chat messages</CheckboxComponent>
             </div>
         }
 
@@ -78,11 +79,11 @@
     [Parameter]
     public string BackgroundColor { get; set; } = "transparent";
 
-    private const string LABEL_GLOBAL_CHAT = "everyone (on treachery.online)";
-    private const string LABEL_ALL_PLAYERS_IN_GAME = "all players (this game)";
+    private const string LabelGlobalChat = "everyone (on treachery.online)";
+    private const string LabelAllPlayersInGame = "all players (this game)";
 
     private string message;
-    private string playername;
+    private string selectedPlayerName;
 
     protected override void OnInitialized()
     {
@@ -90,24 +91,18 @@
         
         if (ShowGameChat)
         {
-            if (Client.Game.Players.Where(p => p.Name != Client.MyName).Any())
-            {
-                playername = Client.Game.Players.Where(p => p.Name != Client.MyName).Select(p => p.Name).First();
-            }
-            else
-            {
-                playername = LABEL_ALL_PLAYERS_IN_GAME;
-            }
+            var firstChatTarget = Game.Players.FirstOrDefault(p => p != Client.Player);
+            selectedPlayerName = firstChatTarget != null ? Game.GetPlayerName(firstChatTarget) : LabelAllPlayersInGame;
         }
         else
         {
-            playername = LABEL_GLOBAL_CHAT;
+            selectedPlayerName = LabelGlobalChat;
         }
     }
 
     private async Task KeyUp(KeyboardEventArgs e)
     {
-        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        if (e.Code is "Enter" or "NumpadEnter")
         {
             await Send();
         }
@@ -115,72 +110,49 @@
 
     private async Task Send()
     {
-        await SendMessage(message, playername);
+        await SendMessage(message, selectedPlayerName);
         message = "";
     }
 
-    public async Task SendMessage(string msg, string target)
+    private async Task SendMessage(string msg, string target)
     {
-        var sourcePlayer = Client.Player;
-
-        if (target == LABEL_GLOBAL_CHAT)
+        if (target == LabelGlobalChat)
         {
-            await Client.RequestSendGlobalChatMessage(
-                new GlobalChatMessage
-                {
-                        SourcePlayerName = sourcePlayer != null ? Client.Player.Name : "",
-                        Body = msg
-                    });
-
+            await Client.SendGlobalChatMessage(new GlobalChatMessage
+            {
+                SourceUserId = Client.UserId,
+                Body = msg
+            });
         }
         else {
 
-            var targetPlayer = target == LABEL_GLOBAL_CHAT || target == LABEL_ALL_PLAYERS_IN_GAME ? null : Client.Game.GetPlayer(target);
-
-            await Client.HostProxy.Request(
-                new GameChatMessage
-                {
-                    SourcePlayerName = sourcePlayer != null ? Client.Player.Name : "",
-                    TargetPlayerName = targetPlayer != null ? targetPlayer.Name : "",
-                    Body = msg
-                });
+            var targetUserId = target is LabelGlobalChat or LabelAllPlayersInGame ? -1 : Client.Game.GetUserIdByName(target);
+            await Client.SendChatMessage(new GameChatMessage
+            {
+                SourceUserId = Client.UserId,
+                TargetUserId = targetUserId,
+                Body = msg
+            });
         }
     }
 
-    private string Placeholder => "Chat to " + playername + "...";
+    private string Placeholder => "Chat to " + selectedPlayerName + "...";
 
     private string SelectedFactionColor
     {
         get
         {
-            if (Client.Faction == Faction.None)
-            {
+            if (Game.CurrentPhase < Phase.SelectingFactions)
                 return "white";
-            }
 
-            var p = Client.Game.GetPlayer(playername);
-            if (p != null)
-            {
-                return Skin.Current.GetFactionColor(p.Faction);
-            }
-
-            return "red";
+            var p = Client.Game.GetPlayerByName(selectedPlayerName);
+            return p != null ? Skin.Current.GetFactionColor(p.Faction) : "red";
         }
     }
 
-    private string SelectedFactionForegroundColor
-    {
-        get
-        {
-            if (Client.Faction == Faction.None)
-            {
-                return "black";
-            }
+    private string SelectedFactionForegroundColor => Client.Faction == Faction.None ? "black" : "white";
+    
 
-            return "white";
-        }
-    }
-
-    private bool ShowGameChat => Client.HostProxy != null && !Client.IsObserver;
+    private bool ShowGameChat => Client.InGame && !Client.IsObserver;
 }
 

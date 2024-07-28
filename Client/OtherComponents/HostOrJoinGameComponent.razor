@@ -59,14 +59,14 @@
 
                     @foreach (var av in Client.RunningGames)
                     {
-                        if (!joinPWD.ContainsKey(av.HostID))
+                        if (!joinPWD.ContainsKey(av.GameId))
                         {
-                            joinPWD.Add(av.HostID, "");
+                            joinPWD.Add(av.GameId, "");
                         }
 
-                        if (!Client.JoinErrors.ContainsKey(av.HostID))
+                        if (!Client.JoinErrors.ContainsKey(av.GameId))
                         {
-                            Client.JoinErrors.Add(av.HostID, "");
+                            Client.JoinErrors.Add(av.GameId, "");
                         }
 
                         var fontColorStyle = av.LastAction != null && DateTime.Now.Subtract((DateTime)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
@@ -83,11 +83,11 @@
 
                                     @if (av.HasPassword)
                                     {
-                                        <input class="form-inline input-sm" style="max-width:120px" @bind="joinPWD[av.HostID]" maxlength="24" placeholder="Game password" />
+                                        <input class="form-inline input-sm" style="max-width:120px" @bind="joinPWD[av.GameId]" maxlength="24" placeholder="Game password" />
                                     }
-                                    <button class="btn btn-primary btn-sm" @onclick="@(e => JoinGameAsPlayer(av.HostID, joinPWD[av.HostID]))">Join</button>
-                                    <button class="btn btn-primary btn-sm" @onclick="@(e => JoinGameAsObserver(av.HostID, joinPWD[av.HostID]))">Observe</button>
-                                    <div class="text-danger">@Client.JoinErrors[av.HostID]</div>
+                                    <button class="btn btn-primary btn-sm" @onclick="@(e => JoinGameAsPlayer(av.GameId, joinPWD[av.GameId]))">Join</button>
+                                    <button class="btn btn-primary btn-sm" @onclick="@(e => JoinGameAsObserver(av.GameId, joinPWD[av.GameId]))">Observe</button>
+                                    <div class="text-danger">@Client.JoinErrors[av.GameId]</div>
                                 </td>
                             }
                             else
@@ -104,18 +104,18 @@
 
                                 </td>
                                 <td>
-                                    @if (Client.GameInProgressHostId == av.HostID)
+                                    @if (Client.GameInProgressHostId == av.GameId)
                                     {
                                         <div class="form-inline">
                                             @if (av.HasPassword)
                                             {
-                                                <input class="form-inline input-sm" @bind="joinPWD[av.HostID]" maxlength="24" placeholder="Game password" />
+                                                <input class="form-inline input-sm" @bind="joinPWD[av.GameId]" maxlength="24" placeholder="Game password" />
                                             }
-                                            <button class="btn btn-primary btn-sm" @onclick="@(e => RejoinGameAsPlayer(av.HostID, joinPWD[av.HostID]))">Reconnect</button>
+                                            <button class="btn btn-primary btn-sm" @onclick="@(e => RejoinGameAsPlayer(av.GameId, joinPWD[av.GameId]))">Reconnect</button>
                                         </div>
-                                        <div class="text-danger">@Client.JoinErrors[av.HostID]</div>
+                                        <div class="text-danger">@Client.JoinErrors[av.GameId]</div>
                                     }
-                                    <button class="btn btn-primary btn-sm" @onclick="@(e => RejoinGameAsObserver(av.HostID, joinPWD[av.HostID]))">Observe</button>
+                                    <button class="btn btn-primary btn-sm" @onclick="@(e => RejoinGameAsObserver(av.GameId, joinPWD[av.GameId]))">Observe</button>
                                 </td>
                             }
                         </tr>
@@ -147,7 +147,7 @@
 
     public GameInfo RejoinableGame(int hostID)
     {
-        return Client.RunningGames.FirstOrDefault(g => g.HostID == hostID && g.CurrentPhase > Phase.AwaitingPlayers);
+        return Client.RunningGames.FirstOrDefault(g => g.GameId == hostID && g.CurrentPhase > Phase.AwaitingPlayers);
     }
 
     protected override void OnAfterRender(bool firstRender)

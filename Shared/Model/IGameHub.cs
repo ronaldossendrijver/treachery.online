@@ -14,7 +14,7 @@ public interface IGameHub
     
     //Game Management
     
-    Task<Result<GameInitInfo>> RequestCreateGame(string userToken, string hashedPassword, string settings, string stateData);
+    Task<Result<GameInitInfo>> RequestCreateGame(string userToken, string hashedPassword, string stateData);
     Task<Result<GameInitInfo>> RequestJoinGame(string userToken, string gameId, string hashedPassword, int seat);
     Task<Result<GameInitInfo>> RequestObserveGame(string userToken, string gameId, string hashedPassword);
     Task<Result<GameInitInfo>> RequestReconnectGame(string userToken, string gameToken);

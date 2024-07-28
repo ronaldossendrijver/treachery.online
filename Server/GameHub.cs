@@ -12,11 +12,11 @@ namespace Treachery.Server;
 
 public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfiguration configuration) : Hub<IGameClient>, IGameHub
 {
-    private readonly ConcurrentDictionary<string,ManagedGame> gamesByGameToken = [];
-    private readonly ConcurrentDictionary<string,string> gameTokensByGameId = [];
-    private readonly ConcurrentDictionary<string,User> usersByUserToken = [];
-    private readonly ConcurrentDictionary<string,Game> finishedGames = [];
-    private readonly ConcurrentDictionary<string,DateTime> userTokensLastSeen = [];
+    private ConcurrentDictionary<string,ManagedGame> GamesByGameToken { get; } = [];
+    private ConcurrentDictionary<string,string> GameTokensByGameId { get; } = [];
+    private ConcurrentDictionary<string,User> UsersByUserToken { get; } = [];
+    private ConcurrentDictionary<string,Game> FinishedGames { get; } = [];
+    private ConcurrentDictionary<string,DateTime> UserTokensLastSeen { get; } = [];
     //private readonly ConcurrentDictionary<int, Game> gamesByPlayerId = [];
 
     
@@ -39,13 +39,13 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         game = null;
         result = null;
         
-        if (!usersByUserToken.TryGetValue(playerToken, out user))
+        if (!UsersByUserToken.TryGetValue(playerToken, out user))
         {
             result = Error<TResult>("Player not found");
             return false;
         }
 
-        if (!gamesByGameToken.TryGetValue(gameToken, out game))
+        if (!GamesByGameToken.TryGetValue(gameToken, out game))
         {
             result = Error<TResult>("Game not found");
             return false;
@@ -59,13 +59,13 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         game = null;
         result = null;
         
-        if (!usersByUserToken.TryGetValue(playerToken, out user))
+        if (!UsersByUserToken.TryGetValue(playerToken, out user))
         {
             result = Error("Player not found");
             return false;
         }
 
-        if (!gamesByGameToken.TryGetValue(gameToken, out game))
+        if (!GamesByGameToken.TryGetValue(gameToken, out game))
         {
             result = Error("Game not found");
             return false;

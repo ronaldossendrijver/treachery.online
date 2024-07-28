@@ -13,32 +13,25 @@ namespace Treachery.Shared;
 
 public class GameInfo
 {
-    public int HostID;
-    public bool HostParticipates;
-    public string GameName;
-    public bool HasPassword;
-    public int ExpansionLevel;
-    public Phase CurrentPhase;
-    public MainPhase CurrentMainPhase;
-    public int CurrentTurn;
-    public int MaximumNumberOfPlayers;
-    public int MaximumNumberOfTurns;
-    public List<Faction> FactionsInPlay;
-    public string[] Players;
+    public string GameId { get; init; }
+    public bool CreatorParticipates { get; set; }
+    public string GameName { get; set; }
+    public bool HasPassword { get; set; }
+    public int ExpansionLevel { get; set; }
+    public Phase CurrentPhase { get; set; }
+    public MainPhase CurrentMainPhase { get; set; }
+    public int CurrentTurn { get; set; }
+    public int MaximumNumberOfPlayers { get; set; }
+    public int MaximumNumberOfTurns { get; set; }
+    public List<Faction> FactionsInPlay { get; set; }
+    public string[] Players { get; set; }
     public string[] Observers { get; set; }
-    public int NumberOfBots;
-    public List<Rule> Rules;
-    public bool InviteOthers;
-    public DateTime? LastAction;
+    public int NumberOfBots { get; set; }
+    public List<Rule> Rules { get; set; }
+    public bool InviteOthers { get; set; }
+    public DateTime? LastAction { get; set; }
     
+    public override bool Equals(object obj) => obj is GameInfo info && info.GameId == GameId;
 
-    public override bool Equals(object obj)
-    {
-        return obj is GameInfo info && info.HostID == HostID;
-    }
-
-    public override int GetHashCode()
-    {
-        return HostID.GetHashCode();
-    }
+    public override int GetHashCode() => GameId.GetHashCode();
 }

@@ -8,7 +8,7 @@ public class GameParticipation
     public HashSet<int> StandingUsers { get; set; } = [];
     
     /// <summary>
-    /// For all Users, hold their Seat
+    /// For all Users that are players, hold their Seat
     /// </summary>
     public Dictionary<int, int> SeatedUsers { get; set; } = [];
 
