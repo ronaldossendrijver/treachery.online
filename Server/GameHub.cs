@@ -12,28 +12,25 @@ namespace Treachery.Server;
 
 public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfiguration configuration) : Hub<IGameClient>, IGameHub
 {
-    private ConcurrentDictionary<string,ManagedGame> GamesByGameToken { get; } = [];
-    private ConcurrentDictionary<string,string> GameTokensByGameId { get; } = [];
-    private ConcurrentDictionary<string,User> UsersByUserToken { get; } = [];
-    private ConcurrentDictionary<string,Game> FinishedGames { get; } = [];
-    private ConcurrentDictionary<string,DateTime> UserTokensLastSeen { get; } = [];
-    //private readonly ConcurrentDictionary<int, Game> gamesByPlayerId = [];
-
-    
+    private static ConcurrentDictionary<string,ManagedGame> GamesByGameToken { get; } = [];
+    private static ConcurrentDictionary<string,string> GameTokensByGameId { get; } = [];
+    private static ConcurrentDictionary<string,User> UsersByUserToken { get; } = [];
+    private static ConcurrentDictionary<string,Game> FinishedGames { get; } = [];
+    private static ConcurrentDictionary<string,DateTime> UserTokensLastSeen { get; } = [];
 
     private TreacheryContext GetDbContext() => new(dbContextOptions, configuration);
 
-    private string GenerateToken() => Convert.ToBase64String(Guid.NewGuid().ToByteArray())[..10];
+    private static string GenerateToken() => Convert.ToBase64String(Guid.NewGuid().ToByteArray())[..10];
     
-    private VoidResult Error(string message) => new() { Message = message, Success = false }; 
+    private static VoidResult Error(string message) => new() { Message = message, Success = false }; 
     
-    private Result<TResult> Error<TResult>(string message) => new() { Message = message, Success = false }; 
+    private static Result<TResult> Error<TResult>(string message) => new() { Message = message, Success = false }; 
     
-    private VoidResult Success() => new() { Success = true, Contents = new VoidContents()}; 
+    private static VoidResult Success() => new() { Success = true, Contents = new VoidContents()}; 
     
-    private Result<TResult> Success<TResult>(TResult contents) => new() { Success = true, Contents = contents };
+    private static Result<TResult> Success<TResult>(TResult contents) => new() { Success = true, Contents = contents };
 
-    private bool AreValid<TResult>(string playerToken, string gameToken, out User user, out ManagedGame game, out Result<TResult> result)
+    private static bool AreValid<TResult>(string playerToken, string gameToken, out User user, out ManagedGame game, out Result<TResult> result)
     {
         user = null;
         game = null;
@@ -53,7 +50,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
 
         return true;
     }    
-    private bool AreValid(string playerToken, string gameToken, out User user, out ManagedGame game, out VoidResult result)
+    private static bool AreValid(string playerToken, string gameToken, out User user, out ManagedGame game, out VoidResult result)
     {
         user = null;
         game = null;
@@ -99,13 +96,13 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         }
     }
     
-    private static Stream GenerateStreamFromString(string s)
+    private static MemoryStream GenerateStreamFromString(string s)
     {
-        var stream = new MemoryStream();
-        var writer = new StreamWriter(stream);
+        var result = new MemoryStream();
+        var writer = new StreamWriter(result);
         writer.Write(s);
         writer.Flush();
-        stream.Position = 0;
-        return stream;
+        result.Position = 0;
+        return result;
     }
 }

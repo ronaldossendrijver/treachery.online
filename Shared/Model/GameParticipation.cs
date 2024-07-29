@@ -25,17 +25,17 @@ public class GameParticipation
     /// <summary>
     /// Observers
     /// </summary>
-    public HashSet<int> Observers { get; set; }
-    
+    public HashSet<int> Observers { get; set; } = [];
+
     /// <summary>
     /// All Users that are Hosts
     /// </summary>
-    public HashSet<int> Hosts { get; set; }
+    public HashSet<int> Hosts { get; set; } = [];
     
     /// <summary>
     /// All Seats that may be taken by other players
     /// </summary>
-    public HashSet<int> AvailableSeats { get; set; }
+    public HashSet<int> AvailableSeats { get; set; } = [];
     
     public bool BotsArePaused { get; set; }
     

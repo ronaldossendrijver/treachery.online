@@ -16,15 +16,9 @@
              BorderWidth="@Skin.Current.TURN_FONT_BORDERWIDTH" BorderColor="white"
              Align="@TextAlignment.Center" />
 
-    string message;
-    if ((DateTime.Now - Client.Disconnected).TotalSeconds < 60)
-    {
-        message = "Please wait while the game is trying to reconnect...";
-    }
-    else
-    {
-        message = "Trying to reconnect, but the host may have ended or restarted the game or your internet connection may be broken...";
-    }
+    var message = Client.IsDisconnected ? 
+        "Please wait while the game is trying to reconnect..." : 
+        "Trying to reconnect, but the host may have ended or restarted the game or your internet connection may be broken...";
 
     <MapText ToShow="@message"
              X="@(Skin.Current.PlanetCenter.X)" Y="@(1.1f * Skin.Current.PlanetCenter.Y)"

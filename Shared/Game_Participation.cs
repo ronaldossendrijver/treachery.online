@@ -76,7 +76,7 @@ public partial class Game
     
     public void AddPlayer(int userId, string playerName, int seat = -1)
     {
-        if (CurrentPhase is Phase.AwaitingPlayers)
+        if (CurrentPhase is Phase.AwaitingPlayers || seat == -1)
         {
             Participation.StandingUsers.Add(userId);            
         }
@@ -120,6 +120,8 @@ public partial class Game
         }
     }
 
+    public int NumberOfPlayers => Participation.StandingUsers.Count + Participation.SeatedUsers.Count;
+
     public int NumberOfHosts => Participation.Hosts.Count;
     
     public int NumberOfBots => Participation.SeatedBots.Count;
@@ -136,6 +138,7 @@ public partial class Game
             .Where(idAndName => Participation.Observers.Contains(idAndName.Key))
             .Select(idAndName => idAndName.Value);
 
+    
     public bool IsPlayer(int userId) => Participation.SeatedUsers.ContainsKey(userId) || Participation.StandingUsers.Contains(userId);
     
     public bool IsHost(int userId) => Participation.Hosts.Contains(userId);

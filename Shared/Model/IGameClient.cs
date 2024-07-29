@@ -13,21 +13,13 @@ namespace Treachery.Shared;
 
 public interface IGameClient
 {
-    
-    Task HandleGlobalChatMessage(GlobalChatMessage message);
-
     Task HandleGameEvent<TEvent>(TEvent evt, int newEventNumber) where TEvent : GameEvent;
-    
-    
     Task HandleChatMessage(GameChatMessage gameChatMessage);
+    Task HandleGlobalChatMessage(GlobalChatMessage message);
     Task HandleSetTimer(int value);
     Task HandleSetSkin(string skin);
     Task HandleUndo(int untilEventNr);
-    Task HandlePing();
-
-    Task HandleListOfGames(List<GameInfo> games);
-    
-    Task HandleJoinGame(int userId, string userName, int seat = -1);
+    Task HandleJoinGame(int userId, string userName, int seat);
     Task HandleSetOrUnsetHost(int userId);
     Task HandleObserveGame(int userId, string userName);
     Task HandleOpenOrCloseSeat(int seat);

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mail;
@@ -11,7 +12,7 @@ namespace Treachery.Server;
 
 public partial class GameHub
 {
-    public async Task<Result<GameInitInfo>> RequestCreateGame(string userToken, string hashedPassword, string stateData = null, string skin = null)
+    public async Task<Result<GameInitInfo>> RequestCreateGame(string userToken, string hashedPassword, string stateData, string skin)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<GameInitInfo>("User not found");
@@ -20,7 +21,7 @@ public partial class GameHub
         var initialParticipation = new GameParticipation();
         var initialSettings = new GameSettings();
         
-        if (stateData != null)
+        if (!string.IsNullOrEmpty(stateData))
         {
             var state = GameState.Load(stateData);
             var errorMessage = Game.TryLoad(state, initialParticipation, false, false, out var loadedGame);
@@ -52,12 +53,9 @@ public partial class GameHub
         await Groups.AddToGroupAsync(Context.ConnectionId, gameToken);
 
         game.AddPlayer(user.Id, user.PlayerName);
-        await Clients.Group(gameToken).HandleJoinGame(user.Id, user.PlayerName);
-        
         game.SetOrUnsetHost(user.Id);
-        await Clients.Group(gameToken).HandleSetOrUnsetHost(user.Id);
         
-        if (skin != null)
+        if (!string.IsNullOrEmpty(skin))
             await Clients.Group(gameToken).HandleSetSkin(skin);
         
         return Success(new GameInitInfo
@@ -69,7 +67,7 @@ public partial class GameHub
         });
     }
     
-    public async Task<VoidResult> RequestLoadGame(string userToken, string gameToken, string stateData, string skin = null)
+    public async Task<VoidResult> RequestLoadGame(string userToken, string gameToken, string stateData, string skin)
     {
         if (!AreValid(userToken, gameToken, out var user, out var managedGame, out var error))
             return error;
@@ -89,7 +87,7 @@ public partial class GameHub
             Settings = managedGame.Settings
         });
 
-        if (skin != null)
+        if (!string.IsNullOrEmpty(skin))
             await Clients.Group(gameToken).HandleSetSkin(skin);
         
         return Success();
@@ -103,7 +101,7 @@ public partial class GameHub
         if (!GameTokensByGameId.TryGetValue(gameId, out var gameToken) || !GamesByGameToken.TryGetValue(gameToken, out var game))
             return Error<GameInitInfo>("Game not found");
         
-        if (game.HashedPassword != null && !game.HashedPassword.Equals(hashedPassword))
+        if (!string.IsNullOrEmpty(game.HashedPassword) && !game.HashedPassword.Equals(hashedPassword))
             return Error<GameInitInfo>("Incorrect password");
         
         if (!game.Game.IsOpen(seat))
@@ -196,7 +194,7 @@ public partial class GameHub
         if (!GameTokensByGameId.TryGetValue(gameId, out var gameToken) || !GamesByGameToken.TryGetValue(gameToken, out var game))
             return Error<GameInitInfo>("Game not found");
         
-        if (game.ObserversRequirePassword && game.HashedPassword != null && !game.HashedPassword.Equals(hashedPassword))
+        if (game.ObserversRequirePassword && !string.IsNullOrEmpty(game.HashedPassword) && !game.HashedPassword.Equals(hashedPassword))
             return Error<GameInitInfo>("Incorrect password");
         
         await Groups.AddToGroupAsync(Context.ConnectionId, gameToken);
@@ -284,14 +282,13 @@ public partial class GameHub
         
         return Success();
     }
-    
-    public async Task<VoidResult> RequestRegisterHeartbeat(string userToken)
+
+    public async Task<Result<List<GameInfo>>> RequestRunningGames(string userToken)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
-            return Error("User not found");
+            return Error<List<GameInfo>>("User not found");
 
-        UserTokensLastSeen[userToken] = DateTime.Now;
-        return await Task.FromResult(Success());
+        return await Task.FromResult(Success(GamesByGameToken.Values.Select(GameInfo.Extract).ToList()));
     }
     
     private void SendEndOfGameMail(string content, GameInfo info)

@@ -15,34 +15,34 @@ using Newtonsoft.Json.Serialization;
 
 namespace Treachery.Client;
 
-public class Client : IGameService, IGameClient
+public class Client : IGameService, IGameClient, IAsyncDisposable
 {
-    private const int HeartbeatDelay = 10000;
-    private const int MaxHeartbeats = 17280;
-    private const int DisconnectTimeout = 25000;
+    private const int HeartbeatDelay = 2000;
+    private const int MaxHeartbeats = 86400;
 
     //General info
     public ServerSettings ServerSettings { get; private set; }
     private int NrOfHeartbeats { get; set; }
-    private string OldConnectionId { get; set; } = string.Empty;
+    public bool IsDisconnected => _connection is not { State: HubConnectionState.Connected };
     
     //Logged in player
     public Dictionary<string, string> JoinErrors { get; } = new();
     public bool LoggedIn => LoginInfo != null;
-    public LoginInfo LoginInfo { get; set; }
-    public string UserToken => LoginInfo.UserToken;
-    public int UserId => LoginInfo.UserId;
-    private DateTime LastPing { get; set; }
+    private LoginInfo LoginInfo { get; set; }
+    private string UserToken => LoginInfo?.UserToken;
+    public int UserId => LoginInfo?.UserId ?? -1;
+    public bool IsPlayer => Player != null && Player.Faction != Faction.None;
+    public Player Player => Game.GetPlayerByUserId(UserId);
+    public Faction Faction => Player?.Faction ?? Faction.None;
     
     //Game in progress
     public bool InGame => Game != null;
-    public string GameToken { get; set; }
+    private string GameToken { get; set; }
     public Game Game { get; private set; }
     public GameSettings Settings { get; private set; }
     public string PlayerName => LoginInfo.PlayerName;
     public GameStatus Status { get; private set; }
     public bool IsObserver => Game.IsObserver(UserId);
-    public DateTime Disconnected { get; private set; }
     public bool BotsArePaused { get; private set; }
     
     //Sound and camera
@@ -76,8 +76,31 @@ public class Client : IGameService, IGameClient
                 configuration.PayloadSerializerSettings.Error += LogSerializationError;
             })
             .Build();
+        
+        _connection.Reconnected += OnReconnected;
+
+        RegisterHandlers();
     }
-    
+
+    private void RegisterHandlers()
+    {
+        //will this work? Task HandleGameEvent<TEvent>(TEvent evt, int newEventNumber) where TEvent : GameEvent;
+        _connection.On<GameEvent,int>(nameof(HandleGameEvent), HandleGameEvent);
+        _connection.On<GameChatMessage>(nameof(HandleChatMessage), HandleChatMessage);
+        _connection.On<GlobalChatMessage>(nameof(HandleGlobalChatMessage), HandleGlobalChatMessage);
+        _connection.On<int>(nameof(HandleSetTimer), HandleSetTimer);
+        _connection.On<string>(nameof(HandleSetSkin), HandleSetSkin);
+        _connection.On<int>(nameof(HandleUndo), HandleUndo);
+        _connection.On<int,string,int>(nameof(HandleJoinGame), HandleJoinGame);
+        _connection.On<int>(nameof(HandleSetOrUnsetHost), HandleSetOrUnsetHost);
+        _connection.On<int,string>(nameof(HandleObserveGame), HandleObserveGame);
+        _connection.On<int>(nameof(HandleOpenOrCloseSeat), HandleOpenOrCloseSeat);
+        _connection.On<int>(nameof(HandleSeatOrUnseatBot), HandleSeatOrUnseatBot);
+        _connection.On<int>(nameof(HandleRemoveUser), HandleRemoveUser);
+        _connection.On<bool>(nameof(HandleBotStatus), HandleBotStatus);
+        _connection.On<GameInitInfo>(nameof(HandleLoadGame), HandleLoadGame);
+    }
+
     public async Task Start()
     {
         await _connection.StartAsync();
@@ -85,16 +108,11 @@ public class Client : IGameService, IGameClient
         _ = Task.Delay(HeartbeatDelay).ContinueWith(_ => Heartbeat());
     }
     
-    public bool IsDisconnected => Disconnected != default;
-
     public void Refresh() => RefreshHandler?.Invoke();
 
     public void RefreshPopovers() => RefreshPopoverHandler?.Invoke();
 
-    private void LogSerializationError(object sender, ErrorEventArgs e)
-    {
-        Support.Log(e.ErrorContext.Error.ToString());
-    }
+    private static void LogSerializationError(object sender, ErrorEventArgs e) => Support.Log(e.ErrorContext.Error.ToString());
 
     public void Reset()
     {
@@ -115,24 +133,7 @@ public class Client : IGameService, IGameClient
         return Task.CompletedTask;
     }
 
-    //Process information about a currently running game on treachery.online
-    public List<GameInfo> RunningGames { get; private set; } = [];
-
-    //public IEnumerable<GameInfo> JoinableAdvertisedGames => _advertisedGames.Where(gameAndDate => gameAndDate.Key.CurrentPhase == Phase.AwaitingPlayers && DateTime.Now.Subtract(gameAndDate.Value).TotalSeconds < 15).Select(gameAndDate => gameAndDate.Key);
-    //private readonly Dictionary<GameInfo, DateTime> _advertisedGames = new();
-    
-    public Task HandleListOfGames(List<GameInfo> games)
-    {
-        if (!InGame)
-        {
-            RunningGames = games;
-            Refresh();
-        }
-        
-        return Task.CompletedTask;
-    }
-    
-    public Task HandleJoinGame(int userId, string userName, int seat = -1)
+    public Task HandleJoinGame(int userId, string userName, int seat)
     {
         Game.AddPlayer(userId, userName, seat);
         return Task.CompletedTask;
@@ -174,54 +175,6 @@ public class Client : IGameService, IGameClient
         return Task.CompletedTask;
     }
 
-
-    public async Task SendGlobalChatMessage(GlobalChatMessage message) =>
-        await _connection.SendAsync(nameof(IGameHub.SendGlobalChatMessage), UserToken, message);
-
-    public async Task Heartbeat()
-    {
-        if (NrOfHeartbeats++ < MaxHeartbeats)
-        {
-            try
-            {
-                if (!CheckDisconnect())
-                {
-                    if (OldConnectionId == "") OldConnectionId = _connection.ConnectionId;
-
-                    if (IsDisconnected || _connection.ConnectionId != OldConnectionId)
-                    {
-                        OldConnectionId = _connection.ConnectionId;
-                        await RequestReconnectGame();
-                    }
-
-                    Disconnected = default;
-                }
-
-                if (!IsDisconnected)
-                    await _connection.SendAsync(nameof(IGameHub.RequestRegisterHeartbeat), UserToken, GameToken);
-            }
-            catch (Exception e)
-            {
-                Support.Log(e.ToString());
-            }
-
-            _ = Task.Delay(HeartbeatDelay).ContinueWith(_ => Heartbeat());
-        }
-    }
-
-    private bool CheckDisconnect()
-    {
-        if (_connection.State is not HubConnectionState.Disconnected || 
-            DateTime.Now.Subtract(LastPing).TotalMilliseconds > DisconnectTimeout)
-        {
-            Disconnected = DateTime.Now;
-            Refresh();
-            return true;
-        }
-
-        return false;
-    }
-
     public async Task HandleGameEvent<TEvent>(TEvent e, int newEventNumber) where TEvent : GameEvent
     {
         Message resultMessage;
@@ -250,29 +203,17 @@ public class Client : IGameService, IGameClient
         }
     }
 
-    private async Task<Message> LoadGame(GameInitInfo initInfo)
+    public async Task HandleUndo(int untilEventNr)
     {
-        var currentState = GameState.Load(initInfo.GameState);
-        var resultMessage = Game.TryLoad(currentState, initInfo.Participation, true, IsHost, out var result);
-        if (resultMessage == null)
+        try
         {
-            Game = result;
-            Settings = initInfo.Settings;
-            await PerformPostEventTasks(Game.LatestEvent());
-            RefreshPopovers();
+            Game = Game.Undo(untilEventNr);
+            await PerformPostEventTasks(null);
         }
-        else
+        catch (Exception ex)
         {
-            Support.Log(resultMessage.ToString(Skin.Current));
+            Support.Log(ex.ToString());
         }
-
-        return resultMessage;
-    }
-
-    public async Task HandlePing()
-    {
-        LastPing = DateTime.Now;
-        await Task.CompletedTask;
     }
     
     public async Task HandleSetSkin(string skinData)
@@ -287,26 +228,8 @@ public class Client : IGameService, IGameClient
         RefreshPopovers();
     }
 
-    public bool IsPlayer => Player != null && Player.Faction != Faction.None;
-
-    public Player Player => Game.GetPlayerByUserId(UserId);
-
-    public Faction Faction => Player?.Faction ?? Faction.None;
-
-    public async Task HandleLoadGame(GameInitInfo initInfo) => await LoadGame(initInfo);
-    
-    public async Task HandleUndo(int untilEventNr)
-    {
-        try
-        {
-            Game = Game.Undo(untilEventNr);
-            await PerformPostEventTasks(null);
-        }
-        catch (Exception ex)
-        {
-            Support.Log(ex.ToString());
-        }
-    }
+    public async Task HandleLoadGame(GameInitInfo initInfo) => 
+        await LoadGame(initInfo);
 
     public LinkedList<ChatMessage> Messages { get; } = [];
     
@@ -331,64 +254,6 @@ public class Client : IGameService, IGameClient
         }
     }
 
-    private async Task PerformPostEventTasks(GameEvent e)
-    {
-        UpdateStatus(Game, Player, IsPlayer);
-
-        if (!(e is AllyPermission || e is DealOffered))
-        {
-            await TurnAlert();
-            await PlaySoundsForMilestones();
-        }
-
-        await Browser.RemoveFocusFromButtons();
-
-        if (Game.CurrentMainPhase == MainPhase.Bidding) ResetAutopassThreshold();
-
-        PerformEndOfTurnTasks();
-        Refresh();
-    }
-
-    private void ResetAutopassThreshold()
-    {
-        if (Game.RecentMilestones.Contains(Milestone.AuctionWon) && (!KeepAutoPassSetting || Game.CurrentPhase == Phase.BiddingReport)) AutoPass = false;
-    }
-
-    private void UpdateStatus(Game game, Player player, bool isPlayer)
-    {
-        Status = GameStatus.DetermineStatus(game, player, isPlayer);
-    }
-
-    private bool itAlreadyWasMyTurn;
-    private async Task TurnAlert()
-    {
-        if (itAlreadyWasMyTurn)
-        {
-            itAlreadyWasMyTurn = !Status.WaitingForOthers(Player, IsHost);
-        }
-        else
-        {
-            if (!Status.WaitingForOthers(Player, IsHost) && Game.CurrentMainPhase != MainPhase.Battle)
-            {
-                itAlreadyWasMyTurn = true;
-                await Browser.PlaySound(Skin.Current.Sound_YourTurn_URL, CurrentEffectVolume);
-            }
-        }
-    }
-
-    private async Task PlaySoundsForMilestones()
-    {
-        foreach (var m in Game.RecentMilestones) await Browser.PlaySound(Skin.Current.GetSound(m), CurrentEffectVolume);
-    }
-
-    private Phase previousPhase;
-    private void PerformEndOfTurnTasks()
-    {
-        if (Game.CurrentPhase == Phase.TurnConcluded && Game.CurrentPhase != previousPhase) Messages.Clear();
-
-        previousPhase = Game.CurrentPhase;
-    }
-
     public bool InScheduledMaintenance =>
         ServerSettings != null &&
         ServerSettings.ScheduledMaintenance.AddMinutes(15) > DateTime.UtcNow &&
@@ -402,21 +267,6 @@ public class Client : IGameService, IGameClient
     public bool IsHost => Game.IsHost(UserId);
 
     public Phase CurrentPhase => Game.CurrentPhase;
-
-    /*
-    private async Task CheckIfPlayerCanReconnect()
-    {
-        GameInProgressHostId = 0;
-
-        var currentGameHostID = await Browser.LoadSetting<int>(string.Format("treachery.online;currentgame;{0};hostid", PlayerName.ToLower().Trim()));
-        if (currentGameHostID == 0) return;
-
-        var currentGameDateTime = await Browser.LoadSetting<DateTime>(string.Format("treachery.online;currentgame;{0};time", PlayerName.ToLower().Trim()));
-        if (DateTime.Now.Subtract(currentGameDateTime).TotalSeconds > 900) return;
-
-        GameInProgressHostId = currentGameHostID;
-    }
-    */
    
     public event EventHandler<Location> OnLocationSelected;
     public event EventHandler<Location> OnLocationSelectedWithCtrlOrAlt;
@@ -464,8 +314,6 @@ public class Client : IGameService, IGameClient
         if (result.Success)
         {
             LoginInfo = result.Contents;
-            //TODO: offer this service
-            //await CheckIfPlayerCanReconnect();
             Refresh();
             return null;
         }
@@ -475,7 +323,7 @@ public class Client : IGameService, IGameClient
     
     public async Task<string> RequestPasswordReset(string email)
     {
-        var result = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestPasswordReset), email);
+        var result = await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestPasswordReset), email);
         return result.Message;
     }
 
@@ -486,8 +334,6 @@ public class Client : IGameService, IGameClient
         if (result.Success)
         {
             LoginInfo = result.Contents;
-            //TODO: offer this service
-            //await CheckIfPlayerCanReconnect();
             Refresh();
             return null;
         }
@@ -506,8 +352,11 @@ public class Client : IGameService, IGameClient
                 return loadMessage.ToString();
 
             GameToken = result.Contents.GameToken;
+            Settings = result.Contents.Settings;
+            Game.AddPlayer(UserId, PlayerName);
+            Game.SetOrUnsetHost(UserId);
         }
-
+        
         return result.Message;
     }
 
@@ -525,6 +374,7 @@ public class Client : IGameService, IGameClient
                 return loadMessage.ToString();
 
             GameToken = result.Contents.GameToken;
+            Settings = result.Contents.Settings;
         }
 
         return result.Message;
@@ -544,6 +394,7 @@ public class Client : IGameService, IGameClient
                 return loadMessage.ToString();
 
             GameToken = result.Contents.GameToken;
+            Settings = result.Contents.Settings;
         }
         
         return result.Message;
@@ -559,6 +410,7 @@ public class Client : IGameService, IGameClient
                 return loadMessage.ToString();
 
             GameToken = result.Contents.GameToken;
+            Settings = result.Contents.Settings;
         }
         
         return result.Message;
@@ -577,7 +429,7 @@ public class Client : IGameService, IGameClient
         await _connection.SendAsync(nameof(IGameHub.RequestLeaveGame), UserToken, GameToken);
     
     public async Task<string> RequestKick(int userId) => 
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestSeatOrUnseatBot), UserToken, GameToken, userId)).Message;
+        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestKick), UserToken, GameToken, userId)).Message;
 
     public async Task<string> RequestLoadGame(string state, string skin = null) =>
         (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestLoadGame), UserToken, GameToken, state, skin)).Message;
@@ -600,7 +452,7 @@ public class Client : IGameService, IGameClient
     public async Task SendChatMessage(GameChatMessage message) =>
         await _connection.SendAsync(nameof(IGameHub.SendChatMessage), UserToken, GameToken, message);
 
-    public async Task SendGlobalChatMessage(string userToken, GlobalChatMessage message) =>
+    public async Task SendGlobalChatMessage(GlobalChatMessage message) =>
         await _connection.SendAsync(nameof(IGameHub.SendGlobalChatMessage), UserToken, message);
 
     private async Task GetServerSettings()
@@ -613,6 +465,128 @@ public class Client : IGameService, IGameClient
         else
         {
             Support.Log(result.Message);
+        }
+    }
+    
+    public List<GameInfo> RunningGames { get; private set; } = [];
+    private async Task Heartbeat()
+    {
+        if (NrOfHeartbeats++ < MaxHeartbeats)
+        {
+            try
+            {
+                if (!IsDisconnected)
+                {
+                    await _connection.SendAsync(nameof(IGameHub.RequestRegisterHeartbeat), UserToken, GameToken);
+                    
+                    if (LoggedIn && !InGame)
+                    {
+                        var runningGamesResult = await _connection.InvokeAsync<Result<List<GameInfo>>>(nameof(IGameHub.RequestRunningGames), UserToken);
+                        if (runningGamesResult.Success)
+                        {
+                            RunningGames = runningGamesResult.Contents;
+                            Refresh();
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Support.Log(e.ToString());
+            }
+
+            _ = Task.Delay(HeartbeatDelay).ContinueWith(_ => Heartbeat());
+        }
+    }
+
+    private async Task<Message> LoadGame(GameInitInfo initInfo)
+    {
+        var currentState = GameState.Load(initInfo.GameState);
+        var resultMessage = Game.TryLoad(currentState, initInfo.Participation, false, false, out var result);
+        if (resultMessage == null)
+        {
+            Game = result;
+            Settings = initInfo.Settings;
+            await PerformPostEventTasks(Game.LatestEvent());
+            RefreshPopovers();
+        }
+        else
+        {
+            Support.Log(resultMessage.ToString(Skin.Current));
+        }
+
+        return resultMessage;
+    }
+    
+    private async Task PerformPostEventTasks(GameEvent e)
+    {
+        UpdateStatus(Game, Player, IsPlayer);
+
+        if (!(e is AllyPermission || e is DealOffered))
+        {
+            await TurnAlert();
+            await PlaySoundsForMilestones();
+        }
+
+        await Browser.RemoveFocusFromButtons();
+
+        if (Game.CurrentMainPhase == MainPhase.Bidding) ResetAutoPassThreshold();
+
+        PerformEndOfTurnTasks();
+        Refresh();
+    }
+
+    private void ResetAutoPassThreshold()
+    {
+        if (Game.RecentMilestones.Contains(Milestone.AuctionWon) && (!KeepAutoPassSetting || Game.CurrentPhase == Phase.BiddingReport)) AutoPass = false;
+    }
+
+    private void UpdateStatus(Game game, Player player, bool isPlayer)
+    {
+        Status = GameStatus.DetermineStatus(game, player, isPlayer);
+    }
+
+    private bool itAlreadyWasMyTurn;
+    private async Task TurnAlert()
+    {
+        if (itAlreadyWasMyTurn)
+        {
+            itAlreadyWasMyTurn = !Status.WaitingForOthers(Player, IsHost);
+        }
+        else
+        {
+            if (!Status.WaitingForOthers(Player, IsHost) && Game.CurrentMainPhase != MainPhase.Battle)
+            {
+                itAlreadyWasMyTurn = true;
+                await Browser.PlaySound(Skin.Current.Sound_YourTurn_URL, CurrentEffectVolume);
+            }
+        }
+    }
+
+    private async Task PlaySoundsForMilestones()
+    {
+        foreach (var m in Game.RecentMilestones) await Browser.PlaySound(Skin.Current.GetSound(m), CurrentEffectVolume);
+    }
+
+    private Phase previousPhase;
+    private void PerformEndOfTurnTasks()
+    {
+        if (Game.CurrentPhase == Phase.TurnConcluded && Game.CurrentPhase != previousPhase) Messages.Clear();
+
+        previousPhase = Game.CurrentPhase;
+    }
+    
+    private async Task OnReconnected(string arg)
+    {
+        await RequestReconnectGame();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_connection != null)
+        {
+            _connection.Reconnected -= OnReconnected;
+            await _connection.DisposeAsync();
         }
     }
 }

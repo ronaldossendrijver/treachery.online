@@ -94,7 +94,7 @@ public class EstablishPlayers : GameEvent
             (ApplicableRules.Contains(Rule.GreyBot) ? 1 : 0) +
             (ApplicableRules.Contains(Rule.BlueBot) ? 1 : 0);
 
-        if (Players.Count() + nrOfBots == 0 && !ApplicableRules.Contains(Rule.FillWithBots)) return Message.Express("At least one player required");
+        if (Game.NumberOfPlayers + nrOfBots == 0 && !ApplicableRules.Contains(Rule.FillWithBots)) return Message.Express("At least one player required");
         if (Players.Count() + nrOfBots < 2 && !ApplicableRules.Contains(Rule.FillWithBots)) return Message.Express("At least two players required");
         if (MaximumNumberOfPlayers < 2) return Message.Express("At least two players required");
         if (Players.Count() + nrOfBots > MaximumNumberOfPlayers) return Message.Express("Too many players");

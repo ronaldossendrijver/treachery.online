@@ -28,84 +28,14 @@
     </div>
 </div>
 
-<div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeIn90 1s">
-    <div class="card-header">Join or observe a game</div>
-    <div class="card-body">
-
-        @if (!Client.RunningGames.Any())
-        {
-            <div class="text-info">No games hosted...</div>
-        }
-        else
-        {
-            <table class="table table-sm" id="availableGames">
-                <tbody>
-
-                    @foreach (var av in Client.RunningGames)
-                    {
-                        joinGamePassword.TryAdd(av.GameId, "");
-                        Client.JoinErrors.TryAdd(av.GameId, "");
-
-                        var fontColorStyle = av.LastAction != null && DateTime.Now.Subtract((DateTime)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
-
-                        <tr class="small table-dark">
-                            <td class="w-25" style="@fontColorStyle">@av.GameName</td>
-                            
-                            @if (av.CurrentPhase == Phase.AwaitingPlayers)
-                            {
-                                <td class="w-50">
-                                    @Game.Players.Count Players, @Skin.Current.Describe(Game.DetermineApproximateRuleset(av.FactionsInPlay, av.Rules, Game.ExpansionLevel)), maximum players: @av.MaximumNumberOfPlayers, maximum turns: @av.MaximumNumberOfTurns
-                                </td>
-                                <td class="w-25">
-
-                                    @if (av.HasPassword)
-                                    {
-                                        <input class="form-inline input-sm" style="max-width:120px" @bind="joinGamePassword[av.GameId]" maxlength="24" placeholder="Game password" />
-                                    }
-                                    <button class="btn btn-primary btn-sm" @onclick="@(e => JoinGameAsPlayer(av.GameId, joinGamePassword[av.GameId]))">Join</button>
-                                    <button class="btn btn-primary btn-sm" @onclick="@(e => JoinGameAsObserver(av.GameId, joinGamePassword[av.GameId]))">Observe</button>
-                                    <div class="text-danger">@Client.JoinErrors[av.GameId]</div>
-                                </td>
-                            }
-                            else
-                            {
-                                var factions = av.FactionsInPlay != null ? av.FactionsInPlay : new List<Faction>();
-                                <td style="@fontColorStyle">
-                                    @Name(Game.DetermineApproximateRuleset(factions, av.Rules, Game.ExpansionLevel)), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
-                                    <br>
-                                    @foreach (var f in factions.Where(f => f != Faction.None))
-                                    {
-                                        <Image Shown="f" Width="20" Shadow=""/>
-                                    }
-                                    @NumberOfBotsMessage(av)
-
-                                </td>
-                            }
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-    </div>
-</div>
-
 @code {
 
-    private const int MaxSavegameSize = 4194304;
+    private const int MaxSaveGameSize = 4194304;
 
     private string createGamePassword;
-    private readonly Dictionary<string, string> joinGamePassword = [];
     private object fileInput;
     private string loadValidationError = string.Empty;
     private string loadedGameData;
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            StartRedrawCycle(5000);
-        }
-    }
 
     private async Task CreateNewGame()
     {
@@ -115,7 +45,7 @@
     private async Task LoadAndCreateGame()
     {
         loadValidationError = string.Empty;
-        await Task.Delay(200).ContinueWith(e => LoadGameOpenFile());
+        await Task.Delay(200).ContinueWith(_ => LoadGameOpenFile());
     }
 
     private async Task LoadGameOpenFile()
@@ -126,7 +56,7 @@
 
             if (!string.IsNullOrEmpty(loadedGameData))
             {
-                if (loadedGameData.Length > MaxSavegameSize)
+                if (loadedGameData.Length > MaxSaveGameSize)
                 {
                     loadValidationError = "File is too big";
                 }
@@ -143,25 +73,5 @@
         }
 
         StateHasChanged();
-    }
-
-    private async Task JoinGameAsPlayer(string gameId, string password)
-    {
-        Client.JoinErrors[gameId] = await Client.RequestJoinGame(gameId, Support.GetHash(password));
-    }
-
-    private async Task JoinGameAsObserver(string gameId, string password)
-    {
-        Client.JoinErrors[gameId] = await Client.RequestObserveGame(gameId, Support.GetHash(password));
-    }
-
-    private static string NumberOfBotsMessage(GameInfo av)
-    {
-        return av.NumberOfBots switch
-        {
-            1 => $" ({av.Players.Length} players, 1 bot)",
-            > 1 => $" ({av.Players.Length} players, {av.NumberOfBots} bots)",
-            _ => $" ({av.Players.Length} players)"
-        };
     }
 }

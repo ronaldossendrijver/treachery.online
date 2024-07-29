@@ -14,7 +14,7 @@ public interface IGameHub
     
     //Game Management
     
-    Task<Result<GameInitInfo>> RequestCreateGame(string userToken, string hashedPassword, string stateData = null, string skinData = null);
+    Task<Result<GameInitInfo>> RequestCreateGame(string userToken, string hashedPassword, string stateData, string skinData);
     Task<Result<GameInitInfo>> RequestJoinGame(string userToken, string gameId, string hashedPassword, int seat);
     Task<Result<GameInitInfo>> RequestObserveGame(string userToken, string gameId, string hashedPassword);
     Task<Result<GameInitInfo>> RequestReconnectGame(string userToken, string gameToken);
@@ -23,12 +23,12 @@ public interface IGameHub
     Task<VoidResult> RequestSeatOrUnseatBot(string userToken, string gameToken, int seat);
     Task<VoidResult> RequestLeaveGame(string userToken, string gameToken);
     Task<VoidResult> RequestKick(string userToken, string gameToken, int userId);
-    
-    Task<VoidResult> RequestLoadGame(string userToken, string hashedPassword, string state, string skin = null);
+    Task<VoidResult> RequestLoadGame(string userToken, string hashedPassword, string state, string skin);
     Task<VoidResult> RequestSetSkin(string userToken, string gameToken, string skin);
     Task<VoidResult> RequestUndo(string userToken, string gameToken, int untilEventNr);
     Task<Result<GameInitInfo>> RequestGameState(string userToken, string gameToken);
     Task<VoidResult> RequestPauseBots(string userToken, string gameToken);
+    Task<Result<List<GameInfo>>> RequestRunningGames(string userToken);
     Task<VoidResult> RequestRegisterHeartbeat(string userToken);
     
     //Game Events

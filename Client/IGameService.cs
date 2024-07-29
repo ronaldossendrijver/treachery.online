@@ -22,7 +22,6 @@ public interface IGameService
     public bool IsObserver { get; }
     public ServerSettings ServerSettings { get; }
     public Dictionary<string, string> JoinErrors { get; }
-    public DateTime Disconnected { get; }
     
     //Client State
     public float CurrentEffectVolume { get; set;  }
@@ -96,11 +95,9 @@ public interface IGameService
     Task<string> RequestPauseBots();
     
     //Game Events
-    
     Task<string> SetTimer(int value);
     Task<string> RequestGameEvent<T>(T e) where T : GameEvent;
     
-        
     //Chat
     Task SendChatMessage(GameChatMessage e);
     Task SendGlobalChatMessage(GlobalChatMessage message);
