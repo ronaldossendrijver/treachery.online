@@ -96,7 +96,7 @@
         }
 
         <div class="text-dark fw-bold text-center" style="@StatusStyle">
-            <ExpressionComponent Game=Game Expression=@Client.Status.GetMessage(Client.Player, Client.IsHost).Expression Size=20/>
+            <ExpressionComponent Game=Game Expression=@Client.Status.GetMessage(Client.Player, Client.IsHost).Expression Size="20"/>
         </div>
 
         @if (!autoConfirm && CanEndPhase)
