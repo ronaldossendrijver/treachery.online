@@ -43,14 +43,14 @@ else if (!Client.LoggedIn)
 else if (!Client.InGame)
 {
     <div class="row d-flex align-items-center" style="min-height: 97vh; background-image: url('art/planet.png'); background-size: 1024px; background-position-x: center; background-position-y: -50px; background-repeat: no-repeat;">
-        <div class="col-sm-12 col-lg-1"></div>
-        <div class="col-sm-12 col-lg-5">
+        <div class="col-sm-12 col-lg-2"></div>
+        <div class="col-sm-12 col-lg-4">
             <RunningGamesComponent/>
         </div>
-        <div class="col-sm-12 col-lg-5">
+        <div class="col-sm-12 col-lg-4">
             <OwnGamesComponent/>
         </div>
-        <div class="col-sm-12 col-lg-1"></div>
+        <div class="col-sm-12 col-lg-2"></div>
     </div>
 }
 else if (Client.Game.CurrentPhase is Phase.AwaitingPlayers)
@@ -67,6 +67,7 @@ else if (Client.Game.CurrentPhase is Phase.AwaitingPlayers)
                 {
                     <AwaitingGameComponent/>
                 }
+                <PlayersComponent/>
             </div>
         </div>
         <div class="col-sm-12 col-lg-3"></div>

@@ -41,6 +41,8 @@ public partial class Game
     public string GetPlayerName(int userId) => Participation.UserNames.GetValueOrDefault(userId);
     
     public string GetPlayerName(Player player) => Participation.UserNames.GetValueOrDefault(UserIdInSeat(player.Seat));
+    
+    public bool IsHost(Player player) => IsHost(UserIdInSeat(player.Seat));
 
     public Player GetPlayerByUserId(int userId) => GetPlayerBySeat(SeatOf(userId));
 

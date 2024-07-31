@@ -1,0 +1,125 @@
+﻿@*
+ * Copyright (C) 2020-2024 Ronald Ossendrijver (admin@treachery.online)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
+ * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
+ * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+*@
+@inherits GameComponent
+
+<div class="card p-1 mb-2">
+    <div class="card-body text-center">
+        <h2>Player Management</h2>
+        <table class="table table-sm">
+            @if (Game.CurrentPhase is Phase.AwaitingPlayers)
+            {
+                <thead>
+                <tr class="table-dark">
+                    <th scope="col">Player</th>
+                    <th scope="col">Host?</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                @foreach (var userId in Game.Participation.StandingUsers)
+                {
+                    var setOrUnsetHostText = Game.IsHost(userId) ? "Revoke Host" : "Promote to Host";
+
+                    <tr class="table-dark">
+                        <td>@Game.GetPlayerName(userId)</td>
+                        <td>@Game.IsHost(userId)</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" @onclick="@(_ => Kick(userId))">Kick</button>
+                            <button class="btn btn-primary btn-sm" @onclick="@(_ => SetOrUnsetHost(userId))">@setOrUnsetHostText</button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <thead>
+                <tr class="table-dark">
+                    <th scope="col">Seat</th>
+                    <th scope="col">Player</th>
+                    <th scope="col">Faction</th>
+                    <th scope="col">Host?</th>
+                    <th scope="col">Seat available?</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var player in Game.Players.OrderBy(p => p.Seat))
+                {
+                    var userId = Game.GetUserIdOfPlayer(player);
+                    var setOrUnsetHostText = Game.IsHost(userId) ? "Revoke Host" : "Promote to Host";
+                    var makeAvailableText = Game.SeatIsAvailable(player.Seat) ? "Don't allow" : "Allow";
+
+                    <tr class="table-dark">
+                        <td>@player.Seat</td>
+                        <td>@Game.GetPlayerName(player)</td>
+                        <td><FactionComponent Faction="@player.Faction"/></td>
+                        <td>@Game.IsHost(userId)</td>
+                        <td>@(Game.SeatIsAvailable(player.Seat) ? "X" : "")</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" @onclick="@(_ => OpenSeat(userId))">@makeAvailableText a new player to take this seat</button>
+                            @if (!Game.IsBot(player))
+                            {
+                                <button class="btn btn-primary btn-sm" @onclick="@(_ => Kick(userId))">Kick</button>
+                                <button class="btn btn-primary btn-sm" @onclick="@(_ => SetOrUnsetHost(userId))">@setOrUnsetHostText</button>
+                                <button class="btn btn-primary btn-sm" @onclick="@(_ => SetBot(userId))">Replace by a Bot</button>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            }
+        </table>
+        @if (Client.Game.NumberOfBots > 0)
+        {
+            <div>
+                <span>Pause or unpause bots:</span>
+                @if (Client.BotsArePaused)
+                {
+                    <a class="btn btn-link p-1" @onclick="@(_ => Client.RequestPauseBots())" title="Unpause Bots">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-play-fill" viewBox="0 0 16 16">
+                            <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>
+                        </svg>
+                    </a>
+                }
+                else
+                {
+                    <a class="btn btn-link p-1" @onclick="@(_ => Client.RequestPauseBots())" title="Pause Bots">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-pause-fill" viewBox="0 0 16 16">
+                            <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z"/>
+                        </svg>
+                    </a>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+
+
+    private Task Kick(int userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    private Task SetOrUnsetHost(int userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    private Task OpenSeat(object userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    private Task SetBot(object userId)
+    {
+        throw new NotImplementedException();
+    }
+
+}
