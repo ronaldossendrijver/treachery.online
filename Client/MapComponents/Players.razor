@@ -26,7 +26,7 @@
             var x = position.X - radiusModifier * Skin.Current.PlayerTokenRadius;
             var y = position.Y - radiusModifier * Skin.Current.PlayerTokenRadius;
             var factionTokenDiameter = radiusModifier * Skin.Current.PlayerTokenRadius * 2;
-            var positionSector = (float)Math.Floor((float)p.Seat * Map.NUMBER_OF_SECTORS / Game.MaximumNumberOfPlayers);
+            var positionSector = (float)Math.Floor((float)p.Seat * Map.NUMBER_OF_SECTORS / Game.MaximumPlayers);
 
             <Circle X="@position.X" Y="@position.Y" Radius="@(1.35f * Skin.Current.PlayerTokenRadius)" FillColor="@Skin.Current.TABLEPOSITION_BACKGROUNDCOLOR" />
 

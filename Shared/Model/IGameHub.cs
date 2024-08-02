@@ -32,7 +32,7 @@ public interface IGameHub
     Task<VoidResult> RequestRegisterHeartbeat(string userToken);
     
     //Game Events
-    
+    Task<VoidResult> RequestChangeSettings(string userToken, string gameToken, ChangeSettings e);
     Task<VoidResult> SetTimer(string userToken, string gameToken, int value);
     Task<VoidResult> RequestEstablishPlayers(string userToken, string gameToken, EstablishPlayers e);
     Task<VoidResult> RequestEndPhase(string userToken, string gameToken, EndPhase e);

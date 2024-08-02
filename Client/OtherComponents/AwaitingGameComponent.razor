@@ -16,15 +16,15 @@
 
         <div class="card-body">
 
-            <div class="mt-1 mb-0"><strong>Maximum number of turns:</strong> @Client.Settings.MaximumTurns</div>
+            <div class="mt-1 mb-0"><strong>Maximum number of turns:</strong> @Settings.MaximumTurns</div>
 
-            <div class="mt-1 mb-0"><strong>Maximum number of players:</strong> @Client.Settings.MaximumNumberOfPlayers</div>
+            <div class="mt-1 mb-0"><strong>Maximum number of players:</strong> @Settings.MaximumPlayers</div>
 
             <div class="mt-1 mb-0"><strong>Players:</strong> @Skin.Current.Join(Client.Game.PlayerNames)</div>
 
-            <div class="mt-1 mb-0"><strong>Bots:</strong> @Skin.Current.Join(Client.Settings.Rules.Where(r => Game.GetRuleGroup(r) == RuleGroup.Bots).Select(r => Skin.Current.Describe(r)))</div>
+            <div class="mt-1 mb-0"><strong>Bots:</strong> @Skin.Current.Join(Settings.InitialRules.Where(r => Game.GetRuleGroup(r) == RuleGroup.Bots).Select(r => Skin.Current.Describe(r)))</div>
 
-            <div class="mt-1 mb-0"><strong>Factions:</strong> @Skin.Current.Join(Client.Settings.FactionsInPlay)</div>
+            <div class="mt-1 mb-0"><strong>Factions:</strong> @Skin.Current.Join(Settings.AllowedFactionsInPlay)</div>
 
             <div class="mt-2 mb-0"><strong>Ruleset:</strong> @Skin.Current.Describe(Game.Ruleset)</div>
 
@@ -32,7 +32,7 @@
             <ul class="mt-0 mb-1">
                 @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvanced, Game.ExpansionLevel))
                 {
-                    <li class="small" style="@DetermineRuleClass(Client.Settings.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
+                    <li class="small" style="@DetermineRuleClass(Settings.InitialRules.Contains(rule))">@Skin.Current.Describe(rule)</li>
                 }
             </ul>
 
@@ -40,7 +40,7 @@
             <ul class="mt-0 mb-1">
                 @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreBasicExceptions, Game.ExpansionLevel))
                 {
-                    <li class="small" style="@DetermineRuleClass(Client.Settings.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
+                    <li class="small" style="@DetermineRuleClass(Settings.InitialRules.Contains(rule))">@Skin.Current.Describe(rule)</li>
                 }
             </ul>
 
@@ -48,7 +48,7 @@
             <ul class="mt-0 mb-1">
                 @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvancedExceptions, Game.ExpansionLevel))
                 {
-                    <li class="small" style="@DetermineRuleClass(Client.Settings.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
+                    <li class="small" style="@DetermineRuleClass(Settings.InitialRules.Contains(rule))">@Skin.Current.Describe(rule)</li>
                 }
             </ul>
 
@@ -56,7 +56,7 @@
             <ul class="mt-0 mb-1">
                 @foreach (var rule in Game.GetRulesInGroup(RuleGroup.ExpansionIxAndBtBasic, Game.ExpansionLevel))
                 {
-                    <li class="small" style="@DetermineRuleClass(Client.Settings.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
+                    <li class="small" style="@DetermineRuleClass(Settings.InitialRules.Contains(rule))">@Skin.Current.Describe(rule)</li>
                 }
             </ul>
 
@@ -64,7 +64,7 @@
             <ul class="mt-0 mb-1">
                 @foreach (var rule in Game.GetRulesInGroup(RuleGroup.ExpansionIxAndBtAdvanced, Game.ExpansionLevel))
                 {
-                    <li class="small" style="@DetermineRuleClass(Client.Settings.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
+                    <li class="small" style="@DetermineRuleClass(Settings.InitialRules.Contains(rule))">@Skin.Current.Describe(rule)</li>
                 }
             </ul>
 
@@ -72,7 +72,7 @@
             <ul class="mt-0 mb-1">
                 @foreach (var rule in Game.GetRulesInGroup(RuleGroup.House, Game.ExpansionLevel))
                 {
-                    <li class="small" style="@DetermineRuleClass(Client.Settings.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
+                    <li class="small" style="@DetermineRuleClass(Settings.InitialRules.Contains(rule))">@Skin.Current.Describe(rule)</li>
                 }
             </ul>
 
@@ -82,18 +82,9 @@
 
 @code {
 
-    private string StyleDef(Faction f)
-    {
-        return string.Format("color:{0}", Skin.Current.GetFactionColor(f));
-    }
+    private GameSettings Settings => Game.Settings;
+    
+    private string StyleDef(Faction f) => $"color:{Skin.Current.GetFactionColor(f)}";
 
-    private string DetermineRuleClass(bool applicable)
-    {
-        if (applicable)
-        {
-            return "color:white";
-        }
-
-        return "color:grey";
-    }
+    private string DetermineRuleClass(bool applicable) => applicable ? "color:white" : "color:grey";
 }

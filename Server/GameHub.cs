@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -105,4 +106,6 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         result.Position = 0;
         return result;
     }
+
+    
 }

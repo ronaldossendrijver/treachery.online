@@ -30,10 +30,13 @@ public class EstablishPlayers : GameEvent
 
     public int Seed { get; set; }
 
+    [Obsolete]
     public int MaximumNumberOfPlayers { get; set; } = 6;
 
+    [Obsolete]
     public int MaximumTurns { get; set; } = 10;
 
+    [Obsolete]
     public Rule[] ApplicableRules { get; set; }
 
     public string _gameName = "";
@@ -54,8 +57,10 @@ public class EstablishPlayers : GameEvent
         set => _players = string.Join('>', value);
     }
 
+    [Obsolete]
     public string _factionsInPlay = "";
 
+    [Obsolete]
     [JsonIgnore]
     public List<Faction> FactionsInPlay
     {
@@ -72,33 +77,33 @@ public class EstablishPlayers : GameEvent
         if (Game.CurrentPhase != Phase.AwaitingPlayers) return Message.Express("Invalid game phase");
 
         var extraSpotsForBots =
-            (ApplicableRules.Contains(Rule.PurpleBot) && FactionsInPlay.Contains(Faction.Purple) ? 1 : 0) +
-            (ApplicableRules.Contains(Rule.BlackBot) && FactionsInPlay.Contains(Faction.Black) ? 1 : 0) +
-            (ApplicableRules.Contains(Rule.OrangeBot) && FactionsInPlay.Contains(Faction.Orange) ? 1 : 0) +
-            (ApplicableRules.Contains(Rule.RedBot) && FactionsInPlay.Contains(Faction.Red) ? 1 : 0) +
-            (ApplicableRules.Contains(Rule.GreenBot) && FactionsInPlay.Contains(Faction.Green) ? 1 : 0) +
-            (ApplicableRules.Contains(Rule.BlueBot) && FactionsInPlay.Contains(Faction.Blue) ? 1 : 0) +
-            (ApplicableRules.Contains(Rule.YellowBot) && FactionsInPlay.Contains(Faction.Yellow) ? 1 : 0) +
-            (ApplicableRules.Contains(Rule.GreyBot) && FactionsInPlay.Contains(Faction.Grey) ? 1 : 0);
+            (Game.Settings.InitialRules.Contains(Rule.PurpleBot) && Game.Settings.AllowedFactionsInPlay.Contains(Faction.Purple) ? 1 : 0) +
+            (Game.Settings.InitialRules.Contains(Rule.BlackBot) && Game.Settings.AllowedFactionsInPlay.Contains(Faction.Black) ? 1 : 0) +
+            (Game.Settings.InitialRules.Contains(Rule.OrangeBot) && Game.Settings.AllowedFactionsInPlay.Contains(Faction.Orange) ? 1 : 0) +
+            (Game.Settings.InitialRules.Contains(Rule.RedBot) && Game.Settings.AllowedFactionsInPlay.Contains(Faction.Red) ? 1 : 0) +
+            (Game.Settings.InitialRules.Contains(Rule.GreenBot) && Game.Settings.AllowedFactionsInPlay.Contains(Faction.Green) ? 1 : 0) +
+            (Game.Settings.InitialRules.Contains(Rule.BlueBot) && Game.Settings.AllowedFactionsInPlay.Contains(Faction.Blue) ? 1 : 0) +
+            (Game.Settings.InitialRules.Contains(Rule.YellowBot) && Game.Settings.AllowedFactionsInPlay.Contains(Faction.Yellow) ? 1 : 0) +
+            (Game.Settings.InitialRules.Contains(Rule.GreyBot) && Game.Settings.AllowedFactionsInPlay.Contains(Faction.Grey) ? 1 : 0);
 
-        if (Players.Count() + extraSpotsForBots > FactionsInPlay.Count) return Message.Express("More factions required");
-        if (ApplicableRules.Contains(Rule.FillWithBots) && FactionsInPlay.Count < MaximumNumberOfPlayers) return Message.Express("More factions required");
+        if (Game.Participation.StandingPlayers.Count + extraSpotsForBots > Game.Settings.AllowedFactionsInPlay.Count) return Message.Express("More factions required");
+        if (Game.Settings.InitialRules.Contains(Rule.FillWithBots) && Game.Settings.AllowedFactionsInPlay.Count < Game.Settings.MaximumPlayers) return Message.Express("More factions required");
 
         var nrOfBots =
-            (ApplicableRules.Contains(Rule.PurpleBot) ? 1 : 0) +
-            (ApplicableRules.Contains(Rule.BlackBot) ? 1 : 0) +
-            (ApplicableRules.Contains(Rule.OrangeBot) ? 1 : 0) +
-            (ApplicableRules.Contains(Rule.RedBot) ? 1 : 0) +
-            (ApplicableRules.Contains(Rule.GreenBot) ? 1 : 0) +
-            (ApplicableRules.Contains(Rule.YellowBot) ? 1 : 0) +
-            (ApplicableRules.Contains(Rule.GreyBot) ? 1 : 0) +
-            (ApplicableRules.Contains(Rule.BlueBot) ? 1 : 0);
+            (Game.Settings.InitialRules.Contains(Rule.PurpleBot) ? 1 : 0) +
+            (Game.Settings.InitialRules.Contains(Rule.BlackBot) ? 1 : 0) +
+            (Game.Settings.InitialRules.Contains(Rule.OrangeBot) ? 1 : 0) +
+            (Game.Settings.InitialRules.Contains(Rule.RedBot) ? 1 : 0) +
+            (Game.Settings.InitialRules.Contains(Rule.GreenBot) ? 1 : 0) +
+            (Game.Settings.InitialRules.Contains(Rule.YellowBot) ? 1 : 0) +
+            (Game.Settings.InitialRules.Contains(Rule.GreyBot) ? 1 : 0) +
+            (Game.Settings.InitialRules.Contains(Rule.BlueBot) ? 1 : 0);
 
-        if (Game.NumberOfPlayers + nrOfBots == 0 && !ApplicableRules.Contains(Rule.FillWithBots)) return Message.Express("At least one player required");
-        if (Players.Count() + nrOfBots < 2 && !ApplicableRules.Contains(Rule.FillWithBots)) return Message.Express("At least two players required");
-        if (MaximumNumberOfPlayers < 2) return Message.Express("At least two players required");
-        if (Players.Count() + nrOfBots > MaximumNumberOfPlayers) return Message.Express("Too many players");
-        if (FactionsInPlay.Any(f => !AvailableFactions().Contains(f))) return Message.Express("Invalid faction");
+        if (Game.NumberOfPlayers + nrOfBots == 0 && !Game.Settings.InitialRules.Contains(Rule.FillWithBots)) return Message.Express("At least one player required");
+        if (Game.Participation.StandingPlayers.Count + nrOfBots < 2 && !Game.Settings.InitialRules.Contains(Rule.FillWithBots)) return Message.Express("At least two players required");
+        if (Game.Settings.MaximumPlayers < 2) return Message.Express("At least two players required");
+        if (Game.Participation.StandingPlayers.Count + nrOfBots > Game.Settings.MaximumPlayers) return Message.Express("Too many players");
+        if (Game.Settings.AllowedFactionsInPlay.Any(f => !AvailableFactions().Contains(f))) return Message.Express("Invalid faction");
 
         return null;
     }
@@ -221,16 +226,17 @@ public class EstablishPlayers : GameEvent
         Game.Name = GameName;
         Game.Random = new Random(Seed);
 
-        Game.AllRules = ApplicableRules.ToList();
-        Game.Rules = ApplicableRules.Where(r => Game.GetRuleGroup(r) != RuleGroup.Bots).ToList();
-        Game.RulesForBots = ApplicableRules.Where(r => Game.GetRuleGroup(r) == RuleGroup.Bots).ToList();
+        Game.AllRules = Game.Version < 169 ? Game.Settings.InitialRules.ToList() : Game.Settings.InitialRules;
+        
+        Game.Rules = Game.Settings.InitialRules.Where(r => Game.GetRuleGroup(r) != RuleGroup.Bots).ToList();
+        Game.RulesForBots = Game.Settings.InitialRules.Where(r => Game.GetRuleGroup(r) == RuleGroup.Bots).ToList();
         Game.Rules.AddRange(Game.GetRulesInGroup(RuleGroup.CoreBasic, Game.ExpansionLevel));
 
-        Game.Ruleset = Game.DetermineApproximateRuleset(FactionsInPlay, Game.Rules, Game.ExpansionLevel);
+        Game.Ruleset = Game.DetermineApproximateRuleset(Game.Settings.AllowedFactionsInPlay, Game.Rules, Game.ExpansionLevel);
         Log("Ruleset: ", Game.Ruleset);
 
         var customRules = Game.GetCustomRules().ToList();
-        LogIf(customRules.Any(), "House rules: ", customRules);
+        LogIf(customRules.Count != 0, "House rules: ", customRules);
 
         if (Game.Applicable(Rule.ExpansionTreacheryCards))
         {
@@ -270,12 +276,17 @@ public class EstablishPlayers : GameEvent
         Game.BlueAllowsUseOfVoice = true;
         Game.WhiteAllowsUseOfNoField = true;
 
-        Game.MaximumNumberOfTurns = MaximumTurns;
-        Game.MaximumNumberOfPlayers = MaximumNumberOfPlayers;
-
-        Log("The maximum number of turns is: ", Game.MaximumNumberOfTurns);
-
-        Game.FactionsInPlay = FactionsInPlay;
+        if (Game.Version < 170)
+        {
+            #pragma warning disable CS0612 // Type or member is obsolete
+            Game.Settings.MaximumPlayers = MaximumNumberOfPlayers;
+            Game.Settings.MaximumTurns = MaximumTurns;
+            Game.Settings.AllowedFactionsInPlay = FactionsInPlay;
+            Game.Settings.InitialRules = ApplicableRules.ToList();
+            #pragma warning restore CS0612 // Type or member is obsolete
+        }
+        
+        Game.FactionsInPlay = Game.Settings.AllowedFactionsInPlay;
 
         AddPlayersToGame();
 
@@ -305,7 +316,8 @@ public class EstablishPlayers : GameEvent
 
     private void RemoveClaimedFactions()
     {
-        foreach (var f in Game.Players.Where(p => !p.Is(Faction.None)).Select(p => p.Faction)) Game.FactionsInPlay.Remove(f);
+        foreach (var f in Game.Players.Where(p => !p.Is(Faction.None)).Select(p => p.Faction)) 
+            Game.Settings.AllowedFactionsInPlay.Remove(f);
     }
 
     private Deck<ResourceCard> CreateAndShuffleResourceCardDeck()
@@ -325,13 +337,39 @@ public class EstablishPlayers : GameEvent
         if (Game.Version < 113) 
             AddBots();
 
-        foreach (var newPlayer in Players)
+        if (Game.Version < 170)
         {
-            var p = Game.Version < 170 ? new Player(Game, newPlayer) : new Player(Game);
-            if (!Game.Players.Contains(p))
+            #pragma warning disable CS0612 // Type or member is obsolete
+            foreach (var newPlayer in Players)
             {
-                Game.Players.Add(p);
+                var p = new Player(Game, newPlayer);
+                if (!Game.Players.Contains(p))
+                {
+                    Game.Players.Add(p);
+                    Log(p.Name, " joined the game");
+                }
+                else
+                {
+                    Log(p.Name, " is already in the game");
+                }
             }
+            #pragma warning restore CS0612 // Type or member is obsolete
+        }
+        else
+        {
+            var positions = new Deck<int>(Game.Random);
+            for (var i = 0; i < Game.Settings.MaximumPlayers; i++) 
+                positions.PutOnTop(i);
+            
+            positions.Shuffle();
+            
+            foreach (var userId in Game.Participation.StandingPlayers)
+            {
+                var p = new Player(Game);
+                p.Seat = positions.Draw();
+                Game.Players.Add(p);
+                Game.Participation.SeatedUsers[userId] = p.Seat;
+            }            
         }
     }
 
@@ -382,10 +420,10 @@ public class EstablishPlayers : GameEvent
         {
             if (Game.Version <= 125)
             {
-                var available = new Deck<Faction>(FactionsInPlay.Where(f => !Game.IsPlaying(f)), Game.Random);
+                var available = new Deck<Faction>(Game.Settings.AllowedFactionsInPlay.Where(f => !Game.IsPlaying(f)), Game.Random);
                 available.Shuffle();
 
-                while (Game.Players.Count < MaximumNumberOfPlayers)
+                while (Game.Players.Count < Game.Settings.MaximumPlayers)
                 {
                     var bot = available.Draw() switch
                     {
@@ -409,7 +447,7 @@ public class EstablishPlayers : GameEvent
             }
             else
             {
-                while (Game.Players.Count < MaximumNumberOfPlayers) 
+                while (Game.Players.Count < Game.Settings.MaximumPlayers) 
                     Game.Players.Add(new Player(Game, Faction.None));
             }
         }

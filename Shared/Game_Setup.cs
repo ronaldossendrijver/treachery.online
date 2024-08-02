@@ -15,9 +15,10 @@ public partial class Game
 {
     #region State
 
-    public List<FactionTradeOffered> CurrentTradeOffers { get; } = new();
+    public GameSettings Settings { get; set; } = new();
+    public List<FactionTradeOffered> CurrentTradeOffers { get; } = [];
     internal Phase PhaseBeforeSkillAssignment { get; set; }
-    public Faction NextFactionToPerformCustomSetup => Players.Select(p => p.Faction).Where(f => !HasActedOrPassed.Contains(f)).FirstOrDefault();
+    public Faction NextFactionToPerformCustomSetup => Players.Select(p => p.Faction).FirstOrDefault(f => !HasActedOrPassed.Contains(f));
     public Deck<TreacheryCard> StartingTreacheryCards { get; private set; }
     private TreacheryCard ExtraStartingCardForBlack { get; set; }
 
@@ -40,17 +41,20 @@ public partial class Game
 
         foreach (var p in Players.Where(p => p.Faction == Faction.None)) p.Faction = inPlay.Draw();
 
-        DeterminePositionsAtTable();
+        if (Version < 170)
+        {
+            DeterminePositionsAtTable();            
+        }
 
         Enter(Applicable(Rule.CustomDecks) && Version < 134, Phase.CustomizingDecks, EnterPhaseTradingFactions);
     }
 
     private void DeterminePositionsAtTable()
     {
-        if (Players.Count <= MaximumNumberOfPlayers)
+        if (Players.Count <= MaximumPlayers)
         {
             var positions = new Deck<int>(Random);
-            for (var i = 0; i < MaximumNumberOfPlayers; i++) positions.PutOnTop(i);
+            for (var i = 0; i < MaximumPlayers; i++) positions.PutOnTop(i);
             positions.Shuffle();
 
             foreach (var p in Players) p.Seat = positions.Draw();

@@ -36,7 +36,7 @@ public class BluePrediction : GameEvent
     public override Message Validate()
     {
         if (!Game.IsPlaying(ToWin)) return Message.Express("Invalid target");
-        if (Turn < 1 || Turn > Game.MaximumNumberOfTurns) return Message.Express("Invalid turn");
+        if (Turn < 1 || Turn > Game.MaximumTurns) return Message.Express("Invalid turn");
 
         return null;
     }
@@ -48,7 +48,7 @@ public class BluePrediction : GameEvent
 
     public static IEnumerable<int> ValidTurns(Game g)
     {
-        return Enumerable.Range(1, g.MaximumNumberOfTurns);
+        return Enumerable.Range(1, g.MaximumTurns);
     }
 
     #endregion Validation

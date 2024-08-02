@@ -19,8 +19,6 @@ public partial class GameHub
 
         Game game;
         var initialParticipation = new GameParticipation();
-        var initialSettings = new GameSettings();
-        
         if (!string.IsNullOrEmpty(stateData))
         {
             var state = GameState.Load(stateData);
@@ -41,7 +39,6 @@ public partial class GameHub
         {
             GameId = gameId,
             Game = game,
-            Settings = initialSettings,
             HashedPassword = hashedPassword,
             ObserversRequirePassword = false
         };
@@ -62,8 +59,7 @@ public partial class GameHub
         {
             GameToken = gameToken, 
             GameState = stateData ?? GameState.GetStateAsString(game), 
-            Participation = game.Participation, 
-            Settings = initialSettings
+            Participation = game.Participation
         });
     }
     
@@ -83,8 +79,7 @@ public partial class GameHub
         {
             GameToken = gameToken, 
             GameState = stateData, 
-            Participation = managedGame.Game.Participation, 
-            Settings = managedGame.Settings
+            Participation = managedGame.Game.Participation
         });
 
         if (!string.IsNullOrEmpty(skin))
@@ -107,15 +102,14 @@ public partial class GameHub
         if (!game.Game.IsOpen(seat))
             return Error<GameInitInfo>("Seat is not available");
     
-        await Groups.AddToGroupAsync(Context.ConnectionId, gameToken);
         game.Game.AddPlayer(user.Id, user.PlayerName, seat);
         await Clients.Group(gameToken).HandleJoinGame(user.Id, user.PlayerName, seat);
+        await Groups.AddToGroupAsync(Context.ConnectionId, gameToken);
         return Success(new GameInitInfo
         {
             GameToken = gameToken, 
             GameState = GameState.GetStateAsString(game.Game), 
-            Participation = game.Game.Participation,
-            Settings = game.Settings
+            Participation = game.Game.Participation
         });
     }
 
@@ -205,8 +199,7 @@ public partial class GameHub
         {
             GameToken = gameToken, 
             GameState = GameState.GetStateAsString(game.Game), 
-            Participation = game.Game.Participation,
-            Settings = game.Settings
+            Participation = game.Game.Participation
         });
     }
 
@@ -220,8 +213,7 @@ public partial class GameHub
         {
             GameToken = gameToken, 
             GameState = GameState.GetStateAsString(game.Game),
-            Participation = game.Game.Participation,
-            Settings = game.Settings
+            Participation = game.Game.Participation
         } );
     }
     
@@ -234,8 +226,7 @@ public partial class GameHub
         {
             GameToken = gameToken, 
             GameState = GameState.GetStateAsString(game.Game), 
-            Participation = game.Game.Participation,
-            Settings = game.Settings
+            Participation = game.Game.Participation
         }));
     }
 

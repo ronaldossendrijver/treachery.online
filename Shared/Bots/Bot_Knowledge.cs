@@ -32,9 +32,9 @@ public partial class Player
         return Faction == Faction.Blue && Game.CurrentTurn == PredictedTurn && (opponentFaction == PredictedFaction || ally == PredictedFaction);
     }
 
-    protected virtual bool LastTurn => Game.CurrentTurn == Game.MaximumNumberOfTurns;
+    protected virtual bool LastTurn => Game.CurrentTurn == Game.MaximumTurns;
 
-    protected virtual bool AlmostLastTurn => Game.CurrentTurn >= Game.MaximumNumberOfTurns - 1;
+    protected virtual bool AlmostLastTurn => Game.CurrentTurn >= Game.MaximumTurns - 1;
 
     protected virtual IEnumerable<Player> OpponentsToShipAndMove => Opponents.Where(p => !Game.HasActedOrPassed.Contains(p.Faction));
 
@@ -309,7 +309,7 @@ public partial class Player
 
     protected bool ProbablySafeFromShaiHulud(Territory t)
     {
-        return Game.CurrentTurn == Game.MaximumNumberOfTurns || Game.ProtectedFromMonster(this) || t != Game.LatestSpiceCardA.Location.Territory || Game.SandTroutOccured || !Game.HasResourceDeckPrescience(this) || (Game.ResourceCardDeck.Top != null && !Game.ResourceCardDeck.Top.IsShaiHulud);
+        return Game.CurrentTurn == Game.MaximumTurns || Game.ProtectedFromMonster(this) || t != Game.LatestSpiceCardA.Location.Territory || Game.SandTroutOccured || !Game.HasResourceDeckPrescience(this) || (Game.ResourceCardDeck.Top != null && !Game.ResourceCardDeck.Top.IsShaiHulud);
     }
 
     #endregion
@@ -629,9 +629,9 @@ public partial class Player
 
         var firstPlayerPosition = PlayerSequence.DetermineFirstPlayer(Game).Seat;
 
-        for (var i = 0; i < Game.MaximumNumberOfPlayers; i++)
+        for (var i = 0; i < Game.MaximumPlayers; i++)
         {
-            var position = (firstPlayerPosition + i) % Game.MaximumNumberOfPlayers;
+            var position = (firstPlayerPosition + i) % Game.MaximumPlayers;
             if (position == Seat)
                 return true;
             if (position == opponent.Seat) return false;

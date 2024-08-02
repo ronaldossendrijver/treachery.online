@@ -207,17 +207,17 @@ public class PlayerSequence
 
     public static Player DetermineFirstPlayer(Game g)
     {
-        var startLookingInSector = (int)Math.Ceiling((float)g.SectorInStorm * g.MaximumNumberOfPlayers / Map.NUMBER_OF_SECTORS) % g.MaximumNumberOfPlayers;
+        var startLookingInSector = (int)Math.Ceiling((float)g.SectorInStorm * g.MaximumPlayers / Map.NUMBER_OF_SECTORS) % g.MaximumPlayers;
 
         Player result = null;
 
-        var position = (g.MaximumNumberOfPlayers + startLookingInSector) % g.MaximumNumberOfPlayers;
-        for (var i = 0; i < g.MaximumNumberOfPlayers; i++)
+        var position = (g.MaximumPlayers + startLookingInSector) % g.MaximumPlayers;
+        for (var i = 0; i < g.MaximumPlayers; i++)
         {
             result = g.Players.FirstOrDefault(p => p.Seat == position);
             if (result != null)
                 return result;
-            position = Mod(g.MaximumNumberOfPlayers + position + 1, g.MaximumNumberOfPlayers);
+            position = Mod(g.MaximumPlayers + position + 1, g.MaximumPlayers);
         }
 
         return null;
@@ -232,9 +232,9 @@ public class PlayerSequence
     {
         var firstPlayer = DetermineFirstPlayer(g);
 
-        for (var i = 0; i < g.MaximumNumberOfPlayers; i++)
+        for (var i = 0; i < g.MaximumPlayers; i++)
         {
-            var positionToCheck = (firstPlayer.Seat + i) % g.MaximumNumberOfPlayers;
+            var positionToCheck = (firstPlayer.Seat + i) % g.MaximumPlayers;
 
             if (positionToCheck == b.Seat)
                 return true;

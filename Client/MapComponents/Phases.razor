@@ -13,7 +13,7 @@
 
     if (Game.CurrentTurn >= 1)
     {
-        <MapText ToShow="@string.Format("Turn {0} of {1}", Client.Game.CurrentTurn, Client.Game.MaximumNumberOfTurns)"
+        <MapText ToShow="@string.Format("Turn {0} of {1}", Client.Game.CurrentTurn, Client.Game.MaximumTurns)"
                  X="x"
                  Y=@(0.3f * TurnFontHeight)
                  Font="@Skin.Current.TURN_FONT"

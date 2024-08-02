@@ -132,7 +132,7 @@
 
     protected static PointD PlayerTokenPosition(Game game, int positionAtTable)
     {
-        var positionSector = Math.Floor((float)positionAtTable * Map.NUMBER_OF_SECTORS / game.MaximumNumberOfPlayers);
+        var positionSector = Math.Floor((float)positionAtTable * Map.NUMBER_OF_SECTORS / game.MaximumPlayers);
         var angle = (4.5 - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
         var x = Skin.Current.PlanetCenter.X + (float)(Skin.Current.MapRadius * Math.Cos(angle));
         var y = Skin.Current.PlanetCenter.Y + (float)(Skin.Current.MapRadius * Math.Sin(angle));

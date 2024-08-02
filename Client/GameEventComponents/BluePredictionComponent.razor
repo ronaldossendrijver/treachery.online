@@ -15,7 +15,7 @@
 
         <SelectFromImageComponent @bind-Value="toWin" Values="BluePrediction.ValidTargets(Game, Player)" Required="true" ImageWidth="40" />
 
-        <SelectNumberComponent @bind-Value="turn" Min="1" Max="Game.MaximumNumberOfTurns" />
+        <SelectNumberComponent @bind-Value="turn" Min="1" Max="Game.MaximumTurns" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Prediction" ConfirmError="@Validation" />
 

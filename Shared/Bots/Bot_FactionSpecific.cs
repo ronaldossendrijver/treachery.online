@@ -359,22 +359,22 @@ public partial class Player
         int turn;
         if (predicted.Is(Faction.Black))
         {
-            if (D(1, 2) == 1) turn = D(1, Math.Min(3, Game.MaximumNumberOfTurns));
-            else turn = D(1, Game.MaximumNumberOfTurns);
+            if (D(1, 2) == 1) turn = D(1, Math.Min(3, Game.MaximumTurns));
+            else turn = D(1, Game.MaximumTurns);
         }
         else if (predicted.Is(Faction.Green) || predicted.Is(Faction.Grey))
         {
-            if (D(1, 2) == 1) turn = D(1, Game.MaximumNumberOfTurns);
-            else turn = 2 + D(1, Game.MaximumNumberOfTurns - 2);
+            if (D(1, 2) == 1) turn = D(1, Game.MaximumTurns);
+            else turn = 2 + D(1, Game.MaximumTurns - 2);
         }
         else if (predicted.Is(Faction.Purple))
         {
-            turn = 3 + D(1, Game.MaximumNumberOfTurns - 3);
+            turn = 3 + D(1, Game.MaximumTurns - 3);
         }
         else
         {
-            if (D(1, 2) == 1) turn = 1 + D(1, Game.MaximumNumberOfTurns - 1);
-            else turn = 2 + D(1, Game.MaximumNumberOfTurns - 2);
+            if (D(1, 2) == 1) turn = 1 + D(1, Game.MaximumTurns - 1);
+            else turn = 2 + D(1, Game.MaximumTurns - 2);
         }
 
         return new BluePrediction(Game, Faction) { ToWin = predicted.Faction, Turn = turn };

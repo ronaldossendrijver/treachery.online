@@ -1,0 +1,111 @@
+﻿@*
+ * Copyright (C) 2020-2024 Ronald Ossendrijver (admin@treachery.online)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
+ * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
+ * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+*@
+@inherits GameEventComponent<ChangeSettings>
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsible="false">
+
+    <Header>Manage game settings</Header>
+    <Body>
+
+        <CheckboxComponent @bind-Value="@Settings.CreatorParticipates">The host (you) will participate in this game</CheckboxComponent>
+
+        <SelectNumberComponent @bind-Value="@Settings.MaximumTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns:"/>
+
+        <SelectNumberComponent @bind-Value="@Settings.MaximumPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Label="Maximum number of players:"/>
+
+        <SelectFromImageComponent Selected="@Settings.AllowedFactionsInPlay" Values="EstablishPlayers.AvailableFactions()" T="Faction" OnChanged="@StateHasChanged" ImageWidth="40" Required="false">
+            <Label>Factions in play:</Label>
+        </SelectFromImageComponent>
+
+        <label class="mt-2 mb-0">AI Players:</label>
+        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots, Game.ExpansionLevel))
+        {
+            <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" Callback="StateHasChanged" />
+        }
+
+        <SelectComponent @bind-Value="@Ruleset" Values="@Game.GetAvailableRulesets()">
+            <Label>Ruleset:</Label>
+        </SelectComponent>
+
+        @if (Game.CurrentPhase == Phase.AwaitingPlayers)
+        {
+            <ButtonRowComponent Confirm="@StartGame" ConfirmText="Start" ConfirmError="@Validation" />
+        }
+        else
+        {
+            <ButtonRowComponent Confirm="@Confirm" ConfirmText="Change Settings" ConfirmError="@Validation" />            
+        }
+        
+        <CheckboxComponent @bind-Value=_advancedOptions>Show advanced options</CheckboxComponent>
+
+        @if (_advancedOptions)
+        {
+            foreach (var ruleGroup in EstablishPlayers.AvailableRuleGroups())
+            {
+                if (Game.GetRulesInGroup(ruleGroup, Game.ExpansionLevel).Any())
+                {
+                    <label class="mt-1 mb-0">@Skin.Current.Describe(ruleGroup)</label>
+                    @foreach (var rule in Game.GetRulesInGroup(ruleGroup, Game.ExpansionLevel).OrderBy(r => Name(r)))
+                    {
+                        <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" />
+                    }
+                }
+            }
+        }
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override bool IsUrgent => true;
+
+    private GameSettings Settings { get; set; } = new();
+    
+    private bool _advancedOptions;
+
+    private Ruleset _ruleset;
+    private Ruleset Ruleset
+    {
+        get => _ruleset;
+        set
+        {
+            _ruleset = value;
+            RulesetChanged(value);
+        }
+    }
+
+    private void RulesetChanged(Ruleset ruleset)
+    {
+        var botRules = Settings.InitialRules.Where(r => Game.GetRuleGroup(r) == RuleGroup.Bots).ToArray();
+
+        Settings.InitialRules.Clear();
+        Settings.InitialRules.AddRange(botRules);
+
+        if (Game.RulesetDefinition.TryGetValue(ruleset, out var value))
+        {
+            Settings.InitialRules.AddRange(value);
+        }
+
+        StateHasChanged();
+    }
+
+    protected override ChangeSettings ConfirmedResult =>
+        new(Game, Faction.None)
+        {
+            Settings = Settings
+        };
+    
+    private async Task StartGame()
+    {
+        await Request(new EstablishPlayers());
+        StateHasChanged();
+    }
+}

@@ -10,50 +10,12 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsible="false">
 
-    <Header>Please review your game configuration</Header>
+    <Header>Players</Header>
     <Body>
-
-        <CheckboxComponent @bind-Value="@Client.Settings.CreatorParticipates">The host (you) will participate in this game</CheckboxComponent>
-
-        <div class="mt-2"><strong>Players:</strong> @string.Join(", ", Players)</div>
-
-        <SelectNumberComponent @bind-Value="@Client.Settings.MaximumTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns:"/>
-
-        <SelectNumberComponent @bind-Value="@Client.Settings.MaximumNumberOfPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Label="Maximum number of players:"/>
-
-        <SelectFromImageComponent Selected="@Client.Settings.FactionsInPlay" Values="EstablishPlayers.AvailableFactions()" T="Faction" OnChanged="@StateHasChanged" ImageWidth="40" Required="false">
-            <Label>Factions in play:</Label>
-        </SelectFromImageComponent>
-
-        <label class="mt-2 mb-0">AI Players:</label>
-        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots, Game.ExpansionLevel))
+        @foreach (var p in Players)
         {
-            <ChecklistItemComponent Value="@rule" Values="Client.Settings.Rules" Callback="StateHasChanged" />
+            <h3>p</h3>            
         }
-
-        <SelectComponent @bind-Value="@Ruleset" Values="@Game.GetAvailableRulesets()">
-            <Label>Ruleset:</Label>
-        </SelectComponent>
-
-        <ButtonRowComponent Confirm="@Confirm" ConfirmText="Start" ConfirmError="@Validation" />
-
-        <CheckboxComponent @bind-Value=_advancedOptions>Show advanced options</CheckboxComponent>
-
-        @if (_advancedOptions)
-        {
-            foreach (var rulegroup in EstablishPlayers.AvailableRuleGroups())
-            {
-                if (Game.GetRulesInGroup(rulegroup, Game.ExpansionLevel).Any())
-                {
-                    <label class="mt-1 mb-0">@Skin.Current.Describe(rulegroup)</label>
-                    @foreach (var rule in Game.GetRulesInGroup(rulegroup, Game.ExpansionLevel).OrderBy(r => Name(r)))
-                    {
-                        <ChecklistItemComponent Value="@rule" Values="@Client.Settings.Rules" />
-                    }
-                }
-            }
-        }
-
     </Body>
 
 </GameEventComponentLayout>
@@ -64,45 +26,9 @@
 
     private bool _advancedOptions = false;
     
-    private GameSettings Settings => Client.Settings;
+    private GameSettings Settings => Game.Settings;
 
-    private Ruleset _ruleset;
-    private Ruleset Ruleset
-    {
-        get => _ruleset;
-        set
-        {
-            _ruleset = value;
-            RulesetChanged(value);
-        }
-    }
-
-    private void RulesetChanged(Ruleset ruleset)
-    {
-        var botRules = Settings.Rules.Where(r => Game.GetRuleGroup(r) == RuleGroup.Bots).ToArray();
-
-        Settings.Rules.Clear();
-        Settings.Rules.AddRange(botRules);
-
-        if (Game.RulesetDefinition.ContainsKey(ruleset))
-        {
-            Settings.Rules.AddRange(Game.RulesetDefinition[ruleset]);
-        }
-
-        StateHasChanged();
-    }
-
-    protected override EstablishPlayers ConfirmedResult =>
-        new(Game, Faction.None)
-        {
-            GameName = $"{Client.PlayerName}'s Game",
-            Seed = new Random().Next(),
-            Players = Players,
-            MaximumTurns = Settings.MaximumTurns,
-            MaximumNumberOfPlayers = Settings.MaximumNumberOfPlayers,
-            ApplicableRules = Settings.Rules.ToArray(),
-            FactionsInPlay = Settings.FactionsInPlay
-        };
+    protected override EstablishPlayers ConfirmedResult => new(Game, Faction.None);
 
     private IEnumerable<string> Players => Game.PlayerNames.Where(p => Settings.CreatorParticipates || p != Client.PlayerName);
 

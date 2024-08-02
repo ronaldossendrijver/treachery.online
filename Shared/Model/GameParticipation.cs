@@ -5,7 +5,7 @@ public class GameParticipation
     /// <summary>
     /// All Users that wish to participate while awaiting players (before the game has actually started)
     /// </summary>
-    public HashSet<int> StandingUsers { get; set; } = [];
+    public HashSet<int> StandingPlayers { get; set; } = [];
     
     /// <summary>
     /// For all Users that are players, hold their Seat

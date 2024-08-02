@@ -21,7 +21,7 @@ public class GameInfo
     public Phase CurrentPhase { get; set; }
     public MainPhase CurrentMainPhase { get; set; }
     public int CurrentTurn { get; set; }
-    public int MaximumNumberOfPlayers { get; set; }
+    public int MaximumPlayers { get; set; }
     public int MaximumNumberOfTurns { get; set; }
     public List<Faction> FactionsInPlay { get; set; }
     public string[] Players { get; set; }
@@ -40,9 +40,9 @@ public class GameInfo
         GameId = managedGame.GameId,
         Players = managedGame.Game.PlayerNames.ToArray(),
         Observers = managedGame.Game.ObserverNames.ToArray(),
-        FactionsInPlay = managedGame.Game.CurrentPhase <= Phase.SelectingFactions ? managedGame.Settings.FactionsInPlay : managedGame.Game.FactionsInPlay,
+        FactionsInPlay = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? managedGame.Game.Settings.AllowedFactionsInPlay : managedGame.Game.FactionsInPlay,
         NumberOfBots = managedGame.Game.NumberOfBots,
-        Rules = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? managedGame.Settings.Rules.ToList() : managedGame.Game.Rules.ToList(),
+        Rules = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? managedGame.Game.Settings.InitialRules : managedGame.Game.Rules.ToList(),
         LastAction = managedGame.Game.CurrentPhase > Phase.AwaitingPlayers ? managedGame.Game.History.Last().Time : DateTime.Now,
         CurrentMainPhase = managedGame.Game.CurrentMainPhase,
         CurrentPhase = managedGame.Game.CurrentPhase,
@@ -52,7 +52,7 @@ public class GameInfo
         HasPassword = managedGame.HashedPassword != null,
         CreatorParticipates = true,
         InviteOthers = true,
-        MaximumNumberOfPlayers = managedGame.Settings.MaximumNumberOfPlayers,
-        MaximumNumberOfTurns = managedGame.Settings.MaximumTurns,
+        MaximumPlayers = managedGame.Game.Settings.MaximumPlayers,
+        MaximumNumberOfTurns = managedGame.Game.Settings.MaximumTurns,
     };
 }

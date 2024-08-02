@@ -136,42 +136,49 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public Task HandleJoinGame(int userId, string userName, int seat)
     {
         Game.AddPlayer(userId, userName, seat);
+        Refresh();
         return Task.CompletedTask;
     }
 
     public Task HandleSetOrUnsetHost(int userId)
     {
         Game.SetOrUnsetHost(userId);
+        Refresh();
         return Task.CompletedTask;
     }
 
     public Task HandleObserveGame(int userId, string userName)
     {
         Game.AddObserver(userId, userName);
+        Refresh();
         return Task.CompletedTask;
     }
 
     public Task HandleOpenOrCloseSeat(int seat)
     {
         Game.OpenOrCloseSeat(seat);
+        Refresh();
         return Task.CompletedTask;
     }
 
     public Task HandleSeatOrUnseatBot(int seat)
     {
         Game.SeatOrUnseatBot(seat);
+        Refresh();
         return Task.CompletedTask;
     }
 
     public Task HandleRemoveUser(int userId)
     {
         Game.RemoveUser(userId);
+        Refresh();
         return Task.CompletedTask;
     }
 
     public Task HandleBotStatus(bool paused)
     {
         BotsArePaused = paused;
+        Refresh();
         return Task.CompletedTask;
     }
 
@@ -353,8 +360,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
             GameToken = result.Contents.GameToken;
             Settings = result.Contents.Settings;
-            Game.AddPlayer(UserId, PlayerName);
-            Game.SetOrUnsetHost(UserId);
         }
         
         return result.Message;
@@ -583,6 +588,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        GC.SuppressFinalize(this);
+        
         if (_connection != null)
         {
             _connection.Reconnected -= OnReconnected;

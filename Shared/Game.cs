@@ -25,7 +25,8 @@ public partial class Game
 
     public int Seed { get; internal set; } = -1;
     internal Random Random { get; set; }
-    public int MaximumNumberOfTurns { get; internal set; }
+    public int MaximumTurns => Settings.MaximumTurns;
+    public int MaximumPlayers => Settings.MaximumPlayers;
     public string Name { get; internal set; }
     public List<Milestone> RecentMilestones { get; } = [];
     public int Version { get; }

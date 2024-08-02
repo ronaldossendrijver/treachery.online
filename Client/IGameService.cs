@@ -11,7 +11,6 @@ namespace Treachery.Client;
 public interface IGameService
 {
     public Game Game { get; }
-    public GameSettings Settings { get; }
     public GameStatus Status { get; }
     public bool InGame { get; }
     

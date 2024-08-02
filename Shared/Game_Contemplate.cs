@@ -128,7 +128,7 @@ public partial class Game
         CheckBeneGesseritPrediction();
         CheckFinalTurnWin();
 
-        if (Winners.Count > 0 || CurrentTurn == MaximumNumberOfTurns)
+        if (Winners.Count > 0 || CurrentTurn == MaximumTurns)
         {
             CurrentMainPhase = MainPhase.Ended;
             Enter(Phase.GameEnded);
@@ -206,7 +206,7 @@ public partial class Game
 
     private void CheckFinalTurnWin()
     {
-        if (CurrentTurn == MaximumNumberOfTurns)
+        if (CurrentTurn == MaximumTurns)
         {
             if (Winners.Count == 0) CheckSpecialWinConditions();
 
@@ -372,7 +372,7 @@ public partial class Game
             var habbanyaSietchOccupiedByOtherThanFremen = Players.Any(p => p.Faction != Faction.Yellow && (p.Faction != Faction.Pink || p.Ally != Faction.Yellow) && p.Occupies(Map.HabbanyaSietch));
             var tueksSietchOccupiedByAtreidesOrHarkonnenOrEmperorOrRichese = Players.Any(p => (p.Is(Faction.Green) || p.Is(Faction.Black) || p.Is(Faction.Red) || p.Is(Faction.White)) && p.Occupies(Map.TueksSietch));
 
-            return CurrentTurn == MaximumNumberOfTurns && !sietchTabrOccupiedByOtherThanFremen && !habbanyaSietchOccupiedByOtherThanFremen && !tueksSietchOccupiedByAtreidesOrHarkonnenOrEmperorOrRichese;
+            return CurrentTurn == MaximumTurns && !sietchTabrOccupiedByOtherThanFremen && !habbanyaSietchOccupiedByOtherThanFremen && !tueksSietchOccupiedByAtreidesOrHarkonnenOrEmperorOrRichese;
         }
     }
 

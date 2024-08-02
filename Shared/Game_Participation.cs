@@ -11,7 +11,6 @@ namespace Treachery.Shared;
 
 public partial class Game
 {
-    public int MaximumNumberOfPlayers { get; internal set; }
     public List<Player> Players { get; private set; } = [];
     public GameParticipation Participation { get; private set; } = new();
     
@@ -57,7 +56,7 @@ public partial class Game
     private int SeatOf(int userId) => Participation.SeatedUsers.GetValueOrDefault(userId);
 
     public bool IsOpen(int seat) => 
-        CurrentPhase is Phase.AwaitingPlayers && Participation.StandingUsers.Count < MaximumNumberOfPlayers || 
+        CurrentPhase is Phase.AwaitingPlayers && Participation.StandingPlayers.Count < MaximumPlayers || 
         Participation.AvailableSeats.Contains(seat);
     
     public int SeatOf(Faction f) => GetPlayer(f)?.Seat ?? -1;
@@ -80,7 +79,7 @@ public partial class Game
     {
         if (CurrentPhase is Phase.AwaitingPlayers || seat == -1)
         {
-            Participation.StandingUsers.Add(userId);            
+            Participation.StandingPlayers.Add(userId);            
         }
         else
         {
@@ -98,7 +97,7 @@ public partial class Game
 
     public void RemoveUser(int userId)
     {
-        Participation.StandingUsers.Remove(userId);
+        Participation.StandingPlayers.Remove(userId);
         Participation.SeatedUsers.Remove(userId);
         Participation.Observers.Remove(userId);
         Participation.UserNames.Remove(userId);
@@ -122,7 +121,7 @@ public partial class Game
         }
     }
 
-    public int NumberOfPlayers => Participation.StandingUsers.Count + Participation.SeatedUsers.Count;
+    public int NumberOfPlayers => Participation.StandingPlayers.Count + Participation.SeatedUsers.Count;
 
     public int NumberOfHosts => Participation.Hosts.Count;
     
@@ -141,7 +140,7 @@ public partial class Game
             .Select(idAndName => idAndName.Value);
 
     
-    public bool IsPlayer(int userId) => Participation.SeatedUsers.ContainsKey(userId) || Participation.StandingUsers.Contains(userId);
+    public bool IsPlayer(int userId) => Participation.SeatedUsers.ContainsKey(userId) || Participation.StandingPlayers.Contains(userId);
     
     public bool IsHost(int userId) => Participation.Hosts.Contains(userId);
     

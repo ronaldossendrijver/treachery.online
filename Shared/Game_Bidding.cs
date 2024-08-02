@@ -480,7 +480,7 @@ public partial class Game
         var highestBidValue = bids.Values.Max(b => b.TotalAmount);
         var determineBidWinnerSequence = new PlayerSequence(this, false, 1);
 
-        for (var i = 0; i < MaximumNumberOfPlayers; i++)
+        for (var i = 0; i < MaximumPlayers; i++)
         {
             var f = determineBidWinnerSequence.CurrentFaction;
             if (bids.TryGetValue(f, out var value) && value.TotalAmount == highestBidValue) return bids[f];

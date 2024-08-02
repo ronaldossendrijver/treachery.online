@@ -10,7 +10,6 @@
 
 <div class="card p-1 mb-2">
     <div class="card-body text-center">
-        <h2>Player Management</h2>
         <table class="table table-sm">
             @if (Game.CurrentPhase is Phase.AwaitingPlayers)
             {
@@ -21,7 +20,7 @@
                     <th scope="col">Actions</th>
                 </tr>
                 </thead>
-                @foreach (var userId in Game.Participation.StandingUsers)
+                @foreach (var userId in Game.Participation.StandingPlayers)
                 {
                     var setOrUnsetHostText = Game.IsHost(userId) ? "Revoke Host" : "Promote to Host";
 

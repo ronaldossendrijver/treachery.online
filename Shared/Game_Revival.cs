@@ -33,7 +33,8 @@ public partial class Game
 
     internal void PrepareSkillAssignmentToRevivedLeader(Player player, Leader leader)
     {
-        if (CurrentPhase != Phase.AssigningSkill) PhaseBeforeSkillAssignment = CurrentPhase;
+        if (CurrentPhase != Phase.AssigningSkill) 
+            PhaseBeforeSkillAssignment = CurrentPhase;
 
         player.MostRecentlyRevivedLeader = leader;
         SkillDeck.Shuffle();

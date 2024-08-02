@@ -44,7 +44,11 @@
 
     protected async Task Request<T>(T e) where T : GameEvent
     {
-        await Client.RequestGameEvent(e);
+        var result = await Client.RequestGameEvent(e);
+        if (result != null)
+        {
+            Console.WriteLine(result);            
+        }
     }
 
     private bool _redrawCycleStarted;
