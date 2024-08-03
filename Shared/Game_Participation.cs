@@ -12,6 +12,7 @@ namespace Treachery.Shared;
 public partial class Game
 {
     public List<Player> Players { get; private set; } = [];
+    public List<Player> InitialBots { get; set; } = [];
     public GameParticipation Participation { get; private set; } = new();
     
     public bool IsPlaying(Faction faction)
@@ -74,6 +75,7 @@ public partial class Game
 
     public bool IsBot(Player p) => Participation.SeatedBots.Contains(p.Seat);
     public bool IsBot(int seat) => Participation.SeatedBots.Contains(seat);
+    
     public void SeatOrUnseatBot(int seat)
     {
         if (IsBot(seat))

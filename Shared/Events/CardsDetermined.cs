@@ -65,7 +65,7 @@ public class CardsDetermined : GameEvent
         Game.TreacheryDeck = new Deck<TreacheryCard>(TreacheryCards, Game.Random);
         Game.TreacheryDeck.Shuffle();
         Game.Stone(Milestone.Shuffled);
-        Game.WhiteCache = new List<TreacheryCard>(WhiteCards);
+        Game.WhiteCache = [..WhiteCards];
         Log(GetVerboseMessage());
         Game.Enter(Game.Version < 134, Game.EnterPhaseTradingFactions, Game.EnterSetupPhase);
     }

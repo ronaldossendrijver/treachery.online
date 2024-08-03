@@ -99,10 +99,22 @@ public class EstablishPlayers : GameEvent
             (Game.Settings.InitialRules.Contains(Rule.GreyBot) ? 1 : 0) +
             (Game.Settings.InitialRules.Contains(Rule.BlueBot) ? 1 : 0);
 
-        if (Game.NumberOfPlayers + nrOfBots == 0 && !Game.Settings.InitialRules.Contains(Rule.FillWithBots)) return Message.Express("At least one player required");
-        if (Game.Participation.StandingPlayers.Count + nrOfBots < 2 && !Game.Settings.InitialRules.Contains(Rule.FillWithBots)) return Message.Express("At least two players required");
         if (Game.Settings.MaximumPlayers < 2) return Message.Express("At least two players required");
-        if (Game.Participation.StandingPlayers.Count + nrOfBots > Game.Settings.MaximumPlayers) return Message.Express("Too many players");
+        if (Game.Version < 170)
+        {
+            #pragma warning disable CS0612 // Type or member is obsolete
+            if (Players.Count() + nrOfBots == 0 && !ApplicableRules.Contains(Rule.FillWithBots)) return Message.Express("At least one player required");
+            if (Players.Count() + nrOfBots < 2 && !ApplicableRules.Contains(Rule.FillWithBots)) return Message.Express("At least two players required");
+            if (Players.Count() + nrOfBots > MaximumNumberOfPlayers) return Message.Express("Too many players");
+            #pragma warning restore CS0612 // Type or member is obsolete
+        }
+        else
+        {
+            if (Game.NumberOfPlayers + nrOfBots == 0 && !Game.Settings.InitialRules.Contains(Rule.FillWithBots)) return Message.Express("At least one player required");
+            if (Game.Participation.StandingPlayers.Count + nrOfBots < 2 && !Game.Settings.InitialRules.Contains(Rule.FillWithBots)) return Message.Express("At least two players required");
+            if (Game.Participation.StandingPlayers.Count + nrOfBots > Game.Settings.MaximumPlayers) return Message.Express("Too many players");            
+        }
+
         if (Game.Settings.AllowedFactionsInPlay.Any(f => !AvailableFactions().Contains(f))) return Message.Express("Invalid faction");
 
         return null;
@@ -226,10 +238,10 @@ public class EstablishPlayers : GameEvent
         Game.Name = GameName;
         Game.Random = new Random(Seed);
 
-        Game.AllRules = Game.Version < 169 ? Game.Settings.InitialRules.ToList() : Game.Settings.InitialRules;
+        Game.AllRules = Game.Version < 170 ? ApplicableRules.ToList() : Game.Settings.InitialRules;
         
-        Game.Rules = Game.Settings.InitialRules.Where(r => Game.GetRuleGroup(r) != RuleGroup.Bots).ToList();
-        Game.RulesForBots = Game.Settings.InitialRules.Where(r => Game.GetRuleGroup(r) == RuleGroup.Bots).ToList();
+        Game.Rules = Game.AllRules.Where(r => Game.GetRuleGroup(r) != RuleGroup.Bots).ToList();
+        Game.RulesForBots = Game.AllRules.Where(r => Game.GetRuleGroup(r) == RuleGroup.Bots).ToList();
         Game.Rules.AddRange(Game.GetRulesInGroup(RuleGroup.CoreBasic, Game.ExpansionLevel));
 
         Game.Ruleset = Game.DetermineApproximateRuleset(Game.Settings.AllowedFactionsInPlay, Game.Rules, Game.ExpansionLevel);
@@ -368,6 +380,10 @@ public class EstablishPlayers : GameEvent
                 var p = new Player(Game);
                 p.Seat = positions.Draw();
                 Game.Players.Add(p);
+                if (Game.InitialBots.Contains(p))
+                {
+                    Game.SeatOrUnseatBot(p.Seat);
+                }
                 Game.Participation.SeatedUsers[userId] = p.Seat;
             }            
         }
@@ -376,14 +392,18 @@ public class EstablishPlayers : GameEvent
     private void AddBots()
     {
         //Can be removed later, this was replaced by filling empty seats with bots.
-        if (Game.Applicable(Rule.OrangeBot)) Game.Players.Add(new Player(Game, Faction.Orange));
-        if (Game.Applicable(Rule.RedBot)) Game.Players.Add(new Player(Game, Faction.Red));
-        if (Game.Applicable(Rule.BlackBot)) Game.Players.Add(new Player(Game, Faction.Black));
-        if (Game.Applicable(Rule.PurpleBot)) Game.Players.Add(new Player(Game, Faction.Purple));
-        if (Game.Applicable(Rule.BlueBot)) Game.Players.Add(new Player(Game, Faction.Blue));
-        if (Game.Applicable(Rule.GreenBot)) Game.Players.Add(new Player(Game, Faction.Green));
-        if (Game.Applicable(Rule.YellowBot)) Game.Players.Add(new Player(Game, Faction.Yellow));
-        if (Game.Applicable(Rule.GreyBot)) Game.Players.Add(new Player(Game,  Faction.Grey));
+        
+        if (Game.Applicable(Rule.OrangeBot)) Game.InitialBots.Add(new Player(Game, Faction.Orange));
+        if (Game.Applicable(Rule.RedBot)) Game.InitialBots.Add(new Player(Game, Faction.Red));
+        if (Game.Applicable(Rule.BlackBot)) Game.InitialBots.Add(new Player(Game, Faction.Black));
+        if (Game.Applicable(Rule.PurpleBot)) Game.InitialBots.Add(new Player(Game, Faction.Purple));
+        if (Game.Applicable(Rule.BlueBot)) Game.InitialBots.Add(new Player(Game, Faction.Blue));
+        if (Game.Applicable(Rule.GreenBot)) Game.InitialBots.Add(new Player(Game, Faction.Green));
+        if (Game.Applicable(Rule.YellowBot)) Game.InitialBots.Add(new Player(Game, Faction.Yellow));
+        if (Game.Applicable(Rule.GreyBot)) Game.InitialBots.Add(new Player(Game,  Faction.Grey));
+        
+        foreach (var bot in Game.InitialBots) 
+            Game.Players.Add(bot);
     }
 
     private string UniquePlayerName(string name)
@@ -442,13 +462,19 @@ public class EstablishPlayers : GameEvent
                         _ => new Player(Game, Faction.Black)
                     };
 
+                    Game.InitialBots.Add(bot);
                     Game.Players.Add(bot);
                 }
             }
             else
             {
-                while (Game.Players.Count < Game.Settings.MaximumPlayers) 
-                    Game.Players.Add(new Player(Game, Faction.None));
+                while (Game.Players.Count < Game.Settings.MaximumPlayers)
+                {
+                    var bot = new Player(Game, Faction.None);
+                    Game.Players.Add(bot);
+                    Game.InitialBots.Add(bot);
+                }
+                    
             }
         }
     }

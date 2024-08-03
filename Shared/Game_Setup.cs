@@ -57,7 +57,15 @@ public partial class Game
             for (var i = 0; i < MaximumPlayers; i++) positions.PutOnTop(i);
             positions.Shuffle();
 
-            foreach (var p in Players) p.Seat = positions.Draw();
+            foreach (var p in Players)
+            {
+                p.Seat = positions.Draw();
+                if (InitialBots.Contains(p))
+                {
+                    SeatOrUnseatBot(p.Seat);
+                }
+            } 
+                
         }
         else
         {
