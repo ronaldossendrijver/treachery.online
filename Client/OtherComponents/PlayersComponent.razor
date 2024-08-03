@@ -43,7 +43,10 @@
                     <th scope="col">Faction</th>
                     <th scope="col">Host?</th>
                     <th scope="col">Seat available?</th>
-                    <th scope="col">Actions</th>
+                    @if (Game.IsHost(Client.UserId))
+                    {
+                        <th scope="col">Actions</th>
+                    }
                 </tr>
                 </thead>
                 <tbody>
@@ -57,19 +60,22 @@
                         <td>@player.Seat</td>
                         <td>@Game.GetPlayerName(player)</td>
                         <td><FactionComponent Faction="@player.Faction"/></td>
-                        <td>@Game.IsHost(userId)</td>
+                        <td>@(Game.IsHost(userId) ? "X" : "")</td>
                         <td>@(Game.SeatIsAvailable(player.Seat) ? "X" : "")</td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" @onclick="@(_ => OpenSeat(player.Seat))">@makeAvailableText a new player to take this seat</button>
-                            @if (!Game.IsBot(player))
-                            {
-                                <button class="btn btn-primary btn-sm" @onclick="@(_ => Kick(userId))">Kick</button>
-                                <button class="btn btn-primary btn-sm" @onclick="@(_ => SetOrUnsetHost(userId))">@setOrUnsetHostText</button>
-                                <button class="btn btn-primary btn-sm" @onclick="@(_ => SetBot(player.Seat))">Replace by a Bot</button>
-                            }
-                            <br>
-                            <div class="text-danger">@ActionResult</div>
-                        </td>
+                        @if (Game.IsHost(Client.UserId))
+                        {
+                            <td>
+                                <button class="btn btn-primary btn-sm" @onclick="@(_ => OpenSeat(player.Seat))">@makeAvailableText a new player to take this seat</button>
+                                @if (!Game.IsBot(player))
+                                {
+                                    <button class="btn btn-primary btn-sm" @onclick="@(_ => Kick(userId))">Kick</button>
+                                    <button class="btn btn-primary btn-sm" @onclick="@(_ => SetOrUnsetHost(userId))">@setOrUnsetHostText</button>
+                                    <button class="btn btn-primary btn-sm" @onclick="@(_ => SetBot(player.Seat))">Replace by a Bot</button>
+                                }
+                                <br>
+                                <div class="text-danger">@ActionResult</div>
+                            </td>
+                        }
                     </tr>
                 }
                 </tbody>

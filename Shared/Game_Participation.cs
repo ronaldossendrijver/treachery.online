@@ -24,6 +24,17 @@ public partial class Game
         return Players.FirstOrDefault(p => p.Faction == f);
     }
     
+    public Player GetPlayerInSeat(int seat)
+    {
+        return Players.FirstOrDefault(p => p.Seat == seat);
+    }
+    
+    public Faction GetFactionInSeat(int seat)
+    {
+        var p = GetPlayerInSeat(seat);
+        return p?.Faction ?? Faction.None;
+    }
+    
     public Faction GetAlly(Faction f)
     {
         var player = GetPlayer(f);
@@ -162,4 +173,6 @@ public partial class Game
     {
         Participation = participation;
     }
+
+    
 }

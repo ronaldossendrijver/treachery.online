@@ -30,7 +30,7 @@ public class GameInfo
     public List<Rule> Rules { get; set; }
     public bool InviteOthers { get; set; }
     public DateTime? LastAction { get; set; }
-    
+    public List<AvailableSeatInfo> AvailableSeats { get; set; }
     public override bool Equals(object obj) => obj is GameInfo info && info.GameId == GameId;
 
     public override int GetHashCode() => GameId.GetHashCode();
@@ -54,5 +54,11 @@ public class GameInfo
         InviteOthers = true,
         MaximumPlayers = managedGame.Game.Settings.MaximumPlayers,
         MaximumNumberOfTurns = managedGame.Game.Settings.MaximumTurns,
+        AvailableSeats = managedGame.Game.Participation.AvailableSeats.Select(seat => new AvailableSeatInfo()
+        {
+            Seat = seat, 
+            Faction = managedGame.Game.GetFactionInSeat(seat), 
+            IsBot = managedGame.Game.IsBot(seat)
+        }).ToList()
     };
 }
