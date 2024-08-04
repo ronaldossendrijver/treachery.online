@@ -30,7 +30,6 @@ public partial class Player : ICloneable
     public Player(Game game, string name)
     {
         Game = game;
-        Name = name;
     }
 
     #endregion Construction
@@ -50,8 +49,7 @@ public partial class Player : ICloneable
         }
     }
 
-    [Obsolete]
-    public string Name { get; set; } = string.Empty;
+    public string Name => Game.GetPlayerName(this);
 
     public int Seat { get; set; } = -1;
 
