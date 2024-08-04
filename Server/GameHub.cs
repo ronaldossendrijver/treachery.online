@@ -31,17 +31,23 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     
     private static Result<TResult> Success<TResult>(TResult contents) => new() { Success = true, Contents = contents };
 
-    private static bool AreValid<TResult>(string playerToken, string gameToken, out User user, out ManagedGame game, out Result<TResult> result)
+    private static bool AreValid<TResult>(string userToken, string gameToken, out User user, out ManagedGame game, out Result<TResult> result)
     {
         user = null;
         game = null;
         result = null;
+
+        if (userToken == null)
+            return false;
         
-        if (!UsersByUserToken.TryGetValue(playerToken, out user))
+        if (!UsersByUserToken.TryGetValue(userToken, out user))
         {
             result = Error<TResult>("Player not found");
             return false;
         }
+        
+        if (gameToken == null)
+            return false;
 
         if (!GamesByGameToken.TryGetValue(gameToken, out game))
         {
@@ -51,17 +57,23 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
 
         return true;
     }    
-    private static bool AreValid(string playerToken, string gameToken, out User user, out ManagedGame game, out VoidResult result)
+    private static bool AreValid(string userToken, string gameToken, out User user, out ManagedGame game, out VoidResult result)
     {
         user = null;
         game = null;
         result = null;
         
-        if (!UsersByUserToken.TryGetValue(playerToken, out user))
+        if (userToken == null)
+            return false;
+        
+        if (!UsersByUserToken.TryGetValue(userToken, out user))
         {
             result = Error("Player not found");
             return false;
         }
+        
+        if (gameToken == null)
+            return false;
 
         if (!GamesByGameToken.TryGetValue(gameToken, out game))
         {
@@ -84,7 +96,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
                 SmtpClient client = new()
                 {
                     Credentials = new NetworkCredential(username, password),
-                    Host = "smtp.strato.com",
+                    Host = "smtp.strato.com", //TODO: move to config
                     EnableSsl = true
                 };
 

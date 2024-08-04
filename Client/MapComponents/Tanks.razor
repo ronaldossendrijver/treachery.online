@@ -90,7 +90,7 @@
     private Situation situation = new();
     protected override bool ShouldRender()
     {
-        return situation.RequiresUpdate(Game);
+        return Client.InGame && situation.RequiresUpdate(Game);
     }
 
     private static void NextColumnIfNecessary(ref float y, ref float x, float spacing)

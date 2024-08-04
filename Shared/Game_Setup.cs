@@ -39,37 +39,34 @@ public partial class Game
         Stone(Milestone.Shuffled);
         inPlay.Shuffle();
 
-        foreach (var p in Players.Where(p => p.Faction == Faction.None)) p.Faction = inPlay.Draw();
+        foreach (var p in Players.Where(p => p.Faction == Faction.None)) 
+            p.Faction = inPlay.Draw();
 
-        if (Version < 170)
-        {
-            DeterminePositionsAtTable();            
-        }
+        DeterminePositionsAtTable();            
 
         Enter(Applicable(Rule.CustomDecks) && Version < 134, Phase.CustomizingDecks, EnterPhaseTradingFactions);
     }
 
+    internal Dictionary<Player, int> InitialUserIds { get; } = [];
     private void DeterminePositionsAtTable()
     {
-        if (Players.Count <= MaximumPlayers)
-        {
-            var positions = new Deck<int>(Random);
-            for (var i = 0; i < MaximumPlayers; i++) positions.PutOnTop(i);
-            positions.Shuffle();
+        var positions = new Deck<int>(Random);
+        for (var i = 0; i < Settings.MaximumPlayers; i++)
+            positions.PutOnTop(i);
+        positions.Shuffle();
 
-            foreach (var p in Players)
-            {
-                p.Seat = positions.Draw();
-                if (InitialBots.Contains(p))
-                {
-                    SeatOrUnseatBot(p.Seat);
-                }
-            } 
-                
-        }
-        else
+        //Seat players and bots
+        foreach (var p in Players)
         {
-            throw new ArgumentException("Number of players cannot exceed number of positions at the table.");
+            p.Seat = positions.Draw();
+            if (InitialBots.Contains(p))
+            {
+                SeatOrUnseatBot(p.Seat);
+            }
+            else if (Version >= 170)
+            {
+                Participation.SeatedPlayers[InitialUserIds[p]] = p.Seat;
+            }
         }
     }
 

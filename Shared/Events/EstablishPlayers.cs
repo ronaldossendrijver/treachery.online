@@ -358,53 +358,34 @@ public class EstablishPlayers : GameEvent
         return result;
     }
 
-
-
     private void AddPlayersToGame()
     {
-        if (Game.Version < 113) 
+        if (Game.Version < 113)
+        {
             AddBots();
-
+        } 
+        
         if (Game.Version < 170)
         {
             #pragma warning disable CS0612 // Type or member is obsolete
             foreach (var newPlayer in Players)
             {
                 var p = new Player(Game, newPlayer);
-                if (!Game.Players.Contains(p))
-                {
-                    Game.Players.Add(p);
-                    Log(p.Name, " joined the game");
-                }
-                else
-                {
-                    Log(p.Name, " is already in the game");
-                }
+                Game.Players.Add(p);
+                Log(p.Name, " joins the game");
             }
             #pragma warning restore CS0612 // Type or member is obsolete
         }
         else
         {
-            var positions = new Deck<int>(Game.Random);
-            for (var i = 0; i < Game.Settings.MaximumPlayers; i++) 
-                positions.PutOnTop(i);
-            
-            positions.Shuffle();
-            
             foreach (var userId in Game.Participation.StandingPlayers)
             {
                 var p = new Player(Game);
-                p.Seat = positions.Draw();
                 Game.Players.Add(p);
-                if (Game.InitialBots.Contains(p))
-                {
-                    Game.SeatOrUnseatBot(p.Seat);
-                }
-                Game.Participation.SeatedPlayers[userId] = p.Seat;
-            }            
+                Game.InitialUserIds.Add(p, userId);
+                Log(Game.GetPlayerName(p), " joins the game");
+            }
         }
-        
-        Game.Participation.StandingPlayers.Clear();
     }
 
     private void AddBots()
@@ -480,8 +461,8 @@ public class EstablishPlayers : GameEvent
                         _ => new Player(Game, Faction.Black)
                     };
 
-                    Game.InitialBots.Add(bot);
                     Game.Players.Add(bot);
+                    Game.InitialBots.Add(bot);
                 }
             }
             else
@@ -492,7 +473,6 @@ public class EstablishPlayers : GameEvent
                     Game.Players.Add(bot);
                     Game.InitialBots.Add(bot);
                 }
-                    
             }
         }
     }
