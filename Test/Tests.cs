@@ -413,8 +413,11 @@ public class Tests
 
         try
         {
-            var settings = new ChangeSettings(game, Faction.None)
+            var start = new EstablishPlayers(game, Faction.None)
             {
+                Players = Array.Empty<string>(),
+                Seed = new Random().Next(),
+                Time = DateTime.Now,
                 Settings = new GameSettings
                 {
                     InitialRules = rules.ToList(),
@@ -422,14 +425,6 @@ public class Tests
                     MaximumTurns = nrOfTurns,
                     MaximumPlayers = nrOfPlayers,
                 }
-            };
-            settings.Execute(false, true);
-            
-            var start = new EstablishPlayers(game, Faction.None)
-            {
-                Players = Array.Empty<string>(),
-                Seed = new Random().Next(),
-                Time = DateTime.Now
             };
             start.Execute(false, true);
 
