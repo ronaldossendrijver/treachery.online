@@ -101,7 +101,7 @@ public partial class GameHub
         
         if (!game.Game.IsOpen(seat))
             return Error<GameInitInfo>("Seat is not available");
-    
+        
         game.Game.AddPlayer(user.Id, user.PlayerName, seat);
         await Clients.Group(gameToken).HandleJoinGame(user.Id, user.PlayerName, seat);
         await Groups.AddToGroupAsync(Context.ConnectionId, gameToken);

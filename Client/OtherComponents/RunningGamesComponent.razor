@@ -24,7 +24,7 @@
                     @foreach (var av in Client.RunningGames)
                     {
                         joinGamePassword.TryAdd(av.GameId, "");
-                        Client.JoinErrors.TryAdd(av.GameId, "");
+                        JoinErrors.TryAdd(av.GameId, "");
 
                         var fontColorStyle = av.LastAction != null && DateTime.Now.Subtract((DateTime)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
 
@@ -64,11 +64,11 @@
                                 {
                                     foreach (var availableSeat in av.AvailableSeats)
                                     {
-                                        var botMessage = availableSeat.IsBot ? "Bot" : "Human";
-                                        <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsPlayer(av.GameId, joinGamePassword[av.GameId], availableSeat.Seat))">Take the <FactionComponent Faction="@availableSeat.Faction"/>Seat (@botMessage)</button>
+                                        var botMessage = availableSeat.IsBot ? "bot" : "human";
+                                        <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsPlayer(av.GameId, joinGamePassword[av.GameId], availableSeat.Seat))">Take over <FactionComponent Faction="@availableSeat.Faction" Diameter="20"/> (@botMessage)</button>
                                     }
                                 }
-                                <div class="text-danger">@Client.JoinErrors[av.GameId]</div>
+                                <div class="text-danger">@JoinErrors[av.GameId]</div>
                             </td>                        
                         </tr>
                     }
@@ -80,6 +80,7 @@
 
 @code {
 
+    private Dictionary<string, string> JoinErrors { get; } = new();
     private readonly Dictionary<string, string> joinGamePassword = [];
 
     protected override void OnAfterRender(bool firstRender)
@@ -92,12 +93,12 @@
 
     private async Task JoinGameAsPlayer(string gameId, string password, int seat = -1)
     {
-        Client.JoinErrors[gameId] = await Client.RequestJoinGame(gameId, Support.GetHash(password), seat);
+        JoinErrors[gameId] = await Client.RequestJoinGame(gameId, Support.GetHash(password), seat);
     }
 
     private async Task JoinGameAsObserver(string gameId, string password)
     {
-        Client.JoinErrors[gameId] = await Client.RequestObserveGame(gameId, Support.GetHash(password));
+        JoinErrors[gameId] = await Client.RequestObserveGame(gameId, Support.GetHash(password));
     }
 
     private static string NumberOfBotsMessage(GameInfo av)

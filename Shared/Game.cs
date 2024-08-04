@@ -89,15 +89,17 @@ public partial class Game
 
     #region Initialization
 
-    public Game() : this(LatestVersion)
+    public Game() : this(LatestVersion, new GameParticipation())
     {
     }
 
-    public Game(int version)
+    public Game(int version, GameParticipation participation)
     {
-        if (version < LowestSupportedVersion) throw new ArgumentException(string.Format("Game version {0} is not supported. The lowest supported version is: {1}.", version, LowestSupportedVersion));
+        if (version < LowestSupportedVersion) 
+            throw new ArgumentException(string.Format("Game version {0} is not supported. The lowest supported version is: {1}.", version, LowestSupportedVersion));
 
         Version = version;
+        Participation = participation;
 
         InitializeLeaderState();
         EnterPhaseAwaitingPlayers();
@@ -136,7 +138,7 @@ public partial class Game
 
     public Game Undo(int untilEventNr)
     {
-        var result = new Game(Version);
+        var result = new Game(Version, Participation);
         var maxEventNr = Math.Min(untilEventNr, History.Count);
 
         for (var i = 0; i < maxEventNr; i++)
@@ -650,7 +652,7 @@ public partial class Game
     {
         try
         {
-            result = new Game(state.Version);
+            result = new Game(state.Version, participation);
 
             var nr = 0;
             foreach (var e in state.Events)
@@ -664,7 +666,6 @@ public partial class Game
                 nr++;
             }
 
-            result.SetParticipation(participation);
             return null;
         }
         catch (Exception e)

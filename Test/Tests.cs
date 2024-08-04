@@ -238,7 +238,7 @@ public class Tests
 
                 var fs = File.OpenText(f);
                 var state = GameState.Load(fs.ReadToEnd());
-                var game = new Game(state.Version);
+                var game = new Game(state.Version, new GameParticipation());
                 var testcase = new Testcase();
 
                 foreach (var e in state.Events)
@@ -413,12 +413,20 @@ public class Tests
 
         try
         {
+            var settings = new ChangeSettings(game, Faction.None)
+            {
+                Settings = new GameSettings
+                {
+                    InitialRules = rules.ToList(),
+                    AllowedFactionsInPlay = factions,
+                    MaximumTurns = nrOfTurns,
+                    MaximumPlayers = nrOfPlayers,
+                }
+            };
+            settings.Execute(false, true);
+            
             var start = new EstablishPlayers(game, Faction.None)
             {
-                ApplicableRules = rules.ToArray(),
-                FactionsInPlay = factions,
-                MaximumTurns = nrOfTurns,
-                MaximumNumberOfPlayers = nrOfPlayers,
                 Players = Array.Empty<string>(),
                 Seed = new Random().Next(),
                 Time = DateTime.Now
@@ -610,7 +618,7 @@ public class Tests
         var state = GameState.Load(fs.ReadToEnd());
         fs.Close();
         Console.WriteLine("Checking {0} (version {1})...", fileName, state.Version);
-        var game = new Game(state.Version);
+        var game = new Game(state.Version, new GameParticipation());
 
         fs = File.OpenText(testcaseFileName);
         var tc = LoadObject<Testcase>(fs.ReadToEnd());

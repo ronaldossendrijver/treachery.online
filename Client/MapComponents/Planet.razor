@@ -72,7 +72,7 @@
     private Situation situation = new();
     protected override bool ShouldRender()
     {
-        return situation.RequiresUpdate(Game);
+        return Client.InGame && situation.RequiresUpdate(Game);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

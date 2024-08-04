@@ -14,7 +14,7 @@
         var previousMainPhase = MainPhase.Started;
         IBid previousWinningBid = null;
 
-        var replayBase = new Game(Game.Version);
+        var replayBase = new Game(Game.Version, Game.Participation);
 
         for (var i = 0; i < Game.History.Count; i++)
         {

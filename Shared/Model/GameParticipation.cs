@@ -3,6 +3,11 @@
 public class GameParticipation
 {
     /// <summary>
+    /// For each User (player or observer) in the game, hold the name
+    /// </summary>
+    public Dictionary<int, string> UserNames { get; set; } = [];
+
+    /// <summary>
     /// All Users that wish to participate while awaiting players (before the game has actually started)
     /// </summary>
     public HashSet<int> StandingPlayers { get; set; } = [];
@@ -10,12 +15,7 @@ public class GameParticipation
     /// <summary>
     /// For all Users that are players, hold their Seat
     /// </summary>
-    public Dictionary<int, int> SeatedUsers { get; set; } = [];
-
-    /// <summary>
-    /// For each User (player or observer) in the game, hold the name
-    /// </summary>
-    public Dictionary<int, string> UserNames { get; set; } = [];
+    public Dictionary<int, int> SeatedPlayers { get; set; } = [];
 
     /// <summary>
     /// Holds the seats occupies by Bots

@@ -47,7 +47,7 @@ public partial class Game
         return Players.Where(x => x.Faction != p.Faction).Select(x => x.Faction);
     }
 
-    public int GetUserIdOfPlayer(Player player) => Participation.SeatedUsers.GetValueOrDefault(player.Seat);
+    public int GetUserIdOfPlayer(Player player) => Participation.SeatedPlayers.GetValueOrDefault(player.Seat);
     
     public string GetPlayerName(int userId) => Participation.UserNames.GetValueOrDefault(userId);
     
@@ -63,9 +63,9 @@ public partial class Game
     
     public Player GetPlayerBySeat(int seatNr) => Players.FirstOrDefault(p => p.Seat == seatNr);
     
-    private int UserIdInSeat(int seat) => Participation.SeatedUsers.FirstOrDefault(seatedUser => seatedUser.Value == seat).Key;
+    private int UserIdInSeat(int seat) => Participation.SeatedPlayers.FirstOrDefault(seatedUser => seatedUser.Value == seat).Key;
     
-    private int SeatOf(int userId) => Participation.SeatedUsers.GetValueOrDefault(userId);
+    private int SeatOf(int userId) => Participation.SeatedPlayers.GetValueOrDefault(userId);
 
     public bool IsOpen(int seat) => 
         CurrentPhase is Phase.AwaitingPlayers && Participation.StandingPlayers.Count < MaximumPlayers || 
@@ -90,13 +90,20 @@ public partial class Game
     
     public void AddPlayer(int userId, string playerName, int seat = -1)
     {
-        if (CurrentPhase is Phase.AwaitingPlayers || seat == -1)
+        if (CurrentPhase is Phase.AwaitingPlayers)
         {
             Participation.StandingPlayers.Add(userId);            
         }
         else
         {
-            Participation.SeatedUsers[userId] = seat;
+            if (Participation.SeatedPlayers.ContainsValue(seat))
+            {
+                var currentUserId = Participation.SeatedPlayers.First(keyValue => keyValue.Value == seat).Key;
+                Participation.SeatedPlayers.Remove(currentUserId);
+                AddObserver(userId, Participation.UserNames.GetValueOrDefault(userId));
+            }
+            
+            Participation.SeatedPlayers[userId] = seat;
         }
 
         Participation.UserNames[userId] = playerName;
@@ -111,7 +118,7 @@ public partial class Game
     public void RemoveUser(int userId)
     {
         Participation.StandingPlayers.Remove(userId);
-        Participation.SeatedUsers.Remove(userId);
+        Participation.SeatedPlayers.Remove(userId);
         Participation.Observers.Remove(userId);
         Participation.UserNames.Remove(userId);
     }
@@ -134,7 +141,7 @@ public partial class Game
         }
     }
 
-    public int NumberOfPlayers => Participation.StandingPlayers.Count + Participation.SeatedUsers.Count;
+    public int NumberOfPlayers => Participation.StandingPlayers.Count + Participation.SeatedPlayers.Count;
 
     public int NumberOfHosts => Participation.Hosts.Count;
     
@@ -153,7 +160,7 @@ public partial class Game
             .Select(idAndName => idAndName.Value);
 
     
-    public bool IsPlayer(int userId) => Participation.SeatedUsers.ContainsKey(userId) || Participation.StandingPlayers.Contains(userId);
+    public bool IsPlayer(int userId) => Participation.SeatedPlayers.ContainsKey(userId) || Participation.StandingPlayers.Contains(userId);
     
     public bool IsHost(int userId) => Participation.Hosts.Contains(userId);
     
@@ -170,11 +177,4 @@ public partial class Game
             Participation.Hosts.Add(userId);
         }
     }
-
-    private void SetParticipation(GameParticipation participation)
-    {
-        Participation = participation;
-    }
-
-    
 }

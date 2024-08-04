@@ -17,39 +17,35 @@ namespace Treachery.Client;
 
 public class Client : IGameService, IGameClient, IAsyncDisposable
 {
-    private const int HeartbeatDelay = 2000;
-    private const int MaxHeartbeats = 86400;
+    private const int HeartbeatDelay = 3000;
 
     //General info
     public ServerSettings ServerSettings { get; private set; }
-    private int NrOfHeartbeats { get; set; }
-    public bool IsDisconnected => _connection is not { State: HubConnectionState.Connected };
+    public bool IsConnected => _connection.State == HubConnectionState.Connected;
     
     //Logged in player
-    public Dictionary<string, string> JoinErrors { get; } = new();
-    public bool LoggedIn => LoginInfo != null;
     private LoginInfo LoginInfo { get; set; }
+    public bool LoggedIn => LoginInfo != null;
     private string UserToken => LoginInfo?.UserToken;
     public int UserId => LoginInfo?.UserId ?? -1;
-    public bool IsPlayer => Player != null && Player.Faction != Faction.None;
-    public Player Player => Game.GetPlayerByUserId(UserId);
-    public Faction Faction => Player?.Faction ?? Faction.None;
     
     //Game in progress
-    public bool InGame => Game != null;
-    private string GameToken { get; set; }
     public Game Game { get; private set; }
-    public GameSettings Settings { get; private set; }
-    public string PlayerName => LoginInfo.PlayerName;
+    private string GameToken { get; set; } = string.Empty;
     public GameStatus Status { get; private set; }
+    public List<Type> Actions { get; private set; } = []; 
+    public bool InGame => Game != null;
+    //public GameSettings Settings { get; private set; }
+    public Player Player => Game.GetPlayerByUserId(UserId);
+    public string PlayerName => LoginInfo.PlayerName;
+    public Faction Faction => Player?.Faction ?? Faction.None;
     public bool IsObserver => Game.IsObserver(UserId);
-    public bool BotsArePaused { get; private set; }
+    public bool IsHost => Game.IsHost(UserId);
+    public Phase CurrentPhase => Game.CurrentPhase;
     
-    //Sound and camera
+    //Settings
     public float CurrentEffectVolume { get; set; } = -1;
     public float CurrentChatVolume { get; set; } = -1;
-
-    //Settings
     public Battle BattleUnderConstruction { get; set; } = null;
     public int BidAutoPassThreshold { get; set; } = 0;
     public bool AutoPass { get; set; }
@@ -81,10 +77,27 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
         RegisterHandlers();
     }
+    
+    public async ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+        
+        if (_connection != null)
+        {
+            _connection.Reconnected -= OnReconnected;
+            await _connection.DisposeAsync();
+        }
+    }
 
+    public async Task Start()
+    {
+        await _connection.StartAsync();
+        await GetServerSettings();
+        _ = Task.Delay(HeartbeatDelay).ContinueWith(_ => Heartbeat());
+    }
+    
     private void RegisterHandlers()
     {
-        //will this work? Task HandleGameEvent<TEvent>(TEvent evt, int newEventNumber) where TEvent : GameEvent;
         _connection.On<GameEvent,int>(nameof(HandleGameEvent), HandleGameEvent);
         _connection.On<GameChatMessage>(nameof(HandleChatMessage), HandleChatMessage);
         _connection.On<GlobalChatMessage>(nameof(HandleGlobalChatMessage), HandleGlobalChatMessage);
@@ -100,27 +113,16 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         _connection.On<bool>(nameof(HandleBotStatus), HandleBotStatus);
         _connection.On<GameInitInfo>(nameof(HandleLoadGame), HandleLoadGame);
     }
-
-    public async Task Start()
-    {
-        await _connection.StartAsync();
-        await GetServerSettings();
-        _ = Task.Delay(HeartbeatDelay).ContinueWith(_ => Heartbeat());
-    }
     
     public void Refresh() => RefreshHandler?.Invoke();
 
-    public void RefreshPopovers() => RefreshPopoverHandler?.Invoke();
-
-    private static void LogSerializationError(object sender, ErrorEventArgs e) => Support.Log(e.ErrorContext.Error.ToString());
+    private void RefreshPopovers() => RefreshPopoverHandler?.Invoke();
 
     public void Reset()
     {
         GameToken = null;
         Game = null;
-        Settings = null;
         Status = null;
-        JoinErrors.Clear();
         _ = Browser.StopSounds();
         Refresh();
     }
@@ -177,7 +179,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public Task HandleBotStatus(bool paused)
     {
-        BotsArePaused = paused;
+        Game.Participation.BotsArePaused = paused;
         Refresh();
         return Task.CompletedTask;
     }
@@ -202,7 +204,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         
         if (resultMessage == null)
         {
-            await PerformPostEventTasks(e);
+            await PerformPostEventTasks();
         }
         else
         {
@@ -215,7 +217,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         try
         {
             Game = Game.Undo(untilEventNr);
-            await PerformPostEventTasks(null);
+            await PerformPostEventTasks();
         }
         catch (Exception ex)
         {
@@ -267,14 +269,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         ((ServerSettings.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 6 && CurrentPhase <= Phase.AwaitingPlayers) ||
          ServerSettings.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 1);
 
-    public IEnumerable<Type> Actions => Game.GetApplicableEvents(Player, IsHost);
-
-    public bool IsConnected => _connection.State == HubConnectionState.Connected;
-    
-    public bool IsHost => Game.IsHost(UserId);
-
-    public Phase CurrentPhase => Game.CurrentPhase;
-   
+  
     public event EventHandler<Location> OnLocationSelected;
     public event EventHandler<Location> OnLocationSelectedWithCtrlOrAlt;
     public event EventHandler<Location> OnLocationSelectedWithShift;
@@ -359,7 +354,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
                 return loadMessage.ToString();
 
             GameToken = result.Contents.GameToken;
-            Settings = result.Contents.Settings;
         }
         
         return result.Message;
@@ -368,18 +362,13 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public async Task<string> RequestJoinGame(string gameId, string hashedPassword, int seat = -1)
     {
         var result = await _connection.InvokeAsync<Result<GameInitInfo>>(nameof(IGameHub.RequestJoinGame), UserToken, gameId, hashedPassword, seat);
-        if (!result.Success)
-        {
-            JoinErrors[gameId] = result.Message;
-        }
-        else
+        if (result.Success)
         {
             var loadMessage = await LoadGame(result.Contents);
             if (loadMessage != null)
                 return loadMessage.ToString();
 
             GameToken = result.Contents.GameToken;
-            Settings = result.Contents.Settings;
         }
 
         return result.Message;
@@ -388,18 +377,13 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public async Task<string> RequestObserveGame(string gameId, string hashedPassword)
     {
         var result = await _connection.InvokeAsync<Result<GameInitInfo>>(nameof(IGameHub.RequestObserveGame), UserToken, gameId, hashedPassword);
-        if (!result.Success)
-        {
-            JoinErrors[gameId] = result.Message;
-        }
-        else
+        if (result.Success)
         {
             var loadMessage = await LoadGame(result.Contents);
             if (loadMessage != null)
                 return loadMessage.ToString();
 
             GameToken = result.Contents.GameToken;
-            Settings = result.Contents.Settings;
         }
         
         return result.Message;
@@ -415,7 +399,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
                 return loadMessage.ToString();
 
             GameToken = result.Contents.GameToken;
-            Settings = result.Contents.Settings;
         }
         
         return result.Message;
@@ -460,6 +443,56 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public async Task SendGlobalChatMessage(GlobalChatMessage message) =>
         await _connection.SendAsync(nameof(IGameHub.SendGlobalChatMessage), UserToken, message);
 
+    public List<GameInfo> RunningGames { get; private set; } = [];
+    private async Task Heartbeat()
+    {
+        try
+        {
+            if (IsConnected)
+            {
+                await _connection.SendAsync(nameof(IGameHub.RequestRegisterHeartbeat), UserToken, GameToken);
+
+                if (LoggedIn && !InGame)
+                {
+                    var runningGamesResult = await _connection.InvokeAsync<Result<List<GameInfo>>>(nameof(IGameHub.RequestRunningGames), UserToken);
+                    if (runningGamesResult.Success)
+                    {
+                        RunningGames = runningGamesResult.Contents;
+                        Refresh();
+                    }
+                    else
+                    {
+                        Support.Log("Server error: " + runningGamesResult.Message);                        
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Support.Log(e.ToString());
+        }
+
+        _ = Task.Delay(HeartbeatDelay).ContinueWith(_ => Heartbeat());
+    }
+
+    private async Task<Message> LoadGame(GameInitInfo initInfo)
+    {
+        var currentState = GameState.Load(initInfo.GameState);
+        var resultMessage = Game.TryLoad(currentState, initInfo.Participation, false, false, out var result);
+        if (resultMessage == null)
+        {
+            Game = result;
+            await PerformPostEventTasks();
+            RefreshPopovers();
+        }
+        else
+        {
+            Support.Log(resultMessage.ToString(Skin.Current));
+        }
+
+        return resultMessage;
+    }
+    
     private async Task GetServerSettings()
     {
         var result = await _connection.InvokeAsync<Result<ServerSettings>>(nameof(IGameHub.GetServerSettings));
@@ -473,69 +506,17 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
     }
     
-    public List<GameInfo> RunningGames { get; private set; } = [];
-    private async Task Heartbeat()
+    private async Task PerformPostEventTasks()
     {
-        if (NrOfHeartbeats++ < MaxHeartbeats)
-        {
-            try
-            {
-                if (!IsDisconnected)
-                {
-                    await _connection.SendAsync(nameof(IGameHub.RequestRegisterHeartbeat), UserToken, GameToken);
-                    
-                    if (LoggedIn && !InGame)
-                    {
-                        var runningGamesResult = await _connection.InvokeAsync<Result<List<GameInfo>>>(nameof(IGameHub.RequestRunningGames), UserToken);
-                        if (runningGamesResult.Success)
-                        {
-                            RunningGames = runningGamesResult.Contents;
-                            Refresh();
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Support.Log(e.ToString());
-            }
+        Status = GameStatus.DetermineStatus(Game, Player, !IsObserver);
+        Actions = Game.GetApplicableEvents(Player, IsHost);
 
-            _ = Task.Delay(HeartbeatDelay).ContinueWith(_ => Heartbeat());
-        }
-    }
-
-    private async Task<Message> LoadGame(GameInitInfo initInfo)
-    {
-        var currentState = GameState.Load(initInfo.GameState);
-        var resultMessage = Game.TryLoad(currentState, initInfo.Participation, false, false, out var result);
-        if (resultMessage == null)
-        {
-            Game = result;
-            Settings = initInfo.Settings;
-            await PerformPostEventTasks(Game.LatestEvent());
-            RefreshPopovers();
-        }
-        else
-        {
-            Support.Log(resultMessage.ToString(Skin.Current));
-        }
-
-        return resultMessage;
-    }
-    
-    private async Task PerformPostEventTasks(GameEvent e)
-    {
-        UpdateStatus(Game, Player, IsPlayer);
-
-        if (!(e is AllyPermission || e is DealOffered))
-        {
-            await TurnAlert();
-            await PlaySoundsForMilestones();
-        }
-
+        await TurnAlert();
+        await PlaySoundsForMilestones();
         await Browser.RemoveFocusFromButtons();
 
-        if (Game.CurrentMainPhase == MainPhase.Bidding) ResetAutoPassThreshold();
+        if (Game.CurrentMainPhase == MainPhase.Bidding) 
+            ResetAutoPassThreshold();
 
         PerformEndOfTurnTasks();
         Refresh();
@@ -544,11 +525,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     private void ResetAutoPassThreshold()
     {
         if (Game.RecentMilestones.Contains(Milestone.AuctionWon) && (!KeepAutoPassSetting || Game.CurrentPhase == Phase.BiddingReport)) AutoPass = false;
-    }
-
-    private void UpdateStatus(Game game, Player player, bool isPlayer)
-    {
-        Status = GameStatus.DetermineStatus(game, player, isPlayer);
     }
 
     private bool itAlreadyWasMyTurn;
@@ -570,30 +546,20 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     private async Task PlaySoundsForMilestones()
     {
-        foreach (var m in Game.RecentMilestones) await Browser.PlaySound(Skin.Current.GetSound(m), CurrentEffectVolume);
+        foreach (var m in Game.RecentMilestones) 
+            await Browser.PlaySound(Skin.Current.GetSound(m), CurrentEffectVolume);
     }
 
     private Phase previousPhase;
     private void PerformEndOfTurnTasks()
     {
-        if (Game.CurrentPhase == Phase.TurnConcluded && Game.CurrentPhase != previousPhase) Messages.Clear();
+        if (Game.CurrentPhase == Phase.TurnConcluded && Game.CurrentPhase != previousPhase) 
+            Messages.Clear();
 
         previousPhase = Game.CurrentPhase;
     }
     
-    private async Task OnReconnected(string arg)
-    {
-        await RequestReconnectGame();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        GC.SuppressFinalize(this);
-        
-        if (_connection != null)
-        {
-            _connection.Reconnected -= OnReconnected;
-            await _connection.DisposeAsync();
-        }
-    }
+    private async Task OnReconnected(string _) => await RequestReconnectGame();
+    
+    private static void LogSerializationError(object sender, ErrorEventArgs e) => Support.Log(e.ErrorContext.Error.ToString());
 }

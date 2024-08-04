@@ -37,7 +37,7 @@
         {
             <div class="card-body">
 
-                @if (Client.IsPlayer && (acceptableDeals.Any() || cancellableDeals.Any())) 
+                @if (!Client.IsObserver && (acceptableDeals.Any() || cancellableDeals.Any())) 
                 {
                     <label>Deal offers</label>
                     <table class="table table-sm">

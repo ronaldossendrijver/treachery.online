@@ -105,7 +105,12 @@
     
     private async Task StartGame()
     {
-        await Request(new EstablishPlayers());
+        await Request(new EstablishPlayers
+        {
+            GameName = $"{Client.PlayerName}'s Game",
+            Settings = Settings,
+            Seed = new Random().Next()
+        });
         StateHasChanged();
     }
 }

@@ -85,7 +85,7 @@
         {
             <div>
                 <span>Pause or unpause bots:</span>
-                @if (Client.BotsArePaused)
+                @if (Client.Game.Participation.BotsArePaused)
                 {
                     <a class="btn btn-link p-1" @onclick="@(_ => Client.RequestPauseBots())" title="Unpause Bots">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-play-fill" viewBox="0 0 16 16">

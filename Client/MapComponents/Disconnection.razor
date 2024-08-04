@@ -8,7 +8,7 @@
 *@
 @inherits MapComponent
 
-@if (Client.IsDisconnected)
+@if (!Client.IsConnected)
 {
     <MapText ToShow="You were disconnected from the game."
              X="@(Skin.Current.PlanetCenter.X)" Y="@(Skin.Current.PlanetCenter.Y)"
@@ -16,11 +16,7 @@
              BorderWidth="@Skin.Current.TURN_FONT_BORDERWIDTH" BorderColor="white"
              Align="@TextAlignment.Center" />
 
-    var message = Client.IsDisconnected ? 
-        "Please wait while the game is trying to reconnect..." : 
-        "Trying to reconnect, but the host may have ended or restarted the game or your internet connection may be broken...";
-
-    <MapText ToShow="@message"
+    <MapText ToShow="Please wait while the game is trying to reconnect..."
              X="@(Skin.Current.PlanetCenter.X)" Y="@(1.1f * Skin.Current.PlanetCenter.Y)"
              Font="@Skin.Current.PLAYERNAME_FONT" FontColor="darkred"
              BorderWidth="@Skin.Current.PLAYERNAME_FONT_BORDERWIDTH" BorderColor="white"

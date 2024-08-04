@@ -2,12 +2,7 @@
 
 public class GameInitInfo
 {
-    public string GameToken { get; set; }
-    
-    public string GameState { get; set; }
-
-    
-    public GameSettings Settings { get; set; }
-
-    public GameParticipation Participation { get; set; }
+    public string GameToken { get; init; }
+    public string GameState { get; init; }
+    public GameParticipation Participation { get; init; }
 }

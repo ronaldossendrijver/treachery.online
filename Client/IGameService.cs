@@ -20,7 +20,6 @@ public interface IGameService
     public string PlayerName { get; }
     public bool IsObserver { get; }
     public ServerSettings ServerSettings { get; }
-    public Dictionary<string, string> JoinErrors { get; }
     
     //Client State
     public float CurrentEffectVolume { get; set;  }
@@ -29,22 +28,17 @@ public interface IGameService
     public int BidAutoPassThreshold { get; set; }
     public bool AutoPass { get; set; }
     public bool KeepAutoPassSetting { get; set; }
-    public bool BotsArePaused { get; }
     public int Timer { get; set; }
     public bool MuteGlobalChat { get; set; }
 
     public event Action RefreshHandler;
     public event Action RefreshPopoverHandler;
-    public bool IsDisconnected { get; }
     public void Refresh();
-    public void RefreshPopovers();
     public Task Start();
     
     public List<GameInfo> RunningGames { get; }
 
     public void Reset();
-
-    public bool IsPlayer { get; }
 
     public Player Player { get; }
 
@@ -54,7 +48,7 @@ public interface IGameService
 
     public bool InScheduledMaintenance { get; }
 
-    public IEnumerable<Type> Actions { get; }
+    public List<Type> Actions { get; }
 
     public bool IsConnected { get; }
 
