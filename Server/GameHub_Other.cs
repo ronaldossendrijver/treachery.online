@@ -5,8 +5,10 @@ namespace Treachery.Server;
 
 public partial class GameHub
 {
-    public Result<ServerSettings> GetServerSettings()
+    public Result<ServerSettings> Connect()
     {
+        //Do some maintenance work here, cleaning up old tokens
+        
         var maintenanceDateTime = configuration["GameMaintenanceDateTime"];
 
         var result = new ServerSettings
@@ -20,10 +22,10 @@ public partial class GameHub
     
     public async Task<VoidResult> RequestRegisterHeartbeat(string userToken)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user))
+        if (!UserTokenInfo.TryGetValue(userToken, out var tokenInfo))
             return Error("User not found");
 
-        UserTokensLastSeen[userToken] = DateTime.Now;
+        tokenInfo.Refreshed = DateTime.Now;
         return await Task.FromResult(Success());
     }
 }

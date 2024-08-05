@@ -67,7 +67,14 @@
 
     protected override bool IsUrgent => true;
 
-    private GameSettings Settings { get; set; } = new();
+    private GameSettings Settings { get; set; } = new()
+    {
+        CreatorParticipates = true,
+        MaximumPlayers = 6,
+        InitialRules = Game.RulesetDefinition[Ruleset.BasicGame].ToList(),
+        AllowedFactionsInPlay = Enumerations.GetValuesExceptDefault(Faction.None).ToList(),
+        MaximumTurns = 10
+    };
     
     private bool _advancedOptions;
 

@@ -8,6 +8,7 @@
 *@
 
 @page "/"
+@page "/{userToken}/{gameToken}"
 @using Treachery.Client.OtherComponents
 @using Treachery.Client.MapComponents
 @using Treachery.Client.GameEventComponents
@@ -22,7 +23,7 @@
 
 @if (!Client.IsConnected)
 {
-    <div class="row d-flex align-items-center" style="min-height: 97vh; background-image: url('art/planet.png'); background-size: 1024px; background-position-x: center; background-position-y: -50px; background-repeat: no-repeat;">
+    <div class="row d-flex align-items-center" style="@StartScreenStyle">
         <div class="d-flex justify-content-center">
             Not Connected
         </div>
@@ -30,7 +31,7 @@
 }
 else if (!Client.LoggedIn)
 {
-    <div class="row d-flex align-items-center" style="min-height: 97vh; background-image: url('art/planet.png'); background-size: 1024px; background-position-x: center; background-position-y: -50px; background-repeat: no-repeat;">
+    <div class="row d-flex align-items-center" style="@StartScreenStyle">
         <div class="col-sm-12 col-lg-3"></div>
         <div class="col-sm-12 col-lg-6">
             <div class="d-flex justify-content-center">
@@ -42,7 +43,7 @@ else if (!Client.LoggedIn)
 }
 else if (!Client.InGame)
 {
-    <div class="row d-flex align-items-center" style="min-height: 97vh; background-image: url('art/planet.png'); background-size: 1024px; background-position-x: center; background-position-y: -50px; background-repeat: no-repeat;">
+    <div class="row" style="@StartScreenStyle">
         <div class="col-sm-12 col-lg-2"></div>
         <div class="col-sm-12 col-lg-4">
             <RunningGamesComponent/>
@@ -55,7 +56,7 @@ else if (!Client.InGame)
 }
 else if (Client.Game.CurrentPhase is Phase.AwaitingPlayers)
 {
-    <div class="row d-flex align-items-center" style="min-height: 97vh; background-image: url('art/planet.png'); background-size: 1024px; background-position-x: center; background-position-y: -50px; background-repeat: no-repeat;">
+    <div class="row d-flex align-items-center" style="@StartScreenStyle">
         <div class="col-sm-12 col-lg-3"></div>
         <div class="col-sm-12 col-lg-6">
             <div class="d-flex justify-content-center">
@@ -75,7 +76,7 @@ else if (Client.Game.CurrentPhase is Phase.AwaitingPlayers)
 }
 else
 {
-    <div @ref=@element class="row">
+    <div @ref="@element" class="row">
 
         <!--Map Column-->
         <div id="mapdiv" class="@MapGrid">
@@ -147,6 +148,9 @@ else
 
 @code {
 
+    [Parameter] public string UserToken { get; set; }
+    [Parameter] public string GameToken { get; set; }
+
     private ElementReference element;
 
     protected override async Task OnInitializedAsync()
@@ -154,11 +158,17 @@ else
         Client.RefreshHandler += StateHasChanged;
         Client.RefreshPopoverHandler += RefreshPopovers;
         
-        await Client.Start();
+        await Client.Start(UserToken, GameToken);
         
         Message.DefaultDescriber = Skin.Current;
         
         await LoadSkinDataIfSaved();
+    }
+    
+    public void Dispose()
+    {
+        Client.RefreshHandler -= StateHasChanged;
+        Client.RefreshPopoverHandler -= RefreshPopovers;
     }
 
     private bool isFullscreen;
@@ -179,17 +189,14 @@ else
     private async Task LoadSkinDataIfSaved()
     {
         var existingSkinData = await Browser.LoadStringSetting("treachery.online;setting.skin");
-        if (existingSkinData != null && existingSkinData.Length > 0)
+        if (existingSkinData is { Length: > 0 })
         {
             Skin.Current = Skin.Load(existingSkinData);
             Message.DefaultDescriber = Skin.Current;
         }
     }
 
-    private void RefreshPopovers() {
-
-        _ = Browser.RefreshPopovers(element);
-    }
+    private void RefreshPopovers() => _ = Browser.RefreshPopovers(element);
 
     private string Scrollbars => isFullscreen? "vh-100 overflow-auto" : "";
 
@@ -197,9 +204,5 @@ else
 
     private string ActionGrid => !Client.IsConnected || !Client.LoggedIn || !Client.IsHost ? "col-sm-12 col-lg-4" : "col-sm-12 col-lg-3";
 
-    public void Dispose()
-    {
-        Client.RefreshHandler -= StateHasChanged;
-        Client.RefreshPopoverHandler -= RefreshPopovers;
-    }
+    private const string StartScreenStyle = "min-height: 97vh; background-image: url('art/planet.png'); background-size: 1024px; background-position-x: center; background-position-y: -50px; background-repeat: no-repeat;";
 }

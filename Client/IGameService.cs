@@ -34,7 +34,7 @@ public interface IGameService
     public event Action RefreshHandler;
     public event Action RefreshPopoverHandler;
     public void Refresh();
-    public Task Start();
+    public Task Start(string userToken, string gameToken);
     
     public List<GameInfo> RunningGames { get; }
 

@@ -23,7 +23,7 @@ public class GameStatistics
     {
         var result = new GameStatistics
         {
-            date = game.History.Last().Time,
+            date = game.History.Last().Time.DateTime,
             method = ToString(game.WinMethod),
             players = game.Players.Select(p => new GameStatisticsPlayerInfo
             {

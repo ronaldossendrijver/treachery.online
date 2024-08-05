@@ -183,15 +183,7 @@ public partial class Game
         return TimeSpan.Zero;
     }
 
-    public DateTime Started
-    {
-        get
-        {
-            if (History.Count > 0)
-                return History[0].Time;
-            return default;
-        }
-    }
+    public DateTimeOffset Started => History.Count > 0 ? History[0].Time : default;
 
     private bool InTimedPhase =>
         CurrentPhase == Phase.Bidding ||

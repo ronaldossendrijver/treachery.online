@@ -29,7 +29,7 @@ public class GameInfo
     public int NumberOfBots { get; set; }
     public List<Rule> Rules { get; set; }
     public bool InviteOthers { get; set; }
-    public DateTime? LastAction { get; set; }
+    public DateTimeOffset? LastAction { get; set; }
     public List<AvailableSeatInfo> AvailableSeats { get; set; }
     public override bool Equals(object obj) => obj is GameInfo info && info.GameId == GameId;
 

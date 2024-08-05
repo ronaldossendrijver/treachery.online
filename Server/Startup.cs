@@ -21,13 +21,6 @@ namespace Treachery.Server;
 
 public class Startup
 {
-    public Startup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
-    public IConfiguration Configuration { get; }
-
     // This method gets called by the runtime. Use this method to add services to the container.
     // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
     public void ConfigureServices(IServiceCollection services)
@@ -39,11 +32,10 @@ public class Startup
                 hubOptions.EnableDetailedErrors = true;
                 hubOptions.MaximumReceiveMessageSize = 4194304;
             })
-            .AddNewtonsoftJsonProtocol(signalRoptions =>
+            .AddNewtonsoftJsonProtocol(options =>
             {
-                signalRoptions.PayloadSerializerSettings.TypeNameHandling = TypeNameHandling.All;
+                options.PayloadSerializerSettings.TypeNameHandling = TypeNameHandling.All;
             });
-        services.AddAuthentication().AddCookie();
         services.AddDbContext<TreacheryContext>();
     }
 
@@ -74,7 +66,6 @@ public class Startup
             endpoints.MapHub<GameHub>("/gameHub");
             endpoints.MapFallbackToFile("index.html");
         });
-
         
         using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
         var context = serviceScope.ServiceProvider.GetService<TreacheryContext>();

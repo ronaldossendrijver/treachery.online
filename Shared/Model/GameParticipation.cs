@@ -5,7 +5,7 @@ public class GameParticipation
     /// <summary>
     /// For each User (player or observer) in the game, hold the name
     /// </summary>
-    public Dictionary<int, string> UserNames { get; set; } = [];
+    public Dictionary<int, string> Users { get; set; } = [];
 
     /// <summary>
     /// All Users that wish to participate while awaiting players (before the game has actually started)

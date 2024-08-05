@@ -25,7 +25,9 @@
                     var setOrUnsetHostText = Game.IsHost(userId) ? "Revoke Host" : "Promote to Host";
 
                     <tr class="table-dark">
-                        <td>@Game.GetPlayerName(userId)</td>
+                        <td>
+                            @Game.GetPlayerName(userId)
+                        </td>
                         <td>@Game.IsHost(userId)</td>
                         <td>
                             <button class="btn btn-primary btn-sm" @onclick="@(_ => Kick(userId))">Kick</button>
@@ -42,7 +44,7 @@
                     <th scope="col">Player</th>
                     <th scope="col">Faction</th>
                     <th scope="col">Host?</th>
-                    <th scope="col">Seat available?</th>
+                    <th scope="col">Open?</th>
                     @if (Game.IsHost(Client.UserId))
                     {
                         <th scope="col">Actions</th>
@@ -54,18 +56,31 @@
                 {
                     var userId = Game.GetUserIdOfPlayer(player);
                     var setOrUnsetHostText = Game.IsHost(userId) ? "Revoke Host" : "Promote to Host";
-                    var makeAvailableText = Game.SeatIsAvailable(player.Seat) ? "Don't allow" : "Allow";
+                    var makeAvailableText = Game.SeatIsAvailable(player.Seat) ? "Don't open" : "Open";
 
                     <tr class="table-dark">
                         <td>@player.Seat</td>
-                        <td>@Game.GetPlayerName(player)</td>
+                        <td>
+                            @if (Game.IsBot(player))
+                            {
+                                <span style="font-style:italic; color: blue;">Bot</span>
+                            }
+                            else if (Game.IsEmpty(player.Seat))
+                            {
+                                <span style="font-style:italic; color: red;">Empty</span>
+                            }
+                            else
+                            {
+                                <span>@Game.GetPlayerName(player)</span>
+                            }
+                        </td>
                         <td><FactionComponent Faction="@player.Faction"/></td>
                         <td>@(Game.IsHost(userId) ? "X" : "")</td>
                         <td>@(Game.SeatIsAvailable(player.Seat) ? "X" : "")</td>
                         @if (Game.IsHost(Client.UserId))
                         {
                             <td>
-                                <button class="btn btn-primary btn-sm" @onclick="@(_ => OpenSeat(player.Seat))">@makeAvailableText a new player to take this seat</button>
+                                <button class="btn btn-primary btn-sm" @onclick="@(_ => OpenSeat(player.Seat))">@makeAvailableText seat</button>
                                 @if (!Game.IsBot(player))
                                 {
                                     <button class="btn btn-primary btn-sm" @onclick="@(_ => Kick(userId))">Kick</button>

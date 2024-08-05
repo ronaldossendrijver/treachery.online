@@ -11,7 +11,7 @@ public interface IGameHub
     Task<Result<LoginInfo>> RequestLogin(int version, string userName, string hashedPassword);
     Task<VoidResult> RequestPasswordReset(string email);
     Task<Result<LoginInfo>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword);
-    
+    Task<Result<LoginInfo>> GetLoginInfo(string userToken);
     //Game Management
     
     Task<Result<GameInitInfo>> RequestCreateGame(string userToken, string hashedPassword, string stateData, string skinData);
@@ -177,5 +177,5 @@ public interface IGameHub
     Task<VoidResult> SendGlobalChatMessage(string userToken, GlobalChatMessage message);
 
     //Other
-    Result<ServerSettings> GetServerSettings();
+    Result<ServerSettings> Connect();
 }

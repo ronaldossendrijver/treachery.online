@@ -48,7 +48,7 @@ public abstract class GameEvent
 
     public Faction Initiator { get; set; }
 
-    public DateTime Time { get; set; }
+    public DateTimeOffset Time { get; set; }
 
     [JsonIgnore]
     public Game Game { get; private set; }

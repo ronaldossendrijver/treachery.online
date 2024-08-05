@@ -31,69 +31,70 @@
         {
             case LoginComponentState.Login:
                 <div>Please enter your user name and password</div>
-                <input @ref="usernameField" class="form-control mt-1 mt-1" @bind-value="username" @bind-value:event="oninput" maxlength="80" placeholder="User name" @onkeyup="@(e => KeyUp(e, Login))"/>
-                <input type="password" class="form-control mt-1" @bind-value="password" @bind-value:event="oninput" maxlength="80" placeholder="Password" @onkeyup="@(e => KeyUp(e, Login))"/>
-                <div class="text-danger small">@loginMessage</div>
-                <button class="btn btn-primary mt-1" disabled="@(State is LoginComponentState.Loading || !ValidateLogin())" @onclick="Login">Log in</button>
+                <input @ref="@focusField" class="form-control mt-1 mt-1" @bind-value="@username" @bind-value:event="oninput" maxlength="80" placeholder="User name" @onkeyup="@(e => KeyUp(e, Login))" style="font-family: Candara, sans-serif;"/>
+                <input type="password" class="form-control mt-1" @bind-value="@password" @bind-value:event="oninput" maxlength="80" placeholder="Password" @onkeyup="@(e => KeyUp(e, Login))" style="font-family: Candara, sans-serif;"/>
+                <div class="text-danger small">@LoginMessage</div>
+                <button class="btn btn-primary mt-1" disabled="@(State is LoginComponentState.Loading)" @onclick="@Login">Log in</button>
                 break;
             case LoginComponentState.NewAccount:
-                <input class="form-control mt-1" @bind-value="newUsername" @bind-value:event="oninput" maxlength="80" placeholder="User name" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
-                <input class="form-control mt-1" @bind-value="newEmail" @bind-value:event="oninput" maxlength="80" placeholder="E-mail address (in case you ever need to reset your password)" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
-                <input type="password" class="form-control mt-1" @bind-value="newPassword" @bind-value:event="oninput" maxlength="80" placeholder="Password" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
-                <input type="password" class="form-control mt-1" @bind-value="newPasswordConfirm" @bind-value:event="oninput" maxlength="80" placeholder="Repeat password" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
-                <div class="text-danger small">@newAccountMessage</div>
-                <button class="btn btn-primary mt-1" disabled="@(State is LoginComponentState.Loading || !ValidateNewAccount())" @onclick="NewAccount">Create account</button>
+                <input @ref="@focusField" class="form-control mt-1" @bind-value="@newUsername" @bind-value:event="oninput" maxlength="80" placeholder="User name" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
+                <input type="password" class="form-control mt-1" @bind-value="@newPassword" @bind-value:event="oninput" maxlength="80" placeholder="Password" autocomplete="new-password" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
+                <input type="password" class="form-control mt-1" @bind-value="@newPasswordConfirm" @bind-value:event="oninput" maxlength="80" placeholder="Repeat password" autocomplete="new-password" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
+                <input class="form-control mt-1" @bind-value="@newEmail" @bind-value:event="oninput" maxlength="80" placeholder="E-mail address (in case you ever need to reset your password)" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
+                <div class="text-danger small">@NewAccountMessage</div>
+                <button class="btn btn-primary mt-1" disabled="@(State is LoginComponentState.Loading)" @onclick="@NewAccount">Create account</button>
                 break;
             case LoginComponentState.RequestPasswordReset:
-                <div>A password reset token will be sent to the e-mail address associated to your account.</div>
-                <input class="form-control mt-1" @bind-value="passwordResetEmail" @bind-value:event="oninput" maxlength="80" placeholder="E-mail address (entered when you created an account)" @onkeyup="@(e => KeyUp(e, PasswordReset))"/>
-                <div class="text-danger small">@passwordResetMessage</div>
-                <button class="btn btn-primary mt-1" disabled="@(State is LoginComponentState.Loading || !ValidatePasswordReset())" @onclick="PasswordReset">Request password reset</button>
+                <div>Enter the e-mail address associated to your account to receive a password reset token.</div>
+                <input @ref="@focusField" class="form-control mt-1" @bind-value="@passwordResetEmail" @bind-value:event="oninput" maxlength="80" placeholder="E-mail address (entered when you created an account)" @onkeyup="@(e => KeyUp(e, PasswordReset))"/>
+                <div class="text-danger small">@PasswordResetMessage</div>
+                <button class="btn btn-primary mt-1" disabled="@(State is LoginComponentState.Loading)" @onclick="@PasswordReset">Request password reset</button>
                 break;
             case LoginComponentState.EnterNewPassword:
                 <div>Enter the username and password reset token you receive by e-mail and your new password below:</div>
-                <input class="form-control mt-1" @bind-value="resetToken" @bind-value:event="oninput" maxlength="80" placeholder="Reset token" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
-                <input class="form-control mt-1" @bind-value="resetUsername" @bind-value:event="oninput" maxlength="80" placeholder="User name" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
-                <input type="password" class="form-control mt-1" @bind-value="resetPassword" @bind-value:event="oninput" maxlength="80" placeholder="Password" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
-                <input type="password" class="form-control mt-1" @bind-value="resetPasswordConfirm" @bind-value:event="oninput" maxlength="80" placeholder="Repeat password" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
-                <div class="text-danger small">@resetPasswordMessage</div>
-                <button class="btn btn-primary mt-1" disabled="@(State is LoginComponentState.Loading || !ValidateNewPassword())" @onclick="NewPassword">Set new password</button>
+                <input @ref="@focusField" class="form-control mt-1" @bind-value="@resetToken" @bind-value:event="oninput" maxlength="80" placeholder="Reset token" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
+                <input class="form-control mt-1" @bind-value="@resetUsername" @bind-value:event="oninput" maxlength="80" placeholder="User name" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
+                <input type="password" class="form-control mt-1" @bind-value="@resetPassword" @bind-value:event="oninput" maxlength="80" placeholder="Password" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
+                <input type="password" class="form-control mt-1" @bind-value="@resetPasswordConfirm" @bind-value:event="oninput" maxlength="80" placeholder="Repeat password" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
+                <div class="text-danger small">@ResetPasswordMessage</div>
+                <button class="btn btn-primary mt-1" disabled="@(State is LoginComponentState.Loading)" @onclick="@NewPassword">Set new password</button>
                 break;
         }
     </div>
-    <div class="card-footer">Version @Game.LatestVersion (April 12, 2024)</div>
+    <div class="card-footer">Version @Game.LatestVersion (August 2024)</div>
 </div>
 
 @code {
 
     private LoginComponentState State { get; set; } = LoginComponentState.Login;
     
-    private ElementReference usernameField;
+    private ElementReference focusField;
     
     private string username;
     private string password;
-    private string loginMessage;
+    private string LoginMessage { get; set; }
     
     private string newUsername;
     private string newPassword;
     private string newPasswordConfirm;
     private string newEmail;
-    private string newAccountMessage;
+    private string NewAccountMessage { get; set; }
     
     private string passwordResetEmail;
-    private string passwordResetMessage;
+    private string PasswordResetMessage { get; set; }
     
     private string resetToken;
     private string resetUsername;
     private string resetPassword;
     private string resetPasswordConfirm;
-    private string resetPasswordMessage;
+    private string ResetPasswordMessage { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await usernameField.FocusAsync();
+            await focusField.FocusAsync();
+            StateHasChanged();
         }
     }
 
@@ -113,70 +114,82 @@
     private bool ValidateNewAccount()
     {
         var result = PlayerJoined.ValidName(newUsername);
-        if (!string.IsNullOrEmpty(result)) newAccountMessage = result;
-        if (newUsername == null || newUsername.Trim().Length <= 3) newAccountMessage = "Username must be more than 3 characters";
-        else if (string.IsNullOrEmpty(newPassword) || newPassword.Length < 6) newAccountMessage = "Password must be at least 6 characters";
-        else if (!newPassword.Equals(newPasswordConfirm)) newAccountMessage = "Passwords do not not match";
-        else if (string.IsNullOrEmpty(newEmail) || !newEmail.Contains('@') || !newEmail.Contains('.')) newAccountMessage = "Enter a valid e-mail address";
-        else newAccountMessage = null;
+        if (!string.IsNullOrEmpty(result)) NewAccountMessage = result;
+        if (newUsername == null || newUsername.Trim().Length <= 3) NewAccountMessage = "Username must be more than 3 characters";
+        else if (string.IsNullOrEmpty(newPassword) || newPassword.Length < 6) NewAccountMessage = "Password must be at least 6 characters";
+        else if (!newPassword.Equals(newPasswordConfirm)) NewAccountMessage = "Passwords do not not match";
+        else if (string.IsNullOrEmpty(newEmail) || !newEmail.Contains('@') || !newEmail.Contains('.')) NewAccountMessage = "Enter a valid e-mail address";
+        else NewAccountMessage = null;
 
-        return newAccountMessage == null;
+        return NewAccountMessage == null;
     }
     
     private bool ValidatePasswordReset()
     {
-        if (string.IsNullOrEmpty(passwordResetEmail) || !passwordResetEmail.Contains('@') || !passwordResetEmail.Contains('.')) passwordResetMessage = "Enter a valid e-mail address";
-        else passwordResetMessage = null;
+        if (string.IsNullOrEmpty(passwordResetEmail) || !passwordResetEmail.Contains('@') || !passwordResetEmail.Contains('.')) PasswordResetMessage = "Enter a valid e-mail address";
+        else PasswordResetMessage = null;
 
-        return passwordResetMessage == null;
+        return PasswordResetMessage == null;
     }
     
     private bool ValidateNewPassword()
     {
         var result = PlayerJoined.ValidName(resetUsername);
         
-        if (string.IsNullOrEmpty(resetToken)) resetPasswordMessage = "Enter the reset token sent to your e-mail address";
-        else if (!string.IsNullOrEmpty(result)) resetPasswordMessage = result;
-        else if (string.IsNullOrEmpty(resetPassword) || resetPassword.Length < 6) resetPasswordMessage = "Password must be at least 6 characters";
-        else if (!resetPassword.Equals(resetPasswordConfirm)) resetPasswordMessage = "Passwords do not match";
-        else resetPasswordMessage = null;
+        if (string.IsNullOrEmpty(resetToken)) ResetPasswordMessage = "Enter the reset token sent to your e-mail address";
+        else if (!string.IsNullOrEmpty(result)) ResetPasswordMessage = result;
+        else if (string.IsNullOrEmpty(resetPassword) || resetPassword.Length < 6) ResetPasswordMessage = "Password must be at least 6 characters";
+        else if (!resetPassword.Equals(resetPasswordConfirm)) ResetPasswordMessage = "Passwords do not match";
+        else ResetPasswordMessage = null;
 
-        return resetPasswordMessage == null;
+        return ResetPasswordMessage == null;
     }
 
     private async Task Login()
     {
-        State = LoginComponentState.Loading;
-        StateHasChanged();
-        loginMessage = await Client.RequestLogin(username, Support.GetHash(password));
-        State = LoginComponentState.Login;
+        if (ValidateLogin())
+        {
+            State = LoginComponentState.Loading;
+            StateHasChanged();
+            LoginMessage = await Client.RequestLogin(username, Support.GetHash(password));
+            State = LoginComponentState.Login;
+        }
     }
     
     private async Task NewAccount()
     {
-        State = LoginComponentState.Loading;
-        StateHasChanged();
-        newAccountMessage = await Client.RequestCreateUser(newUsername, Support.GetHash(newPassword), newEmail, newUsername);
-        State = newAccountMessage == null ? LoginComponentState.Login : LoginComponentState.NewAccount;
-        if (State is not LoginComponentState.NewAccount) ClearAllInputs();
+        if (ValidateNewAccount())
+        {
+            State = LoginComponentState.Loading;
+            StateHasChanged();
+            NewAccountMessage = await Client.RequestCreateUser(newUsername, Support.GetHash(newPassword), newEmail, newUsername);
+            State = NewAccountMessage == null ? LoginComponentState.Login : LoginComponentState.NewAccount;
+            if (State is not LoginComponentState.NewAccount) ClearAllInputs();
+        }
     }
     
     private async Task PasswordReset()
     {
-        State = LoginComponentState.Loading;
-        StateHasChanged();
-        passwordResetMessage = await Client.RequestPasswordReset(passwordResetEmail);
-        State = passwordResetMessage == null ? LoginComponentState.EnterNewPassword : LoginComponentState.RequestPasswordReset;
-        if (State is not LoginComponentState.RequestPasswordReset) ClearAllInputs();
+        if (ValidatePasswordReset())
+        {
+            State = LoginComponentState.Loading;
+            StateHasChanged();
+            PasswordResetMessage = await Client.RequestPasswordReset(passwordResetEmail);
+            State = PasswordResetMessage == null ? LoginComponentState.EnterNewPassword : LoginComponentState.RequestPasswordReset;
+            if (State is not LoginComponentState.RequestPasswordReset) ClearAllInputs();
+        }
     }
     
     private async Task NewPassword()
     {
-        State = LoginComponentState.Loading;
-        StateHasChanged();
-        resetPasswordMessage = await Client.RequestSetPassword(resetUsername, resetToken, Support.GetHash(resetPassword));
-        State = resetPasswordMessage == null ? LoginComponentState.Login : LoginComponentState.EnterNewPassword;
-        if (State is not LoginComponentState.EnterNewPassword) ClearAllInputs();
+        if (ValidateNewPassword())
+        {
+            State = LoginComponentState.Loading;
+            StateHasChanged();
+            ResetPasswordMessage = await Client.RequestSetPassword(resetUsername, resetToken, Support.GetHash(resetPassword));
+            State = ResetPasswordMessage == null ? LoginComponentState.Login : LoginComponentState.EnterNewPassword;
+            if (State is not LoginComponentState.EnterNewPassword) ClearAllInputs();
+        }
     }
 
     private enum LoginComponentState
@@ -190,22 +203,22 @@
     {
         username = null;
         password = null;
-        loginMessage = null;
+        LoginMessage = null;
         
         newUsername = null;
         newPassword = null;
         newPasswordConfirm = null;
         newEmail = null;
-        newAccountMessage = null;
+        NewAccountMessage = null;
         
         passwordResetEmail = null;
-        passwordResetMessage = null;
+        PasswordResetMessage = null;
         
         resetToken = null;
         resetUsername = null;
         resetPassword = null;
         resetPasswordConfirm = null;
-        resetPasswordMessage = null;
+        ResetPasswordMessage = null;
     }
 }
 

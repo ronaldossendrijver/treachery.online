@@ -25,8 +25,9 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     //Logged in player
     private LoginInfo LoginInfo { get; set; }
+    
     public bool LoggedIn => LoginInfo != null;
-    private string UserToken => LoginInfo?.UserToken;
+    private string UserToken => LoginInfo?.Token;
     public int UserId => LoginInfo?.UserId ?? -1;
     
     //Game in progress
@@ -34,8 +35,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     private string GameToken { get; set; } = string.Empty;
     public GameStatus Status { get; private set; }
     public List<Type> Actions { get; private set; } = []; 
+    
     public bool InGame => Game != null;
-    //public GameSettings Settings { get; private set; }
     public Player Player => Game.GetPlayerByUserId(UserId);
     public string PlayerName => LoginInfo.PlayerName;
     public Faction Faction => Player?.Faction ?? Faction.None;
@@ -89,10 +90,22 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
     }
 
-    public async Task Start()
+    public async Task Start(string userToken, string gameToken)
     {
         await _connection.StartAsync();
-        await GetServerSettings();
+        await Connect();
+        
+        if (!string.IsNullOrEmpty(userToken) && !string.IsNullOrEmpty(gameToken))
+        {
+            var loginInfo = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.GetLoginInfo), userToken);
+            if (loginInfo.Success)
+            {
+                LoginInfo = loginInfo.Contents;
+                GameToken = gameToken;
+                await RequestReconnectGame();
+            }
+        }
+        
         _ = Task.Delay(HeartbeatDelay).ContinueWith(_ => Heartbeat());
     }
     
@@ -493,9 +506,9 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return resultMessage;
     }
     
-    private async Task GetServerSettings()
+    private async Task Connect()
     {
-        var result = await _connection.InvokeAsync<Result<ServerSettings>>(nameof(IGameHub.GetServerSettings));
+        var result = await _connection.InvokeAsync<Result<ServerSettings>>(nameof(IGameHub.Connect));
         if (result.Success)
         {
             ServerSettings = result.Contents;

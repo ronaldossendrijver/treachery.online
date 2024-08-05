@@ -57,7 +57,8 @@ public partial class GameHub
         
         var userToken = GenerateToken();
         UsersByUserToken.TryAdd(userToken, user);
-        return Success(new LoginInfo { UserId =user.Id, UserToken = userToken, PlayerName = user.PlayerName });
+        UserTokenInfo[userToken] = new TokenInfo();
+        return Success(new LoginInfo { UserId =user.Id, Token = userToken, PlayerName = user.PlayerName });
     }
     
     public async Task<Result<LoginInfo>> RequestLogin(int version, string userName, string hashedPassword)
@@ -75,7 +76,8 @@ public partial class GameHub
 
         var userToken = GenerateToken();
         UsersByUserToken.TryAdd(userToken, user);
-        return Success(new LoginInfo { UserId = user.Id, UserToken = userToken, PlayerName = user.PlayerName });
+        UserTokenInfo[userToken] = new TokenInfo();
+        return Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName });
     }
     
     public async Task<VoidResult> RequestPasswordReset(string email)
@@ -138,7 +140,15 @@ public partial class GameHub
         
         var userToken = GenerateToken();
         UsersByUserToken.TryAdd(userToken, user);
-        return Success(new LoginInfo { UserId = user.Id, UserToken = userToken, PlayerName = user.PlayerName });
+        return Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName });
+    }
+    
+    public async Task<Result<LoginInfo>> GetLoginInfo(string userToken)
+    {
+        if (!UsersByUserToken.TryGetValue(userToken, out var user))
+            return Error<LoginInfo>("User not found");
+            
+        return await Task.FromResult(Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName }));
     }
 }
 

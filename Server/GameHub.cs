@@ -13,15 +13,17 @@ namespace Treachery.Server;
 
 public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfiguration configuration) : Hub<IGameClient>, IGameHub
 {
-    private static ConcurrentDictionary<string,ManagedGame> GamesByGameToken { get; } = [];
     private static ConcurrentDictionary<string,string> GameTokensByGameId { get; } = [];
-    private static ConcurrentDictionary<string,User> UsersByUserToken { get; } = [];
+    private static ConcurrentDictionary<string,ManagedGame> GamesByGameToken { get; } = [];
+    private static ConcurrentDictionary<string,TokenInfo> GameTokenInfo { get; } = [];
     private static ConcurrentDictionary<string,Game> FinishedGames { get; } = [];
-    private static ConcurrentDictionary<string,DateTime> UserTokensLastSeen { get; } = [];
-
+    
+    private static ConcurrentDictionary<string,User> UsersByUserToken { get; } = [];
+    private static ConcurrentDictionary<string,TokenInfo> UserTokenInfo { get; } = [];
+    
     private TreacheryContext GetDbContext() => new(dbContextOptions, configuration);
 
-    private static string GenerateToken() => Convert.ToBase64String(Guid.NewGuid().ToByteArray())[..10];
+    private static string GenerateToken() => Convert.ToBase64String(Guid.NewGuid().ToByteArray())[..16];
     
     private static VoidResult Error(string message) => new() { Message = message, Success = false }; 
     
@@ -42,7 +44,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         
         if (!UsersByUserToken.TryGetValue(userToken, out user))
         {
-            result = Error<TResult>("Player not found");
+            result = Error<TResult>("User not found");
             return false;
         }
         
@@ -52,6 +54,12 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         if (!GamesByGameToken.TryGetValue(gameToken, out game))
         {
             result = Error<TResult>("Game not found");
+            return false;
+        }
+        
+        if (!game.Game.IsParticipant(user.Id))
+        {
+            result = Error<TResult>("User not found");
             return false;
         }
 
@@ -68,7 +76,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         
         if (!UsersByUserToken.TryGetValue(userToken, out user))
         {
-            result = Error("Player not found");
+            result = Error("User not found");
             return false;
         }
         
@@ -81,6 +89,12 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
             return false;
         }
 
+        if (!game.Game.IsParticipant(user.Id))
+        {
+            result = Error("User not found");
+            return false;
+        }
+        
         return true;
     }
     
@@ -89,19 +103,19 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         try
         {
             var username = configuration["GameEndEmailUsername"];
-            if (username != "")
+            if (string.IsNullOrEmpty(username)) 
+                return;
+            
+            var password = configuration["GameEndEmailPassword"];
+
+            SmtpClient client = new()
             {
-                var password = configuration["GameEndEmailPassword"];
+                Credentials = new NetworkCredential(username, password),
+                Host = "smtp.strato.com", //TODO: move to config
+                EnableSsl = true
+            };
 
-                SmtpClient client = new()
-                {
-                    Credentials = new NetworkCredential(username, password),
-                    Host = "smtp.strato.com", //TODO: move to config
-                    EnableSsl = true
-                };
-
-                client.Send(mail);
-            }
+            client.Send(mail);
         }
         catch (Exception e)
         {
@@ -118,6 +132,4 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         result.Position = 0;
         return result;
     }
-
-    
 }
