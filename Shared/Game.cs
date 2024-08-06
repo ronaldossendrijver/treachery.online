@@ -26,7 +26,7 @@ public partial class Game
     public int Seed { get; internal set; } = -1;
     internal Random Random { get; set; }
     public int MaximumTurns => Settings.MaximumTurns;
-    public int MaximumPlayers => Settings.MaximumPlayers;
+    public int MaximumPlayers => Settings.NumberOfPlayers;
     public string Name { get; internal set; }
     public List<Milestone> RecentMilestones { get; } = [];
     public int Version { get; }
@@ -96,7 +96,7 @@ public partial class Game
     public Game(int version, GameParticipation participation)
     {
         if (version < LowestSupportedVersion) 
-            throw new ArgumentException(string.Format("Game version {0} is not supported. The lowest supported version is: {1}.", version, LowestSupportedVersion));
+            throw new ArgumentException($"Game version {version} is not supported. The lowest supported version is: {LowestSupportedVersion}.");
 
         Version = version;
         Participation = participation;

@@ -84,7 +84,7 @@ public class EstablishPlayers : GameEvent
             {
                 AllowedFactionsInPlay = FactionsInPlay,
                 InitialRules = ApplicableRules.ToList(),
-                MaximumPlayers = MaximumNumberOfPlayers,
+                NumberOfPlayers = MaximumNumberOfPlayers,
                 MaximumTurns = MaximumTurns
             };
 
@@ -99,7 +99,7 @@ public class EstablishPlayers : GameEvent
             (settingsToCheck.InitialRules.Contains(Rule.GreyBot) && settingsToCheck.AllowedFactionsInPlay.Contains(Faction.Grey) ? 1 : 0);
 
         if (Game.Participation.StandingPlayers.Count + extraSpotsForBots > settingsToCheck.AllowedFactionsInPlay.Count) return Message.Express("More factions required");
-        if (settingsToCheck.InitialRules.Contains(Rule.FillWithBots) && settingsToCheck.AllowedFactionsInPlay.Count < settingsToCheck.MaximumPlayers) return Message.Express("More factions required");
+        if (settingsToCheck.InitialRules.Contains(Rule.FillWithBots) && settingsToCheck.AllowedFactionsInPlay.Count < settingsToCheck.NumberOfPlayers) return Message.Express("More factions required");
 
         var nrOfBots =
             (settingsToCheck.InitialRules.Contains(Rule.PurpleBot) ? 1 : 0) +
@@ -111,7 +111,7 @@ public class EstablishPlayers : GameEvent
             (settingsToCheck.InitialRules.Contains(Rule.GreyBot) ? 1 : 0) +
             (settingsToCheck.InitialRules.Contains(Rule.BlueBot) ? 1 : 0);
 
-        if (settingsToCheck.MaximumPlayers < 2) return Message.Express("At least two players required");
+        if (settingsToCheck.NumberOfPlayers < 2) return Message.Express("At least two players required");
         if (Game.Version < 170)
         {
             #pragma warning disable CS0612 // Type or member is obsolete
@@ -122,9 +122,8 @@ public class EstablishPlayers : GameEvent
         }
         else
         {
-            if (Game.NumberOfPlayers + nrOfBots == 0 && !settingsToCheck.InitialRules.Contains(Rule.FillWithBots)) return Message.Express("At least one player required");
-            if (Game.Participation.StandingPlayers.Count + nrOfBots < 2 && !settingsToCheck.InitialRules.Contains(Rule.FillWithBots)) return Message.Express("At least two players required");
-            if (Game.Participation.StandingPlayers.Count + nrOfBots > settingsToCheck.MaximumPlayers) return Message.Express("Too many players");            
+            if (settingsToCheck.NumberOfPlayers < 2) return Message.Express("At least one player required");
+            if (Game.Participation.StandingPlayers.Count > settingsToCheck.NumberOfPlayers) return Message.Express("More players than seats at the table");            
         }
 
         if (settingsToCheck.AllowedFactionsInPlay.Any(f => !AvailableFactions().Contains(f))) return Message.Express("Invalid faction");
@@ -308,7 +307,7 @@ public class EstablishPlayers : GameEvent
         if (Game.Version < 170)
         {
             #pragma warning disable CS0612 // Type or member is obsolete
-            Game.Settings.MaximumPlayers = MaximumNumberOfPlayers;
+            Game.Settings.NumberOfPlayers = MaximumNumberOfPlayers;
             Game.Settings.MaximumTurns = MaximumTurns;
             Game.Settings.AllowedFactionsInPlay = FactionsInPlay;
             Game.Settings.InitialRules = ApplicableRules.ToList();
@@ -318,7 +317,7 @@ public class EstablishPlayers : GameEvent
         Game.FactionsInPlay = Game.Settings.AllowedFactionsInPlay;
 
         AddPlayersToGame();
-        FillEmptySeatsWithBots();
+        FillSeats();
         RemoveClaimedFactions();
 
         Game.Enter(Game.Applicable(Rule.PlayersChooseFactions), Phase.SelectingFactions, Game.AssignFactionsAndEnterFactionTrade);
@@ -376,40 +375,20 @@ public class EstablishPlayers : GameEvent
             }
             #pragma warning restore CS0612 // Type or member is obsolete
         }
-        else
-        {
-            foreach (var userId in Game.Participation.StandingPlayers)
-            {
-                var p = new Player(Game);
-                Game.Players.Add(p);
-                Game.InitialUserIds.Add(p, userId);
-                Log(Game.GetPlayerName(p), " joins the game");
-            }
-        }
     }
 
     private void AddBots()
     {
         //Can be removed later, this was replaced by filling empty seats with bots.
         
-        if (Game.Applicable(Rule.OrangeBot)) Game.InitialBots.Add(new Player(Game, Faction.Orange));
-        if (Game.Applicable(Rule.RedBot)) Game.InitialBots.Add(new Player(Game, Faction.Red));
-        if (Game.Applicable(Rule.BlackBot)) Game.InitialBots.Add(new Player(Game, Faction.Black));
-        if (Game.Applicable(Rule.PurpleBot)) Game.InitialBots.Add(new Player(Game, Faction.Purple));
-        if (Game.Applicable(Rule.BlueBot)) Game.InitialBots.Add(new Player(Game, Faction.Blue));
-        if (Game.Applicable(Rule.GreenBot)) Game.InitialBots.Add(new Player(Game, Faction.Green));
-        if (Game.Applicable(Rule.YellowBot)) Game.InitialBots.Add(new Player(Game, Faction.Yellow));
-        if (Game.Applicable(Rule.GreyBot)) Game.InitialBots.Add(new Player(Game,  Faction.Grey));
-        
-        foreach (var bot in Game.InitialBots) 
-            Game.Players.Add(bot);
-    }
-
-    private string UniquePlayerName(string name)
-    {
-        var result = name;
-        while (Game.Players.Any(p => p.Name == result)) result += "'";
-        return result;
+        if (Game.Applicable(Rule.OrangeBot)) Game.Players.Add(new Player(Game, Faction.Orange));
+        if (Game.Applicable(Rule.RedBot)) Game.Players.Add(new Player(Game, Faction.Red));
+        if (Game.Applicable(Rule.BlackBot)) Game.Players.Add(new Player(Game, Faction.Black));
+        if (Game.Applicable(Rule.PurpleBot)) Game.Players.Add(new Player(Game, Faction.Purple));
+        if (Game.Applicable(Rule.BlueBot)) Game.Players.Add(new Player(Game, Faction.Blue));
+        if (Game.Applicable(Rule.GreenBot)) Game.Players.Add(new Player(Game, Faction.Green));
+        if (Game.Applicable(Rule.YellowBot)) Game.Players.Add(new Player(Game, Faction.Yellow));
+        if (Game.Applicable(Rule.GreyBot)) Game.Players.Add(new Player(Game,  Faction.Grey));
     }
 
     private void CreateDiscoveryTokens()
@@ -433,16 +412,25 @@ public class EstablishPlayers : GameEvent
         }
     }
 
-    private void FillEmptySeatsWithBots()
+    private void FillSeats()
     {
-        if (Game.Applicable(Rule.FillWithBots))
+        if (Game.Version >= 170 || Game.Applicable(Rule.FillWithBots))
         {
-            if (Game.Version <= 125)
+            if (Game.Version > 125)
             {
-                var available = new Deck<Faction>(Game.Settings.AllowedFactionsInPlay.Where(f => !Game.IsPlaying(f)), Game.Random);
+                while (Game.Players.Count < Game.Settings.NumberOfPlayers)
+                {
+                    var player = new Player(Game, Faction.None);
+                    Game.Players.Add(player);
+                }
+            }
+            else
+            {
+                var available = new Deck<Faction>(Game.Settings.AllowedFactionsInPlay.Where(f => !Game.IsPlaying(f)),
+                    Game.Random);
                 available.Shuffle();
 
-                while (Game.Players.Count < Game.Settings.MaximumPlayers)
+                while (Game.Players.Count < Game.Settings.NumberOfPlayers)
                 {
                     var bot = available.Draw() switch
                     {
@@ -462,16 +450,6 @@ public class EstablishPlayers : GameEvent
                     };
 
                     Game.Players.Add(bot);
-                    Game.InitialBots.Add(bot);
-                }
-            }
-            else
-            {
-                while (Game.Players.Count < Game.Settings.MaximumPlayers)
-                {
-                    var bot = new Player(Game, Faction.None);
-                    Game.Players.Add(bot);
-                    Game.InitialBots.Add(bot);
                 }
             }
         }

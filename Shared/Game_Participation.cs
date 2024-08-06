@@ -12,8 +12,9 @@ namespace Treachery.Shared;
 public partial class Game
 {
     public List<Player> Players { get; private set; } = [];
-    public List<Player> InitialBots { get; set; } = [];
-    public GameParticipation Participation { get; private set; } = new();
+
+    public Dictionary<Player, string> LegacyNames { get; } = [];
+    public GameParticipation Participation { get; } = new();
     
     public bool IsPlaying(Faction faction)
     {
@@ -47,11 +48,13 @@ public partial class Game
         return Players.Where(x => x.Faction != p.Faction).Select(x => x.Faction);
     }
 
-    public int GetUserIdOfPlayer(Player player) => Participation.SeatedPlayers.GetValueOrDefault(player.Seat);
+    public int GetUserIdOfPlayer(Player player) => UserIdInSeat(player.Seat);
     
     public string GetPlayerName(int userId) => Participation.Users.GetValueOrDefault(userId);
-    
-    public string GetPlayerName(Player player) => player.IsBot ? "Bot" : Participation.Users.GetValueOrDefault(UserIdInSeat(player.Seat));
+
+    public string GetPlayerName(Player player) => Version >= 170
+        ? player.IsBot ? "Bot" : Participation.Users.GetValueOrDefault(UserIdInSeat(player.Seat))
+        : LegacyNames.GetValueOrDefault(player);
     
     public bool IsHost(Player player) => IsHost(UserIdInSeat(player.Seat));
 
@@ -72,24 +75,12 @@ public partial class Game
         Participation.AvailableSeats.Contains(seat);
 
     public bool IsEmpty(int seat) =>
-        CurrentPhase is Phase.AwaitingPlayers || !Participation.SeatedPlayers.ContainsKey(seat) && !IsBot(seat); 
+        CurrentPhase is Phase.AwaitingPlayers || !Participation.SeatedPlayers.ContainsValue(seat) && !IsBot(seat); 
     
     public int SeatOf(Faction f) => GetPlayer(f)?.Seat ?? -1;
 
-    public bool IsBot(Player p) => Participation.SeatedBots.Contains(p.Seat);
-    public bool IsBot(int seat) => Participation.SeatedBots.Contains(seat);
-    
-    public void SeatOrUnseatBot(int seat)
-    {
-        if (IsBot(seat))
-        {
-            Participation.SeatedBots.Remove(seat);
-        }
-        else
-        {
-            Participation.SeatedBots.Add(seat);
-        }
-    }
+    public bool IsBot(Player p) => IsBot(p.Seat);
+    public bool IsBot(int seat) => !Participation.SeatedPlayers.ContainsValue(seat);
     
     public void AddPlayer(int userId, string playerName, int seat = -1)
     {
@@ -99,6 +90,7 @@ public partial class Game
         }
         else
         {
+            var replacedPlayer = GetPlayerInSeat(seat);
             if (Participation.SeatedPlayers.ContainsValue(seat))
             {
                 var currentUserId = Participation.SeatedPlayers.First(keyValue => keyValue.Value == seat).Key;
@@ -106,7 +98,9 @@ public partial class Game
                 AddObserver(userId, Participation.Users.GetValueOrDefault(userId));
             }
             
+            Log(playerName, " now controls ", replacedPlayer.Faction);
             Participation.SeatedPlayers[userId] = seat;
+            Participation.AvailableSeats.Remove(seat);
         }
 
         Participation.Users[userId] = playerName;
@@ -114,16 +108,23 @@ public partial class Game
     
     public void AddObserver(int userId, string observerName)
     {
+        Log(observerName, " is now observing this game");
         Participation.Observers.Add(userId);
         Participation.Users[userId] = observerName;
     }
 
-    public void RemoveUser(int userId)
+    public void RemoveUser(int userId, bool kick)
     {
+        Log(Participation.Users.GetValueOrDefault(userId), kick ? " was kicked" : " was removed", " from the game");
         Participation.StandingPlayers.Remove(userId);
         Participation.SeatedPlayers.Remove(userId);
         Participation.Observers.Remove(userId);
         Participation.Users.Remove(userId);
+
+        if (kick)
+        {
+            Participation.Kicked.Add(userId);
+        }
     }
 
     public bool SeatIsAvailable(int seat) => 
@@ -135,7 +136,6 @@ public partial class Game
         if (SeatIsAvailable(seat))
         {
             Participation.AvailableSeats.Remove(seat);
-            
         }
         else
         {
@@ -147,8 +147,8 @@ public partial class Game
     public int NumberOfPlayers => Participation.StandingPlayers.Count + Participation.SeatedPlayers.Count;
 
     public int NumberOfHosts => Participation.Hosts.Count;
-    
-    public int NumberOfBots => Participation.SeatedBots.Count;
+
+    public int NumberOfBots => Players.Count(IsBot);
     
     public int NumberOfObservers => Participation.Observers.Count;
     
@@ -183,4 +183,5 @@ public partial class Game
 
     public bool IsParticipant(int userId) => Participation.Users.ContainsKey(userId);
 
+    public bool WasKicked(int userId) => Participation.Kicked.Contains(userId);
 }

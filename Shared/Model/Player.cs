@@ -30,6 +30,7 @@ public partial class Player : ICloneable
     public Player(Game game, string name)
     {
         Game = game;
+        Game.LegacyNames.Add(this, name);
     }
 
     #endregion Construction

@@ -5,37 +5,37 @@ public class GameParticipation
     /// <summary>
     /// For each User (player or observer) in the game, hold the name
     /// </summary>
-    public Dictionary<int, string> Users { get; set; } = [];
+    public Dictionary<int, string> Users { get; } = [];
 
     /// <summary>
-    /// All Users that wish to participate while awaiting players (before the game has actually started)
+    /// All Users (UserIds) that wish to participate while awaiting players (before the game has actually started)
     /// </summary>
-    public HashSet<int> StandingPlayers { get; set; } = [];
+    public List<int> StandingPlayers { get; } = [];
     
     /// <summary>
-    /// For all Users that are players, hold their Seat
+    /// For all Users (UserIds) that are players, hold their Seat
     /// </summary>
-    public Dictionary<int, int> SeatedPlayers { get; set; } = [];
+    public Dictionary<int, int> SeatedPlayers { get; } = [];
 
     /// <summary>
-    /// Holds the seats occupies by Bots
+    /// All joined users that are Observers (UserIds)
     /// </summary>
-    public HashSet<int> SeatedBots { get; set; } = [];
-    
-    /// <summary>
-    /// Observers
-    /// </summary>
-    public HashSet<int> Observers { get; set; } = [];
+    public HashSet<int> Observers { get; } = [];
 
     /// <summary>
-    /// All Users that are Hosts
+    /// All joined users (UserIds) that are Hosts
     /// </summary>
-    public HashSet<int> Hosts { get; set; } = [];
+    public HashSet<int> Hosts { get; } = [];
     
     /// <summary>
-    /// All Seats that may be taken by other players
+    /// Seats that may be taken by other players
     /// </summary>
-    public HashSet<int> AvailableSeats { get; set; } = [];
+    public HashSet<int> AvailableSeats { get; } = [];
+    
+    /// <summary>
+    /// Kicked users (UserIds)
+    /// </summary>
+    public HashSet<int> Kicked { get; } = [];
     
     public bool BotsArePaused { get; set; }
     

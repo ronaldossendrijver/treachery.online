@@ -20,7 +20,6 @@ public interface IGameHub
     Task<Result<GameInitInfo>> RequestReconnectGame(string userToken, string gameToken);
     Task<VoidResult> RequestSetOrUnsetHost(string userToken, string gameToken, int userId);
     Task<VoidResult> RequestOpenOrCloseSeat(string userToken, string gameToken, int seat);
-    Task<VoidResult> RequestSeatOrUnseatBot(string userToken, string gameToken, int seat);
     Task<VoidResult> RequestLeaveGame(string userToken, string gameToken);
     Task<VoidResult> RequestKick(string userToken, string gameToken, int userId);
     Task<VoidResult> RequestLoadGame(string userToken, string hashedPassword, string state, string skin);

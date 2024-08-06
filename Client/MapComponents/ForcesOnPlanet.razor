@@ -119,7 +119,7 @@
     private Situation situation = new();
     protected override bool ShouldRender()
     {
-        return Client.InGame && CheckAndResetDirty() || situation.RequiresUpdate(Game);
+        return Client.InGame && (CheckAndResetDirty() || situation.RequiresUpdate(Game));
     }
 
     private bool showHMS = true;

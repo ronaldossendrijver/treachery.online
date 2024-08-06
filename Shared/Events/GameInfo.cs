@@ -52,7 +52,7 @@ public class GameInfo
         HasPassword = managedGame.HashedPassword != null,
         CreatorParticipates = true,
         InviteOthers = true,
-        MaximumPlayers = managedGame.Game.Settings.MaximumPlayers,
+        MaximumPlayers = managedGame.Game.Settings.NumberOfPlayers,
         MaximumNumberOfTurns = managedGame.Game.Settings.MaximumTurns,
         AvailableSeats = managedGame.Game.Participation.AvailableSeats.Select(seat => new AvailableSeatInfo()
         {

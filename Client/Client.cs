@@ -121,8 +121,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         _connection.On<int>(nameof(HandleSetOrUnsetHost), HandleSetOrUnsetHost);
         _connection.On<int,string>(nameof(HandleObserveGame), HandleObserveGame);
         _connection.On<int>(nameof(HandleOpenOrCloseSeat), HandleOpenOrCloseSeat);
-        _connection.On<int>(nameof(HandleSeatOrUnseatBot), HandleSeatOrUnseatBot);
-        _connection.On<int>(nameof(HandleRemoveUser), HandleRemoveUser);
+        _connection.On<int,bool>(nameof(HandleRemoveUser), HandleRemoveUser);
         _connection.On<bool>(nameof(HandleBotStatus), HandleBotStatus);
         _connection.On<GameInitInfo>(nameof(HandleLoadGame), HandleLoadGame);
     }
@@ -176,17 +175,18 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return Task.CompletedTask;
     }
 
-    public Task HandleSeatOrUnseatBot(int seat)
+    public Task HandleRemoveUser(int userId, bool kick)
     {
-        Game.SeatOrUnseatBot(seat);
-        Refresh();
-        return Task.CompletedTask;
-    }
-
-    public Task HandleRemoveUser(int userId)
-    {
-        Game.RemoveUser(userId);
-        Refresh();
+        if (userId == UserId)
+        {
+            Reset();
+        }
+        else
+        {
+            Game.RemoveUser(userId, kick);
+            Refresh();
+        }
+        
         return Task.CompletedTask;
     }
 
@@ -422,9 +422,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public async Task<string> RequestOpenOrCloseSeat(int seat) =>
         (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestOpenOrCloseSeat), UserToken, GameToken, seat)).Message;
-
-    public async Task<string> RequestSeatOrUnseatBot(int seat) =>
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestSeatOrUnseatBot), UserToken, GameToken, seat)).Message;
 
     public async Task RequestLeaveGame() =>
         await _connection.SendAsync(nameof(IGameHub.RequestLeaveGame), UserToken, GameToken);

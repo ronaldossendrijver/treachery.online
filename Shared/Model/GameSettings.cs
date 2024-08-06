@@ -2,7 +2,7 @@
 
 public class GameSettings
 {
-    public int MaximumPlayers { get; set; } = 6;
+    public int NumberOfPlayers { get; set; } = 6;
     
     public int MaximumTurns { get; set; } = 10;
 

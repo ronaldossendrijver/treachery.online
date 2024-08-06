@@ -352,7 +352,7 @@ public partial class Game
             or Rule.BattleWithoutLeader or Rule.CapturedLeadersAreTraitorsToOwnFaction
             or Rule.DisableEndOfGameReport or Rule.DisableOrangeSpecialVictory or Rule.DisableResourceTransfers
             or Rule.YellowAllyGetsDialedResourcesRefunded => RuleGroup.House,
-        Rule.FillWithBots or Rule.BotsCannotAlly => RuleGroup.Bots,
+        Rule.BotsCannotAlly => RuleGroup.Bots,
         Rule.TechTokens or Rule.CheapHeroTraitor or Rule.ExpansionTreacheryCards or Rule.SandTrout => RuleGroup
             .ExpansionIxAndBtBasic,
         Rule.GreySwappingCardOnBid or Rule.PurpleGholas => RuleGroup.ExpansionIxAndBtAdvanced,

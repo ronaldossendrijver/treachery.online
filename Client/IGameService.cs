@@ -78,7 +78,6 @@ public interface IGameService
     Task<string> RequestReconnectGame();
     Task<string> RequestSetOrUnsetHost(int userId);
     Task<string> RequestOpenOrCloseSeat(int seat);
-    Task<string> RequestSeatOrUnseatBot(int seat);
     Task RequestLeaveGame();
     Task<string> RequestKick(int userId);
     

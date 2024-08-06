@@ -23,8 +23,7 @@ public interface IGameClient
     Task HandleSetOrUnsetHost(int userId);
     Task HandleObserveGame(int userId, string userName);
     Task HandleOpenOrCloseSeat(int seat);
-    Task HandleSeatOrUnseatBot(int seat);
-    Task HandleRemoveUser(int userId);
+    Task HandleRemoveUser(int userId, bool kick);
     Task HandleBotStatus(bool botsArePaused);
     Task HandleLoadGame(GameInitInfo initInfo);
 }

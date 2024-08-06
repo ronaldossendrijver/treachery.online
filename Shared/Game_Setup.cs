@@ -47,25 +47,23 @@ public partial class Game
         Enter(Applicable(Rule.CustomDecks) && Version < 134, Phase.CustomizingDecks, EnterPhaseTradingFactions);
     }
 
-    internal Dictionary<Player, int> InitialUserIds { get; } = [];
+    //internal Dictionary<Player, int> InitialUserIds { get; } = [];
     private void DeterminePositionsAtTable()
     {
         var positions = new Deck<int>(Random);
-        for (var i = 0; i < Settings.MaximumPlayers; i++)
+        for (var i = 0; i < Settings.NumberOfPlayers; i++)
             positions.PutOnTop(i);
         positions.Shuffle();
 
         //Seat players and bots
-        foreach (var p in Players)
+        for (int i = 0; i < Players.Count; i++)
         {
+            var p = Players[i];
             p.Seat = positions.Draw();
-            if (InitialBots.Contains(p))
+            if (Version >= 170 && i < Participation.StandingPlayers.Count)
             {
-                SeatOrUnseatBot(p.Seat);
-            }
-            else if (Version >= 170)
-            {
-                Participation.SeatedPlayers[InitialUserIds[p]] = p.Seat;
+                var userIdToSeat = Participation.StandingPlayers[i];
+                Participation.SeatedPlayers[userIdToSeat] = p.Seat;
             }
         }
     }

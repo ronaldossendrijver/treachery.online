@@ -47,8 +47,7 @@ public partial class GameHub
         GamesByGameToken[gameToken] = managedGame; 
         GameTokensByGameId[gameId] = gameToken;
 
-        await Groups.AddToGroupAsync(Context.ConnectionId, gameToken);
-
+        await AddToGroup(gameToken, user.Id, Context.ConnectionId);
         game.AddPlayer(user.Id, user.PlayerName);
         game.SetOrUnsetHost(user.Id);
         
@@ -99,12 +98,12 @@ public partial class GameHub
         if (!string.IsNullOrEmpty(game.HashedPassword) && !game.HashedPassword.Equals(hashedPassword))
             return Error<GameInitInfo>("Incorrect password");
         
-        if (!game.Game.IsOpen(seat))
+        if (!game.Game.IsOpen(seat) || game.Game.WasKicked(user.Id))
             return Error<GameInitInfo>("Seat is not available");
         
         game.Game.AddPlayer(user.Id, user.PlayerName, seat);
         await Clients.Group(gameToken).HandleJoinGame(user.Id, user.PlayerName, seat);
-        await Groups.AddToGroupAsync(Context.ConnectionId, gameToken);
+        await AddToGroup(gameToken, user.Id, Context.ConnectionId);
         return Success(new GameInitInfo
         {
             GameToken = gameToken, 
@@ -142,27 +141,14 @@ public partial class GameHub
         return Success();
     }
 
-    public async Task<VoidResult> RequestSeatOrUnseatBot(string userToken, string gameToken, int seat)
-    {
-        if (!AreValid(userToken, gameToken, out var user, out var game, out var error))
-            return error;
-
-        if (!game.Game.IsHost(user.Id))
-            return Error("You are not a host");
-
-        game.Game.SeatOrUnseatBot(seat);
-        await Clients.Group(gameToken).HandleSeatOrUnseatBot(seat);
-        return Success();
-    }
-
     public async Task<VoidResult> RequestLeaveGame(string userToken, string gameToken)
     {
         if (!AreValid(userToken, gameToken, out var user, out var game, out var error))
             return error;
 
-        //TODO: remove from SignalR group?
-        game.Game.RemoveUser(user.Id);
-        await Clients.Group(gameToken).HandleRemoveUser(user.Id);
+        game.Game.RemoveUser(user.Id, false);
+        await Clients.Group(gameToken).HandleRemoveUser(user.Id, false);
+        await RemoveFromGroup(gameToken, user.Id);
         return Success();
     }
 
@@ -174,10 +160,30 @@ public partial class GameHub
         if (!game.Game.IsHost(user.Id))
             return Error("You are not a host");
         
-        //TODO: remove from SignalR group?
-        game.Game.RemoveUser(userId);
-        await Clients.Group(gameToken).HandleRemoveUser(userId);
+        game.Game.RemoveUser(userId, true);
+        await Clients.Group(gameToken).HandleRemoveUser(userId, true);
+        await RemoveFromGroup(gameToken, userId);
         return Success();
+    }
+
+    private async Task AddToGroup(string gameToken, int userId, string connectionId)
+    {
+        await Groups.AddToGroupAsync(connectionId, gameToken);
+        if (!ConnectionInfoByUserId.ContainsKey(userId))
+        {
+            ConnectionInfoByUserId[userId] = new ConnectionInfo();
+        }
+        
+        ConnectionInfoByUserId[userId].ConnectionIdByGameToken[gameToken] = Context.ConnectionId;
+    }
+    
+    private async Task RemoveFromGroup(string gameToken, int userId)
+    {
+        if (ConnectionInfoByUserId.TryGetValue(userId, out var connectionInfo) &&
+            connectionInfo.ConnectionIdByGameToken.TryGetValue(gameToken, out var connectionId))
+        {
+            await Groups.RemoveFromGroupAsync(connectionId, gameToken);
+        }
     }
 
     public async Task<Result<GameInitInfo>> RequestObserveGame(string userToken, string gameId, string hashedPassword)
@@ -191,7 +197,7 @@ public partial class GameHub
         if (game.ObserversRequirePassword && !string.IsNullOrEmpty(game.HashedPassword) && !game.HashedPassword.Equals(hashedPassword))
             return Error<GameInitInfo>("Incorrect password");
         
-        await Groups.AddToGroupAsync(Context.ConnectionId, gameToken);
+        await AddToGroup(gameToken, user.Id, Context.ConnectionId);
         game.Game.AddObserver(user.Id, user.PlayerName);
         await Clients.Group(gameToken).HandleObserveGame(user.Id, user.PlayerName);
         
@@ -205,10 +211,10 @@ public partial class GameHub
 
     public async Task<Result<GameInitInfo>> RequestReconnectGame(string userToken, string gameToken)
     {
-        if (!AreValid<GameInitInfo>(userToken, gameToken, out _, out var game, out var error))
+        if (!AreValid<GameInitInfo>(userToken, gameToken, out var user, out var game, out var error))
             return error;
         
-        await Groups.AddToGroupAsync(Context.ConnectionId, gameToken);
+        await AddToGroup(gameToken, user.Id, Context.ConnectionId);
         return Success(new GameInitInfo
         {
             GameToken = gameToken, 

@@ -423,7 +423,7 @@ public class Tests
                     InitialRules = rules.ToList(),
                     AllowedFactionsInPlay = factions,
                     MaximumTurns = nrOfTurns,
-                    MaximumPlayers = nrOfPlayers,
+                    NumberOfPlayers = nrOfPlayers,
                 }
             };
             start.Execute(false, true);

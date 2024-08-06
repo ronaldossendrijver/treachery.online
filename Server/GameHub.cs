@@ -20,6 +20,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     
     private static ConcurrentDictionary<string,User> UsersByUserToken { get; } = [];
     private static ConcurrentDictionary<string,TokenInfo> UserTokenInfo { get; } = [];
+    private static ConcurrentDictionary<int,ConnectionInfo> ConnectionInfoByUserId { get; } = [];
     
     private TreacheryContext GetDbContext() => new(dbContextOptions, configuration);
 

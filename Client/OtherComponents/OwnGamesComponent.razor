@@ -22,9 +22,9 @@
         </a>
         <div class="text-danger small">@loadValidationError</div>
         <button class="btn btn-primary mt-1" @onclick="@CreateNewGame">Create new game</button>
-        <button class="btn btn-primary mt-1">Load game from file
+        <label class="btn btn-primary mt-1">Load game from file
             <input hidden type="file" id="fileInput" @ref="fileInput" @onchange="@LoadAndCreateGame" />
-        </button>
+        </label>
     </div>
 </div>
 
