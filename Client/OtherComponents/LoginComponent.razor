@@ -31,8 +31,8 @@
         {
             case LoginComponentState.Login:
                 <div>Please enter your user name and password</div>
-                <input @ref="@focusField" class="form-control mt-1 mt-1" @bind-value="@username" @bind-value:event="oninput" maxlength="80" placeholder="User name" @onkeyup="@(e => KeyUp(e, Login))" style="font-family: Candara, sans-serif;"/>
-                <input type="password" class="form-control mt-1" @bind-value="@password" @bind-value:event="oninput" maxlength="80" placeholder="Password" @onkeyup="@(e => KeyUp(e, Login))" style="font-family: Candara, sans-serif;"/>
+                <input @ref="@focusField" class="form-control mt-1 mt-1" @bind-value="@username" @bind-value:event="oninput" maxlength="80" placeholder="User name" @onkeyup="@(e => KeyUp(e, Login))"/>
+                <input type="password" class="form-control mt-1" @bind-value="@password" @bind-value:event="oninput" maxlength="80" placeholder="Password" @onkeyup="@(e => KeyUp(e, Login))"/>
                 <div class="text-danger small">@LoginMessage</div>
                 <button class="btn btn-primary mt-1" disabled="@(State is LoginComponentState.Loading)" @onclick="@Login">Log in</button>
                 break;

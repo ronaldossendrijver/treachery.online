@@ -1,0 +1,112 @@
+﻿@*
+ * Copyright (C) 2020-2024 Ronald Ossendrijver (admin@treachery.online)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
+ * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
+ * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+*@
+
+@page "/admin/"
+
+@if (!Client.IsConnected)
+{
+    <div class="row d-flex align-items-center" style="@StartScreenStyle">
+        <div class="d-flex justify-content-center">
+            Not Connected
+        </div>
+    </div>
+}
+else 
+{
+    <div class="row d-flex align-items-center" style="@StartScreenStyle">
+        <div class="d-flex justify-content-center">
+            
+            <div class="card mb-2" style="animation:fadeIn 1s;">
+                <div class="card">
+                    <div class="card-header">Password</div>
+                    <div class="card-body">
+                        <input type="password" class="form-control mt-1" @bind-value="@Password" @bind-value:event="oninput" maxlength="80" placeholder="Password"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-2" style="animation:fadeIn 1s;">
+                <div class="card">
+                    <div class="card-header">Server maintenance</div>
+                    <div class="card-body">
+                        <h3>Maintenance window</h3>
+                        <InputDate @bind-Value="@MaintenanceDate"/>
+                        <button class="btn btn-primary me-1" @onclick="UpdateMaintenance">Set maintenance</button>
+                        <h3>Persist data</h3>
+                        <button class="btn btn-primary me-1" @onclick="PersistState">Persist data</button>
+                        <h3>Restore persisted data</h3>
+                        <button class="btn btn-primary me-1" @onclick="RestoreState">Restore data</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-2" style="animation:fadeIn 1s;">
+                <div class="card">
+                    <div class="card-header">Running games</div>
+                    <div class="card-body">
+                        <table class="table table-sm" id="availableGames">
+                            <tbody>
+
+                            @foreach (var av in Client.RunningGames.OrderByDescending(av => av.LastAction))
+                            {
+                                var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
+
+                                <tr class="small table-dark">
+                                    <td class="w-25" style="@fontColorStyle">
+                                        @av.GameName
+                                    </td>
+                                    <td class="w-25">
+                                        <button class="btn btn-primary me-1" @onclick="@(_ => Close(av))">Close</button>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+
+@code {
+    
+    private DateTime MaintenanceDate { get; set; }
+    private string Password { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Client.Start();
+
+        MaintenanceDate = Client.ServerSettings.ScheduledMaintenance;
+    }
+    
+    private const string StartScreenStyle = "min-height: 97vh; background-image: url('art/planet.png'); background-size: 1024px; background-position-x: center; background-position-y: -50px; background-repeat: no-repeat;";
+
+    private async Task UpdateMaintenance()
+    {
+        await Client.AdminUpdateMaintenance(Support.GetHash(Password), MaintenanceDate);
+    }
+    
+    private async Task PersistState()
+    {
+        await Client.AdminPersistState(Support.GetHash(Password));
+    }
+    
+    private async Task RestoreState()
+    {
+        await Client.AdminRestoreState(Support.GetHash(Password));
+    }
+
+    private async Task Close(GameInfo av)
+    {
+        await Client.AdminCloseGame(Support.GetHash(Password), av.GameId);
+    }
+}

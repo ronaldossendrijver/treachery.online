@@ -90,7 +90,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
     }
 
-    public async Task Start(string userToken, string gameToken)
+    public async Task Start(string userToken = null, string gameToken = null)
     {
         await _connection.StartAsync();
         await Connect();
@@ -452,6 +452,18 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public async Task SendGlobalChatMessage(GlobalChatMessage message) =>
         await _connection.SendAsync(nameof(IGameHub.SendGlobalChatMessage), UserToken, message);
+    
+    public async Task AdminUpdateMaintenance(string hashedPassword, DateTime maintenanceDate) =>
+        await _connection.SendAsync(nameof(IGameHub.AdminUpdateMaintenance), hashedPassword, maintenanceDate);
+    
+    public async Task AdminPersistState(string hashedPassword) =>
+        await _connection.SendAsync(nameof(IGameHub.AdminPersistState), hashedPassword);
+    
+    public async Task AdminRestoreState(string hashedPassword) => 
+        await _connection.SendAsync(nameof(IGameHub.AdminRestoreState), hashedPassword);
+    
+    public async Task AdminCloseGame(string hashedPassword, string gameId) =>
+        await _connection.SendAsync(nameof(IGameHub.AdminCloseGame), hashedPassword, gameId);
 
     public List<GameInfo> RunningGames { get; private set; } = [];
     private async Task Heartbeat()

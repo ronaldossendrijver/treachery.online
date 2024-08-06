@@ -9,11 +9,9 @@ public partial class GameHub
     {
         //Do some maintenance work here, cleaning up old tokens
         
-        var maintenanceDateTime = configuration["GameMaintenanceDateTime"];
-
         var result = new ServerSettings
         {
-            ScheduledMaintenance = maintenanceDateTime != null ? DateTime.Parse(maintenanceDateTime) : DateTime.MinValue,
+            ScheduledMaintenance = MaintenanceDate,
             AdminName = configuration["GameAdminUsername"]
         };
 
@@ -27,6 +25,29 @@ public partial class GameHub
 
         tokenInfo.Refreshed = DateTime.Now;
         return await Task.FromResult(Success());
+    }
+
+    public async Task AdminUpdateMaintenance(string hashedPassword, DateTime maintenanceDate)
+    {
+        if (await AuthenticateAdmin(hashedPassword))
+        {
+            MaintenanceDate = maintenanceDate;
+        }
+    }
+
+    public async Task AdminPersistState(string hashedPassword)
+    {
+        //TODO
+    }
+
+    public async Task AdminRestoreState(string hashedPassword)
+    {
+        //TODO
+    }
+
+    public async Task AdminCloseGame(string hashedPassword, string gameId)
+    {
+        //TODO
     }
 }
 

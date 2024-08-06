@@ -22,6 +22,8 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     private static ConcurrentDictionary<string,TokenInfo> UserTokenInfo { get; } = [];
     private static ConcurrentDictionary<int,ConnectionInfo> ConnectionInfoByUserId { get; } = [];
     
+    private static DateTime MaintenanceDate { get; set; }
+    
     private TreacheryContext GetDbContext() => new(dbContextOptions, configuration);
 
     private static string GenerateToken() => Convert.ToBase64String(Guid.NewGuid().ToByteArray())[..16];

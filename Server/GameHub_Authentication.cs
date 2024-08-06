@@ -150,5 +150,23 @@ public partial class GameHub
             
         return await Task.FromResult(Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName }));
     }
+    
+    private async Task<bool> AuthenticateAdmin(string hashedPassword)
+    {
+        var adminName = configuration["GameAdminUsername"];
+
+        if (string.IsNullOrEmpty(adminName))
+            return false;
+        
+        await using var db = GetDbContext();
+        
+        var user = await db.Users.FirstOrDefaultAsync(x =>
+            x.Name.Trim().ToLower().Equals(adminName.Trim().ToLower()) && x.HashedPassword == hashedPassword);
+
+        if (user != null)
+            return true;
+
+        return false;
+    }
 }
 

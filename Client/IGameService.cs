@@ -34,12 +34,9 @@ public interface IGameService
     public event Action RefreshHandler;
     public event Action RefreshPopoverHandler;
     public void Refresh();
-    public Task Start(string userToken, string gameToken);
-    
+    public Task Start(string userToken = null, string gameToken = null);
     public List<GameInfo> RunningGames { get; }
-
     public void Reset();
-
     public Player Player { get; }
 
     public Faction Faction { get; }
@@ -93,4 +90,10 @@ public interface IGameService
     //Chat
     Task SendChatMessage(GameChatMessage e);
     Task SendGlobalChatMessage(GlobalChatMessage message);
+    
+    //Admin
+    Task AdminUpdateMaintenance(string hashedPassword, DateTime maintenanceDate);
+    Task AdminPersistState(string hashedPassword);
+    Task AdminRestoreState(string hashedPassword);
+    Task AdminCloseGame(string hashedPassword, string gameId);
 }

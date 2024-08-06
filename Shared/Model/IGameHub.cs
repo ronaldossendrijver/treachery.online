@@ -177,4 +177,10 @@ public interface IGameHub
 
     //Other
     Result<ServerSettings> Connect();
+    
+    //Admin
+    Task AdminUpdateMaintenance(string hashedPassword, DateTime maintenanceDate);
+    Task AdminPersistState(string hashedPassword);
+    Task AdminRestoreState(string hashedPassword);
+    Task AdminCloseGame(string hashedPassword, string gameId);
 }
