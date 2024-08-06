@@ -178,16 +178,16 @@ public partial class GameHub
             return Error(validationResult.ToString());
         }
 
-        if (game.Game.CurrentMainPhase is MainPhase.Ended && !FinishedGames.ContainsKey(gameToken))
+        if (game.Game.CurrentMainPhase is MainPhase.Ended && !game.StatisticsSent)
         {
-            FinishedGames.TryAdd(gameToken, game.Game);
             await SendMailAndStatistics(game);
+            game.StatisticsSent = true;
         }
 
         await Clients.Group(gameToken).HandleGameEvent(e, game.Game.History.Count);
         
         var botDelay = DetermineBotDelay(game.Game.CurrentMainPhase, e);
-        _ = Task.Delay(botDelay).ContinueWith(e => PerformBotEvent(gameToken, game));
+        _ = Task.Delay(botDelay).ContinueWith(_ => PerformBotEvent(gameToken, game));
         
         return Success();
     }

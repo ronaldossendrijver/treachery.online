@@ -4,13 +4,14 @@ using Treachery.Shared;
 
 //using Treachery.Server.Migrations;
 
-namespace Treachery.Server.Data;
+namespace Treachery.Server;
 
 public partial class TreacheryContext(DbContextOptions<TreacheryContext> options, IConfiguration configuration)
     : DbContext(options)
 {
     public DbSet<User> Users { get; set; }
-    public DbSet<PlayedGame> Games { get; set; }
+    public DbSet<PersistedGame> PersistedGames { get; set; }
+    public DbSet<ArchivedGame> ArchivedGames { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

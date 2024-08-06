@@ -37,6 +37,7 @@ public partial class GameHub
         var gameId = Guid.NewGuid().ToString();
         var managedGame = new ManagedGame
         {
+            CreatorUserId = user.Id,
             GameId = gameId,
             Game = game,
             HashedPassword = hashedPassword,
@@ -163,6 +164,27 @@ public partial class GameHub
         game.Game.RemoveUser(userId, true);
         await Clients.Group(gameToken).HandleRemoveUser(userId, true);
         await RemoveFromGroup(gameToken, userId);
+        return Success();
+    }
+    
+    public async Task<VoidResult> RequestCloseGame(string userToken, string gameToken)
+    {
+        if (!AreValid(userToken, gameToken, out var user, out var game, out var error))
+            return error;
+        
+        if (game.CreatorUserId != user.Id)
+            return Error("You are not the creator of this game");
+
+        foreach (var userId in game.Game.Participation.Users.Keys)
+        {
+            game.Game.RemoveUser(userId, true);
+            await Clients.Group(gameToken).HandleRemoveUser(userId, true);
+            await RemoveFromGroup(gameToken, userId);
+        }
+
+        GameTokensByGameId.Remove(game.GameId, out _);
+        GamesByGameToken.Remove(gameToken, out _);
+        
         return Success();
     }
 

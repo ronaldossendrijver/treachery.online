@@ -179,8 +179,8 @@ public interface IGameHub
     Result<ServerSettings> Connect();
     
     //Admin
-    Task AdminUpdateMaintenance(string hashedPassword, DateTime maintenanceDate);
-    Task AdminPersistState(string hashedPassword);
-    Task AdminRestoreState(string hashedPassword);
-    Task AdminCloseGame(string hashedPassword, string gameId);
+    Task<Result<string>> AdminUpdateMaintenance(string hashedPassword, DateTime maintenanceDate);
+    Task<Result<string>> AdminPersistState(string hashedPassword);
+    Task<Result<string>> AdminRestoreState(string hashedPassword);
+    Task<Result<string>> AdminCloseGame(string hashedPassword, string gameId);
 }

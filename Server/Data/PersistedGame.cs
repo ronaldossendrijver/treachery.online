@@ -1,4 +1,4 @@
-﻿// /*
+// /*
 //  * Copyright (C) 2020-2024 Ronald Ossendrijver (admin@treachery.online)
 //  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 //  * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
@@ -7,18 +7,34 @@
 //  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 // */
 
-using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace Treachery.Shared;
+namespace Treachery.Server;
 
-public class PlayedGame
+public class PersistedGame
 {
     public int Id { get; init; }
-
-    public User Host { get; set; }
-
-    public DateTime LastChanged { get; set; }
-
+    
+    [MaxLength(32)]
+    public string Token { get; init; }
+    
+    public int CreatorUserId { get; init; }
+    
+    [MaxLength(36)]
+    public string GameId { get; init; }
+    
     // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
-    public string State { get; set; }
+    public string GameState { get; init; }
+    
+    // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
+    public string GameParticipation { get; init; }
+    
+    [MaxLength(4000)]
+    public string HashedPassword { get; init; }
+    
+    public bool BotsArePaused { get; init; }
+    
+    public bool ObserversRequirePassword { get; init; }
+    
+    public bool StatisticsSent { get; init; }
 }

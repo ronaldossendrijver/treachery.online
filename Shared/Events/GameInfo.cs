@@ -13,6 +13,7 @@ namespace Treachery.Shared;
 
 public class GameInfo
 {
+    public int CreatorUserId { get; set; }
     public string GameId { get; init; }
     public bool CreatorParticipates { get; set; }
     public string GameName { get; set; }
@@ -38,6 +39,7 @@ public class GameInfo
     public static GameInfo Extract(ManagedGame managedGame) => new()
     {
         GameId = managedGame.GameId,
+        CreatorUserId = managedGame.CreatorUserId,
         Players = managedGame.Game.PlayerNames.ToArray(),
         Observers = managedGame.Game.ObserverNames.ToArray(),
         FactionsInPlay = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? managedGame.Game.Settings.AllowedFactionsInPlay : managedGame.Game.FactionsInPlay,

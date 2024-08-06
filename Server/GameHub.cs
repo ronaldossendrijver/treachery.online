@@ -2,26 +2,27 @@
 using System.IO;
 using System.Net;
 using System.Net.Mail;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Treachery.Server.Data;
 using Treachery.Shared;
 
 namespace Treachery.Server;
 
 public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfiguration configuration) : Hub<IGameClient>, IGameHub
 {
-    private static ConcurrentDictionary<string,string> GameTokensByGameId { get; } = [];
-    private static ConcurrentDictionary<string,ManagedGame> GamesByGameToken { get; } = [];
-    private static ConcurrentDictionary<string,TokenInfo> GameTokenInfo { get; } = [];
-    private static ConcurrentDictionary<string,Game> FinishedGames { get; } = [];
-    
+    //State
+
+    //Users
     private static ConcurrentDictionary<string,User> UsersByUserToken { get; } = [];
     private static ConcurrentDictionary<string,TokenInfo> UserTokenInfo { get; } = [];
     private static ConcurrentDictionary<int,ConnectionInfo> ConnectionInfoByUserId { get; } = [];
+
+    //Games
+    private static ConcurrentDictionary<string,string> GameTokensByGameId { get; } = [];
+    private static ConcurrentDictionary<string,ManagedGame> GamesByGameToken { get; } = [];
     
+    //Other
     private static DateTime MaintenanceDate { get; set; }
     
     private TreacheryContext GetDbContext() => new(dbContextOptions, configuration);

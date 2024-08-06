@@ -8,6 +8,7 @@
 *@
 
 @page "/admin/"
+@using Treachery.Client.OtherComponents
 
 @if (!Client.IsConnected)
 {
@@ -17,20 +18,23 @@
         </div>
     </div>
 }
+else if (!Client.LoggedIn)
+{
+    <div class="row d-flex align-items-center" style="@StartScreenStyle">
+        <div class="col-sm-12 col-lg-3"></div>
+        <div class="col-sm-12 col-lg-6">
+            <div class="d-flex justify-content-center">
+                <LoginComponent  />
+            </div>
+        </div>
+        <div class="col-sm-12 col-lg-3"></div>
+    </div>
+}
 else 
 {
     <div class="row d-flex align-items-center" style="@StartScreenStyle">
         <div class="d-flex justify-content-center">
             
-            <div class="card mb-2" style="animation:fadeIn 1s;">
-                <div class="card">
-                    <div class="card-header">Password</div>
-                    <div class="card-body">
-                        <input type="password" class="form-control mt-1" @bind-value="@Password" @bind-value:event="oninput" maxlength="80" placeholder="Password"/>
-                    </div>
-                </div>
-            </div>
-
             <div class="card mb-2" style="animation:fadeIn 1s;">
                 <div class="card">
                     <div class="card-header">Server maintenance</div>
