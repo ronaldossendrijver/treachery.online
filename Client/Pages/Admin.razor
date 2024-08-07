@@ -55,9 +55,8 @@ else
                 <div class="card">
                     <div class="card-header">Running games</div>
                     <div class="card-body">
-                        <table class="table table-sm" id="availableGames">
+                        <table class="table table-sm">
                             <tbody>
-
                             @foreach (var av in Client.RunningGames.OrderByDescending(av => av.LastAction))
                             {
                                 var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";

@@ -7,39 +7,41 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// ReSharper disable MemberCanBePrivate.Global
+
 using System;
 
 namespace Treachery.Shared;
 
 public class GameInfo
 {
-    public int CreatorUserId { get; set; }
+    public int CreatorUserId { get; init; }
+    public bool YouAreIn { get; init; }
     public string GameId { get; init; }
-    public bool CreatorParticipates { get; set; }
-    public string GameName { get; set; }
-    public bool HasPassword { get; set; }
-    public int ExpansionLevel { get; set; }
-    public Phase CurrentPhase { get; set; }
-    public MainPhase CurrentMainPhase { get; set; }
-    public int CurrentTurn { get; set; }
-    public int MaximumPlayers { get; set; }
-    public int MaximumNumberOfTurns { get; set; }
-    public List<Faction> FactionsInPlay { get; set; }
-    public string[] Players { get; set; }
-    public string[] Observers { get; set; }
-    public int NumberOfBots { get; set; }
-    public List<Rule> Rules { get; set; }
-    public bool InviteOthers { get; set; }
-    public DateTimeOffset? LastAction { get; set; }
-    public List<AvailableSeatInfo> AvailableSeats { get; set; }
+    public bool HasPassword { get; init; }
+    public string GameName { get; init; }
+    public int ExpansionLevel { get; init; }
+    public MainPhase CurrentMainPhase { get; init; }
+    public Phase CurrentPhase { get; init; }
+    public int CurrentTurn { get; init; }
+    public int NumberOfPlayers { get; init; }
+    public int MaximumTurns { get; init; }
+    public List<Faction> FactionsInPlay { get; init; }
+    public string[] Players { get; init; } = [];
+    public string[] Observers { get; init; } = [];
+    public int NumberOfBots { get; init; }
+    public List<Rule> Rules { get; init; } = [];
+    public DateTimeOffset? LastAction { get; init; }
+    public List<AvailableSeatInfo> AvailableSeats { get; init; } = [];
     public override bool Equals(object obj) => obj is GameInfo info && info.GameId == GameId;
 
     public override int GetHashCode() => GameId.GetHashCode();
     
-    public static GameInfo Extract(ManagedGame managedGame) => new()
+    public static GameInfo Extract(ManagedGame managedGame, int userId) => new()
     {
         GameId = managedGame.GameId,
         CreatorUserId = managedGame.CreatorUserId,
+        YouAreIn = managedGame.Game.Participation.Users.ContainsKey(userId),
         Players = managedGame.Game.PlayerNames.ToArray(),
         Observers = managedGame.Game.ObserverNames.ToArray(),
         FactionsInPlay = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? managedGame.Game.Settings.AllowedFactionsInPlay : managedGame.Game.FactionsInPlay,
@@ -52,10 +54,8 @@ public class GameInfo
         ExpansionLevel = Game.ExpansionLevel,
         GameName = managedGame.GameName,
         HasPassword = managedGame.HashedPassword != null,
-        CreatorParticipates = true,
-        InviteOthers = true,
-        MaximumPlayers = managedGame.Game.Settings.NumberOfPlayers,
-        MaximumNumberOfTurns = managedGame.Game.Settings.MaximumTurns,
+        NumberOfPlayers = managedGame.Game.Settings.NumberOfPlayers,
+        MaximumTurns = managedGame.Game.Settings.MaximumTurns,
         AvailableSeats = managedGame.Game.Participation.AvailableSeats.Select(seat => new AvailableSeatInfo()
         {
             Seat = seat, 

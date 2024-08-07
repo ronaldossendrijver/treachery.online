@@ -16,6 +16,9 @@ public partial class GameHub
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<GameInitInfo>("User not found");
+        
+        if (GamesByGameToken.Values.Count(g => g.CreatorUserId == user.Id) >= 10)
+            return Error<GameInitInfo>("You cannot have more than 10 active games");
 
         Game game;
         var initialParticipation = new GameParticipation();
@@ -96,14 +99,18 @@ public partial class GameHub
 
         if (!GameTokensByGameId.TryGetValue(gameId, out var gameToken) || !GamesByGameToken.TryGetValue(gameToken, out var game))
             return Error<GameInitInfo>("Game not found");
+
+        if (!game.Game.IsPlayer(user.Id))
+        {
+            if (!string.IsNullOrEmpty(game.HashedPassword) && !game.HashedPassword.Equals(hashedPassword))
+                return Error<GameInitInfo>("Incorrect password");
         
-        if (!string.IsNullOrEmpty(game.HashedPassword) && !game.HashedPassword.Equals(hashedPassword))
-            return Error<GameInitInfo>("Incorrect password");
-        
-        if (!game.Game.IsOpen(seat) || game.Game.WasKicked(user.Id))
-            return Error<GameInitInfo>("Seat is not available");
-        
-        game.Game.AddPlayer(user.Id, user.PlayerName, seat);
+            if (!game.Game.IsOpen(seat) || game.Game.WasKicked(user.Id))
+                return Error<GameInitInfo>("Seat is not available");
+
+            game.Game.AddPlayer(user.Id, user.PlayerName, seat);
+        }
+      
         await Clients.Group(gameToken).HandleJoinGame(user.Id, user.PlayerName, seat);
         await AddToGroup(gameToken, user.Id, Context.ConnectionId);
         return Success(new GameInitInfo
@@ -168,8 +175,11 @@ public partial class GameHub
         return Success();
     }
     
-    public async Task<VoidResult> RequestCloseGame(string userToken, string gameToken)
+    public async Task<VoidResult> RequestCloseGame(string userToken, string gameId)
     {
+        if (!GameTokensByGameId.TryGetValue(gameId, out var gameToken))
+            return Error("Game not found");
+        
         if (!AreValid(userToken, gameToken, out var user, out var game, out var error))
             return error;
         
@@ -308,7 +318,8 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<List<GameInfo>>("User not found");
 
-        return await Task.FromResult(Success(GamesByGameToken.Values.Select(GameInfo.Extract).ToList()));
+        var result = GamesByGameToken.Values.Select(g => GameInfo.Extract(g, user.Id)).ToList();
+        return await Task.FromResult(Success(result));
     }
     
     private void SendEndOfGameMail(string content, GameInfo info)

@@ -70,6 +70,7 @@ public interface IGameService
     //Game Management
     
     Task<string> RequestCreateGame(string hashedPassword, string stateData = null, string skinData = null);
+    Task<string> RequestCloseGame(string gameId);
     Task<string> RequestJoinGame(string gameId, string hashedPassword, int seat = -1);
     Task<string> RequestObserveGame(string gameId, string hashedPassword);
     Task<string> RequestReconnectGame();
@@ -96,4 +97,5 @@ public interface IGameService
     Task<string> AdminPersistState();
     Task<string> AdminRestoreState();
     Task<string> AdminCloseGame(string gameId);
+  
 }

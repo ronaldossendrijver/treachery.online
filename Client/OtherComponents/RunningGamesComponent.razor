@@ -34,7 +34,7 @@
                                 @if (av.CurrentPhase == Phase.AwaitingPlayers)
                                 {
                                     <div>
-                                        @av.Players.Count() Players, @Skin.Current.Describe(Game.DetermineApproximateRuleset(av.FactionsInPlay, av.Rules, Game.ExpansionLevel)), maximum players: @av.MaximumPlayers, maximum turns: @av.MaximumNumberOfTurns
+                                        @av.Players.Length Players, @Skin.Current.Describe(Game.DetermineApproximateRuleset(av.FactionsInPlay, av.Rules, Game.ExpansionLevel)), maximum players: @av.NumberOfPlayers, maximum turns: @av.MaximumTurns
                                     </div>
                                 }
                                 else
@@ -51,22 +51,31 @@
                                 }
                             </td>
                             <td class="w-25">
-                                @if (av.HasPassword)
+                                @if (!av.YouAreIn)
                                 {
-                                    <input class="form-inline input-sm" style="max-width:120px" @bind="joinGamePassword[av.GameId]" maxlength="24" placeholder="Game password"/>
-                                }
-                                <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsObserver(av.GameId, joinGamePassword[av.GameId]))">Observe</button>
-                                @if (av.CurrentPhase == Phase.AwaitingPlayers)
-                                {
-                                    <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsPlayer(av.GameId, joinGamePassword[av.GameId]))">Join</button>
+                                    if (av.HasPassword)
+                                    {
+                                        <input class="form-inline input-sm" style="max-width:120px" @bind="joinGamePassword[av.GameId]" maxlength="24" placeholder="Game password"/>
+                                    }
+                                    
+                                    <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsObserver(av.GameId, joinGamePassword[av.GameId]))">Observe</button>
+                                    
+                                    @if (av.CurrentPhase == Phase.AwaitingPlayers)
+                                    {
+                                        <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsPlayer(av.GameId, joinGamePassword[av.GameId]))">Join</button>
+                                    }
+                                    else
+                                    {
+                                        foreach (var availableSeat in av.AvailableSeats)
+                                        {
+                                            var botMessage = availableSeat.IsBot ? "bot" : "human";
+                                            <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsPlayer(av.GameId, joinGamePassword[av.GameId], availableSeat.Seat))">Take over <FactionComponent Faction="@availableSeat.Faction" Diameter="20"/> (@botMessage)</button>
+                                        }
+                                    }
                                 }
                                 else
                                 {
-                                    foreach (var availableSeat in av.AvailableSeats)
-                                    {
-                                        var botMessage = availableSeat.IsBot ? "bot" : "human";
-                                        <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsPlayer(av.GameId, joinGamePassword[av.GameId], availableSeat.Seat))">Take over <FactionComponent Faction="@availableSeat.Faction" Diameter="20"/> (@botMessage)</button>
-                                    }
+                                    <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty))">Reconnect</button>
                                 }
                                 <div class="text-danger">@JoinErrors[av.GameId]</div>
                             </td>                        

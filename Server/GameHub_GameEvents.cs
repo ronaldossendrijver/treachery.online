@@ -266,10 +266,8 @@ public partial class GameHub
     private async Task SendMailAndStatistics(ManagedGame game)
     {
         var state = GameState.GetStateAsString(game.Game);
-        SendEndOfGameMail(state, GameInfo.Extract(game));
+        SendEndOfGameMail(state, GameInfo.Extract(game, -1));
         await SendGameStatistics(game.Game);
     }
-    
-    
 }
 

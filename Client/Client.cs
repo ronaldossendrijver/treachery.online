@@ -355,6 +355,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
         return result.Message;
     }
+    
+    //Game Management
 
     public async Task<string> RequestCreateGame(string hashedPassword, string stateData = null, string skinData = null)
     {
@@ -370,6 +372,12 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
         
         return result.Message;
+    }
+    
+    public async Task<string> RequestCloseGame(string gameId)
+    {
+        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.RequestCloseGame), UserToken, gameId);
+        return result.Success ? result.Contents : result.Message;
     }
 
     public async Task<string> RequestJoinGame(string gameId, string hashedPassword, int seat = -1)

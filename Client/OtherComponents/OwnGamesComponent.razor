@@ -9,9 +9,26 @@
 @inherits GameComponent
 
 <div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeIn90 1s">
-    <div class="card-header">Start a new game</div>
+    <div class="card-header">Games created by you</div>
     <div class="card-body">
-        <input type="text" class="form-control" @bind="createGamePassword" maxlength="24" placeholder="Game password (optional)" />
+        <table class="table table-sm">
+            <tbody>
+            @foreach (var av in Client.RunningGames.Where(info => info.CreatorUserId == Client.UserId).OrderByDescending(av => av.LastAction))
+            {
+                var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
+
+                <tr class="small table-dark">
+                    <td class="w-25" style="@fontColorStyle">
+                        @av.GameName
+                    </td>
+                    <td class="w-25">
+                        <button class="btn btn-primary  me-1" @onclick="@(_ => Close(av))">Close</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <input type="text" class="form-control" @bind="createGamePassword" maxlength="24" placeholder="Game password (optional)"/>
         <a class="btn btn-dark btn-sm mt-1 p-2 text-start p-0 mt-0 mb-0" href="https://discord.gg/qsMSgtYN" target="_blank" title="Find players on Dune Discord">
             <svg style="margin-right:2px" width="18" height="18" viewBox="0 -28.5 256 256" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
                 <g>
@@ -20,10 +37,10 @@
             </svg>
             Find players on Dune Discord
         </a>
-        <div class="text-danger small">@loadValidationError</div>
+        <div class="text-danger small">@error</div>
         <button class="btn btn-primary mt-1" @onclick="@CreateNewGame">Create new game</button>
         <label class="btn btn-primary mt-1">Load game from file
-            <input hidden type="file" id="fileInput" @ref="fileInput" @onchange="@LoadAndCreateGame" />
+            <input hidden type="file" id="fileInput" @ref="fileInput" @onchange="@LoadAndCreateGame"/>
         </label>
     </div>
 </div>
@@ -34,7 +51,7 @@
 
     private string createGamePassword;
     private object fileInput;
-    private string loadValidationError = string.Empty;
+    private string error = string.Empty;
     private string loadedGameData;
 
     private async Task CreateNewGame()
@@ -44,7 +61,7 @@
     
     private async Task LoadAndCreateGame()
     {
-        loadValidationError = string.Empty;
+        error = string.Empty;
         await Task.Delay(200).ContinueWith(_ => LoadGameOpenFile());
     }
 
@@ -58,7 +75,7 @@
             {
                 if (loadedGameData.Length > MaxSaveGameSize)
                 {
-                    loadValidationError = "File is too big";
+                    error = "File is too big";
                 }
                 else
                 {
@@ -69,9 +86,18 @@
         }
         catch (Exception e)
         {
-            loadValidationError = $"Error loading game ({e.Message})";
+            error = $"Error loading game ({e.Message})";
         }
 
+        StateHasChanged();
+    }
+    
+    private async Task Close(GameInfo av)
+    {
+        var result = await Client.RequestCloseGame(av.GameId);
+        if (result != null)
+            error = result;
+        
         StateHasChanged();
     }
 }
