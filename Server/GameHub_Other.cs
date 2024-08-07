@@ -63,10 +63,12 @@ public partial class GameHub
                     HashedPassword = gameTokenAndManagedGame.Value.HashedPassword,
                     BotsArePaused = gameTokenAndManagedGame.Value.BotsArePaused,
                     ObserversRequirePassword = gameTokenAndManagedGame.Value.ObserversRequirePassword,
-                    StatisticsSent = gameTokenAndManagedGame.Value.StatisticsSent
+                    StatisticsSent = gameTokenAndManagedGame.Value.StatisticsSent,
+                    GameName = gameTokenAndManagedGame.Value.GameName,
                 };
 
                 context.PersistedGames.Add(persisted);
+                await context.SaveChangesAsync();
                 amount++;
             }
         }
@@ -84,6 +86,7 @@ public partial class GameHub
         await using (var context = GetDbContext())
         {
             GamesByGameToken.Clear();
+            GameTokensByGameId.Clear();
             
             foreach (var persistedGame in context.PersistedGames)
             {
@@ -92,7 +95,7 @@ public partial class GameHub
                 var participation = JsonSerializer.Deserialize<GameParticipation>(persistedGame.GameParticipation);
                 if (Game.TryLoad(gameState, participation, false, true, out Game game) == null)
                 {
-                    var managedGame = new ManagedGame()
+                    var managedGame = new ManagedGame
                     {
                         CreatorUserId = persistedGame.CreatorUserId,
                         GameId = persistedGame.GameId,
@@ -100,9 +103,11 @@ public partial class GameHub
                         HashedPassword = persistedGame.HashedPassword,
                         BotsArePaused = persistedGame.BotsArePaused,
                         ObserversRequirePassword = persistedGame.ObserversRequirePassword,
-                        StatisticsSent = persistedGame.StatisticsSent
+                        StatisticsSent = persistedGame.StatisticsSent,
+                        GameName = persistedGame.GameName,
                     };
                     GamesByGameToken.TryAdd(token, managedGame);
+                    GameTokensByGameId.TryAdd(persistedGame.GameId, token);
                 }
                 amount++;
             }

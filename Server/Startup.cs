@@ -72,7 +72,7 @@ public class Startup
         var pending = context.Database.GetPendingMigrations();
         if (pending.Any())
         {
-            context.Database.MigrateAsync();
+            context.Database.Migrate();
         }
     }
 }

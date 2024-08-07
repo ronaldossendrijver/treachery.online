@@ -452,18 +452,31 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public async Task SendGlobalChatMessage(GlobalChatMessage message) =>
         await _connection.SendAsync(nameof(IGameHub.SendGlobalChatMessage), UserToken, message);
-    
-    public async Task AdminUpdateMaintenance(string hashedPassword, DateTime maintenanceDate) =>
-        await _connection.SendAsync(nameof(IGameHub.AdminUpdateMaintenance), hashedPassword, maintenanceDate);
-    
-    public async Task AdminPersistState(string hashedPassword) =>
-        await _connection.SendAsync(nameof(IGameHub.AdminPersistState), hashedPassword);
-    
-    public async Task AdminRestoreState(string hashedPassword) => 
-        await _connection.SendAsync(nameof(IGameHub.AdminRestoreState), hashedPassword);
-    
-    public async Task AdminCloseGame(string hashedPassword, string gameId) =>
-        await _connection.SendAsync(nameof(IGameHub.AdminCloseGame), hashedPassword, gameId);
+
+    public async Task<string> AdminUpdateMaintenance(DateTime maintenanceDate)
+    {
+        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.AdminUpdateMaintenance), UserToken, maintenanceDate);
+        return result.Success ? result.Contents : result.Message;
+    }
+
+    public async Task<string> AdminPersistState()
+    {
+        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.AdminPersistState), UserToken);
+        return result.Success ? result.Contents : result.Message;
+    }
+
+
+    public async Task<string> AdminRestoreState()
+    {
+        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.AdminRestoreState), UserToken);
+        return result.Success ? result.Contents : result.Message;
+    }
+
+    public async Task<string> AdminCloseGame(string gameId)
+    {
+        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.AdminCloseGame), UserToken, gameId);
+        return result.Success ? result.Contents : result.Message;
+    }
 
     public List<GameInfo> RunningGames { get; private set; } = [];
     private async Task Heartbeat()

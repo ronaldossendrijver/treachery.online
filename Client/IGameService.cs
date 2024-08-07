@@ -92,8 +92,8 @@ public interface IGameService
     Task SendGlobalChatMessage(GlobalChatMessage message);
     
     //Admin
-    Task AdminUpdateMaintenance(string hashedPassword, DateTime maintenanceDate);
-    Task AdminPersistState(string hashedPassword);
-    Task AdminRestoreState(string hashedPassword);
-    Task AdminCloseGame(string hashedPassword, string gameId);
+    Task<string> AdminUpdateMaintenance(DateTime maintenanceDate);
+    Task<string> AdminPersistState();
+    Task<string> AdminRestoreState();
+    Task<string> AdminCloseGame(string gameId);
 }

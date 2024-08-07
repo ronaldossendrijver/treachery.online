@@ -15,6 +15,9 @@ public class PersistedGame
 {
     public int Id { get; init; }
     
+    [MaxLength(128)]
+    public string GameName { get; set; }
+    
     [MaxLength(32)]
     public string Token { get; init; }
     

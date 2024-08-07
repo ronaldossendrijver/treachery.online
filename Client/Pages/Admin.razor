@@ -9,6 +9,7 @@
 
 @page "/admin/"
 @using Treachery.Client.OtherComponents
+@implements IDisposable
 
 @if (!Client.IsConnected)
 {
@@ -39,12 +40,12 @@ else
                 <div class="card">
                     <div class="card-header">Server maintenance</div>
                     <div class="card-body">
-                        <h3>Maintenance window</h3>
+                        <div>Set maintenance window</div>
                         <InputDate @bind-Value="@MaintenanceDate"/>
-                        <button class="btn btn-primary me-1" @onclick="UpdateMaintenance">Set maintenance</button>
-                        <h3>Persist data</h3>
+                        <button class="btn btn-primary me-1" @onclick="UpdateMaintenance">Ok</button>
+                        <div>Persist data</div>
                         <button class="btn btn-primary me-1" @onclick="PersistState">Persist data</button>
-                        <h3>Restore persisted data</h3>
+                        <div>Restore persisted data</div>
                         <button class="btn btn-primary me-1" @onclick="RestoreState">Restore data</button>
                     </div>
                 </div>
@@ -66,7 +67,7 @@ else
                                         @av.GameName
                                     </td>
                                     <td class="w-25">
-                                        <button class="btn btn-primary me-1" @onclick="@(_ => Close(av))">Close</button>
+                                        <button class="btn btn-primary  me-1" @onclick="@(_ => Close(av))">Close</button>
                                     </td>
                                 </tr>
                             }
@@ -76,6 +77,18 @@ else
                 </div>
             </div>
 
+            <div class="card mb-2" style="animation:fadeIn 1s;">
+                <div class="card">
+                    <div class="card-header">Log</div>
+                    <div class="card-body">
+                        @foreach (var m in Messages)
+                        {
+                            <div>@m</div>
+                        } 
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </div>
 }
@@ -83,34 +96,43 @@ else
 @code {
     
     private DateTime MaintenanceDate { get; set; }
-    private string Password { get; set; }
+    private List<string> Messages { get; } = [];
 
     protected override async Task OnInitializedAsync()
     {
+        Client.RefreshHandler += StateHasChanged;
         await Client.Start();
-
         MaintenanceDate = Client.ServerSettings.ScheduledMaintenance;
+    }
+
+    public void Dispose()
+    {
+        Client.RefreshHandler += StateHasChanged;
     }
     
     private const string StartScreenStyle = "min-height: 97vh; background-image: url('art/planet.png'); background-size: 1024px; background-position-x: center; background-position-y: -50px; background-repeat: no-repeat;";
 
     private async Task UpdateMaintenance()
     {
-        await Client.AdminUpdateMaintenance(Support.GetHash(Password), MaintenanceDate);
+        Messages.Add(await Client.AdminUpdateMaintenance(MaintenanceDate));
+        StateHasChanged();
     }
     
     private async Task PersistState()
     {
-        await Client.AdminPersistState(Support.GetHash(Password));
+        Messages.Add(await Client.AdminPersistState());
+        StateHasChanged();
     }
     
     private async Task RestoreState()
     {
-        await Client.AdminRestoreState(Support.GetHash(Password));
+        Messages.Add(await Client.AdminRestoreState());
+        StateHasChanged();
     }
 
     private async Task Close(GameInfo av)
     {
-        await Client.AdminCloseGame(Support.GetHash(Password), av.GameId);
+        Messages.Add(await Client.AdminCloseGame(av.GameId));
+        StateHasChanged();
     }
 }

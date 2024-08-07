@@ -14,11 +14,6 @@ namespace Treachery.Server.Migrations
             migrationBuilder.DropTable(
                 name: "Games");
 
-            migrationBuilder.RenameColumn(
-                name: "PasswordResetTokenExpiration",
-                table: "Users",
-                newName: "PasswordResetTokenCreated");
-
             migrationBuilder.CreateTable(
                 name: "ArchivedGames",
                 columns: table => new
@@ -64,11 +59,6 @@ namespace Treachery.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "PersistedGames");
-
-            migrationBuilder.RenameColumn(
-                name: "PasswordResetTokenCreated",
-                table: "Users",
-                newName: "PasswordResetTokenExpiration");
 
             migrationBuilder.CreateTable(
                 name: "Games",
