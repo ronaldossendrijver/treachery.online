@@ -23,7 +23,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     private static ConcurrentDictionary<string,ManagedGame> GamesByGameToken { get; } = [];
     
     //Other
-    private static DateTime MaintenanceDate { get; set; }
+    private static DateTimeOffset MaintenanceDate { get; set; }
     
     private TreacheryContext GetDbContext() => new(dbContextOptions, configuration);
 

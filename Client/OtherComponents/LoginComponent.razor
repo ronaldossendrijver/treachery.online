@@ -54,8 +54,8 @@
                 <div>Enter the username and password reset token you receive by e-mail and your new password below:</div>
                 <input @ref="@focusField" class="form-control mt-1" @bind-value="@resetToken" @bind-value:event="oninput" maxlength="80" placeholder="Reset token" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
                 <input class="form-control mt-1" @bind-value="@resetUsername" @bind-value:event="oninput" maxlength="80" placeholder="User name" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
-                <input type="password" class="form-control mt-1" @bind-value="@resetPassword" @bind-value:event="oninput" maxlength="80" placeholder="Password" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
-                <input type="password" class="form-control mt-1" @bind-value="@resetPasswordConfirm" @bind-value:event="oninput" maxlength="80" placeholder="Repeat password" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
+                <input type="password" class="form-control mt-1" @bind-value="@resetPassword" @bind-value:event="oninput" maxlength="80" placeholder="Password" autocomplete="new-password" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
+                <input type="password" class="form-control mt-1" @bind-value="@resetPasswordConfirm" @bind-value:event="oninput" maxlength="80" placeholder="Repeat password" autocomplete="new-password" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
                 <div class="text-danger small">@ResetPasswordMessage</div>
                 <button class="btn btn-primary mt-1" disabled="@(State is LoginComponentState.Loading)" @onclick="@NewPassword">Set new password</button>
                 break;

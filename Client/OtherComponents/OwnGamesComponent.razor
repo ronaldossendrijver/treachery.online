@@ -11,24 +11,59 @@
 <div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeIn90 1s">
     <div class="card-header">Games created by you</div>
     <div class="card-body">
-        <table class="table table-sm">
-            <tbody>
-            @foreach (var av in Client.RunningGames.Where(info => info.CreatorUserId == Client.UserId).OrderByDescending(av => av.LastAction))
-            {
-                var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
-
-                <tr class="small table-dark">
-                    <td class="w-25" style="@fontColorStyle">
-                        @av.GameName
-                    </td>
-                    <td class="w-25">
-                        <button class="btn btn-primary  me-1" @onclick="@(_ => Close(av))">Close</button>
-                    </td>
+        @{
+            var myGames = Client.RunningGames.Where(info => info.CreatorUserId == Client.UserId).OrderByDescending(av => av.LastAction).ToList();
+        }
+        
+        @if (!myGames.Any())
+        {
+            <div class="text-info mb-2">No games yet...</div>
+        }
+        else
+        {
+            <table class="table table-sm">
+                <thead>
+                <tr class="table-dark">
+                    <th scope="col">Last action</th>
+                    <th scope="col">Game info</th>
+                    <th scope="col">Close game?</th>
                 </tr>
-            }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                @foreach (var av in myGames)
+                {
+                    var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
+                    var factions = av.FactionsInPlay ?? [];
+
+                    <tr class="small table-dark">
+                        <td class="w-25">
+                            @av.LastAction
+                        </td>
+                        <td class="w-50" style="@fontColorStyle">
+                            <div>@Name(Game.DetermineApproximateRuleset(factions, av.Rules, Game.ExpansionLevel)), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
+                                <br>
+                                @foreach (var f in factions.Where(f => f != Faction.None))
+                                {
+                                    <Image Shown="f" Width="20" Shadow=""/>
+                                }
+                            </div>
+                        </td>
+                        <td class="w-25">
+                            <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Close(av))">Close</button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+
         <input type="text" class="form-control" @bind="createGamePassword" maxlength="24" placeholder="Game password (optional)"/>
+
+        <div class="text-danger small">@error</div>
+        <button class="btn btn-primary mt-1" @onclick="@CreateNewGame">Create new game</button>
+        <label class="btn btn-primary mt-1">Load game from file
+            <input hidden type="file" id="fileInput" @ref="fileInput" @onchange="@LoadAndCreateGame"/>
+        </label>
         <a class="btn btn-dark btn-sm mt-1 p-2 text-start p-0 mt-0 mb-0" href="https://discord.gg/qsMSgtYN" target="_blank" title="Find players on Dune Discord">
             <svg style="margin-right:2px" width="18" height="18" viewBox="0 -28.5 256 256" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
                 <g>
@@ -37,11 +72,64 @@
             </svg>
             Find players on Dune Discord
         </a>
-        <div class="text-danger small">@error</div>
-        <button class="btn btn-primary mt-1" @onclick="@CreateNewGame">Create new game</button>
-        <label class="btn btn-primary mt-1">Load game from file
-            <input hidden type="file" id="fileInput" @ref="fileInput" @onchange="@LoadAndCreateGame"/>
-        </label>
+    </div>
+</div>
+
+<div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeIn90 1s">
+    <div class="card-header">Your account</div>
+    <div class="card-body">
+        <div class="mb-3 row">
+            <label for="userName" class="col-3 col-form-label">User name</label>
+            <div class="col-auto">
+                <input type="text" readonly class="form-control-plaintext" id="userName" value="@Client.UserName">
+            </div>
+        </div>
+        @if (!EditUser)
+        {
+            <div class="mb-3 row">
+                <label for="playerName" class="col-3 col-form-label">Player name (in game)</label>
+                <div class="col-auto">
+                    <input type="text" readonly class="form-control-plaintext" id="playerName" @bind="@PlayerName">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="email" class="col-3 col-form-label">E-mail address</label>
+                <div class="col-auto">
+                    <input type="text" readonly class="form-control-plaintext" id="email" @bind="@Email">
+                </div>
+            </div>
+            <button class="btn btn-primary me-1" @onclick="@EnterEdit">Change account info</button>
+        }
+        else
+        {
+            <div class="mb-3 row">
+                <label for="playerName" class="col-3 col-form-label">Player name (shown in game)</label>
+                <div class="col-auto">
+                    <input type="text" class="form-control" id="playerName" @bind="@PlayerName">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="email" class="col-3 col-form-label">E-mail address</label>
+                <div class="col-auto">
+                    <input type="text" class="form-control" id="email" @bind="@Email">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="password1" class="col-3 col-form-label">Password</label>
+                <div class="col-auto">
+                    <input type="password" class="form-control" id="password1" autocomplete="new-password" @bind="@Password1">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="password2" class="col-3 col-form-label">Repeat password</label>
+                <div class="col-auto">
+                    <input type="password" class="form-control" id="password2" autocomplete="new-password" @bind="@Password2">
+                </div>
+            </div>
+            <div class="text-danger small">@ChangeUserInfoMessage</div>
+            <button class="btn btn-secondary btn-sm me-1" @onclick="@CancelEdit">Cancel</button>
+            <button class="btn btn-primary btn-sm me-1" @onclick="@UpdateUserInfo">Apply changes</button>
+        }
     </div>
 </div>
 
@@ -53,6 +141,18 @@
     private object fileInput;
     private string error = string.Empty;
     private string loadedGameData;
+    private bool EditUser { get; set; }
+    private string UserName { get; set; }
+    private string PlayerName { get; set; }
+    private string Password1 { get; set; }
+    private string Password2 { get; set; }
+    private string Email { get; set; }
+    private string ChangeUserInfoMessage { get; set; }
+    
+    protected override void OnParametersSet()
+    {
+        GetUserInfoFromClient();
+    }
 
     private async Task CreateNewGame()
     {
@@ -99,5 +199,45 @@
             error = result;
         
         StateHasChanged();
+    }
+
+    private void CancelEdit()
+    {
+        GetUserInfoFromClient();
+        EditUser = false;
+    }
+
+    private void GetUserInfoFromClient()
+    {
+        UserName = Client.UserName;
+        PlayerName = Client.PlayerName;
+        Email = Client.UserEmail;
+        Password1 = string.Empty;
+        Password2 = string.Empty;
+    }
+
+    private async Task UpdateUserInfo()
+    {
+        if (ValidateUpdatedUserInfo())
+        {
+            await Client.RequestUpdateUserInfo(Support.GetHash(Password1), Email, PlayerName);
+            GetUserInfoFromClient();
+            EditUser = false;
+        }
+    }
+    
+    private bool ValidateUpdatedUserInfo()
+    {
+        if (string.IsNullOrEmpty(Password1) || Password1.Length < 6) ChangeUserInfoMessage = "Password must be at least 6 characters";
+        else if (!Password1.Equals(Password2)) ChangeUserInfoMessage = "Passwords do not not match";
+        else if (string.IsNullOrEmpty(Email) || !Email.Contains('@') || !Email.Contains('.')) ChangeUserInfoMessage = "Enter a valid e-mail address";
+        else ChangeUserInfoMessage = null;
+
+        return ChangeUserInfoMessage == null;
+    }
+
+    private void EnterEdit()
+    {
+        EditUser = true;
     }
 }

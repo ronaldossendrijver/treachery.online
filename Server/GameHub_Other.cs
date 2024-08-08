@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -8,14 +9,19 @@ namespace Treachery.Server;
 
 public partial class GameHub
 {
-    public Result<ServerSettings> Connect()
+    public Result<ServerInfo> Connect()
     {
         //Do some maintenance work here, cleaning up old tokens
         
-        var result = new ServerSettings
+        var result = new ServerInfo
         {
+            AdminName = configuration["GameAdminUsername"],
             ScheduledMaintenance = MaintenanceDate,
-            AdminName = configuration["GameAdminUsername"]
+            TotalUsers = GetDbContext().Users.Count(),
+            UsersByUserTokenCount = UsersByUserToken.Count,
+            ConnectionInfoByUserIdCount = ConnectionInfoByUserId.Count,
+            GamesByGameTokenCount = GamesByGameToken.Count,
+            GameTokensByGameIdCount = GameTokensByGameId.Count
         };
 
         return Success(result);
@@ -30,7 +36,7 @@ public partial class GameHub
         return await Task.FromResult(Success());
     }
 
-    public async Task<Result<string>> AdminUpdateMaintenance(string userToken, DateTime maintenanceDate)
+    public async Task<Result<string>> AdminUpdateMaintenance(string userToken, DateTimeOffset maintenanceDate)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
             return Error<string>("Not authorized");

@@ -20,7 +20,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     private const int HeartbeatDelay = 3000;
 
     //General info
-    public ServerSettings ServerSettings { get; private set; }
+    public ServerInfo ServerInfo { get; private set; }
     public bool IsConnected => _connection.State == HubConnectionState.Connected;
     
     //Logged in player
@@ -29,6 +29,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public bool LoggedIn => LoginInfo != null;
     private string UserToken => LoginInfo?.Token;
     public int UserId => LoginInfo?.UserId ?? -1;
+    public string UserName => LoginInfo.UserName;
+    public string UserEmail => LoginInfo.Email;
     
     //Game in progress
     public Game Game { get; private set; }
@@ -277,10 +279,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     }
 
     public bool InScheduledMaintenance =>
-        ServerSettings != null &&
-        ServerSettings.ScheduledMaintenance.AddMinutes(15) > DateTime.UtcNow &&
-        ((ServerSettings.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 6 && CurrentPhase <= Phase.AwaitingPlayers) ||
-         ServerSettings.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 1);
+        ServerInfo != null &&
+        ServerInfo.ScheduledMaintenance.AddMinutes(15) > DateTime.UtcNow &&
+        ((ServerInfo.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 6 && CurrentPhase <= Phase.AwaitingPlayers) ||
+         ServerInfo.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 1);
 
   
     public event EventHandler<Location> OnLocationSelected;
@@ -335,7 +337,22 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
         return result.Message;
     }
-    
+
+    public async Task<string> RequestUpdateUserInfo(string hashedPassword, string email, string playerName)
+    {
+        var result = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestUpdateUserInfo), UserToken,
+            hashedPassword, playerName, email);
+
+        if (result.Success)
+        {
+            LoginInfo = result.Contents;
+            Refresh();
+            return null;
+        }
+
+        return result.Message;
+    }
+
     public async Task<string> RequestPasswordReset(string email)
     {
         var result = await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestPasswordReset), email);
@@ -376,8 +393,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     public async Task<string> RequestCloseGame(string gameId)
     {
-        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.RequestCloseGame), UserToken, gameId);
-        return result.Success ? result.Contents : result.Message;
+        var result = await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestCloseGame), UserToken, gameId);
+        return result.Success ? string.Empty : result.Message;
     }
 
     public async Task<string> RequestJoinGame(string gameId, string hashedPassword, int seat = -1)
@@ -461,7 +478,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public async Task SendGlobalChatMessage(GlobalChatMessage message) =>
         await _connection.SendAsync(nameof(IGameHub.SendGlobalChatMessage), UserToken, message);
 
-    public async Task<string> AdminUpdateMaintenance(DateTime maintenanceDate)
+    public async Task<string> AdminUpdateMaintenance(DateTimeOffset maintenanceDate)
     {
         var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.AdminUpdateMaintenance), UserToken, maintenanceDate);
         return result.Success ? result.Contents : result.Message;
@@ -538,10 +555,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     private async Task Connect()
     {
-        var result = await _connection.InvokeAsync<Result<ServerSettings>>(nameof(IGameHub.Connect));
+        var result = await _connection.InvokeAsync<Result<ServerInfo>>(nameof(IGameHub.Connect));
         if (result.Success)
         {
-            ServerSettings = result.Contents;
+            ServerInfo = result.Contents;
         }
         else
         {

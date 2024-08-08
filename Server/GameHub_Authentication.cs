@@ -58,7 +58,7 @@ public partial class GameHub
         var userToken = GenerateToken();
         UsersByUserToken.TryAdd(userToken, user);
         UserTokenInfo[userToken] = new TokenInfo();
-        return Success(new LoginInfo { UserId =user.Id, Token = userToken, PlayerName = user.PlayerName });
+        return Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email });
     }
     
     public async Task<Result<LoginInfo>> RequestLogin(int version, string userName, string hashedPassword)
@@ -77,7 +77,7 @@ public partial class GameHub
         var userToken = GenerateToken();
         UsersByUserToken.TryAdd(userToken, user);
         UserTokenInfo[userToken] = new TokenInfo();
-        return Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName });
+        return Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email });
     }
     
     public async Task<VoidResult> RequestPasswordReset(string email)
@@ -140,7 +140,7 @@ public partial class GameHub
         
         var userToken = GenerateToken();
         UsersByUserToken.TryAdd(userToken, user);
-        return Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName });
+        return Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email });
     }
     
     public async Task<Result<LoginInfo>> GetLoginInfo(string userToken)
@@ -148,25 +148,29 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<LoginInfo>("User not found");
             
-        return await Task.FromResult(Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName }));
+        return await Task.FromResult(Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email }));
     }
     
-    private async Task<bool> AuthenticateAdmin(string hashedPassword)
+    public async Task<Result<LoginInfo>> RequestUpdateUserInfo(string userToken, string hashedPassword, string playerName, string email)
     {
-        var adminName = configuration["GameAdminUsername"];
-
-        if (string.IsNullOrEmpty(adminName))
-            return false;
+        if (!UsersByUserToken.TryGetValue(userToken, out var user))
+            return Error<LoginInfo>("User not found");
         
         await using var db = GetDbContext();
+
+        var dbUser = await db.Users.FindAsync(user.Id); 
         
-        var user = await db.Users.FirstOrDefaultAsync(x =>
-            x.Name.Trim().ToLower().Equals(adminName.Trim().ToLower()) && x.HashedPassword == hashedPassword);
+        if (dbUser == null)
+            return Error<LoginInfo>("User not found");
 
-        if (user != null)
-            return true;
+        dbUser.HashedPassword = hashedPassword;
+        dbUser.PlayerName = playerName;
+        dbUser.Email = email;
 
-        return false;
+        await db.SaveChangesAsync();
+            
+        return await Task.FromResult(Success(new LoginInfo { UserId = dbUser.Id, Token = userToken, PlayerName = dbUser.PlayerName, UserName = dbUser.Name, Email = dbUser.Email }));
     }
+
 }
 

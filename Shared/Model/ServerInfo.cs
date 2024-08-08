@@ -11,9 +11,16 @@ using System;
 
 namespace Treachery.Shared;
 
-public class ServerSettings
+public class ServerInfo
 {
-    public DateTime ScheduledMaintenance { get; set; }
+    public DateTimeOffset ScheduledMaintenance { get; set; }
 
     public string AdminName { get; set; }
+
+    public int TotalUsers { get; set; }
+    
+    public int UsersByUserTokenCount { get; set; }
+    public int ConnectionInfoByUserIdCount { get; set; }
+    public int GamesByGameTokenCount { get; set; }
+    public int GameTokensByGameIdCount { get; set; }
 }

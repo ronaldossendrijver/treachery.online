@@ -17,9 +17,11 @@ public interface IGameService
     //Player and Host
     public bool LoggedIn { get; }
     public int UserId { get; }
+    public string UserName { get; }
+    public string UserEmail { get; }
     public string PlayerName { get; }
     public bool IsObserver { get; }
-    public ServerSettings ServerSettings { get; }
+    public ServerInfo ServerInfo { get; }
     
     //Client State
     public float CurrentEffectVolume { get; set;  }
@@ -66,6 +68,7 @@ public interface IGameService
     Task<string> RequestLogin(string userName, string hashedPassword);
     Task<string> RequestPasswordReset(string email);
     Task<string> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword);
+    Task<string> RequestUpdateUserInfo(string hashedPassword, string email, string playerName);
     
     //Game Management
     
@@ -93,7 +96,7 @@ public interface IGameService
     Task SendGlobalChatMessage(GlobalChatMessage message);
     
     //Admin
-    Task<string> AdminUpdateMaintenance(DateTime maintenanceDate);
+    Task<string> AdminUpdateMaintenance(DateTimeOffset maintenanceDate);
     Task<string> AdminPersistState();
     Task<string> AdminRestoreState();
     Task<string> AdminCloseGame(string gameId);

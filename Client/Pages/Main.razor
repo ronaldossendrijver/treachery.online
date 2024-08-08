@@ -17,7 +17,7 @@
 @if (Client.InScheduledMaintenance)
 {
     <div class="alert alert-danger text-center p-0" role="alert">
-        treachery.online will be down for maintenance from @Client.ServerSettings.ScheduledMaintenance.ToLocalTime() until @Client.ServerSettings.ScheduledMaintenance.AddMinutes(15).ToLocalTime() (your local time)
+        treachery.online will be down for maintenance from @Client.ServerInfo.ScheduledMaintenance.ToLocalTime() until @Client.ServerInfo.ScheduledMaintenance.AddMinutes(15).ToLocalTime() (your local time)
     </div>
 }
 
