@@ -26,7 +26,7 @@
                 <tr class="table-dark">
                     <th scope="col">Last action</th>
                     <th scope="col">Game info</th>
-                    <th scope="col">Close game?</th>
+                    <th scope="col">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -78,22 +78,22 @@
 <div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeIn90 1s">
     <div class="card-header">Your account</div>
     <div class="card-body">
-        <div class="mb-3 row">
-            <label for="userName" class="col-3 col-form-label">User name</label>
+        <div class="row">
+            <label for="userName" class="col-4 col-form-label">User name</label>
             <div class="col-auto">
                 <input type="text" readonly class="form-control-plaintext" id="userName" value="@Client.UserName">
             </div>
         </div>
         @if (!EditUser)
         {
-            <div class="mb-3 row">
-                <label for="playerName" class="col-3 col-form-label">Player name (in game)</label>
+            <div class="row">
+                <label for="playerName" class="col-4 col-form-label">Player name (in game)</label>
                 <div class="col-auto">
                     <input type="text" readonly class="form-control-plaintext" id="playerName" @bind="@PlayerName">
                 </div>
             </div>
-            <div class="mb-3 row">
-                <label for="email" class="col-3 col-form-label">E-mail address</label>
+            <div class="row">
+                <label for="email" class="col-4 col-form-label">E-mail address</label>
                 <div class="col-auto">
                     <input type="text" readonly class="form-control-plaintext" id="email" @bind="@Email">
                 </div>
@@ -102,26 +102,26 @@
         }
         else
         {
-            <div class="mb-3 row">
-                <label for="playerName" class="col-3 col-form-label">Player name (shown in game)</label>
+            <div class="row">
+                <label for="playerName" class="col-4 col-form-label">Player name (in game)</label>
                 <div class="col-auto">
                     <input type="text" class="form-control" id="playerName" @bind="@PlayerName">
                 </div>
             </div>
-            <div class="mb-3 row">
-                <label for="email" class="col-3 col-form-label">E-mail address</label>
+            <div class="row">
+                <label for="email" class="col-4 col-form-label">E-mail address</label>
                 <div class="col-auto">
                     <input type="text" class="form-control" id="email" @bind="@Email">
                 </div>
             </div>
-            <div class="mb-3 row">
-                <label for="password1" class="col-3 col-form-label">Password</label>
+            <div class="row">
+                <label for="password1" class="col-4 col-form-label">Password</label>
                 <div class="col-auto">
                     <input type="password" class="form-control" id="password1" autocomplete="new-password" @bind="@Password1">
                 </div>
             </div>
-            <div class="mb-3 row">
-                <label for="password2" class="col-3 col-form-label">Repeat password</label>
+            <div class="row">
+                <label for="password2" class="col-4 col-form-label">Repeat password</label>
                 <div class="col-auto">
                     <input type="password" class="form-control" id="password2" autocomplete="new-password" @bind="@Password2">
                 </div>
@@ -220,7 +220,7 @@
     {
         if (ValidateUpdatedUserInfo())
         {
-            await Client.RequestUpdateUserInfo(Support.GetHash(Password1), Email, PlayerName);
+            await Client.RequestUpdateUserInfo(string.IsNullOrEmpty(Password1) ? null : Support.GetHash(Password1), Email, PlayerName);
             GetUserInfoFromClient();
             EditUser = false;
         }
@@ -228,9 +228,9 @@
     
     private bool ValidateUpdatedUserInfo()
     {
-        if (string.IsNullOrEmpty(Password1) || Password1.Length < 6) ChangeUserInfoMessage = "Password must be at least 6 characters";
-        else if (!Password1.Equals(Password2)) ChangeUserInfoMessage = "Passwords do not not match";
-        else if (string.IsNullOrEmpty(Email) || !Email.Contains('@') || !Email.Contains('.')) ChangeUserInfoMessage = "Enter a valid e-mail address";
+        if (!string.IsNullOrEmpty(Password1) && Password1.Length < 6) ChangeUserInfoMessage = "Password must be at least 6 characters";
+        else if (!string.IsNullOrEmpty(Password1) && !Password1.Equals(Password2)) ChangeUserInfoMessage = "Passwords do not not match";
+        else if (!Email.Contains('@') || !Email.Contains('.')) ChangeUserInfoMessage = "Enter a valid e-mail address";
         else ChangeUserInfoMessage = null;
 
         return ChangeUserInfoMessage == null;
@@ -239,5 +239,10 @@
     private void EnterEdit()
     {
         EditUser = true;
+    }
+    
+    private async Task JoinGameAsPlayer(string gameId, string password, int seat = -1)
+    {
+        await Client.RequestJoinGame(gameId, Support.GetHash(password), seat);
     }
 }

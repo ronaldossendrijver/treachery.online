@@ -76,10 +76,9 @@ public interface IGameService
     Task<string> RequestCloseGame(string gameId);
     Task<string> RequestJoinGame(string gameId, string hashedPassword, int seat = -1);
     Task<string> RequestObserveGame(string gameId, string hashedPassword);
-    Task<string> RequestReconnectGame();
     Task<string> RequestSetOrUnsetHost(int userId);
     Task<string> RequestOpenOrCloseSeat(int seat);
-    Task RequestLeaveGame();
+    Task<string> RequestLeaveGame();
     Task<string> RequestKick(int userId);
     
     Task<string> RequestLoadGame(string state, string skin = null);

@@ -42,17 +42,17 @@ else
                     <div class="card-header">Server info</div>
                     <div class="card-body">
                         <h3>Info</h3>
-                        <p><strong></strong>@ServerInfo.TotalUsers</p>
-                        <p><strong></strong>@ServerInfo.UsersByUserTokenCount</p>
-                        <p><strong></strong>@ServerInfo.UsersByUserTokenCount</p>
-                        <p><strong></strong>@ServerInfo.UsersByUserTokenCount</p>
-                        <p><strong></strong>@ServerInfo.UsersByUserTokenCount</p>
-                        <div>Maintenance window</div>
-                        <input type="text" class="form-control" @bind="@MaintenanceDate"/>
-                        <button class="btn btn-primary me-1" @onclick="@UpdateMaintenance" disabled="@MaintenanceDateIsValid">Ok</button>
-                        <div>Persist data</div>
+                        <p><strong>Total Users: </strong>@ServerInfo.TotalUsers</p>
+                        <p><strong>Users by User Token: </strong>@ServerInfo.UsersByUserTokenCount</p>
+                        <p><strong>Game Tokens by GameId: </strong>@ServerInfo.GameTokensByGameIdCount</p>
+                        <p><strong>Games by Game Token: </strong>@ServerInfo.GamesByGameTokenCount</p>
+                        <p><strong>ConnectionInfo by UserId: </strong>@ServerInfo.ConnectionInfoByUserIdCount</p>
+                        <h3>Maintenance window</h3>
+                        <input type="text" class="form-control" @bind="@MaintenanceDate" @bind:event="oninput"/>
+                        <button class="btn btn-primary me-1" @onclick="@UpdateMaintenance" disabled="@(!MaintenanceDateIsValid)">Ok</button>
+                        <h3>Persist data</h3>
                         <button class="btn btn-primary me-1" @onclick="@PersistState">Persist data</button>
-                        <div>Restore persisted data</div>
+                        <h3>Restore persisted data</h3>
                         <button class="btn btn-primary me-1" @onclick="@RestoreState">Restore data</button>
                     </div>
                 </div>
@@ -110,7 +110,7 @@ else
         Client.RefreshHandler += StateHasChanged;
         await Client.Start();
         ServerInfo = Client.ServerInfo;
-        MaintenanceDate = ServerInfo.ScheduledMaintenance.ToString();
+        MaintenanceDate = ServerInfo.ScheduledMaintenance.ToString(CultureInfo.CurrentUICulture);
     }
 
     public void Dispose()

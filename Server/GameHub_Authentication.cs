@@ -163,7 +163,9 @@ public partial class GameHub
         if (dbUser == null)
             return Error<LoginInfo>("User not found");
 
-        dbUser.HashedPassword = hashedPassword;
+        if (!string.IsNullOrEmpty(hashedPassword))
+            dbUser.HashedPassword = hashedPassword;
+        
         dbUser.PlayerName = playerName;
         dbUser.Email = email;
 

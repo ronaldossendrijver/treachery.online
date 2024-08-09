@@ -40,6 +40,7 @@ public partial class GameHub
         var gameId = Guid.NewGuid().ToString();
         var managedGame = new ManagedGame
         {
+            CreationDate = DateTimeOffset.Now,
             CreatorUserId = user.Id,
             GameId = gameId,
             Game = game,
@@ -113,6 +114,13 @@ public partial class GameHub
       
         await Clients.Group(gameToken).HandleJoinGame(user.Id, user.PlayerName, seat);
         await AddToGroup(gameToken, user.Id, Context.ConnectionId);
+
+        if (game.Game.NumberOfPlayers == 1)
+        {
+            game.Game.SetOrUnsetHost(user.Id);
+            await Clients.Group(gameToken).HandleSetOrUnsetHost(user.Id);
+        }
+            
         return Success(new GameInitInfo
         {
             GameToken = gameToken, 
@@ -142,7 +150,7 @@ public partial class GameHub
         if (!game.Game.IsHost(user.Id))
             return Error("You are not a host");
 
-        if (game.Game.IsHost(userId) && game.Game.NumberOfHosts <= 1) 
+        if (game.Game.NumberOfHosts <= 1) 
             return Error("You cannot remove the only remaining host from the game");
         
         game.Game.SetOrUnsetHost(userId);
@@ -154,7 +162,15 @@ public partial class GameHub
     {
         if (!AreValid(userToken, gameToken, out var user, out var game, out var error))
             return error;
-
+        
+        if (game.Game.IsHost(user.Id) && game.Game.NumberOfHosts == 1)
+            foreach (var id in game.Game.Participation.SeatedPlayers.Keys.Where(playerUserId =>
+                         playerUserId != user.Id))
+            {
+                game.Game.SetOrUnsetHost(id);
+                await Clients.Group(gameToken).HandleSetOrUnsetHost(id);
+            }
+                
         game.Game.RemoveUser(user.Id, false);
         await Clients.Group(gameToken).HandleRemoveUser(user.Id, false);
         await RemoveFromGroup(gameToken, user.Id);

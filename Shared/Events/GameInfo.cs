@@ -47,7 +47,7 @@ public class GameInfo
         FactionsInPlay = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? managedGame.Game.Settings.AllowedFactionsInPlay : managedGame.Game.FactionsInPlay,
         NumberOfBots = managedGame.Game.NumberOfBots,
         Rules = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? managedGame.Game.Settings.InitialRules : managedGame.Game.Rules.ToList(),
-        LastAction = managedGame.Game.CurrentPhase > Phase.AwaitingPlayers ? managedGame.Game.History.Last().Time : DateTime.Now,
+        LastAction = managedGame.Game.CurrentPhase > Phase.AwaitingPlayers ? managedGame.Game.History.Last().Time : managedGame.CreationDate,
         CurrentMainPhase = managedGame.Game.CurrentMainPhase,
         CurrentPhase = managedGame.Game.CurrentPhase,
         CurrentTurn = managedGame.Game.CurrentTurn,

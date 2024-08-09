@@ -62,6 +62,7 @@ public partial class GameHub
                 var persisted = new PersistedGame
                 {
                     Token = gameTokenAndManagedGame.Key,
+                    CreationDate = gameTokenAndManagedGame.Value.CreationDate,
                     CreatorUserId = gameTokenAndManagedGame.Value.CreatorUserId,
                     GameId = gameTokenAndManagedGame.Value.GameId,
                     GameState = GameState.GetStateAsString(game),
@@ -104,6 +105,7 @@ public partial class GameHub
                     var managedGame = new ManagedGame
                     {
                         CreatorUserId = persistedGame.CreatorUserId,
+                        CreationDate = persistedGame.CreationDate,
                         GameId = persistedGame.GameId,
                         Game = game,
                         HashedPassword = persistedGame.HashedPassword,

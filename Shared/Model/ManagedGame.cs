@@ -1,7 +1,11 @@
-﻿namespace Treachery.Shared;
+﻿using System;
+
+namespace Treachery.Shared;
 
 public class ManagedGame
 {
+    public DateTimeOffset CreationDate { get; set; }
+    
     public int CreatorUserId { get; set; }
     
     public string GameId { get; set; }

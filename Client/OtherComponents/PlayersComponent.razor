@@ -9,29 +9,37 @@
 @inherits GameComponent
 
 <div class="card p-1 mb-2">
-    <div class="card-body text-center">
+    <div class="card-body">
         <table class="table table-sm">
             @if (Game.CurrentPhase is Phase.AwaitingPlayers)
             {
                 <thead>
-                <tr class="table-dark">
-                    <th scope="col">Player</th>
-                    <th scope="col">Host?</th>
-                    <th scope="col">Actions</th>
-                </tr>
+                    <tr class="table-dark">
+                        <th scope="col">Player</th>
+                        <th scope="col">Host?</th>
+                        <th scope="col">Actions</th>
+                    </tr>
                 </thead>
                 @foreach (var userId in Game.Participation.StandingPlayers)
                 {
                     var setOrUnsetHostText = Game.IsHost(userId) ? "Revoke Host" : "Promote to Host";
-
+                    var kick = userId != Client.UserId;
+                        
                     <tr class="table-dark">
                         <td>
                             @Game.GetPlayerName(userId)
                         </td>
-                        <td>@Game.IsHost(userId)</td>
+                        <td>@(Game.IsHost(userId)? "X" : "")</td>
                         <td>
-                            <button class="btn btn-primary btn-sm" @onclick="@(_ => Kick(userId))">Kick</button>
-                            <button class="btn btn-primary btn-sm" @onclick="@(_ => SetOrUnsetHost(userId))">@setOrUnsetHostText</button>
+                            @if (Client.IsHost)
+                            {
+                                if (Client.UserId != userId)
+                                {
+                                    <button class="btn btn-primary btn-sm" @onclick="@(_ => Remove(userId, true))">Kick</button>    
+                                }
+                                <button class="btn btn-primary btn-sm" @onclick="@(_ => SetOrUnsetHost(userId))">@setOrUnsetHostText</button>
+                            }
+                            <button class="btn btn-primary btn-sm" @onclick="@(_ => Remove(userId, false))">Leave</button>
                         </td>
                     </tr>
                 }
@@ -39,16 +47,13 @@
             else
             {
                 <thead>
-                <tr class="table-dark">
-                    <th scope="col">Player</th>
-                    <th scope="col">Faction</th>
-                    <th scope="col">Host?</th>
-                    <th scope="col">Open?</th>
-                    @if (Game.IsHost(Client.UserId))
-                    {
+                    <tr class="table-dark">
+                        <th scope="col">Player</th>
+                        <th scope="col">Faction</th>
+                        <th scope="col">Host?</th>
+                        <th scope="col">Open?</th>
                         <th scope="col">Actions</th>
-                    }
-                </tr>
+                    </tr>
                 </thead>
                 <tbody>
                 @foreach (var player in Game.Players.OrderBy(p => p.Seat))
@@ -62,10 +67,6 @@
                             @if (Game.IsBot(player))
                             {
                                 <span style="font-style:italic;color:lightblue;">Bot</span>
-                            }
-                            else if (Game.IsEmpty(player.Seat))
-                            {
-                                <span style="font-style:italic;color:red;">Empty</span>
                             }
                             else
                             {
@@ -81,12 +82,16 @@
                                 <button class="btn btn-primary btn-sm" @onclick="@(_ => OpenSeat(player.Seat))">@makeAvailableText seat</button>
                                 @if (!Game.IsBot(player))
                                 {
-                                    <button class="btn btn-primary btn-sm" @onclick="@(_ => Kick(userId))">Kick</button>
+                                    <button class="btn btn-primary btn-sm" @onclick="@(_ => Remove(userId, true))">Kick</button>
                                     <button class="btn btn-primary btn-sm" @onclick="@(_ => SetOrUnsetHost(userId))">@setOrUnsetHostText</button>
                                 }
                                 <br>
                                 <div class="text-danger">@ActionResult</div>
                             </td>
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary btn-sm" @onclick="@(_ => Remove(userId, false))">Leave game</button>
                         }
                     </tr>
                 }
@@ -105,9 +110,17 @@
 
     private string ActionResult { get; set; } = string.Empty;
     
-    private async Task Kick(int userId)
+    private async Task Remove(int userId, bool kick)
     {
-        ActionResult = await Client.RequestKick(userId);
+        if (kick)
+        {
+            ActionResult = await Client.RequestKick(userId);
+        }
+        else
+        {
+            await Client.RequestLeaveGame();
+            ActionResult = string.Empty;
+        }
     }
 
     private async Task SetOrUnsetHost(int userId)

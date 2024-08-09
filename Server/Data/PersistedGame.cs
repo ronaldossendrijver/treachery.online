@@ -21,6 +21,8 @@ public class PersistedGame
     [MaxLength(32)]
     public string Token { get; init; }
     
+    public DateTimeOffset CreationDate { get; set; }
+    
     public int CreatorUserId { get; init; }
     
     [MaxLength(36)]

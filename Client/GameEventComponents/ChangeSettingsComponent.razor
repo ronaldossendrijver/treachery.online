@@ -13,8 +13,6 @@
     <Header>Manage game settings</Header>
     <Body>
 
-        <CheckboxComponent @bind-Value="@Settings.CreatorParticipates">The host (you) will participate in this game</CheckboxComponent>
-
         <SelectNumberComponent @bind-Value="@Settings.MaximumTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns:"/>
 
         <SelectNumberComponent @bind-Value="@Settings.NumberOfPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Label="Number of players:"/>
@@ -69,7 +67,6 @@
 
     private GameSettings Settings { get; set; } = new()
     {
-        CreatorParticipates = true,
         NumberOfPlayers = 6,
         InitialRules = Game.RulesetDefinition[Ruleset.BasicGame].ToList(),
         AllowedFactionsInPlay = Enumerations.GetValuesExceptDefault(Faction.None).ToList(),

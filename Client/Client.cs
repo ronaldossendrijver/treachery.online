@@ -281,7 +281,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public bool InScheduledMaintenance =>
         ServerInfo != null &&
         ServerInfo.ScheduledMaintenance.AddMinutes(15) > DateTime.UtcNow &&
-        ((ServerInfo.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 6 && CurrentPhase <= Phase.AwaitingPlayers) ||
+        ((InGame && ServerInfo.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 6 && CurrentPhase <= Phase.AwaitingPlayers) ||
          ServerInfo.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 1);
 
   
@@ -448,8 +448,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public async Task<string> RequestOpenOrCloseSeat(int seat) =>
         (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestOpenOrCloseSeat), UserToken, GameToken, seat)).Message;
 
-    public async Task RequestLeaveGame() =>
-        await _connection.SendAsync(nameof(IGameHub.RequestLeaveGame), UserToken, GameToken);
+    public async Task<string> RequestLeaveGame() =>
+        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestLeaveGame), UserToken, GameToken)).Message;
     
     public async Task<string> RequestKick(int userId) => 
         (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestKick), UserToken, GameToken, userId)).Message;
