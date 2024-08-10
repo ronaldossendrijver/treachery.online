@@ -21,12 +21,6 @@
             <Label>Factions in play:</Label>
         </SelectFromImageComponent>
 
-        <label class="mt-2 mb-0">AI Players:</label>
-        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots, Game.ExpansionLevel))
-        {
-            <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" Callback="StateHasChanged" />
-        }
-
         <SelectComponent @bind-Value="@Ruleset" Values="@Game.GetAvailableRulesets()">
             <Label>Ruleset:</Label>
         </SelectComponent>
@@ -40,10 +34,16 @@
             <ButtonRowComponent Confirm="@Confirm" ConfirmText="Change Settings" ConfirmError="@Validation" />            
         }
         
-        <CheckboxComponent @bind-Value=_advancedOptions>Show advanced options</CheckboxComponent>
+        <CheckboxComponent @bind-Value=_advancedOptions>Change advanced options</CheckboxComponent>
 
         @if (_advancedOptions)
         {
+            <label class="mt-1 mb-0">AI Players</label>
+            @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots, Game.ExpansionLevel))
+            {
+                <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" Callback="StateHasChanged" />
+            }
+
             foreach (var ruleGroup in EstablishPlayers.AvailableRuleGroups())
             {
                 if (Game.GetRulesInGroup(ruleGroup, Game.ExpansionLevel).Any())

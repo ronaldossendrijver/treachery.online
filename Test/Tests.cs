@@ -442,7 +442,6 @@ public class Tests
 
                 evt.Time = DateTime.Now;
 
-
                 if (game.History.Count == maxNumberOfEvents) File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
                 Assert.AreNotEqual(maxNumberOfEvents, game.History.Count, "bots got stuck");
 

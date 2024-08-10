@@ -115,7 +115,9 @@ public partial class Game
     
     public void AddObserver(int userId, string observerName)
     {
-        Log(observerName, " is now observing this game");
+        if (CurrentReport != null)
+            Log(observerName, " is now observing this game");
+        
         Participation.Observers.Add(userId);
         Participation.Users[userId] = observerName;
     }
@@ -146,7 +148,6 @@ public partial class Game
         else
         {
             Participation.AvailableSeats.Add(seat);
-            Log();
         }
     }
 

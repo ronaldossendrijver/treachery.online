@@ -44,7 +44,7 @@ public abstract class GameEvent
 
     #region Properties
 
-    private const char IDSTRINGSEPARATOR = ';';
+    private const char IdStringSeparator = ';';
 
     public Faction Initiator { get; set; }
 
@@ -150,14 +150,14 @@ public abstract class GameEvent
         var result = new List<T>();
 
         if (ids != null && ids.Length > 0)
-            foreach (var id in ids.Split(IDSTRINGSEPARATOR)) result.Add(lookup.Find(Convert.ToInt32(id)));
+            foreach (var id in ids.Split(IdStringSeparator)) result.Add(lookup.Find(Convert.ToInt32(id)));
 
         return result;
     }
 
     public static string ObjectsToIdString<T>(IEnumerable<T> objs, IFetcher<T> lookup)
     {
-        return string.Join(IDSTRINGSEPARATOR, objs.Select(pj => Convert.ToString(lookup.GetId(pj))));
+        return string.Join(IdStringSeparator, objs.Select(pj => Convert.ToString(lookup.GetId(pj))));
     }
 
     public bool By(Faction f)

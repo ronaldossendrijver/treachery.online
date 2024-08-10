@@ -14,11 +14,11 @@
             @if (Game.CurrentPhase is Phase.AwaitingPlayers)
             {
                 <thead>
-                    <tr class="table-dark">
-                        <th scope="col">Player</th>
-                        <th scope="col">Host?</th>
-                        <th scope="col">Actions</th>
-                    </tr>
+                <tr class="table-dark">
+                    <th scope="col">Player</th>
+                    <th scope="col">Host?</th>
+                    <th scope="col">Actions</th>
+                </tr>
                 </thead>
                 @foreach (var userId in Game.Participation.StandingPlayers)
                 {
@@ -47,13 +47,13 @@
             else
             {
                 <thead>
-                    <tr class="table-dark">
-                        <th scope="col">Player</th>
-                        <th scope="col">Faction</th>
-                        <th scope="col">Host?</th>
-                        <th scope="col">Open?</th>
-                        <th scope="col">Actions</th>
-                    </tr>
+                <tr class="table-dark">
+                    <th scope="col">Player</th>
+                    <th scope="col">Faction</th>
+                    <th scope="col">Host?</th>
+                    <th scope="col">Open?</th>
+                    <th scope="col">Actions</th>
+                </tr>
                 </thead>
                 <tbody>
                 @foreach (var player in Game.Players.OrderBy(p => p.Seat))
@@ -76,9 +76,9 @@
                         <td><FactionComponent Faction="@player.Faction" Diameter="20"/></td>
                         <td>@(Game.IsHost(userId) ? "X" : "")</td>
                         <td>@(Game.SeatIsAvailable(player.Seat) ? "X" : "")</td>
-                        @if (Client.IsHost)
-                        {
-                            <td>
+                        <td>                        
+                            @if (Client.IsHost)
+                            {
                                 <button class="btn btn-primary btn-sm" @onclick="@(_ => OpenSeat(player.Seat))">@makeAvailableText seat</button>
                                 @if (!Game.IsBot(player))
                                 {
@@ -86,18 +86,18 @@
                                     <button class="btn btn-primary btn-sm" @onclick="@(_ => SetOrUnsetHost(userId))">@setOrUnsetHostText</button>
                                 }
                                 <br>
-                                <div class="text-danger">@ActionResult</div>
-                            </td>
-                        }
-                        else
-                        {
-                            <button class="btn btn-primary btn-sm" @onclick="@(_ => Remove(userId, false))">Leave game</button>
-                        }
+                            }
+                            else
+                            {
+                                <button class="btn btn-primary btn-sm" @onclick="@(_ => Remove(userId, false))">Leave game</button>
+                            }
+                        </td>                   
                     </tr>
                 }
                 </tbody>
             }
         </table>
+        <div class="text-danger">@ActionResult</div>
         @if (Client.IsHost && Client.Game.NumberOfBots > 0)
         {
             var pauseMessage = Client.Game.Participation.BotsArePaused ? "Unpause" : "Pause";

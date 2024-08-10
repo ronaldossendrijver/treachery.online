@@ -165,6 +165,7 @@ public partial class GameHub
             return error;
         
         e.Initialize(game.Game);
+        e.Time = DateTimeOffset.Now;
         return await ValidateAndExecute(gameId, e, game, game.Game.IsHost(user.Id));
     }
 
@@ -172,6 +173,7 @@ public partial class GameHub
         where TEvent : GameEvent
     {
         var validationResult = e.Execute(true, isHost);
+        e.Time = DateTimeOffset.Now;
         
         if (validationResult != null)
         {

@@ -59,12 +59,6 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
             result = Error<TResult>("Game not found");
             return false;
         }
-        
-        if (!game.Game.IsParticipant(user.Id))
-        {
-            result = Error<TResult>("User not found in game");
-            return false;
-        }
 
         return true;
     }    
@@ -89,12 +83,6 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         if (!GamesByGameId.TryGetValue(gameId, out game))
         {
             result = Error("Game not found");
-            return false;
-        }
-
-        if (!game.Game.IsParticipant(user.Id))
-        {
-            result = Error("User not found in game");
             return false;
         }
         

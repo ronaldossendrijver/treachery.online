@@ -68,21 +68,24 @@ public partial class GameHub
     
     public async Task<VoidResult> RequestLoadGame(string userToken, string gameId, string stateData, string skin)
     {
-        if (!AreValid(userToken, gameId, out var user, out var managedGame, out var error))
+        if (!AreValid(userToken, gameId, out var user, out var game, out var error))
             return error;
         
+        if (!game.Game.IsHost(user.Id))
+            return Error("You are not a host");
+        
         var state = GameState.Load(stateData);
-        var errorMessage = Game.TryLoad(state, managedGame.Game.Participation, false, false, out var loadedGame);
+        var errorMessage = Game.TryLoad(state, game.Game.Participation, false, false, out var loadedGame);
 
         if (errorMessage != null)
             return Error(errorMessage.ToString());
             
-        managedGame.Game = loadedGame;
+        game.Game = loadedGame;
         await Clients.Group(gameId).HandleLoadGame(new GameInitInfo
         {
             GameId = gameId, 
             GameState = stateData, 
-            Participation = managedGame.Game.Participation
+            Participation = game.Game.Participation
         });
 
         if (!string.IsNullOrEmpty(skin))
@@ -95,7 +98,7 @@ public partial class GameHub
     {
         if (!AreValid<GameInitInfo>(userToken, gameId, out var user, out var game, out var error))
             return error;
-
+        
         if (!game.Game.IsPlayer(user.Id))
         {
             if (!string.IsNullOrEmpty(game.HashedPassword) && !game.HashedPassword.Equals(hashedPassword))
@@ -103,18 +106,21 @@ public partial class GameHub
         
             if (!game.Game.IsOpen(seat) || game.Game.WasKicked(user.Id))
                 return Error<GameInitInfo>("Seat is not available");
+            
+            if (game.Game.IsObserver(user.Id))
+                return Error<GameInitInfo>("You are already an observer in this game");
 
             game.Game.AddPlayer(user.Id, user.PlayerName, seat);
+            await Clients.Group(gameId).HandleJoinGame(user.Id, user.PlayerName, seat);
+            
+            if (game.Game.NumberOfPlayers == 1)
+            {
+                game.Game.SetOrUnsetHost(user.Id);
+                await Clients.Group(gameId).HandleSetOrUnsetHost(user.Id);
+            }
         }
       
-        await Clients.Group(gameId).HandleJoinGame(user.Id, user.PlayerName, seat);
         await AddToGroup(gameId, user.Id, Context.ConnectionId);
-
-        if (game.Game.NumberOfPlayers == 1)
-        {
-            game.Game.SetOrUnsetHost(user.Id);
-            await Clients.Group(gameId).HandleSetOrUnsetHost(user.Id);
-        }
             
         return Success(new GameInitInfo
         {
@@ -230,18 +236,26 @@ public partial class GameHub
     {
         if (!AreValid<GameInitInfo>(userToken, gameId, out var user, out var game, out var error))
             return error;
-        
-        if (game.ObserversRequirePassword && !string.IsNullOrEmpty(game.HashedPassword) && !game.HashedPassword.Equals(hashedPassword))
-            return Error<GameInitInfo>("Incorrect password");
-        
+
+        if (!game.Game.IsObserver(user.Id))
+        {
+            if (game.ObserversRequirePassword && !string.IsNullOrEmpty(game.HashedPassword) &&
+                !game.HashedPassword.Equals(hashedPassword))
+                return Error<GameInitInfo>("Incorrect password");
+
+            if (game.Game.IsPlayer(user.Id))
+                return Error<GameInitInfo>("You are already a player in this game");
+
+            game.Game.AddObserver(user.Id, user.PlayerName);
+            await Clients.Group(gameId).HandleObserveGame(user.Id, user.PlayerName);
+        }
+
         await AddToGroup(gameId, user.Id, Context.ConnectionId);
-        game.Game.AddObserver(user.Id, user.PlayerName);
-        await Clients.Group(gameId).HandleObserveGame(user.Id, user.PlayerName);
-        
+
         return Success(new GameInitInfo
         {
-            GameId = gameId, 
-            GameState = GameState.GetStateAsString(game.Game), 
+            GameId = gameId,
+            GameState = GameState.GetStateAsString(game.Game),
             Participation = game.Game.Participation
         });
     }
@@ -251,6 +265,9 @@ public partial class GameHub
         if (!AreValid<GameInitInfo>(userToken, gameId, out var user, out var game, out var error))
             return error;
         
+        if (!game.Game.IsParticipant(user.Id))
+            return Error<GameInitInfo>("User not found in game");
+       
         await AddToGroup(gameId, user.Id, Context.ConnectionId);
         return Success(new GameInitInfo
         {
@@ -262,9 +279,12 @@ public partial class GameHub
     
     public async Task<Result<GameInitInfo>> RequestGameState(string userToken, string gameId)
     {
-        if (!AreValid<GameInitInfo>(userToken, gameId, out _, out var game, out var error))
+        if (!AreValid<GameInitInfo>(userToken, gameId, out var user, out var game, out var error))
             return error;
-        
+
+        if (!game.Game.IsParticipant(user.Id))
+            return Error<GameInitInfo>("User not found in game");
+
         return await Task.FromResult(Success(new GameInitInfo
         {
             GameId = gameId, 
@@ -304,7 +324,7 @@ public partial class GameHub
             return error;
 
         if (!game.Game.IsHost(user.Id))
-            return Error("You are not the host");
+            return Error("You are not a host");
 
         game.BotsArePaused = !game.BotsArePaused;
         await Clients.All.HandleBotStatus(game.BotsArePaused);
