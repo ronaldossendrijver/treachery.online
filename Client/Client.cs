@@ -34,7 +34,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     //Game in progress
     public Game Game { get; private set; }
-    private string GameToken { get; set; } = string.Empty;
+    private string GameId { get; set; } = string.Empty;
     public GameStatus Status { get; private set; }
     public List<Type> Actions { get; private set; } = []; 
     
@@ -92,18 +92,18 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
     }
 
-    public async Task Start(string userToken = null, string gameToken = null)
+    public async Task Start(string userToken = null, string gameId = null)
     {
         await _connection.StartAsync();
         await Connect();
         
-        if (!string.IsNullOrEmpty(userToken) && !string.IsNullOrEmpty(gameToken))
+        if (!string.IsNullOrEmpty(userToken) && !string.IsNullOrEmpty(gameId))
         {
             var loginInfo = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.GetLoginInfo), userToken);
             if (loginInfo.Success)
             {
                 LoginInfo = loginInfo.Contents;
-                GameToken = gameToken;
+                GameId = gameId;
                 await RequestReconnectGame();
             }
         }
@@ -134,7 +134,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public void Reset()
     {
-        GameToken = null;
+        GameId = null;
         Game = null;
         Status = null;
         _ = Browser.StopSounds();
@@ -213,7 +213,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         else
         {
             //This is not the expected event. Request game state from the server.
-            var gameInitInfo = await _connection.InvokeAsync<GameInitInfo>(nameof(IGameHub.RequestGameState), UserToken, GameToken);
+            var gameInitInfo = await _connection.InvokeAsync<GameInitInfo>(nameof(IGameHub.RequestGameState), UserToken, GameId);
             resultMessage = await LoadGame(gameInitInfo);
         }
         
@@ -385,7 +385,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             if (loadMessage != null)
                 return loadMessage.ToString();
 
-            GameToken = result.Contents.GameToken;
+            GameId = result.Contents.GameId;
         }
         
         return result.Message;
@@ -397,7 +397,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return result.Success ? string.Empty : result.Message;
     }
 
-    public async Task<string> RequestJoinGame(string gameId, string hashedPassword, int seat = -1)
+    public async Task<string> RequestJoinGame(string gameId, string hashedPassword, int seat)
     {
         var result = await _connection.InvokeAsync<Result<GameInitInfo>>(nameof(IGameHub.RequestJoinGame), UserToken, gameId, hashedPassword, seat);
         if (result.Success)
@@ -406,7 +406,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             if (loadMessage != null)
                 return loadMessage.ToString();
 
-            GameToken = result.Contents.GameToken;
+            GameId = result.Contents.GameId;
         }
 
         return result.Message;
@@ -421,7 +421,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             if (loadMessage != null)
                 return loadMessage.ToString();
 
-            GameToken = result.Contents.GameToken;
+            GameId = result.Contents.GameId;
         }
         
         return result.Message;
@@ -429,51 +429,51 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public async Task<string> RequestReconnectGame()
     {
-        var result = await _connection.InvokeAsync<Result<GameInitInfo>>(nameof(IGameHub.RequestReconnectGame), UserToken, GameToken);
+        var result = await _connection.InvokeAsync<Result<GameInitInfo>>(nameof(IGameHub.RequestReconnectGame), UserToken, GameId);
         if (result.Success)
         {
             var loadMessage = await LoadGame(result.Contents);
             if (loadMessage != null)
                 return loadMessage.ToString();
 
-            GameToken = result.Contents.GameToken;
+            GameId = result.Contents.GameId;
         }
         
         return result.Message;
     }
 
     public async Task<string> RequestSetOrUnsetHost(int userId) =>
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestSetOrUnsetHost), UserToken, GameToken, userId)).Message;
+        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestSetOrUnsetHost), UserToken, GameId, userId)).Message;
 
     public async Task<string> RequestOpenOrCloseSeat(int seat) =>
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestOpenOrCloseSeat), UserToken, GameToken, seat)).Message;
+        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestOpenOrCloseSeat), UserToken, GameId, seat)).Message;
 
     public async Task<string> RequestLeaveGame() =>
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestLeaveGame), UserToken, GameToken)).Message;
+        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestLeaveGame), UserToken, GameId)).Message;
     
     public async Task<string> RequestKick(int userId) => 
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestKick), UserToken, GameToken, userId)).Message;
+        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestKick), UserToken, GameId, userId)).Message;
 
     public async Task<string> RequestLoadGame(string state, string skin = null) =>
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestLoadGame), UserToken, GameToken, state, skin)).Message;
+        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestLoadGame), UserToken, GameId, state, skin)).Message;
 
     public async Task<string> RequestSetSkin(string skin) =>
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestSetSkin), UserToken, GameToken, skin)).Message;
+        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestSetSkin), UserToken, GameId, skin)).Message;
 
     public async Task<string> RequestUndo(int untilEventNr) =>
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestUndo), UserToken, GameToken, untilEventNr)).Message;
+        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestUndo), UserToken, GameId, untilEventNr)).Message;
 
     public async Task<string> SetTimer(int value) =>
         (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.SetTimer), value)).Message;
 
     public async Task<string> RequestGameEvent<T>(T gameEvent) where T : GameEvent =>
-        (await _connection.InvokeAsync<VoidResult>($"Request{typeof(T).Name}", UserToken, GameToken, gameEvent)).Message;
+        (await _connection.InvokeAsync<VoidResult>($"Request{typeof(T).Name}", UserToken, GameId, gameEvent)).Message;
 
     public async Task<string> RequestPauseBots() =>
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestPauseBots), UserToken, GameToken)).Message;
+        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestPauseBots), UserToken, GameId)).Message;
 
     public async Task SendChatMessage(GameChatMessage message) =>
-        await _connection.SendAsync(nameof(IGameHub.SendChatMessage), UserToken, GameToken, message);
+        await _connection.SendAsync(nameof(IGameHub.SendChatMessage), UserToken, GameId, message);
 
     public async Task SendGlobalChatMessage(GlobalChatMessage message) =>
         await _connection.SendAsync(nameof(IGameHub.SendGlobalChatMessage), UserToken, message);
@@ -510,7 +510,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         {
             if (IsConnected)
             {
-                await _connection.SendAsync(nameof(IGameHub.RequestRegisterHeartbeat), UserToken, GameToken);
+                await _connection.SendAsync(nameof(IGameHub.RequestRegisterHeartbeat), UserToken, GameId);
 
                 if (LoggedIn && !InGame)
                 {

@@ -62,7 +62,7 @@
                                     
                                     @if (av.CurrentPhase == Phase.AwaitingPlayers)
                                     {
-                                        <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsPlayer(av.GameId, joinGamePassword[av.GameId]))">Join</button>
+                                        <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsPlayer(av.GameId, joinGamePassword[av.GameId], -1))">Join</button>
                                     }
                                     else
                                     {
@@ -75,7 +75,7 @@
                                 }
                                 else
                                 {
-                                    <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty))">Resume</button>
+                                    <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat))">Resume</button>
                                 }
                                 <div class="text-danger">@JoinErrors[av.GameId]</div>
                             </td>                        
@@ -100,7 +100,7 @@
         }
     }
 
-    private async Task JoinGameAsPlayer(string gameId, string password, int seat = -1)
+    private async Task JoinGameAsPlayer(string gameId, string password, int seat)
     {
         JoinErrors[gameId] = await Client.RequestJoinGame(gameId, Support.GetHash(password), seat);
     }

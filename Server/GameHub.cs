@@ -19,8 +19,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     private static ConcurrentDictionary<int,ConnectionInfo> ConnectionInfoByUserId { get; } = [];
 
     //Games
-    private static ConcurrentDictionary<string,string> GameTokensByGameId { get; } = [];
-    private static ConcurrentDictionary<string,ManagedGame> GamesByGameToken { get; } = [];
+    private static ConcurrentDictionary<string,ManagedGame> GamesByGameId{ get; } = [];
     
     //Other
     private static DateTimeOffset MaintenanceDate { get; set; }
@@ -37,7 +36,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     
     private static Result<TResult> Success<TResult>(TResult contents) => new() { Success = true, Contents = contents };
 
-    private static bool AreValid<TResult>(string userToken, string gameToken, out User user, out ManagedGame game, out Result<TResult> result)
+    private static bool AreValid<TResult>(string userToken, string gameId, out User user, out ManagedGame game, out Result<TResult> result)
     {
         user = null;
         game = null;
@@ -52,10 +51,10 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
             return false;
         }
         
-        if (gameToken == null)
+        if (gameId == null)
             return false;
 
-        if (!GamesByGameToken.TryGetValue(gameToken, out game))
+        if (!GamesByGameId.TryGetValue(gameId, out game))
         {
             result = Error<TResult>("Game not found");
             return false;
@@ -63,13 +62,13 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         
         if (!game.Game.IsParticipant(user.Id))
         {
-            result = Error<TResult>("User not found");
+            result = Error<TResult>("User not found in game");
             return false;
         }
 
         return true;
     }    
-    private static bool AreValid(string userToken, string gameToken, out User user, out ManagedGame game, out VoidResult result)
+    private static bool AreValid(string userToken, string gameId, out User user, out ManagedGame game, out VoidResult result)
     {
         user = null;
         game = null;
@@ -84,10 +83,10 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
             return false;
         }
         
-        if (gameToken == null)
+        if (gameId == null)
             return false;
 
-        if (!GamesByGameToken.TryGetValue(gameToken, out game))
+        if (!GamesByGameId.TryGetValue(gameId, out game))
         {
             result = Error("Game not found");
             return false;
@@ -95,7 +94,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
 
         if (!game.Game.IsParticipant(user.Id))
         {
-            result = Error("User not found");
+            result = Error("User not found in game");
             return false;
         }
         

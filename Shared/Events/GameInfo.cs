@@ -16,7 +16,8 @@ namespace Treachery.Shared;
 public class GameInfo
 {
     public int CreatorUserId { get; init; }
-    public bool YouAreIn { get; init; }
+    public int YourCurrentSeat { get; set; }
+    public bool YouAreIn => YourCurrentSeat >= 0;
     public string GameId { get; init; }
     public bool HasPassword { get; init; }
     public string GameName { get; init; }
@@ -41,7 +42,7 @@ public class GameInfo
     {
         GameId = managedGame.GameId,
         CreatorUserId = managedGame.CreatorUserId,
-        YouAreIn = managedGame.Game.Participation.Users.ContainsKey(userId),
+        YourCurrentSeat = managedGame.Game.Participation.SeatedPlayers.GetValueOrDefault(userId, -1),
         Players = managedGame.Game.PlayerNames.ToArray(),
         Observers = managedGame.Game.ObserverNames.ToArray(),
         FactionsInPlay = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? managedGame.Game.Settings.AllowedFactionsInPlay : managedGame.Game.FactionsInPlay,

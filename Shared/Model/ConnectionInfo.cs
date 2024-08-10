@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace Treachery.Shared;
+﻿namespace Treachery.Shared;
 
 public class ConnectionInfo
 {
-    public Dictionary<string, string> ConnectionIdByGameToken { get; } = [];
+    public Dictionary<string, string> ConnectionIdByGameId { get; } = [];
 }

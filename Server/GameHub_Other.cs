@@ -20,8 +20,7 @@ public partial class GameHub
             TotalUsers = GetDbContext().Users.Count(),
             UsersByUserTokenCount = UsersByUserToken.Count,
             ConnectionInfoByUserIdCount = ConnectionInfoByUserId.Count,
-            GamesByGameTokenCount = GamesByGameToken.Count,
-            GameTokensByGameIdCount = GameTokensByGameId.Count
+            GamesByGameIdCount = GamesByGameId.Count,
         };
 
         return Success(result);
@@ -55,23 +54,22 @@ public partial class GameHub
         {
             await context.PersistedGames.ExecuteDeleteAsync();
             
-            foreach (var gameTokenAndManagedGame in GamesByGameToken)
+            foreach (var gameIdAndManagedGame in GamesByGameId)
             {
-                var game = gameTokenAndManagedGame.Value.Game;
+                var game = gameIdAndManagedGame.Value;
 
                 var persisted = new PersistedGame
                 {
-                    Token = gameTokenAndManagedGame.Key,
-                    CreationDate = gameTokenAndManagedGame.Value.CreationDate,
-                    CreatorUserId = gameTokenAndManagedGame.Value.CreatorUserId,
-                    GameId = gameTokenAndManagedGame.Value.GameId,
-                    GameState = GameState.GetStateAsString(game),
-                    GameParticipation = JsonSerializer.Serialize(game.Participation),
-                    HashedPassword = gameTokenAndManagedGame.Value.HashedPassword,
-                    BotsArePaused = gameTokenAndManagedGame.Value.BotsArePaused,
-                    ObserversRequirePassword = gameTokenAndManagedGame.Value.ObserversRequirePassword,
-                    StatisticsSent = gameTokenAndManagedGame.Value.StatisticsSent,
-                    GameName = gameTokenAndManagedGame.Value.GameName,
+                    CreationDate = game.CreationDate,
+                    CreatorUserId = game.CreatorUserId,
+                    GameId = game.GameId,
+                    GameState = GameState.GetStateAsString(game.Game),
+                    GameParticipation = JsonSerializer.Serialize(game.Game.Participation),
+                    HashedPassword = game.HashedPassword,
+                    BotsArePaused = game.BotsArePaused,
+                    ObserversRequirePassword = game.ObserversRequirePassword,
+                    StatisticsSent = game.StatisticsSent,
+                    GameName = game.GameName,
                 };
 
                 context.PersistedGames.Add(persisted);
@@ -92,12 +90,11 @@ public partial class GameHub
         var amount = 0;
         await using (var context = GetDbContext())
         {
-            GamesByGameToken.Clear();
-            GameTokensByGameId.Clear();
+            GamesByGameId.Clear();
             
             foreach (var persistedGame in context.PersistedGames)
             {
-                var token = persistedGame.Token;
+                var id = persistedGame.GameId;
                 var gameState = GameState.Load(persistedGame.GameState);
                 var participation = JsonSerializer.Deserialize<GameParticipation>(persistedGame.GameParticipation);
                 if (Game.TryLoad(gameState, participation, false, true, out Game game) == null)
@@ -114,8 +111,7 @@ public partial class GameHub
                         StatisticsSent = persistedGame.StatisticsSent,
                         GameName = persistedGame.GameName,
                     };
-                    GamesByGameToken.TryAdd(token, managedGame);
-                    GameTokensByGameId.TryAdd(persistedGame.GameId, token);
+                    GamesByGameId.TryAdd(id, managedGame);
                 }
                 amount++;
             }
@@ -129,20 +125,15 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
             return Error<string>("Not authorized");
 
-        if (GameTokensByGameId.TryGetValue(gameId, out var gameToken))
+        if (GamesByGameId.TryGetValue(gameId, out var game))
         {
-            GameTokensByGameId.Remove(gameId, out _);
+            GamesByGameId.Remove(gameId, out _);
 
-            if (GamesByGameToken.TryGetValue(gameToken, out var game))
+            foreach (var userId in game.Game.Participation.Users.Keys)
             {
-                GamesByGameToken.Remove(gameToken, out _);
-
-                foreach (var userId in game.Game.Participation.Users.Keys)
-                {
-                    game.Game.RemoveUser(userId, true);
-                    await Clients.Group(gameToken).HandleRemoveUser(userId, true);
-                    await RemoveFromGroup(gameToken, userId);
-                }
+                game.Game.RemoveUser(userId, true);
+                await Clients.Group(gameId).HandleRemoveUser(userId, true);
+                await RemoveFromGroup(gameId, userId);
             }
         }
         

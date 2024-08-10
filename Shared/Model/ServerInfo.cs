@@ -21,6 +21,5 @@ public class ServerInfo
     
     public int UsersByUserTokenCount { get; set; }
     public int ConnectionInfoByUserIdCount { get; set; }
-    public int GamesByGameTokenCount { get; set; }
-    public int GameTokensByGameIdCount { get; set; }
+    public int GamesByGameIdCount { get; set; }
 }

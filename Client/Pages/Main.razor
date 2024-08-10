@@ -8,7 +8,7 @@
 *@
 
 @page "/"
-@page "/{userToken}/{gameToken}"
+@page "/{userToken}/{gameId}"
 @using Treachery.Client.OtherComponents
 @using Treachery.Client.MapComponents
 @using Treachery.Client.GameEventComponents
@@ -149,7 +149,7 @@ else
 @code {
 
     [Parameter] public string UserToken { get; set; }
-    [Parameter] public string GameToken { get; set; }
+    [Parameter] public string GameId { get; set; }
 
     private ElementReference element;
 
@@ -158,7 +158,7 @@ else
         Client.RefreshHandler += StateHasChanged;
         Client.RefreshPopoverHandler += RefreshPopovers;
         
-        await Client.Start(UserToken, GameToken);
+        await Client.Start(UserToken, GameId);
         
         Message.DefaultDescriber = Skin.Current;
         

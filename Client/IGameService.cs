@@ -36,7 +36,7 @@ public interface IGameService
     public event Action RefreshHandler;
     public event Action RefreshPopoverHandler;
     public void Refresh();
-    public Task Start(string userToken = null, string gameToken = null);
+    public Task Start(string userToken = null, string gameId = null);
     public List<GameInfo> RunningGames { get; }
     public void Reset();
     public Player Player { get; }
@@ -74,7 +74,7 @@ public interface IGameService
     
     Task<string> RequestCreateGame(string hashedPassword, string stateData = null, string skinData = null);
     Task<string> RequestCloseGame(string gameId);
-    Task<string> RequestJoinGame(string gameId, string hashedPassword, int seat = -1);
+    Task<string> RequestJoinGame(string gameId, string hashedPassword, int seat);
     Task<string> RequestObserveGame(string gameId, string hashedPassword);
     Task<string> RequestSetOrUnsetHost(int userId);
     Task<string> RequestOpenOrCloseSeat(int seat);
