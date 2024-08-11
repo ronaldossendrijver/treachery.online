@@ -105,7 +105,7 @@ public partial class Game
                 AddObserver(userId, Participation.Users.GetValueOrDefault(userId));
             }
             
-            Log(playerName, " now controls ", replacedPlayer.Faction);
+            Log(playerName, " now controls ", replacedPlayer?.Faction);
             Participation.SeatedPlayers[userId] = seat;
             Participation.AvailableSeats.Remove(seat);
         }

@@ -40,7 +40,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public List<Type> Actions { get; private set; } = []; 
     
     public bool InGame => Game != null;
-    public Player Player => Game.GetPlayerByUserId(UserId);
+    public Player Player => Game.Version >= 170 ? Game.GetPlayerByUserId(UserId) : Game.GetPlayerByName(PlayerName);
     public string PlayerName => LoginInfo.PlayerName;
     public Faction Faction => Player?.Faction ?? Faction.None;
     public bool IsObserver => Game.IsObserver(UserId);
@@ -648,12 +648,31 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
  
     private async Task<Result<T>> Invoke<T>(string hubMethod, params object[] args)
     {
-        var result = await _connection.InvokeAsync<Result<T>>(hubMethod, args);
+        var result = args.Length switch
+        {
+            0 => await _connection.InvokeAsync<Result<T>>(hubMethod),
+            1 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0]),
+            2 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1]),
+            3 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2]),
+            4 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3]),
+            5 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3], args[5]),
+            _ => throw new ArgumentException("Too many arguments")
+        };
+        
         if (!result.Success && result.Error is ErrorType.UserNotFound && StoredPassword != null)
         {
             if (await RequestLogin(UserName, StoredPassword) == null)
             {
-                result = await _connection.InvokeAsync<Result<T>>(hubMethod, args);
+                result = args.Length switch
+                {
+                    0 => await _connection.InvokeAsync<Result<T>>(hubMethod),
+                    1 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0]),
+                    2 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1]),
+                    3 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2]),
+                    4 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3]),
+                    5 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3], args[5]),
+                    _ => throw new ArgumentException("Too many arguments")
+                };
             }
         }
 
