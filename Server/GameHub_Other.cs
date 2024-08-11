@@ -9,10 +9,10 @@ namespace Treachery.Server;
 
 public partial class GameHub
 {
-    public Result<ServerInfo> Connect()
+    public async Task<Result<ServerInfo>> Connect()
     {
-        //Do some maintenance work here, cleaning up old tokens
-        
+        await CleanupUserTokens();
+
         var result = new ServerInfo
         {
             AdminName = configuration["GameAdminUsername"],
@@ -25,11 +25,37 @@ public partial class GameHub
 
         return Success(result);
     }
-    
+
+    private async Task CleanupUserTokens()
+    {
+        var now = DateTimeOffset.Now;
+        if (!(now.Subtract(LastCleanup).TotalMinutes >= 15)) 
+            return;
+        
+        foreach (var tokenAndInfo in UserTokenInfo.ToArray())
+        {
+            var age = now.Subtract(tokenAndInfo.Value.Issued).TotalMinutes;
+            if (age >= 10080 ||
+                age >= 15 && now.Subtract(tokenAndInfo.Value.Refreshed).TotalMinutes >= 15)
+            {
+                UsersByUserToken.Remove(tokenAndInfo.Key, out _);
+                UserTokenInfo.Remove(tokenAndInfo.Key, out _);
+            } 
+        }
+
+        foreach (var userIdAndConnectionInfo in ConnectionInfoByUserId)
+        {
+            foreach (var gameId in userIdAndConnectionInfo.Value.GetGameIdsWithOldConnections(10080).ToArray())
+            {
+                await RemoveFromGroup(gameId, userIdAndConnectionInfo.Key);
+            }
+        }
+    }
+
     public async Task<VoidResult> RequestRegisterHeartbeat(string userToken)
     {
         if (!UserTokenInfo.TryGetValue(userToken, out var tokenInfo))
-            return Error("User not found");
+            return Error(ErrorType.UserNotFound);
 
         tokenInfo.Refreshed = DateTime.Now;
         return await Task.FromResult(Success());
@@ -38,7 +64,7 @@ public partial class GameHub
     public async Task<Result<string>> AdminUpdateMaintenance(string userToken, DateTimeOffset maintenanceDate)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
-            return Error<string>("Not authorized");
+            return Error<string>(ErrorType.InvalidUserNameOrPassword);
 
         MaintenanceDate = maintenanceDate;
         return await Task.FromResult(Success("Maintenance window updated"));
@@ -47,7 +73,7 @@ public partial class GameHub
     public async Task<Result<string>> AdminPersistState(string userToken)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
-            return Error<string>("Not authorized");
+            return Error<string>(ErrorType.InvalidUserNameOrPassword);
         
         var amount = 0;
         await using (var context = GetDbContext())
@@ -85,7 +111,7 @@ public partial class GameHub
     public async Task<Result<string>> AdminRestoreState(string userToken)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
-            return Error<string>("Not authorized");
+            return Error<string>(ErrorType.InvalidUserNameOrPassword);
         
         var amount = 0;
         await using (var context = GetDbContext())
@@ -123,7 +149,7 @@ public partial class GameHub
     public async Task<Result<string>> AdminCloseGame(string userToken, string gameId)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
-            return Error<string>("Not authorized");
+            return Error<string>(ErrorType.InvalidUserNameOrPassword);
 
         if (GamesByGameId.TryGetValue(gameId, out var game))
         {

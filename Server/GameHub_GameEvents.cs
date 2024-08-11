@@ -152,12 +152,11 @@ public partial class GameHub
             return error;
 
         if (!game.Game.IsHost(user.Id))
-            return Error("You are not a host");
+            return Error(ErrorType.NoHost);
         
         await Clients.Group(gameId).HandleSetTimer(value);
         return Success();
     }
-
     
     private async Task<VoidResult> ProcessGameEvent<TEvent>(string userToken, string gameId, TEvent e) where TEvent : GameEvent
     {
@@ -177,7 +176,7 @@ public partial class GameHub
         
         if (validationResult != null)
         {
-            return Error(validationResult.ToString());
+            return Error(ErrorType.InvalidGameEvent, validationResult.ToString());
         }
 
         if (game.Game.CurrentMainPhase is MainPhase.Ended && !game.StatisticsSent)

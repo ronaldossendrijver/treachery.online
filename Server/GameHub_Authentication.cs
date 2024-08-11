@@ -14,19 +14,14 @@ public partial class GameHub
         
         if (trimmedUsername.Trim().Length <= 3)
         {
-            return Error<LoginInfo>("Username must be more than 3 characters");
+            return Error<LoginInfo>(ErrorType.UserNameTooShort);
         }
         
         await using var db = GetDbContext();
         
         if (db.Users.Any(x => x.Name.Trim().ToLower().Equals(trimmedUsername)))
         {
-            return Error<LoginInfo>("This username already exists");
-        }
-        
-        if (db.Users.Any(x => x.Email.Trim().ToLower().Equals(trimmedUsername)))
-        {
-            return Error<LoginInfo>("This e-mail address is already in use");
+            return Error<LoginInfo>(ErrorType.UserNameExists);
         }
 
         db.Add(new User
@@ -38,7 +33,7 @@ public partial class GameHub
             x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()) && x.HashedPassword == hashedPassword);
         
         if (user == null)
-            return Error<LoginInfo>("User creation failed");
+            return Error<LoginInfo>(ErrorType.UserCreationFailed);
         
         MailMessage mailMessage = new()
         {
@@ -64,7 +59,7 @@ public partial class GameHub
     public async Task<Result<LoginInfo>> RequestLogin(int version, string userName, string hashedPassword)
     {
         if (Game.LatestVersion != version)
-            return Error<LoginInfo>("Invalid game version");
+            return Error<LoginInfo>(ErrorType.InvalidGameVersion);
         
         await using var db = GetDbContext();
         
@@ -72,7 +67,7 @@ public partial class GameHub
             x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()) && x.HashedPassword == hashedPassword);
         
         if (user == null)
-            return Error<LoginInfo>("Invalid user name or password");
+            return Error<LoginInfo>(ErrorType.InvalidUserNameOrPassword);
 
         var userToken = GenerateToken();
         UsersByUserToken.TryAdd(userToken, user);
@@ -87,10 +82,10 @@ public partial class GameHub
         var user = await db.Users.FirstOrDefaultAsync(x => x.Email.Trim().ToLower().Equals(email.Trim().ToLower()));
         
         if (user == null)
-            return Error("Unknown email address");
+            return Error(ErrorType.UnknownEmailAddress);
 
         if ((DateTime.Now - user.PasswordResetTokenCreated).TotalMinutes < 10)
-            return Error("Please wait at least 10 minutes before requesting another password reset");
+            return Error(ErrorType.ResetRequestTooSoon);
 
         var token = GenerateToken();
         user.PasswordResetToken = token;
@@ -124,13 +119,13 @@ public partial class GameHub
             x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()));
         
         if (user == null)
-            return Error<LoginInfo>("Unknown user name");
+            return Error<LoginInfo>(ErrorType.UnknownUserName);
 
         if (string.IsNullOrEmpty(user.PasswordResetToken) || user.PasswordResetToken.Trim() != passwordResetToken)
-            return Error<LoginInfo>("Invalid password reset token");
+            return Error<LoginInfo>(ErrorType.InvalidResetToken);
         
         if ((DateTime.Now - user.PasswordResetTokenCreated).TotalMinutes > 60)
-            return Error<LoginInfo>("Your password reset token has expired");
+            return Error<LoginInfo>(ErrorType.ResetTokenExpired);
 
         user.HashedPassword = newHashedPassword;
         user.PasswordResetToken = null;
@@ -146,7 +141,7 @@ public partial class GameHub
     public async Task<Result<LoginInfo>> GetLoginInfo(string userToken)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
-            return Error<LoginInfo>("User not found");
+            return Error<LoginInfo>(ErrorType.UserNotFound);
             
         return await Task.FromResult(Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email }));
     }
@@ -154,14 +149,14 @@ public partial class GameHub
     public async Task<Result<LoginInfo>> RequestUpdateUserInfo(string userToken, string hashedPassword, string playerName, string email)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
-            return Error<LoginInfo>("User not found");
+            return Error<LoginInfo>(ErrorType.UserNotFound);
         
         await using var db = GetDbContext();
 
         var dbUser = await db.Users.FindAsync(user.Id); 
         
         if (dbUser == null)
-            return Error<LoginInfo>("User not found");
+            return Error<LoginInfo>(ErrorType.UserNotFound);
 
         if (!string.IsNullOrEmpty(hashedPassword))
             dbUser.HashedPassword = hashedPassword;

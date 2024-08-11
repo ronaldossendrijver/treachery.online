@@ -200,7 +200,7 @@ else if (IsVisible(Players))
     private void RestartGame()
     {
         SetVisible(Restart);
-        Client.Reset();
+        Client.ExitGame();
         Client.Refresh();
     }
 

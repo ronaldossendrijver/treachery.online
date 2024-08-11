@@ -179,7 +179,7 @@ public interface IGameHub
     Task<VoidResult> SendGlobalChatMessage(string userToken, GlobalChatMessage message);
 
     //Other
-    Result<ServerInfo> Connect();
+    Task<Result<ServerInfo>> Connect();
     
     //Admin
     Task<Result<string>> AdminUpdateMaintenance(string hashedPassword, DateTimeOffset maintenanceDate);

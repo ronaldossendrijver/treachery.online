@@ -17,7 +17,7 @@ public partial class GameHub
     public async Task<VoidResult> SendGlobalChatMessage(string userToken, GlobalChatMessage message)
     {
         if (!UsersByUserToken.ContainsKey(userToken))
-            return Error("User not found");
+            return Error(ErrorType.UserNotFound);
         
         await Clients.All.HandleGlobalChatMessage(message);
         return Success();

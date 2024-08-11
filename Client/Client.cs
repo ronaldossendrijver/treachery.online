@@ -25,6 +25,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     //Logged in player
     private LoginInfo LoginInfo { get; set; }
+    private string StoredPassword { get; set; }
     
     public bool LoggedIn => LoginInfo != null;
     private string UserToken => LoginInfo?.Token;
@@ -77,6 +78,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             .Build();
         
         _connection.Reconnected += OnReconnected;
+        _connection.Closed += OnDisconnected;
+        
 
         RegisterHandlers();
     }
@@ -88,6 +91,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         if (_connection != null)
         {
             _connection.Reconnected -= OnReconnected;
+            _connection.Closed -= OnDisconnected;
             await _connection.DisposeAsync();
         }
     }
@@ -102,6 +106,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             var loginInfo = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.GetLoginInfo), userToken);
             if (loginInfo.Success)
             {
+                StoredPassword = null;
                 LoginInfo = loginInfo.Contents;
                 GameId = gameId;
                 await RequestReconnectGame();
@@ -132,11 +137,12 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     private void RefreshPopovers() => RefreshPopoverHandler?.Invoke();
 
-    public void Reset()
+    public void ExitGame()
     {
-        GameId = null;
         Game = null;
+        GameId = null;
         Status = null;
+        Actions = [];
         _ = Browser.StopSounds();
         Refresh();
     }
@@ -181,7 +187,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     {
         if (userId == UserId)
         {
-            Reset();
+            ExitGame();
         }
         else
         {
@@ -213,8 +219,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         else
         {
             //This is not the expected event. Request game state from the server.
-            var gameInitInfo = await _connection.InvokeAsync<GameInitInfo>(nameof(IGameHub.RequestGameState), UserToken, GameId);
-            resultMessage = await LoadGame(gameInitInfo);
+            var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestGameState), UserToken, GameId);
+            resultMessage = result.Success ? await LoadGame(result.Contents) : Message.Express("Connection error");
         }
         
         if (resultMessage == null)
@@ -226,7 +232,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             Support.Log(resultMessage.ToString(Skin.Current));
         }
     }
-
+    
     public async Task HandleUndo(int untilEventNr)
     {
         try
@@ -316,12 +322,13 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
         if (result.Success)
         {
+            StoredPassword = hashedPassword;
             LoginInfo = result.Contents;
             Refresh();
             return null;
         }
 
-        return result.Message;
+        return Skin.Current.Describe(result.Error);
     }
 
     public async Task<string> RequestLogin(string userName, string hashedPassword)
@@ -330,33 +337,23 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
         if (result.Success)
         {
+            StoredPassword = hashedPassword;
             LoginInfo = result.Contents;
             Refresh();
             return null;
         }
 
-        return result.Message;
-    }
-
-    public async Task<string> RequestUpdateUserInfo(string hashedPassword, string email, string playerName)
-    {
-        var result = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestUpdateUserInfo), UserToken,
-            hashedPassword, playerName, email);
-
-        if (result.Success)
-        {
-            LoginInfo = result.Contents;
-            Refresh();
-            return null;
-        }
-
-        return result.Message;
+        StoredPassword = null;
+        LoginInfo = null;
+        Refresh();
+        
+        return Skin.Current.Describe(result.Error);
     }
 
     public async Task<string> RequestPasswordReset(string email)
     {
         var result = await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestPasswordReset), email);
-        return result.Message;
+        return Skin.Current.Describe(result.Error);
     }
 
     public async Task<string> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword)
@@ -365,20 +362,34 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
         if (result.Success)
         {
+            StoredPassword = newHashedPassword;
             LoginInfo = result.Contents;
             Refresh();
             return null;
         }
 
-        return result.Message;
+        return Skin.Current.Describe(result.Error);
+    }
+    
+    public async Task<string> RequestUpdateUserInfo(string hashedPassword, string email, string playerName)
+    {
+        var result = await Invoke<LoginInfo>(nameof(IGameHub.RequestUpdateUserInfo), UserToken,
+            hashedPassword, playerName, email);
+
+        if (!result.Success) 
+            return Skin.Current.Describe(result.Error);
+        
+        StoredPassword = hashedPassword;
+        LoginInfo = result.Contents;
+        Refresh();
+        return null;
     }
     
     //Game Management
 
     public async Task<string> RequestCreateGame(string hashedPassword, string stateData = null, string skinData = null)
     {
-        var result = await _connection.InvokeAsync<Result<GameInitInfo>>(nameof(IGameHub.RequestCreateGame), UserToken, hashedPassword, stateData, skinData);
-        
+        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestCreateGame), UserToken, hashedPassword, stateData, skinData);
         if (result.Success)
         {
             var loadMessage = await LoadGame(result.Contents);
@@ -388,119 +399,110 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             GameId = result.Contents.GameId;
         }
         
-        return result.Message;
+        return result.Success ? null :
+            result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : Skin.Current.Describe(result.Error);
     }
     
     public async Task<string> RequestCloseGame(string gameId)
     {
-        var result = await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestCloseGame), UserToken, gameId);
-        return result.Success ? string.Empty : result.Message;
+        var result = await Invoke(nameof(IGameHub.RequestCloseGame), UserToken, gameId);
+        return result.Success ? string.Empty : Skin.Current.Describe(result.Error);
     }
 
     public async Task<string> RequestJoinGame(string gameId, string hashedPassword, int seat)
     {
-        var result = await _connection.InvokeAsync<Result<GameInitInfo>>(nameof(IGameHub.RequestJoinGame), UserToken, gameId, hashedPassword, seat);
-        if (result.Success)
-        {
-            var loadMessage = await LoadGame(result.Contents);
-            if (loadMessage != null)
-                return loadMessage.ToString();
+        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestJoinGame), UserToken, gameId, hashedPassword, seat);
+        if (!result.Success) 
+            return Skin.Current.Describe(result.Error);
+        
+        var loadMessage = await LoadGame(result.Contents);
+        if (loadMessage != null)
+            return loadMessage.ToString();
 
-            GameId = result.Contents.GameId;
-        }
-
-        return result.Message;
+        GameId = result.Contents.GameId;
+        return null;
     }
 
     public async Task<string> RequestObserveGame(string gameId, string hashedPassword)
     {
-        var result = await _connection.InvokeAsync<Result<GameInitInfo>>(nameof(IGameHub.RequestObserveGame), UserToken, gameId, hashedPassword);
-        if (result.Success)
-        {
-            var loadMessage = await LoadGame(result.Contents);
-            if (loadMessage != null)
-                return loadMessage.ToString();
-
-            GameId = result.Contents.GameId;
-        }
+        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestObserveGame), UserToken, gameId, hashedPassword);
+        if (!result.Success) 
+            return Skin.Current.Describe(result.Error);
         
-        return result.Message;
-    }
+        var loadMessage = await LoadGame(result.Contents);
+        if (loadMessage != null)
+            return loadMessage.ToString();
 
-    public async Task<string> RequestReconnectGame()
-    {
-        var result = await _connection.InvokeAsync<Result<GameInitInfo>>(nameof(IGameHub.RequestReconnectGame), UserToken, GameId);
-        if (result.Success)
-        {
-            var loadMessage = await LoadGame(result.Contents);
-            if (loadMessage != null)
-                return loadMessage.ToString();
-
-            GameId = result.Contents.GameId;
-        }
-        
-        return result.Message;
+        GameId = result.Contents.GameId;
+        return null;
     }
 
     public async Task<string> RequestSetOrUnsetHost(int userId) =>
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestSetOrUnsetHost), UserToken, GameId, userId)).Message;
+        Skin.Current.Describe((await Invoke(nameof(IGameHub.RequestSetOrUnsetHost), UserToken, GameId, userId)).Error);
 
     public async Task<string> RequestOpenOrCloseSeat(int seat) =>
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestOpenOrCloseSeat), UserToken, GameId, seat)).Message;
+        Skin.Current.Describe((await Invoke(nameof(IGameHub.RequestOpenOrCloseSeat), UserToken, GameId, seat)).Error);
 
     public async Task<string> RequestLeaveGame() =>
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestLeaveGame), UserToken, GameId)).Message;
+        Skin.Current.Describe((await Invoke(nameof(IGameHub.RequestLeaveGame), UserToken, GameId)).Error);
     
     public async Task<string> RequestKick(int userId) => 
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestKick), UserToken, GameId, userId)).Message;
+        Skin.Current.Describe((await Invoke(nameof(IGameHub.RequestKick), UserToken, GameId, userId)).Error);
 
-    public async Task<string> RequestLoadGame(string state, string skin = null) =>
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestLoadGame), UserToken, GameId, state, skin)).Message;
+    public async Task<string> RequestLoadGame(string state, string skin = null)
+    {
+        var result = await Invoke(nameof(IGameHub.RequestLoadGame), UserToken, GameId, state, skin);
+        return result.Success ? null :
+            result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : Skin.Current.Describe(result.Error);
+    }
 
     public async Task<string> RequestSetSkin(string skin) =>
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestSetSkin), UserToken, GameId, skin)).Message;
+        Skin.Current.Describe((await Invoke<VoidResult>(nameof(IGameHub.RequestSetSkin), UserToken, GameId, skin)).Error);
 
     public async Task<string> RequestUndo(int untilEventNr) =>
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestUndo), UserToken, GameId, untilEventNr)).Message;
+        Skin.Current.Describe((await Invoke(nameof(IGameHub.RequestUndo), UserToken, GameId, untilEventNr)).Error);
 
     public async Task<string> SetTimer(int value) =>
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.SetTimer), value)).Message;
+        Skin.Current.Describe((await Invoke(nameof(IGameHub.SetTimer), value)).Error);
 
-    public async Task<string> RequestGameEvent<T>(T gameEvent) where T : GameEvent =>
-        (await _connection.InvokeAsync<VoidResult>($"Request{typeof(T).Name}", UserToken, GameId, gameEvent)).Message;
-
+    public async Task<string> RequestGameEvent<T>(T gameEvent) where T : GameEvent
+    {
+        var result = await Invoke($"Request{typeof(T).Name}", UserToken, GameId, gameEvent);
+        return result.Success ? null :
+            result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : Skin.Current.Describe(result.Error);
+    }
+        
     public async Task<string> RequestPauseBots() =>
-        (await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestPauseBots), UserToken, GameId)).Message;
+        Skin.Current.Describe((await Invoke(nameof(IGameHub.RequestPauseBots), UserToken, GameId)).Error);
 
     public async Task SendChatMessage(GameChatMessage message) =>
-        await _connection.SendAsync(nameof(IGameHub.SendChatMessage), UserToken, GameId, message);
+        await Invoke(nameof(IGameHub.SendChatMessage), UserToken, GameId, message);
 
     public async Task SendGlobalChatMessage(GlobalChatMessage message) =>
-        await _connection.SendAsync(nameof(IGameHub.SendGlobalChatMessage), UserToken, message);
+        await Invoke(nameof(IGameHub.SendGlobalChatMessage), UserToken, message);
 
     public async Task<string> AdminUpdateMaintenance(DateTimeOffset maintenanceDate)
     {
-        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.AdminUpdateMaintenance), UserToken, maintenanceDate);
-        return result.Success ? result.Contents : result.Message;
+        var result = await Invoke<string>(nameof(IGameHub.AdminUpdateMaintenance), UserToken, maintenanceDate);
+        return result.Success ? result.Contents : Skin.Current.Describe(result.Error);
     }
 
     public async Task<string> AdminPersistState()
     {
-        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.AdminPersistState), UserToken);
-        return result.Success ? result.Contents : result.Message;
+        var result = await Invoke<string>(nameof(IGameHub.AdminPersistState), UserToken);
+        return result.Success ? result.Contents : Skin.Current.Describe(result.Error);
     }
-
 
     public async Task<string> AdminRestoreState()
     {
-        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.AdminRestoreState), UserToken);
-        return result.Success ? result.Contents : result.Message;
+        var result = await Invoke<string>(nameof(IGameHub.AdminRestoreState), UserToken);
+        return result.Success ? result.Contents : Skin.Current.Describe(result.Error);
     }
 
     public async Task<string> AdminCloseGame(string gameId)
     {
-        var result = await _connection.InvokeAsync<Result<string>>(nameof(IGameHub.AdminCloseGame), UserToken, gameId);
-        return result.Success ? result.Contents : result.Message;
+        var result = await Invoke<string>(nameof(IGameHub.AdminCloseGame), UserToken, gameId);
+        return result.Success ? result.Contents : Skin.Current.Describe(result.Error);
     }
 
     public List<GameInfo> RunningGames { get; private set; } = [];
@@ -522,7 +524,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
                     }
                     else
                     {
-                        Support.Log("Server error: " + runningGamesResult.Message);                        
+                        Support.Log("Server error: " + runningGamesResult.Error);                        
                     }
                 }
             }
@@ -562,7 +564,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
         else
         {
-            Support.Log(result.Message);
+            Support.Log(result.Error);
         }
     }
     
@@ -620,6 +622,43 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     }
     
     private async Task OnReconnected(string _) => await RequestReconnectGame();
+
+    private Task OnDisconnected(Exception arg)
+    {
+        Refresh();
+        return Task.CompletedTask;
+    }
     
+    private async Task RequestReconnectGame()
+    {
+        var result = await _connection.InvokeAsync<Result<GameInitInfo>>(nameof(IGameHub.RequestReconnectGame), UserToken, GameId);
+        if (result.Success)
+        {
+            var loadMessage = await LoadGame(result.Contents);
+            if (loadMessage != null)
+                return;
+
+            GameId = result.Contents.GameId;
+            Refresh();
+        }
+    }
+
+    private async Task<Result<VoidContents>> Invoke(string hubMethod, params object[] args) =>
+        await Invoke<VoidContents>(hubMethod, args);
+ 
+    private async Task<Result<T>> Invoke<T>(string hubMethod, params object[] args)
+    {
+        var result = await _connection.InvokeAsync<Result<T>>(hubMethod, args);
+        if (!result.Success && result.Error is ErrorType.UserNotFound && StoredPassword != null)
+        {
+            if (await RequestLogin(UserName, StoredPassword) == null)
+            {
+                result = await _connection.InvokeAsync<Result<T>>(hubMethod, args);
+            }
+        }
+
+        return result;
+    }
+   
     private static void LogSerializationError(object sender, ErrorEventArgs e) => Support.Log(e.ErrorContext.Error.ToString());
 }

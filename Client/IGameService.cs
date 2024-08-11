@@ -38,7 +38,7 @@ public interface IGameService
     public void Refresh();
     public Task Start(string userToken = null, string gameId = null);
     public List<GameInfo> RunningGames { get; }
-    public void Reset();
+    public void ExitGame();
     public Player Player { get; }
 
     public Faction Faction { get; }

@@ -11,9 +11,10 @@ namespace Treachery.Shared;
 
 public class Result<T>
 {
-    public bool Success { get; set; }
-    public string Message { get; set; }
-    public T Contents { get; set; }
+    public bool Success { get; init; }
+    public ErrorType Error { get; init; }
+    public string ErrorDetails { get; init; }
+    public T Contents { get; init; }
 }
 
 public class VoidResult : Result<VoidContents>
@@ -21,7 +22,31 @@ public class VoidResult : Result<VoidContents>
     
 }
 
-public class VoidContents
+public class VoidContents;
+
+public enum ErrorType
 {
-    
+    UserNotFound,
+    GameNotFound,
+    UserNameTooShort,
+    UserNameExists,
+    EmailExists,
+    UserCreationFailed,
+    InvalidGameVersion,
+    InvalidUserNameOrPassword,
+    UnknownEmailAddress,
+    ResetRequestTooSoon,
+    UnknownUserName,
+    InvalidResetToken,
+    ResetTokenExpired,
+    NoHost,
+    InvalidGameEvent,
+    TooManyGames,
+    IncorrectGamePassword,
+    SeatNotAvailable,
+    AlreadyObserver,
+    CannotRemoveLastHost,
+    NoCreator,
+    AlreadyPlayer,
+    UserNotInGame
 }

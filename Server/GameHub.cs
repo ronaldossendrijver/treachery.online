@@ -16,21 +16,22 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     //Users
     private static ConcurrentDictionary<string,User> UsersByUserToken { get; } = [];
     private static ConcurrentDictionary<string,TokenInfo> UserTokenInfo { get; } = [];
-    private static ConcurrentDictionary<int,ConnectionInfo> ConnectionInfoByUserId { get; } = [];
+    private static ConcurrentDictionary<int,UserConnections> ConnectionInfoByUserId { get; } = [];
 
     //Games
     private static ConcurrentDictionary<string,ManagedGame> GamesByGameId{ get; } = [];
     
     //Other
     private static DateTimeOffset MaintenanceDate { get; set; }
+    private static DateTimeOffset LastCleanup { get; set; }
     
     private TreacheryContext GetDbContext() => new(dbContextOptions, configuration);
 
     private static string GenerateToken() => Convert.ToBase64String(Guid.NewGuid().ToByteArray())[..16];
     
-    private static VoidResult Error(string message) => new() { Message = message, Success = false }; 
+    private static VoidResult Error(ErrorType error, string errorDetails = "") => new() { Error = error, ErrorDetails = errorDetails, Success = false }; 
     
-    private static Result<TResult> Error<TResult>(string message) => new() { Message = message, Success = false }; 
+    private static Result<TResult> Error<TResult>(ErrorType error, string errorDetails = "") => new() { Error = error, ErrorDetails = errorDetails, Success = false }; 
     
     private static VoidResult Success() => new() { Success = true, Contents = new VoidContents()}; 
     
@@ -47,7 +48,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         
         if (!UsersByUserToken.TryGetValue(userToken, out user))
         {
-            result = Error<TResult>("User not found");
+            result = Error<TResult>(ErrorType.UserNotFound);
             return false;
         }
         
@@ -56,7 +57,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
 
         if (!GamesByGameId.TryGetValue(gameId, out game))
         {
-            result = Error<TResult>("Game not found");
+            result = Error<TResult>(ErrorType.GameNotFound);
             return false;
         }
 
@@ -73,7 +74,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         
         if (!UsersByUserToken.TryGetValue(userToken, out user))
         {
-            result = Error("User not found");
+            result = Error(ErrorType.UserNotFound);
             return false;
         }
         
@@ -82,7 +83,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
 
         if (!GamesByGameId.TryGetValue(gameId, out game))
         {
-            result = Error("Game not found");
+            result = Error(ErrorType.GameNotFound);
             return false;
         }
         

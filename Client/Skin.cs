@@ -839,6 +839,37 @@ public class Skin : IDescriber
             _ => "unknown rule"
         };
     }
+    
+    public string Describe(ErrorType e)
+    {
+        return e switch
+        {
+            ErrorType.UserNotFound => "User not found",
+            ErrorType.GameNotFound => "Game not found",
+            ErrorType.UserNameTooShort => "Username must be more than 3 characters",
+            ErrorType.UserNameExists => "This username already exists",
+            ErrorType.EmailExists => "This e-mail address is already in use",
+            ErrorType.UserCreationFailed => "User creation failed",
+            ErrorType.InvalidGameVersion => "Invalid game version",
+            ErrorType.InvalidUserNameOrPassword => "Invalid user name or password",
+            ErrorType.UnknownEmailAddress => "Unknown email address",
+            ErrorType.ResetRequestTooSoon => "Please wait at least 10 minutes before requesting another password reset",
+            ErrorType.UnknownUserName => "Unknown user name",
+            ErrorType.InvalidResetToken => "Invalid password reset token",
+            ErrorType.ResetTokenExpired => "Your password reset token has expired",
+            ErrorType.NoHost => "You are not a host",
+            ErrorType.InvalidGameEvent => "Invalid game action",
+            ErrorType.TooManyGames => "You cannot have more than 10 active games",
+            ErrorType.IncorrectGamePassword => "Incorrect password",
+            ErrorType.SeatNotAvailable => "Seat is not available",
+            ErrorType.AlreadyObserver => "You are already an observer in this game",
+            ErrorType.CannotRemoveLastHost => "You cannot remove the only remaining host from the game",
+            ErrorType.NoCreator => "You are not the creator of this game",
+            ErrorType.AlreadyPlayer => "You are already a player in this game",
+            ErrorType.UserNotInGame => "User not found in game",
+            
+        };
+    }
 
     #endregion Descriptions
 

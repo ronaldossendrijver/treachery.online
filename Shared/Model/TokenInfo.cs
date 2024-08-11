@@ -4,7 +4,7 @@ namespace Treachery.Shared;
 
 public class TokenInfo
 {
-    public DateTime Issued { get; } = DateTime.Now;
+    public DateTimeOffset Issued { get; } = DateTimeOffset.Now;
     
-    public DateTime Refreshed { get; set; }
+    public DateTimeOffset Refreshed { get; set; }
 }
