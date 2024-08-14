@@ -74,6 +74,18 @@ else if (Client.Game.CurrentPhase is Phase.AwaitingPlayers)
         <div class="col-sm-12 col-lg-3"></div>
     </div>
 }
+else if (Client.PlayerNeedsSeating)
+{
+    <div class="row d-flex align-items-center">
+        <div class="col-sm-12 col-lg-3"></div>
+        <div class="col-sm-12 col-lg-6">
+            <div class="d-flex justify-content-center">
+                <SeatPlayersComponent/>
+            </div>
+        </div>
+        <div class="col-sm-12 col-lg-3"></div>
+    </div>
+}
 else
 {
     <div @ref="@element" class="row">

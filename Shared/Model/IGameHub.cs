@@ -32,6 +32,7 @@ public interface IGameHub
     Task<VoidResult> RequestPauseBots(string userToken, string gameId);
     Task<Result<List<GameInfo>>> RequestRunningGames(string userToken);
     Task<VoidResult> RequestRegisterHeartbeat(string userToken);
+    Task<VoidResult> RequestAssignSeats(string userToken, string gameId, Dictionary<int, int> assignment);
     
     //Game Events
     Task<VoidResult> RequestChangeSettings(string userToken, string gameId, ChangeSettings e);

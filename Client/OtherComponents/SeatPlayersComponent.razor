@@ -1,0 +1,76 @@
+﻿@*
+ * Copyright (C) 2020-2024 Ronald Ossendrijver (admin@treachery.online)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
+ * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
+ * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+*@
+@inherits GameComponent
+
+<div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeIn90 3s;">
+    <div class="card-header">Assign factions to players</div>
+    <div class="card-body">
+        <table class="table table-sm">
+            <thead>
+            <tr class="table-dark">
+                <th scope="col">Player</th>
+                <th scope="col">Seat</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var userId in SeatedPlayers.Keys)
+            {
+                <tr class="table-dark">
+                    <td>
+                        @Game.GetPlayerName(userId)
+                    </td>
+                    <td>
+                        <SelectFromImageComponent T="Faction" 
+                                                  OnChanged="@(f => AssignFaction(userId, f))" 
+                                                  Value="@GetAssignedFaction(userId)" 
+                                                  Values="@Client.Game.Players.Select(p => p.Faction)" 
+                                                  Required="false" 
+                                                  ImageWidth="40" />
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <button class="btn btn-primary mt-1" disabled="@(SeatedPlayers.ContainsValue(-1))" @onclick="@AssignSeats">Confirm</button>
+    </div>
+</div>
+
+@code {
+    
+    private Dictionary<int, int> SeatedPlayers { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        SeatedPlayers = new Dictionary<int, int>(Game.Participation.SeatedPlayers);
+    }
+
+    private Faction GetAssignedFaction(int userId)
+    {
+        var seat = SeatedPlayers.GetValueOrDefault(userId);
+        return seat == -1 ? Faction.None : Client.Game.GetFactionInSeat(seat);
+    }
+
+    private void AssignFaction(int userId, Faction faction)
+    {
+        var seat = Game.GetPlayer(faction)?.Seat ?? -1;
+        foreach (var existingSeatedPlayer in SeatedPlayers.Where(sp => sp.Key != userId && sp.Value == seat).ToArray())
+        {
+            SeatedPlayers[existingSeatedPlayer.Key] = -1;    
+        }
+        
+        SeatedPlayers[userId] = seat;
+    }
+
+    private async Task AssignSeats()
+    {
+        await Client.RequestAssignSeats(SeatedPlayers);
+    }
+}
+
+

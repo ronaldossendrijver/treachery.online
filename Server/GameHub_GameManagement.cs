@@ -21,11 +21,11 @@ public partial class GameHub
             return Error<GameInitInfo>(ErrorType.TooManyGames);
 
         Game game;
-        var initialParticipation = new GameParticipation();
-        if (!string.IsNullOrEmpty(stateData))
+        var loadGame = !string.IsNullOrEmpty(stateData);
+        if (loadGame)
         {
             var state = GameState.Load(stateData);
-            var errorMessage = Game.TryLoad(state, initialParticipation, false, false, out var loadedGame);
+            var errorMessage = Game.TryLoad(state, new GameParticipation(), false, false, out var loadedGame);
 
             if (errorMessage == null)
                 game = loadedGame;
@@ -51,9 +51,9 @@ public partial class GameHub
         
         GamesByGameId[gameId] = managedGame;
 
-        await AddToGroup(gameId, user.Id, Context.ConnectionId);
         game.AddPlayer(user.Id, user.PlayerName);
         game.SetOrUnsetHost(user.Id);
+        await AddToGroup(gameId, user.Id, Context.ConnectionId);
         
         if (!string.IsNullOrEmpty(skin))
             await Clients.Group(gameId).HandleSetSkin(skin);
@@ -79,7 +79,10 @@ public partial class GameHub
 
         if (errorMessage != null)
             return Error(ErrorType.InvalidGameEvent, errorMessage.ToString());
-            
+
+        if (loadedGame.Seed != game.Game.Seed)
+            loadedGame.ResetSeats();
+        
         game.Game = loadedGame;
         await Clients.Group(gameId).HandleLoadGame(new GameInitInfo
         {
@@ -93,7 +96,21 @@ public partial class GameHub
         
         return Success();
     }
-    
+
+    public async Task<VoidResult> RequestAssignSeats(string userToken, string gameId, Dictionary<int, int> assignment)
+    {
+        if (!AreValid(userToken, gameId, out var user, out var game, out var error))
+            return error;
+
+        if (!game.Game.IsHost(user.Id))
+            return Error(ErrorType.NoHost);
+
+        game.Game.Participation.SeatedPlayers = assignment;
+        await Clients.Group(gameId).HandleAssignSeats(assignment);
+
+        return Success();
+    }
+
     public async Task<Result<GameInitInfo>> RequestJoinGame(string userToken, string gameId, string hashedPassword, int seat)
     {
         if (!AreValid<GameInitInfo>(userToken, gameId, out var user, out var game, out var error))

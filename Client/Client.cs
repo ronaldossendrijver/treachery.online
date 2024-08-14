@@ -40,7 +40,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public List<Type> Actions { get; private set; } = []; 
     
     public bool InGame => Game != null;
-    public Player Player => Game.Version >= 170 ? Game.GetPlayerByUserId(UserId) : Game.GetPlayerByName(PlayerName);
+    public bool PlayerNeedsSeating => InGame && Game.Participation.SeatedPlayers.ContainsValue(-1);
+    public Player Player => Game.GetPlayerByUserId(UserId);
     public string PlayerName => LoginInfo.PlayerName;
     public Faction Faction => Player?.Faction ?? Faction.None;
     public bool IsObserver => Game.IsObserver(UserId);
@@ -131,6 +132,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         _connection.On<int,bool>(nameof(HandleRemoveUser), HandleRemoveUser);
         _connection.On<bool>(nameof(HandleBotStatus), HandleBotStatus);
         _connection.On<GameInitInfo>(nameof(HandleLoadGame), HandleLoadGame);
+        _connection.On<Dictionary<int, int>>(nameof(HandleAssignSeats), HandleAssignSeats);
     }
     
     public void Refresh() => RefreshHandler?.Invoke();
@@ -258,8 +260,14 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         RefreshPopovers();
     }
 
-    public async Task HandleLoadGame(GameInitInfo initInfo) => 
-        await LoadGame(initInfo);
+    public async Task HandleLoadGame(GameInitInfo initInfo) => await LoadGame(initInfo);
+
+    public Task HandleAssignSeats(Dictionary<int, int> assignment)
+    {
+        Game.Participation.SeatedPlayers = assignment;
+        Refresh();
+        return Task.CompletedTask;
+    }
 
     public LinkedList<ChatMessage> Messages { get; } = [];
     
@@ -455,6 +463,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return result.Success ? null :
             result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : Skin.Current.Describe(result.Error);
     }
+    public async Task<string> RequestAssignSeats(Dictionary<int, int> assignment) =>
+        Skin.Current.Describe((await Invoke(nameof(IGameHub.RequestAssignSeats), UserToken, GameId, assignment)).Error);
 
     public async Task<string> RequestSetSkin(string skin) =>
         Skin.Current.Describe((await Invoke<VoidResult>(nameof(IGameHub.RequestSetSkin), UserToken, GameId, skin)).Error);

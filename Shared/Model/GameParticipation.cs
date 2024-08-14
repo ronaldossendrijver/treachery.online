@@ -15,7 +15,7 @@ public class GameParticipation
     /// <summary>
     /// For all Users (UserIds) that are players, hold their Seat
     /// </summary>
-    public Dictionary<int, int> SeatedPlayers { get; } = [];
+    public Dictionary<int, int> SeatedPlayers { get; set; } = [];
 
     /// <summary>
     /// All joined users that are Observers (UserIds)

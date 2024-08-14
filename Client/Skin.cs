@@ -1274,8 +1274,8 @@ public class Skin : IDescriber
                   <li>The Face Dancer leader is sent to the {31} if it was not already killed. You don't collect {16} for it.</li>
                   <li>The remaining amount of forces in the territory go back to their reserves and are replaced by up to the same amount of your forces from your reserves and/or from anywhere on the planet.</li>
                   </ol>
-                  Once revealed you do not replace a Face Dancer (Traitor Card) until you have revealed all 3. When that happens, they are shuffled into the Traitor deck and you get 3 new Face Dancers.
-                  During {43}, you may replace an unrevealed Face Dancer with one from the traitor deck (after shuffling it back).") +
+                  <p>Once revealed you do not replace a Face Dancer (Traitor Card) until you have revealed all 3. When that happens, they are shuffled into the Traitor deck and you get 3 new Face Dancers.
+                  During {43}, you may replace an unrevealed Face Dancer with one from the traitor deck (after shuffling it back).</p>") +
                Advantage("Unlimited Revival",
                    "You have no revival limits and your revive at half price (rounded up). Payments by other players for revivals go to you. Each time a player uses free revival or a Tleilaxu Ghola card, you get 1 {16} from the bank.") +
                Advantage("Increased Revival",

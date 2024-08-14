@@ -14,11 +14,11 @@
             @if (Game.CurrentPhase is Phase.AwaitingPlayers)
             {
                 <thead>
-                <tr class="table-dark">
-                    <th scope="col">Player</th>
-                    <th scope="col">Host?</th>
-                    <th scope="col">Actions</th>
-                </tr>
+                    <tr class="table-dark">
+                        <th scope="col">Player</th>
+                        <th scope="col">Host?</th>
+                        <th scope="col">Actions</th>
+                    </tr>
                 </thead>
                 @foreach (var userId in Game.Participation.StandingPlayers)
                 {

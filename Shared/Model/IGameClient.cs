@@ -26,4 +26,5 @@ public interface IGameClient
     Task HandleRemoveUser(int userId, bool kick);
     Task HandleBotStatus(bool botsArePaused);
     Task HandleLoadGame(GameInitInfo initInfo);
+    Task HandleAssignSeats(Dictionary<int, int> assignment);
 }

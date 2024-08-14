@@ -10,18 +10,20 @@ namespace Treachery.Client;
 
 public interface IGameService
 {
-    public Game Game { get; }
-    public GameStatus Status { get; }
-    public bool InGame { get; }
-    
-    //Player and Host
+    //Logged in?
     public bool LoggedIn { get; }
     public int UserId { get; }
     public string UserName { get; }
     public string UserEmail { get; }
     public string PlayerName { get; }
-    public bool IsObserver { get; }
     public ServerInfo ServerInfo { get; }
+
+    //Game info
+    public Game Game { get; }
+    public GameStatus Status { get; }
+    public bool InGame { get; }
+    public bool PlayerNeedsSeating { get; }
+    public bool IsObserver { get; }
     
     //Client State
     public float CurrentEffectVolume { get; set;  }
@@ -82,6 +84,7 @@ public interface IGameService
     Task<string> RequestKick(int userId);
     
     Task<string> RequestLoadGame(string state, string skin = null);
+    Task<string> RequestAssignSeats(Dictionary<int, int> seatedPlayers);
     Task<string> RequestSetSkin(string skin);
     Task<string> RequestUndo(int untilEventNr);
     Task<string> RequestPauseBots();
@@ -99,5 +102,6 @@ public interface IGameService
     Task<string> AdminPersistState();
     Task<string> AdminRestoreState();
     Task<string> AdminCloseGame(string gameId);
-  
+
+    
 }

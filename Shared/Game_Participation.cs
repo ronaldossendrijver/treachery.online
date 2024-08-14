@@ -162,4 +162,10 @@ public partial class Game
             Participation.Hosts.Add(userId);
         }
     }
+
+    public void ResetSeats()
+    {
+        foreach (var userId in Participation.SeatedPlayers.Keys)
+            Participation.SeatedPlayers[userId] = -1;
+    }
 }
