@@ -21,4 +21,11 @@ public class ManagedGame
     public bool BotsArePaused { get; set; }
     
     public bool StatisticsSent { get; set; }
+
+    
+    public bool AsyncPlay { get; set; }
+    
+    public int AsyncPlayMessageIntervalSeconds { get; set; }
+
+    public DateTimeOffset LastAsyncPlayMessageSent { get; set; }
 }

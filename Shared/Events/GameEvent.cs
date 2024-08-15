@@ -7,16 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-/// <summary>
-/// When adding a new GameEvent 'XYZ' to the game:
-/// - Add it to Game.GetApplicableEvents()
-/// - Add a HandleEvent(XYZ e) method to the Game class
-/// - Create a XYZComponent to show the event in Treachery.Client.GameEventComponents.
-/// - Add the XYZComponent to Treachery.Client.OtherComponents.ActionPanel
-/// - Add a method RequestXYZ(int hostID, XYZ e)<XYZ>(XYZ e) to Treachery.online.Server.GameHub
-/// </summary>
-/// 
-
 using System;
 using Newtonsoft.Json;
 
@@ -82,8 +72,8 @@ public abstract class GameEvent
         Initiator = initiator;
         Player = game.GetPlayer(initiator);
     }
-    
-    public void Initialize(Game game, int seat)
+
+    private void Initialize(Game game, int seat)
     {
         Game = game;
         Initiator = Faction.None;

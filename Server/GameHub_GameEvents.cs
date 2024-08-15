@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Treachery.Client;
 using Treachery.Shared;
 using Treachery.Shared.Model;
 
@@ -189,8 +190,32 @@ public partial class GameHub
         
         var botDelay = DetermineBotDelay(game.Game.CurrentMainPhase, e);
         _ = Task.Delay(botDelay).ContinueWith(_ => PerformBotEvent(gameId, game));
+
+        await SendAsyncPlayMessagesIfApplicable(game);
         
         return Success();
+    }
+
+    private async Task SendAsyncPlayMessagesIfApplicable(ManagedGame game)
+    {
+        var now = DateTimeOffset.Now;
+        if (game.AsyncPlay && now.Subtract(game.LastAsyncPlayMessageSent).TotalSeconds >=
+            game.AsyncPlayMessageIntervalSeconds)
+        {
+            var message = Skin.Current.Format("Turn: {0}, phase: {1}", game.Game.CurrentTurn, game.Game.CurrentPhase); 
+            //message += = $"The following happened:{Environment.NewLine}{Environment.NewLine}";
+            foreach (var evt in game.Game.History.Where(e => e.Time > game.LastAsyncPlayMessageSent))
+            {
+                message += "- " + evt.ToString() + Environment.NewLine;
+            }
+            message += Environment.NewLine;
+            
+            
+            foreach (var userId in game.Game.Participation.SeatedPlayers.Keys)
+            {
+                
+            }
+        }
     }
 
     private async Task PerformBotEvent(string gameId, ManagedGame managedGame)

@@ -181,7 +181,7 @@
 
                         @if (ShownPlayer.Nexus != Faction.None)
                         {
-                            <div>Nexus: <Image Width=30 Src=@Skin.Current.GetFactionFacedownImageURL(ShownPlayer.Nexus) Popover=@Popup.GetNexusCard(ShownPlayer.Nexus)/></div>
+                            <div>Nexus: <Image Width=30 Src=@Skin.Current.GetFactionFacedownImageURL(ShownPlayer.Nexus) Popover=@Popup.GetNexusCard(ShownPlayer.Nexus.ToNexus())/></div>
                         }
                     }
                     else

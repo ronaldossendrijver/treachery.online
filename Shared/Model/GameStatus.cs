@@ -11,7 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Treachery.Client;
+namespace Treachery.Shared;
 
 public class GameStatus
 {
@@ -245,7 +245,7 @@ public class GameStatus
 
             /* Charity */
 
-            Phase.ClaimingCharity => Status(Skin.Current.Format("Factions may now claim charity if eligible.")),
+            Phase.ClaimingCharity => Status(Express("Factions may now claim charity if eligible.")),
 
             /* Bidding */
 
@@ -495,8 +495,8 @@ public class GameStatus
             /* Mentat */
 
             Phase.Extortion => Status(
-                Skin.Current.Format("You may proceed when done waiting for players to avoid future {0} by {1}", TerrorType.Extortion, Faction.Cyan),
-                Skin.Current.Format("Players may pay {0} to avoid future {1} by {2}...", Concept.Resource, TerrorType.Extortion, Faction.Cyan)),
+                Express("You may proceed when done waiting for players to avoid future {0} by {1}", TerrorType.Extortion, Faction.Cyan),
+                Express("Players may pay {0} to avoid future {1} by {2}...", Concept.Resource, TerrorType.Extortion, Faction.Cyan)),
 
             Phase.ReplacingFaceDancer => Status(game,
                 "You may replace an unrevealed Face Dancer with a new one from the Traitor Deck.",
@@ -715,14 +715,14 @@ public class GameStatus
 
         if (g.CurrentPhase == Phase.GameEnded)
         {
-            foreach (var p in g.Winners) Flash(result, Message.Express(p.Faction, " win!"), Skin.Current.GetImageURL(p.Faction));
+            foreach (var p in g.Winners) Flash(result, Message.Express(p.Faction, " win!"), p.Faction);
 
             return result;
         }
 
         if (g.CurrentPhase == Phase.BattleConclusion && g.BattleWinner != Faction.None)
         {
-            Flash(result, Message.Express(g.BattleWinner, " win!"), Skin.Current.GetImageURL(g.BattleWinner));
+            Flash(result, Message.Express(g.BattleWinner, " win!"), g.BattleWinner);
             return result;
         }
 
@@ -768,8 +768,8 @@ public class GameStatus
                 case FactionTradeOffered fto when (fto.Initiator == myFaction || fto.Target == myFaction) && !g.CurrentTradeOffers.Any(t => t.Initiator == myFaction): Flash(result, myFaction); break;
 
                 //Show Nexus card played
-                case NexusPlayed np: Flash(result, Message.Express(np.Initiator, " play a Nexus card"), Skin.Current.GetNexusCardImageURL(np.Faction)); break;
-                case Revival nexusrev when nexusrev.UsesRedSecretAlly: Flash(result, Message.Express(nexusrev.Initiator, " play a Nexus card"), Skin.Current.GetNexusCardImageURL(Faction.Red)); break;
+                case NexusPlayed np: Flash(result, Message.Express(np.Initiator, " play a Nexus card"), np.Faction.ToNexus()); break;
+                case Revival nexusrev when nexusrev.UsesRedSecretAlly: Flash(result, Message.Express(nexusrev.Initiator, " play a Nexus card"), Faction.Red.ToNexus()); break;
                 //case Bid nexusbid when nexusbid.UsesRedSecretAlly: Flash(result, Message.Express(nexusbid.Initiator, " play a Nexus card"), Skin.Current.GetNexusCardImageURL(Faction.Red)); break;
             }
 
@@ -787,22 +787,24 @@ public class GameStatus
                 }
                 case Milestone.BabyMonster:
                 {
-                    Flash(result, Message.Express(Concept.BabyMonster, " detected!"), Skin.Current.GetImageURL(Map.GetResourceCardsInPlay(g).FirstOrDefault(c => c.IsSandTrout)));
+                    Flash(result, Message.Express(Concept.BabyMonster, " detected!"), Map.GetResourceCardsInPlay(g).FirstOrDefault(c => c.IsSandTrout));
                     break;
                 }
                 case Milestone.Karma when latestEvent is Bid:
                 {
-                    if (g.TreacheryDiscardPile.Top != null) Flash(result, Message.Express("Card was won using ", TreacheryCardType.Karma), Skin.Current.GetImageURL(g.TreacheryDiscardPile.Top));
+                    if (g.TreacheryDiscardPile.Top != null) 
+                        Flash(result, Message.Express("Card was won using ", TreacheryCardType.Karma), g.TreacheryDiscardPile.Top);
+                    
                     break;
                 }
                 case Milestone.Monster:
                 {
-                    Flash(result, Message.Express(Concept.Monster, " detected!"), Skin.Current.GetImageURL(Map.GetResourceCardsInPlay(g).FirstOrDefault(c => c.IsShaiHulud)));
+                    Flash(result, Message.Express(Concept.Monster, " detected!"), Map.GetResourceCardsInPlay(g).FirstOrDefault(c => c.IsShaiHulud));
                     break;
                 }
                 case Milestone.GreatMonster:
                 {
-                    Flash(result, Message.Express(Concept.GreatMonster, " detected!"), Skin.Current.GetImageURL(Map.GetResourceCardsInPlay(g).FirstOrDefault(c => c.IsGreatMaker)));
+                    Flash(result, Message.Express(Concept.GreatMonster, " detected!"), Map.GetResourceCardsInPlay(g).FirstOrDefault(c => c.IsGreatMaker));
                     break;
                 }
                 case Milestone.Resource:
@@ -829,7 +831,7 @@ public class GameStatus
                             cardToShow = g.LatestSpiceCardA;
                     }
 
-                    if (cardToShow != null) Flash(result, Message.Express(Concept.Resource, " in ", Skin.Current.Describe(cardToShow)), Skin.Current.GetImageURL(cardToShow));
+                    if (cardToShow != null) Flash(result, Message.Express(Concept.Resource, " in ", cardToShow), cardToShow);
 
                     break;
                 }
@@ -839,27 +841,27 @@ public class GameStatus
         return result;
     }
 
-    private static void Flash(IList<FlashInfo> flashes, Message message, string imageURL)
+    private static void Flash<T>(ICollection<FlashInfo> flashes, Message message, T toShow)
     {
-        FlashInfo result;
-        result.Message = message;
-        result.Url = imageURL;
-        flashes.Add(result);
+        flashes.Add(new FlashInfo { Message = message, ToShow = toShow});
     }
 
     private static void Flash(IList<FlashInfo> flashes, GameEvent e)
     {
+        if (e == null)
+            return;
+        
         switch (e)
         {
             case TreacheryCalled t:
                 var victim = e.Game.CurrentBattle.OpponentOf(t.Initiator);
                 var victimPlan = e.Game.CurrentBattle.PlanOf(victim);
-                Flash(flashes, Message.Express(victimPlan.Hero, " is a ", t.Initiator, " traitor!"), Skin.Current.GetImageURL(victimPlan.Hero));
+                Flash(flashes, Message.Express(victimPlan.Hero, " is a ", t.Initiator, " traitor!"), victimPlan.Hero);
                 break;
 
             case FaceDanced:
                 var dancer = e.Game.WinnerHero;
-                Flash(flashes, Message.Express(dancer, " is a ", e.Initiator, " facedancer!"), Skin.Current.GetImageURL(dancer));
+                Flash(flashes, Message.Express(dancer, " is a ", e.Initiator, " facedancer!"), dancer);
                 break;
 
             case SwitchedSkilledLeader:
@@ -867,32 +869,32 @@ public class GameStatus
                 Flash(
                     flashes,
                     Message.Express(e.Initiator, " place ", e.Game.Skill(leader), " ", leader, e.Game.IsInFrontOfShield(leader) ? " in front of" : " behind", " their shield"),
-                    Skin.Current.GetImageURL(leader));
+                    leader);
                 break;
 
-            default: Flash(flashes, e?.GetMessage(), Skin.Current.GetImageURL(e.Initiator)); break;
+            default: Flash(flashes, e.GetMessage(), e.Initiator); break;
         }
     }
 
     private static void Flash(IList<FlashInfo> flashes, GameEvent e, TreacheryCardType t)
     {
         if (e.Game.TreacheryDiscardPile.Top?.Type == t || (t == TreacheryCardType.Karma && e.Game.TreacheryDiscardPile.Top?.Type == TreacheryCardType.Useless))
-            Flash(flashes, e?.GetMessage(), Skin.Current.GetImageURL(e.Game.TreacheryDiscardPile.Top));
+            Flash(flashes, e?.GetMessage(), e.Game.TreacheryDiscardPile.Top);
         else
-            Flash(flashes, e?.GetMessage(), Skin.Current.GetImageURL(TreacheryCardManager.GetCardsInAndOutsidePlay().First(card => card.Type == t)));
+            Flash(flashes, e?.GetMessage(), TreacheryCardManager.GetCardsInAndOutsidePlay().First(card => card.Type == t));
     }
 
     private static void Flash(IList<FlashInfo> flashes, GameEvent e, LeaderSkill s)
     {
         if (s == LeaderSkill.Decipherer)
-            Flash(flashes, Message.Express(e.Initiator, " use their ", s, " skill"), Skin.Current.GetImageURL(s));
+            Flash(flashes, Message.Express(e.Initiator, " use their ", s, " skill"), s);
         else
-            Flash(flashes, e?.GetMessage(), Skin.Current.GetImageURL(s));
+            Flash(flashes, e?.GetMessage(), s);
     }
 
     private static void Flash(IList<FlashInfo> flashes, Faction f)
     {
-        Flash(flashes, Message.Express("You play ", f), Skin.Current.GetImageURL(f));
+        Flash(flashes, Message.Express("You play ", f), f);
     }
 
     private static Message Express(params object[] elements)
@@ -903,6 +905,6 @@ public class GameStatus
 }
 public struct FlashInfo
 {
-    public string Url;
-    public Message Message;
+    public object ToShow { get; init; }
+    public Message Message { get; init; }
 }

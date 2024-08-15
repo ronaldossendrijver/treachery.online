@@ -58,7 +58,7 @@ public class Skin : IDescriber
     public Dictionary<StrongholdAdvantage, string> StrongholdCardImage_URL;
     public Dictionary<World, string> HomeWorldImage_URL;
     public Dictionary<World, string> HomeWorldCardImage_URL;
-    public Dictionary<Faction, string> NexusCardImage_URL;
+    public Dictionary<Nexus, string> NexusCardImage_URL;
     public Dictionary<TerrorType, string> TerrorTokenName_STR;
     public Dictionary<TerrorType, string> TerrorTokenDescription_STR;
     public Dictionary<DiscoveryToken, string> DiscoveryTokenName_STR;
@@ -432,6 +432,7 @@ public class Skin : IDescriber
             LeaderSkill ls => GetImageURL(ls),
             TechToken tt => GetImageURL(tt),
             Faction f => GetImageURL(f),
+            Nexus n => GetImageURL(n),
             Ambassador a => GetImageURL(a),
             FactionForce ff => GetImageURL(ff),
             FactionSpecialForce fsf => GetImageURL(fsf),
@@ -965,9 +966,9 @@ public class Skin : IDescriber
         return GetLabel(HomeWorldCardImage_URL, w);
     }
 
-    public string GetNexusCardImageURL(Faction f)
+    public string GetImageUrl(Nexus n)
     {
-        return GetLabel(NexusCardImage_URL, f);
+        return GetLabel(NexusCardImage_URL, n);
     }
 
     public string GetImageURL(TechToken tech)
@@ -2703,23 +2704,23 @@ public class Skin : IDescriber
             [World.Cyan] = DEFAULT_ART_LOCATION + "/art/GrummanCard.gif"
         },
 
-        NexusCardImage_URL = Game.ExpansionLevel < 3 ? new() : new Dictionary<Faction, string>
+        NexusCardImage_URL = Game.ExpansionLevel < 3 ? new() : new Dictionary<Nexus, string>
         {
-            [Faction.Green] = DEFAULT_ART_LOCATION + "/art/faction1nexus.gif",
-            [Faction.Black] = DEFAULT_ART_LOCATION + "/art/faction2nexus.gif",
-            [Faction.Yellow] = DEFAULT_ART_LOCATION + "/art/faction3nexus.gif",
-            [Faction.Red] = DEFAULT_ART_LOCATION + "/art/faction4nexus.gif",
-            [Faction.Orange] = DEFAULT_ART_LOCATION + "/art/faction5nexus.gif",
-            [Faction.Blue] = DEFAULT_ART_LOCATION + "/art/faction6nexus.gif",
+            [Nexus.Green] = DEFAULT_ART_LOCATION + "/art/faction1nexus.gif",
+            [Nexus.Black] = DEFAULT_ART_LOCATION + "/art/faction2nexus.gif",
+            [Nexus.Yellow] = DEFAULT_ART_LOCATION + "/art/faction3nexus.gif",
+            [Nexus.Red] = DEFAULT_ART_LOCATION + "/art/faction4nexus.gif",
+            [Nexus.Orange] = DEFAULT_ART_LOCATION + "/art/faction5nexus.gif",
+            [Nexus.Blue] = DEFAULT_ART_LOCATION + "/art/faction6nexus.gif",
 
-            [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7nexus.gif",
-            [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8nexus.gif",
+            [Nexus.Grey] = DEFAULT_ART_LOCATION + "/art/faction7nexus.gif",
+            [Nexus.Purple] = DEFAULT_ART_LOCATION + "/art/faction8nexus.gif",
 
-            [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9nexus.gif",
-            [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10nexus.gif",
+            [Nexus.Brown] = DEFAULT_ART_LOCATION + "/art/faction9nexus.gif",
+            [Nexus.White] = DEFAULT_ART_LOCATION + "/art/faction10nexus.gif",
 
-            [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11nexus.gif",
-            [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12nexus.gif"
+            [Nexus.Pink] = DEFAULT_ART_LOCATION + "/art/faction11nexus.gif",
+            [Nexus.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12nexus.gif"
         },
 
         TerrorTokenName_STR = Game.ExpansionLevel < 3 ? new() : new Dictionary<TerrorType, string>

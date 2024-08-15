@@ -16,7 +16,7 @@
         {
             <div style="float:left;position:relative;top:0px;display:inline-block;vertical-align:top;width:@Support.Px(ItemWidth)">
 
-                <img src="@img.Url" width=@CardWidth style="filter:drop-shadow(2px 2px 2px black);"/>
+                <img src="@Skin.Current.GetImageURL(img.ToShow)" width=@CardWidth style="filter:drop-shadow(2px 2px 2px black);" alt="@Name(img.ToShow)"/>
 
                 @if (img.Message != null)
                 {

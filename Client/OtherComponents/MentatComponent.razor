@@ -17,7 +17,7 @@
         {
             <div class="card">
                 <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
-                    <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt=@Name(v)>
+                    <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@Name(v)">
                 </Hoverable>
             </div>
         }
@@ -33,7 +33,7 @@
             {
                 <div class="card">
                     <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
-                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt=@Name(v)>
+                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@Name(v)">
                     </Hoverable>
                 </div>
             }
@@ -48,7 +48,7 @@
         {
             <div class="card">
                 <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
-                    <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt=@Name(v)>
+                    <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@Name(v)">
                 </Hoverable>
             </div>
         }
@@ -64,7 +64,7 @@
             {
                 <div class="card">
                     <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
-                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt=@Name(v)>
+                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@Name(v)">
                     </Hoverable>
                 </div>
             }
@@ -81,7 +81,7 @@
             {
                 <div class="card">
                     <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
-                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt=@Name(v)>
+                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@Name(v)">
                     </Hoverable>
                 </div>
             }
@@ -94,11 +94,11 @@
         <h5 class="mt-2">Nexus Cards</h5>
         <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
 
-            @foreach (var f in Enumerations.GetValuesExceptDefault(Faction.None))
+            @foreach (var n in Enumerations.GetValuesExceptDefault(Nexus.None))
             {
                 <div class="card">
-                    <Hoverable Class="card-img-top" Popover=@Popup.GetNexusCard(f)>
-                        <img src="@Skin.Current.GetNexusCardImageURL(f)" class="card-img" alt=@Name(f)>
+                    <Hoverable Class="card-img-top" Popover=@Popup.GetNexusCard(n)>
+                        <img src="@Skin.Current.GetImageURL(n)" class="card-img" alt="@Name(n)">
                     </Hoverable>
                 </div>
             }
@@ -115,7 +115,7 @@
             {
                 <div class="card">
                     <Hoverable Class="card-img-top" Popover=@Popup.Get(w)>
-                        <img src="@Skin.Current.GetHomeworldCardImageURL(w.World)" class="card-img" alt=@Name(w)>
+                        <img src="@Skin.Current.GetHomeworldCardImageURL(w.World)" class="card-img" alt="@Name(w)">
                     </Hoverable>
                 </div>
             }
@@ -133,8 +133,8 @@
                 if (t != Ambassador.Cyan)
                 {
                     <div class="card">
-                        <img src="@Skin.Current.GetImageURL(t)" class="card-img" title=@Skin.Current.GetAmbassadorDescription(t)>
-                </div>
+                        <img src="@Skin.Current.GetImageURL(t)" class="card-img" title=@Skin.Current.GetAmbassadorDescription(t) alt="@Name(t)">
+                    </div>
                 }
             }
 
@@ -175,6 +175,5 @@
 
 @code {
 
-    [Parameter]
-    public new string Id { get; set; } = "";
+    [Parameter] public new string Id { get; set; } = "";
 }

@@ -37,6 +37,62 @@ public enum Faction
     Cyan = 120
 }
 
+public static class EnumerationExtensions
+{
+    public static Nexus ToNexus(this Faction faction) => faction switch
+    {
+        Faction.None => Nexus.None,
+        Faction.Yellow => Nexus.Yellow,
+        Faction.Green => Nexus.Green,
+        Faction.Black => Nexus.Black,
+        Faction.Red => Nexus.Red,
+        Faction.Orange => Nexus.Orange,
+        Faction.Blue => Nexus.Blue,
+        Faction.Grey => Nexus.Grey,
+        Faction.Purple => Nexus.Purple,
+        Faction.Brown => Nexus.Brown,
+        Faction.White => Nexus.White,
+        Faction.Pink => Nexus.Pink,
+        Faction.Cyan => Nexus.Cyan,
+        _ => throw new ArgumentOutOfRangeException(nameof(faction), faction, null)
+    };
+    
+    public static Faction ToFaction(this Nexus nexus) => nexus switch
+    {
+        Nexus.None => Faction.None,
+        Nexus.Yellow => Faction.Yellow,
+        Nexus.Green => Faction.Green,
+        Nexus.Black => Faction.Black,
+        Nexus.Red => Faction.Red,
+        Nexus.Orange => Faction.Orange,
+        Nexus.Blue => Faction.Blue,
+        Nexus.Grey => Faction.Grey,
+        Nexus.Purple => Faction.Purple,
+        Nexus.Brown => Faction.Brown,
+        Nexus.White => Faction.White,
+        Nexus.Pink => Faction.Pink,
+        Nexus.Cyan => Faction.Cyan,
+        _ => throw new ArgumentOutOfRangeException(nameof(nexus), nexus, null)
+    };
+} 
+
+public enum Nexus
+{
+    None = 0,
+    Yellow = 10,
+    Green = 20,
+    Black = 30,
+    Red = 40,
+    Orange = 50,
+    Blue = 60,
+    Grey = 70,
+    Purple = 80,
+    Brown = 90,
+    White = 100,
+    Pink = 110,
+    Cyan = 120
+}
+
 public enum Ambassador
 {
     None = 0,

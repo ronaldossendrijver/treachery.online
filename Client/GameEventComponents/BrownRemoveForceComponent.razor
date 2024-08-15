@@ -35,7 +35,7 @@
 
     protected override Faction IsFactionSpecific => Faction.Brown;
 
-    protected override string Background => BrownRemoveForce.CardToUse(Player) != null ? Skin.Current.GetImageURL(BrownRemoveForce.CardToUse(Player)) : Skin.Current.GetNexusCardImageURL(Faction.Brown);
+    protected override string Background => BrownRemoveForce.CardToUse(Player) != null ? Skin.Current.GetImageURL(BrownRemoveForce.CardToUse(Player)) : Skin.Current.GetImageURL(Nexus.Brown);
 
     private Location location;
     private Faction target;

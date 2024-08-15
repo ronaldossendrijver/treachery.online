@@ -450,7 +450,7 @@
         case nameof(BrownExtraMove):
             var cardToUse = BrownExtraMove.CardToUse(Client.Player);
             var titleBrownExtraMove = Skin.Current.Format("Use {0} to be able to move your forces one extra territory?", cardToUse != null ? Name(cardToUse) : "Nexus Cunning");
-            var background = cardToUse != null ? Skin.Current.GetImageURL(cardToUse) : Skin.Current.GetNexusCardImageURL(Faction.Brown);
+            var background = cardToUse != null ? Skin.Current.GetImageURL(cardToUse) : Skin.Current.GetImageURL(Nexus.Brown);
             <SimpleActionComponent GameEventType="BrownExtraMove" BackgroundImage=@background Title=@titleBrownExtraMove Alert="false"/>
             break;
 

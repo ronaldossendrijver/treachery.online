@@ -36,9 +36,9 @@ public static class Popup
         return GetImageHoverHTML(Skin.Current.GetImageURL(tt));
     }
 
-    public static string GetNexusCard(Faction f)
+    public static string GetNexusCard(Nexus n)
     {
-        return GetImageHoverHTML(Skin.Current.GetNexusCardImageURL(f));
+        return GetImageHoverHTML(Skin.Current.GetImageUrl(n));
     }
 
     public static string Get(Homeworld w)
