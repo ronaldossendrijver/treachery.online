@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using Treachery.Client;
 using Treachery.Shared;
@@ -202,18 +203,40 @@ public partial class GameHub
         if (game.AsyncPlay && now.Subtract(game.LastAsyncPlayMessageSent).TotalSeconds >=
             game.AsyncPlayMessageIntervalSeconds)
         {
-            var message = Skin.Current.Format("Turn: {0}, phase: {1}", game.Game.CurrentTurn, game.Game.CurrentPhase); 
-            //message += = $"The following happened:{Environment.NewLine}{Environment.NewLine}";
+            var context = GetDbContext();
+            
+            var turnInfo = Skin.Current.Format("Turn: {0}, phase: {1}", game.Game.CurrentTurn, game.Game.CurrentPhase);
+             
+            var history = $"The following happened:{Environment.NewLine}{Environment.NewLine}";
             foreach (var evt in game.Game.History.Where(e => e.Time > game.LastAsyncPlayMessageSent))
             {
-                message += "- " + evt.ToString() + Environment.NewLine;
+                history += "- " + evt.ToString() + Environment.NewLine;
             }
-            message += Environment.NewLine;
-            
             
             foreach (var userId in game.Game.Participation.SeatedPlayers.Keys)
             {
+                var user = await context.Users.FindAsync(userId);
+                var mail = user?.Email;
+                if (mail == null) continue;
                 
+                var player = game.Game.GetPlayerByUserId(userId);
+                if (player == null) continue;
+                
+                var status = GameStatus.DetermineStatus(game.Game, player, true) + Environment.NewLine + Environment.NewLine;
+
+                var asyncMessage = turnInfo + Environment.NewLine + Environment.NewLine + status + Environment.NewLine +
+                                   Environment.NewLine + history;
+                
+                MailMessage mailMessage = new()
+                {
+                    From = new MailAddress("noreply@treachery.online"),
+                    Subject = $"Update for {game.GameName}",
+                    IsBodyHtml = true,
+                    Body = asyncMessage
+                };
+
+                mailMessage.To.Add(new MailAddress(mail));
+                SendMail(mailMessage);
             }
         }
     }
