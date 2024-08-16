@@ -106,6 +106,16 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
                 Host = "smtp.strato.com", //TODO: move to config
                 EnableSsl = true
             };
+            
+            Console.WriteLine($"""
+                              Sending mail
+                              ============
+                              Time    : {DateTimeOffset.Now}
+                              From    : {mail.From}
+                              To      : {mail.To}
+                              Subject : {mail.Subject}
+                              Body    : {mail.Body}
+                              """);
 
             client.Send(mail);
         }

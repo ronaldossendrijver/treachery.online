@@ -162,11 +162,16 @@ public partial class GameHub
     
     private async Task<VoidResult> ProcessGameEvent<TEvent>(string userToken, string gameId, TEvent e) where TEvent : GameEvent
     {
+        Console.WriteLine($"Start processing event {e.GetType().Name}...");
+        
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
             return error;
         
         e.Initialize(game.Game);
         e.Time = DateTimeOffset.Now;
+        
+        Console.WriteLine($"Finished processing event {e.GetType().Name}.");
+        
         return await ValidateAndExecute(gameId, e, game, game.Game.IsHost(user.Id));
     }
 
@@ -189,16 +194,18 @@ public partial class GameHub
 
         await Clients.Group(gameId).HandleGameEvent(e, game.Game.History.Count);
         
+        await SendAsyncPlayMessagesIfApplicable(game);
+        
         var botDelay = DetermineBotDelay(game.Game.CurrentMainPhase, e);
         _ = Task.Delay(botDelay).ContinueWith(_ => PerformBotEvent(gameId, game));
-
-        await SendAsyncPlayMessagesIfApplicable(game);
         
         return Success();
     }
 
     private async Task SendAsyncPlayMessagesIfApplicable(ManagedGame game)
     {
+        Console.WriteLine("Start SendAsyncPlayMessagesIfApplicable...");
+        
         if (game.Game.Settings.AsyncPlay)
         {
             var whatHappened = game.Game.History.Where(e => e.Time > game.LastAsyncPlayMessageSent).ToList();
@@ -209,6 +216,7 @@ public partial class GameHub
             var elapsed = (int)now.Subtract(game.LastAsyncPlayMessageSent).TotalMinutes;
             if (elapsed < game.Game.Settings.AsyncPlayMessageIntervalMinutes)
             {
+                Console.WriteLine("Scheduling SendAsyncPlayMessagesIfApplicable()...");
                 _ = Task.Delay(60000 * (game.Game.Settings.AsyncPlayMessageIntervalMinutes - elapsed) + 1000)
                     .ContinueWith(_ => SendAsyncPlayMessagesIfApplicable(game));
                 
@@ -253,6 +261,8 @@ public partial class GameHub
                 SendMail(mailMessage);
             }
         }
+        
+        Console.WriteLine("Finished SendAsyncPlayMessagesIfApplicable...");
     }
 
     private async Task PerformBotEvent(string gameId, ManagedGame managedGame)
@@ -269,7 +279,7 @@ public partial class GameHub
                     bot.DetermineHighPrioInPhaseAction(events) ??
                     bot.DetermineMiddlePrioInPhaseAction(events) ??
                     bot.DetermineLowPrioInPhaseAction(events);
-                          ;
+                          
                 if (evt != null)
                 {
                     await ValidateAndExecute(gameId, evt, managedGame, false);
