@@ -33,8 +33,14 @@
         {
             <ButtonRowComponent Confirm="@Confirm" ConfirmText="Change Settings" ConfirmError="@Validation" />            
         }
+
+        <CheckboxComponent @bind-Value="@Settings.AsyncPlay">Async play (send e-mail updates)</CheckboxComponent>
+        @if (Settings.AsyncPlay)
+        {
+            <SelectNumberComponent @bind-Value="@Settings.AsyncPlayMessageIntervalMinutes" Min="10" Max="120" StepDown="10" StepUp="10" Label="Minimum minutes between e-mails:"/>
+        }
         
-        <CheckboxComponent @bind-Value=_advancedOptions>Change advanced options</CheckboxComponent>
+        <CheckboxComponent @bind-Value="@_advancedOptions">Change advanced options</CheckboxComponent>
 
         @if (_advancedOptions)
         {

@@ -4,15 +4,13 @@ namespace Treachery.Shared;
 
 public class ManagedGame
 {
-    public DateTimeOffset CreationDate { get; set; }
+    public DateTimeOffset CreationDate { get; init; }
     
-    public int CreatorUserId { get; set; }
+    public int CreatorUserId { get; init; }
     
-    public string GameId { get; set; }
+    public string GameId { get; init; }
     
     public Game Game { get; set; }
-    
-    public string GameName { get; set; }
     
     public string HashedPassword { get; init; }
 
@@ -21,11 +19,6 @@ public class ManagedGame
     public bool BotsArePaused { get; set; }
     
     public bool StatisticsSent { get; set; }
-
-    
-    public bool AsyncPlay { get; set; }
-    
-    public int AsyncPlayMessageIntervalSeconds { get; set; }
 
     public DateTimeOffset LastAsyncPlayMessageSent { get; set; }
 }

@@ -45,8 +45,7 @@ public partial class GameHub
             GameId = gameId,
             Game = game,
             HashedPassword = hashedPassword,
-            ObserversRequirePassword = false,
-            GameName = $"{user.PlayerName}'s Game"
+            ObserversRequirePassword = false
         };
         
         GamesByGameId[gameId] = managedGame;

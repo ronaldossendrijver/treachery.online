@@ -53,7 +53,7 @@ public class GameInfo
         CurrentPhase = managedGame.Game.CurrentPhase,
         CurrentTurn = managedGame.Game.CurrentTurn,
         ExpansionLevel = Game.ExpansionLevel,
-        GameName = managedGame.GameName,
+        GameName = managedGame.Game.Name,
         HasPassword = managedGame.HashedPassword != null,
         NumberOfPlayers = managedGame.Game.Settings.NumberOfPlayers,
         MaximumTurns = managedGame.Game.Settings.MaximumTurns,

@@ -199,17 +199,17 @@ public partial class GameHub
 
     private async Task SendAsyncPlayMessagesIfApplicable(ManagedGame game)
     {
-        if (game.AsyncPlay)
+        if (game.Game.Settings.AsyncPlay)
         {
             var whatHappened = game.Game.History.Where(e => e.Time > game.LastAsyncPlayMessageSent).ToList();
             if (whatHappened.Count == 0)
                 return;
 
             var now = DateTimeOffset.Now;
-            var elapsed = (int)now.Subtract(game.LastAsyncPlayMessageSent).TotalSeconds;
-            if (elapsed < game.AsyncPlayMessageIntervalSeconds)
+            var elapsed = (int)now.Subtract(game.LastAsyncPlayMessageSent).TotalMinutes;
+            if (elapsed < game.Game.Settings.AsyncPlayMessageIntervalMinutes)
             {
-                _ = Task.Delay(1000 * (1 + game.AsyncPlayMessageIntervalSeconds - elapsed))
+                _ = Task.Delay(60000 * (game.Game.Settings.AsyncPlayMessageIntervalMinutes - elapsed) + 1000)
                     .ContinueWith(_ => SendAsyncPlayMessagesIfApplicable(game));
                 
                 return;
@@ -244,7 +244,7 @@ public partial class GameHub
                 MailMessage mailMessage = new()
                 {
                     From = new MailAddress("noreply@treachery.online"),
-                    Subject = $"Update for {game.GameName}",
+                    Subject = $"Update for {game.Game.Name}",
                     IsBodyHtml = true,
                     Body = asyncMessage
                 };

@@ -95,7 +95,7 @@ public partial class GameHub
                     BotsArePaused = game.BotsArePaused,
                     ObserversRequirePassword = game.ObserversRequirePassword,
                     StatisticsSent = game.StatisticsSent,
-                    GameName = game.GameName,
+                    LastAsyncPlayMessageSent = game.LastAsyncPlayMessageSent,
                 };
 
                 context.PersistedGames.Add(persisted);
@@ -123,19 +123,19 @@ public partial class GameHub
                 var id = persistedGame.GameId;
                 var gameState = GameState.Load(persistedGame.GameState);
                 var participation = JsonSerializer.Deserialize<GameParticipation>(persistedGame.GameParticipation);
-                if (Game.TryLoad(gameState, participation, false, true, out Game game) == null)
+                if (Game.TryLoad(gameState, participation, false, true, out var game) == null)
                 {
                     var managedGame = new ManagedGame
                     {
-                        CreatorUserId = persistedGame.CreatorUserId,
                         CreationDate = persistedGame.CreationDate,
+                        CreatorUserId = persistedGame.CreatorUserId,
                         GameId = persistedGame.GameId,
                         Game = game,
                         HashedPassword = persistedGame.HashedPassword,
                         BotsArePaused = persistedGame.BotsArePaused,
                         ObserversRequirePassword = persistedGame.ObserversRequirePassword,
                         StatisticsSent = persistedGame.StatisticsSent,
-                        GameName = persistedGame.GameName,
+                        LastAsyncPlayMessageSent = persistedGame.LastAsyncPlayMessageSent,
                     };
                     GamesByGameId.TryAdd(id, managedGame);
                 }

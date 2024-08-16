@@ -151,8 +151,15 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<LoginInfo>(ErrorType.UserNotFound);
         
+        user.PlayerName = playerName;
+        user.Email = email;
+        if (!string.IsNullOrEmpty(hashedPassword))
+            user.HashedPassword = hashedPassword;
+        
         await using var db = GetDbContext();
-
+        db.Users.Update(user);
+        await db.SaveChangesAsync();
+/*
         var dbUser = await db.Users.FindAsync(user.Id); 
         
         if (dbUser == null)
@@ -165,10 +172,9 @@ public partial class GameHub
         dbUser.Email = email;
 
         await db.SaveChangesAsync();
-        
-        //var memUser = UsersByUserToken
+        */
             
-        return await Task.FromResult(Success(new LoginInfo { UserId = dbUser.Id, Token = userToken, PlayerName = dbUser.PlayerName, UserName = dbUser.Name, Email = dbUser.Email }));
+        return await Task.FromResult(Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email }));
     }
 
 }

@@ -39,4 +39,6 @@ public class PersistedGame
     public bool ObserversRequirePassword { get; init; }
     
     public bool StatisticsSent { get; init; }
+    
+    public DateTimeOffset LastAsyncPlayMessageSent { get; set; }
 }
