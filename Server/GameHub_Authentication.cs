@@ -165,6 +165,8 @@ public partial class GameHub
         dbUser.Email = email;
 
         await db.SaveChangesAsync();
+        
+        //var memUser = UsersByUserToken
             
         return await Task.FromResult(Success(new LoginInfo { UserId = dbUser.Id, Token = userToken, PlayerName = dbUser.PlayerName, UserName = dbUser.Name, Email = dbUser.Email }));
     }

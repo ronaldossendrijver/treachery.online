@@ -199,34 +199,48 @@ public partial class GameHub
 
     private async Task SendAsyncPlayMessagesIfApplicable(ManagedGame game)
     {
-        var now = DateTimeOffset.Now;
-        if (game.AsyncPlay && now.Subtract(game.LastAsyncPlayMessageSent).TotalSeconds >=
-            game.AsyncPlayMessageIntervalSeconds)
+        if (game.AsyncPlay)
         {
-            var context = GetDbContext();
-            
-            var turnInfo = Skin.Current.Format("Turn: {0}, phase: {1}", game.Game.CurrentTurn, game.Game.CurrentPhase);
-             
-            var history = $"The following happened:{Environment.NewLine}{Environment.NewLine}";
-            foreach (var evt in game.Game.History.Where(e => e.Time > game.LastAsyncPlayMessageSent))
+            var whatHappened = game.Game.History.Where(e => e.Time > game.LastAsyncPlayMessageSent).ToList();
+            if (whatHappened.Count == 0)
+                return;
+
+            var now = DateTimeOffset.Now;
+            var elapsed = (int)now.Subtract(game.LastAsyncPlayMessageSent).TotalSeconds;
+            if (elapsed < game.AsyncPlayMessageIntervalSeconds)
             {
-                history += "- " + evt.ToString() + Environment.NewLine;
+                _ = Task.Delay(1000 * (1 + game.AsyncPlayMessageIntervalSeconds - elapsed))
+                    .ContinueWith(_ => SendAsyncPlayMessagesIfApplicable(game));
+                
+                return;
+            }
+                
+            var history = $"The following happened:{Environment.NewLine}{Environment.NewLine}";
+            foreach (var evt in whatHappened)
+            {
+                history += "- " + evt + Environment.NewLine;
             }
             
+            var turnInfo = Skin.Current.Format("Turn: {0}, phase: {1}", game.Game.CurrentTurn, game.Game.CurrentPhase);
+            
+            await using var context = GetDbContext();
+
             foreach (var userId in game.Game.Participation.SeatedPlayers.Keys)
             {
                 var user = await context.Users.FindAsync(userId);
                 var mail = user?.Email;
                 if (mail == null) continue;
-                
+
                 var player = game.Game.GetPlayerByUserId(userId);
                 if (player == null) continue;
-                
-                var status = GameStatus.DetermineStatus(game.Game, player, true) + Environment.NewLine + Environment.NewLine;
 
-                var asyncMessage = turnInfo + Environment.NewLine + Environment.NewLine + status + Environment.NewLine +
+                var status = GameStatus.DetermineStatus(game.Game, player, true) + Environment.NewLine +
+                             Environment.NewLine;
+
+                var asyncMessage = turnInfo + Environment.NewLine + Environment.NewLine + status +
+                                   Environment.NewLine +
                                    Environment.NewLine + history;
-                
+
                 MailMessage mailMessage = new()
                 {
                     From = new MailAddress("noreply@treachery.online"),
@@ -244,52 +258,18 @@ public partial class GameHub
     private async Task PerformBotEvent(string gameId, ManagedGame managedGame)
     {
         var game = managedGame.Game;
-        
         if (!managedGame.BotsArePaused && game.CurrentPhase > Phase.AwaitingPlayers)
         {
             var bots = Deck<Player>.Randomize(game.Players.Where(p => p.IsBot));
-
             foreach (var bot in bots)
             {
                 var events = game.GetApplicableEvents(bot, false);
-                var evt = bot.DetermineHighestPrioInPhaseAction(events);
-
-                if (evt != null)
-                {
-                    await ValidateAndExecute(gameId, evt, managedGame, false);
-                    return;
-                }
-            }
-
-            foreach (var bot in bots)
-            {
-                var evts = game.GetApplicableEvents(bot, false);
-                var evt = bot.DetermineHighPrioInPhaseAction(evts);
-
-                if (evt != null)
-                {
-                    await ValidateAndExecute(gameId, evt, managedGame, false);
-                    return;
-                }
-            }
-
-            foreach (var bot in bots)
-            {
-                var evts = game.GetApplicableEvents(bot, false);
-                var evt = bot.DetermineMiddlePrioInPhaseAction(evts);
-
-                if (evt != null)
-                {
-                    await ValidateAndExecute(gameId, evt, managedGame, false);
-                    return;
-                }
-            }
-
-            foreach (var bot in bots)
-            {
-                var evts = game.GetApplicableEvents(bot, false);
-                var evt = bot.DetermineLowPrioInPhaseAction(evts);
-
+                var evt = 
+                    bot.DetermineHighestPrioInPhaseAction(events) ??
+                    bot.DetermineHighPrioInPhaseAction(events) ??
+                    bot.DetermineMiddlePrioInPhaseAction(events) ??
+                    bot.DetermineLowPrioInPhaseAction(events);
+                          ;
                 if (evt != null)
                 {
                     await ValidateAndExecute(gameId, evt, managedGame, false);
@@ -301,14 +281,15 @@ public partial class GameHub
     
     private static int DetermineBotDelay(MainPhase phase, GameEvent e)
     {
-        if (phase == MainPhase.Resurrection || phase == MainPhase.Charity || e is AllyPermission || e is DealOffered || e is SetShipmentPermission)
+        if (phase is MainPhase.Resurrection or MainPhase.Charity || e is AllyPermission || e is DealOffered || e is SetShipmentPermission)
             return 300;
+        
         if (e is Bid)
             return 800;
-        if (phase == MainPhase.ShipmentAndMove)
+        
+        if (phase is MainPhase.ShipmentAndMove or MainPhase.Battle)
             return 3200;
-        if (phase == MainPhase.Battle)
-            return 3200;
+        
         return 1600;
     }
 
