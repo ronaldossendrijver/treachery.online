@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -90,8 +91,17 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         return true;
     }
     
-    private void SendMail(MailMessage mail)
+    private async Task SendMail(MailMessage mail)
     {
+        Console.WriteLine($"""
+                           Sending mail
+                           ============
+                           Time    : {DateTimeOffset.Now}
+                           From    : {mail.From}
+                           To      : {mail.To}
+                           Subject : {mail.Subject}
+                           Body    : {mail.Body}
+                           """);
         try
         {
             var username = configuration["GameEndEmailUsername"];
@@ -107,17 +117,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
                 EnableSsl = true
             };
             
-            Console.WriteLine($"""
-                              Sending mail
-                              ============
-                              Time    : {DateTimeOffset.Now}
-                              From    : {mail.From}
-                              To      : {mail.To}
-                              Subject : {mail.Subject}
-                              Body    : {mail.Body}
-                              """);
-
-            client.Send(mail);
+            await client.SendMailAsync(mail);
         }
         catch (Exception e)
         {

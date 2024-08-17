@@ -48,7 +48,7 @@ public partial class GameHub
         };
 
         mailMessage.To.Add(new MailAddress(email));
-        SendMail(mailMessage);
+        await SendMail(mailMessage);
         
         var userToken = GenerateToken();
         UsersByUserToken.TryAdd(userToken, user);
@@ -106,7 +106,7 @@ public partial class GameHub
         };
 
         mailMessage.To.Add(new MailAddress(user.Email));
-        SendMail(mailMessage);
+        await SendMail(mailMessage);
         
         return null;
     }

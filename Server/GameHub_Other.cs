@@ -31,6 +31,8 @@ public partial class GameHub
         var now = DateTimeOffset.Now;
         if (!(now.Subtract(LastCleanup).TotalMinutes >= 15)) 
             return;
+
+        LastCleanup = now;
         
         foreach (var tokenAndInfo in UserTokenInfo.ToArray())
         {
@@ -123,7 +125,8 @@ public partial class GameHub
                 var id = persistedGame.GameId;
                 var gameState = GameState.Load(persistedGame.GameState);
                 var participation = JsonSerializer.Deserialize<GameParticipation>(persistedGame.GameParticipation);
-                if (Game.TryLoad(gameState, participation, false, true, out var game) == null)
+                var loadMessage = Game.TryLoad(gameState, participation, false, true, out var game);
+                if (loadMessage == null)
                 {
                     var managedGame = new ManagedGame
                     {
@@ -137,9 +140,10 @@ public partial class GameHub
                         StatisticsSent = persistedGame.StatisticsSent,
                         LastAsyncPlayMessageSent = persistedGame.LastAsyncPlayMessageSent,
                     };
+                    
                     GamesByGameId.TryAdd(id, managedGame);
+                    amount++;
                 }
-                amount++;
             }
         }
             

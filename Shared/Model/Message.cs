@@ -13,7 +13,7 @@ public class Message
 {
     public static IDescriber DefaultDescriber = null;
 
-    private static int Counter;
+    private static int Counter { get; set; }
 
     public int Nr { get; } = Counter++;
 
@@ -41,7 +41,7 @@ public class Message
 
     public string ToString(IDescriber describer)
     {
-        return string.Join("", Expression.Elements.Select(e => describer.Describe(e)));
+        return string.Join("", Expression.Elements.Select(describer.Describe));
     }
 
     public static Message Express(params object[] list)

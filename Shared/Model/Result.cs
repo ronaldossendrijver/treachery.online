@@ -12,7 +12,7 @@ namespace Treachery.Shared;
 public class Result<T>
 {
     public bool Success { get; init; }
-    public ErrorType Error { get; init; }
+    public ErrorType Error { get; init; } = ErrorType.None;
     public string ErrorDetails { get; init; }
     public T Contents { get; init; }
 }
@@ -26,6 +26,7 @@ public class VoidContents;
 
 public enum ErrorType
 {
+    None,
     UserNotFound,
     GameNotFound,
     UserNameTooShort,

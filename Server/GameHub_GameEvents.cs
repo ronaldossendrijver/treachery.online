@@ -162,15 +162,11 @@ public partial class GameHub
     
     private async Task<VoidResult> ProcessGameEvent<TEvent>(string userToken, string gameId, TEvent e) where TEvent : GameEvent
     {
-        Console.WriteLine($"Start processing event {e.GetType().Name}...");
-        
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
             return error;
         
         e.Initialize(game.Game);
         e.Time = DateTimeOffset.Now;
-        
-        Console.WriteLine($"Finished processing event {e.GetType().Name}.");
         
         return await ValidateAndExecute(gameId, e, game, game.Game.IsHost(user.Id));
     }
@@ -194,7 +190,7 @@ public partial class GameHub
 
         await Clients.Group(gameId).HandleGameEvent(e, game.Game.History.Count);
         
-        await SendAsyncPlayMessagesIfApplicable(game);
+        await SendAsyncPlayMessagesIfApplicable(gameId);
         
         var botDelay = DetermineBotDelay(game.Game.CurrentMainPhase, e);
         _ = Task.Delay(botDelay).ContinueWith(_ => PerformBotEvent(gameId, game));
@@ -202,37 +198,47 @@ public partial class GameHub
         return Success();
     }
 
-    private async Task SendAsyncPlayMessagesIfApplicable(ManagedGame game)
+    private async Task SendAsyncPlayMessagesIfApplicable(string gameId)
     {
-        Console.WriteLine("Start SendAsyncPlayMessagesIfApplicable...");
+        if (!GamesByGameId.TryGetValue(gameId, out var game))
+            return;
         
         if (game.Game.Settings.AsyncPlay)
         {
-            var whatHappened = game.Game.History.Where(e => e.Time > game.LastAsyncPlayMessageSent).ToList();
+            var now = DateTimeOffset.Now;
+            var elapsedMinutes = (int)now.Subtract(game.LastAsyncPlayMessageSent).TotalMinutes;
+            if (elapsedMinutes < game.Game.Settings.AsyncPlayMessageIntervalMinutes)
+            {
+                int delayInSeconds = 1 + 60 * (game.Game.Settings.AsyncPlayMessageIntervalMinutes - elapsedMinutes);
+                _ = Task.Delay(delayInSeconds * 1000)
+                    .ContinueWith(_ => SendAsyncPlayMessagesIfApplicable(gameId));
+                
+                return;
+            }
+            var whatHappened = game.Game.History
+                .Where(e => e.Time > game.LastAsyncPlayMessageSent && e is not (AllyPermission))
+                .ToList();
+            
             if (whatHappened.Count == 0)
                 return;
 
-            var now = DateTimeOffset.Now;
-            var elapsed = (int)now.Subtract(game.LastAsyncPlayMessageSent).TotalMinutes;
-            if (elapsed < game.Game.Settings.AsyncPlayMessageIntervalMinutes)
+            var history = $"The game was just started. Have fun!";
+            if (whatHappened.Count > 1)
             {
-                Console.WriteLine("Scheduling SendAsyncPlayMessagesIfApplicable()...");
-                _ = Task.Delay(60000 * (game.Game.Settings.AsyncPlayMessageIntervalMinutes - elapsed) + 1000)
-                    .ContinueWith(_ => SendAsyncPlayMessagesIfApplicable(game));
-                
-                return;
-            }
-                
-            var history = $"The following happened:{Environment.NewLine}{Environment.NewLine}";
-            foreach (var evt in whatHappened)
-            {
-                history += "- " + evt + Environment.NewLine;
+                history = "The following happened:" + Environment.NewLine; 
+                foreach (var evt in whatHappened.Where(e => e is not EstablishPlayers))
+                {
+                    history += "- " + evt.GetShortMessage().ToString(Skin.Current) + Environment.NewLine;
+                }
             }
             
-            var turnInfo = Skin.Current.Format("Turn: {0}, phase: {1}", game.Game.CurrentTurn, game.Game.CurrentPhase);
+            var turnInfo = game.Game.CurrentTurn == 0 ? 
+                "Setting up a new game" : 
+                Skin.Current.Format("Turn: {0}, phase: {1}", game.Game.CurrentTurn, game.Game.CurrentPhase);
             
             await using var context = GetDbContext();
 
+            var nl = Environment.NewLine + Environment.NewLine;
             foreach (var userId in game.Game.Participation.SeatedPlayers.Keys)
             {
                 var user = await context.Users.FindAsync(userId);
@@ -242,12 +248,25 @@ public partial class GameHub
                 var player = game.Game.GetPlayerByUserId(userId);
                 if (player == null) continue;
 
-                var status = GameStatus.DetermineStatus(game.Game, player, true) + Environment.NewLine +
-                             Environment.NewLine;
+                var status = GameStatus.DetermineStatus(game.Game, player, true);
+                
+                var statusInfo = status.GetMessage(player, game.Game.IsHost(userId)).ToString(Skin.Current);
 
-                var asyncMessage = turnInfo + Environment.NewLine + Environment.NewLine + status +
-                                   Environment.NewLine +
-                                   Environment.NewLine + history;
+                var waitingFor = status.WaitingForHost ? "Players are waiting for the host to continue the game " + nl :
+                    status.WaitingForPlayers.Any() ? "Waiting for: " + string.Join(", ", status.WaitingForPlayers.Select(p => p.Name)) + nl : string.Empty;
+
+                var userToken = UsersByUserToken.FirstOrDefault(tokenAndUser => tokenAndUser.Value.Id == userId).Key;
+
+                var link = userToken == default
+                    ? "Join game at: <a href=\"https://treachery.online/\">https://treachery.online/</a>"
+                    : $"Jump to game: <a href=\"https://treachery.online/{userToken}/{game.GameId}\">https://treachery.online/</a>";
+
+                var asyncMessage = 
+                    turnInfo + nl + 
+                    statusInfo + nl +
+                    waitingFor +
+                    link + nl +
+                    history;
 
                 MailMessage mailMessage = new()
                 {
@@ -258,11 +277,11 @@ public partial class GameHub
                 };
 
                 mailMessage.To.Add(new MailAddress(mail));
-                SendMail(mailMessage);
+                await SendMail(mailMessage);
             }
+            
+            game.LastAsyncPlayMessageSent = now;
         }
-        
-        Console.WriteLine("Finished SendAsyncPlayMessagesIfApplicable...");
     }
 
     private async Task PerformBotEvent(string gameId, ManagedGame managedGame)
@@ -306,7 +325,7 @@ public partial class GameHub
     private async Task SendMailAndStatistics(ManagedGame game)
     {
         var state = GameState.GetStateAsString(game.Game);
-        SendEndOfGameMail(state, GameInfo.Extract(game, -1));
+        await SendEndOfGameMail(state, GameInfo.Extract(game, -1));
         await SendGameStatistics(game.Game);
     }
 }

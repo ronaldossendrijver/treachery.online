@@ -364,7 +364,7 @@ public partial class GameHub
         return await Task.FromResult(Success(result));
     }
     
-    private void SendEndOfGameMail(string content, GameInfo info)
+    private async Task SendEndOfGameMail(string content, GameInfo info)
     {
         var from = configuration["GameEndEmailFrom"];
         var to = configuration["GameEndEmailTo"];
@@ -387,7 +387,7 @@ public partial class GameHub
         mailMessage.To.Add(new MailAddress(to));
         mailMessage.Attachments.Add(saveGameToAttach);
 
-        SendMail(mailMessage);
+        await SendMail(mailMessage);
     }
     
     private static async Task SendGameStatistics(Game game)
