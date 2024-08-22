@@ -104,7 +104,7 @@ public static class TreacheryCardManager
         Items.Add(new TreacheryCard(102, 23, TreacheryCardType.Karma, Rule.ExtraKaramaCards));
     }
 
-    public static Deck<TreacheryCard> CreateTreacheryDeck(Game g, Random random)
+    public static Deck<TreacheryCard> CreateTreacheryDeck(Game g, LoggedRandom random)
     {
         return new Deck<TreacheryCard>(GetCardsInPlay(g), random);
     }

@@ -76,7 +76,7 @@ public static class ExtensionMethods
         return sourceArray[_random.Next(sourceArray.Length)];
     }
 
-    public static T RandomOrDefault<T>(this IEnumerable<T> source, Random random)
+    public static T RandomOrDefault<T>(this IEnumerable<T> source, LoggedRandom random)
     {
         if (source is null) return default;
 

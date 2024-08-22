@@ -77,9 +77,10 @@ public partial class Game
         Participation.Users
             .Where(idAndName => Participation.Observers.Contains(idAndName.Key))
             .Select(idAndName => idAndName.Value);
-    
-    public bool IsPlayer(int userId) => CurrentPhase is Phase.AwaitingPlayers && Participation.SeatedPlayers.ContainsKey(userId) || 
-                                        Participation.StandingPlayers.Contains(userId);
+
+    public bool IsPlayer(int userId) =>
+        CurrentPhase is Phase.AwaitingPlayers && Participation.StandingPlayers.Contains(userId) ||
+        Participation.SeatedPlayers.ContainsKey(userId);
     
     public bool IsHost(int userId) => Participation.Hosts.Contains(userId);
     

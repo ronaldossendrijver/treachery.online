@@ -261,7 +261,7 @@ public partial class Player
         }
     }
 
-    private readonly Random random = new();
+    private readonly LoggedRandom random = new();
     protected int D(int amount, int sides)
     {
         if (amount == 0 || sides == 0) return 0;

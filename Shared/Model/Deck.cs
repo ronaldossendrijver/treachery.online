@@ -15,15 +15,15 @@ public class Deck<T>
 {
     public List<T> Items { get; set; } = new();
 
-    public Random Random { get; set; }
+    public LoggedRandom Random { get; set; }
 
-    public Deck(IEnumerable<T> items, Random random)
+    public Deck(IEnumerable<T> items, LoggedRandom random)
     {
         Items = new List<T>(items);
         Random = random;
     }
 
-    public Deck(Random random)
+    public Deck(LoggedRandom random)
     {
         Random = random;
     }
@@ -60,7 +60,7 @@ public class Deck<T>
         Shuffle(Items, Random);
     }
 
-    public static void Shuffle(List<T> items, Random random)
+    public static void Shuffle(List<T> items, LoggedRandom random)
     {
         var n = items.Count;
         while (n > 1)
@@ -73,7 +73,7 @@ public class Deck<T>
 
     public static List<T> Randomize(IEnumerable<T> toRandomize)
     {
-        var deck = new Deck<T>(toRandomize, new Random());
+        var deck = new Deck<T>(toRandomize, new LoggedRandom());
         deck.Shuffle();
         return deck.Items;
     }

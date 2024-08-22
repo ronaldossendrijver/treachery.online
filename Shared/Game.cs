@@ -24,7 +24,7 @@ public partial class Game
     #region GameState
 
     public int Seed { get; internal set; } = -1;
-    internal Random Random { get; set; }
+    internal LoggedRandom Random { get; set; }
     public int MaximumTurns => Settings.MaximumTurns;
     public int MaximumPlayers => Settings.NumberOfPlayers;
     public string Name { get; internal set; }

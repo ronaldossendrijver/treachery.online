@@ -35,18 +35,20 @@ public partial class Game
 
     internal void AssignFactionsAndEnterFactionTrade()
     {
-        Console.WriteLine("In play: " + string.Join(", ", FactionsInPlay));
+        //Console.WriteLine($"AssignFactionsAndEnterFactionTrade, seed: {Seed}, random count: {Random.GetCount()}");
+        
+        //Console.WriteLine("In play: " + string.Join(", ", FactionsInPlay));
         
         var inPlay = new Deck<Faction>(FactionsInPlay, Random);
         Stone(Milestone.Shuffled);
         inPlay.Shuffle();
         
-        Console.WriteLine("In play: " + string.Join(", ", inPlay));
+        //Console.WriteLine("In play after shuffling: " + string.Join(", ", inPlay.Items));
 
         foreach (var p in Players.Where(p => p.Faction == Faction.None))
         {
             p.Faction = inPlay.Draw();
-            Console.WriteLine($"Player: {p.Seat}:{p.Faction}");
+            //Console.WriteLine($"Player: {p.Seat}:{p.Faction}");
         }
 
         DeterminePositionsAtTable();            
@@ -54,7 +56,6 @@ public partial class Game
         Enter(Applicable(Rule.CustomDecks) && Version < 134, Phase.CustomizingDecks, EnterPhaseTradingFactions);
     }
 
-    //internal Dictionary<Player, int> InitialUserIds { get; } = [];
     private void DeterminePositionsAtTable()
     {
         var positions = new Deck<int>(Random);
@@ -73,7 +74,7 @@ public partial class Game
                 var userIdToSeat = Participation.StandingPlayers[i];
                 Participation.SeatedPlayers[userIdToSeat] = p.Seat;
             }
-            Console.WriteLine($"Seat of player {i} ({p.Faction}: {p.Seat}");
+            Console.WriteLine($"Seat of player {i} ({p.Faction}): {p.Seat}");
         }
     }
 
@@ -129,7 +130,7 @@ public partial class Game
         }
     }
 
-    private Deck<IHero> CreateAndShuffleTraitorDeck(Random random)
+    private Deck<IHero> CreateAndShuffleTraitorDeck(LoggedRandom random)
     {
         var result = new Deck<IHero>(TraitorsInPlay, random);
 
