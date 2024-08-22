@@ -236,25 +236,36 @@ public class EstablishPlayers : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        if (Game.CurrentPhase != Phase.AwaitingPlayers) return;
+        Game.CurrentReport = new Report(MainPhase.Setup);
+        Log("Game started!");
+        Game.Stone(Milestone.GameStarted);
+        
+        Game.CurrentMainPhase = MainPhase.Setup;
+        Game.Seed = Seed;
+        Game.Random = new Random(Seed);
+        Game.Name = GameName;
+        
+        //Settings
 
         if (Game.Version >= 170)
         {
-            Game.Settings = Settings;            
+            Game.Settings = Settings;
         }
+        else
+        {
+            #pragma warning disable CS0612 // Type or member is obsolete
+            Game.Settings.NumberOfPlayers = MaximumNumberOfPlayers;
+            Game.Settings.MaximumTurns = MaximumTurns;
+            Game.Settings.AllowedFactionsInPlay = FactionsInPlay;
+            Game.Settings.InitialRules = ApplicableRules.ToList();
+            #pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        //Rules
         
-        Game.CurrentReport = new Report(MainPhase.Setup);
-
-        Game.Stone(Milestone.GameStarted);
-        Log("Game started!");
-
-        Game.CurrentMainPhase = MainPhase.Setup;
-
-        Game.Seed = Seed;
-        Game.Name = GameName;
-        Game.Random = new Random(Seed);
-
+        #pragma warning disable CS0612 // Type or member is obsolete
         Game.AllRules = Game.Version < 170 ? ApplicableRules.ToList() : Game.Settings.InitialRules;
+        #pragma warning restore CS0612 // Type or member is obsolete
         
         Game.Rules = Game.AllRules.Where(r => Game.GetRuleGroup(r) != RuleGroup.Bots).ToList();
         Game.RulesForBots = Game.AllRules.Where(r => Game.GetRuleGroup(r) == RuleGroup.Bots).ToList();
@@ -272,6 +283,8 @@ public class EstablishPlayers : GameEvent
             if (!Game.Rules.Contains(Rule.ExpansionTreacheryCardsPBandSs)) Game.Rules.Add(Rule.ExpansionTreacheryCardsPBandSs);
             if (!Game.Rules.Contains(Rule.ExpansionTreacheryCardsAmal)) Game.Rules.Add(Rule.ExpansionTreacheryCardsAmal);
         }
+        
+        //Decks and card piles
 
         Game.ResourceCardDeck = CreateAndShuffleResourceCardDeck();
         Game.TreacheryDeck = TreacheryCardManager.CreateTreacheryDeck(Game, Game.Random);
@@ -287,11 +300,15 @@ public class EstablishPlayers : GameEvent
         Game.ResourceCardDiscardPileA = new Deck<ResourceCard>(Game.Random);
         Game.ResourceCardDiscardPileB = new Deck<ResourceCard>(Game.Random);
 
-        if (Game.Applicable(Rule.NexusCards)) CreateNexusDeck();
+        if (Game.Applicable(Rule.NexusCards)) 
+            CreateNexusDeck();
 
         CreateTerrorTokens();
-        Game.UnassignedAmbassadors = new Deck<Ambassador>(AvailableFactions().Where(f => f != Faction.Cyan).Select(f => Game.AmbassadorOf(f)), Game.Random);
+        
+        Game.UnassignedAmbassadors = new Deck<Ambassador>(AvailableFactions().Where(f => f != Faction.Cyan).Select(Game.AmbassadorOf), Game.Random);
 
+        //Initial alliance settings
+        
         Game.OrangeAllowsShippingDiscount = true;
         Game.PurpleAllowsRevivalDiscount = true;
         Game.GreyAllowsReplacingCards = true;
@@ -304,16 +321,6 @@ public class EstablishPlayers : GameEvent
         Game.BlueAllowsUseOfVoice = true;
         Game.WhiteAllowsUseOfNoField = true;
 
-        if (Game.Version < 170)
-        {
-            #pragma warning disable CS0612 // Type or member is obsolete
-            Game.Settings.NumberOfPlayers = MaximumNumberOfPlayers;
-            Game.Settings.MaximumTurns = MaximumTurns;
-            Game.Settings.AllowedFactionsInPlay = FactionsInPlay;
-            Game.Settings.InitialRules = ApplicableRules.ToList();
-            #pragma warning restore CS0612 // Type or member is obsolete
-        }
-        
         Game.FactionsInPlay = Game.Settings.AllowedFactionsInPlay;
 
         AddPlayersToGame();
@@ -325,14 +332,15 @@ public class EstablishPlayers : GameEvent
 
     private void CreateTerrorTokens()
     {
-        Game.UnplacedTerrorTokens = new List<TerrorType> {
+        Game.UnplacedTerrorTokens =
+        [
             TerrorType.Assassination,
             TerrorType.Atomics,
             TerrorType.Extortion,
             TerrorType.Robbery,
             TerrorType.Sabotage,
             TerrorType.SneakAttack
-        };
+        ];
     }
 
     private void CreateNexusDeck()

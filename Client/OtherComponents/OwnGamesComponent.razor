@@ -180,7 +180,7 @@
                 else
                 {
                     var skinData = Skin.Current == Skin.Default ? null : Skin.Current.SkinToString();
-                    await Client.RequestCreateGame(createGamePassword, loadedGameData, skinData);    
+                    error = await Client.RequestCreateGame(createGamePassword, loadedGameData, skinData);    
                 }
             }
         }
