@@ -163,7 +163,7 @@
             State = LoginComponentState.Loading;
             StateHasChanged();
             NewAccountMessage = await Client.RequestCreateUser(newUsername, Support.GetHash(newPassword), newEmail, newUsername);
-            State = NewAccountMessage == null ? LoginComponentState.Login : LoginComponentState.NewAccount;
+            State = string.IsNullOrEmpty(PasswordResetMessage) ? LoginComponentState.Login : LoginComponentState.NewAccount;
             if (State is not LoginComponentState.NewAccount) ClearAllInputs();
         }
     }
@@ -175,7 +175,7 @@
             State = LoginComponentState.Loading;
             StateHasChanged();
             PasswordResetMessage = await Client.RequestPasswordReset(passwordResetEmail);
-            State = PasswordResetMessage == null ? LoginComponentState.EnterNewPassword : LoginComponentState.RequestPasswordReset;
+            State = string.IsNullOrEmpty(PasswordResetMessage) ? LoginComponentState.EnterNewPassword : LoginComponentState.RequestPasswordReset;
             if (State is not LoginComponentState.RequestPasswordReset) ClearAllInputs();
         }
     }
@@ -187,7 +187,7 @@
             State = LoginComponentState.Loading;
             StateHasChanged();
             ResetPasswordMessage = await Client.RequestSetPassword(resetUsername, resetToken, Support.GetHash(resetPassword));
-            State = ResetPasswordMessage == null ? LoginComponentState.Login : LoginComponentState.EnterNewPassword;
+            State = string.IsNullOrEmpty(PasswordResetMessage) ? LoginComponentState.Login : LoginComponentState.EnterNewPassword;
             if (State is not LoginComponentState.EnterNewPassword) ClearAllInputs();
         }
     }
