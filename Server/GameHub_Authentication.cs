@@ -108,7 +108,7 @@ public partial class GameHub
         mailMessage.To.Add(new MailAddress(user.Email));
         await SendMail(mailMessage);
         
-        return null;
+        return Success();
     }
     
     public async Task<Result<LoginInfo>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword)
