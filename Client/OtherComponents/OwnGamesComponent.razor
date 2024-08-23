@@ -24,8 +24,8 @@
             <table class="table table-sm">
                 <thead>
                 <tr class="table-dark">
-                    <th scope="col">Last action</th>
                     <th scope="col">Game info</th>
+                    <th scope="col">Last action</th>
                     <th scope="col">Actions</th>
                 </tr>
                 </thead>
@@ -36,9 +36,6 @@
                     var factions = av.FactionsInPlay ?? [];
 
                     <tr class="small table-dark">
-                        <td class="w-25">
-                            @av.LastAction
-                        </td>
                         <td class="w-50" style="@fontColorStyle">
                             <div>@Name(Game.DetermineApproximateRuleset(factions, av.Rules, Game.ExpansionLevel)), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
                                 <br>
@@ -47,6 +44,9 @@
                                     <Image Shown="f" Width="20" Shadow=""/>
                                 }
                             </div>
+                        </td>
+                        <td class="w-25">
+                            @av.LastAction?.DateTime
                         </td>
                         <td class="w-25">
                             <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Close(av))">Close</button>
@@ -79,8 +79,8 @@
     <div class="card-header">Your account</div>
     <div class="card-body">
         <div class="row">
-            <label for="userName" class="col-4 col-form-label">User name</label>
-            <div class="col-auto">
+            <label for="userName" class="col-4 col-form-label">Username</label>
+            <div class="col-8">
                 <input type="text" readonly class="form-control-plaintext" id="userName" value="@Client.UserName">
             </div>
         </div>

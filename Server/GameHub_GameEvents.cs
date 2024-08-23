@@ -225,11 +225,13 @@ public partial class GameHub
             var history = $"The game was just started. Have fun!";
             if (whatHappened.Count > 1)
             {
-                history = "The following happened:" + Environment.NewLine; 
+                history = "The following happened:";
+                history += "<ul>";
                 foreach (var evt in whatHappened.Where(e => e is not EstablishPlayers))
                 {
-                    history += "- " + evt.GetShortMessage().ToString(Skin.Current) + Environment.NewLine;
+                    history += $"<li>{evt.GetShortMessage().ToString(Skin.Current)}</li>";
                 }
+                history += "</ul>";
             }
             
             var turnInfo = game.Game.CurrentTurn == 0 ? 
@@ -262,11 +264,7 @@ public partial class GameHub
                     : $"Jump to game: <a href=\"https://treachery.online/{userToken}/{game.GameId}\">https://treachery.online/</a>";
 
                 var asyncMessage = 
-                    turnInfo + nl + 
-                    statusInfo + nl +
-                    waitingFor +
-                    link + nl +
-                    history;
+                    $"<p>{turnInfo}</p><p>{statusInfo}</p><p>{waitingFor}</p><p>{link}</p><p>{history}</p>";
 
                 MailMessage mailMessage = new()
                 {
