@@ -72,7 +72,7 @@ else
                                 @av.GameName
                             </td>
                             <td class="w-25">
-                                <button class="btn btn-primary  me-1" @onclick="@(_ => Close(av))">Close</button>
+                                <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Close(av))">Close</button>
                             </td>
                         </tr>
                     }
@@ -98,7 +98,7 @@ else
                                 <td class="w-15">@av.Name</td>
                                 <td class="w-50">@av.Email</td>
                                 <td class="w-15">@av.LastLogin</td>
-                                <td class="w-10"><button class="btn btn-primary me-1" @onclick="@(_ => DeleteUser(av))">Delete</button></td>
+                                <td class="w-10"><button class="btn btn-primary btn-sm me-1" @onclick="@(_ => DeleteUser(av))">Delete</button></td>
                             </tr>
                         }
                         </tbody>

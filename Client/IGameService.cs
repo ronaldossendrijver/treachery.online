@@ -67,10 +67,10 @@ public interface IGameService
     
     //Authentication
     
-    Task<string> RequestCreateUser(string userName, string hashedPassword, string email, string playerName);
-    Task<string> RequestLogin(string userName, string hashedPassword);
-    Task<string> RequestPasswordReset(string email);
-    Task<string> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword);
+    Task<Result<LoginInfo>> RequestCreateUser(string userName, string hashedPassword, string email, string playerName);
+    Task<Result<LoginInfo>> RequestLogin(string userName, string hashedPassword);
+    Task<VoidResult> RequestPasswordReset(string email);
+    Task<Result<LoginInfo>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword);
     Task<string> RequestUpdateUserInfo(string hashedPassword, string email, string playerName);
     
     //Game Management

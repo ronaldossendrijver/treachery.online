@@ -327,7 +327,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     //Authentication
     
-    public async Task<string> RequestCreateUser(string userName, string hashedPassword, string email, string playerName)
+    public async Task<Result<LoginInfo>> RequestCreateUser(string userName, string hashedPassword, string email, string playerName)
     {
         var result = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestCreateUser), userName, hashedPassword, email, playerName);
 
@@ -336,13 +336,13 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             StoredPassword = hashedPassword;
             LoginInfo = result.Contents;
             Refresh();
-            return null;
+            return result;
         }
 
-        return Skin.Current.Describe(result.Error);
+        return result;
     }
 
-    public async Task<string> RequestLogin(string userName, string hashedPassword)
+    public async Task<Result<LoginInfo>> RequestLogin(string userName, string hashedPassword)
     {
         var result = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestLogin), Game.LatestVersion, userName, hashedPassword);
 
@@ -351,23 +351,19 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             StoredPassword = hashedPassword;
             LoginInfo = result.Contents;
             Refresh();
-            return null;
+            return result;
         }
 
         StoredPassword = null;
         LoginInfo = null;
         Refresh();
         
-        return Skin.Current.Describe(result.Error);
+        return result;
     }
 
-    public async Task<string> RequestPasswordReset(string email)
-    {
-        var result = await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestPasswordReset), email);
-        return Skin.Current.Describe(result.Error);
-    }
+    public async Task<VoidResult> RequestPasswordReset(string email) => await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestPasswordReset), email);
 
-    public async Task<string> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword)
+    public async Task<Result<LoginInfo>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword)
     {
         var result = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestSetPassword), userName, passwordResetToken, newHashedPassword);
 
@@ -376,10 +372,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             StoredPassword = newHashedPassword;
             LoginInfo = result.Contents;
             Refresh();
-            return null;
+            return result;
         }
 
-        return Skin.Current.Describe(result.Error);
+        return result;
     }
     
     public async Task<string> RequestUpdateUserInfo(string hashedPassword, string email, string playerName)

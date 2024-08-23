@@ -151,8 +151,17 @@
         {
             State = LoginComponentState.Loading;
             StateHasChanged();
-            LoginMessage = await Client.RequestLogin(username, Support.GetHash(password));
-            State = LoginComponentState.Login;
+            
+            var result = await Client.RequestLogin(username, Support.GetHash(password));
+            if (result.Success)
+            {
+                ClearAllInputs();
+            }
+            else
+            {
+                LoginMessage = Skin.Current.Describe(result.Error);
+                State = LoginComponentState.Login;
+            }
         }
     }
     
@@ -162,9 +171,18 @@
         {
             State = LoginComponentState.Loading;
             StateHasChanged();
-            NewAccountMessage = await Client.RequestCreateUser(newUsername, Support.GetHash(newPassword), newEmail, newUsername);
-            State = string.IsNullOrEmpty(PasswordResetMessage) ? LoginComponentState.Login : LoginComponentState.NewAccount;
-            if (State is not LoginComponentState.NewAccount) ClearAllInputs();
+            
+            var result = await Client.RequestCreateUser(newUsername, Support.GetHash(newPassword), newEmail, newUsername);
+            if (result.Success)
+            {
+                ClearAllInputs();
+                State = LoginComponentState.Login;
+            }
+            else
+            {
+                NewAccountMessage = Skin.Current.Describe(result.Error);
+                State = LoginComponentState.NewAccount;
+            }
         }
     }
     
@@ -174,9 +192,18 @@
         {
             State = LoginComponentState.Loading;
             StateHasChanged();
-            PasswordResetMessage = await Client.RequestPasswordReset(passwordResetEmail);
-            State = string.IsNullOrEmpty(PasswordResetMessage) ? LoginComponentState.EnterNewPassword : LoginComponentState.RequestPasswordReset;
-            if (State is not LoginComponentState.RequestPasswordReset) ClearAllInputs();
+            
+            var result = await Client.RequestPasswordReset(passwordResetEmail);
+            if (result.Success)
+            {
+                ClearAllInputs();
+                State = LoginComponentState.EnterNewPassword;
+            }
+            else
+            {
+                PasswordResetMessage = Skin.Current.Describe(result.Error);
+                State = LoginComponentState.RequestPasswordReset;
+            }
         }
     }
     
@@ -186,9 +213,18 @@
         {
             State = LoginComponentState.Loading;
             StateHasChanged();
-            ResetPasswordMessage = await Client.RequestSetPassword(resetUsername, resetToken, Support.GetHash(resetPassword));
-            State = string.IsNullOrEmpty(PasswordResetMessage) ? LoginComponentState.Login : LoginComponentState.EnterNewPassword;
-            if (State is not LoginComponentState.EnterNewPassword) ClearAllInputs();
+            
+            var result = await Client.RequestSetPassword(resetUsername, resetToken, Support.GetHash(resetPassword));
+            if (result.Success)
+            {
+                ClearAllInputs();
+                State = LoginComponentState.Login;
+            }
+            else
+            {
+                ResetPasswordMessage = Skin.Current.Describe(result.Error);
+                State = LoginComponentState.EnterNewPassword;
+            }
         }
     }
 
