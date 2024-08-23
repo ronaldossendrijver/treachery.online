@@ -115,8 +115,7 @@ public partial class GameHub
             IsBodyHtml = true,
             Body = $"""
                     <p>You have requested a password reset for <strong>{usersMessage}</strong>.</p>
-                    {Environment.NewLine}{Environment.NewLine}
-                    <p>You can use this token to reset your password: <strong>{token}</strong></p>
+                    <p>You can use this token to reset your password: <strong>{token}</strong>.</p>
                     """
         };
 
