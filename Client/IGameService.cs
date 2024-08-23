@@ -17,6 +17,7 @@ public interface IGameService
     public string UserEmail { get; }
     public string PlayerName { get; }
     public ServerInfo ServerInfo { get; }
+    public AdminInfo AdminInfo { get; }
 
     //Game info
     public Game Game { get; }
@@ -102,6 +103,6 @@ public interface IGameService
     Task<string> AdminPersistState();
     Task<string> AdminRestoreState();
     Task<string> AdminCloseGame(string gameId);
-
-    
+    Task<string> AdminDeleteUser(int userId);
+    Task<string> GetAdminInfo();
 }

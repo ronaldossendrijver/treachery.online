@@ -68,10 +68,14 @@ public partial class GameHub
         
         if (user == null)
             return Error<LoginInfo>(ErrorType.InvalidUserNameOrPassword);
+        
+        user.LastLogin = DateTimeOffset.Now;
+        await db.SaveChangesAsync();
 
         var userToken = GenerateToken();
         UsersByUserToken.TryAdd(userToken, user);
         UserTokenInfo[userToken] = new TokenInfo();
+        
         return Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email });
     }
     
@@ -159,20 +163,6 @@ public partial class GameHub
         await using var db = GetDbContext();
         db.Users.Update(user);
         await db.SaveChangesAsync();
-/*
-        var dbUser = await db.Users.FindAsync(user.Id); 
-        
-        if (dbUser == null)
-            return Error<LoginInfo>(ErrorType.UserNotFound);
-
-        if (!string.IsNullOrEmpty(hashedPassword))
-            dbUser.HashedPassword = hashedPassword;
-        
-        dbUser.PlayerName = playerName;
-        dbUser.Email = email;
-
-        await db.SaveChangesAsync();
-        */
             
         return await Task.FromResult(Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email }));
     }

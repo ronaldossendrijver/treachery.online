@@ -93,6 +93,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     
     private async Task SendMail(MailMessage mail)
     {
+        /*
         Console.WriteLine($"""
                            Sending mail
                            ============
@@ -102,6 +103,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
                            Subject : {mail.Subject}
                            Body    : {mail.Body}
                            """);
+        */
         try
         {
             var username = configuration["GameEndEmailUsername"];

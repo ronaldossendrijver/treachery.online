@@ -8,30 +8,17 @@
 // */
 
 using System;
-using System.ComponentModel.DataAnnotations;
 
-namespace Treachery.Server;
+namespace Treachery.Shared;
 
-public class User
+public class UserInfo
 {
     public int Id { get; init; }
     
-    [MaxLength(4000)]
-    public string Name { get; set; }
+    public string Name { get; init; }
     
-    [MaxLength(4000)]
-    public string Email { get; set; }
+    public string Email { get; init; }
     
-    [MaxLength(4000)]
-    public string HashedPassword { get; set; }
-
-    [MaxLength(4000)]
-    public string PasswordResetToken { get; set; }
-    
-    public DateTime PasswordResetTokenCreated { get; set; }
-    
-    [MaxLength(4000)]
+    public DateTimeOffset LastLogin { get; init; }
     public string PlayerName { get; set; }
-
-    public DateTimeOffset LastLogin { get; set; }
 }

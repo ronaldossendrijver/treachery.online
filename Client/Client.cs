@@ -23,6 +23,9 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public ServerInfo ServerInfo { get; private set; }
     public bool IsConnected => _connection.State == HubConnectionState.Connected;
     
+    //Admin info
+    public AdminInfo AdminInfo { get; private set; }
+    
     //Logged in player
     private LoginInfo LoginInfo { get; set; }
     private string StoredPassword { get; set; }
@@ -514,6 +517,26 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         var result = await Invoke<string>(nameof(IGameHub.AdminCloseGame), UserToken, gameId);
         return result.Success ? result.Contents : Skin.Current.Describe(result.Error);
     }
+    
+    public async Task<string> AdminDeleteUser(int userId)
+    {
+        var result = await Invoke<string>(nameof(IGameHub.AdminDeleteUser), UserToken, userId);
+        return result.Success ? result.Contents : Skin.Current.Describe(result.Error);
+    }
+
+    public async Task<string> GetAdminInfo()
+    {
+        var result = await Invoke<AdminInfo>(nameof(IGameHub.GetAdminInfo), UserToken);
+        if (result.Success)
+        {
+            AdminInfo = result.Contents;
+            return "AdminInfo retrieved";
+        }
+        else
+        {
+            return Skin.Current.Describe(result.Error);            
+        }
+    }
 
     public List<GameInfo> RunningGames { get; private set; } = [];
     private async Task Heartbeat()
@@ -691,3 +714,4 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
    
     private static void LogSerializationError(object sender, ErrorEventArgs e) => Support.Log(e.ErrorContext.Error.ToString());
 }
+

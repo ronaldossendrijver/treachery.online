@@ -17,15 +17,11 @@ public partial class GameHub
         {
             AdminName = configuration["GameAdminUsername"],
             ScheduledMaintenance = MaintenanceDate,
-            TotalUsers = GetDbContext().Users.Count(),
-            UsersByUserTokenCount = UsersByUserToken.Count,
-            ConnectionInfoByUserIdCount = ConnectionInfoByUserId.Count,
-            GamesByGameIdCount = GamesByGameId.Count,
         };
 
         return Success(result);
     }
-
+    
     private async Task CleanupUserTokens()
     {
         var now = DateTimeOffset.Now;
@@ -168,5 +164,33 @@ public partial class GameHub
         }
         
         return Success("Game removed");
+    }
+    
+    public async Task<Result<string>> AdminDeleteUser(string userToken, int userId)
+    {
+        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
+            return Error<string>(ErrorType.InvalidUserNameOrPassword);
+
+        await using var db = GetDbContext();
+        await db.Users.Where(u => u.Id == userId).ExecuteDeleteAsync();
+        
+        return Success("User deleted");
+    }
+    
+    public async Task<Result<AdminInfo>> GetAdminInfo(string userToken)
+    {
+        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
+            return Error<AdminInfo>(ErrorType.InvalidUserNameOrPassword);
+
+        var result = new AdminInfo
+        {
+            Users = GetDbContext().Users.Select(u => new UserInfo { Id = u.Id, Name = u.Name, PlayerName = u.PlayerName, Email = u.Email, LastLogin = u.LastLogin }).ToList(),
+            UsersByUserTokenCount = UsersByUserToken.Count,
+            ConnectionInfoByUserIdCount = ConnectionInfoByUserId.Count,
+            GamesByGameIdCount = GamesByGameId.Count,
+        };
+
+        await Task.CompletedTask;
+        return Success(result);
     }
 }

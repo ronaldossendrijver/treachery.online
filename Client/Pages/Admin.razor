@@ -34,82 +34,91 @@ else if (!Client.LoggedIn)
 }
 else 
 {
-    <div class="row d-flex align-items-center" style="@StartScreenStyle">
-        <div class="d-flex justify-content-center">
-            
-            <div class="card mb-2" style="animation:fadeIn 1s;">
-                <div class="card">
-                    <div class="card-header">Server info</div>
-                    <div class="card-body">
-                        <h3>Info</h3>
-                        <p><strong>Total Users: </strong>@ServerInfo.TotalUsers</p>
-                        <p><strong>Users by User Token: </strong>@ServerInfo.UsersByUserTokenCount</p>
-                        <p><strong>Games by Game Id: </strong>@ServerInfo.GamesByGameIdCount</p>
-                        <p><strong>ConnectionInfo by UserId: </strong>@ServerInfo.ConnectionInfoByUserIdCount</p>
-                        <h3>Maintenance window</h3>
-                        <input type="text" class="form-control" @bind="@MaintenanceDate" @bind:event="oninput"/>
-                        <button class="btn btn-primary me-1" @onclick="@UpdateMaintenance" disabled="@(!MaintenanceDateIsValid)">Ok</button>
-                        <h3>Persist data</h3>
-                        <button class="btn btn-primary me-1" @onclick="@PersistState">Persist data</button>
-                        <h3>Restore persisted data</h3>
-                        <button class="btn btn-primary me-1" @onclick="@RestoreState">Restore data</button>
-                    </div>
-                </div>
+    <div class="row" style="@StartScreenStyle">
+        <div class="card mb-2">
+            <div class="card-header">Server info</div>
+            <div class="card-body">
+                <h3 class="h3">Info</h3>
+                <button class="btn btn-primary me-1" @onclick="@GetAdminInfo">Get admin info</button>
+                <h3 class="h3">Maintenance window</h3>
+                <input type="text" class="form-control" @bind="@MaintenanceDate" @bind:event="oninput"/>
+                <button class="btn btn-primary me-1" @onclick="@UpdateMaintenance" disabled="@(!MaintenanceDateIsValid)">Ok</button>
+                <h3 class="h3">Persist data</h3>
+                <button class="btn btn-primary me-1" @onclick="@PersistState">Persist data</button>
+                <h3 class="h3">Restore persisted data</h3>
+                <button class="btn btn-primary me-1" @onclick="@RestoreState">Restore data</button>
             </div>
-
-            <div class="card mb-2" style="animation:fadeIn 1s;">
-                <div class="card">
-                    <div class="card-header">Running games</div>
-                    <div class="card-body">
-                        <table class="table table-sm">
-                            <tbody>
-                            @foreach (var av in Client.RunningGames.OrderByDescending(av => av.LastAction))
-                            {
-                                var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
-
-                                <tr class="small table-dark">
-                                    <td class="w-25" style="@fontColorStyle">
-                                        @av.GameName
-                                    </td>
-                                    <td class="w-25">
-                                        <button class="btn btn-primary  me-1" @onclick="@(_ => Close(av))">Close</button>
-                                    </td>
-                                </tr>
-                            }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-2" style="animation:fadeIn 1s;">
-                <div class="card">
-                    <div class="card-header">Log</div>
-                    <div class="card-body">
-                        @foreach (var m in Messages)
-                        {
-                            <div>@m</div>
-                        } 
-                    </div>
-                </div>
-            </div>
-            
         </div>
+        <div class="card mb-2">
+            <div class="card-header">Log</div>
+            <div class="card-body">
+                @foreach (var m in Messages)
+                {
+                    <div>@m</div>
+                }
+            </div>
+        </div>
+        <div class="card mb-2">
+            <div class="card-header">Running games</div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tbody>
+                    @foreach (var av in Client.RunningGames.OrderByDescending(av => av.LastAction))
+                    {
+                        var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
+
+                        <tr class="small table-dark">
+                            <td class="w-25" style="@fontColorStyle">
+                                @av.GameName
+                            </td>
+                            <td class="w-25">
+                                <button class="btn btn-primary  me-1" @onclick="@(_ => Close(av))">Close</button>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @if (Client.AdminInfo != null)
+        {
+            <div class="card mb-2">
+                <div class="card-header">Info</div>
+                <div class="card-body">
+                    <p><strong>Users by User Token: </strong>@Client.AdminInfo.UsersByUserTokenCount</p>
+                    <p><strong>Games by Game Id: </strong>@Client.AdminInfo.GamesByGameIdCount</p>
+                    <p><strong>Total Users: </strong>@Client.AdminInfo.Users.Count</p>
+                    <p><strong>ConnectionInfo by UserId: </strong>@Client.AdminInfo.ConnectionInfoByUserIdCount</p>
+                    <table class="table table-sm">
+                        <tbody>
+                        @foreach (var av in Client.AdminInfo.Users)
+                        {
+                            <tr class="small table-dark">
+                                <td class="w-10">@av.Id</td>
+                                <td class="w-15">@av.Name</td>
+                                <td class="w-50">@av.Email</td>
+                                <td class="w-15">@av.LastLogin</td>
+                                <td class="w-10"><button class="btn btn-primary me-1" @onclick="@(_ => DeleteUser(av))">Delete</button></td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>            
+        }
     </div>
 }
 
 @code {
 
     private string MaintenanceDate { get; set; }
-    private ServerInfo ServerInfo { get; set; }
     private List<string> Messages { get; } = [];
 
     protected override async Task OnInitializedAsync()
     {
         Client.RefreshHandler += StateHasChanged;
         await Client.Start();
-        ServerInfo = Client.ServerInfo;
-        MaintenanceDate = ServerInfo.ScheduledMaintenance.ToString(CultureInfo.CurrentUICulture);
+        MaintenanceDate = Client.ServerInfo.ScheduledMaintenance.ToString(CultureInfo.CurrentUICulture);
     }
 
     public void Dispose()
@@ -123,6 +132,12 @@ else
     {
         DateTimeOffset.TryParse(MaintenanceDate, CultureInfo.CurrentUICulture, DateTimeStyles.AssumeUniversal, out var date);
         Messages.Add(await Client.AdminUpdateMaintenance(date));
+        StateHasChanged();
+    }
+    
+    private async Task GetAdminInfo()
+    {
+        Messages.Add(await Client.GetAdminInfo());
         StateHasChanged();
     }
     
@@ -141,6 +156,12 @@ else
     private async Task Close(GameInfo av)
     {
         Messages.Add(await Client.AdminCloseGame(av.GameId));
+        StateHasChanged();
+    }
+    
+    private async Task DeleteUser(UserInfo av)
+    {
+        Messages.Add(await Client.AdminDeleteUser(av.Id));
         StateHasChanged();
     }
 

@@ -7,31 +7,15 @@
 //  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 // */
 
-using System;
-using System.ComponentModel.DataAnnotations;
+namespace Treachery.Shared;
 
-namespace Treachery.Server;
-
-public class User
+public class AdminInfo
 {
-    public int Id { get; init; }
+    public List<UserInfo> Users { get; set; }
     
-    [MaxLength(4000)]
-    public string Name { get; set; }
+    public int UsersByUserTokenCount { get; set; }
     
-    [MaxLength(4000)]
-    public string Email { get; set; }
+    public int ConnectionInfoByUserIdCount { get; set; }
     
-    [MaxLength(4000)]
-    public string HashedPassword { get; set; }
-
-    [MaxLength(4000)]
-    public string PasswordResetToken { get; set; }
-    
-    public DateTime PasswordResetTokenCreated { get; set; }
-    
-    [MaxLength(4000)]
-    public string PlayerName { get; set; }
-
-    public DateTimeOffset LastLogin { get; set; }
+    public int GamesByGameIdCount { get; set; }
 }

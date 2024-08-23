@@ -16,10 +16,4 @@ public class ServerInfo
     public DateTimeOffset ScheduledMaintenance { get; set; }
 
     public string AdminName { get; set; }
-
-    public int TotalUsers { get; set; }
-    
-    public int UsersByUserTokenCount { get; set; }
-    public int ConnectionInfoByUserIdCount { get; set; }
-    public int GamesByGameIdCount { get; set; }
 }
