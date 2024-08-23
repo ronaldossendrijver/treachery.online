@@ -49,37 +49,6 @@ else
                 <button class="btn btn-primary me-1" @onclick="@RestoreState">Restore data</button>
             </div>
         </div>
-        <div class="card mb-2">
-            <div class="card-header">Log</div>
-            <div class="card-body">
-                @foreach (var m in Messages)
-                {
-                    <div>@m</div>
-                }
-            </div>
-        </div>
-        <div class="card mb-2">
-            <div class="card-header">Running games</div>
-            <div class="card-body">
-                <table class="table table-sm">
-                    <tbody>
-                    @foreach (var av in Client.RunningGames.OrderByDescending(av => av.LastAction))
-                    {
-                        var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
-
-                        <tr class="small table-dark">
-                            <td class="w-25" style="@fontColorStyle">
-                                @av.GameName
-                            </td>
-                            <td class="w-25">
-                                <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Close(av))">Close</button>
-                            </td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
-            </div>
-        </div>
         @if (Client.AdminInfo != null)
         {
             <div class="card mb-2">
@@ -90,14 +59,30 @@ else
                     <p><strong>Total Users: </strong>@Client.AdminInfo.Users.Count</p>
                     <p><strong>ConnectionInfo by UserId: </strong>@Client.AdminInfo.ConnectionInfoByUserIdCount</p>
                     <table class="table table-sm">
+                        <thead>
+                            <tr class="small table-dark">
+                                <th class="w-10">User id</th>
+                                <th class="w-15">Username</th>
+                                <th class="w-15">Player name</th>
+                                <th class="w-50">Email</th>
+                                <th class="w-15">Last login</th>
+                                <th class="w-10">Actions</th>
+                            </tr>
+                        </thead>
                         <tbody>
                         @foreach (var av in Client.AdminInfo.Users)
                         {
                             <tr class="small table-dark">
                                 <td class="w-10">@av.Id</td>
                                 <td class="w-15">@av.Name</td>
+                                <td class="w-15">@av.PlayerName</td>
                                 <td class="w-50">@av.Email</td>
-                                <td class="w-15">@av.LastLogin</td>
+                                <td class="w-15">
+                                    @if (av.LastLogin != default)
+                                    {
+                                        @av.LastLogin.LocalDateTime   
+                                    }
+                                </td>
                                 <td class="w-10"><button class="btn btn-primary btn-sm me-1" @onclick="@(_ => DeleteUser(av))">Delete</button></td>
                             </tr>
                         }
@@ -106,6 +91,37 @@ else
                 </div>
             </div>            
         }
+        <div class="card mb-2">
+            <div class="card-header">Running games</div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tbody>
+                    @foreach (var av in Client.RunningGames.OrderByDescending(av => av.LastAction))
+                    {
+                    var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
+
+                    <tr class="small table-dark">
+                        <td class="w-25" style="@fontColorStyle">
+                            @av.GameName
+                        </td>
+                        <td class="w-25">
+                            <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Close(av))">Close</button>
+                        </td>
+                    </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card mb-2">
+            <div class="card-header">Log</div>
+            <div class="card-body">
+                @foreach (var m in Messages)
+                {
+                <div>@m</div>
+                }
+            </div>
+        </div>
     </div>
 }
 

@@ -62,7 +62,7 @@ public partial class GameHub
             return Error<LoginInfo>(ErrorType.InvalidGameVersion);
         
         await using var db = GetDbContext();
-        
+      
         var user = await db.Users.FirstOrDefaultAsync(x =>
             x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()) && x.HashedPassword == hashedPassword);
         
@@ -79,37 +79,49 @@ public partial class GameHub
         return Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email });
     }
     
-    public async Task<VoidResult> RequestPasswordReset(string email)
+    public async Task<VoidResult> RequestPasswordReset(string usernameOrEmail)
     {
         await using var db = GetDbContext();
         
-        var user = await db.Users.FirstOrDefaultAsync(x => x.Email.Trim().ToLower().Equals(email.Trim().ToLower()));
+        var users = db.Users.Where(x => 
+            x.Email.Trim().ToLower().Equals(usernameOrEmail.Trim().ToLower()) ||
+            x.Name.Trim().ToLower().Equals(usernameOrEmail.Trim().ToLower()))
+            .ToList();
         
-        if (user == null)
-            return Error(ErrorType.UnknownEmailAddress);
+        if (users.Count == 0)
+            return Error(ErrorType.UnknownUsernameOrEmailAddress);
 
-        if ((DateTime.Now - user.PasswordResetTokenCreated).TotalMinutes < 10)
+        if (users.Any(u => (DateTimeOffset.Now - u.PasswordResetTokenCreated).TotalMinutes < 5))
             return Error(ErrorType.ResetRequestTooSoon);
 
         var token = GenerateToken();
-        user.PasswordResetToken = token;
-        user.PasswordResetTokenCreated = DateTime.Now;
+        var now = DateTimeOffset.Now;
+
+        foreach (var user in users)
+        {
+            user.PasswordResetToken = token;
+            user.PasswordResetTokenCreated = now; 
+        }
 
         await db.SaveChangesAsync();
 
+        string usersMessage = users.Count == 1 ? 
+            "user: " + users[0].Name : 
+            "users: " + string.Join(", ", users.Select(u => u.Name));
+        
         MailMessage mailMessage = new()
         {
             From = new MailAddress("noreply@treachery.online"),
             Subject = "Password Reset",
             IsBodyHtml = true,
             Body = $"""
-                    You have requested a password reset for user: {user.Name}
+                    You have requested a password reset for {usersMessage}
                     {Environment.NewLine}{Environment.NewLine}
                     You can use this token to reset your password: {token}
                     """
         };
 
-        mailMessage.To.Add(new MailAddress(user.Email));
+        mailMessage.To.Add(new MailAddress(users[0].Email));
         await SendMail(mailMessage);
         
         return Success();

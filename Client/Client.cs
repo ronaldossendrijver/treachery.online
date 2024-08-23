@@ -361,7 +361,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return result;
     }
 
-    public async Task<VoidResult> RequestPasswordReset(string email) => await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestPasswordReset), email);
+    public async Task<VoidResult> RequestPasswordReset(string usernameOrEmail) => await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestPasswordReset), usernameOrEmail);
 
     public async Task<Result<LoginInfo>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword)
     {

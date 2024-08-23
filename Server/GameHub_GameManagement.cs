@@ -161,13 +161,13 @@ public partial class GameHub
     
     public async Task<VoidResult> RequestSetOrUnsetHost(string userToken, string gameId, int userId)
     {
-        if (!AreValid(userToken, gameId, out var user, out var game, out var error))
+        if (!AreValid(userToken, gameId, out var host, out var game, out var error))
             return error;
 
-        if (!game.Game.IsHost(user.Id))
+        if (!game.Game.IsHost(host.Id))
             return Error(ErrorType.NoHost);
 
-        if (game.Game.NumberOfHosts <= 1) 
+        if (userId == host.Id && game.Game.NumberOfHosts <= 1) 
             return Error(ErrorType.CannotRemoveLastHost);
         
         game.Game.SetOrUnsetHost(userId);

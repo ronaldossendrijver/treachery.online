@@ -28,7 +28,7 @@ public class User
     [MaxLength(4000)]
     public string PasswordResetToken { get; set; }
     
-    public DateTime PasswordResetTokenCreated { get; set; }
+    public DateTimeOffset PasswordResetTokenCreated { get; set; }
     
     [MaxLength(4000)]
     public string PlayerName { get; set; }

@@ -74,7 +74,7 @@ public partial class Game
                 var userIdToSeat = Participation.StandingPlayers[i];
                 Participation.SeatedPlayers[userIdToSeat] = p.Seat;
             }
-            Console.WriteLine($"Seat of player {i} ({p.Faction}): {p.Seat}");
+            //Console.WriteLine($"Seat of player {i} ({p.Faction}): {p.Seat}");
         }
     }
 

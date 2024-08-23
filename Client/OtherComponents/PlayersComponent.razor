@@ -29,7 +29,7 @@
                         <td>
                             @Game.GetPlayerName(userId)
                         </td>
-                        <td>@(Game.IsHost(userId)? "X" : "")</td>
+                        <td>@(Game.IsHost(userId)? "\u2713" : "")</td>
                         <td>
                             @if (Client.IsHost)
                             {
@@ -74,8 +74,8 @@
                             }
                         </td>
                         <td><FactionComponent Faction="@player.Faction" Diameter="20"/></td>
-                        <td>@(Game.IsHost(userId) ? "X" : "")</td>
-                        <td>@(Game.SeatIsAvailable(player.Seat) ? "X" : "")</td>
+                        <td>@(Game.IsHost(userId) ? "\u2713" : "")</td>
+                        <td>@(Game.SeatIsAvailable(player.Seat) ? "\u2713" : "")</td>
                         <td>                        
                             @if (Client.IsHost)
                             {
