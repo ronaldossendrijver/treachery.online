@@ -41,9 +41,8 @@ public partial class GameHub
             Subject = "Welcome to treachery.online",
             IsBodyHtml = true,
             Body = $"""
-                    Welcome to treachery.online, {trimmedUsername}!
-                    {Environment.NewLine}{Environment.NewLine}
-                    If you ever need to reset your password, a reset token will be sent to this e-mail address.
+                    <p>Welcome to treachery.online, <strong>{trimmedUsername}</strong>.</p>
+                    <p>If you ever need to reset your password, a reset token will be sent to this e-mail address.</p>
                     """
         };
 
@@ -115,9 +114,9 @@ public partial class GameHub
             Subject = "Password Reset",
             IsBodyHtml = true,
             Body = $"""
-                    You have requested a password reset for {usersMessage}
+                    <p>You have requested a password reset for <strong>{usersMessage}</strong>.</p>
                     {Environment.NewLine}{Environment.NewLine}
-                    You can use this token to reset your password: {token}
+                    <p>You can use this token to reset your password: <strong>{token}</strong></p>
                     """
         };
 
