@@ -46,7 +46,7 @@
             if (evt is BluePrediction bp && replay.YieldsSecrets(evt.Initiator))
             {
                 <div>
-                    <img class="img-fluid" width="24" src="@Skin.Current.GetImageURL(Faction.Blue)" /> Predicted that <img class="img-fluid" width="24" src="@Skin.Current.GetImageURL(bp.ToWin)" /> win in turn @bp.Turn.
+                    <img class="img-fluid" width="24" src="@Skin.Current.GetImageUrl(Faction.Blue)" /> Predicted that <img class="img-fluid" width="24" src="@Skin.Current.GetImageUrl(bp.ToWin)" /> win in turn @bp.Turn.
                 </div>
             }
 
@@ -55,7 +55,7 @@
                 if (replay.WinningBid != previousWinningBid)
                 {
                     <div>
-                        <img class="img-fluid" width="24" src="@Skin.Current.GetImageURL(replay.WinningBid.Initiator)" /> 
+                        <img class="img-fluid" width="24" src="@Skin.Current.GetImageUrl(replay.WinningBid.Initiator)" /> 
                         buy 
                         <RichText Shown=@replay.CardJustWon/>
                         for @replay.WinningBid.TotalAmount
@@ -101,7 +101,7 @@
             if (IsMilestone(evt))
             {
                 <div class="mb-1">
-                    <img class="img-fluid" width="24" src="@Skin.Current.GetImageURL(evt.Initiator)" /> @evt.GetMessage().ToString(Skin.Current)
+                    <img class="img-fluid" width="24" src="@Skin.Current.GetImageUrl(evt.Initiator)" /> @evt.GetMessage().ToString(Skin.Current)
                 </div>
             }
 
@@ -199,7 +199,7 @@
                 @foreach (var w in replay.Winners)
                 {
                     <div>
-                        <h3 class="h3"><img class="img-fluid" width="30" src="@Skin.Current.GetImageURL(w.Faction)" /> @w.Name wins @Skin.Current.Describe(replay.WinMethod)!</h3>
+                        <h3 class="h3"><img class="img-fluid" width="30" src="@Skin.Current.GetImageUrl(w.Faction)" /> @w.Name wins @Skin.Current.Describe(replay.WinMethod)!</h3>
                     </div>
                 }
 

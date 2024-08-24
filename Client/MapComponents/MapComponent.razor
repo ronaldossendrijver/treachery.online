@@ -284,7 +284,7 @@
         if (Game.TerrorIn(intelligenceLocation.Territory).Any())
         {
             result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" style=\"filter:hue-rotate(180deg);\" /><strong>&nbsp;{1}</strong></div>",
-                Skin.Current.GetImageURL(Faction.Cyan),
+                Skin.Current.GetImageUrl(Faction.Cyan),
                 Game.TerrorIn(intelligenceLocation.Territory).Count());
         }
 
@@ -292,19 +292,19 @@
         if (ambassador != Ambassador.None)
         {
             result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong></div>",
-                Skin.Current.GetImageURL(ambassador));
+                Skin.Current.GetImageUrl(ambassador));
         }
 
         if (Game.DiscoveriesOnPlanet.TryGetValue(intelligenceLocation, out var discovery))
         {
             result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /></div>",
-                Skin.Current.GetImageURL(discovery.TokenType));
+                Skin.Current.GetImageUrl(discovery.TokenType));
         }
 
         foreach (var hero in Game.LeaderState.Where(state => state.Key is IHero && state.Value.Alive && state.Value.CurrentTerritory == intelligenceLocation.Territory).Select(state => state.Key))
         {
             result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"64\" height=\"64\" src=\"{0}\" /></div>",
-                        Skin.Current.GetImageURL(hero));
+                        Skin.Current.GetImageUrl(hero));
         }
 
         result += "</div>";

@@ -421,32 +421,32 @@ public class Skin : IDescriber
         return GetLabel(DiscoveryTokenDescription_STR, dt);
     }
 
-    public string GetImageURL(object obj)
+    public string GetImageUrl(object obj)
     {
         return obj switch
         {
             null => "",
-            TreacheryCard tc => GetImageURL(tc),
-            ResourceCard rc => GetImageURL(rc),
-            IHero h => GetImageURL(h),
-            LeaderSkill ls => GetImageURL(ls),
-            TechToken tt => GetImageURL(tt),
-            Faction f => GetImageURL(f),
-            Nexus n => GetImageURL(n),
-            Ambassador a => GetImageURL(a),
-            FactionForce ff => GetImageURL(ff),
-            FactionSpecialForce fsf => GetImageURL(fsf),
-            StrongholdAdvantage adv => GetImageURL(adv),
+            TreacheryCard tc => GetImageUrl(tc),
+            ResourceCard rc => GetImageUrl(rc),
+            IHero h => GetImageUrl(h),
+            LeaderSkill ls => GetImageUrl(ls),
+            TechToken tt => GetImageUrl(tt),
+            Faction f => GetImageUrl(f),
+            Nexus n => GetImageUrl(n),
+            Ambassador a => GetImageUrl(a),
+            FactionForce ff => GetImageUrl(ff),
+            FactionSpecialForce fsf => GetImageUrl(fsf),
+            StrongholdAdvantage adv => GetImageUrl(adv),
             _ => ""
         };
     }
 
-    public string GetImageURL(DiscoveryTokenType dtt)
+    public string GetImageUrl(DiscoveryTokenType dtt)
     {
         return GetLabel(DiscoveryTokenTypeImage_URL, dtt);
     }
 
-    public string GetImageURL(DiscoveryToken dt)
+    public string GetImageUrl(DiscoveryToken dt)
     {
         return GetLabel(DiscoveryTokenImage_URL, dt);
     }
@@ -476,7 +476,7 @@ public class Skin : IDescriber
         return GetLabel(AmbassadorDescription_STR, ambassador);
     }
 
-    public string GetImageURL(Ambassador ambassador)
+    public string GetImageUrl(Ambassador ambassador)
     {
         return GetLabel(AmbassadorImage_URL, ambassador);
     }
@@ -882,27 +882,27 @@ public class Skin : IDescriber
         return t != null ? GetLabel(TerritoryBorder_SVG, t.SkinId) : "";
     }
 
-    public string GetImageURL(TreacheryCard c)
+    public string GetImageUrl(TreacheryCard c)
     {
         return c != null ? GetLabel(TreacheryCardImage_URL, c.SkinId) : "";
     }
 
-    public string GetImageURL(World w)
+    public string GetImageUrl(World w)
     {
         return GetLabel(HomeWorldImage_URL, w);
     }
 
-    public string GetImageURL(StrongholdAdvantage a)
+    public string GetImageUrl(StrongholdAdvantage a)
     {
         return GetLabel(StrongholdCardImage_URL, a);
     }
 
-    public string GetImageURL(ResourceCard c)
+    public string GetImageUrl(ResourceCard c)
     {
         return c != null ? GetLabel(ResourceCardImage_URL, c.SkinId) : "";
     }
 
-    public string GetImageURL(LeaderSkill s)
+    public string GetImageUrl(LeaderSkill s)
     {
         return GetLabel(LeaderSkillCardImage_URL, s);
     }
@@ -917,7 +917,7 @@ public class Skin : IDescriber
         return GetLabel(TechTokenDescription_STR, t);
     }
 
-    public string GetImageURL(IHero h)
+    public string GetImageUrl(IHero h)
     {
         if (h == null)
             return "";
@@ -927,7 +927,7 @@ public class Skin : IDescriber
             return Messiah_URL;
         return GetLabel(PersonImage_URL, h.SkinId);
     }
-    public string GetImageURL(Faction faction)
+    public string GetImageUrl(Faction faction)
     {
         return GetLabel(FactionImage_URL, faction);
     }
@@ -952,12 +952,12 @@ public class Skin : IDescriber
         return GetLabel(FactionSpecialForceImage_URL, f);
     }
 
-    public string GetImageURL(FactionForce ff)
+    public string GetImageUrl(FactionForce ff)
     {
         return GetFactionForceImageURL(GetFaction(ff));
     }
 
-    public string GetImageURL(FactionSpecialForce fsf)
+    public string GetImageUrl(FactionSpecialForce fsf)
     {
         return GetFactionSpecialForceImageURL(GetFaction(fsf));
     }
@@ -972,7 +972,7 @@ public class Skin : IDescriber
         return GetLabel(NexusCardImage_URL, n);
     }
 
-    public string GetImageURL(TechToken tech)
+    public string GetImageUrl(TechToken tech)
     {
         return GetLabel(TechTokenImage_URL, tech);
     }

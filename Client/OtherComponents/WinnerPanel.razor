@@ -14,7 +14,7 @@
 
         @foreach (var w in Client.Game.Winners)
         {
-            <h1 class="h1"><img width="72" src="@Skin.Current.GetImageURL(w.Faction)" /> @w.Name</h1>
+            <h1 class="h1"><img width="72" src="@Skin.Current.GetImageUrl(w.Faction)" /> @w.Name</h1>
         }
 
         @if (!Game.Applicable(Rule.DisableEndOfGameReport))

@@ -29,7 +29,7 @@
     {
         base.OnParametersSet();
 
-        BackgroundImage = Skin.Current.GetImageURL(LeaderSkill.Diplomat);
+        BackgroundImage = Skin.Current.GetImageUrl(LeaderSkill.Diplomat);
     }
 
     protected override Diplomacy ConfirmedResult => new(Game, Faction) { Card = card };

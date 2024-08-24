@@ -37,7 +37,7 @@
         if (ambassador != Ambassador.None)
         {
             var popover = $"{Skin.Current.Describe(ambassador)} Ambassador - {Skin.Current.GetAmbassadorDescription(ambassador)}";
-            <MapImage X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetImageURL(ambassador)
+            <MapImage X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetImageUrl(ambassador)
             ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover PopoverAsTooltip="true"/>
 
             y += Skin.Current.PlayerTokenRadius;
@@ -86,7 +86,7 @@
             forceDiameter = 1.5f * Skin.Current.FORCETOKEN_RADIUS;
 
             <MapImage X=@(pos.X - 1.25f * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 1.25f * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2.5f * Skin.Current.FORCETOKEN_RADIUS) 
-                Src=@Skin.Current.GetImageURL(ds.Discovery) Popover=@Intel(ds) 
+                Src=@Skin.Current.GetImageUrl(ds.Discovery) Popover=@Intel(ds) 
                 ShadowX=1 ShadowY=1
                 OnClick=@(e => OnClick(e, location)) />
 
@@ -103,7 +103,7 @@
                 $"{Skin.Current.Describe(discovery.Token)} - {Skin.Current.GetDiscoveryTokenDescription(discovery.Token)}" : Skin.Current.Describe(discovery.TokenType);
 
             <MapImage X=@(pos.X - 1.25f * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 1.25f * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2.5f * Skin.Current.FORCETOKEN_RADIUS)
-                Src=@Skin.Current.GetImageURL(discovery.TokenType) Popover=@popoverToShow PopoverAsTooltip=true
+                Src=@Skin.Current.GetImageUrl(discovery.TokenType) Popover=@popoverToShow PopoverAsTooltip=true
                 Opacity="0.9f" ShadowX=1 ShadowY=1 />
         }
 

@@ -54,7 +54,7 @@
                 {
                     <MapImage X=homeworldXY.X Y=@homeworldXY.Y
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                       Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
+                       Src="@Skin.Current.GetImageUrl(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
                     Popover=@Popup.Get(homeworld) OnClick="e => OnClick(e, homeworld)" PopoverStyle="" />
 
                     if (Game.IsOccupied(homeworld.World))
@@ -86,7 +86,7 @@
                 {
                     <MapImage X=homeworldXY.X Y=@homeworldXY.Y
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                       Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
+                       Src="@Skin.Current.GetImageUrl(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
                        Popover=@Skin.Current.Format("{0} Reserves", homeworld.Faction) PopoverAsTooltip="true"/>
                 }
 
@@ -126,7 +126,7 @@
                 positionOnCircle += TWOPI / 90;
                 <MapImage XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                       Src="@Skin.Current.GetImageURL(tt)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                       Src="@Skin.Current.GetImageUrl(tt)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                        Popover="@Popup.Get(tt)" PopoverStyle=""/>
             }
 
@@ -136,7 +136,7 @@
 
                 <MapImage XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                       Src="@Skin.Current.GetImageURL(Game.PinkLoyalLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
+                       Src="@Skin.Current.GetImageUrl(Game.PinkLoyalLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
                 Popover=@Skin.Current.Format("{0} is Loyal to {1}", Game.PinkLoyalLeader, Faction.Pink) PopoverAsTooltip="true"/>
             }
                         
@@ -146,7 +146,7 @@
 
                 <MapImage XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
                         Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                        Src="@Skin.Current.GetImageURL(skilledLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                        Src="@Skin.Current.GetImageUrl(skilledLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                         Popover="@Popup.Get(skilledLeader, Client.Game.Skill(skilledLeader))" PopoverStyle=""/>
 
                 <MapText ToShow="@Skin.Current.Describe(Game.Skill(skilledLeader))"
@@ -169,7 +169,7 @@
                     <MapImage X=@(ambassadorXY.X + xOffset)
                               Y=@(ambassadorXY.Y + yOffset)
                               Diameter=@(Skin.Current.PlayerTokenRadius)
-                              Src="@Skin.Current.GetImageURL(a)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
+                              Src="@Skin.Current.GetImageUrl(a)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
                               Popover=@Skin.Current.GetAmbassadorDescription(a) PopoverAsTooltip="true"/>
 
                     yOffset += 0.2f * Skin.Current.PlayerTokenRadius;
@@ -289,7 +289,7 @@
             return "";
         }
 
-        return string.Format("<img class='img-fluid' src='{0}' width=80 style='filter:drop-shadow(-3px 3px 2px black);'/>", Skin.Current.GetImageURL(l));
+        return string.Format("<img class='img-fluid' src='{0}' width=80 style='filter:drop-shadow(-3px 3px 2px black);'/>", Skin.Current.GetImageUrl(l));
     }
 
     private string DetermineVideoStreamId(Player p)

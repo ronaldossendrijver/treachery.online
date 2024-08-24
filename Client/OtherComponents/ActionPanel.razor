@@ -450,7 +450,7 @@
         case nameof(BrownExtraMove):
             var cardToUse = BrownExtraMove.CardToUse(Client.Player);
             var titleBrownExtraMove = Skin.Current.Format("Use {0} to be able to move your forces one extra territory?", cardToUse != null ? Name(cardToUse) : "Nexus Cunning");
-            var background = cardToUse != null ? Skin.Current.GetImageURL(cardToUse) : Skin.Current.GetImageURL(Nexus.Brown);
+            var background = cardToUse != null ? Skin.Current.GetImageUrl(cardToUse) : Skin.Current.GetImageUrl(Nexus.Brown);
             <SimpleActionComponent GameEventType="BrownExtraMove" BackgroundImage=@background Title=@titleBrownExtraMove Alert="false"/>
             break;
 
@@ -539,7 +539,7 @@
             break;
 
         case nameof(Bureaucracy):
-            <YesNoActionComponent GameEventType="Bureaucracy" BackgroundImage="@Skin.Current.GetImageURL(LeaderSkill.Bureaucrat)" Title="@Skin.Current.Format("Use your {0} skill?", LeaderSkill.Bureaucrat)" Alert="true"/>
+            <YesNoActionComponent GameEventType="Bureaucracy" BackgroundImage="@Skin.Current.GetImageUrl(LeaderSkill.Bureaucrat)" Title="@Skin.Current.Format("Use your {0} skill?", LeaderSkill.Bureaucrat)" Alert="true"/>
             break;
 
         case nameof(Captured):
@@ -556,7 +556,7 @@
             var confirmLabel = Skin.Current.Format("Put {0} shield", Client.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of");
 
             <SimpleActionComponent GameEventType="SwitchedSkilledLeader"
-                                   BackgroundImage="@Skin.Current.GetImageURL(Client.Game.Skill(skilledLeader))" Title=@titleSwitchedSkilledLeader
+                                   BackgroundImage="@Skin.Current.GetImageUrl(Client.Game.Skill(skilledLeader))" Title=@titleSwitchedSkilledLeader
                                    ConfirmLabel=@confirmLabel/>
             break;
 

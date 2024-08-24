@@ -21,7 +21,7 @@
     //Resource cards
     @if (!Game.ResourceCardDeck.IsEmpty)
     {
-        var cardImageToShow = Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(Client.Player) ? Skin.Current.GetImageURL(Game.ResourceCardDeck.Top) : Skin.Current.CardBack_ResourceCard_URL;
+        var cardImageToShow = Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(Client.Player) ? Skin.Current.GetImageUrl(Game.ResourceCardDeck.Top) : Skin.Current.CardBack_ResourceCard_URL;
         <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@cardImageToShow" 
            ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="2" 
            Popover="@IntelOfResourceCardPile()"/>
@@ -36,7 +36,7 @@
     x += cardWidth + cardspacing;
     if (Game.LatestSpiceCardA != null)
     {
-        <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.LatestSpiceCardA)" 
+        <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageUrl(Game.LatestSpiceCardA)" 
                ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                Popover="@IntelOfResourceDiscardPileA()"/>
     }
@@ -52,7 +52,7 @@
         x += cardWidth + cardspacing;
         if (Game.LatestSpiceCardB != null)
         {
-            <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.LatestSpiceCardB)" 
+            <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageUrl(Game.LatestSpiceCardB)" 
                    ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                    Popover="@IntelOfResourceDiscardPileB()"/>
         }
@@ -67,7 +67,7 @@
     if (Game.SandTroutOccured)
     {
         x += cardWidth + cardspacing;
-        <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.SandTrout)"
+        <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageUrl(Game.SandTrout)"
             ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" Popover=@Popup.Get(Game.SandTrout)/>
     }
 
@@ -91,7 +91,7 @@
     if (!Game.TreacheryDiscardPile.IsEmpty)
     {
         x += cardWidth + cardspacing;
-        <MapImage X="@(x)" Y=@y Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.TreacheryDiscardPile.Top)" 
+        <MapImage X="@(x)" Y=@y Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageUrl(Game.TreacheryDiscardPile.Top)" 
                ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                Popover="@IntelOfTreacheryDiscardPile()"/>
 
@@ -110,7 +110,7 @@
                ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                Popover="@IntelOfWhiteCardPile()"/>
 
-        <MapImage X="@(x + cardWidth / 3)" Y="@(y + cardHeight / 8)" Diameter="@(cardWidth / 3)" Src="@Skin.Current.GetImageURL(Faction.White)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
+        <MapImage X="@(x + cardWidth / 3)" Y="@(y + cardHeight / 8)" Diameter="@(cardWidth / 3)" Src="@Skin.Current.GetImageUrl(Faction.White)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
 
         <MapText ToShow="@Game.WhiteCache.Count.ToString()"
                  X="@(x + cardWidth / 2)" Y="@(y + cardHeight / 1.5f)"
@@ -139,7 +139,7 @@
             result += "<div class=\"row row-cols-6 mt-1\">";
             foreach (var c in Client.Game.TreacheryDiscardPile.Items)
             {
-                var imgUrl = known.Contains(c) ? Skin.Current.GetImageURL(c) : Skin.Current.CardBack_TreacheryCard_URL;
+                var imgUrl = known.Contains(c) ? Skin.Current.GetImageUrl(c) : Skin.Current.CardBack_TreacheryCard_URL;
                 result += $"<img src=\"{imgUrl}\" class=\"img-fluid p-1\"/>";
             }
             result += "</div>";
@@ -158,7 +158,7 @@
         var result = "<div class=\"row row-cols-6 mt-1\">";
         foreach (var c in items)
         {
-            result += string.Format("<img src=\"{0}\" class=\"img-fluid p-1\"/>", Skin.Current.GetImageURL(c));
+            result += string.Format("<img src=\"{0}\" class=\"img-fluid p-1\"/>", Skin.Current.GetImageUrl(c));
         }
         result += "</div>";
 

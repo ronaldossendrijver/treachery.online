@@ -157,7 +157,7 @@
 
     protected static string GetImage(TreacheryCardType type)
     {
-        return Skin.Current.GetImageURL(TreacheryCardManager.GetCardsInAndOutsidePlay().FirstOrDefault(c => c.Type == type));
+        return Skin.Current.GetImageUrl(TreacheryCardManager.GetCardsInAndOutsidePlay().FirstOrDefault(c => c.Type == type));
     }
 
     protected static string DescribeCard(TreacheryCardType t)

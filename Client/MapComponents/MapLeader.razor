@@ -18,7 +18,7 @@
     [Parameter]
     public bool ShowPopover { get; set; } = true;
 
-    private string LeaderURL => Skin.Current.GetImageURL(ToShow);
+    private string LeaderURL => Skin.Current.GetImageUrl(ToShow);
 
     private string Popover => ShowPopover ? Popup.Get(ToShow, Game) : null;
 }

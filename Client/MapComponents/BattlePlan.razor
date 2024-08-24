@@ -56,7 +56,7 @@
 
             <MapImage X=@(dialBonusX - Skin.Current.PlayerTokenRadius) Y=@(forceY - Skin.Current.PlayerTokenRadius)
                    Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                   Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" />
+                   Src="@Skin.Current.GetImageUrl(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" />
 
             var homeworldBonusText = $"+{homeworldBonus}";
 
@@ -101,7 +101,7 @@
         if (Game.HasStrongholdAdvantage(Plan.Initiator, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory))
         {
             <MapImage X="@(forceX + 8f * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)"
-                   Src="@Skin.Current.GetImageURL(StrongholdAdvantage.FreeResourcesForBattles)"
+                   Src="@Skin.Current.GetImageUrl(StrongholdAdvantage.FreeResourcesForBattles)"
                    ShadowColor="@Skin.Current.SHADOW" ShadowX="3" ShadowY="3" ShadowBlur="1"
                    Popover="@Popup.Get(StrongholdAdvantage.FreeResourcesForBattles, Plan.Initiator)" />
         }
@@ -128,7 +128,7 @@
             var heroSkill = Game.Skill(Plan.Hero);
             if (heroSkill != LeaderSkill.None)
             {
-                <MapImage X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(heroSkill)" 
+                <MapImage X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageUrl(heroSkill)" 
                         ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0"
                         Popover="@Popup.Get(heroSkill)" />
 
@@ -138,7 +138,7 @@
             var passiveSkill = Game.GetSkill(Plan.Player);
             if (passiveSkill != heroSkill && PassiveSkillIsRelevantForBattlePlan(passiveSkill))
             {
-                <MapImage X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(passiveSkill)"
+                <MapImage X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageUrl(passiveSkill)"
                        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0"
                        Popover="@Popup.Get(passiveSkill)" />
 
@@ -177,7 +177,7 @@
         else if (Plan.Hero is TreacheryCard)
         {
             <MapImage X="@(X + Skin.Current.BattleScreenHeroX)" Y="@(Y + Skin.Current.BattleScreenHeroY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
-                   Src="@Skin.Current.GetImageURL(Plan.Hero as TreacheryCard)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                   Src="@Skin.Current.GetImageUrl(Plan.Hero as TreacheryCard)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                    Popover="@Popup.Get(Plan.Hero as TreacheryCard)" PopoverStyle=""/>
         }
 
@@ -220,7 +220,7 @@
             var defenseToShow = isUsingPortableAntidote ? Plan.Player.Card(TreacheryCardType.PortableAntidote) : Plan.Defense;
 
             <MapImage X="@(X + Skin.Current.BattleWheelCardX + 1.1f * Skin.Current.BattleWheelCardWidth)" Y="@(Y + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
-                   Src="@Skin.Current.GetImageURL(defenseToShow)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                   Src="@Skin.Current.GetImageUrl(defenseToShow)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                    Popover="@Popup.Get(defenseToShow)" PopoverStyle=""/>
         }
         else if (!ShowEntirePlan)
@@ -238,7 +238,7 @@
         if (Plan.Weapon != null && (ShowEntirePlan || Plan.Weapon.IsWeapon))
         {
             <MapImage X="@(X + Skin.Current.BattleWheelCardX)" Y="@(Y + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
-                   Src="@Skin.Current.GetImageURL(Plan.Weapon)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                   Src="@Skin.Current.GetImageUrl(Plan.Weapon)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                    Popover="@Popup.Get(Plan.Weapon)" PopoverStyle=""/>
         }
         else if (!ShowEntirePlan)

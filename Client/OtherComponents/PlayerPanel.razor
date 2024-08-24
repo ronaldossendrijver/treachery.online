@@ -21,7 +21,7 @@
         }
 
         @if (!_collapsed || !ShowHeader) {
-            <div class="card-body p-0 bg-transparent text-center" style="background-image: url('@Skin.Current.GetImageURL(ShownPlayer.Faction)'); background-position:center; background-size:300px 300px; background-clip:content-box; background-repeat: no-repeat">
+            <div class="card-body p-0 bg-transparent text-center" style="background-image: url('@Skin.Current.GetImageUrl(ShownPlayer.Faction)'); background-position:center; background-size:300px 300px; background-clip:content-box; background-repeat: no-repeat">
 
                 <div class="card-text h-100 text-white" style="background-color:rgba(0,0,0,0.6);">
 
@@ -53,12 +53,12 @@
                         @foreach (var v in ShownPlayer.Leaders.Where(l => Client.Game.IsAlive(l)))
                         {
                             var style = Game.IsSkilled(v) ? "filter:brightness(150%) contrast(100%)" : "";
-                            <Image Src=@Skin.Current.GetImageURL(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, Client.Game)/>
+                            <Image Src=@Skin.Current.GetImageUrl(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, Client.Game)/>
                         }
 
                         @foreach (var v in ShownPlayer.Leaders.Where(l => !Client.Game.IsAlive(l)))
                         {
-                            <Image Src=@Skin.Current.GetImageURL(v) Style="filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8)" Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, Client.Game)/>
+                            <Image Src=@Skin.Current.GetImageUrl(v) Style="filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8)" Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, Client.Game)/>
                         }
 
                         <!-- Traitors and Face Dancers -->
@@ -68,12 +68,12 @@
                             @foreach (var v in ShownPlayer.FaceDancers)
                             {
                                 var style = ShownPlayer.RevealedDancers.Contains(v) ? "filter:brightness(150%) contrast(100%) blur(1px)" : "";
-                                <Image Src=@Skin.Current.GetImageURL(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, Client.Game)/>
+                                <Image Src=@Skin.Current.GetImageUrl(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, Client.Game)/>
                             }
                         }
                         else if (!Client.Game.AssistedNotekeepingEnabled(Player) && ShownPlayer.Traitors.Count == 1)
                         {
-                            <div><Image Src=@Skin.Current.GetImageURL(ShownPlayer.Traitors[0]) Class="img-fluid p-1" Width=60 Popover=@Popup.Get(ShownPlayer.Traitors[0], Client.Game)/> is your traitor.</div>
+                            <div><Image Src=@Skin.Current.GetImageUrl(ShownPlayer.Traitors[0]) Class="img-fluid p-1" Width=60 Popover=@Popup.Get(ShownPlayer.Traitors[0], Client.Game)/> is your traitor.</div>
                         }
                         else if (ShownPlayer.Traitors.Count > 0)
                         {
@@ -89,12 +89,12 @@
                             @foreach (var v in ShownPlayer.Traitors)
                             {
                                 var style = ShownPlayer.RevealedTraitors.Contains(v) ? "filter:brightness(150%) contrast(110%) blur(1px)" : "";
-                                <Image Src=@Skin.Current.GetImageURL(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, Client.Game)/>
+                                <Image Src=@Skin.Current.GetImageUrl(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, Client.Game)/>
                             }
 
                             @foreach (var v in ShownPlayer.DiscardedTraitors)
                             {
-                                <Image Src=@Skin.Current.GetImageURL(v) Style="filter:grayscale(100%) opacity(60%)" Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, Client.Game)/>
+                                <Image Src=@Skin.Current.GetImageUrl(v) Style="filter:grayscale(100%) opacity(60%)" Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, Client.Game)/>
                             }
                         }
 

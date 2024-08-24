@@ -310,7 +310,7 @@
     private string DetermineImageSrc(int cardID)
     {
         var card = TreacheryCardManager.Lookup.Find(cardID);
-        return Skin.Current.GetImageURL(card);
+        return Skin.Current.GetImageUrl(card);
     }
 
     private async Task Save()
