@@ -320,6 +320,7 @@ public partial class GameHub
             return Error(ErrorType.NoHost);
 
         await Clients.Group(gameId).HandleSetSkin(skin);
+        
         return Success();
     }
 

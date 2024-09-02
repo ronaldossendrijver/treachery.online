@@ -465,8 +465,12 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public async Task<string> RequestAssignSeats(Dictionary<int, int> assignment) =>
         Skin.Current.Describe((await Invoke(nameof(IGameHub.RequestAssignSeats), UserToken, GameId, assignment)).Error);
 
-    public async Task<string> RequestSetSkin(string skin) =>
-        Skin.Current.Describe((await Invoke<VoidResult>(nameof(IGameHub.RequestSetSkin), UserToken, GameId, skin)).Error);
+    public async Task<string> RequestSetSkin(string skin)
+    {
+        var result = await Invoke(nameof(IGameHub.RequestSetSkin), UserToken, GameId, skin);
+        return result.Success ? null : Skin.Current.Describe(result.Error);
+    }
+        
 
     public async Task<string> RequestUndo(int untilEventNr) =>
         Skin.Current.Describe((await Invoke(nameof(IGameHub.RequestUndo), UserToken, GameId, untilEventNr)).Error);
@@ -690,7 +694,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         
         if (!result.Success && result.Error is ErrorType.UserNotFound && StoredPassword != null)
         {
-            if (await RequestLogin(UserName, StoredPassword) == null)
+            if ((await RequestLogin(UserName, StoredPassword)).Success)
             {
                 result = args.Length switch
                 {
