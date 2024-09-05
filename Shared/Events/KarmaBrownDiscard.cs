@@ -43,8 +43,16 @@ public class KarmaBrownDiscard : GameEvent
     public override Message Validate()
     {
         var karmaCardToUse = Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
-        if (karmaCardToUse == null) return Message.Express("You don't have a ", TreacheryCardType.Karma, " card");
-        if (Cards.Contains(karmaCardToUse)) return Message.Express("You can't select the ", TreacheryCardType.Karma, " you need to play to use this power");
+        
+        var clairvoyanceToUse = Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Clairvoyance);
+
+        if (!Player.Occupies(Game.Map.Shrine)) clairvoyanceToUse = null;
+            
+        if (karmaCardToUse == null && clairvoyanceToUse == null) return Message.Express("You don't have a ", TreacheryCardType.Karma, " card");
+        
+        
+        if (Cards.Contains(karmaCardToUse) && Cards.Contains(clairvoyanceToUse)) return Message.Express(
+            "You can't select the ", TreacheryCardType.Karma, " you need to play to use this power");
 
         return null;
     }
