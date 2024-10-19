@@ -89,8 +89,7 @@ public class TerrorPlanted : PassableGameEvent
 
     public static bool IsApplicable(Game g, Player p)
     {
-        return g.CurrentMainPhase is MainPhase.Collection &&
-               ValidTerrorTypes(g, true).Any()
+        return MayRemoveTokens(g, p)
                || 
                g.CurrentPhase is Phase.Contemplate &&
                ValidTerrorTypes(g, false).Any() &&

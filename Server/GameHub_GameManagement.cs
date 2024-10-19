@@ -337,7 +337,7 @@ public partial class GameHub
         if (!game.Game.IsHost(user.Id))
             return Error(ErrorType.NoHost);
 
-        game.Game.Undo(untilEventNr);
+        game.Game = game.Game.Undo(untilEventNr);
         await Clients.Group(gameId).HandleUndo(untilEventNr);
         return Success();
     }
