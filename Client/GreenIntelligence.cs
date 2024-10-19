@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Treachery.Client;
@@ -24,13 +22,15 @@ public class GreenIntelligence
     private readonly List<int> discardedCards = new();
     private readonly List<int> removedCards = new();
     private readonly TreacheryCard[] CardsInPlay;
+    private IGameService _client;
 
-    public GreenIntelligence(Game g)
+    public GreenIntelligence(IGameService client)
     {
-        var whiteCards = g.IsPlaying(Faction.White) ? TreacheryCardManager.GetWhiteCards().ToArray() : Array.Empty<TreacheryCard>();
-        CardsInPlay = TreacheryCardManager.GetCardsInPlay(g).Union(whiteCards).ToArray();
+        _client = client;
+        var whiteCards = client.Game.IsPlaying(Faction.White) ? TreacheryCardManager.GetWhiteCards().ToArray() : Array.Empty<TreacheryCard>();
+        CardsInPlay = TreacheryCardManager.GetCardsInPlay(client.Game).Union(whiteCards).ToArray();
         TrackedTreacheryCards = new Dictionary<Faction, Dictionary<int, int>>();
-        foreach (var p in g.Players)
+        foreach (var p in client.Game.Players)
         {
             var cardsOfPlayer = new Dictionary<int, int>();
             for (var i = 0; i < p.MaximumNumberOfCards; i++) cardsOfPlayer.Add(i, DefaultSelectedCard(p.Faction, i));
@@ -56,7 +56,7 @@ public class GreenIntelligence
         var cardsSelectedElsewhere = AllTrackedCardsExcept(f, cardNumber);
 
         foreach (var c in CardsInPlay)
-            if (!result.Any(added => Skin.Current.Describe(added) == Skin.Current.Describe(c)) && !removedCards.Contains(c.Id) && !discardedCards.Contains(c.Id) && !cardsSelectedElsewhere.Contains(c.Id)) result.Add(c);
+            if (result.All(added => _client.CurrentSkin.Describe(added) != _client.CurrentSkin.Describe(c)) && !removedCards.Contains(c.Id) && !discardedCards.Contains(c.Id) && !cardsSelectedElsewhere.Contains(c.Id)) result.Add(c);
 
         return result;
     }
@@ -172,14 +172,14 @@ public class GreenIntelligence
         return result;
     }
 
-    public static GreenIntelligence Parse(Game g, string data)
+    public static GreenIntelligence Parse(IGameService client, string data)
     {
         var elts = data.Split(';');
         var elt = 0;
 
         try
         {
-            var result = new GreenIntelligence(g);
+            var result = new GreenIntelligence(client);
 
             //Treachery cards
             foreach (var faction in result.TrackedTreacheryCards.Keys.ToList())
@@ -217,9 +217,9 @@ public class GreenIntelligence
         }
         catch (Exception)
         {
-
+            //Do nothing
         }
 
-        return new GreenIntelligence(g);
+        return new GreenIntelligence(client);
     }
 }

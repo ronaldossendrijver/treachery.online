@@ -37,7 +37,7 @@
                     @foreach (var p in Game.Players.Where(p => p != Client.Player))
                     {
                         var name = Game.GetPlayerName(p);
-                        <option style="color:@Skin.Current.GetFactionColor(p.Faction);background-color:white" value="@name">@name</option>
+                        <option style="color:@Client.CurrentSkin.GetFactionColor(p.Faction);background-color:white" value="@name">@name</option>
                     }
 
                 </select>
@@ -53,7 +53,7 @@
         {
             var color = m switch
             {
-                GameChatMessage gcm => Skin.Current.GetFactionColor(gcm.GetSourceFaction(Client.Game)),
+                GameChatMessage gcm => Client.CurrentSkin.GetFactionColor(gcm.GetSourceFaction(Client.Game)),
                 GlobalChatMessage gcm => "grey",
                 _ => "grey"
             };
@@ -146,7 +146,7 @@
                 return "white";
 
             var p = Client.Game.GetPlayerByName(selectedPlayerName);
-            return p != null ? Skin.Current.GetFactionColor(p.Faction) : "red";
+            return p != null ? Client.CurrentSkin.GetFactionColor(p.Faction) : "red";
         }
     }
 

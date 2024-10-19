@@ -16,8 +16,8 @@
         @foreach (var v in TreacheryCardManager.GetCardsInPlay(Client.Game))
         {
             <div class="card">
-                <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
-                    <img src="@Skin.Current.GetImageUrl(v)" class="card-img" alt="@Name(v)">
+                <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
+                    <img src="@Client.CurrentSkin.GetImageUrl(v)" class="card-img" alt="@Name(v)">
                 </Hoverable>
             </div>
         }
@@ -26,14 +26,14 @@
 
     @if (Client.Game.IsPlaying(Faction.White))
     {
-        <h5 class="mt-2">@Skin.Current.Describe(Faction.White) Cards</h5>
+        <h5 class="mt-2">@Client.CurrentSkin.Describe(Faction.White) Cards</h5>
         <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
 
             @foreach (var v in TreacheryCardManager.GetWhiteCards())
             {
                 <div class="card">
-                    <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
-                        <img src="@Skin.Current.GetImageUrl(v)" class="card-img" alt="@Name(v)">
+                    <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
+                        <img src="@Client.CurrentSkin.GetImageUrl(v)" class="card-img" alt="@Name(v)">
                     </Hoverable>
                 </div>
             }
@@ -41,14 +41,14 @@
         </div>
     }
 
-    <h5 class="mt-2">@Skin.Current.Describe(Concept.Resource) Cards</h5>
+    <h5 class="mt-2">@Client.CurrentSkin.Describe(Concept.Resource) Cards</h5>
     <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
 
         @foreach (var v in Map.GetResourceCardsInPlay(Client.Game))
         {
             <div class="card">
-                <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
-                    <img src="@Skin.Current.GetImageUrl(v)" class="card-img" alt="@Name(v)">
+                <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
+                    <img src="@Client.CurrentSkin.GetImageUrl(v)" class="card-img" alt="@Name(v)">
                 </Hoverable>
             </div>
         }
@@ -63,8 +63,8 @@
             @foreach (var v in Enumerations.GetValuesExceptDefault(LeaderSkill.None))
             {
                 <div class="card">
-                    <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
-                        <img src="@Skin.Current.GetImageUrl(v)" class="card-img" alt="@Name(v)">
+                    <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
+                        <img src="@Client.CurrentSkin.GetImageUrl(v)" class="card-img" alt="@Name(v)">
                     </Hoverable>
                 </div>
             }
@@ -80,8 +80,8 @@
             @foreach (var v in Enumerations.GetValuesExceptDefault(StrongholdAdvantage.None))
             {
                 <div class="card">
-                    <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
-                        <img src="@Skin.Current.GetImageUrl(v)" class="card-img" alt="@Name(v)">
+                    <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
+                        <img src="@Client.CurrentSkin.GetImageUrl(v)" class="card-img" alt="@Name(v)">
                     </Hoverable>
                 </div>
             }
@@ -97,8 +97,8 @@
             @foreach (var n in Enumerations.GetValuesExceptDefault(Nexus.None))
             {
                 <div class="card">
-                    <Hoverable Class="card-img-top" Popover=@Popup.GetNexusCard(n)>
-                        <img src="@Skin.Current.GetImageUrl(n)" class="card-img" alt="@Name(n)">
+                    <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetNexusCardPopup(n)>
+                        <img src="@Client.CurrentSkin.GetImageUrl(n)" class="card-img" alt="@Name(n)">
                     </Hoverable>
                 </div>
             }
@@ -114,8 +114,8 @@
             @foreach (var w in Client.Game.Map.Homeworlds)
             {
                 <div class="card">
-                    <Hoverable Class="card-img-top" Popover=@Popup.Get(w)>
-                        <img src="@Skin.Current.GetHomeworldCardImageURL(w.World)" class="card-img" alt="@Name(w)">
+                    <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetPopup(w)>
+                        <img src="@Client.CurrentSkin.GetHomeworldCardImageURL(w.World)" class="card-img" alt="@Name(w)">
                     </Hoverable>
                 </div>
             }
@@ -133,7 +133,7 @@
                 if (t != Ambassador.Cyan)
                 {
                     <div class="card">
-                        <img src="@Skin.Current.GetImageUrl(t)" class="card-img" title=@Skin.Current.GetAmbassadorDescription(t) alt="@Name(t)">
+                        <img src="@Client.CurrentSkin.GetImageUrl(t)" class="card-img" title=@Client.CurrentSkin.GetAmbassadorDescription(t) alt="@Name(t)">
                     </div>
                 }
             }
@@ -149,7 +149,7 @@
             <ul>
                 @foreach (var t in Enumerations.GetValuesExceptDefault(TerrorType.None))
                 {
-                    <li><strong>@Name(t) -</strong> @Skin.Current.GetTerrorTypeDescription(t)</li>
+                    <li><strong>@Name(t) -</strong> @Client.CurrentSkin.GetTerrorTypeDescription(t)</li>
                 }
             </ul>
 
@@ -164,7 +164,7 @@
             <ul>
             @foreach (var t in Enumerations.GetValuesExceptDefault(DiscoveryToken.None))
             {
-                <li><strong>@Name(t) -</strong> @Skin.Current.GetDiscoveryTokenDescription(t)</li>
+                <li><strong>@Name(t) -</strong> @Client.CurrentSkin.GetDiscoveryTokenDescription(t)</li>
             }
             </ul>
 

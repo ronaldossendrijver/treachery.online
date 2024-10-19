@@ -10,15 +10,15 @@
 
 @if (Client.Game.CurrentPhase >= Phase.MetheorAndStormSpell)
 {
-    var y = 1.75f * Skin.Current.FORCETOKEN_RADIUS;
-    var x = 1.5f * Skin.Current.FORCETOKEN_RADIUS;
-    var leaderDiameter = 3.2f * Skin.Current.FORCETOKEN_RADIUS;
-    var leaderPctHeight = .25f * leaderDiameter * Skin.Current.BattleWheelHeroHeight / Skin.Current.BattleWheelHeroWidth;
+    var y = 1.75f * Client.CurrentSkin.FORCETOKEN_RADIUS;
+    var x = 1.5f * Client.CurrentSkin.FORCETOKEN_RADIUS;
+    var leaderDiameter = 3.2f * Client.CurrentSkin.FORCETOKEN_RADIUS;
+    var leaderPctHeight = .25f * leaderDiameter * Client.CurrentSkin.BattleWheelHeroHeight / Client.CurrentSkin.BattleWheelHeroWidth;
     var spacing = 0.85f;
 
     foreach (var p in Client.Game.Players)
     {
-        var color = Skin.Current.GetFactionColor(p.Faction);
+        var color = Client.CurrentSkin.GetFactionColor(p.Faction);
 
         if (p.ForcesKilled > 0 || p.SpecialForcesKilled > 0)
         {
@@ -29,11 +29,11 @@
 
             if (p.SpecialForcesKilled > 0)
             {
-                var dX = p.ForcesKilled > 0 ? 2 * Skin.Current.FORCETOKEN_RADIUS : 0;
+                var dX = p.ForcesKilled > 0 ? 2 * Client.CurrentSkin.FORCETOKEN_RADIUS : 0;
                 <MapForce X=@(x + dX) Y=@y Special=@true Amount=@p.SpecialForcesKilled Faction=@p.Faction />
             }
 
-            y += spacing * 2 * Skin.Current.FORCETOKEN_RADIUS;
+            y += spacing * 2 * Client.CurrentSkin.FORCETOKEN_RADIUS;
         }
 
         var corpses = p.Leaders
@@ -54,9 +54,9 @@
                 if (Client.Game.LeaderState[leader].IsFaceDownDead)
                 {
                     <MapImage X="@(l.X + displaceX)" Y="@(l.Y)" Diameter="@(leaderDiameter)"
-                           Src="@Skin.Current.GetFactionFacedownImageURL(p.Faction)"
+                           Src="@Client.CurrentSkin.GetFactionFacedownImageURL(p.Faction)"
                            Popover="@Popover(leader)" PopoverStyle=""
-                           ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" />
+                           ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" />
                 }
                 else
                 {
@@ -75,8 +75,8 @@
         {
             var l = new PointD(x, y);
             <MapImage X="@(x)" Y="@(y)" Diameter="@(0.5f * leaderDiameter)"
-                   Src="@Skin.Current.Messiah_URL"
-                   ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" Popover="@Skin.Current.Describe(Concept.Messiah)"/>
+                   Src="@Client.CurrentSkin.Messiah_URL"
+                   ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" Popover="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
             
             y += spacing * leaderDiameter;
         }
@@ -90,21 +90,21 @@
     private Situation situation = new();
     protected override bool ShouldRender()
     {
-        return Client.InGame && situation.RequiresUpdate(Game);
+        return Client.InGame && situation.RequiresUpdate(Client);
     }
 
-    private static void NextColumnIfNecessary(ref float y, ref float x, float spacing)
+    private void NextColumnIfNecessary(ref float y, ref float x, float spacing)
     {
-        if (y > 15 * Skin.Current.FORCETOKEN_RADIUS - 0.8f * x)
+        if (y > 15 * Client.CurrentSkin.FORCETOKEN_RADIUS - 0.8f * x)
         {
-            y = 1.75f * Skin.Current.FORCETOKEN_RADIUS;
-            x += 4.25f * Skin.Current.FORCETOKEN_RADIUS;
+            y = 1.75f * Client.CurrentSkin.FORCETOKEN_RADIUS;
+            x += 4.25f * Client.CurrentSkin.FORCETOKEN_RADIUS;
         }
     }
 
     private string Popover(Leader l)
     {
-        return Player.Is(l.Faction) || Player.Is(Faction.Purple) ? Popup.Get(l, Game) : "?";
+        return Player.Is(l.Faction) || Player.Is(Faction.Purple) ? Client.CurrentSkin.GetPopup(l, Game) : "?";
     }
 
 }

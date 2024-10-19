@@ -290,49 +290,74 @@ public partial class Player
         return DetermineMostSuitableNearbyLocation(battalionAtLocation.Key, battalionAtLocation.Value, includeSecondBestLocations, mustMove);
     }
 
+    private T Log<T>(string message, T returnValue)
+    {
+        LogInfo($"{message}: {returnValue}");
+        return returnValue;
+    }
+
     private Location DetermineMostSuitableNearbyLocation(Location location, Battalion battalion, bool includeSecondBestLocations, bool mustMove)
     {
         var result = NearbyStrongholdOfWinningOpponent(location, battalion, false);
-        if (result == null) result = NearbyStrongholdOfWinningOpponent(location, battalion, true);
-        LogInfo("Suitable NearbyStrongholdOfWinningOpponent: {0}", result);
+        if (result != null) return Log("Suitable NearbyStrongholdOfWinningOpponent excluding bots", result);
+        
+        result = NearbyStrongholdOfWinningOpponent(location, battalion, true);
+        if (result != null) return Log("Suitable NearbyStrongholdOfWinningOpponent includign bots", result);
 
-        if (result == null) result = VacantAndSafeNearbyStronghold(location, battalion);
-        LogInfo("Suitable VacantAndSafeNearbyStronghold: {0}", result);
+        result = VacantAndSafeNearbyStronghold(location, battalion);
+        if (result != null) return Log("Suitable VacantAndSafeNearbyStronghold", result);
 
-        if (result == null) result = NearbyStrongholdOfAlmostWinningOpponent(location, battalion, false);
-        if (result == null) result = NearbyStrongholdOfAlmostWinningOpponent(location, battalion, true);
-        LogInfo("Suitable NearbyStrongholdOfAlmostWinningOpponent: {0}", result);
+        result = NearbyStrongholdOfAlmostWinningOpponent(location, battalion, false);
+        if (result != null) return Log("Suitable NearbyStrongholdOfAlmostWinningOpponent excluding bots", result);
+        
+        result = NearbyStrongholdOfAlmostWinningOpponent(location, battalion, true);
+        if (result != null) return Log("Suitable NearbyStrongholdOfAlmostWinningOpponent including bots", result);
 
-        if (result == null) result = WeakAndSafeNearbyStronghold(location, battalion);
-        LogInfo("Suitable WeakAndSafeNearbyStronghold: {0}", result);
+        result = WeakAndSafeNearbyStronghold(location, battalion);
+        if (result != null) return Log("Suitable WeakAndSafeNearbyStronghold", result);
 
-        if (result == null && !LastTurn) result = BestSafeAndNearbyResources(location, battalion);
-        LogInfo("Suitable BestSafeAndNearbyResources without fighting: {0}", result);
+        if (!LastTurn)
+        {
+            result = BestSafeAndNearbyResources(location, battalion);
+            if (result != null) return Log("Suitable BestSafeAndNearbyResources without fighting", result);
+        }
+        
+        result = UnthreatenedAndSafeNearbyStronghold(location, battalion);
+        if (result != null) return Log("Suitable UnthreatenedAndSafeNearbyStronghold", result);
 
-        if (result == null) result = UnthreatenedAndSafeNearbyStronghold(location, battalion);
-        LogInfo("Suitable UnthreatenedAndSafeNearbyStronghold: {0}", result);
+        result = WinnableNearbyStronghold(location, battalion);
+        if (result != null) return Log("Suitable WinnableNearbyStronghold", result);
 
-        if (result == null) result = WinnableNearbyStronghold(location, battalion);
-        LogInfo("Suitable WinnableNearbyStronghold: {0}", result);
-
-        if (result == null && !LastTurn) result = BestSafeAndNearbyDiscovery(location, battalion);
-        LogInfo("Nearby Discovery: {0}", result);
-
-        if (result == null && !LastTurn) result = BestSafeAndNearbyResources(location, battalion, true);
-        LogInfo("Suitable BestSafeAndNearbyResources with fighting: {0}", result);
+        if (!LastTurn)
+        {
+            result = BestSafeAndNearbyDiscovery(location, battalion);
+            if (result != null) return Log("Nearby Discovery", result);
+            
+            result = BestSafeAndNearbyResources(location, battalion, true);
+            if (result != null) return Log("Suitable BestSafeAndNearbyResources with fighting", result);
+        }
 
         if (includeSecondBestLocations)
         {
-            if (result == null && !LastTurn && WithinRange(location, Game.Map.PolarSink, battalion)) result = Game.Map.PolarSink;
-            LogInfo("Suitable - Polar Sink nearby? {0}", result);
+            if (!LastTurn && WithinRange(location, Game.Map.PolarSink, battalion))
+            {
+                result = Game.Map.PolarSink;
+                if (result != null) return Log("Suitable - Polar Sink nearby?", result);
+            }
 
-            if (result == null && location != Game.Map.PolarSink) result = Game.Map.Locations(false).Where(l => Game.IsProtectedFromStorm(l) && WithinRange(location, l, battalion) && NotOccupiedByOthers(l.Territory) && l.Territory != location.Territory).FirstOrDefault();
-            LogInfo("Suitable nearby Rock: {0}", result);
+            if (location != Game.Map.PolarSink)
+            {
+                result = Game.Map.Locations(false).Where(l => Game.IsProtectedFromStorm(l) && WithinRange(location, l, battalion) && NotOccupiedByOthers(l.Territory) && l.Territory != location.Territory).FirstOrDefault();
+                if (result != null) return Log("Suitable nearby Rock", result);
+            }
         }
 
-        if (result == null && mustMove) result = PlacementEvent.ValidTargets(Game, this, location, battalion).FirstOrDefault(l => AllyDoesntBlock(l.Territory) && l != location);
-        LogInfo("Suitable - any location without my ally: {0}", result);
-
+        if (mustMove)
+        {
+            result = PlacementEvent.ValidTargets(Game, this, location, battalion).FirstOrDefault(l => AllyDoesntBlock(l.Territory) && l != location);
+            LogInfo("Suitable - any location without my ally: {0}", result);
+        }
+        
         return result;
     }
 }

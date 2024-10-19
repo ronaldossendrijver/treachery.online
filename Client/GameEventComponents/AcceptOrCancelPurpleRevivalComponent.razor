@@ -86,7 +86,7 @@
 
     private IEnumerable<IHero> CurrentRevivalOfferValues => Game.EarlyRevivalsOffers.Select(kvp => kvp.Key);
 
-    private string OfferLabel => Skin.Current.Format("Offer {0} for {1}", offerHero, price); 
+    private string OfferLabel => Client.CurrentSkin.Format("Offer {0} for {1}", offerHero, price); 
 
-    private string DenyLabel => Skin.Current.Format("Deny revival of {0}", offerHero); 
+    private string DenyLabel => Client.CurrentSkin.Format("Deny revival of {0}", offerHero); 
 }

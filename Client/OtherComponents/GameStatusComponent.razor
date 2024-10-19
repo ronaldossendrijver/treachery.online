@@ -36,8 +36,8 @@
                         {
                             <div class="col" style="filter:drop-shadow(1px 1px 1px black)">
                                 <NumberComponent Value="Game.CardsOwnedBy(se.Player).Count()" Size="@(se.Player == hasTurn || (showTurnInSequence && se.HasTurn) ? 36 : 28)"
-                                                SymbolSRC="@Skin.Current.GetImageUrl(se.Player.Faction)"
-                                                BehindNumberSRC="@Skin.Current.CardBack_TreacheryCard_URL"
+                                                SymbolSRC="@Client.CurrentSkin.GetImageUrl(se.Player.Faction)"
+                                                BehindNumberSRC="@Client.CurrentSkin.CardBack_TreacheryCard_URL"
                                                 Title="@PlayerWithCardsTitle(se.Player)"
                                                 NumberColor="@(se.Player.HasRoomForCards ? "black" : "red")" NumberBorderColor="white" NumberBorderWidth=1 NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
                             </div>
@@ -50,7 +50,7 @@
                             var player = Client.Status.WaitingForPlayers.First();
 
                             <div style="position: relative; width: 64px; height: 64px;">
-                                <img title="@player.Name" src="@Skin.Current.GetImageUrl(player.Faction)" width="64" style="position: absolute; left: 0px; filter: drop-shadow(2px 2px 2px black)" />
+                                <img title="@player.Name" src="@Client.CurrentSkin.GetImageUrl(player.Faction)" width="64" style="position: absolute; left: 0px; filter: drop-shadow(2px 2px 2px black)" />
                                 <img src="./art/worm.gif" width="94" style="position: absolute; top: -14px; left: -20px; filter: drop-shadow(1px 1px 1px black)" />
                             </div>
                         }
@@ -59,7 +59,7 @@
                             foreach (var p in Client.Status.WaitingForPlayers)
                             {
                                 <div style="position: relative; width: 48px;">
-                                    <img class="p-2" title="@p.Name" src="@Skin.Current.GetImageUrl(p.Faction)" width="48" style="filter:drop-shadow(2px 2px 2px black)" />
+                                    <img class="p-2" title="@p.Name" src="@Client.CurrentSkin.GetImageUrl(p.Faction)" width="48" style="filter:drop-shadow(2px 2px 2px black)" />
                                 </div>
                             }
                         }
@@ -71,12 +71,12 @@
                             <div class="align-self-center p-0 m-0" style="position: relative; width: 64px;">
                                 @if (f.HasTurn)
                                 {
-                                    <img title="@f.Player.Name" src="@Skin.Current.GetImageUrl(f.Player.Faction)" width="64" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
+                                    <img title="@f.Player.Name" src="@Client.CurrentSkin.GetImageUrl(f.Player.Faction)" width="64" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
                                     <img src="./art/worm.gif" width="90" style="position: absolute; top: -12px; left: -18px; filter: drop-shadow(1px 1px 1px black)" />
                                 }
                                 else
                                 {
-                                    <img class="align-self-center p-2" title="@f.Player.Name" src="@Skin.Current.GetImageUrl(f.Player.Faction)" width="48" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
+                                    <img class="align-self-center p-2" title="@f.Player.Name" src="@Client.CurrentSkin.GetImageUrl(f.Player.Faction)" width="48" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
                                 }
                             </div>
                         }

@@ -11,38 +11,38 @@
 @{
     foreach (var l in Game.Map.Locations(false).Where(l => l.SpiceBlowAmount > 0))
     {
-        var spiceLocation = Skin.Current.GetSpiceLocation(l);
+        var spiceLocation = Client.CurrentSkin.GetSpiceLocation(l);
 
         if (Game.ResourcesOnPlanet.ContainsKey(l))
         {
             <MapImage 
-                X="@(spiceLocation.X - Skin.Current.RESOURCETOKEN_RADIUS)" 
-                Y="@(spiceLocation.Y - Skin.Current.RESOURCETOKEN_RADIUS)" 
-                Width=@(Skin.Current.RESOURCETOKEN_RADIUS * 2) 
-                Height="@(Skin.Current.RESOURCETOKEN_RADIUS * 2)" 
-                Src="@Skin.Current.Harvester_URL" 
-                ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
+                X="@(spiceLocation.X - Client.CurrentSkin.RESOURCETOKEN_RADIUS)" 
+                Y="@(spiceLocation.Y - Client.CurrentSkin.RESOURCETOKEN_RADIUS)" 
+                Width=@(Client.CurrentSkin.RESOURCETOKEN_RADIUS * 2) 
+                Height="@(Client.CurrentSkin.RESOURCETOKEN_RADIUS * 2)" 
+                Src="@Client.CurrentSkin.Harvester_URL" 
+                ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
 
             <MapText ToShow="@Game.ResourcesOnPlanet[l].ToString()"
                      X="@(spiceLocation.X)" Y="@spiceLocation.Y"
-                     Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
-                     BorderWidth="@Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
+                     Font="@Client.CurrentSkin.RESOURCETOKEN_FONT" FontColor="@Client.CurrentSkin.RESOURCETOKEN_FONTCOLOR"
+                     BorderWidth="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERCOLOR"
                      Align="@TextAlignment.Center"/>
         }
-        else if (Skin.Current.DrawResourceIconsOnMap)
+        else if (Client.CurrentSkin.DrawResourceIconsOnMap)
         {
             <MapImage 
-                X="@(spiceLocation.X - Skin.Current.RESOURCETOKEN_RADIUS)" 
-                Y="@(spiceLocation.Y - Skin.Current.RESOURCETOKEN_RADIUS)" 
-                Width=@(Skin.Current.RESOURCETOKEN_RADIUS * 2) 
-                Height="@(Skin.Current.RESOURCETOKEN_RADIUS * 2)" 
-                Src="@Skin.Current.Resource_URL" 
-                ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"/>
+                X="@(spiceLocation.X - Client.CurrentSkin.RESOURCETOKEN_RADIUS)" 
+                Y="@(spiceLocation.Y - Client.CurrentSkin.RESOURCETOKEN_RADIUS)" 
+                Width=@(Client.CurrentSkin.RESOURCETOKEN_RADIUS * 2) 
+                Height="@(Client.CurrentSkin.RESOURCETOKEN_RADIUS * 2)" 
+                Src="@Client.CurrentSkin.Resource_URL" 
+                ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"/>
 
             <MapText ToShow="@l.SpiceBlowAmount.ToString()"
                      X="@(spiceLocation.X)" Y="@spiceLocation.Y"
-                     Font="@ScaledFont(Skin.Current.RESOURCETOKEN_FONT, 0.7f)" FontColor="#FFFFFFDD"
-                     BorderWidth="@Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="#646464DD"
+                     Font="@ScaledFont(Client.CurrentSkin.RESOURCETOKEN_FONT, 0.7f)" FontColor="#FFFFFFDD"
+                     BorderWidth="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="#646464DD"
                      Align="@TextAlignment.Center"/>
         }
     }

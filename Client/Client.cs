@@ -21,6 +21,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     //General info
     public ServerInfo ServerInfo { get; private set; }
+    public Skin CurrentSkin { get; set; } = DefaultSkin.Default;
     public bool IsConnected => _connection.State == HubConnectionState.Connected;
     
     //Admin info
@@ -234,7 +235,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
         else
         {
-            Support.Log(resultMessage.ToString(Skin.Current));
+            Support.Log(resultMessage.ToString(CurrentSkin));
         }
     }
     
@@ -255,9 +256,9 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     {
         await Browser.SaveStringSetting("treachery.online;setting.skin", skinData);
 
-        Skin.Current = Skin.Load(skinData);
+        CurrentSkin = Skin.Load(skinData, DefaultSkin.Default);
 
-        Message.DefaultDescriber = Skin.Current;
+        Message.DefaultDescriber = CurrentSkin;
 
         Refresh();
         RefreshPopovers();
@@ -280,7 +281,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
         if (!MuteGlobalChat)
         {
-            await Browser.PlaySound(Skin.Current.Sound_Chatmessage_URL, CurrentChatVolume);
+            await Browser.PlaySound(CurrentSkin.Sound_Chatmessage_URL, CurrentChatVolume);
             Refresh();
         }
     }
@@ -290,7 +291,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         if (m.TargetUserId == -1 || m.SourceUserId == -1 || m.SourceUserId == UserId || m.TargetUserId == UserId)
         {
             Messages.AddFirst(m);
-            await Browser.PlaySound(Skin.Current.Sound_Chatmessage_URL, CurrentChatVolume);
+            await Browser.PlaySound(CurrentSkin.Sound_Chatmessage_URL, CurrentChatVolume);
             Refresh();
         }
     }
@@ -384,7 +385,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             hashedPassword, playerName, email);
 
         if (!result.Success) 
-            return Skin.Current.Describe(result.Error);
+            return CurrentSkin.Describe(result.Error);
         
         StoredPassword = hashedPassword;
         LoginInfo = result.Contents;
@@ -407,20 +408,20 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
         
         return result.Success ? null :
-            result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : Skin.Current.Describe(result.Error);
+            result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : CurrentSkin.Describe(result.Error);
     }
     
     public async Task<string> RequestCloseGame(string gameId)
     {
         var result = await Invoke(nameof(IGameHub.RequestCloseGame), UserToken, gameId);
-        return result.Success ? string.Empty : Skin.Current.Describe(result.Error);
+        return result.Success ? string.Empty : CurrentSkin.Describe(result.Error);
     }
 
     public async Task<string> RequestJoinGame(string gameId, string hashedPassword, int seat)
     {
         var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestJoinGame), UserToken, gameId, hashedPassword, seat);
         if (!result.Success) 
-            return Skin.Current.Describe(result.Error);
+            return CurrentSkin.Describe(result.Error);
         
         var loadMessage = await LoadGame(result.Contents);
         if (loadMessage != null)
@@ -434,7 +435,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     {
         var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestObserveGame), UserToken, gameId, hashedPassword);
         if (!result.Success) 
-            return Skin.Current.Describe(result.Error);
+            return CurrentSkin.Describe(result.Error);
         
         var loadMessage = await LoadGame(result.Contents);
         if (loadMessage != null)
@@ -445,48 +446,48 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     }
 
     public async Task<string> RequestSetOrUnsetHost(int userId) =>
-        Skin.Current.Describe((await Invoke(nameof(IGameHub.RequestSetOrUnsetHost), UserToken, GameId, userId)).Error);
+        CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestSetOrUnsetHost), UserToken, GameId, userId)).Error);
 
     public async Task<string> RequestOpenOrCloseSeat(int seat) =>
-        Skin.Current.Describe((await Invoke(nameof(IGameHub.RequestOpenOrCloseSeat), UserToken, GameId, seat)).Error);
+        CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestOpenOrCloseSeat), UserToken, GameId, seat)).Error);
 
     public async Task<string> RequestLeaveGame() =>
-        Skin.Current.Describe((await Invoke(nameof(IGameHub.RequestLeaveGame), UserToken, GameId)).Error);
+        CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestLeaveGame), UserToken, GameId)).Error);
     
     public async Task<string> RequestKick(int userId) => 
-        Skin.Current.Describe((await Invoke(nameof(IGameHub.RequestKick), UserToken, GameId, userId)).Error);
+        CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestKick), UserToken, GameId, userId)).Error);
 
     public async Task<string> RequestLoadGame(string state, string skin = null)
     {
         var result = await Invoke(nameof(IGameHub.RequestLoadGame), UserToken, GameId, state, skin);
         return result.Success ? null :
-            result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : Skin.Current.Describe(result.Error);
+            result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : CurrentSkin.Describe(result.Error);
     }
     public async Task<string> RequestAssignSeats(Dictionary<int, int> assignment) =>
-        Skin.Current.Describe((await Invoke(nameof(IGameHub.RequestAssignSeats), UserToken, GameId, assignment)).Error);
+        CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestAssignSeats), UserToken, GameId, assignment)).Error);
 
     public async Task<string> RequestSetSkin(string skin)
     {
         var result = await Invoke(nameof(IGameHub.RequestSetSkin), UserToken, GameId, skin);
-        return result.Success ? null : Skin.Current.Describe(result.Error);
+        return result.Success ? null : CurrentSkin.Describe(result.Error);
     }
         
 
     public async Task<string> RequestUndo(int untilEventNr) =>
-        Skin.Current.Describe((await Invoke(nameof(IGameHub.RequestUndo), UserToken, GameId, untilEventNr)).Error);
+        CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestUndo), UserToken, GameId, untilEventNr)).Error);
 
     public async Task<string> SetTimer(int value) =>
-        Skin.Current.Describe((await Invoke(nameof(IGameHub.SetTimer), value)).Error);
+        CurrentSkin.Describe((await Invoke(nameof(IGameHub.SetTimer), value)).Error);
 
     public async Task<string> RequestGameEvent<T>(T gameEvent) where T : GameEvent
     {
         var result = await Invoke($"Request{typeof(T).Name}", UserToken, GameId, gameEvent);
         return result.Success ? null :
-            result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : Skin.Current.Describe(result.Error);
+            result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : CurrentSkin.Describe(result.Error);
     }
         
     public async Task<string> RequestPauseBots() =>
-        Skin.Current.Describe((await Invoke(nameof(IGameHub.RequestPauseBots), UserToken, GameId)).Error);
+        CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestPauseBots), UserToken, GameId)).Error);
 
     public async Task SendChatMessage(GameChatMessage message) =>
         await Invoke(nameof(IGameHub.SendChatMessage), UserToken, GameId, message);
@@ -497,31 +498,31 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public async Task<string> AdminUpdateMaintenance(DateTimeOffset maintenanceDate)
     {
         var result = await Invoke<string>(nameof(IGameHub.AdminUpdateMaintenance), UserToken, maintenanceDate);
-        return result.Success ? result.Contents : Skin.Current.Describe(result.Error);
+        return result.Success ? result.Contents : CurrentSkin.Describe(result.Error);
     }
 
     public async Task<string> AdminPersistState()
     {
         var result = await Invoke<string>(nameof(IGameHub.AdminPersistState), UserToken);
-        return result.Success ? result.Contents : Skin.Current.Describe(result.Error);
+        return result.Success ? result.Contents : CurrentSkin.Describe(result.Error);
     }
 
     public async Task<string> AdminRestoreState()
     {
         var result = await Invoke<string>(nameof(IGameHub.AdminRestoreState), UserToken);
-        return result.Success ? result.Contents : Skin.Current.Describe(result.Error);
+        return result.Success ? result.Contents : CurrentSkin.Describe(result.Error);
     }
 
     public async Task<string> AdminCloseGame(string gameId)
     {
         var result = await Invoke<string>(nameof(IGameHub.AdminCloseGame), UserToken, gameId);
-        return result.Success ? result.Contents : Skin.Current.Describe(result.Error);
+        return result.Success ? result.Contents : CurrentSkin.Describe(result.Error);
     }
     
     public async Task<string> AdminDeleteUser(int userId)
     {
         var result = await Invoke<string>(nameof(IGameHub.AdminDeleteUser), UserToken, userId);
-        return result.Success ? result.Contents : Skin.Current.Describe(result.Error);
+        return result.Success ? result.Contents : CurrentSkin.Describe(result.Error);
     }
 
     public async Task<string> GetAdminInfo()
@@ -534,7 +535,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
         else
         {
-            return Skin.Current.Describe(result.Error);            
+            return CurrentSkin.Describe(result.Error);            
         }
     }
 
@@ -582,7 +583,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
         else
         {
-            Support.Log(resultMessage.ToString(Skin.Current));
+            Support.Log(resultMessage.ToString(CurrentSkin));
         }
 
         return resultMessage;
@@ -634,7 +635,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             if (!Status.WaitingForOthers(Player, IsHost) && Game.CurrentMainPhase != MainPhase.Battle)
             {
                 itAlreadyWasMyTurn = true;
-                await Browser.PlaySound(Skin.Current.Sound_YourTurn_URL, CurrentEffectVolume);
+                await Browser.PlaySound(CurrentSkin.Sound_YourTurn_URL, CurrentEffectVolume);
             }
         }
     }
@@ -642,7 +643,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     private async Task PlaySoundsForMilestones()
     {
         foreach (var m in Game.RecentMilestones) 
-            await Browser.PlaySound(Skin.Current.GetSound(m), CurrentEffectVolume);
+            await Browser.PlaySound(CurrentSkin.GetSound(m), CurrentEffectVolume);
     }
 
     private Phase previousPhase;

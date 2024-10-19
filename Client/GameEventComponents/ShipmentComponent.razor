@@ -15,7 +15,7 @@
 
         @if (Faction == Faction.Yellow)
         {
-            <div>Bring any number of forces onto @Skin.Current.Describe(Game.Map.TheGreatFlat.Territory) or onto any one territory within two territories of @Skin.Current.Describe(Game.Map.TheGreatFlat.Territory).</div>
+            <div>Bring any number of forces onto @Client.CurrentSkin.Describe(Game.Map.TheGreatFlat.Territory) or onto any one territory within two territories of @Client.CurrentSkin.Describe(Game.Map.TheGreatFlat.Territory).</div>
 
             @if (Shipment.MayShipCrossPlanet(Game, Player))
             {
@@ -87,7 +87,7 @@
             validNoFieldValueLabels.AddRange(Shipment.ValidNoFieldValues(Game, Player).Select(v => string.Format("No-Field of {0}", v)));
 
             <RadioComponent @bind-Value="nofieldValue" Values="validNoFieldValues" ValueLabels="validNoFieldValueLabels">
-                <Label>Use a @Skin.Current.Describe(Faction.White) No-Field for this shipment?</Label>
+                <Label>Use a @Client.CurrentSkin.Describe(Faction.White) No-Field for this shipment?</Label>
             </RadioComponent>
 
             if (Shipment.MayUseCunningNoField(Player))
@@ -200,7 +200,7 @@
         {
             <div class="mt-1">Let your ally support this shipment?</div>
             <div class="mt-1">
-                <SelectResourcesFromFactionComponent @bind-Value="shipmentAllyContributionAmount" Min="0" Max="Game.ResourcesYourAllyCanPay(Player)" Faction="Player.Ally" Title=@Skin.Current.Format("{0} paid by your ally", Concept.Resource) />
+                <SelectResourcesFromFactionComponent @bind-Value="shipmentAllyContributionAmount" Min="0" Max="Game.ResourcesYourAllyCanPay(Player)" Faction="Player.Ally" Title=@Client.CurrentSkin.Format("{0} paid by your ally", Concept.Resource) />
             </div>
         }
         else
@@ -213,7 +213,7 @@
             <div class="mt-1">
 
                 <SelectFromImageComponent @bind-Value="karmaCard" Values="Shipment.ValidKarmaCards(Game, Player)" Required="false" ImageWidth="80">
-                    <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to ship at @Skin.Current.Describe(Faction.Orange) rate?</Label>
+                    <Label>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to ship at @Client.CurrentSkin.Describe(Faction.Orange) rate?</Label>
                 </SelectFromImageComponent>
             
                 @if (karmaCard != null && !Player.TreacheryCards.Contains(karmaCard))

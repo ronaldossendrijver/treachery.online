@@ -216,6 +216,7 @@ public partial class Player
         if (richestLocation != null)
         {
             var locationToShipTo = ValidShipmentLocations(false).FirstOrDefault(sh =>
+                (!HasAlly || Ally is Faction.Pink || AlliedPlayer.AnyForcesIn(sh) == 0 || Faction != Faction.White || !Game.HasLowThreshold(Faction.White)) &&
                 !InStorm(sh) &&
                 AnyForcesIn(sh) <= 8 &&
                 sh.IsStronghold &&
@@ -225,7 +226,7 @@ public partial class Player
             {
                 var forcesNeededForCollection = MakeEvenIfEfficientForShipping(Math.Min(6, DetermineForcesNeededForCollection(richestLocation)));
                 var opponent = OccupyingOpponentsIn(richestLocation.Territory).FirstOrDefault();
-                var opponentFaction = opponent != null ? opponent.Faction : Faction.None;
+                var opponentFaction = opponent?.Faction ?? Faction.None;
                 DetermineShortageForShipment(forcesNeededForCollection + TotalMaxDialOfOpponents(richestLocation.Territory), false, locationToShipTo, opponentFaction, ForcesInReserve, SpecialForcesInReserve, out var nrOfForces, out var nrOfSpecialForces, out var noFieldValue, out var cunningNoFieldValue, 0, 99, Faction == Faction.Grey);
                 DoShipment(ShipmentDecision.StrongholdNearResources, locationToShipTo, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, richestLocation, true, true);
             }

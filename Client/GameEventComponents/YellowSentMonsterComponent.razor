@@ -11,12 +11,12 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Select where to make @Skin.Current.Describe(Concept.Monster) appear</Header>
+    <Header>Select where to make @Client.CurrentSkin.Describe(Concept.Monster) appear</Header>
     <Body>
 
         <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="YellowSentMonster.ValidTargets(Game).OrderBy(t => Name(t))"/>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Appear in {0}", target)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Appear in {0}", target)" ConfirmError="@Validation" />
 
     </Body>
 

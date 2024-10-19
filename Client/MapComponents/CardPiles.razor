@@ -10,34 +10,34 @@
 
 @{
 
-    var cardWidth = Skin.Current.CardSize.X;
-    var cardHeight = Skin.Current.CardSize.Y;
+    var cardWidth = Client.CurrentSkin.CardSize.X;
+    var cardHeight = Client.CurrentSkin.CardSize.Y;
 
-    var x = Skin.Current.SpiceDeckLocation.X;
-    var y = 1.02f * Skin.Current.SpiceDeckLocation.Y;
+    var x = Client.CurrentSkin.SpiceDeckLocation.X;
+    var y = 1.02f * Client.CurrentSkin.SpiceDeckLocation.Y;
 
     double cardspacing = 1f;
 
     //Resource cards
     @if (!Game.ResourceCardDeck.IsEmpty)
     {
-        var cardImageToShow = Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(Client.Player) ? Skin.Current.GetImageUrl(Game.ResourceCardDeck.Top) : Skin.Current.CardBack_ResourceCard_URL;
+        var cardImageToShow = Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(Client.Player) ? Client.CurrentSkin.GetImageUrl(Game.ResourceCardDeck.Top) : Client.CurrentSkin.CardBack_ResourceCard_URL;
         <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@cardImageToShow" 
-           ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="2" 
+           ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="2" 
            Popover="@IntelOfResourceCardPile()"/>
 
         <MapText ToShow="@Game.ResourceCardDeck.Items.Count.ToString()"
              X="@(x + cardWidth / 2)" Y="@(y + cardHeight / 1.5f)"
-             Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
-             BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
+             Font="@Client.CurrentSkin.CARDPILE_FONT" FontColor="@Client.CurrentSkin.CARDPILE_FONTCOLOR"
+             BorderWidth="@Client.CurrentSkin.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.CARDPILE_FONT_BORDERCOLOR"
              Align="@TextAlignment.Center" />
     }
 
     x += cardWidth + cardspacing;
     if (Game.LatestSpiceCardA != null)
     {
-        <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageUrl(Game.LatestSpiceCardA)" 
-               ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
+        <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Client.CurrentSkin.GetImageUrl(Game.LatestSpiceCardA)" 
+               ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                Popover="@IntelOfResourceDiscardPileA()"/>
     }
 
@@ -45,77 +45,77 @@
     {
         <MapText ToShow="A"
                  X="@(x + cardWidth / 2)" Y="@(y + cardHeight / 1.5f)"
-                 Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
-                 BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
+                 Font="@Client.CurrentSkin.CARDPILE_FONT" FontColor="@Client.CurrentSkin.CARDPILE_FONTCOLOR"
+                 BorderWidth="@Client.CurrentSkin.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.CARDPILE_FONT_BORDERCOLOR"
                  Align="@TextAlignment.Center" />
 
         x += cardWidth + cardspacing;
         if (Game.LatestSpiceCardB != null)
         {
-            <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageUrl(Game.LatestSpiceCardB)" 
-                   ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
+            <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Client.CurrentSkin.GetImageUrl(Game.LatestSpiceCardB)" 
+                   ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                    Popover="@IntelOfResourceDiscardPileB()"/>
         }
 
         <MapText ToShow="B"
                  X="@(x + cardWidth / 2)" Y="@(y + cardHeight / 1.5f)"
-                 Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
-                 BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
+                 Font="@Client.CurrentSkin.CARDPILE_FONT" FontColor="@Client.CurrentSkin.CARDPILE_FONTCOLOR"
+                 BorderWidth="@Client.CurrentSkin.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.CARDPILE_FONT_BORDERCOLOR"
                  Align="@TextAlignment.Center" />
     }
 
     if (Game.SandTroutOccured)
     {
         x += cardWidth + cardspacing;
-        <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageUrl(Game.SandTrout)"
-            ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" Popover=@Popup.Get(Game.SandTrout)/>
+        <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Client.CurrentSkin.GetImageUrl(Game.SandTrout)"
+            ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" Popover=@Client.CurrentSkin.GetPopup(Game.SandTrout)/>
     }
 
     //Treachery cards
-    x = Skin.Current.TreacheryDeckLocation.X;
-    y = 1.02f * Skin.Current.TreacheryDeckLocation.Y;
+    x = Client.CurrentSkin.TreacheryDeckLocation.X;
+    y = 1.02f * Client.CurrentSkin.TreacheryDeckLocation.Y;
 
     if (Game.TreacheryDeck.Items.Count > 0)
     {
-        <MapImage X="@(x)" Y=@y Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" 
-               ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
+        <MapImage X="@(x)" Y=@y Width=@(cardWidth) Height="@(cardHeight)" Src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" 
+               ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                Popover="@IntelOfTreacheryCardPile()"/>
     }
 
     <MapText ToShow="@Game.TreacheryDeck.Items.Count.ToString()"
              X="@(x + cardWidth / 2)" Y="@(y + cardHeight / 1.5f)"
-             Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
-             BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
+             Font="@Client.CurrentSkin.CARDPILE_FONT" FontColor="@Client.CurrentSkin.CARDPILE_FONTCOLOR"
+             BorderWidth="@Client.CurrentSkin.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.CARDPILE_FONT_BORDERCOLOR"
              Align="@TextAlignment.Center" />
 
     if (!Game.TreacheryDiscardPile.IsEmpty)
     {
         x += cardWidth + cardspacing;
-        <MapImage X="@(x)" Y=@y Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageUrl(Game.TreacheryDiscardPile.Top)" 
-               ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
+        <MapImage X="@(x)" Y=@y Width=@(cardWidth) Height="@(cardHeight)" Src="@Client.CurrentSkin.GetImageUrl(Game.TreacheryDiscardPile.Top)" 
+               ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                Popover="@IntelOfTreacheryDiscardPile()"/>
 
         <MapText ToShow="@Game.TreacheryDiscardPile.Items.Count.ToString()"
                  X="@(x + cardWidth / 2)" Y="@(y + cardHeight / 1.5f)"
-                 Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
-                 BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
+                 Font="@Client.CurrentSkin.CARDPILE_FONT" FontColor="@Client.CurrentSkin.CARDPILE_FONTCOLOR"
+                 BorderWidth="@Client.CurrentSkin.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.CARDPILE_FONT_BORDERCOLOR"
                  Align="@TextAlignment.Center" />
     }
 
     if (Game.WhiteCache.Count > 0)
     {
-        x = Skin.Current.TreacheryDeckLocation.X - cardWidth - cardspacing;
+        x = Client.CurrentSkin.TreacheryDeckLocation.X - cardWidth - cardspacing;
 
-        <MapImage X="@(x)" Y=@y Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" 
-               ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
+        <MapImage X="@(x)" Y=@y Width=@(cardWidth) Height="@(cardHeight)" Src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" 
+               ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                Popover="@IntelOfWhiteCardPile()"/>
 
-        <MapImage X="@(x + cardWidth / 3)" Y="@(y + cardHeight / 8)" Diameter="@(cardWidth / 3)" Src="@Skin.Current.GetImageUrl(Faction.White)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
+        <MapImage X="@(x + cardWidth / 3)" Y="@(y + cardHeight / 8)" Diameter="@(cardWidth / 3)" Src="@Client.CurrentSkin.GetImageUrl(Faction.White)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
 
         <MapText ToShow="@Game.WhiteCache.Count.ToString()"
                  X="@(x + cardWidth / 2)" Y="@(y + cardHeight / 1.5f)"
-                 Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
-                 BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
+                 Font="@Client.CurrentSkin.CARDPILE_FONT" FontColor="@Client.CurrentSkin.CARDPILE_FONTCOLOR"
+                 BorderWidth="@Client.CurrentSkin.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.CARDPILE_FONT_BORDERCOLOR"
                  Align="@TextAlignment.Center" />
     }
 }
@@ -124,14 +124,14 @@
 
     private string IntelOfTreacheryCardPile()
     {
-        return Skin.Current.Format("<h4>Treachery Cards: {0} on deck</h4>", Client.Game.TreacheryDeck.Items.Count); ;
+        return Client.CurrentSkin.Format("<h4>Treachery Cards: {0} on deck</h4>", Client.Game.TreacheryDeck.Items.Count); ;
     }
 
     private string IntelOfTreacheryDiscardPile()
     {
         var result = "";
 
-        result += Skin.Current.Format("<h4>Discard pile: {0} cards</h4>", Client.Game.TreacheryDiscardPile.Items.Count);
+        result += Client.CurrentSkin.Format("<h4>Discard pile: {0} cards</h4>", Client.Game.TreacheryDiscardPile.Items.Count);
 
         if (Client.Game.AssistedNotekeepingEnabled(Player))
         {
@@ -139,7 +139,7 @@
             result += "<div class=\"row row-cols-6 mt-1\">";
             foreach (var c in Client.Game.TreacheryDiscardPile.Items)
             {
-                var imgUrl = known.Contains(c) ? Skin.Current.GetImageUrl(c) : Skin.Current.CardBack_TreacheryCard_URL;
+                var imgUrl = known.Contains(c) ? Client.CurrentSkin.GetImageUrl(c) : Client.CurrentSkin.CardBack_TreacheryCard_URL;
                 result += $"<img src=\"{imgUrl}\" class=\"img-fluid p-1\"/>";
             }
             result += "</div>";
@@ -147,7 +147,7 @@
         }
         else if (Client.Game.TreacheryDiscardPile.Top != null)
         {
-            result += Popup.Get(Client.Game.TreacheryDiscardPile.Top);
+            result += Client.CurrentSkin.GetPopup(Client.Game.TreacheryDiscardPile.Top);
         }
 
         return result;
@@ -158,7 +158,7 @@
         var result = "<div class=\"row row-cols-6 mt-1\">";
         foreach (var c in items)
         {
-            result += string.Format("<img src=\"{0}\" class=\"img-fluid p-1\"/>", Skin.Current.GetImageUrl(c));
+            result += string.Format("<img src=\"{0}\" class=\"img-fluid p-1\"/>", Client.CurrentSkin.GetImageUrl(c));
         }
         result += "</div>";
 
@@ -170,7 +170,7 @@
         var result = "";
         if (Client.Game.WhiteCache.Count > 0)
         {
-            result += Skin.Current.Format("<h4>{0} cards: {1} on deck</h4>", Faction.White, Client.Game.WhiteCache.Count);
+            result += Client.CurrentSkin.Format("<h4>{0} cards: {1} on deck</h4>", Faction.White, Client.Game.WhiteCache.Count);
 
             if (Client.Faction == Faction.White)
             {
@@ -185,12 +185,12 @@
     {
         var result = "";
 
-        result += Skin.Current.Format("<h4>{0} Cards: {1} on deck</h4>", Concept.Resource, Client.Game.ResourceCardDeck.Items.Count);
+        result += Client.CurrentSkin.Format("<h4>{0} Cards: {1} on deck</h4>", Concept.Resource, Client.Game.ResourceCardDeck.Items.Count);
 
         if (Client.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Client.Game.HasResourceDeckPrescience(Client.Player) && Client.Game.ResourceCardDeck.Top != null)
         {
             result += "<p>Top Card:</p>";
-            result += Popup.Get(Client.Game.ResourceCardDeck.Top);
+            result += Client.CurrentSkin.GetPopup(Client.Game.ResourceCardDeck.Top);
         }
 
         return result;
@@ -210,7 +210,7 @@
             }
             else
             {
-                result += Popup.Get(Client.Game.LatestSpiceCardA);
+                result += Client.CurrentSkin.GetPopup(Client.Game.LatestSpiceCardA);
             }
         }
 
@@ -223,7 +223,7 @@
 
         if (Client.Game.Applicable(Rule.IncreasedResourceFlow))
         {
-            result += Skin.Current.Format("<h4>Discard pile B: {0} cards</h4>", Client.Game.ResourceCardDiscardPileB.Items.Count);
+            result += Client.CurrentSkin.Format("<h4>Discard pile B: {0} cards</h4>", Client.Game.ResourceCardDiscardPileB.Items.Count);
             if (Client.Game.LatestSpiceCardB != null)
             {
                 if (Client.Game.AssistedNotekeepingEnabled(Player))
@@ -232,7 +232,7 @@
                 }
                 else
                 {
-                    result += Popup.Get(Client.Game.LatestSpiceCardB);
+                    result += Client.CurrentSkin.GetPopup(Client.Game.LatestSpiceCardB);
                 }
             }
         }

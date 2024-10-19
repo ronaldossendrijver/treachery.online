@@ -82,7 +82,7 @@ else
 
         if (Shown != null)
         {
-            Src = Skin.Current.GetImageUrl(Shown);
+            Src = Client.CurrentSkin.GetImageUrl(Shown);
             PopoverAsTooltip = !ShownHasRichPopover;
             Popover = GetShownPopover();
         }
@@ -120,17 +120,17 @@ else
         return Shown switch
         {
             null => "",
-            TreacheryCard tc => Popup.Get(tc),
-            ResourceCard rc => Popup.Get(rc),
-            IHero h => Game != null ? Popup.Get(h, Game) : Popup.Get(h),
-            LeaderSkill ls => Popup.Get(ls),
-            TechToken tt => Popup.Get(tt),
-            StrongholdAdvantage loc => Popup.Get(loc),
+            TreacheryCard tc => Client.CurrentSkin.GetPopup(tc),
+            ResourceCard rc => Client.CurrentSkin.GetPopup(rc),
+            IHero h => Game != null ? Client.CurrentSkin.GetPopup(h, Game) : Client.CurrentSkin.GetPopup(h),
+            LeaderSkill ls => Client.CurrentSkin.GetPopup(ls),
+            TechToken tt => Client.CurrentSkin.GetPopup(tt),
+            StrongholdAdvantage loc => Client.CurrentSkin.GetPopup(loc),
 
-            TerrorType terr => Skin.Current.GetTerrorTypeDescription(terr),
-            Ambassador amb => Skin.Current.GetAmbassadorDescription(amb),
+            TerrorType terr => Client.CurrentSkin.GetTerrorTypeDescription(terr),
+            Ambassador amb => Client.CurrentSkin.GetAmbassadorDescription(amb),
 
-            _ => Skin.Current.Describe(Shown)
+            _ => Client.CurrentSkin.Describe(Shown)
         };
     }
 

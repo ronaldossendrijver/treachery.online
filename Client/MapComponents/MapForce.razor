@@ -50,8 +50,8 @@
     {
         base.OnParametersSet();
 
-        if (Diameter == 0) Diameter = 2 * Skin.Current.FORCETOKEN_RADIUS;
-        if (Font == "") Font = Skin.Current.FORCETOKEN_FONT;
+        if (Diameter == 0) Diameter = 2 * Client.CurrentSkin.FORCETOKEN_RADIUS;
+        if (Font == "") Font = Client.CurrentSkin.FORCETOKEN_FONT;
 
         _attributes = new Dictionary<string, object>();
 
@@ -81,17 +81,17 @@
         }
     }
 
-    private string ForceURL => Special ? Skin.Current.GetFactionSpecialForceImageURL(Faction) : Skin.Current.GetFactionForceImageURL(Faction);
+    private string ForceURL => Special ? Client.CurrentSkin.GetFactionSpecialForceImageURL(Faction) : Client.CurrentSkin.GetFactionForceImageURL(Faction);
 
-    private string ShadowColor => Threatened ? "red" : Skin.Current.SHADOW;
+    private string ShadowColor => Threatened ? "red" : Client.CurrentSkin.SHADOW;
 
     private float ShadowSize => Threatened ? 1f : 0.5f;
 
     private float ShadowBlur => Threatened ? 1f : 0.5f;
 
-    private string BorderColor => Threatened ? "red" : Skin.Current.FORCETOKEN_FONT_BORDERCOLOR;
+    private string BorderColor => Threatened ? "red" : Client.CurrentSkin.FORCETOKEN_FONT_BORDERCOLOR;
 
-    private int BorderWidth => Threatened ? 2 * Skin.Current.FORCETOKEN_FONT_BORDERWIDTH : Skin.Current.FORCETOKEN_FONT_BORDERWIDTH;
+    private int BorderWidth => Threatened ? 2 * Client.CurrentSkin.FORCETOKEN_FONT_BORDERWIDTH : Client.CurrentSkin.FORCETOKEN_FONT_BORDERWIDTH;
 
     private string PointerType => ShowPopover ? "" : "pointer-events:none";
 

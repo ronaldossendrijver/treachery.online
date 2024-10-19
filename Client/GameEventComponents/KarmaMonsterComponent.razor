@@ -11,14 +11,14 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to make @Skin.Current.Describe(Concept.Monster) appear in a territory of choice</Header>
+    <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to make @Client.CurrentSkin.Describe(Concept.Monster) appear in a territory of choice</Header>
     <Body>
 
         <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="KarmaMonster.ValidTargets(Game).OrderBy(t => Name(t))">
             <Label>Territory</Label>
         </SelectComponent>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Karma)" ConfirmError="@Validation" />
 
     </Body>
 

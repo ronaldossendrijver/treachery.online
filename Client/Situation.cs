@@ -6,22 +6,27 @@ public class Situation
     private Game _game;
     public int _eventCount;
 
-    public bool RequiresUpdate(Game game)
+    public bool RequiresUpdate(IGameService service)
     {
-        var latestEvent = game.LatestEvent();
+        var latestEvent = service.Game.LatestEvent();
 
-        var result = _skin == null || Skin.Current == null || _skin != Skin.Current || _game == null || game == null || _game != game;
+        var result = _skin == null || 
+                     service.CurrentSkin == null || 
+                     _skin != service.CurrentSkin || 
+                     _game == null || 
+                     service.Game == null || 
+                     _game != service.Game;
 
         if (!result)
         {
-            result = _eventCount != game.EventCount;
+            result = _eventCount != service.Game.EventCount;
 
             if (result) result = latestEvent is not AllyPermission;
         }
 
-        _skin = Skin.Current;
-        _game = game;
-        _eventCount = game.EventCount;
+        _skin = service.CurrentSkin;
+        _game = service.Game;
+        _eventCount = service.Game.EventCount;
 
         return result;
     }

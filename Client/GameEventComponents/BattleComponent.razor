@@ -21,17 +21,17 @@
             Opponent forces: 
             @if (Opponent.ForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Skin.Current.GetFactionForceImageURL(Opponent.Faction)" width=30 height="30"/>
+                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageURL(Opponent.Faction)" width=30 height="30"/>
                 <span>&nbsp;<strong>@Opponent.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
             }
             @if (Opponent.HasAlly && Opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Skin.Current.GetFactionForceImageURL(Opponent.Ally)" width=30 height="30"/>
+                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageURL(Opponent.Ally)" width=30 height="30"/>
                 <span>&nbsp;<strong>@Opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
             }
             @if (Opponent.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Skin.Current.GetFactionSpecialForceImageURL(Opponent.Faction)" width=30 height="30"/>
+                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageURL(Opponent.Faction)" width=30 height="30"/>
                 
                 @if (Opponent.Faction != Faction.White) {
 
@@ -40,7 +40,7 @@
             }
             @if (Opponent.HasAlly && Opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Skin.Current.GetFactionSpecialForceImageURL(Opponent.Ally)" width=30 height="30"/>
+                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageURL(Opponent.Ally)" width=30 height="30"/>
 
                 @if (Opponent.Ally != Faction.White)
                 {
@@ -75,11 +75,11 @@
         {
             @if (Faction == Faction.Blue || Player.Ally == Faction.Blue)
             {
-                <div class="text-success mt-1">Your opponent @(Game.CurrentVoice.Must? "must use" : "may not use") @Skin.Current.Describe(Game.CurrentVoice.Type).</div>
+                <div class="text-success mt-1">Your opponent @(Game.CurrentVoice.Must? "must use" : "may not use") @Client.CurrentSkin.Describe(Game.CurrentVoice.Type).</div>
             }
             else
             {
-                <div class="text-warning mt-1">You @(Game.CurrentVoice.Must? "must use" : "may not use") @Skin.Current.Describe(Game.CurrentVoice.Type).</div>
+                <div class="text-warning mt-1">You @(Game.CurrentVoice.Must? "must use" : "may not use") @Client.CurrentSkin.Describe(Game.CurrentVoice.Type).</div>
             }
         }
 
@@ -162,13 +162,13 @@
                     var maxAllyResources = Battle.MaxAllyResources(Game, Player, forces, specialForces);
                     var maxTotalResources = Math.Min(forces + specialForces, maxResources + maxAllyResources);
 
-                    <SelectResourcesComponent @bind-Value=@resources Min=0 Max=@maxTotalResources Title=@Skin.Current.Format("{0} used to support forces", Concept.Resource)/> <span>&nbsp;</span>
+                    <SelectResourcesComponent @bind-Value=@resources Min=0 Max=@maxTotalResources Title=@Client.CurrentSkin.Format("{0} used to support forces", Concept.Resource)/> <span>&nbsp;</span>
 
                     var maxPaidByAlly = Math.Min(maxAllyResources, resources);
 
                     @if (Player.Ally == Faction.Brown && maxPaidByAlly > 0)
                     {
-                        <SelectResourcesFromFactionComponent @bind-Value=@resourcesFromAlly Min=0 Max=@maxPaidByAlly Faction="Player.Ally" Title=@Skin.Current.Format("{0} paid by your ally", Concept.Resource) />
+                        <SelectResourcesFromFactionComponent @bind-Value=@resourcesFromAlly Min=0 Max=@maxPaidByAlly Faction="Player.Ally" Title=@Client.CurrentSkin.Format("{0} paid by your ally", Concept.Resource) />
                     }
                     else
                     {
@@ -225,7 +225,7 @@
         {
             <div class="mt-2">
                 <RadioComponent @bind-Value="messiah" Values="@(new[] {false,true})" ValueLabels="@(new[] {"No","Yes"})">
-                    <Label>Should <img class="img-fluid" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> join the fight?</Label>
+                    <Label>Should <img class="img-fluid" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" /> join the fight?</Label>
                 </RadioComponent>
             </div>
         }
@@ -236,7 +236,7 @@
         
         @if (Battle.MaxBankerBoost(Game, Player, hero) > 0)
         {
-            <SelectResourcesComponent @bind-Value="bankerBoost" Min="0" Max="Battle.MaxBankerBoost(Game, Player, hero)" Label="@Skin.Current.Format("Boost {0} {1} with {2}?", Skin.Current.Describe(LeaderSkill.Banker), hero, Concept.Resource)"/>
+            <SelectResourcesComponent @bind-Value="bankerBoost" Min="0" Max="Battle.MaxBankerBoost(Game, Player, hero)" Label="@Client.CurrentSkin.Format("Boost {0} {1} with {2}?", Client.CurrentSkin.Describe(LeaderSkill.Banker), hero, Concept.Resource)"/>
         }
         else
         {
@@ -372,10 +372,10 @@
     {
         switch (aspect)
         {
-            case PrescienceAspect.Defense: return plan.Defense == null || (!showEverything && !plan.Defense.IsDefense) ? "" : Popup.Get(plan.Defense);
-            case PrescienceAspect.Weapon: return plan.Weapon == null || (!showEverything && !plan.Weapon.IsWeapon) ? "" : Popup.Get(plan.Weapon);
+            case PrescienceAspect.Defense: return plan.Defense == null || (!showEverything && !plan.Defense.IsDefense) ? "" : Client.CurrentSkin.GetPopup(plan.Defense);
+            case PrescienceAspect.Weapon: return plan.Weapon == null || (!showEverything && !plan.Weapon.IsWeapon) ? "" : Client.CurrentSkin.GetPopup(plan.Weapon);
             case PrescienceAspect.Dial: return "";
-            case PrescienceAspect.Leader: return plan.Hero == null ? "" : Popup.Get(plan.Hero, Game);
+            case PrescienceAspect.Leader: return plan.Hero == null ? "" : Client.CurrentSkin.GetPopup(plan.Hero, Game);
         }
 
         return "?";

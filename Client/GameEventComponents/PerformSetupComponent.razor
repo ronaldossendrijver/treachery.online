@@ -12,19 +12,19 @@
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>
-        Set <FactionComponent Faction="CurrentFaction"/> initial @Skin.Current.Describe(Concept.Resource) and forces.
+        Set <FactionComponent Faction="CurrentFaction"/> initial @Client.CurrentSkin.Describe(Concept.Resource) and forces.
     </Header>
 
     <Body>
 
-        <SelectResourcesComponent @bind-Value="resources" Min="0" Max="100" Label="@Skin.Current.Describe(Concept.Resource)" />
+        <SelectResourcesComponent @bind-Value="resources" Min="0" Max="100" Label="@Client.CurrentSkin.Describe(Concept.Resource)" />
 
         <div class="mt-1">Initial forces on planet (you may use the planet map):</div>
-        <div class="small">Add / Remove @Skin.Current.Describe(currentPlayer.Force): <ClickHintComponent Button="ClickHintButton.LMB" /> / <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.SHIFT" /></div>
+        <div class="small">Add / Remove @Client.CurrentSkin.Describe(currentPlayer.Force): <ClickHintComponent Button="ClickHintButton.LMB" /> / <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.SHIFT" /></div>
 
         @if (currentPlayer.HasSpecialForces && !currentPlayer.Is(Faction.White))
         {
-            <div class="small">Add / Remove @Skin.Current.Describe(currentPlayer.SpecialForce): <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL" /> / <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL | ClickHintModifier.SHIFT" /></div>
+            <div class="small">Add / Remove @Client.CurrentSkin.Describe(currentPlayer.SpecialForce): <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL" /> / <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL | ClickHintModifier.SHIFT" /></div>
         }
 
         <ForceSelectionComponent Game="Client.Game" Player="currentPlayer" OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="20" FixedMaxSpecialForces="MaxSpecialForces" AllowMultipleTerritories="true"/>
@@ -110,7 +110,7 @@
         }
     }
 
-    private IEnumerable<Location> ValidLocations => Game.Map.Locations(false).OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l));
+    private IEnumerable<Location> ValidLocations => Game.Map.Locations(false).OrderByDescending(l => l.IsStronghold).ThenBy(l => Client.CurrentSkin.Describe(l));
 
     protected int Forces(Location l, bool special)
     {

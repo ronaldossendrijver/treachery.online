@@ -229,14 +229,14 @@ public partial class GameHub
                 history += "<ul>";
                 foreach (var evt in whatHappened.Where(e => e is not EstablishPlayers))
                 {
-                    history += $"<li>{evt.GetShortMessage().ToString(Skin.Current)}</li>";
+                    history += $"<li>{evt.GetShortMessage().ToString(DefaultSkin.Default)}</li>";
                 }
                 history += "</ul>";
             }
             
             var turnInfo = game.Game.CurrentTurn == 0 ? 
                 "Setting up a new game" : 
-                Skin.Current.Format("Turn: {0}, phase: {1}", game.Game.CurrentTurn, game.Game.CurrentPhase);
+                DefaultSkin.Default.Format("Turn: {0}, phase: {1}", game.Game.CurrentTurn, game.Game.CurrentPhase);
             
             await using var context = GetDbContext();
 
@@ -252,7 +252,7 @@ public partial class GameHub
 
                 var status = GameStatus.DetermineStatus(game.Game, player, true);
                 
-                var statusInfo = status.GetMessage(player, game.Game.IsHost(userId)).ToString(Skin.Current);
+                var statusInfo = status.GetMessage(player, game.Game.IsHost(userId)).ToString(DefaultSkin.Default);
 
                 var waitingFor = status.WaitingForHost ? "Players are waiting for the host to continue the game " + nl :
                     status.WaitingForPlayers.Any() ? "Waiting for: " + string.Join(", ", status.WaitingForPlayers.Select(p => p.Name)) + nl : string.Empty;

@@ -230,7 +230,7 @@
 //             if (denyMessage == "")
 //             {
 //                 var data = GameState.GetStateAsString(client.Game);
-//                 var skin = Skin.Current.SkinToString();
+//                 var skin = Client.CurrentSkin.SkinToString();
 //                 await connection.SendAsync("LoadGame", gameID, data, e.Name, skin);
 //             }
 //         }
@@ -265,7 +265,7 @@
 //             await connection.SendAsync("RespondObserverRejoined", gameID, playerConnectionId, HostID, denyMessage);
 //             if (!JoinedObservers.Contains(e.Name)) JoinedObservers.Add(e.Name);
 //             var data = GameState.GetStateAsString(client.Game);
-//             var skin = Skin.Current.SkinToString();
+//             var skin = Client.CurrentSkin.SkinToString();
 //             await connection.SendAsync("LoadGame", gameID, data, e.Name, skin);
 //         }
 //         catch (Exception ex)
@@ -313,7 +313,7 @@
 //             if (result == null)
 //                 await connection.SendAsync("NotifyUpdate", gameID, gameAtHost.EventCount, e);
 //             else
-//                 Support.Log(result.ToString(Skin.Current));
+//                 Support.Log(result.ToString(Client.CurrentSkin));
 //         }
 //         catch (Exception ex)
 //         {

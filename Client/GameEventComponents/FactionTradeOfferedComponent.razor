@@ -27,5 +27,5 @@
 
     protected override FactionTradeOffered ConfirmedResult => new(Game, Faction) { Target = target };
 
-    private string ConfirmText => Game.Players.Any(p => p.Faction == target) ? Skin.Current.Format("Offer Trade with {0}", target) : Skin.Current.Format("Pick {0}", target);
+    private string ConfirmText => Game.Players.Any(p => p.Faction == target) ? Client.CurrentSkin.Format("Offer Trade with {0}", target) : Client.CurrentSkin.Format("Pick {0}", target);
 }

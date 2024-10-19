@@ -10,7 +10,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to prevent revival</Header>
+    <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to prevent revival</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="target" Values="KarmaRevivalPrevention.GetValidTargets(Game, Player)" Required="true" ImageWidth="40">

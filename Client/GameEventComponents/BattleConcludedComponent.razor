@@ -21,8 +21,8 @@
             var maxReplacementForces = BattleConcluded.ValidMaxReplacementForceAmount(Game, forceSupplier);
             if (maxReplacementForces > 0)
             {
-                <label>How many <Image Shown=@forceSupplier.SpecialForce Width=20/> losses should be exchanged with <Image Shown=@forceSupplier.Force Width="20"/>?</label>
-                <SelectForcesComponent @bind-Value="replacementAmount" Min="0" Max="maxReplacementForces" Faction=@forceSupplier.Faction Special="true" />
+                <label>How many <Image Shown="@forceSupplier.SpecialForce" Width="20"/> losses should be exchanged with <Image Shown="@forceSupplier.Force" Width="20"/>?</label>
+                <SelectForcesComponent @bind-Value="@replacementAmount" Min="0" Max="maxReplacementForces" Faction="@forceSupplier.Faction" Special="true" />
             }
             else
             {
@@ -41,24 +41,24 @@
 
                     if (discardableMercenary != null)
                     {
-                        <CheckboxComponent @bind-Value="discardMercenary">@Skin.Current.Describe(discardableMercenary)</CheckboxComponent>
+                        <CheckboxComponent @bind-Value="discardMercenary">@Client.CurrentSkin.Describe(discardableMercenary)</CheckboxComponent>
                     }
 
                     if (discardableWeapon != null)
                     {
-                        <CheckboxComponent @bind-Value="discardWeapon">@Skin.Current.Describe(discardableWeapon)</CheckboxComponent>
+                        <CheckboxComponent @bind-Value="discardWeapon">@Client.CurrentSkin.Describe(discardableWeapon)</CheckboxComponent>
                     }
 
                     if (discardableDefense != null)
                     {
-                        <CheckboxComponent @bind-Value="discardDefense">@Skin.Current.Describe(discardableDefense)</CheckboxComponent>
+                        <CheckboxComponent @bind-Value="discardDefense">@Client.CurrentSkin.Describe(discardableDefense)</CheckboxComponent>
                     }
                 }
             }
 
             if (BattleConcluded.MayCaptureOrKill(Game, Player))
             {
-                <div>Our troops captured <Image Shown=@Game.BlackVictim Popover=@Popup.Get(Game.BlackVictim, Game) Class="img-float" Width="50"/></div>
+                <div>Our troops captured <Image Shown=@Game.BlackVictim Popover=@Client.CurrentSkin.GetPopup(Game.BlackVictim, Game) Class="img-float" Width="50"/></div>
                 <RadioComponent @bind-Value="captureDecision" Values="@BattleConcluded.ValidCaptureDecisions(Game)">
                         <Label>What are your orders, keep or kill?</Label>
                  </RadioComponent>
@@ -89,7 +89,7 @@
             if (Game.TraitorsDeciphererCanLookAt.Any())
             {
                 <SelectFromImageComponent Game="Game" @bind-Value="selectedNewTraitor" Values="Game.TraitorsDeciphererCanLookAt" Required="false" ImageWidth="80">
-                    <Label>@Skin.Current.Describe(LeaderSkill.Decipherer) shows you the following leaders from the traitor deck:</Label>
+                    <Label>@Client.CurrentSkin.Describe(LeaderSkill.Decipherer) shows you the following leaders from the traitor deck:</Label>
                 </SelectFromImageComponent>
 
                 @if (Game.DeciphererMayReplaceTraitor)
@@ -224,5 +224,5 @@
 
     private Player Loser => Game.GetPlayer(Game.BattleLoser);
 
-    private string ConfirmLabel => traitorToReplace == null ? "Conclude Battle" : Skin.Current.Format("Conclude Battle and Reveal & Replace {0}", traitorToReplace);
+    private string ConfirmLabel => traitorToReplace == null ? "Conclude Battle" : Client.CurrentSkin.Format("Conclude Battle and Reveal & Replace {0}", traitorToReplace);
 }

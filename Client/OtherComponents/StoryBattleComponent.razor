@@ -29,7 +29,7 @@
 
             <tr class="table-dark" style="@BackgroundStyle(AggressorBattle.Initiator)">
                 <td>
-                    <img class="img-fluid p-1" width="60" src="@Skin.Current.GetFactionTableImageURL(AggressorBattle.Initiator)" />
+                    <img class="img-fluid p-1" width="60" src="@Client.CurrentSkin.GetFactionTableImageURL(AggressorBattle.Initiator)" />
 
                     @if (AggressorBattle.Initiator == Game.BattleWinner)
                     {
@@ -42,12 +42,12 @@
 
                 <td>
                     @if (AggressorBattle.Hero != null) {
-                        <Image Shown=@AggressorBattle.Hero Popover=@Popup.Get(AggressorBattle.Hero, Game) Class="img-fluid p-1" Width=60/>
+                        <Image Shown=@AggressorBattle.Hero Popover=@Client.CurrentSkin.GetPopup(AggressorBattle.Hero, Game) Class="img-fluid p-1" Width=60/>
                     }
 
                     @if (AggressorBattle.Messiah)
                     {
-                        <img class="img-fluid p-1" width=60 src="@Skin.Current.Messiah_URL" title=@Skin.Current.Describe(Concept.Messiah) />
+                        <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" title=@Client.CurrentSkin.Describe(Concept.Messiah) />
                     }
 
                 </td>
@@ -74,7 +74,7 @@
 
             <tr class="table-dark" style="@BackgroundStyle(DefenderBattle.Initiator)">
                 <td>
-                    <img class="img-fluid p-1" width="60" src="@Skin.Current.GetFactionTableImageURL(DefenderBattle.Initiator)" />
+                    <img class="img-fluid p-1" width="60" src="@Client.CurrentSkin.GetFactionTableImageURL(DefenderBattle.Initiator)" />
 
                     @if (DefenderBattle.Initiator == Game.BattleWinner)
                     {
@@ -87,12 +87,12 @@
 
                 <td>
                     @if (DefenderBattle.Hero != null) {
-                        <Image Shown=@DefenderBattle.Hero Popover=@Popup.Get(DefenderBattle.Hero, Game) Class="img-fluid p-1" Width=60/>
+                        <Image Shown=@DefenderBattle.Hero Popover=@Client.CurrentSkin.GetPopup(DefenderBattle.Hero, Game) Class="img-fluid p-1" Width=60/>
                     }
 
                     @if (DefenderBattle.Messiah)
                     {
-                        <img class="img-fluid p-1" width=60 src="@Skin.Current.Messiah_URL" title=@Skin.Current.Describe(Concept.Messiah) />
+                        <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" title=@Client.CurrentSkin.Describe(Concept.Messiah) />
                     }
                 </td>
 

@@ -10,7 +10,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @Skin.Current.Describe(LeaderSkill.Planetologist) to move 1 extra territory or move two force groups to the same territory?</Header>
+    <Header>Use @Client.CurrentSkin.Describe(LeaderSkill.Planetologist) to move 1 extra territory or move two force groups to the same territory?</Header>
     <Body>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="1 extra territory" Other="Other" OtherText="2 force groups" ConfirmError="@Validation" />
@@ -29,6 +29,6 @@
     {
         base.OnParametersSet();
 
-        BackgroundImage = Skin.Current.GetImageUrl(LeaderSkill.Planetologist);
+        BackgroundImage = Client.CurrentSkin.GetImageUrl(LeaderSkill.Planetologist);
     }
 }

@@ -9,20 +9,19 @@
 
 namespace Treachery.Shared;
 
-public class Location : IIdentifiable
+public class Location(int id) : IIdentifiable
 {
     public virtual int Sector { get; set; }
 
-    private Territory _territory;
-
-    public virtual Territory Territory
+    private readonly Territory _territory;
+    public Territory Territory
     {
         get => _territory;
-        set
+        init
         {
             _territory = value;
-
-            if (value != null) _territory.AddLocation(this);
+            if (value != null) 
+                _territory.AddLocation(this);
         }
     }
 
@@ -32,16 +31,11 @@ public class Location : IIdentifiable
 
     public string Orientation { get; set; } = "";
 
-    public virtual int SpiceBlowAmount { get; set; } = 0;
+    public int SpiceBlowAmount { get; set; } = 0;
 
-    public virtual DiscoveryTokenType DiscoveryTokenType { get; set; } = DiscoveryTokenType.None;
+    public DiscoveryTokenType DiscoveryTokenType { get; set; } = DiscoveryTokenType.None;
 
-    public Location(int id)
-    {
-        Id = id;
-    }
-
-    public int Id { get; set; }
+    public int Id { get; } = id;
 
     public bool IsStronghold => Territory.IsStronghold;
 
@@ -65,6 +59,7 @@ public class Location : IIdentifiable
     {
         if (Message.DefaultDescriber != null)
             return Message.DefaultDescriber.Describe(this) + "*";
+        
         return base.ToString();
     }
 }

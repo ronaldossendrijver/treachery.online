@@ -50,9 +50,9 @@
                                 var validity = offer.Acceptance(Faction).Validate();
 
                                 <tr class="table-dark">
-                                    <td><img width=24 src="@Skin.Current.GetImageUrl(offer.Initiator)" /></td>
+                                    <td><img width=24 src="@Client.CurrentSkin.GetImageUrl(offer.Initiator)" /></td>
                                     <td>@offer.Price</td>
-                                    <td class="text-break">@offer.GetDealDescription().ToString(Skin.Current)</td>
+                                    <td class="text-break">@offer.GetDealDescription().ToString(Client.CurrentSkin)</td>
                                     <td>
                                         <button class="btn btn-primary btn-sm" @onclick="e => Accept(offerToShow)" disabled=@(validity != null)>Accept</button>
                                     </td>
@@ -64,9 +64,9 @@
                                 var offerToShow = offer;
 
                                 <tr class="table-dark">
-                                    <td><img width=24 src="@Skin.Current.GetImageUrl(offer.Initiator)" /></td>
+                                    <td><img width=24 src="@Client.CurrentSkin.GetImageUrl(offer.Initiator)" /></td>
                                     <td>@offer.Price</td>
-                                    <td class="text-break">@offer.GetDealDescription().ToString(Skin.Current)</td>
+                                    <td class="text-break">@offer.GetDealDescription().ToString(Client.CurrentSkin)</td>
                                     <td>
                                         <button class="btn btn-primary btn-sm" @onclick="e => Cancel(offerToShow)">Withdraw</button>
                                     </td>
@@ -88,11 +88,11 @@
                             {
                                 <tr class="table-dark">
                                     <td class="p-0">
-                                        <img width=24 src="@Skin.Current.GetImageUrl(deal.BoundFaction)" />
+                                        <img width=24 src="@Client.CurrentSkin.GetImageUrl(deal.BoundFaction)" />
                                         ⇒
-                                        <img width=24 src="@Skin.Current.GetImageUrl(deal.ConsumingFaction)" />
+                                        <img width=24 src="@Client.CurrentSkin.GetImageUrl(deal.ConsumingFaction)" />
                                     </td>
-                                    <td class="text-break">@deal.DealContentsDescription(Game).ToString(Skin.Current)</td>
+                                    <td class="text-break">@deal.DealContentsDescription(Game).ToString(Client.CurrentSkin)</td>
                                 </tr>
                             }
                         </tbody>

@@ -10,7 +10,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsed="CollapseState.Collapsed">
 
-    <Header>Give @Skin.Current.Describe(Concept.Resource) to a faction</Header>
+    <Header>Give @Client.CurrentSkin.Describe(Concept.Resource) to a faction</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="target" Values="Targets" Required="true" ImageWidth="40" />
@@ -33,7 +33,7 @@
         @if (Client.IsHost)
         {
             <CheckboxComponent @bind-Value="fromBank">
-                Host only: give from @Skin.Current.Describe(Concept.Resource) bank (you may select a negative amount to put that amount of @Skin.Current.Describe(Concept.Resource) from target faction in the bank)
+                Host only: give from @Client.CurrentSkin.Describe(Concept.Resource) bank (you may select a negative amount to put that amount of @Client.CurrentSkin.Describe(Concept.Resource) from target faction in the bank)
             </CheckboxComponent>
         }
         else

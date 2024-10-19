@@ -10,11 +10,11 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @ToUse to prevent a faction from playing @Skin.Current.Describe(TreacheryCardType.Karma) this phase?</Header>
+    <Header>Use @ToUse to prevent a faction from playing @Client.CurrentSkin.Describe(TreacheryCardType.Karma) this phase?</Header>
 
     <Body>
         <SelectFromImageComponent @bind-Value="target" Values="Game.PlayersOtherThan(Player)" Required="true" ImageWidth="40" />
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Prevent use of {0}", TreacheryCardType.Karma)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Prevent use of {0}", TreacheryCardType.Karma)" ConfirmError="@Validation" />
     </Body>
 
 </GameEventComponentLayout>
@@ -23,11 +23,11 @@
 
     protected override Faction IsFactionSpecific => Faction.Brown;
 
-    protected override string Background => Skin.Current.GetImageUrl(BrownKarmaPrevention.CardToUse(Player));
+    protected override string Background => Client.CurrentSkin.GetImageUrl(BrownKarmaPrevention.CardToUse(Player));
 
     private Faction target;
 
     protected override BrownKarmaPrevention ConfirmedResult => new(Game, Faction) { Target = target };
 
-    private string ToUse => BrownKarmaPrevention.CardToUse(Player) != null ? Skin.Current.Describe(BrownKarmaPrevention.CardToUse(Player)) : "Nexus Cunning";
+    private string ToUse => BrownKarmaPrevention.CardToUse(Player) != null ? Client.CurrentSkin.Describe(BrownKarmaPrevention.CardToUse(Player)) : "Nexus Cunning";
 }

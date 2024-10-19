@@ -10,7 +10,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>How much of your @Skin.Current.Describe(Concept.Resource) may non-allied factions use for bidding?</Header>
+    <Header>How much of your @Client.CurrentSkin.Describe(Concept.Resource) may non-allied factions use for bidding?</Header>
     <Body>
 
         @foreach (var faction in amounts.Keys)

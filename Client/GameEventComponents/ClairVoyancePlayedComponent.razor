@@ -55,14 +55,14 @@
 
             case ClairvoyanceQuestion.WillAttackX:
                 <SelectComponent @bind-Value="questionParameterA" 
-                        Values="Game.Map.Territories(true).OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l)).Select(l => l.Id).Cast<object>()"
-                                 ValueLabels="Game.Map.Territories(true).OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l)).Select(l => Skin.Current.Describe(l))">
+                        Values="Game.Map.Territories(true).OrderByDescending(l => l.IsStronghold).ThenBy(l => Client.CurrentSkin.Describe(l)).Select(l => l.Id).Cast<object>()"
+                                 ValueLabels="Game.Map.Territories(true).OrderByDescending(l => l.IsStronghold).ThenBy(l => Client.CurrentSkin.Describe(l)).Select(l => Client.CurrentSkin.Describe(l))">
                     <Label>Territory</Label>
                 </SelectComponent>
                 break;
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.Clairvoyance)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Clairvoyance)" ConfirmError="@Validation" />
 
     </Body>
 
@@ -93,6 +93,6 @@
 
     private string ToLabel(ClairvoyanceQuestion q)
     {
-        return ClairVoyancePlayed.Express(q).ToString(Skin.Current);
+        return ClairVoyancePlayed.Express(q).ToString(Client.CurrentSkin);
     }
 }

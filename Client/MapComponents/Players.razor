@@ -23,21 +23,21 @@
             }
 
             var position = PlayerTokenPosition(Game, p.Seat);
-            var x = position.X - radiusModifier * Skin.Current.PlayerTokenRadius;
-            var y = position.Y - radiusModifier * Skin.Current.PlayerTokenRadius;
-            var factionTokenDiameter = radiusModifier * Skin.Current.PlayerTokenRadius * 2;
+            var x = position.X - radiusModifier * Client.CurrentSkin.PlayerTokenRadius;
+            var y = position.Y - radiusModifier * Client.CurrentSkin.PlayerTokenRadius;
+            var factionTokenDiameter = radiusModifier * Client.CurrentSkin.PlayerTokenRadius * 2;
             var positionSector = (float)Math.Floor((float)p.Seat * Map.NUMBER_OF_SECTORS / Game.MaximumPlayers);
 
-            <Circle X="@position.X" Y="@position.Y" Radius="@(1.35f * Skin.Current.PlayerTokenRadius)" FillColor="@Skin.Current.TABLEPOSITION_BACKGROUNDCOLOR" />
+            <Circle X="@position.X" Y="@position.Y" Radius="@(1.35f * Client.CurrentSkin.PlayerTokenRadius)" FillColor="@Client.CurrentSkin.TABLEPOSITION_BACKGROUNDCOLOR" />
 
-            <MapImage X="@(x)" Y="@(y)" Diameter=@factionTokenDiameter Src="@Skin.Current.GetFactionTableImageURL(p.Faction)" 
-                   ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+            <MapImage X="@(x)" Y="@(y)" Diameter=@factionTokenDiameter Src="@Client.CurrentSkin.GetFactionTableImageURL(p.Faction)" 
+                   ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                    Popover="@Intel(p)"/>
 
             if (p.Ally != Faction.None)
             {
-                <MapImage X="@(position.X)" Y="@(position.Y + 0.25f * Skin.Current.PlayerTokenRadius)" Diameter=@(1.2f * Skin.Current.PlayerTokenRadius) Src="@Skin.Current.GetFactionTableImageURL(p.Ally)" 
-                       ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                <MapImage X="@(position.X)" Y="@(position.Y + 0.25f * Client.CurrentSkin.PlayerTokenRadius)" Diameter=@(1.2f * Client.CurrentSkin.PlayerTokenRadius) Src="@Client.CurrentSkin.GetFactionTableImageURL(p.Ally)" 
+                       ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                        Popover="@Intel(p.AlliedPlayer)"/>
             }
 
@@ -48,66 +48,66 @@
             {
                 positionOnCircle += 0.06f;
 
-                var homeworldXY = Pos(positionOnCircle, Skin.Current.PlayerTokenRadius);
+                var homeworldXY = Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius);
 
                 @if (Game.Applicable(Rule.Homeworlds)) 
                 {
                     <MapImage X=homeworldXY.X Y=@homeworldXY.Y
-                       Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                       Src="@Skin.Current.GetImageUrl(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
-                    Popover=@Popup.Get(homeworld) OnClick="e => OnClick(e, homeworld)" PopoverStyle="" />
+                       Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
+                       Src="@Client.CurrentSkin.GetImageUrl(homeworld.World)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
+                    Popover=@Client.CurrentSkin.GetPopup(homeworld) OnClick="e => OnClick(e, homeworld)" PopoverStyle="" />
 
                     if (Game.IsOccupied(homeworld.World))
                     {
                         var occupier = Game.OccupierOf(homeworld.World).Faction;
-                        var occupierMessage = Skin.Current.Format("Occupied by ", occupier);
+                        var occupierMessage = Client.CurrentSkin.Format("Occupied by ", occupier);
 
-                        <MapImage X=@(homeworldXY.X + 0.75f * Skin.Current.PlayerTokenRadius) Y=@(homeworldXY.Y + 1.5f * Skin.Current.PlayerTokenRadius)
-                                  Diameter=@(0.5f * Skin.Current.PlayerTokenRadius)
-                                  Src="@Skin.Current.GetFactionFacedownImageURL(occupier)" ShadowColor="white" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
+                        <MapImage X=@(homeworldXY.X + 0.75f * Client.CurrentSkin.PlayerTokenRadius) Y=@(homeworldXY.Y + 1.5f * Client.CurrentSkin.PlayerTokenRadius)
+                                  Diameter=@(0.5f * Client.CurrentSkin.PlayerTokenRadius)
+                                  Src="@Client.CurrentSkin.GetFactionFacedownImageURL(occupier)" ShadowColor="white" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
                                   Popover=@occupierMessage PopoverAsTooltip="true" />
                     }
                     else if (p.HasHighThreshold(homeworld.World))
                     {
-                        <MapImage X=@(homeworldXY.X + 0.75f * Skin.Current.PlayerTokenRadius) Y=@(homeworldXY.Y + 1.5f * Skin.Current.PlayerTokenRadius)
-                                  Diameter=@(0.5f * Skin.Current.PlayerTokenRadius)
-                                  Src="@Skin.Current.HighThreshold_URL" ShadowColor="white" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
+                        <MapImage X=@(homeworldXY.X + 0.75f * Client.CurrentSkin.PlayerTokenRadius) Y=@(homeworldXY.Y + 1.5f * Client.CurrentSkin.PlayerTokenRadius)
+                                  Diameter=@(0.5f * Client.CurrentSkin.PlayerTokenRadius)
+                                  Src="@Client.CurrentSkin.HighThreshold_URL" ShadowColor="white" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
                                   Popover="High Threshold" PopoverAsTooltip="true" />
                     }
                     else if (p.HasLowThreshold(homeworld.World))
                     {
-                        <MapImage X=@(homeworldXY.X + 0.75f * Skin.Current.PlayerTokenRadius) Y=@(homeworldXY.Y + 1.5f * Skin.Current.PlayerTokenRadius)
-                                  Diameter=@(0.5f * Skin.Current.PlayerTokenRadius)
-                                  Src="@Skin.Current.LowThreshold_URL" ShadowColor="white" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
+                        <MapImage X=@(homeworldXY.X + 0.75f * Client.CurrentSkin.PlayerTokenRadius) Y=@(homeworldXY.Y + 1.5f * Client.CurrentSkin.PlayerTokenRadius)
+                                  Diameter=@(0.5f * Client.CurrentSkin.PlayerTokenRadius)
+                                  Src="@Client.CurrentSkin.LowThreshold_URL" ShadowColor="white" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
                                   Popover="Low Threshold" PopoverAsTooltip="true" />
                     }
                 }
                 else
                 {
                     <MapImage X=homeworldXY.X Y=@homeworldXY.Y
-                       Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                       Src="@Skin.Current.GetImageUrl(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
-                       Popover=@Skin.Current.Format("{0} Reserves", homeworld.Faction) PopoverAsTooltip="true"/>
+                       Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
+                       Src="@Client.CurrentSkin.GetImageUrl(homeworld.World)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
+                       Popover=@Client.CurrentSkin.Format("{0} Reserves", homeworld.Faction) PopoverAsTooltip="true"/>
                 }
 
                 if (Client.Status.HighlightedTerritories.Contains(homeworld.Territory))
                 {
-                    <Circle X=@(homeworldXY.X + Skin.Current.PlayerTokenRadius) Y=@(homeworldXY.Y + Skin.Current.PlayerTokenRadius) Radius=@Skin.Current.PlayerTokenRadius 
-                            FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" StrokeWidth="1" StrokeColor="red"/>
+                    <Circle X=@(homeworldXY.X + Client.CurrentSkin.PlayerTokenRadius) Y=@(homeworldXY.Y + Client.CurrentSkin.PlayerTokenRadius) Radius=@Client.CurrentSkin.PlayerTokenRadius 
+                            FillColor="@Client.CurrentSkin.HIGHLIGHT_OVERLAY_COLOR" StrokeWidth="1" StrokeColor="red"/>
                 }
 
-                var verticalSpaceRequired = Game.BattalionsIn(homeworld).Count() * Skin.Current.FORCETOKEN_RADIUS;
-                var reservesY = homeworldXY.Y + 0.5f * (2 * Skin.Current.PlayerTokenRadius - verticalSpaceRequired);
+                var verticalSpaceRequired = Game.BattalionsIn(homeworld).Count() * Client.CurrentSkin.FORCETOKEN_RADIUS;
+                var reservesY = homeworldXY.Y + 0.5f * (2 * Client.CurrentSkin.PlayerTokenRadius - verticalSpaceRequired);
 
                 foreach (var b in Game.BattalionsIn(homeworld)) {
 
-                    var horizontalSpaceRequired = (b.AmountOfForces > 0 && b.AmountOfSpecialForces > 0 ? 2 : 1) * Skin.Current.FORCETOKEN_RADIUS;
-                    var reservesX = homeworldXY.X + 0.5f * (2 * Skin.Current.PlayerTokenRadius - horizontalSpaceRequired);
+                    var horizontalSpaceRequired = (b.AmountOfForces > 0 && b.AmountOfSpecialForces > 0 ? 2 : 1) * Client.CurrentSkin.FORCETOKEN_RADIUS;
+                    var reservesX = homeworldXY.X + 0.5f * (2 * Client.CurrentSkin.PlayerTokenRadius - horizontalSpaceRequired);
 
                     if (b.AmountOfForces > 0)
                     {
                         forcesToDraw.Add(new MapForce { X = reservesX, Y = reservesY, Special = false, Amount = b.AmountOfForces, Faction = b.Faction });
-                        reservesX += Skin.Current.FORCETOKEN_RADIUS;
+                        reservesX += Client.CurrentSkin.FORCETOKEN_RADIUS;
                     }
 
                     if (b.AmountOfSpecialForces > 0)
@@ -115,7 +115,7 @@
                         forcesToDraw.Add(new MapForce { X = reservesX, Y = reservesY, Special = true, Amount = b.AmountOfSpecialForces, Faction = b.Faction });
                     }
 
-                    reservesY += Skin.Current.FORCETOKEN_RADIUS;
+                    reservesY += Client.CurrentSkin.FORCETOKEN_RADIUS;
                 }
 
                 positionOnCircle += 0.02f;
@@ -124,56 +124,56 @@
             foreach (var tt in p.TechTokens)
             {
                 positionOnCircle += TWOPI / 90;
-                <MapImage XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
-                       Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                       Src="@Skin.Current.GetImageUrl(tt)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                       Popover="@Popup.Get(tt)" PopoverStyle=""/>
+                <MapImage XY=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
+                       Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
+                       Src="@Client.CurrentSkin.GetImageUrl(tt)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                       Popover="@Client.CurrentSkin.GetPopup(tt)" PopoverStyle=""/>
             }
 
             if (p.Faction == Faction.Pink && Game.PinkLoyalLeader != null)
             {
                 positionOnCircle += TWOPI / 90;
 
-                <MapImage XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
-                       Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                       Src="@Skin.Current.GetImageUrl(Game.PinkLoyalLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
-                Popover=@Skin.Current.Format("{0} is Loyal to {1}", Game.PinkLoyalLeader, Faction.Pink) PopoverAsTooltip="true"/>
+                <MapImage XY=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
+                       Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
+                       Src="@Client.CurrentSkin.GetImageUrl(Game.PinkLoyalLeader)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
+                Popover=@Client.CurrentSkin.Format("{0} is Loyal to {1}", Game.PinkLoyalLeader, Faction.Pink) PopoverAsTooltip="true"/>
             }
                         
             foreach (var skilledLeader in Game.GetSkilledLeaders(p).Where(l => Game.IsInFrontOfShield(l))) {
 
                 positionOnCircle += TWOPI / 90;
 
-                <MapImage XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
-                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                        Src="@Skin.Current.GetImageUrl(skilledLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                        Popover="@Popup.Get(skilledLeader, Client.Game.Skill(skilledLeader))" PopoverStyle=""/>
+                <MapImage XY=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
+                        Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
+                        Src="@Client.CurrentSkin.GetImageUrl(skilledLeader)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                        Popover="@Client.CurrentSkin.GetPopup(skilledLeader, Client.Game.Skill(skilledLeader))" PopoverStyle=""/>
 
-                <MapText ToShow="@Skin.Current.Describe(Game.Skill(skilledLeader))"
+                <MapText ToShow="@Client.CurrentSkin.Describe(Game.Skill(skilledLeader))"
                         XY=@Pos(positionOnCircle)
-                        Font="@Skin.Current.SKILL_FONT" FontColor="@Skin.Current.SKILL_FONTCOLOR"
-                        BorderWidth="@Skin.Current.SKILL_FONT_BORDERWIDTH" BorderColor="@Skin.Current.SKILL_FONT_BORDERCOLOR"
-                        Align="@TextAlignment.Center" MaxWidth="3f * Skin.Current.PlayerTokenRadius"
-                        Popover="@Popup.Get(skilledLeader, Client.Game.Skill(skilledLeader))" PopoverStyle="" />
+                        Font="@Client.CurrentSkin.SKILL_FONT" FontColor="@Client.CurrentSkin.SKILL_FONTCOLOR"
+                        BorderWidth="@Client.CurrentSkin.SKILL_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.SKILL_FONT_BORDERCOLOR"
+                        Align="@TextAlignment.Center" MaxWidth="3f * Client.CurrentSkin.PlayerTokenRadius"
+                        Popover="@Client.CurrentSkin.GetPopup(skilledLeader, Client.Game.Skill(skilledLeader))" PopoverStyle="" />
             }
 
             if (p.Faction == Faction.Pink && p.Ambassadors.Any())
             {
                 positionOnCircle += TWOPI / 90;
 
-                var ambassadorXY = Pos(positionOnCircle, 0.5f * Skin.Current.PlayerTokenRadius);
-                var yOffset = -0.5f * p.Ambassadors.Count() * 0.2f * Skin.Current.PlayerTokenRadius;
+                var ambassadorXY = Pos(positionOnCircle, 0.5f * Client.CurrentSkin.PlayerTokenRadius);
+                var yOffset = -0.5f * p.Ambassadors.Count() * 0.2f * Client.CurrentSkin.PlayerTokenRadius;
                 var xOffset = 0f;
                 foreach (var a in p.Ambassadors)
                 {
                     <MapImage X=@(ambassadorXY.X + xOffset)
                               Y=@(ambassadorXY.Y + yOffset)
-                              Diameter=@(Skin.Current.PlayerTokenRadius)
-                              Src="@Skin.Current.GetImageUrl(a)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
-                              Popover=@Skin.Current.GetAmbassadorDescription(a) PopoverAsTooltip="true"/>
+                              Diameter=@(Client.CurrentSkin.PlayerTokenRadius)
+                              Src="@Client.CurrentSkin.GetImageUrl(a)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
+                              Popover=@Client.CurrentSkin.GetAmbassadorDescription(a) PopoverAsTooltip="true"/>
 
-                    yOffset += 0.2f * Skin.Current.PlayerTokenRadius;
-                    xOffset = xOffset == 0 ? 0.5f * Skin.Current.PlayerTokenRadius : 0;
+                    yOffset += 0.2f * Client.CurrentSkin.PlayerTokenRadius;
+                    xOffset = xOffset == 0 ? 0.5f * Client.CurrentSkin.PlayerTokenRadius : 0;
                 }
             }
 
@@ -181,14 +181,14 @@
             {
                 positionOnCircle += TWOPI / 90;
 
-                <MapImage XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) Src="@Skin.Current.FactionSpecialForceImage_URL[Faction.White]"
-                       ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
-                       Popover="@Skin.Current.Format("Latest revealed No-Field: {0}", Game.LatestRevealedNoFieldValue)" PopoverAsTooltip="true"/>
+                <MapImage XY=@Pos(positionOnCircle, Client.CurrentSkin.FORCETOKEN_RADIUS) Diameter=@(2 * Client.CurrentSkin.FORCETOKEN_RADIUS) Src="@Client.CurrentSkin.FactionSpecialForceImage_URL[Faction.White]"
+                       ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
+                       Popover="@Client.CurrentSkin.Format("Latest revealed No-Field: {0}", Game.LatestRevealedNoFieldValue)" PopoverAsTooltip="true"/>
 
                 <MapText ToShow="@Game.LatestRevealedNoFieldValue.ToString()"
                          XY=@Pos(positionOnCircle)
-                         Font="@Skin.Current.FORCETOKEN_FONT" FontColor="@Skin.Current.FORCETOKEN_FONTCOLOR"
-                         BorderWidth="@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR"
+                         Font="@Client.CurrentSkin.FORCETOKEN_FONT" FontColor="@Client.CurrentSkin.FORCETOKEN_FONTCOLOR"
+                         BorderWidth="@Client.CurrentSkin.FORCETOKEN_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.FORCETOKEN_FONT_BORDERCOLOR"
                          Align="@TextAlignment.Center"/>
             }
 
@@ -197,58 +197,58 @@
             if (totalSpiceToReceiveLater > 0)
             {
                 positionOnCircle += TWOPI / 90;
-                var tooltip = Skin.Current.Format("To be collected during {0}", MainPhase.Contemplate);
+                var tooltip = Client.CurrentSkin.Format("To be collected during {0}", MainPhase.Contemplate);
 
                 <MapImage 
-                    XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) 
-                    Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS)
-                    Src="@Skin.Current.Harvester_URL"
+                    XY=@Pos(positionOnCircle, Client.CurrentSkin.FORCETOKEN_RADIUS) 
+                    Diameter=@(2 * Client.CurrentSkin.FORCETOKEN_RADIUS)
+                    Src="@Client.CurrentSkin.Harvester_URL"
                     Popover=@tooltip PopoverAsTooltip=true
                     BackgroundCircleColor="#black"
-                    BackgroundCircleDiameter=@(1.5f * Skin.Current.FORCETOKEN_RADIUS)
-                    ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
+                    BackgroundCircleDiameter=@(1.5f * Client.CurrentSkin.FORCETOKEN_RADIUS)
+                    ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
 
                 <MapText 
                     ToShow=@totalSpiceToReceiveLater.ToString()
                     XY=@Pos(positionOnCircle)
-                    Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
+                    Font="@Client.CurrentSkin.RESOURCETOKEN_FONT" FontColor="@Client.CurrentSkin.RESOURCETOKEN_FONTCOLOR"
                     Popover=@tooltip PopoverAsTooltip=true
-                    BorderWidth="@Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
+                    BorderWidth="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERCOLOR"
                     Align="@TextAlignment.Center"/>
             }
 
             if (p.ResourcesAfterBidding > 0)
             {
                 positionOnCircle += TWOPI / 90;
-                var tooltip = Skin.Current.Format("Subbed {0}", Concept.Resource);
+                var tooltip = Client.CurrentSkin.Format("Subbed {0}", Concept.Resource);
 
                 <MapImage 
-                    XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) 
-                    Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) 
-                    Src="@Skin.Current.Harvester_URL"
+                    XY=@Pos(positionOnCircle, Client.CurrentSkin.FORCETOKEN_RADIUS) 
+                    Diameter=@(2 * Client.CurrentSkin.FORCETOKEN_RADIUS) 
+                    Src="@Client.CurrentSkin.Harvester_URL"
                     Popover=@tooltip PopoverAsTooltip=true
                     BackgroundCircleColor="black"
-                    BackgroundCircleDiameter=@(1.5f * Skin.Current.FORCETOKEN_RADIUS)
-                    ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
+                    BackgroundCircleDiameter=@(1.5f * Client.CurrentSkin.FORCETOKEN_RADIUS)
+                    ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
 
                 <MapText ToShow=@tooltip
                     XY=@Pos(positionOnCircle)
-                    Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
+                    Font="@Client.CurrentSkin.RESOURCETOKEN_FONT" FontColor="@Client.CurrentSkin.RESOURCETOKEN_FONTCOLOR"
                     Popover=@tooltip PopoverAsTooltip=true
-                    BorderWidth="@Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
+                    BorderWidth="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERCOLOR"
                     Align="@TextAlignment.Center"/>
             }
 
             foreach (var f in forcesToDraw)
             {
-                <MapForce X=@f.X Y=@f.Y Special=@f.Special Amount=@f.Amount Faction=@f.Faction Threatened=@false ShowPopover="true" Font="@Skin.Current.SKILL_FONT" Diameter="@Skin.Current.FORCETOKEN_RADIUS" />
+                <MapForce X=@f.X Y=@f.Y Special=@f.Special Amount=@f.Amount Faction=@f.Faction Threatened=@false ShowPopover="true" Font="@Client.CurrentSkin.SKILL_FONT" Diameter="@Client.CurrentSkin.FORCETOKEN_RADIUS" />
             }
 
             <MapText ToShow="@p.Name"
                      X="@position.X" Y="@y"
-                     Font="@Skin.Current.PLAYERNAME_FONT" FontColor="@Skin.Current.PLAYERNAME_FONTCOLOR"
-                     BorderWidth="@Skin.Current.PLAYERNAME_FONT_BORDERWIDTH" BorderColor="@Skin.Current.PLAYERNAME_FONT_BORDERCOLOR"
-                     Align="TextAlignment.Center" MaxWidth="6 * Skin.Current.PlayerTokenRadius"/>
+                     Font="@Client.CurrentSkin.PLAYERNAME_FONT" FontColor="@Client.CurrentSkin.PLAYERNAME_FONTCOLOR"
+                     BorderWidth="@Client.CurrentSkin.PLAYERNAME_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.PLAYERNAME_FONT_BORDERCOLOR"
+                     Align="TextAlignment.Center" MaxWidth="6 * Client.CurrentSkin.PlayerTokenRadius"/>
         }
     }
 
@@ -262,12 +262,12 @@
     private Situation situation = new();
     protected override bool ShouldRender()
     {
-        return Client.InGame && situation.RequiresUpdate(Game);
+        return Client.InGame && situation.RequiresUpdate(Client);
     }
 
     private string Intel(Player p)
     {
-        var result = Skin.Current.Format("<p><strong>{0} plays {1}</strong></p>", p.Name, p.Faction);
+        var result = Client.CurrentSkin.Format("<p><strong>{0} plays {1}</strong></p>", p.Name, p.Faction);
 
         foreach (var v in LeaderManager.Leaders.Where(l => l.Faction == p.Faction))
         {
@@ -278,7 +278,7 @@
 
         result += "</div>";
 
-        result += "<div class=\"mt-1 text-start\">" + Skin.Current.GetFactionInfo_HTML(Client.Game, p.Faction) + "</div>";
+        result += "<div class=\"mt-1 text-start\">" + Client.CurrentSkin.GetFactionInfo_HTML(Client.Game, p.Faction) + "</div>";
         return result;
     }
 
@@ -289,7 +289,7 @@
             return "";
         }
 
-        return string.Format("<img class='img-fluid' src='{0}' width=80 style='filter:drop-shadow(-3px 3px 2px black);'/>", Skin.Current.GetImageUrl(l));
+        return string.Format("<img class='img-fluid' src='{0}' width=80 style='filter:drop-shadow(-3px 3px 2px black);'/>", Client.CurrentSkin.GetImageUrl(l));
     }
 
     private string DetermineVideoStreamId(Player p)
@@ -313,10 +313,10 @@
 
     private PointD Pos(float positionOnCircle, float radiusOfToken = 0) {
 
-        var mapradius = 1.06f * Skin.Current.MapRadius;
+        var mapradius = 1.06f * Client.CurrentSkin.MapRadius;
         return new PointD(
-            X = Skin.Current.PlanetCenter.X + (float)(Math.Cos(positionOnCircle) * mapradius) - radiusOfToken, 
-            Y = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(positionOnCircle) * mapradius) - radiusOfToken);
+            X = Client.CurrentSkin.PlanetCenter.X + (float)(Math.Cos(positionOnCircle) * mapradius) - radiusOfToken, 
+            Y = Client.CurrentSkin.PlanetCenter.Y + (float)(Math.Sin(positionOnCircle) * mapradius) - radiusOfToken);
     }
     
 }

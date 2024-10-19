@@ -10,9 +10,9 @@
 
 <div id="planetmap" style="position:absolute; left:0px">
 
-    <div id="planetmap_inner" style="position:absolute; width:@Px(Skin.Current.MapDimensions.X); height:@Px(Skin.Current.MapDimensions.Y);">
+    <div id="planetmap_inner" style="position:absolute; width:@Px(Client.CurrentSkin.MapDimensions.X); height:@Px(Client.CurrentSkin.MapDimensions.Y);">
 
-        <BackgroundImage X="0" Y="0" Width="@Skin.Current.MapDimensions.X" Height="@Skin.Current.MapDimensions.Y" Src="@Skin.Current.Map_URL"/>
+        <BackgroundImage X="0" Y="0" Width="@Client.CurrentSkin.MapDimensions.X" Height="@Client.CurrentSkin.MapDimensions.Y" Src="@Client.CurrentSkin.Map_URL"/>
 
         @if (Client.Game.CurrentPhase > Phase.AwaitingPlayers)
         {

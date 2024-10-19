@@ -179,7 +179,7 @@
                 }
                 else
                 {
-                    var skinData = Skin.Current == Skin.Default ? null : Skin.Current.SkinToString();
+                    var skinData = Client.CurrentSkin == DefaultSkin.Default ? null : Client.CurrentSkin.SkinToString();
                     error = await Client.RequestCreateGame(createGamePassword, loadedGameData, skinData);    
                 }
             }

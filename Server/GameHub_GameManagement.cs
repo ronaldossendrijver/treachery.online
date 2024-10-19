@@ -93,6 +93,11 @@ public partial class GameHub
         if (!string.IsNullOrEmpty(skin))
             await Clients.Group(gameId).HandleSetSkin(skin);
         
+        if (!game.BotsArePaused)
+        {
+            await PerformBotEvent(gameId, game);
+        }
+        
         return Success();
     }
 

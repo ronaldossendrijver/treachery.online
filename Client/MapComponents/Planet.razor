@@ -7,9 +7,9 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 @inherits MapComponent
-@implements IDisposable;
+@implements IDisposable
  
-<svg @ref="@element" width="@Skin.Current.MapDimensions.X" height="@Skin.Current.MapDimensions.Y" viewBox="0 0 @Skin.Current.MapDimensions.X @Skin.Current.MapDimensions.Y" 
+<svg @ref="@element" width="@Client.CurrentSkin.MapDimensions.X" height="@Client.CurrentSkin.MapDimensions.Y" viewBox="0 0 @Client.CurrentSkin.MapDimensions.X @Client.CurrentSkin.MapDimensions.Y" 
      style="position: absolute; left: 0; top: 0; height: 100%; width: 100%;" pointer-events="none">
 
     <!-- Clipping areas of each sector -->
@@ -17,36 +17,36 @@
 
         <clipPath id="@SectorClipName(i)">
             <path d="
-                M @Round(ScaleX * Skin.Current.PlanetCenter.X),@Round(ScaleY * Skin.Current.PlanetCenter.Y)
+                M @Round(ScaleX * Client.CurrentSkin.PlanetCenter.X),@Round(ScaleY * Client.CurrentSkin.PlanetCenter.Y)
                 L @Round(ScaleX * StartX(i)),@Round(ScaleY * StartY(i)) 
-                A @Round(ScaleX * Skin.Current.PlanetRadius) @Round(ScaleY * Skin.Current.PlanetRadius) @Angle 0 0 @Round(ScaleX * EndX(i)) @Round(ScaleY * EndY(i))
+                A @Round(ScaleX * Client.CurrentSkin.PlanetRadius) @Round(ScaleY * Client.CurrentSkin.PlanetRadius) @Angle 0 0 @Round(ScaleX * EndX(i)) @Round(ScaleY * EndY(i))
                 Z"/>
         </clipPath>
     }
 
     <clipPath id="@SectorClipName(-1)">
-        <rect x="0" y="0" width="@Skin.Current.MapDimensions.X" height="@Skin.Current.MapDimensions.Y"/>
+        <rect x="0" y="0" width="@Client.CurrentSkin.MapDimensions.X" height="@Client.CurrentSkin.MapDimensions.Y"/>
     </clipPath>
 
     <!-- Shield Wall -->
     @if (Game.ShieldWallDestroyed)
     {
-        <path d="@Skin.Current.GetTerritoryBorder(Game.Map.ShieldWall)" fill="@Skin.Current.BLOWNSHIELDWALL_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
-        <path d="@Skin.Current.GetTerritoryBorder(Game.Map.Arrakeen.Territory)" fill="@Skin.Current.METHEOR_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
-        <path d="@Skin.Current.GetTerritoryBorder(Game.Map.Carthag.Territory)" fill="@Skin.Current.METHEOR_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
-        <path d="@Skin.Current.GetTerritoryBorder(Game.Map.ImperialBasin)" fill="@Skin.Current.METHEOR_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
+        <path d="@Client.CurrentSkin.GetTerritoryBorder(Game.Map.ShieldWall)" fill="@Client.CurrentSkin.BLOWNSHIELDWALL_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
+        <path d="@Client.CurrentSkin.GetTerritoryBorder(Game.Map.Arrakeen.Territory)" fill="@Client.CurrentSkin.METHEOR_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
+        <path d="@Client.CurrentSkin.GetTerritoryBorder(Game.Map.Carthag.Territory)" fill="@Client.CurrentSkin.METHEOR_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
+        <path d="@Client.CurrentSkin.GetTerritoryBorder(Game.Map.ImperialBasin)" fill="@Client.CurrentSkin.METHEOR_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
     }
 
     <!-- SSW -->
     @if (Game.Applicable(Rule.Ssw) && Game.IsSpecialStronghold(Game.Map.ShieldWall))
     {
-        <path d="@Skin.Current.GetTerritoryBorder(Game.Map.ShieldWall)" fill="#FF6F34" fill-opacity="0.6" stroke="transparent"/>
+        <path d="@Client.CurrentSkin.GetTerritoryBorder(Game.Map.ShieldWall)" fill="#FF6F34" fill-opacity="0.6" stroke="transparent"/>
     }
 
     <!-- Highlighted Territories -->
     @foreach (var territory in Client.Status.HighlightedTerritories.Where(t => t != Game.Map.HiddenMobileStronghold.Territory && !t.IsHomeworld)) {
 
-        <path d="@Skin.Current.GetTerritoryBorder(territory)" fill="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" fill-opacity="1" stroke="red" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="@Client.CurrentSkin.GetTerritoryBorder(territory)" fill="@Client.CurrentSkin.HIGHLIGHT_OVERLAY_COLOR" fill-opacity="1" stroke="red" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
     }
 
     <!-- Locations -->
@@ -58,7 +58,7 @@
                 cursor="pointer" pointer-events="all" @onclick=@(e => OnClick(e, location))
                 data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-bs-content="@Intel(location)" data-bs-template="@PopoverTemplate">
 
-                    <path d="@Skin.Current.GetTerritoryBorder(location.Territory)"/>
+                    <path d="@Client.CurrentSkin.GetTerritoryBorder(location.Territory)"/>
             </g>
         </g>
     }
@@ -72,7 +72,7 @@
     private Situation situation = new();
     protected override bool ShouldRender()
     {
-        return Client.InGame && situation.RequiresUpdate(Game);
+        return Client.InGame && situation.RequiresUpdate(Client);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -91,17 +91,17 @@
 
         if (Game.SectorInStorm >= 0 && l.Sector == Game.SectorInStorm)
         {
-            return Skin.Current.STORM_OVERLAY_COLOR;
+            return Client.CurrentSkin.STORM_OVERLAY_COLOR;
         }
 
         if (Game.AtomicsAftermath == l.Territory)
         {
-            return Skin.Current.BLOWNSHIELDWALL_OVERLAY_COLOR;
+            return Client.CurrentSkin.BLOWNSHIELDWALL_OVERLAY_COLOR;
         }
 
         if (Game.HasStormPrescience(Player) && NextStormWillPassOver(l))
         {
-            return Skin.Current.STORM_PRESCIENCE_OVERLAY_COLOR;
+            return Client.CurrentSkin.STORM_PRESCIENCE_OVERLAY_COLOR;
         }
 
         return "transparent";
@@ -142,27 +142,27 @@
 
     private double StartX(int sector)
     {
-        return Math.Cos(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.X;
+        return Math.Cos(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Client.CurrentSkin.PlanetRadius + Client.CurrentSkin.PlanetCenter.X;
     }
 
     private double StartY(int sector)
     {
-        return Math.Sin(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.Y;
+        return Math.Sin(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Client.CurrentSkin.PlanetRadius + Client.CurrentSkin.PlanetCenter.Y;
     }
 
     private double EndX(int sector)
     {
-        return Math.Cos(2f * Math.PI * (5 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.X;
+        return Math.Cos(2f * Math.PI * (5 - sector) / Map.NUMBER_OF_SECTORS) * Client.CurrentSkin.PlanetRadius + Client.CurrentSkin.PlanetCenter.X;
     }
 
     private double EndY(int sector)
     {
-        return Math.Sin(2f * Math.PI * (5 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.Y;
+        return Math.Sin(2f * Math.PI * (5 - sector) / Map.NUMBER_OF_SECTORS) * Client.CurrentSkin.PlanetRadius + Client.CurrentSkin.PlanetCenter.Y;
     }
 
-    private double ScaleX = 563f / Skin.Current.MapDimensions.X;
+    private double ScaleX => 563f / Client.CurrentSkin.MapDimensions.X;
 
-    private double ScaleY = 626f / Skin.Current.MapDimensions.Y;
+    private double ScaleY => 626f / Client.CurrentSkin.MapDimensions.Y;
 
     private string PointerEvents => OnLocationClick.HasDelegate ? "all" : "none";
 

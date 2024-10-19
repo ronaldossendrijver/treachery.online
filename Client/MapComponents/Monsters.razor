@@ -10,7 +10,7 @@
 
 @foreach (var m in Client.Game.Monsters)
 {
-    var position = Skin.Current.GetCenter(m.Territory.MiddleLocation, Client.Game.Map);
+    var position = Client.CurrentSkin.GetCenter(m.Territory.MiddleLocation, Client.Game.Map);
 
-    <MapImage X="@(position.X - Skin.Current.MONSTERTOKEN_RADIUS)" Y="@(position.Y - Skin.Current.MONSTERTOKEN_RADIUS)" Width=@(2 * Skin.Current.MONSTERTOKEN_RADIUS) Height="@(2 * Skin.Current.MONSTERTOKEN_RADIUS)" Src="@Skin.Current.Monster_URL" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"/>
+    <MapImage X="@(position.X - Client.CurrentSkin.MONSTERTOKEN_RADIUS)" Y="@(position.Y - Client.CurrentSkin.MONSTERTOKEN_RADIUS)" Width=@(2 * Client.CurrentSkin.MONSTERTOKEN_RADIUS) Height="@(2 * Client.CurrentSkin.MONSTERTOKEN_RADIUS)" Src="@Client.CurrentSkin.Monster_URL" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"/>
 }

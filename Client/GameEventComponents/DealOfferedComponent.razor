@@ -23,7 +23,7 @@
         
         @{
             var dealTypes = DealOffered.GetStandardDealTypes(Game, Player).ToList();
-            <SelectComponent @bind-Value="type" Values=@dealTypes ValueLabels=@dealTypes.Select(dt => Deal.Express(dt).ToString(Skin.Current))>
+            <SelectComponent @bind-Value="type" Values=@dealTypes ValueLabels=@dealTypes.Select(dt => Deal.Express(dt).ToString(Client.CurrentSkin))>
                 <Label>Type of deal</Label>
             </SelectComponent>
         }

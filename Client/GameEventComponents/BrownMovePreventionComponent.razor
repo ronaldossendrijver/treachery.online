@@ -29,7 +29,7 @@
 
     protected override Faction IsFactionSpecific => Faction.Brown;
 
-    protected override string Background => Skin.Current.GetImageUrl(BrownMovePrevention.CardToUse(Player));
+    protected override string Background => Client.CurrentSkin.GetImageUrl(BrownMovePrevention.CardToUse(Player));
 
     private Territory territory;
 
@@ -54,5 +54,5 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    private string ToUse => BrownMovePrevention.CardToUse(Player) != null ? Skin.Current.Describe(BrownMovePrevention.CardToUse(Player)) : "Nexus Cunning";
+    private string ToUse => BrownMovePrevention.CardToUse(Player) != null ? Client.CurrentSkin.Describe(BrownMovePrevention.CardToUse(Player)) : "Nexus Cunning";
 }

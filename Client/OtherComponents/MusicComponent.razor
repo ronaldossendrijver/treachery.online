@@ -91,19 +91,19 @@
     {
         if (Client.Game == null)
         {
-            return Skin.Current.MusicGeneral_URL;
+            return Client.CurrentSkin.MusicGeneral_URL;
         }
 
         return Client.Game.CurrentMainPhase switch
         {
-            MainPhase.Setup => Skin.Current.MusicSetup_URL,
-            MainPhase.Blow or MainPhase.Charity => Skin.Current.MusicResourceBlow_URL,
-            MainPhase.Bidding => Skin.Current.MusicBidding_URL,
-            MainPhase.ShipmentAndMove => Skin.Current.MusicShipmentAndMove_URL,
-            MainPhase.Battle when Game.CurrentPhase >= Phase.CallTraitorOrPass => Skin.Current.MusicBattleClimax_URL,
-            MainPhase.Battle => Skin.Current.MusicBattle_URL,
-            MainPhase.Collection or MainPhase.Contemplate or MainPhase.Ended => Skin.Current.MusicMentat_URL,
-            _ => Skin.Current.MusicGeneral_URL
+            MainPhase.Setup => Client.CurrentSkin.MusicSetup_URL,
+            MainPhase.Blow or MainPhase.Charity => Client.CurrentSkin.MusicResourceBlow_URL,
+            MainPhase.Bidding => Client.CurrentSkin.MusicBidding_URL,
+            MainPhase.ShipmentAndMove => Client.CurrentSkin.MusicShipmentAndMove_URL,
+            MainPhase.Battle when Game.CurrentPhase >= Phase.CallTraitorOrPass => Client.CurrentSkin.MusicBattleClimax_URL,
+            MainPhase.Battle => Client.CurrentSkin.MusicBattle_URL,
+            MainPhase.Collection or MainPhase.Contemplate or MainPhase.Ended => Client.CurrentSkin.MusicMentat_URL,
+            _ => Client.CurrentSkin.MusicGeneral_URL
         };
     }
 

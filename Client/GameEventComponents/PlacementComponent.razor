@@ -16,7 +16,7 @@
 
         @if (InformAboutCaravan)
         {
-            <div class="text-info small">Note: if you wish to perform a @Skin.Current.Describe(TreacheryCardType.Caravan) this turn, you need to do that before performing your regular move.</div>
+            <div class="text-info small">Note: if you wish to perform a @Client.CurrentSkin.Describe(TreacheryCardType.Caravan) this turn, you need to do that before performing your regular move.</div>
         }
 
         @if (ValidSources.Any())
@@ -119,7 +119,7 @@
         {
             if (forces.Sum(kvp => kvp.Value.TotalAmountOfForces) > 0)
             {
-                return PlacementEvent.ValidTargets(Game, Player, forces).OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l));
+                return PlacementEvent.ValidTargets(Game, Player, forces).OrderByDescending(l => l.IsStronghold).ThenBy(l => Client.CurrentSkin.Describe(l));
             }
 
             return Array.Empty<Location>();

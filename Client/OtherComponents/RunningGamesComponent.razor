@@ -34,7 +34,7 @@
                                 @if (av.CurrentPhase == Phase.AwaitingPlayers)
                                 {
                                     <div>
-                                        @av.Players.Length Players, @Skin.Current.Describe(Game.DetermineApproximateRuleset(av.FactionsInPlay, av.Rules, Game.ExpansionLevel)), maximum players: @av.NumberOfPlayers, maximum turns: @av.MaximumTurns
+                                        @av.Players.Length Players, @Client.CurrentSkin.Describe(Game.DetermineApproximateRuleset(av.FactionsInPlay, av.Rules, Game.ExpansionLevel)), maximum players: @av.NumberOfPlayers, maximum turns: @av.MaximumTurns
                                     </div>
                                 }
                                 else

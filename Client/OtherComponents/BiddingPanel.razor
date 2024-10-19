@@ -23,7 +23,7 @@
                 }
                 else 
                 {
-                    <img src="@Skin.Current.CardBack_TreacheryCard_URL" width="150" />
+                    <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" width="150" />
                 }
 
                 <div style="position: absolute; top: 80px; left: 5px; width: 180px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
@@ -34,8 +34,8 @@
                             
                     @if (ShowCurrentBid)
                     {
-                        <img src="@Skin.Current.GetImageUrl(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />
-                        <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
+                        <img src="@Client.CurrentSkin.GetImageUrl(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />
+                        <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSRC="@Client.CurrentSkin.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
                     }
                 </div>
 
@@ -77,7 +77,7 @@
                     {
                         <div class="mt-1">
                             <SelectFromImageComponent @bind-Value="karmaCard" Values="Bid.ValidKarmaCards(Game, Player)" Required="false" ImageWidth="80">
-                                <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to bid without limit or win immediately? <InfoComponent Contents="@KarmaInfoMessage" /></Label>
+                                <Label>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to bid without limit or win immediately? <InfoComponent Contents="@KarmaInfoMessage" /></Label>
                             </SelectFromImageComponent>
                         </div>
                     }
@@ -225,7 +225,7 @@
 
     private bool CardIsVisible => (Game.HasBiddingPrescience(Player) || IsWhiteBidding) && Game.CardsOnAuction.Top != null;
 
-    private string KarmaInfoMessage => Skin.Current.Format("If you use a {0} card to bid any amount of {1} you wish, that card will be set aside until someone outbids you and will be discarded only if you win the auction. If you instead use your {0} card to win immediately, it is immediately discarded.", TreacheryCardType.Karma, Concept.Resource);
+    private string KarmaInfoMessage => Client.CurrentSkin.Format("If you use a {0} card to bid any amount of {1} you wish, that card will be set aside until someone outbids you and will be discarded only if you win the auction. If you instead use your {0} card to win immediately, it is immediately discarded.", TreacheryCardType.Karma, Concept.Resource);
 
     private bool ShowCurrentBid => !IsSilentAuction && Game.CurrentBid != null;
 

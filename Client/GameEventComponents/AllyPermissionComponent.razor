@@ -10,7 +10,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsed="CollapseState.Collapsed">
 
-    <Header>Manage your Alliance with &nbsp;<img width="32" src="@Skin.Current.GetImageUrl(Player.Ally)" /></Header>
+    <Header>Manage your Alliance with &nbsp;<img width="32" src="@Client.CurrentSkin.GetImageUrl(Player.Ally)" /></Header>
 
     <Body>
 
@@ -45,7 +45,7 @@
                 <div>
                     They claim you can safely use:
                     @foreach (var l in safeLeaders) {
-                        <Image Popover=@Popup.Get(l) Shown=l Width="30"/>
+                        <Image Popover=@Client.CurrentSkin.GetPopup(l) Shown=l Width="30"/>
                     }
                 </div>
             }
@@ -55,7 +55,7 @@
                 <div>They don't know of any safe leaders you could use.</div>
             }
 
-            <div>They own <strong>@ally.Resources</strong> @Skin.Current.Describe(Concept.Resource).</div>
+            <div>They own <strong>@ally.Resources</strong> @Client.CurrentSkin.Describe(Concept.Resource).</div>
         }
 
         <div class="mt-1">
@@ -67,7 +67,7 @@
             var permittedKarma = Game.GetPermittedUseOfAllyKarma(Player.Ally);
 
             <SelectFromImageComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCards(Game, Player)" Required="false" T=TreacheryCard OnChanged=SetEdited ImageWidth="80">
-                <Label>Select a @Skin.Current.Describe(TreacheryCardType.Karma) card they may use to ship at @Skin.Current.Describe(Faction.Orange) rates (currently: <strong>@(permittedKarma == null ? "none" : Name(permittedKarma))</strong>)?</Label>
+                <Label>Select a @Client.CurrentSkin.Describe(TreacheryCardType.Karma) card they may use to ship at @Client.CurrentSkin.Describe(Faction.Orange) rates (currently: <strong>@(permittedKarma == null ? "none" : Name(permittedKarma))</strong>)?</Label>
             </SelectFromImageComponent>
         }
         else
@@ -80,19 +80,19 @@
             case Faction.Red:
                 <div class="mt-1">
                     <label class="mt-1 mb-0">How many revivals will you pay for them (currently: <strong>@(Game.RedWillPayForExtraRevival)</strong>)?</label>
-                    <SelectForcesComponent @bind-Value="emperorWillPayForExtraRevival" Min="0" Max="3" Faction="Player.Ally" Special="false" OnChanged=SetEdited/>
+                    <SelectForcesComponent @bind-Value="emperorWillPayForExtraRevival" Min="0" Max="3" Faction="Player.Ally" Special="false" OnChanged="@SetEdited"/>
                 </div>
                 break;
 
             case Faction.Orange:
                 <CheckboxComponent @bind-Value="guildAllyMayShipAsGuild" OnChanged=SetEdited>
-                    Allow shipment at @Skin.Current.Describe(Faction.Orange) rates and site-to-site (currently: <strong>@(Game.OrangeAllowsShippingDiscount ? "yes" : "no")</strong>)
+                    Allow shipment at @Client.CurrentSkin.Describe(Faction.Orange) rates and site-to-site (currently: <strong>@(Game.OrangeAllowsShippingDiscount ? "yes" : "no")</strong>)
                 </CheckboxComponent>
                 break;
 
             case Faction.Purple:
                 <CheckboxComponent @bind-Value="purpleAllyMyReviveAsPurple" OnChanged=SetEdited>
-                    Allow revival at @Skin.Current.Describe(Faction.Purple) rates (currently: <strong>@(Game.PurpleAllowsRevivalDiscount ? "yes" : "no")</strong>)
+                    Allow revival at @Client.CurrentSkin.Describe(Faction.Purple) rates (currently: <strong>@(Game.PurpleAllowsRevivalDiscount ? "yes" : "no")</strong>)
                 </CheckboxComponent>
                 break;
 
@@ -108,7 +108,7 @@
                 </CheckboxComponent>
 
                 <CheckboxComponent @bind-Value="fremenWillProtectFromShaiHulud" OnChanged=SetEdited>
-                    Protect them from @Skin.Current.Describe(Concept.Monster) (currently: <strong>@(Game.YellowWillProtectFromMonster ? "yes" : "no")</strong>)
+                    Protect them from @Client.CurrentSkin.Describe(Concept.Monster) (currently: <strong>@(Game.YellowWillProtectFromMonster ? "yes" : "no")</strong>)
                 </CheckboxComponent>
 
                 @if (Game.Applicable(Rule.YellowSeesStorm))

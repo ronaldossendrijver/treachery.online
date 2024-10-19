@@ -35,7 +35,7 @@
 
     protected override Faction IsFactionSpecific => Faction.Brown;
 
-    protected override string Background => BrownRemoveForce.CardToUse(Player) != null ? Skin.Current.GetImageUrl(BrownRemoveForce.CardToUse(Player)) : Skin.Current.GetImageUrl(Nexus.Brown);
+    protected override string Background => BrownRemoveForce.CardToUse(Player) != null ? Client.CurrentSkin.GetImageUrl(BrownRemoveForce.CardToUse(Player)) : Client.CurrentSkin.GetImageUrl(Nexus.Brown);
 
     private Location location;
     private Faction target;
@@ -59,12 +59,12 @@
 
     private IEnumerable<bool> ForceChoices => BrownRemoveForce.ValidSpecialForceChoices(Game, location, target);
 
-    private IEnumerable<string> ImageURLs => BrownRemoveForce.ValidSpecialForceChoices(Game, location, target).Select(special => special ? Skin.Current.GetFactionSpecialForceImageURL(target) : Skin.Current.GetFactionForceImageURL(target));
+    private IEnumerable<string> ImageURLs => BrownRemoveForce.ValidSpecialForceChoices(Game, location, target).Select(special => special ? Client.CurrentSkin.GetFactionSpecialForceImageURL(target) : Client.CurrentSkin.GetFactionForceImageURL(target));
 
     private void HandleLocationSelected(object sender, Location l)
     {
         SetIfValid(ref location, BrownRemoveForce.ValidLocations(Game), l);
     }
 
-    private string ToUse => BrownRemoveForce.CardToUse(Player) != null ? Skin.Current.Describe(BrownRemoveForce.CardToUse(Player)) : "Nexus Cunning";
+    private string ToUse => BrownRemoveForce.CardToUse(Player) != null ? Client.CurrentSkin.Describe(BrownRemoveForce.CardToUse(Player)) : "Nexus Cunning";
 }

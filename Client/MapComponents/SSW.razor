@@ -11,14 +11,14 @@
 @{
     if (Game.Applicable(Rule.Ssw) && !Game.IsSpecialStronghold(Game.Map.ShieldWall))
     {
-        var position = Skin.Current.GetCenter(Game.Map.ShieldWall.MiddleLocation, Game.Map);
+        var position = Client.CurrentSkin.GetCenter(Game.Map.ShieldWall.MiddleLocation, Game.Map);
 
         for (var i = 0; i < Game.NumberOfMonsters; i++)
         {
-            var tip = $"{Game.Natural(i)} {Skin.Current.Describe(Concept.Monster)}";
-            <MapImage X="@(i * 0.7f * Skin.Current.MONSTERTOKEN_RADIUS + position.X - 0.35f * Skin.Current.MONSTERTOKEN_RADIUS)" 
+            var tip = $"{Game.Natural(i)} {Client.CurrentSkin.Describe(Concept.Monster)}";
+            <MapImage X="@(i * 0.7f * Client.CurrentSkin.MONSTERTOKEN_RADIUS + position.X - 0.35f * Client.CurrentSkin.MONSTERTOKEN_RADIUS)" 
                       Popover="@tip"
-                      Y="position.Y" Width=@(0.7f * Skin.Current.MONSTERTOKEN_RADIUS) Height=@(0.7f * Skin.Current.MONSTERTOKEN_RADIUS) Src=@Skin.Current.Monster_URL 
+                      Y="position.Y" Width=@(0.7f * Client.CurrentSkin.MONSTERTOKEN_RADIUS) Height=@(0.7f * Client.CurrentSkin.MONSTERTOKEN_RADIUS) Src=@Client.CurrentSkin.Monster_URL 
                    ShadowColor="white" ShadowX="1" ShadowY="1" ShadowBlur="1"/>
         }
     }

@@ -23,7 +23,7 @@
     {
         if (ConfirmError != null)
         {
-            <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-delay="0" title=@ConfirmError.ToString(Skin.Current)>
+            <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-delay="0" title=@ConfirmError.ToString(Client.CurrentSkin)>
                 <button class="btn btn-primary" disabled=@true>@ConfirmText</button>
             </span>
         }

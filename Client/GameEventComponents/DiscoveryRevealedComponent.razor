@@ -27,7 +27,7 @@
                 _selectedLocation = locations.First();
             
             <div>Reveal the <strong>@Name(Game.DiscoveriesOnPlanet[_selectedLocation].Token)</strong> in @Name(_selectedLocation.Territory)?</div>
-            <div class="label-info">@Skin.Current.GetDiscoveryTokenDescription(Game.DiscoveriesOnPlanet[_selectedLocation].Token)</div>
+            <div class="label-info">@Client.CurrentSkin.GetDiscoveryTokenDescription(Game.DiscoveriesOnPlanet[_selectedLocation].Token)</div>
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" Pass="Pass" />

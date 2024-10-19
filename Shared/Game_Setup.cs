@@ -28,7 +28,7 @@ public partial class Game
 
     private void EnterPhaseAwaitingPlayers()
     {
-        Players = new List<Player>();
+        Players = [];
         CurrentTurn = 0;
         Enter(Phase.AwaitingPlayers);
     }
@@ -203,7 +203,8 @@ public partial class Game
 
     internal void SetupSpiceAndForces()
     {
-        foreach (var p in Players) SetupPlayerHomeworld(p);
+        foreach (var p in Players) 
+            SetupPlayerHomeworld(p);
 
         if (Applicable(Rule.CustomInitialForcesAndResources))
         {
@@ -240,8 +241,8 @@ public partial class Game
 
             case Faction.Red:
                 p.InitializeHomeworld(normalForceWorld, Applicable(Rule.RedSpecialForces) ? 15 : 20, 0);
-                if (Applicable(Rule.RedSpecialForces)) p.InitializeHomeworld(Map.Homeworlds.First(w => w.Faction == p.Faction && w.IsHomeOfSpecialForces), 0, 5);
-
+                if (Applicable(Rule.RedSpecialForces)) 
+                    p.InitializeHomeworld(Map.Homeworlds.First(w => w.Faction == p.Faction && w.IsHomeOfSpecialForces), 0, 5);
                 break;
 
             case Faction.Grey:

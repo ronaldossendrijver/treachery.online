@@ -11,7 +11,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Distribute @(10 - forces.Sum(fl => fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces)) forces on @Skin.Current.Describe(Game.Map.SietchTabr), @Skin.Current.Describe(Game.Map.FalseWallSouth), and @Skin.Current.Describe(Game.Map.FalseWallWest).</Header>
+    <Header>Distribute @(10 - forces.Sum(fl => fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces)) forces on @Client.CurrentSkin.Describe(Game.Map.SietchTabr), @Client.CurrentSkin.Describe(Game.Map.FalseWallSouth), and @Client.CurrentSkin.Describe(Game.Map.FalseWallWest).</Header>
     <Body>
 
         <ForceSelectionComponent Game="Game" Player="Player" OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="true" FixedMaxForces="10" FixedMaxSpecialForces="@(Player.HasSpecialForces ? 10 : 0)" AllowMultipleTerritories="true" />
@@ -19,13 +19,13 @@
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
         <div>You can use the planet map:</div>
-        <div>Add @Skin.Current.Describe(Player.Force): <ClickHintComponent Button="ClickHintButton.LMB" /></div>
-        <div>Remove @Skin.Current.Describe(Player.Force): <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.SHIFT" /></div>
+        <div>Add @Client.CurrentSkin.Describe(Player.Force): <ClickHintComponent Button="ClickHintButton.LMB" /></div>
+        <div>Remove @Client.CurrentSkin.Describe(Player.Force): <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.SHIFT" /></div>
 
         @if (Player.HasSpecialForces)
         {
-            <div>Add @Skin.Current.Describe(Player.SpecialForce): <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL" /> </div>
-            <div>Remove @Skin.Current.Describe(Player.SpecialForce): <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL | ClickHintModifier.SHIFT" /></div>
+            <div>Add @Client.CurrentSkin.Describe(Player.SpecialForce): <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL" /> </div>
+            <div>Remove @Client.CurrentSkin.Describe(Player.SpecialForce): <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL | ClickHintModifier.SHIFT" /></div>
         }
 
     </Body>

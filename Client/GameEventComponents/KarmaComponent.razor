@@ -10,7 +10,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to prevent a faction from using one of their advantages</Header>
+    <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to prevent a faction from using one of their advantages</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="card" Values="Karma.ValidKarmaCards(Game, Player)" Required="true" ImageWidth="80" />
@@ -19,7 +19,7 @@
             <Label>Advantage to prevent <InfoComponent Contents="@InfoMessage" /></Label>
         </SelectComponent>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Karma)" ConfirmError="@Validation" />
 
     </Body>
 

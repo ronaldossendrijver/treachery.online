@@ -13,7 +13,7 @@
     <div class="row row-cols-3 row-cols-md-6 m-0">
 
         <div class="card p-1 m-0 border-0">
-            <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="card-img" alt="Unknown" @onclick="e => Pick(TreacheryCard.Unknown)" title="Set as unknown card" style="cursor:pointer;">
+            <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" class="card-img" alt="Unknown" @onclick="e => Pick(TreacheryCard.Unknown)" title="Set as unknown card" style="cursor:pointer;">
         </div>
 
         @if (Tracker.CurrentCard != TreacheryCard.None)
@@ -81,7 +81,7 @@
 
     private string Name(TreacheryCard card)
     {
-        return Skin.Current.Describe(card);
+        return Client.CurrentSkin.Describe(card);
     }
 
 }

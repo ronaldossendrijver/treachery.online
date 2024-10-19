@@ -10,14 +10,14 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @Skin.Current.Describe(TreacheryCardType.Distrans)?</Header>
+    <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Distrans)?</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="target" Values="DistransUsed.ValidTargets(Game, Player)" Required="true" ImageWidth="40" />
 
         <SelectFromImageComponent @bind-Value="card" Values="DistransUsed.ValidCards(Player)" Required="true" ImageWidth="80" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.Distrans)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Distrans)" ConfirmError="@Validation" />
 
     </Body>
 

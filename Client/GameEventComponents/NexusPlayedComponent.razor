@@ -180,7 +180,7 @@
                     break;
 
                 case Faction.Brown when secretAlly && Game.CurrentMainPhase == MainPhase.Collection:
-                    <div>Discard a @Skin.Current.Describe(TreacheryCardType.Useless) card for 2 @Skin.Current.Describe(Concept.Resource)?</div>
+                    <div>Discard a @Client.CurrentSkin.Describe(TreacheryCardType.Useless) card for 2 @Client.CurrentSkin.Describe(Concept.Resource)?</div>
                     <SelectFromImageComponent @bind-Value=brownCard Values="NexusPlayed.ValidBrownCards(Player)" Required="true" ImageWidth="80" />
                     break;
 
@@ -256,7 +256,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        BackgroundImage = Skin.Current.GetImageUrl(Player.Nexus.ToNexus());
+        BackgroundImage = Client.CurrentSkin.GetImageUrl(Player.Nexus.ToNexus());
     }
 
     protected override void OnAfterRender(bool firstRender)

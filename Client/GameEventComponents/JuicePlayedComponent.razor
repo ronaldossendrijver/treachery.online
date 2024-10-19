@@ -10,12 +10,12 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @Skin.Current.Describe(TreacheryCardType.Juice)?</Header>
+    <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Juice)?</Header>
     <Body>
 
         <RadioComponent @bind-Value="type" Values="JuicePlayed.ValidTypes(Game, Player)" Required="true"/>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.Juice)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Juice)" ConfirmError="@Validation" />
 
     </Body>
 

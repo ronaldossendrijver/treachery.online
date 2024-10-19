@@ -15,7 +15,7 @@
 
         <SelectFromImageComponent @bind-Value="card" Values="Player.TreacheryCards" Required="true" ImageWidth="80" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Discard {0}", card)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Discard {0}", card)" ConfirmError="@Validation" />
 
     </Body>
 

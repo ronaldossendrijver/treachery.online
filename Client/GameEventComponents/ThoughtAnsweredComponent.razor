@@ -10,12 +10,12 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Select which card (if any) to show in response to your opponent's @Skin.Current.Describe(LeaderSkill.Thinker) question</Header>
+    <Header>Select which card (if any) to show in response to your opponent's @Client.CurrentSkin.Describe(LeaderSkill.Thinker) question</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="card" Values="ThoughtAnswered.ValidCards(Game, Player)" Required="true" ImageWidth="80" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Show {0}", card)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Show {0}", card)" ConfirmError="@Validation" />
 
     </Body>
 

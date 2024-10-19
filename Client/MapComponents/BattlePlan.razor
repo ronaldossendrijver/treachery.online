@@ -10,15 +10,15 @@
 
 @if (showPlan) {
 
-    <MapImage X=X Y=Y Diameter="@(Skin.Current.BattleScreenWidth)" Src="@Skin.Current.BattleScreen_URL" 
-           ShadowColor="@Skin.Current.SHADOW" ShadowX="3" ShadowY="3" ShadowBlur="1" 
+    <MapImage X=X Y=Y Diameter="@(Client.CurrentSkin.BattleScreenWidth)" Src="@Client.CurrentSkin.BattleScreen_URL" 
+           ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="3" ShadowY="3" ShadowBlur="1" 
            Opacity="Opacity"/>
 
-    <MapImage X=X Y=Y Diameter="@(Skin.Current.BattleScreenWidth)" Src="@Skin.Current.FactionTableImage_URL[Plan.Initiator]" 
+    <MapImage X=X Y=Y Diameter="@(Client.CurrentSkin.BattleScreenWidth)" Src="@Client.CurrentSkin.FactionTableImage_URL[Plan.Initiator]" 
            Opacity="Opacity * 0.3f"/>
 
-    var forceX = X + Skin.Current.BattleWheelForcesX;
-    var forceY = Y + Skin.Current.BattleWheelForcesY;
+    var forceX = X + Client.CurrentSkin.BattleWheelForcesX;
+    var forceY = Y + Client.CurrentSkin.BattleWheelForcesY;
 
     if (ShowEntirePlan || (Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Dial) || (Game.CurrentNexusPrescience != null && Game.CurrentNexusPrescience.GreenPrescienceAspect == PrescienceAspect.Dial))
     {
@@ -26,27 +26,27 @@
 
         <MapText ToShow="@dial"
                  X="@(forceX)" Y="@(forceY)"
-                 Font="@Skin.Current.WHEEL_FONT" FontColor="@Skin.Current.WHEEL_FONTCOLOR"
-                 BorderWidth="Skin.Current.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Skin.Current.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Skin.Current.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
+                 Font="@Client.CurrentSkin.WHEEL_FONT" FontColor="@Client.CurrentSkin.WHEEL_FONTCOLOR"
+                 BorderWidth="Client.CurrentSkin.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Client.CurrentSkin.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Client.CurrentSkin.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
                  Align="@TextAlignment.Center" />
         
         @if (Game.CurrentPinkBattleContribution > 0 && (Plan.By(Faction.Pink) || Plan.ByAllyOf(Faction.Pink)))
         {
-            <MapForce X="@(forceX - 3 * Skin.Current.FORCETOKEN_RADIUS)" Y="@(forceY - Skin.Current.FORCETOKEN_RADIUS)" Diameter="@(2 * Skin.Current.FORCETOKEN_RADIUS)" Faction="Faction.Pink" Special="false" Amount="@Game.CurrentPinkBattleContribution" />
+            <MapForce X="@(forceX - 3 * Client.CurrentSkin.FORCETOKEN_RADIUS)" Y="@(forceY - Client.CurrentSkin.FORCETOKEN_RADIUS)" Diameter="@(2 * Client.CurrentSkin.FORCETOKEN_RADIUS)" Faction="Faction.Pink" Special="false" Amount="@Game.CurrentPinkBattleContribution" />
         }
 
-        var dialBonusX = forceX + 3 * Skin.Current.RESOURCETOKEN_RADIUS;
+        var dialBonusX = forceX + 3 * Client.CurrentSkin.RESOURCETOKEN_RADIUS;
 
         if (Plan.Initiator == Faction.Pink && Game.PinkKarmaBonus != 0)
         {
             var karmaBonusText = $"+{Game.PinkKarmaBonus}";
             <MapText ToShow=@karmaBonusText
                      X=@dialBonusX Y=@forceY
-                     Font="@Skin.Current.WHEEL_FONT" FontColor="green"
-                     BorderWidth="Skin.Current.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Skin.Current.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Skin.Current.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
+                     Font="@Client.CurrentSkin.WHEEL_FONT" FontColor="green"
+                     BorderWidth="Client.CurrentSkin.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Client.CurrentSkin.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Client.CurrentSkin.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
             Align="@TextAlignment.Center" />
 
-            dialBonusX += 2 * Skin.Current.RESOURCETOKEN_RADIUS;
+            dialBonusX += 2 * Client.CurrentSkin.RESOURCETOKEN_RADIUS;
         }
 
         var homeworldBonus = Plan.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(Game.CurrentBattle.Territory);
@@ -54,32 +54,32 @@
         {
             var homeworld = Game.CurrentBattle.Territory.Locations.First() as Homeworld;
 
-            <MapImage X=@(dialBonusX - Skin.Current.PlayerTokenRadius) Y=@(forceY - Skin.Current.PlayerTokenRadius)
-                   Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                   Src="@Skin.Current.GetImageUrl(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" />
+            <MapImage X=@(dialBonusX - Client.CurrentSkin.PlayerTokenRadius) Y=@(forceY - Client.CurrentSkin.PlayerTokenRadius)
+                   Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
+                   Src="@Client.CurrentSkin.GetImageUrl(homeworld.World)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" />
 
             var homeworldBonusText = $"+{homeworldBonus}";
 
             <MapText ToShow=@homeworldBonusText
                     X=@dialBonusX Y=@forceY
                     Popover="Homeworld Bonus"
-                    Font="@Skin.Current.CARDPILE_FONT" FontColor="green"
-                    BorderWidth="Skin.Current.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Skin.Current.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Skin.Current.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
+                    Font="@Client.CurrentSkin.CARDPILE_FONT" FontColor="green"
+                    BorderWidth="Client.CurrentSkin.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Client.CurrentSkin.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Client.CurrentSkin.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
                     Align="@TextAlignment.Center" />
 
-            dialBonusX += 2 * Skin.Current.RESOURCETOKEN_RADIUS;
+            dialBonusX += 2 * Client.CurrentSkin.RESOURCETOKEN_RADIUS;
         }
 
         if (ShowEntirePlan && Plan.HasReinforcements)
         {
             <MapText ToShow="+2"
                      X=@dialBonusX Y=@forceY
-                     Popover=@Skin.Current.Describe(TreacheryCardType.Reinforcements)
-                     Font="@Skin.Current.CARDPILE_FONT" FontColor="green"
-                     BorderWidth="Skin.Current.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Skin.Current.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Skin.Current.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
+                     Popover=@Client.CurrentSkin.Describe(TreacheryCardType.Reinforcements)
+                     Font="@Client.CurrentSkin.CARDPILE_FONT" FontColor="green"
+                     BorderWidth="Client.CurrentSkin.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Client.CurrentSkin.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Client.CurrentSkin.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
                      Align="@TextAlignment.Center" />
 
-            dialBonusX += 2 * Skin.Current.RESOURCETOKEN_RADIUS;
+            dialBonusX += 2 * Client.CurrentSkin.RESOURCETOKEN_RADIUS;
         }
     }
 
@@ -88,22 +88,22 @@
         var costsOfBattle = Plan.Cost(Game);
         if (costsOfBattle > 0)
         {
-            <MapImage X="@(forceX + 5 * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY)" Diameter="@(Skin.Current.RESOURCETOKEN_RADIUS * 2)" 
-                   Src="@Skin.Current.Harvester_URL" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
+            <MapImage X="@(forceX + 5 * Client.CurrentSkin.RESOURCETOKEN_RADIUS)" Y="@(forceY)" Diameter="@(Client.CurrentSkin.RESOURCETOKEN_RADIUS * 2)" 
+                   Src="@Client.CurrentSkin.Harvester_URL" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
 
             <MapText ToShow="@costsOfBattle.ToString()"
-                     X="@(forceX + 6 * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY + Skin.Current.RESOURCETOKEN_RADIUS)"
-                     Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
-                     BorderWidth="Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
+                     X="@(forceX + 6 * Client.CurrentSkin.RESOURCETOKEN_RADIUS)" Y="@(forceY + Client.CurrentSkin.RESOURCETOKEN_RADIUS)"
+                     Font="@Client.CurrentSkin.RESOURCETOKEN_FONT" FontColor="@Client.CurrentSkin.RESOURCETOKEN_FONTCOLOR"
+                     BorderWidth="Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERCOLOR"
                      Align="@TextAlignment.Center" />
         }
 
         if (Game.HasStrongholdAdvantage(Plan.Initiator, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory))
         {
-            <MapImage X="@(forceX + 8f * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)"
-                   Src="@Skin.Current.GetImageUrl(StrongholdAdvantage.FreeResourcesForBattles)"
-                   ShadowColor="@Skin.Current.SHADOW" ShadowX="3" ShadowY="3" ShadowBlur="1"
-                   Popover="@Popup.Get(StrongholdAdvantage.FreeResourcesForBattles, Plan.Initiator)" />
+            <MapImage X="@(forceX + 8f * Client.CurrentSkin.RESOURCETOKEN_RADIUS)" Y="@(forceY)" Width=@(0.4f * Client.CurrentSkin.BattleWheelCardWidth) Height="@(0.4f * Client.CurrentSkin.BattleWheelCardHeight)"
+                   Src="@Client.CurrentSkin.GetImageUrl(StrongholdAdvantage.FreeResourcesForBattles)"
+                   ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="3" ShadowY="3" ShadowBlur="1"
+                   Popover="@Client.CurrentSkin.GetPopup(StrongholdAdvantage.FreeResourcesForBattles, Plan.Initiator)" />
         }
     }
 
@@ -114,38 +114,38 @@
             if (!ShowEntirePlan)
             {
                 <MapText ToShow="no leader"
-                         X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 2)" Y="@(Y + Skin.Current.BattleScreenHeroY + Skin.Current.BattleWheelHeroWidth / 2)"
-                         Font="@Skin.Current.CARDPILE_FONT" FontColor="white"
-                         BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="black"
+                         X="@(X + Client.CurrentSkin.BattleScreenHeroX + Client.CurrentSkin.BattleWheelHeroWidth / 2)" Y="@(Y + Client.CurrentSkin.BattleScreenHeroY + Client.CurrentSkin.BattleWheelHeroWidth / 2)"
+                         Font="@Client.CurrentSkin.CARDPILE_FONT" FontColor="white"
+                         BorderWidth="Client.CurrentSkin.CARDPILE_FONT_BORDERWIDTH" BorderColor="black"
                          Align="@TextAlignment.Center" />
             }
         }
         else if (Plan.Hero is Leader)
         {
-            var skillX = X + Skin.Current.BattleScreenHeroX + 0.6f * Skin.Current.BattleWheelHeroWidth;
-            var skillY = Y + Skin.Current.BattleScreenHeroY - 0.6f * Skin.Current.BattleWheelHeroHeight;
+            var skillX = X + Client.CurrentSkin.BattleScreenHeroX + 0.6f * Client.CurrentSkin.BattleWheelHeroWidth;
+            var skillY = Y + Client.CurrentSkin.BattleScreenHeroY - 0.6f * Client.CurrentSkin.BattleWheelHeroHeight;
 
             var heroSkill = Game.Skill(Plan.Hero);
             if (heroSkill != LeaderSkill.None)
             {
-                <MapImage X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageUrl(heroSkill)" 
-                        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0"
-                        Popover="@Popup.Get(heroSkill)" />
+                <MapImage X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Client.CurrentSkin.BattleWheelCardWidth) Height="@(0.4f * Client.CurrentSkin.BattleWheelCardHeight)" Src="@Client.CurrentSkin.GetImageUrl(heroSkill)" 
+                        ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0"
+                        Popover="@Client.CurrentSkin.GetPopup(heroSkill)" />
 
-                skillX += 0.5f * Skin.Current.BattleWheelCardWidth;
+                skillX += 0.5f * Client.CurrentSkin.BattleWheelCardWidth;
             }
 
             var passiveSkill = Game.GetSkill(Plan.Player);
             if (passiveSkill != heroSkill && PassiveSkillIsRelevantForBattlePlan(passiveSkill))
             {
-                <MapImage X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageUrl(passiveSkill)"
-                       ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0"
-                       Popover="@Popup.Get(passiveSkill)" />
+                <MapImage X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Client.CurrentSkin.BattleWheelCardWidth) Height="@(0.4f * Client.CurrentSkin.BattleWheelCardHeight)" Src="@Client.CurrentSkin.GetImageUrl(passiveSkill)"
+                       ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0"
+                       Popover="@Client.CurrentSkin.GetPopup(passiveSkill)" />
 
-                skillX += 0.5f * Skin.Current.BattleWheelCardWidth;
+                skillX += 0.5f * Client.CurrentSkin.BattleWheelCardWidth;
             }
 
-            <MapLeader  ToShow="Plan.Hero" X=@(X + Skin.Current.BattleScreenHeroX) Y=@(Y + Skin.Current.BattleScreenHeroY) Diameter="Skin.Current.BattleWheelHeroWidth"/>
+            <MapLeader  ToShow="Plan.Hero" X=@(X + Client.CurrentSkin.BattleScreenHeroX) Y=@(Y + Client.CurrentSkin.BattleScreenHeroY) Diameter="Client.CurrentSkin.BattleWheelHeroWidth"/>
 
             var usedSkill = LeaderSkill.None;
                 
@@ -153,9 +153,9 @@
             if (bonus != 0)
             {
                 <MapText ToShow="@("+" + bonus)"
-                            X="@(X + Skin.Current.BattleScreenHeroX + 0.9f * Skin.Current.BattleWheelHeroWidth)" Y="@(Y + Skin.Current.BattleScreenHeroY + 0.2f * Skin.Current.BattleWheelHeroWidth)"
-                            Font="@Skin.Current.CARDPILE_FONT" FontColor="green"
-                            BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
+                            X="@(X + Client.CurrentSkin.BattleScreenHeroX + 0.9f * Client.CurrentSkin.BattleWheelHeroWidth)" Y="@(Y + Client.CurrentSkin.BattleScreenHeroY + 0.2f * Client.CurrentSkin.BattleWheelHeroWidth)"
+                            Font="@Client.CurrentSkin.CARDPILE_FONT" FontColor="green"
+                            BorderWidth="Client.CurrentSkin.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
                             Align="@TextAlignment.Right" />
             }
                 
@@ -164,51 +164,51 @@
                 var penalty = Battle.DetermineSkillPenalty(Game, OpponentPlan, Plan.Player, ref usedSkill);
                 if (penalty != 0)
                 {
-                    var tip = $"{Skin.Current.Describe(usedSkill)} penalty";
+                    var tip = $"{Client.CurrentSkin.Describe(usedSkill)} penalty";
                     <MapText ToShow="@("-" + penalty)"
-                             X="@(X + Skin.Current.BattleScreenHeroX + 0.9f * Skin.Current.BattleWheelHeroWidth)" Y="@(Y + Skin.Current.BattleScreenHeroY + 0.75f * Skin.Current.BattleWheelHeroWidth)"
+                             X="@(X + Client.CurrentSkin.BattleScreenHeroX + 0.9f * Client.CurrentSkin.BattleWheelHeroWidth)" Y="@(Y + Client.CurrentSkin.BattleScreenHeroY + 0.75f * Client.CurrentSkin.BattleWheelHeroWidth)"
                              Popover="@tip"
-                                Font="@Skin.Current.CARDPILE_FONT" FontColor="red"
-                                BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
+                                Font="@Client.CurrentSkin.CARDPILE_FONT" FontColor="red"
+                                BorderWidth="Client.CurrentSkin.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
                                 Align="@TextAlignment.Right" />
                 }
             }
         }
         else if (Plan.Hero is TreacheryCard)
         {
-            <MapImage X="@(X + Skin.Current.BattleScreenHeroX)" Y="@(Y + Skin.Current.BattleScreenHeroY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
-                   Src="@Skin.Current.GetImageUrl(Plan.Hero as TreacheryCard)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                   Popover="@Popup.Get(Plan.Hero as TreacheryCard)" PopoverStyle=""/>
+            <MapImage X="@(X + Client.CurrentSkin.BattleScreenHeroX)" Y="@(Y + Client.CurrentSkin.BattleScreenHeroY)" Width=@(Client.CurrentSkin.BattleWheelCardWidth) Height="@(Client.CurrentSkin.BattleWheelCardHeight)" 
+                   Src="@Client.CurrentSkin.GetImageUrl(Plan.Hero as TreacheryCard)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                   Popover="@Client.CurrentSkin.GetPopup(Plan.Hero as TreacheryCard)" PopoverStyle=""/>
         }
 
         if (TraitorCalled)
         {
             <MapText ToShow="TRAITOR!"
-                     X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 2)" Y="@(Y + Skin.Current.BattleScreenHeroY + Skin.Current.BattleWheelHeroWidth / 1.5f)"
-                     Font="@Skin.Current.CARDPILE_FONT" FontColor="red"
-                     BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
+                     X="@(X + Client.CurrentSkin.BattleScreenHeroX + Client.CurrentSkin.BattleWheelHeroWidth / 2)" Y="@(Y + Client.CurrentSkin.BattleScreenHeroY + Client.CurrentSkin.BattleWheelHeroWidth / 1.5f)"
+                     Font="@Client.CurrentSkin.CARDPILE_FONT" FontColor="red"
+                     BorderWidth="Client.CurrentSkin.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
                      Align="@TextAlignment.Center" />
         }
 
         if (Facedanced)
         {
             <MapText ToShow="FACE DANCER!"
-                     X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 2)" Y="@(Y + Skin.Current.BattleScreenHeroY + Skin.Current.BattleWheelHeroWidth / 1.5f)"
-                     Font="@Skin.Current.CARDPILE_FONT" FontColor="red"
-                     BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
+                     X="@(X + Client.CurrentSkin.BattleScreenHeroX + Client.CurrentSkin.BattleWheelHeroWidth / 2)" Y="@(Y + Client.CurrentSkin.BattleScreenHeroY + Client.CurrentSkin.BattleWheelHeroWidth / 1.5f)"
+                     Font="@Client.CurrentSkin.CARDPILE_FONT" FontColor="red"
+                     BorderWidth="Client.CurrentSkin.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
                      Align="@TextAlignment.Center" />
         }
 
         if (Plan.Initiator == Faction.Green && Plan.Messiah)
         {
-            <MapImage X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 1.5f)" Y="@(Y + 0.8f * Skin.Current.BattleScreenHeroY)" 
-                Diameter="@(0.5f * Skin.Current.BattleWheelHeroWidth)" 
-                Src="@Skin.Current.Messiah_URL" 
-                ShadowColor="@Skin.Current.SHADOW" 
+            <MapImage X="@(X + Client.CurrentSkin.BattleScreenHeroX + Client.CurrentSkin.BattleWheelHeroWidth / 1.5f)" Y="@(Y + 0.8f * Client.CurrentSkin.BattleScreenHeroY)" 
+                Diameter="@(0.5f * Client.CurrentSkin.BattleWheelHeroWidth)" 
+                Src="@Client.CurrentSkin.Messiah_URL" 
+                ShadowColor="@Client.CurrentSkin.SHADOW" 
                 ShadowX="1" 
                 ShadowY="1" 
                 ShadowBlur="1" 
-                Popover=@Skin.Current.Describe(Concept.Messiah) />
+                Popover=@Client.CurrentSkin.Describe(Concept.Messiah) />
         }
     }
 
@@ -219,16 +219,16 @@
         {
             var defenseToShow = isUsingPortableAntidote ? Plan.Player.Card(TreacheryCardType.PortableAntidote) : Plan.Defense;
 
-            <MapImage X="@(X + Skin.Current.BattleWheelCardX + 1.1f * Skin.Current.BattleWheelCardWidth)" Y="@(Y + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
-                   Src="@Skin.Current.GetImageUrl(defenseToShow)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                   Popover="@Popup.Get(defenseToShow)" PopoverStyle=""/>
+            <MapImage X="@(X + Client.CurrentSkin.BattleWheelCardX + 1.1f * Client.CurrentSkin.BattleWheelCardWidth)" Y="@(Y + Client.CurrentSkin.BattleWheelCardY)" Width=@(Client.CurrentSkin.BattleWheelCardWidth) Height="@(Client.CurrentSkin.BattleWheelCardHeight)" 
+                   Src="@Client.CurrentSkin.GetImageUrl(defenseToShow)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                   Popover="@Client.CurrentSkin.GetPopup(defenseToShow)" PopoverStyle=""/>
         }
         else if (!ShowEntirePlan)
         {
             <MapText ToShow="no defense"
-                     X="@(X + Skin.Current.BattleWheelCardX + 1.6f * Skin.Current.BattleWheelCardWidth)" Y="@(Y + 1.1f * Skin.Current.BattleWheelCardY + Skin.Current.BattleWheelCardHeight / 2)"
-                     Font="@Skin.Current.TURN_FONT" FontColor="white"
-                     BorderWidth="Skin.Current.TURN_FONT_BORDERWIDTH" BorderColor="black"
+                     X="@(X + Client.CurrentSkin.BattleWheelCardX + 1.6f * Client.CurrentSkin.BattleWheelCardWidth)" Y="@(Y + 1.1f * Client.CurrentSkin.BattleWheelCardY + Client.CurrentSkin.BattleWheelCardHeight / 2)"
+                     Font="@Client.CurrentSkin.TURN_FONT" FontColor="white"
+                     BorderWidth="Client.CurrentSkin.TURN_FONT_BORDERWIDTH" BorderColor="black"
                      Align="@TextAlignment.Center" />
         }
     }
@@ -237,29 +237,29 @@
     {
         if (Plan.Weapon != null && (ShowEntirePlan || Plan.Weapon.IsWeapon))
         {
-            <MapImage X="@(X + Skin.Current.BattleWheelCardX)" Y="@(Y + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
-                   Src="@Skin.Current.GetImageUrl(Plan.Weapon)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                   Popover="@Popup.Get(Plan.Weapon)" PopoverStyle=""/>
+            <MapImage X="@(X + Client.CurrentSkin.BattleWheelCardX)" Y="@(Y + Client.CurrentSkin.BattleWheelCardY)" Width=@(Client.CurrentSkin.BattleWheelCardWidth) Height="@(Client.CurrentSkin.BattleWheelCardHeight)" 
+                   Src="@Client.CurrentSkin.GetImageUrl(Plan.Weapon)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                   Popover="@Client.CurrentSkin.GetPopup(Plan.Weapon)" PopoverStyle=""/>
         }
         else if (!ShowEntirePlan)
         {
             <MapText ToShow="no weapon"
-                     X="@(X + Skin.Current.BattleWheelCardX + Skin.Current.BattleWheelCardWidth / 2)" Y="@(Y + 1.1f * Skin.Current.BattleWheelCardY + Skin.Current.BattleWheelCardHeight / 2)"
-                     Font="@Skin.Current.TURN_FONT" FontColor="white"
-                     BorderWidth="Skin.Current.TURN_FONT_BORDERWIDTH" BorderColor="black"
+                     X="@(X + Client.CurrentSkin.BattleWheelCardX + Client.CurrentSkin.BattleWheelCardWidth / 2)" Y="@(Y + 1.1f * Client.CurrentSkin.BattleWheelCardY + Client.CurrentSkin.BattleWheelCardHeight / 2)"
+                     Font="@Client.CurrentSkin.TURN_FONT" FontColor="white"
+                     BorderWidth="Client.CurrentSkin.TURN_FONT_BORDERWIDTH" BorderColor="black"
                      Align="@TextAlignment.Center" />
         }
     }
 }
 else
 {
-    <MapImage X=@(X + 0.5f * Skin.Current.BattleScreenWidth - Skin.Current.FORCETOKEN_RADIUS) Y=@Y Diameter=@(2*Skin.Current.FORCETOKEN_RADIUS) Src="@Skin.Current.BattleScreen_URL"
-       ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"/>
+    <MapImage X=@(X + 0.5f * Client.CurrentSkin.BattleScreenWidth - Client.CurrentSkin.FORCETOKEN_RADIUS) Y=@Y Diameter=@(2*Client.CurrentSkin.FORCETOKEN_RADIUS) Src="@Client.CurrentSkin.BattleScreen_URL"
+       ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"/>
 }
 
-<MapImage X="@(X + Skin.Current.BattleWheelForcesX - 0.5f * Skin.Current.FORCETOKEN_RADIUS)" Y="@(Y + 0.25f * Skin.Current.FORCETOKEN_RADIUS)"
-    Diameter="@Skin.Current.FORCETOKEN_RADIUS"
-    Src="@(showPlan ? Skin.Current.EyeSlash_URL : Skin.Current.Eye_URL)"
+<MapImage X="@(X + Client.CurrentSkin.BattleWheelForcesX - 0.5f * Client.CurrentSkin.FORCETOKEN_RADIUS)" Y="@(Y + 0.25f * Client.CurrentSkin.FORCETOKEN_RADIUS)"
+    Diameter="@Client.CurrentSkin.FORCETOKEN_RADIUS"
+    Src="@(showPlan ? Client.CurrentSkin.EyeSlash_URL : Client.CurrentSkin.Eye_URL)"
     OnClick="@OnShowPlanClick"
     ShadowColor="black" ShadowX="1" ShadowY="1" ShadowBlur="0"
     Popover="@(showPlan ? "Hide Wheel" : "Show Wheel")" PopoverAsTooltip="true"/>

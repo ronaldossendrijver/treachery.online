@@ -13,7 +13,7 @@
     <Header>Swap the next card on auction with a card from your hand? You can do this once per Bidding round.</Header>
     <Body>
         <SelectFromImageComponent @bind-Value="card" Values="Player.TreacheryCards" ImageWidth="80" />
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Swap {0}", card)" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Swap {0}", card)" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
     </Body>
 
 </GameEventComponentLayout>

@@ -10,11 +10,11 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to buy one of your special Treachery cards for 3 @Skin.Current.Describe(Concept.Resource)</Header>
+    <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to buy one of your special Treachery cards for 3 @Client.CurrentSkin.Describe(Concept.Resource)</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="card" Values="Game.WhiteCache" ImageWidth="80" />
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Karma)" ConfirmError="@Validation" />
 
     </Body>
 

@@ -71,7 +71,7 @@
 
     protected override YellowRidesMonster PassedResult => new(Game, Faction) { Passed = true };
 
-    protected override IEnumerable<Location> ValidTargets => YellowRidesMonster.ValidTargets(Game, Player).OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l));
+    protected override IEnumerable<Location> ValidTargets => YellowRidesMonster.ValidTargets(Game, Player).OrderByDescending(l => l.IsStronghold).ThenBy(l => Client.CurrentSkin.Describe(l));
 
     protected override bool InformAboutCaravan => false;
 
@@ -82,10 +82,10 @@
             var toRide = YellowRidesMonster.ToRide(Game);
             if (toRide.IsGreatMonster)
             {
-                return Skin.Current.Format("Ride the {0} with forces from your reserves?", Concept.GreatMonster);
+                return Client.CurrentSkin.Format("Ride the {0} with forces from your reserves?", Concept.GreatMonster);
             }
 
-            return Skin.Current.Format("Ride the Worm that appeared in {0}?", toRide.Territory);
+            return Client.CurrentSkin.Format("Ride the Worm that appeared in {0}?", toRide.Territory);
         }
     }
 

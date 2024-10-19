@@ -11,7 +11,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @Skin.Current.Describe(TreacheryCardType.RaiseDead) to revive up to five forces or one leader for free</Header>
+    <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.RaiseDead) to revive up to five forces or one leader for free</Header>
     <Body>
 
         @{
@@ -82,7 +82,7 @@
             }
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.RaiseDead)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.RaiseDead)" ConfirmError="@Validation" />
 
     </Body>
 

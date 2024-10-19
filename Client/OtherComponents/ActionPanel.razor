@@ -94,7 +94,7 @@
             break;
 
         case nameof(MetheorPlayed):
-            <SimpleActionComponent GameEventType="MetheorPlayed" BackgroundImage="@GetImage(TreacheryCardType.Metheor)" Title="@DescribeCard(TreacheryCardType.Metheor)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Metheor)"/>
+            <SimpleActionComponent GameEventType="MetheorPlayed" BackgroundImage="@GetImage(TreacheryCardType.Metheor)" Title="@DescribeCard(TreacheryCardType.Metheor)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Metheor)"/>
             break;
 
         case nameof(TakeLosses):
@@ -158,11 +158,11 @@
             break;
 
         case nameof(AllianceByTerror):
-            <YesNoActionComponent GameEventType="AllianceByTerror" Title=@Skin.Current.Format("Enter an alliance with {0}?", Faction.Cyan) Alert="true"/>
+            <YesNoActionComponent GameEventType="AllianceByTerror" Title=@Client.CurrentSkin.Format("Enter an alliance with {0}?", Faction.Cyan) Alert="true"/>
             break;
 
         case nameof(AllianceByAmbassador):
-            <YesNoActionComponent GameEventType="AllianceByAmbassador" Title=@Skin.Current.Format("Enter an alliance with {0}?", Faction.Pink) Alert="true"/>
+            <YesNoActionComponent GameEventType="AllianceByAmbassador" Title=@Client.CurrentSkin.Format("Enter an alliance with {0}?", Faction.Pink) Alert="true"/>
             break;
 
         case nameof(NexusPlayed):
@@ -186,7 +186,7 @@
             break;
 
         case nameof(BattleClaimed):
-            var titleBattleClaimed = Faction == Faction.Pink ? Skin.Current.Format("Do you wish to fight in {0}? Otherwise, your ally will.", Game.BattleAboutToStart.Territory) : Skin.Current.Format("Should {0} fight the battle in {1}?", Faction.Pink, Game.BattleAboutToStart.Territory);
+            var titleBattleClaimed = Faction == Faction.Pink ? Client.CurrentSkin.Format("Do you wish to fight in {0}? Otherwise, your ally will.", Game.BattleAboutToStart.Territory) : Client.CurrentSkin.Format("Should {0} fight the battle in {1}?", Faction.Pink, Game.BattleAboutToStart.Territory);
             <YesNoActionComponent GameEventType="BattleClaimed" Title=@titleBattleClaimed Alert="true"/>
             break;
 
@@ -227,7 +227,7 @@
             break;
 
         case nameof(DivideResourcesAccepted):
-            <YesNoActionComponent GameEventType="DivideResourcesAccepted" Title=@Skin.Current.Format("Agree with the proposed division of {0}?", Concept.Resource) Alert="true"/>
+            <YesNoActionComponent GameEventType="DivideResourcesAccepted" Title=@Client.CurrentSkin.Format("Agree with the proposed division of {0}?", Concept.Resource) Alert="true"/>
             break;
 
         case nameof(DiscoveryRevealed):
@@ -235,7 +235,7 @@
             break;
 
         case nameof(CardGiven):
-            <YesNoActionComponent GameEventType="CardGiven" Title=@Skin.Current.Format("Give your ally the {0} you just received?", Game.CardThatMustBeKeptOrGivenToAlly) Alert="true"/>
+            <YesNoActionComponent GameEventType="CardGiven" Title=@Client.CurrentSkin.Format("Give your ally the {0} you just received?", Game.CardThatMustBeKeptOrGivenToAlly) Alert="true"/>
             break;
 
         case nameof(RaiseDeadPlayed):
@@ -295,11 +295,11 @@
             break;
 
         case nameof(KarmaPrescience):
-            <SimpleActionComponent GameEventType="KarmaPrescience" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Skin.Current.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)"/>
+            <SimpleActionComponent GameEventType="KarmaPrescience" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Client.CurrentSkin.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Karma)"/>
             break;
 
         case nameof(KarmaPinkDial):
-            <SimpleActionComponent GameEventType="KarmaPinkDial" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Skin.Current.Format("Use {0} to add the difference between the leader discs to your dial", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)"/>
+            <SimpleActionComponent GameEventType="KarmaPinkDial" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Client.CurrentSkin.Format("Use {0} to add the difference between the leader discs to your dial", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Karma)"/>
             break;
 
         case nameof(KarmaWhiteBuy):
@@ -339,11 +339,11 @@
             break;
 
         case nameof(AmalPlayed):
-            <SimpleActionComponent GameEventType="AmalPlayed" BackgroundImage="@GetImage(TreacheryCardType.Amal)" Title="@DescribeCard(TreacheryCardType.Amal)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Amal)"/>
+            <SimpleActionComponent GameEventType="AmalPlayed" BackgroundImage="@GetImage(TreacheryCardType.Amal)" Title="@DescribeCard(TreacheryCardType.Amal)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Amal)"/>
             break;
 
         case nameof(RecruitsPlayed):
-            <SimpleActionComponent GameEventType="RecruitsPlayed" BackgroundImage="@GetImage(TreacheryCardType.Recruits)" Title="@DescribeCard(TreacheryCardType.Recruits)" Alert="false" ConfirmLabel="@Skin.Current.Format("Play {0}", TreacheryCardType.Recruits)"/>
+            <SimpleActionComponent GameEventType="RecruitsPlayed" BackgroundImage="@GetImage(TreacheryCardType.Recruits)" Title="@DescribeCard(TreacheryCardType.Recruits)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Play {0}", TreacheryCardType.Recruits)"/>
             break;
 
         case nameof(WhiteAnnouncesBlackMarket):
@@ -371,7 +371,7 @@
             break;
 
         case nameof(HarvesterPlayed):
-            <SimpleActionComponent GameEventType="HarvesterPlayed" BackgroundImage="@GetImage(TreacheryCardType.Harvester)" Title="@DescribeCard(TreacheryCardType.Harvester)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Harvester)"/>
+            <SimpleActionComponent GameEventType="HarvesterPlayed" BackgroundImage="@GetImage(TreacheryCardType.Harvester)" Title="@DescribeCard(TreacheryCardType.Harvester)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Harvester)"/>
             break;
 
         case nameof(PoisonToothCancelled):
@@ -383,7 +383,7 @@
             break;
 
         case nameof(ThumperPlayed):
-            <SimpleActionComponent GameEventType="ThumperPlayed" BackgroundImage="@GetImage(TreacheryCardType.Thumper)" Title="@DescribeCard(TreacheryCardType.Thumper)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Thumper)"/>
+            <SimpleActionComponent GameEventType="ThumperPlayed" BackgroundImage="@GetImage(TreacheryCardType.Thumper)" Title="@DescribeCard(TreacheryCardType.Thumper)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Thumper)"/>
             break;
 
         case nameof(HideSecrets):
@@ -419,7 +419,7 @@
             break;
 
         case nameof(ExtortionPrevented):
-            var titleExtortionPrevented = Skin.Current.Format("Pay 3 to prevent {0} regaining their {1} token?", Faction.Cyan, TerrorType.Extortion);
+            var titleExtortionPrevented = Client.CurrentSkin.Format("Pay 3 to prevent {0} regaining their {1} token?", Faction.Cyan, TerrorType.Extortion);
             <SimpleActionComponent GameEventType="ExtortionPrevented" Title=@titleExtortionPrevented ConfirmLabel="Yes" Alert="false"/>
             break;
 
@@ -449,8 +449,8 @@
 
         case nameof(BrownExtraMove):
             var cardToUse = BrownExtraMove.CardToUse(Client.Player);
-            var titleBrownExtraMove = Skin.Current.Format("Use {0} to be able to move your forces one extra territory?", cardToUse != null ? Name(cardToUse) : "Nexus Cunning");
-            var background = cardToUse != null ? Skin.Current.GetImageUrl(cardToUse) : Skin.Current.GetImageUrl(Nexus.Brown);
+            var titleBrownExtraMove = Client.CurrentSkin.Format("Use {0} to be able to move your forces one extra territory?", cardToUse != null ? Name(cardToUse) : "Nexus Cunning");
+            var background = cardToUse != null ? Client.CurrentSkin.GetImageUrl(cardToUse) : Client.CurrentSkin.GetImageUrl(Nexus.Brown);
             <SimpleActionComponent GameEventType="BrownExtraMove" BackgroundImage=@background Title=@titleBrownExtraMove Alert="false"/>
             break;
 
@@ -485,15 +485,15 @@
         case nameof(WhiteRevealedNoField):
             <SimpleActionComponent GameEventType="WhiteRevealedNoField"
                                    IsFactionSpecific=Faction.White
-                                   Title="@Skin.Current.Format("Reveal your currently active No-Field of {0}, placing {1} forces?", Client.Game.CurrentNoFieldValue, Math.Min(Client.Game.CurrentNoFieldValue, Client.Player.ForcesInReserve))"
+                                   Title="@Client.CurrentSkin.Format("Reveal your currently active No-Field of {0}, placing {1} forces?", Client.Game.CurrentNoFieldValue, Math.Min(Client.Game.CurrentNoFieldValue, Client.Player.ForcesInReserve))"
                                    ConfirmLabel="Reveal"/>
             break;
 
         case nameof(ResidualPlayed):
             <SimpleActionComponent GameEventType="ResidualPlayed"
                                    BackgroundImage="@GetImage(TreacheryCardType.Residual)"
-                                   Title="@Skin.Current.Format("Use {0} to kill a random available opponent leader?", TreacheryCardType.Residual)"
-                                   ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Residual)"/>
+                                   Title="@Client.CurrentSkin.Format("Use {0} to kill a random available opponent leader?", TreacheryCardType.Residual)"
+                                   ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Residual)"/>
             break;
 
         case nameof(FlightUsed):
@@ -501,7 +501,7 @@
             break;
 
         case nameof(FlightDiscoveryUsed):
-            <SimpleActionComponent GameEventType="FlightDiscoveryUsed" Title=@Skin.Current.Format("Use your {0} Discovery Token to gain extra movement speed?", DiscoveryToken.Flight) Alert="false" ConfirmLabel="Yes"/>
+            <SimpleActionComponent GameEventType="FlightDiscoveryUsed" Title=@Client.CurrentSkin.Format("Use your {0} Discovery Token to gain extra movement speed?", DiscoveryToken.Flight) Alert="false" ConfirmLabel="Yes"/>
             break;
 
         case nameof(RockWasMelted):
@@ -519,8 +519,8 @@
         case nameof(DiscardedSearchedAnnounced):
             <SimpleActionComponent GameEventType="DiscardedSearchedAnnounced"
                                    BackgroundImage="@GetImage(TreacheryCardType.SearchDiscarded)"
-                                   Title="@Skin.Current.Format("Use {0} to pay 2 and search and take a card from the treachery discard pile?", TreacheryCardType.SearchDiscarded)"
-                                   ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.SearchDiscarded)"/>
+                                   Title="@Client.CurrentSkin.Format("Use {0} to pay 2 and search and take a card from the treachery discard pile?", TreacheryCardType.SearchDiscarded)"
+                                   ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.SearchDiscarded)"/>
             break;
 
         case nameof(DiscardedSearched):
@@ -534,12 +534,12 @@
         case nameof(PortableAntidoteUsed):
             <SimpleActionComponent GameEventType="PortableAntidoteUsed"
                                    BackgroundImage="@GetImage(TreacheryCardType.PortableAntidote)"
-                                   Title="@Skin.Current.Format("Use your {0}?", TreacheryCardType.PortableAntidote)"
-                                   ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.PortableAntidote)"/>
+                                   Title="@Client.CurrentSkin.Format("Use your {0}?", TreacheryCardType.PortableAntidote)"
+                                   ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.PortableAntidote)"/>
             break;
 
         case nameof(Bureaucracy):
-            <YesNoActionComponent GameEventType="Bureaucracy" BackgroundImage="@Skin.Current.GetImageUrl(LeaderSkill.Bureaucrat)" Title="@Skin.Current.Format("Use your {0} skill?", LeaderSkill.Bureaucrat)" Alert="true"/>
+            <YesNoActionComponent GameEventType="Bureaucracy" BackgroundImage="@Client.CurrentSkin.GetImageUrl(LeaderSkill.Bureaucrat)" Title="@Client.CurrentSkin.Format("Use your {0} skill?", LeaderSkill.Bureaucrat)" Alert="true"/>
             break;
 
         case nameof(Captured):
@@ -552,11 +552,11 @@
 
         case nameof(SwitchedSkilledLeader):
             var skilledLeader = SwitchedSkilledLeader.SwitchableLeader(Game, Player);
-            var titleSwitchedSkilledLeader = Skin.Current.Format("Place {0} {1} your player shield?", skilledLeader, Client.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of");
-            var confirmLabel = Skin.Current.Format("Put {0} shield", Client.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of");
+            var titleSwitchedSkilledLeader = Client.CurrentSkin.Format("Place {0} {1} your player shield?", skilledLeader, Client.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of");
+            var confirmLabel = Client.CurrentSkin.Format("Put {0} shield", Client.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of");
 
             <SimpleActionComponent GameEventType="SwitchedSkilledLeader"
-                                   BackgroundImage="@Skin.Current.GetImageUrl(Client.Game.Skill(skilledLeader))" Title=@titleSwitchedSkilledLeader
+                                   BackgroundImage="@Client.CurrentSkin.GetImageUrl(Client.Game.Skill(skilledLeader))" Title=@titleSwitchedSkilledLeader
                                    ConfirmLabel=@confirmLabel/>
             break;
 

@@ -10,6 +10,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Treachery.Client;
+using Treachery.Shared;
 
 namespace Treachery.Server;
 
@@ -17,6 +19,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        Message.DefaultDescriber = DefaultSkin.Default;
         CreateHostBuilder(args).Build().Run();
     }
 

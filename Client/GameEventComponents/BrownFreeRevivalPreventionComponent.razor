@@ -23,11 +23,11 @@
 
     protected override Faction IsFactionSpecific => Faction.Brown;
 
-    protected override string Background => Skin.Current.GetImageUrl(BrownFreeRevivalPrevention.CardToUse(Player));
+    protected override string Background => Client.CurrentSkin.GetImageUrl(BrownFreeRevivalPrevention.CardToUse(Player));
 
     private Faction target;
 
     protected override BrownFreeRevivalPrevention ConfirmedResult => new(Game, Faction) { Target = target };
 
-    private string ToUse => BrownFreeRevivalPrevention.CardToUse(Player) != null ? Skin.Current.Describe(BrownFreeRevivalPrevention.CardToUse(Player)) : "Nexus Cunning";
+    private string ToUse => BrownFreeRevivalPrevention.CardToUse(Player) != null ? Client.CurrentSkin.Describe(BrownFreeRevivalPrevention.CardToUse(Player)) : "Nexus Cunning";
 }

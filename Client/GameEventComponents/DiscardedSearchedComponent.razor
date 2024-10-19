@@ -10,12 +10,12 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @Skin.Current.Describe(TreacheryCardType.SearchDiscarded)?</Header>
+    <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.SearchDiscarded)?</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="card" Values="DiscardedSearched.ValidCards(Game)" Required="true" ImageWidth="80" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.SearchDiscarded)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.SearchDiscarded)" ConfirmError="@Validation" />
 
     </Body>
 

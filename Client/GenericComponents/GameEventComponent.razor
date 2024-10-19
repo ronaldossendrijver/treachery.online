@@ -92,7 +92,7 @@
                     return "";
                 }
 
-                return string.Format("background-color: {0};", Skin.Current.GetFactionColorTransparant(IsFactionSpecific, "bb"));
+                return string.Format("background-color: {0};", Client.CurrentSkin.GetFactionColorTransparant(IsFactionSpecific, "bb"));
             }
 
             return string.Format("background-color: rgba(0,0,0,0); background-image: url('{0}'); background-origin: content-box; background-size: cover; background-repeat: no-repeat;", BackgroundImage);

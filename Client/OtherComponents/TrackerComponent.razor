@@ -25,17 +25,17 @@
 
                 @foreach (var p in Players)
                 {
-                    <button class="btn @ButtonStyle(p) p-1" @onclick="e => Toggle(p)" data-bs-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
-                        <img class="img-fluid" width="29" height="29" src="@Skin.Current.GetFactionTableImageURL(p.Faction)" />
+                    <button class="btn @ButtonStyle(p) p-1" @onclick="e => Toggle(p)" data-bs-toggle="tooltip" title="@Client.CurrentSkin.Describe(p.Faction)">
+                        <img class="img-fluid" width="29" height="29" src="@Client.CurrentSkin.GetFactionTableImageURL(p.Faction)" />
                     </button>
                 }
 
                 <button class="btn @ButtonStyle(Client.Game.TreacheryDiscardPile) p-1" @onclick="e => Toggle(Client.Game.TreacheryDiscardPile)" data-bs-toggle="tooltip" title="Discarded Treachery Cards">
-                    <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Skin.Current.CardBack_TreacheryCard_URL" />
+                    <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" />
                 </button>
 
                 <button class="btn @ButtonStyle(Client.Game.ResourceCardDeck) p-1" @onclick="e => Toggle(Client.Game.ResourceCardDeck)" data-bs-toggle="tooltip" title="Discarded Spice Cards">
-                    <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Skin.Current.CardBack_ResourceCard_URL" />
+                    <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Client.CurrentSkin.CardBack_ResourceCard_URL" />
                 </button>
 
             </div>
@@ -61,7 +61,7 @@
                             }
                             else if (cardId == TreacheryCard.Unknown)
                             {
-                                <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="img-fluid" />
+                                <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" class="img-fluid" />
                             }
                             else
                             {
@@ -130,22 +130,22 @@
 
             else if (Shown == Client.Game.ResourceCardDeck)
             {
-                <div>Top @Skin.Current.Describe(Concept.Resource) Card</div>
-                <PickFromImageComponent Value=SpiceCard(Info.TrackedSpiceCard) T=ResourceCard OnChanged=@(card => Info.TrackedSpiceCard = Skin.Current.Describe(card)) Title="Select Card" Required=false ImageWidth=60 Values="AllSpiceCards"/>
+                <div>Top @Client.CurrentSkin.Describe(Concept.Resource) Card</div>
+                <PickFromImageComponent Value=SpiceCard(Info.TrackedSpiceCard) T=ResourceCard OnChanged=@(card => Info.TrackedSpiceCard = Client.CurrentSkin.Describe(card)) Title="Select Card" Required=false ImageWidth=60 Values="AllSpiceCards"/>
 
                 if (Client.Game.Applicable(Rule.IncreasedResourceFlow))
                 {
                     @if (Client.Game.ResourceCardDiscardPileA.Items.Any() || Client.Game.ResourceCardDiscardPileA.Items.Any())
                     {
-                        <div class="small"><strong>Discard pile A:</strong> @Skin.Current.Join(Client.Game.ResourceCardDiscardPileA.Items)</div>
-                        <div class="small"><strong>Discard pile B:</strong> @Skin.Current.Join(Client.Game.ResourceCardDiscardPileB.Items)</div>
+                        <div class="small"><strong>Discard pile A:</strong> @Client.CurrentSkin.Join(Client.Game.ResourceCardDiscardPileA.Items)</div>
+                        <div class="small"><strong>Discard pile B:</strong> @Client.CurrentSkin.Join(Client.Game.ResourceCardDiscardPileB.Items)</div>
                     }
                 }
                 else
                 {
                     @if (Client.Game.ResourceCardDiscardPileA.Items.Any())
                     {
-                        <div class="small"><strong>Discarded:</strong> @Skin.Current.Join(Client.Game.ResourceCardDiscardPileA.Items)</div>
+                        <div class="small"><strong>Discarded:</strong> @Client.CurrentSkin.Join(Client.Game.ResourceCardDiscardPileA.Items)</div>
                     }
                 }
             }
@@ -167,7 +167,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Info = new GreenIntelligence(Client.Game);
+        Info = new GreenIntelligence(Client);
 
         try
         {
@@ -310,7 +310,7 @@
     private string DetermineImageSrc(int cardID)
     {
         var card = TreacheryCardManager.Lookup.Find(cardID);
-        return Skin.Current.GetImageUrl(card);
+        return Client.CurrentSkin.GetImageUrl(card);
     }
 
     private async Task Save()
@@ -323,7 +323,7 @@
         var trackerdata = await Browser.LoadSetting<string>(string.Format("treachery.online;currentgame;{0};trackerdata", Client.Game.Seed));
         if (trackerdata != null && trackerdata != "")
         {
-            Info = GreenIntelligence.Parse(Client.Game, trackerdata);
+            Info = GreenIntelligence.Parse(Client, trackerdata);
             StateHasChanged();
         }
     }
@@ -341,12 +341,12 @@
 
     private ResourceCard SpiceCard(string name)
     {
-        return AllSpiceCards.FirstOrDefault(c => Skin.Current.Describe(c) == name);
+        return AllSpiceCards.FirstOrDefault(c => Client.CurrentSkin.Describe(c) == name);
     }
 
     private IEnumerable<Player> Players => Client.Game.Players.OrderBy(p => Name(p.Faction));
 
-    private string InfoMessage => Skin.Current.Format("Welcome to the {0} Tracker! Use it to take note of (discarded) traitors, the top spice card and treachery cards.<br>When a (possibly unknown) card is won, click on an empty card placeholder and select it.<br>To indicate that a card was discarded, click it and then select the 'trash can' which will move the card to the Discarded section. When an unknown card becomes known and discarded, select it first, then discard it.<br>When the discard pile is shuffled into a new draw pile, click 'reshuffle' to clear the Discarded section.<br>If you sent a card to the Discarded section by mistake, click on the X next to it.", Faction.Green);
+    private string InfoMessage => Client.CurrentSkin.Format("Welcome to the {0} Tracker! Use it to take note of (discarded) traitors, the top spice card and treachery cards.<br>When a (possibly unknown) card is won, click on an empty card placeholder and select it.<br>To indicate that a card was discarded, click it and then select the 'trash can' which will move the card to the Discarded section. When an unknown card becomes known and discarded, select it first, then discard it.<br>When the discard pile is shuffled into a new draw pile, click 'reshuffle' to clear the Discarded section.<br>If you sent a card to the Discarded section by mistake, click on the X next to it.", Faction.Green);
 
     private void Toggle(object toShow)
     {

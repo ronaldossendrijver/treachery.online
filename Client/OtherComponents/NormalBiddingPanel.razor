@@ -47,7 +47,7 @@
                 return string.Format("Card {0} of {1}", Game.CardNumber, Game.NumberOfCardsOnRegularAuction);
             }
 
-            return Skin.Current.Format("{0} Card ({1})", Faction.White, Game.CurrentAuctionType);
+            return Client.CurrentSkin.Format("{0} Card ({1})", Faction.White, Game.CurrentAuctionType);
         }
     }
 }

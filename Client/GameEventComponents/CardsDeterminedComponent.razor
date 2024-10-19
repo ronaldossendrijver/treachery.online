@@ -18,7 +18,7 @@
 
         @if(Game.WhiteCache.Any())
         {
-            <h4>@Skin.Current.Describe(Faction.White) Cards</h4>
+            <h4>@Client.CurrentSkin.Describe(Faction.White) Cards</h4>
             <SelectFromImageComponent Selected="selectedWhiteCards" Values="Game.WhiteCache" T=TreacheryCard OnChanged=StateHasChanged/>
         }
 

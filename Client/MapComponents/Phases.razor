@@ -9,17 +9,17 @@
 @inherits MapComponent
 
 @{
-    var x = Skin.Current.MapDimensions.X - 5;
+    var x = Client.CurrentSkin.MapDimensions.X - 5;
 
     if (Game.CurrentTurn >= 1)
     {
         <MapText ToShow="@string.Format("Turn {0} of {1}", Client.Game.CurrentTurn, Client.Game.MaximumTurns)"
                  X="x"
                  Y=@(0.3f * TurnFontHeight)
-                 Font="@Skin.Current.TURN_FONT"
-                 FontColor="@Skin.Current.TURN_FONT_COLOR"
-                 BorderWidth="@Skin.Current.TURN_FONT_BORDERWIDTH"
-                 BorderColor="@Skin.Current.TURN_FONT_BORDERCOLOR"
+                 Font="@Client.CurrentSkin.TURN_FONT"
+                 FontColor="@Client.CurrentSkin.TURN_FONT_COLOR"
+                 BorderWidth="@Client.CurrentSkin.TURN_FONT_BORDERWIDTH"
+                 BorderColor="@Client.CurrentSkin.TURN_FONT_BORDERCOLOR"
                  Popover=@TurnPopover
                  Align="@TextAlignment.Right"/>
     }
@@ -27,13 +27,13 @@
     if (Game.NumberOfObservers > 0)
     {
         <MapText ToShow="@string.Format("observers: {0}", Game.NumberOfObservers)"
-                 X="@(Skin.Current.PlanetCenter.X)"
-                 Y="@(Skin.Current.MapDimensions.Y - TurnFontHeight)"
+                 X="@(Client.CurrentSkin.PlanetCenter.X)"
+                 Y="@(Client.CurrentSkin.MapDimensions.Y - TurnFontHeight)"
                  Popover="@ObserverPopover"
-                 Font="@Skin.Current.FORCETOKEN_FONT"
-                 FontColor="@Skin.Current.FORCETOKEN_FONTCOLOR"
-                 BorderWidth="@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH"
-                 BorderColor="@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR"
+                 Font="@Client.CurrentSkin.FORCETOKEN_FONT"
+                 FontColor="@Client.CurrentSkin.FORCETOKEN_FONTCOLOR"
+                 BorderWidth="@Client.CurrentSkin.FORCETOKEN_FONT_BORDERWIDTH"
+                 BorderColor="@Client.CurrentSkin.FORCETOKEN_FONT_BORDERCOLOR"
                  Align="@TextAlignment.Center"/>
     }
 
@@ -48,21 +48,21 @@
             {
                 posY += 0.7f * ActiveFontHeight;
 
-                <MapText ToShow="@Skin.Current.Describe(phase)"
+                <MapText ToShow="@Client.CurrentSkin.Describe(phase)"
                          X="@(posX)" Y="@(posY)"
-                         Font="@Skin.Current.PHASE_ACTIVE_FONT" FontColor="@Skin.Current.PHASE_ACTIVE_FONTCOLOR"
-                         BorderWidth="@Skin.Current.PHASE_ACTIVE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.PHASE_FONT_BORDERCOLOR"
+                         Font="@Client.CurrentSkin.PHASE_ACTIVE_FONT" FontColor="@Client.CurrentSkin.PHASE_ACTIVE_FONTCOLOR"
+                         BorderWidth="@Client.CurrentSkin.PHASE_ACTIVE_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.PHASE_FONT_BORDERCOLOR"
                          Align="@TextAlignment.Right"/>
 
                 if (Game.EconomicsStatus != BrownEconomicsStatus.None && Game.EconomicsStatus != BrownEconomicsStatus.RemovedFromGame && phase == MainPhase.Charity)
                 {
-                    var diameter = 2 * Skin.Current.PlayerTokenRadius;
+                    var diameter = 2 * Client.CurrentSkin.PlayerTokenRadius;
 
-                    <MapImage X="@(posX - diameter)" Y="@(posY - Skin.Current.PlayerTokenRadius)" Diameter=diameter Src="@Skin.Current.GetImageUrl(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
+                    <MapImage X="@(posX - diameter)" Y="@(posY - Client.CurrentSkin.PlayerTokenRadius)" Diameter=diameter Src="@Client.CurrentSkin.GetImageUrl(Faction.Brown)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
 
-                    <MapText ToShow="@Skin.Current.Describe(Game.EconomicsStatus)"
-                             X="@(posX - Skin.Current.PlayerTokenRadius)" Y="@(posY)"
-                             Font="@Skin.Current.SKILL_FONT" FontColor="white"
+                    <MapText ToShow="@Client.CurrentSkin.Describe(Game.EconomicsStatus)"
+                             X="@(posX - Client.CurrentSkin.PlayerTokenRadius)" Y="@(posY)"
+                             Font="@Client.CurrentSkin.SKILL_FONT" FontColor="white"
                              BorderWidth="1" BorderColor="black"
                              Align="@TextAlignment.Center"/>
                 }
@@ -73,19 +73,19 @@
             {
                 posY += PassiveFontHeight;
 
-                <MapText ToShow="@Skin.Current.Describe(phase)"
+                <MapText ToShow="@Client.CurrentSkin.Describe(phase)"
                          X="@(posX)" Y="@(posY)"
-                         Font="@Skin.Current.PHASE_FONT" FontColor="@Skin.Current.PHASE_FONTCOLOR"
-                         BorderWidth="@Skin.Current.PHASE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.PHASE_FONT_BORDERCOLOR"
+                         Font="@Client.CurrentSkin.PHASE_FONT" FontColor="@Client.CurrentSkin.PHASE_FONTCOLOR"
+                         BorderWidth="@Client.CurrentSkin.PHASE_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.PHASE_FONT_BORDERCOLOR"
                          Align="@TextAlignment.Right"/>
 
                 if (Game.EconomicsStatus != BrownEconomicsStatus.None && Game.EconomicsStatus != BrownEconomicsStatus.RemovedFromGame && phase == MainPhase.Charity)
                 {
-                    <MapImage X="@(posX - Skin.Current.PlayerTokenRadius)" Y="@(posY - 0.5f * Skin.Current.PlayerTokenRadius)" Diameter=Skin.Current.PlayerTokenRadius Src="@Skin.Current.GetImageUrl(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
+                    <MapImage X="@(posX - Client.CurrentSkin.PlayerTokenRadius)" Y="@(posY - 0.5f * Client.CurrentSkin.PlayerTokenRadius)" Diameter=Client.CurrentSkin.PlayerTokenRadius Src="@Client.CurrentSkin.GetImageUrl(Faction.Brown)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
 
-                    <MapText ToShow="@Skin.Current.Describe(Game.EconomicsStatus)"
-                             X="@(posX - 0.5f * Skin.Current.PlayerTokenRadius)" Y="@(posY)"
-                             Font="@Skin.Current.SKILL_FONT" FontColor="white"
+                    <MapText ToShow="@Client.CurrentSkin.Describe(Game.EconomicsStatus)"
+                             X="@(posX - 0.5f * Client.CurrentSkin.PlayerTokenRadius)" Y="@(posY)"
+                             Font="@Client.CurrentSkin.SKILL_FONT" FontColor="white"
                              BorderWidth="1" BorderColor="black"
                              Align="@TextAlignment.Center"/>
                 }
@@ -115,12 +115,12 @@
             var ruleInfo = "";
             foreach (var group in groups)
             {
-                ruleInfo += Skin.Current.Format("<h5 class='h5'>{0}</h5><p class='mt-0 mb-2'>{1}.</p>", group, rulesWithGroups.Where(rg => rg.Group == group).Select(rg => rg.Rule));
+                ruleInfo += Client.CurrentSkin.Format("<h5 class='h5'>{0}</h5><p class='mt-0 mb-2'>{1}.</p>", group, rulesWithGroups.Where(rg => rg.Group == group).Select(rg => rg.Rule));
             }
 
-            result += Skin.Current.Format("<h4>{0}</h4><p>Game version: {1}</p>{2}", Game.Ruleset, Game.Version, ruleInfo);
+            result += Client.CurrentSkin.Format("<h4>{0}</h4><p>Game version: {1}</p>{2}", Game.Ruleset, Game.Version, ruleInfo);
 
-            result += Skin.Current.Format("<h4>Timers</h4>");
+            result += Client.CurrentSkin.Format("<h4>Timers</h4>");
             result += $"<p><string>Game started:</strong> {Game.Started:dddd, dd MMMM yyyy H:mm:ss}";
             result += $"<p><string>Last activity:</strong> {Game.History.Last().Time:dddd, dd MMMM yyyy H:mm:ss}";
             result += $"<p><string>Game duration:</strong> {Math.Round(Game.Duration.TotalHours, 1)} hours";
@@ -138,7 +138,7 @@
                 var timeBattling = Game.TimeSpent(p, MainPhase.Battle);
                 var timeTotal = timeBidding + timeShipping + timeBattling;
 
-                result += Skin.Current.Format("<tr class='table-dark'><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>",
+                result += Client.CurrentSkin.Format("<tr class='table-dark'><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>",
                 Game.GetPlayerName(p), timeBidding.ToString(@"h\:mm\:ss"), timeShipping.ToString(@"h\:mm\:ss"), timeBattling.ToString(@"h\:mm\:ss"), timeTotal.ToString(@"h\:mm\:ss"));
             }
 

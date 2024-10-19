@@ -10,7 +10,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Return @Game.KarmaHandSwapNumberOfCards cards to @Skin.Current.Describe(Game.KarmaHandSwapTarget)</Header>
+    <Header>Return @Game.KarmaHandSwapNumberOfCards cards to @Client.CurrentSkin.Describe(Game.KarmaHandSwapTarget)</Header>
     <Body>
         
         <SelectFromImageComponent Selected="selectedCards" Values="Player.TreacheryCards" T="TreacheryCard" OnChanged="StateHasChanged" ImageWidth="80" />

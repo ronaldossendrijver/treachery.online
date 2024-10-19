@@ -334,7 +334,7 @@ public class Tests
     {
         var statistics = new Statistics();
 
-        Message.DefaultDescriber = Skin.Current;
+        Message.DefaultDescriber = DefaultSkin.Default;
 
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
@@ -366,9 +366,9 @@ public class Tests
                 PlayGameAndRecordResults(nrOfPlayers, nrOfTurns, rulesAsArray, wincounter, statistics, timeout);
             });
 
-        foreach (var f in wincounter.Counted.OrderByDescending(f => wincounter.CountOf(f))) Console.WriteLine(Skin.Current.Format("{0}: {1} ({2}%)", f, wincounter.CountOf(f), 100f * wincounter.CountOf(f) / nrOfGames));
+        foreach (var f in wincounter.Counted.OrderByDescending(f => wincounter.CountOf(f))) Console.WriteLine(DefaultSkin.Default.Format("{0}: {1} ({2}%)", f, wincounter.CountOf(f), 100f * wincounter.CountOf(f) / nrOfGames));
 
-        statistics?.Output(Skin.Current);
+        statistics.Output(DefaultSkin.Default);
     }
 
     private void PlayGameAndRecordResults(int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> winCounter, Statistics statistics, int timeout)
@@ -377,14 +377,14 @@ public class Tests
 
         Console.WriteLine("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
             string.Join(",", game.Winners.Select(DetermineName)),
-            Skin.Current.Describe(game.WinMethod),
+            DefaultSkin.Default.Describe(game.WinMethod),
             game.CurrentTurn,
             game.History.Count,
-            Skin.Current.Join(LeaderManager.Leaders.Where(l => !game.IsAlive(l))),
+            DefaultSkin.Default.Join(LeaderManager.Leaders.Where(l => !game.IsAlive(l))),
             game.Players.Sum(p => p.ForcesKilled + p.SpecialForcesKilled),
-            Skin.Current.Join(game.Players.SelectMany(p => p.TreacheryCards)),
+            DefaultSkin.Default.Join(game.Players.SelectMany(p => p.TreacheryCards)),
             game.Players.Sum(p => p.Resources),
-            Skin.Current.Join(game.TreacheryDiscardPile.Items));
+            DefaultSkin.Default.Join(game.TreacheryDiscardPile.Items));
 
         foreach (var winner in game.Winners) winCounter.Count(winner.Faction);
     }
@@ -564,7 +564,7 @@ public class Tests
 
         File.WriteAllText("CentralStyleStatistics.json", "{\r\n  \"entries\": [");
 
-        Message.DefaultDescriber = Skin.Current;
+        Message.DefaultDescriber = DefaultSkin.Default;
 
         ProfileGames();
 
@@ -596,7 +596,7 @@ public class Tests
             throw;
         }
             
-        statistics?.Output(Skin.Current);
+        statistics?.Output(DefaultSkin.Default);
             
         foreach (var item in centralStyleStatistics)
         {
@@ -712,19 +712,19 @@ public class Tests
             }
             else if (latest is TreacheryCalled traitorcalled && traitorcalled.Succeeded)
             {
-                statistics.TraitoredLeaders.Count(Skin.Current.Describe(game.CurrentBattle.PlanOfOpponent(traitorcalled.Player).Hero));
+                statistics.TraitoredLeaders.Count(DefaultSkin.Default.Describe(game.CurrentBattle.PlanOfOpponent(traitorcalled.Player).Hero));
             }
             else if (latest is FaceDanced fd && !fd.Passed)
             {
-                statistics.FacedancedLeaders.Count(Skin.Current.Describe(game.WinnerHero));
+                statistics.FacedancedLeaders.Count(DefaultSkin.Default.Describe(game.WinnerHero));
             }
             else if (latest is ClairVoyancePlayed cp)
             {
-                statistics.Truthtrances.Count(cp.GetQuestion().ToString(Skin.Current).Replace(';', ':'));
+                statistics.Truthtrances.Count(cp.GetQuestion().ToString(DefaultSkin.Default).Replace(';', ':'));
             }
             else if (latest is DealAccepted da)
             {
-                statistics.AcceptedDeals.Count(da.GetDealContents().ToString(Skin.Current).Replace(';', ':'));
+                statistics.AcceptedDeals.Count(da.GetDealContents().ToString(DefaultSkin.Default).Replace(';', ':'));
             }
             else if (latest is Karma karma)
             {
@@ -769,16 +769,16 @@ public class Tests
 
                 statistics.BattleWinningFactions.Count(outcome.Winner != null ? outcome.Winner.Faction : Faction.None);
                 statistics.BattleLosingFactions.Count(outcome.Loser != null ? outcome.Loser.Faction : Faction.None);
-                statistics.BattleWinningLeaders.Count(Skin.Current.Describe(outcome.WinnerBattlePlan.Hero));
-                statistics.BattleLosingLeaders.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Hero));
+                statistics.BattleWinningLeaders.Count(DefaultSkin.Default.Describe(outcome.WinnerBattlePlan.Hero));
+                statistics.BattleLosingLeaders.Count(DefaultSkin.Default.Describe(outcome.LoserBattlePlan.Hero));
 
-                if (outcome.LoserHeroKilled) statistics.BattleKilledLeaders.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Hero));
-                if (outcome.WinnerHeroKilled) statistics.BattleKilledLeaders.Count(Skin.Current.Describe(outcome.WinnerBattlePlan.Hero));
+                if (outcome.LoserHeroKilled) statistics.BattleKilledLeaders.Count(DefaultSkin.Default.Describe(outcome.LoserBattlePlan.Hero));
+                if (outcome.WinnerHeroKilled) statistics.BattleKilledLeaders.Count(DefaultSkin.Default.Describe(outcome.WinnerBattlePlan.Hero));
 
-                if (outcome.WinnerBattlePlan.Weapon != null) statistics.UsedWeapons.Count(Skin.Current.Describe(outcome.WinnerBattlePlan.Weapon));
-                if (outcome.WinnerBattlePlan.Defense != null) statistics.UsedDefenses.Count(Skin.Current.Describe(outcome.WinnerBattlePlan.Defense));
-                if (outcome.LoserBattlePlan.Weapon != null) statistics.UsedWeapons.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Weapon));
-                if (outcome.LoserBattlePlan.Defense != null) statistics.UsedDefenses.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Defense));
+                if (outcome.WinnerBattlePlan.Weapon != null) statistics.UsedWeapons.Count(DefaultSkin.Default.Describe(outcome.WinnerBattlePlan.Weapon));
+                if (outcome.WinnerBattlePlan.Defense != null) statistics.UsedDefenses.Count(DefaultSkin.Default.Describe(outcome.WinnerBattlePlan.Defense));
+                if (outcome.LoserBattlePlan.Weapon != null) statistics.UsedWeapons.Count(DefaultSkin.Default.Describe(outcome.LoserBattlePlan.Weapon));
+                if (outcome.LoserBattlePlan.Defense != null) statistics.UsedDefenses.Count(DefaultSkin.Default.Describe(outcome.LoserBattlePlan.Defense));
             }
                 
             if (game.CurrentPhase == Phase.BeginningOfCollection && latest is EndPhase)
@@ -796,7 +796,7 @@ public class Tests
 
     private static string DetermineName(Player p)
     {
-        return p.IsBot ? Skin.Current.Format("{0}Bot", p.Faction) : p.Name.Replace(';', ':');
+        return p.IsBot ? DefaultSkin.Default.Format("{0}Bot", p.Faction) : p.Name.Replace(';', ':');
     }
 
     private static Testvalues DetermineTestvalues(Game game)
@@ -858,11 +858,11 @@ public class Tests
     public void SaveAndLoadSkin()
     {
         var leader = LeaderManager.LeaderLookup.Find(1008);
-        var oldName = Skin.Current.Describe(leader);
+        var oldName = DefaultSkin.Default.Describe(leader);
         var serializer = JsonSerializer.CreateDefault();
         serializer.Formatting = Formatting.Indented;
         var writer = new StringWriter();
-        serializer.Serialize(writer, Skin.Default);
+        serializer.Serialize(writer, DefaultSkin.Default);
         writer.Close();
         var skinData = writer.ToString();
         File.WriteAllText("skin.json", skinData);
@@ -916,7 +916,7 @@ public class Tests
             if (asymNeighbour != null)
             {
                 issueFound = true;
-                Console.WriteLine($"Asymmetrical: {Skin.Current.Describe(l)}[{l.Id}] <-> {Skin.Current.Describe(asymNeighbour)}[{asymNeighbour.Id}]");
+                Console.WriteLine($"Asymmetrical: {DefaultSkin.Default.Describe(l)}[{l.Id}] <-> {DefaultSkin.Default.Describe(asymNeighbour)}[{asymNeighbour.Id}]");
             }
         }
 

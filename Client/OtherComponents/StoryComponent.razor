@@ -31,11 +31,11 @@
 
                 <h4 class="h4">Setup</h4>
 
-                <div class="mt-1"><strong>Ruleset:</strong> @Skin.Current.Describe(replay.Ruleset)</div>
+                <div class="mt-1"><strong>Ruleset:</strong> @Client.CurrentSkin.Describe(replay.Ruleset)</div>
 
                 @if (replay.GetCustomRules().Any())
                 {
-                    <div class="mt-1"><strong>Custom rules:</strong> @Skin.Current.Join(replay.GetCustomRules())</div>
+                    <div class="mt-1"><strong>Custom rules:</strong> @Client.CurrentSkin.Join(replay.GetCustomRules())</div>
                 }
 
                 <div class="mt-1"><strong>Game started:</strong> @evt.Time.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss \"UTC\"")</div>
@@ -46,7 +46,7 @@
             if (evt is BluePrediction bp && replay.YieldsSecrets(evt.Initiator))
             {
                 <div>
-                    <img class="img-fluid" width="24" src="@Skin.Current.GetImageUrl(Faction.Blue)" /> Predicted that <img class="img-fluid" width="24" src="@Skin.Current.GetImageUrl(bp.ToWin)" /> win in turn @bp.Turn.
+                    <img class="img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(Faction.Blue)" /> Predicted that <img class="img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(bp.ToWin)" /> win in turn @bp.Turn.
                 </div>
             }
 
@@ -55,17 +55,17 @@
                 if (replay.WinningBid != previousWinningBid)
                 {
                     <div>
-                        <img class="img-fluid" width="24" src="@Skin.Current.GetImageUrl(replay.WinningBid.Initiator)" /> 
+                        <img class="img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(replay.WinningBid.Initiator)" /> 
                         buy 
                         <RichText Shown=@replay.CardJustWon/>
                         for @replay.WinningBid.TotalAmount
                         @if (replay.WinningBid is Bid b && b.KarmaCard != null)
                         {
-                            <span> using <strong>@Skin.Current.Describe(b.KarmaCard)</strong></span>
+                            <span> using <strong>@Client.CurrentSkin.Describe(b.KarmaCard)</strong></span>
                         }
                         @if (replay.CurrentAuctionType != AuctionType.Normal)
                         {
-                            <span> (@Skin.Current.DescribeDetailed(replay.CurrentAuctionType))</span>
+                            <span> (@Client.CurrentSkin.DescribeDetailed(replay.CurrentAuctionType))</span>
                         }
                     </div>
                 }
@@ -95,13 +95,13 @@
 
             if (evt is BattleInitiated)
             {
-                <h5 class="mt-2">Battle for @Skin.Current.Describe(replay.BattleAboutToStart.Territory)</h5>
+                <h5 class="mt-2">Battle for @Client.CurrentSkin.Describe(replay.BattleAboutToStart.Territory)</h5>
             }
 
             if (IsMilestone(evt))
             {
                 <div class="mb-1">
-                    <img class="img-fluid" width="24" src="@Skin.Current.GetImageUrl(evt.Initiator)" /> @evt.GetMessage().ToString(Skin.Current)
+                    <img class="img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(evt.Initiator)" /> @evt.GetMessage().ToString(Client.CurrentSkin)
                 </div>
             }
 
@@ -136,7 +136,7 @@
                     @foreach (var sh in replay.Map.Strongholds)
                     {
                             <tr class="table-dark">
-                            <td>@Skin.Current.Describe(sh)</td>
+                            <td>@Client.CurrentSkin.Describe(sh)</td>
                             <td>
                                 @foreach (var b in replay.BattalionsIn(sh))
                                 {
@@ -199,7 +199,7 @@
                 @foreach (var w in replay.Winners)
                 {
                     <div>
-                        <h3 class="h3"><img class="img-fluid" width="30" src="@Skin.Current.GetImageUrl(w.Faction)" /> @w.Name wins @Skin.Current.Describe(replay.WinMethod)!</h3>
+                        <h3 class="h3"><img class="img-fluid" width="30" src="@Client.CurrentSkin.GetImageUrl(w.Faction)" /> @w.Name wins @Client.CurrentSkin.Describe(replay.WinMethod)!</h3>
                     </div>
                 }
 

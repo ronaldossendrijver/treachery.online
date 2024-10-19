@@ -15,7 +15,7 @@
         var position = PlayerTokenPosition(Client.Game, p.Seat);
         if (!Client.Status.PlayerShouldBeHighlighted(p))
         {
-            var y = position.Y + Skin.Current.PlayerTokenRadius;
+            var y = position.Y + Client.CurrentSkin.PlayerTokenRadius;
             var bidText = "";
             var bidColor = "white";
 
@@ -33,7 +33,7 @@
 
             <MapText ToShow="@bidText"
                      X="@(position.X)" Y="@(y)"
-                     Font="@Skin.Current.TURN_FONT" FontColor="@bidColor"
+                     Font="@Client.CurrentSkin.TURN_FONT" FontColor="@bidColor"
                      BorderWidth="2" BorderColor="black"
                      Align="@TextAlignment.Center" />
         }

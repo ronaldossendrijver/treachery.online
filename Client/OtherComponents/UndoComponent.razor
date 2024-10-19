@@ -51,12 +51,12 @@
 
     private string DetermineEventDescription(int eventnumber, GameEvent e)
     {
-        return "" + eventnumber + ". " + e.GetShortMessage()?.ToString(Skin.Current);
+        return "" + eventnumber + ". " + e.GetShortMessage()?.ToString(Client.CurrentSkin);
     }
 
     private string DetermineGroup(Moment m)
     {
-        return "Turn " + m.Turn + " - " + Skin.Current.Describe(m.Phase);
+        return "Turn " + m.Turn + " - " + Client.CurrentSkin.Describe(m.Phase);
     }
 
     private Dictionary<string,Dictionary<int, GameEvent>> UndoableEvents

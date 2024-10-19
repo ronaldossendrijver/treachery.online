@@ -10,12 +10,12 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Select which advantage of another stronghold you control to use for the @Skin.Current.Describe(Game.Map.HiddenMobileStronghold)</Header>
+    <Header>Select which advantage of another stronghold you control to use for the @Client.CurrentSkin.Describe(Game.Map.HiddenMobileStronghold)</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="advantage" Values="HMSAdvantageChosen.ValidAdvantages(Game, Player)" ImageWidth="100" Required="true"/>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Select {0}", advantage)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Select {0}", advantage)" ConfirmError="@Validation" />
 
     </Body>
 

@@ -163,7 +163,7 @@ else
             }
             else
             {
-                LoginMessage = Skin.Current.Describe(result.Error);
+                LoginMessage = Client.CurrentSkin.Describe(result.Error);
                 State = LoginComponentState.Login;
             }
         }
@@ -184,7 +184,7 @@ else
             }
             else
             {
-                NewAccountMessage = Skin.Current.Describe(result.Error);
+                NewAccountMessage = Client.CurrentSkin.Describe(result.Error);
                 State = LoginComponentState.NewAccount;
             }
         }
@@ -205,7 +205,7 @@ else
             }
             else
             {
-                PasswordResetMessage = Skin.Current.Describe(result.Error);
+                PasswordResetMessage = Client.CurrentSkin.Describe(result.Error);
                 State = LoginComponentState.RequestPasswordReset;
             }
         }
@@ -226,7 +226,7 @@ else
             }
             else
             {
-                ResetPasswordMessage = Skin.Current.Describe(result.Error);
+                ResetPasswordMessage = Client.CurrentSkin.Describe(result.Error);
                 State = LoginComponentState.EnterNewPassword;
             }
         }

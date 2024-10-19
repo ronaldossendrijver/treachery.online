@@ -21,7 +21,7 @@
         }
 
         @if (!_collapsed || !ShowHeader) {
-            <div class="card-body p-0 bg-transparent text-center" style="background-image: url('@Skin.Current.GetImageUrl(ShownPlayer.Faction)'); background-position:center; background-size:300px 300px; background-clip:content-box; background-repeat: no-repeat">
+            <div class="card-body p-0 bg-transparent text-center" style="background-image: url('@Client.CurrentSkin.GetImageUrl(ShownPlayer.Faction)'); background-position:center; background-size:300px 300px; background-clip:content-box; background-repeat: no-repeat">
 
                 <div class="card-text h-100 text-white" style="background-color:rgba(0,0,0,0.6);">
 
@@ -31,19 +31,19 @@
 
                             <!-- Resources -->
                             <div class="col p-0">
-                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.Harvester_URL" title="@Name(Concept.Resource)" /><strong>&nbsp;@ResourcesText</strong>
+                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.Harvester_URL" title="@Name(Concept.Resource)" /><strong>&nbsp;@ResourcesText</strong>
                             </div>
 
                             <!-- Forces -->
                             <div class="col p-0">
-                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionForceImageURL(ShownPlayer.Faction)" title=@Name(ShownPlayer.Force) /><strong>&nbsp;@ShownPlayer.ForcesInReserve</strong>
+                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionForceImageURL(ShownPlayer.Faction)" title=@Name(ShownPlayer.Force) /><strong>&nbsp;@ShownPlayer.ForcesInReserve</strong>
                             </div>
 
                             <!-- Special Forces -->
                             @if (ShownPlayer.HasSpecialForces)
                             {
                                 <div class="col p-0">
-                                    <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionSpecialForceImageURL(ShownPlayer.Faction)" title=@Name(ShownPlayer.SpecialForce) /><strong>&nbsp;@ShownPlayer.SpecialForcesInReserve</strong>
+                                    <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionSpecialForceImageURL(ShownPlayer.Faction)" title=@Name(ShownPlayer.SpecialForce) /><strong>&nbsp;@ShownPlayer.SpecialForcesInReserve</strong>
                                 </div>
                             }
 
@@ -53,12 +53,12 @@
                         @foreach (var v in ShownPlayer.Leaders.Where(l => Client.Game.IsAlive(l)))
                         {
                             var style = Game.IsSkilled(v) ? "filter:brightness(150%) contrast(100%)" : "";
-                            <Image Src=@Skin.Current.GetImageUrl(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, Client.Game)/>
+                            <Image Src=@Client.CurrentSkin.GetImageUrl(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
                         }
 
                         @foreach (var v in ShownPlayer.Leaders.Where(l => !Client.Game.IsAlive(l)))
                         {
-                            <Image Src=@Skin.Current.GetImageUrl(v) Style="filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8)" Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, Client.Game)/>
+                            <Image Src=@Client.CurrentSkin.GetImageUrl(v) Style="filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
                         }
 
                         <!-- Traitors and Face Dancers -->
@@ -68,12 +68,12 @@
                             @foreach (var v in ShownPlayer.FaceDancers)
                             {
                                 var style = ShownPlayer.RevealedDancers.Contains(v) ? "filter:brightness(150%) contrast(100%) blur(1px)" : "";
-                                <Image Src=@Skin.Current.GetImageUrl(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, Client.Game)/>
+                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
                             }
                         }
                         else if (!Client.Game.AssistedNotekeepingEnabled(Player) && ShownPlayer.Traitors.Count == 1)
                         {
-                            <div><Image Src=@Skin.Current.GetImageUrl(ShownPlayer.Traitors[0]) Class="img-fluid p-1" Width=60 Popover=@Popup.Get(ShownPlayer.Traitors[0], Client.Game)/> is your traitor.</div>
+                            <div><Image Src=@Client.CurrentSkin.GetImageUrl(ShownPlayer.Traitors[0]) Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(ShownPlayer.Traitors[0], Client.Game)/> is your traitor.</div>
                         }
                         else if (ShownPlayer.Traitors.Count > 0)
                         {
@@ -89,12 +89,12 @@
                             @foreach (var v in ShownPlayer.Traitors)
                             {
                                 var style = ShownPlayer.RevealedTraitors.Contains(v) ? "filter:brightness(150%) contrast(110%) blur(1px)" : "";
-                                <Image Src=@Skin.Current.GetImageUrl(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, Client.Game)/>
+                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
                             }
 
                             @foreach (var v in ShownPlayer.DiscardedTraitors)
                             {
-                                <Image Src=@Skin.Current.GetImageUrl(v) Style="filter:grayscale(100%) opacity(60%)" Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, Client.Game)/>
+                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) Style="filter:grayscale(100%) opacity(60%)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
                             }
                         }
 
@@ -116,16 +116,16 @@
                                 {
                                     if (ShownPlayer.MessiahAvailable)
                                     {
-                                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> is available.</div>
+                                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" /> is available.</div>
                                     }
                                     else
                                     {
-                                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> has been killed.</div>
+                                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" /> has been killed.</div>
                                     }
                                 }
                                 else
                                 {
-                                    <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> will be available after <SimpleNumberComponent>@(7 - ShownPlayer.TotalForcesKilledInBattle)</SimpleNumberComponent> more forces are killed in battle.</div>
+                                    <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" /> will be available after <SimpleNumberComponent>@(7 - ShownPlayer.TotalForcesKilledInBattle)</SimpleNumberComponent> more forces are killed in battle.</div>
                                 }
                             }
                         }
@@ -153,7 +153,7 @@
 
                         @if (Client.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Client.Game.HasResourceDeckPrescience(Player) && !Client.Game.ResourceCardDeck.IsEmpty)
                         {
-                            <Hoverable Popover=@Popup.Get(Client.Game.ResourceCardDeck.Top)>Top card of @Name(Concept.Resource) Deck: <strong>@Name(Client.Game.ResourceCardDeck.Top)</strong></Hoverable>
+                            <Hoverable Popover=@Client.CurrentSkin.GetPopup(Client.Game.ResourceCardDeck.Top)>Top card of @Name(Concept.Resource) Deck: <strong>@Name(Client.Game.ResourceCardDeck.Top)</strong></Hoverable>
                         }
 
                         <!-- Cards -->
@@ -181,7 +181,7 @@
 
                         @if (ShownPlayer.Nexus != Faction.None)
                         {
-                            <div>Nexus: <Image Width=30 Src=@Skin.Current.GetFactionFacedownImageURL(ShownPlayer.Nexus) Popover=@Popup.GetNexusCard(ShownPlayer.Nexus.ToNexus())/></div>
+                            <div>Nexus: <Image Width=30 Src=@Client.CurrentSkin.GetFactionFacedownImageURL(ShownPlayer.Nexus) Popover=@Client.CurrentSkin.GetNexusCardPopup(ShownPlayer.Nexus.ToNexus())/></div>
                         }
                     }
                     else
@@ -207,7 +207,7 @@
 
     private bool _collapsed = true;
 
-    private string PlayerColor => string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(ShownPlayer.Faction, "bb"));
+    private string PlayerColor => string.Format("background-color:{0}", Client.CurrentSkin.GetFactionColorTransparant(ShownPlayer.Faction, "bb"));
 
     private string ResourcesText
     {
@@ -219,36 +219,36 @@
                 {
                     if (ShownPlayer.ResourcesAfterBidding > 0)
                     {
-                        return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, ShownPlayer.ResourcesAfterBidding, ShownPlayer.BankedResources, MainPhase.Contemplate);
+                        return Client.CurrentSkin.Format("{0}, {1} at end of turn, {2} at end of bidding, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, ShownPlayer.ResourcesAfterBidding, ShownPlayer.BankedResources, MainPhase.Contemplate);
                     }
 
-                    return Skin.Current.Format("{0}, {1} at {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, MainPhase.Contemplate, ShownPlayer.BankedResources, MainPhase.Contemplate);
+                    return Client.CurrentSkin.Format("{0}, {1} at {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, MainPhase.Contemplate, ShownPlayer.BankedResources, MainPhase.Contemplate);
                 }
 
                 if (ShownPlayer.ResourcesAfterBidding > 0)
                 {
-                    return Skin.Current.Format("{0}, {1} at end of {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding, ShownPlayer.BankedResources, MainPhase.Contemplate);
+                    return Client.CurrentSkin.Format("{0}, {1} at end of {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding, ShownPlayer.BankedResources, MainPhase.Contemplate);
                 }
 
-                return Skin.Current.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.BankedResources, MainPhase.Contemplate);
+                return Client.CurrentSkin.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.BankedResources, MainPhase.Contemplate);
             }
 
             if (ShownPlayer.Bribes + ShownPlayer.Extortion > 0)
             {
                 if (ShownPlayer.ResourcesAfterBidding > 0)
                 {
-                    return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, ShownPlayer.ResourcesAfterBidding);
+                    return Client.CurrentSkin.Format("{0}, {1} at end of turn, {2} at end of bidding", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, ShownPlayer.ResourcesAfterBidding);
                 }
 
-                return Skin.Current.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, MainPhase.Contemplate);
+                return Client.CurrentSkin.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, MainPhase.Contemplate);
             }
 
             if (ShownPlayer.ResourcesAfterBidding > 0)
             {
-                return Skin.Current.Format("{0}, {1} at end of {2}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding);
+                return Client.CurrentSkin.Format("{0}, {1} at end of {2}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding);
             }
 
-            return Skin.Current.Format("{0}", ShownPlayer.Resources);
+            return Client.CurrentSkin.Format("{0}", ShownPlayer.Resources);
         }
     }
 }

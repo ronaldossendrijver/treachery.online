@@ -54,7 +54,7 @@
             {
                 if (Game.GetRulesInGroup(ruleGroup, Game.ExpansionLevel).Any())
                 {
-                    <label class="mt-1 mb-0">@Skin.Current.Describe(ruleGroup)</label>
+                    <label class="mt-1 mb-0">@Client.CurrentSkin.Describe(ruleGroup)</label>
                     @foreach (var rule in Game.GetRulesInGroup(ruleGroup, Game.ExpansionLevel).OrderBy(r => Name(r)))
                     {
                         <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" />

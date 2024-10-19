@@ -10,11 +10,11 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @Skin.Current.Describe(TreacheryCardType.StormSpell)?</Header>
+    <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.StormSpell)?</Header>
     <Body>
 
         <SelectNumberComponent @bind-Value="nrOfSectors" Min="0" Max="10" Label="Number of sectors" />
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.StormSpell)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.StormSpell)" ConfirmError="@Validation" />
 
     </Body>
 

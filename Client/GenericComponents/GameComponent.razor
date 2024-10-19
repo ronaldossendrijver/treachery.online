@@ -145,24 +145,24 @@
         await Task.CompletedTask;
     }
 
-    protected static IEnumerable<string> GetLabels<T>(IEnumerable<T> items, string labelIfNull = "")
+    protected IEnumerable<string> GetLabels<T>(IEnumerable<T> items, string labelIfNull = "")
     {
         return items.Select(i => i != null ? Name(i) : labelIfNull);
     }
 
-    protected static string Name(object o)
+    protected string Name(object o)
     {
-        return Skin.Current.Describe(o);
+        return Client.CurrentSkin.Describe(o);
     }
 
-    protected static string GetImage(TreacheryCardType type)
+    protected string GetImage(TreacheryCardType type)
     {
-        return Skin.Current.GetImageUrl(TreacheryCardManager.GetCardsInAndOutsidePlay().FirstOrDefault(c => c.Type == type));
+        return Client.CurrentSkin.GetImageUrl(TreacheryCardManager.GetCardsInAndOutsidePlay().FirstOrDefault(c => c.Type == type));
     }
 
-    protected static string DescribeCard(TreacheryCardType t)
+    protected string DescribeCard(TreacheryCardType t)
     {
-        return Skin.Current.Format("Use {0}?", t);
+        return Client.CurrentSkin.Format("Use {0}?", t);
     }
 
     protected string GetId(object value)
@@ -179,7 +179,7 @@
             return valueAsIdentifiable.Id.ToString();
         }
 
-        return Skin.Current.Describe(value);
+        return Client.CurrentSkin.Describe(value);
     }
 }
 

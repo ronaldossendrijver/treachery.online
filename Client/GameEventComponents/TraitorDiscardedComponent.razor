@@ -15,7 +15,7 @@
 
         <SelectFromImageComponent Game="Game" @bind-Value="hero" Values="@TraitorDiscarded.ValidTraitors(Player)" Required="true" ImageWidth="80" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Discard {0}", hero)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Discard {0}", hero)" ConfirmError="@Validation" />
 
     </Body>
 

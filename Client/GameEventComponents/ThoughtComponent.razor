@@ -10,12 +10,12 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use your @Skin.Current.Describe(LeaderSkill.Thinker) to ask if your opponent has a specific weapon</Header>
+    <Header>Use your @Client.CurrentSkin.Describe(LeaderSkill.Thinker) to ask if your opponent has a specific weapon</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="card" Values="Thought.ValidCards(Game)" Required="true" ImageWidth="80" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Ask about {0}", card)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Ask about {0}", card)" ConfirmError="@Validation" />
 
     </Body>
 

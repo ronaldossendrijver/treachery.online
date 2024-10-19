@@ -15,7 +15,7 @@
 
         <SelectFromImageComponent @bind-Value="card" Values="WhiteGaveCard.ValidCards(Player)" Required="true" ImageWidth="80" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Give {0}", card)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Give {0}", card)" ConfirmError="@Validation" />
 
     </Body>
 

@@ -29,7 +29,7 @@
         </SelectComponent>
 
         <div class="text-info">
-            @Skin.Current.GetTerrorTypeDescription(_type)
+            @Client.CurrentSkin.GetTerrorTypeDescription(_type)
         </div>
 
         <ButtonRowComponent Pass="Pass" Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@Validation" />
@@ -68,7 +68,7 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    private string[] ValueLabels => ["Place or move a token", Skin.Current.Format("Remove a token to gain 4 ", Concept.Resource)];
+    private string[] ValueLabels => ["Place or move a token", Client.CurrentSkin.Format("Remove a token to gain 4 ", Concept.Resource)];
 
     private string ConfirmLabel => TerrorPlanted.MayRemoveTokens(Game, Player) ? "Remove token" : Game.UnplacedTerrorTokens.Contains(_type) ? "Place token" : "Move token";
 

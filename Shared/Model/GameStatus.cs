@@ -770,7 +770,7 @@ public class GameStatus
                 //Show Nexus card played
                 case NexusPlayed np: Flash(result, Message.Express(np.Initiator, " play a Nexus card"), np.Faction.ToNexus()); break;
                 case Revival nexusrev when nexusrev.UsesRedSecretAlly: Flash(result, Message.Express(nexusrev.Initiator, " play a Nexus card"), Faction.Red.ToNexus()); break;
-                //case Bid nexusbid when nexusbid.UsesRedSecretAlly: Flash(result, Message.Express(nexusbid.Initiator, " play a Nexus card"), Skin.Current.GetNexusCardImageURL(Faction.Red)); break;
+                //case Bid nexusbid when nexusbid.UsesRedSecretAlly: Flash(result, Message.Express(nexusbid.Initiator, " play a Nexus card"), Client.CurrentSkin.GetNexusCardImageURL(Faction.Red)); break;
             }
 
         var nrOfSpiceBlows = g.RecentMilestones.Count(m => m == Milestone.Resource);

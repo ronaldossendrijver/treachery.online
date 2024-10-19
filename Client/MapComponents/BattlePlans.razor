@@ -29,8 +29,8 @@
     var AggressorWasFacedanced = Game.Version > 150 && Game.CurrentPhase == Phase.Facedancing && Game.CurrentBattle.Aggressor == Game.BattleWinner;
     var DefenderWasFacedanced = Game.Version > 150 && Game.CurrentPhase == Phase.Facedancing && Game.CurrentBattle.Defender == Game.BattleWinner;
 
-    var x = 0.1f * Skin.Current.MapDimensions.X;
-    var y = 0.1f * Skin.Current.MapDimensions.Y;
+    var x = 0.1f * Client.CurrentSkin.MapDimensions.X;
+    var y = 0.1f * Client.CurrentSkin.MapDimensions.Y;
 
     if (MaySeeAggressorBattlePlan || MaySeeBothBattlePlans)
     {
@@ -45,8 +45,8 @@
         <BattlePlan  Plan="Game.AggressorPlan" ShowEntirePlan=false OpponentPlan="Game.DefenderPlan" Facedanced="AggressorWasFacedanced" TraitorCalled="false" IsAggressor="true" X="x" Y="y" Opacity="0.5f" />
     }
 
-    x = 0.4f * Skin.Current.MapDimensions.X;
-    y = 0.5f * Skin.Current.MapDimensions.Y;
+    x = 0.4f * Client.CurrentSkin.MapDimensions.X;
+    y = 0.5f * Client.CurrentSkin.MapDimensions.Y;
 
     if (MaySeeDefenderBattlePlan || MaySeeBothBattlePlans)
     {

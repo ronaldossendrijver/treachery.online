@@ -22,8 +22,8 @@
 
                 @foreach (var p in Players.Where(p => p != Client.Player))
                 {
-                    <button class="btn @ButtonStyle(p) p-1" @onclick="e => Toggle(p)" data-bs-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
-                        <img class="img-fluid" width="29" height="29" src="@Skin.Current.GetFactionTableImageURL(p.Faction)" />
+                    <button class="btn @ButtonStyle(p) p-1" @onclick="e => Toggle(p)" data-bs-toggle="tooltip" title="@Client.CurrentSkin.Describe(p.Faction)">
+                        <img class="img-fluid" width="29" height="29" src="@Client.CurrentSkin.GetFactionTableImageURL(p.Faction)" />
                     </button>
                 }
 
@@ -37,19 +37,19 @@
 
                     <!-- Resources -->
                     <div class="col col-auto ps-0">
-                        <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.Harvester_URL" title="@Skin.Current.Describe(Concept.Resource)" /><strong>&nbsp;@ResourcesText(p)</strong>
+                        <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.Harvester_URL" title="@Client.CurrentSkin.Describe(Concept.Resource)" /><strong>&nbsp;@ResourcesText(p)</strong>
                     </div>
 
                     <!-- Forces -->
                     <div class="col col-auto ps-0">
-                        <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionForceImageURL(p.Faction)" title="@Skin.Current.Describe(p.Force)" /><strong>&nbsp;@p.ForcesInReserve</strong>
+                        <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionForceImageURL(p.Faction)" title="@Client.CurrentSkin.Describe(p.Force)" /><strong>&nbsp;@p.ForcesInReserve</strong>
                     </div>
 
                     <!-- Special Forces -->
                     @if (p.HasSpecialForces)
                     {
                         <div class="col col-auto ps-0">
-                            <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionSpecialForceImageURL(p.Faction)" title="@Skin.Current.Describe(p.SpecialForce)" /><strong>&nbsp;@p.SpecialForcesInReserve</strong>
+                            <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionSpecialForceImageURL(p.Faction)" title="@Client.CurrentSkin.Describe(p.SpecialForce)" /><strong>&nbsp;@p.SpecialForcesInReserve</strong>
                         </div>
                     }
 
@@ -65,17 +65,17 @@
                         @foreach (var c in cards)
                         {
                             var isKnown = IsKnownCard(c);
-                            var popover = isKnown ? Popup.Get(c) : "<div class='p-1 small' style='color:black;background-color:white;border: 1px solid black;'>Unknown</div>";
+                            var popover = isKnown ? Client.CurrentSkin.GetPopup(c) : "<div class='p-1 small' style='color:black;background-color:white;border: 1px solid black;'>Unknown</div>";
 
                             <Hoverable Class="card border-0 p-1" Popover=@popover>
 
                                 @if (IsKnownCard(c))
                                 {
-                                    <img src="@Skin.Current.GetImageUrl(c)" class="img-fluid" />
+                                    <img src="@Client.CurrentSkin.GetImageUrl(c)" class="img-fluid" />
                                 }
                                 else
                                 {
-                                    <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="img-fluid" />
+                                    <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" class="img-fluid" />
                                 }
 
                             </Hoverable>
@@ -118,16 +118,16 @@
                     {
                         if (p.MessiahAvailable)
                         {
-                            <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> is available.</div>
+                            <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" /> is available.</div>
                         }
                         else
                         {
-                            <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> is dead.</div>
+                            <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" /> is dead.</div>
                         }
                     }
                     else
                     {
-                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> available after <SimpleNumberComponent>@(7 - p.TotalForcesKilledInBattle)</SimpleNumberComponent> more forces are killed.</div>
+                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" /> available after <SimpleNumberComponent>@(7 - p.TotalForcesKilledInBattle)</SimpleNumberComponent> more forces are killed.</div>
                     }
                 }
             }
@@ -197,17 +197,17 @@
 
             if (p.ResourcesAfterBidding > 0)
             {
-                return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding", p.Resources, p.Bribes, p.ResourcesAfterBidding);
+                return Client.CurrentSkin.Format("{0}, {1} at end of turn, {2} at end of bidding", p.Resources, p.Bribes, p.ResourcesAfterBidding);
             }
 
-            return Skin.Current.Format("{0}, {1} at {2}", p.Resources, p.Bribes, MainPhase.Contemplate);
+            return Client.CurrentSkin.Format("{0}, {1} at {2}", p.Resources, p.Bribes, MainPhase.Contemplate);
         }
 
         if (p.ResourcesAfterBidding > 0)
         {
-            return Skin.Current.Format("{0}, {1} at end of {2}", p.Resources, p.ResourcesAfterBidding, MainPhase.Bidding);
+            return Client.CurrentSkin.Format("{0}, {1} at end of {2}", p.Resources, p.ResourcesAfterBidding, MainPhase.Bidding);
         }
 
-        return Skin.Current.Format("{0}", p.Resources);
+        return Client.CurrentSkin.Format("{0}", p.Resources);
     }
 }

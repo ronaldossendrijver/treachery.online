@@ -40,7 +40,7 @@
 
                     <div>Discard cards from your hand for 3 @Name(Concept.Resource) each?</div>
                     <SelectFromImageComponent Selected="_brownCards" Values=@AmbassadorActivated.GetValidBrownCards(Player) T=TreacheryCard OnChanged=StateHasChanged ImageWidth="80">
-                        <Label>Select the cards you wish to discard for 3 @Skin.Current.Describe(Concept.Resource) each</Label>
+                        <Label>Select the cards you wish to discard for 3 @Client.CurrentSkin.Describe(Concept.Resource) each</Label>
                     </SelectFromImageComponent>
                     break;
 

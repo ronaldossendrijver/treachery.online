@@ -57,7 +57,8 @@ public interface IGameService
     public bool IsHost { get; }
 
     public Phase CurrentPhase { get; }
-    
+    public Skin CurrentSkin { get; set; }
+
     public event EventHandler<Location> OnLocationSelected;
     public event EventHandler<Location> OnLocationSelectedWithCtrlOrAlt;
     public event EventHandler<Location> OnLocationSelectedWithShift;

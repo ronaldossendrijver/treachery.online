@@ -61,7 +61,7 @@
 
         if (ValueLabels == null || ValueLabels.Count() != Values.Count())
         {
-            ValueLabels = Values.Select(v => v != null ? Skin.Current.Describe(v) : EmptyLabel);
+            ValueLabels = Values.Select(v => v != null ? Client.CurrentSkin.Describe(v) : EmptyLabel);
         }
 
         _shown = Values.Zip(ValueLabels, (v, l) => new ValueToShow { Value = v, Id = GetId(v), Label = l }).ToDictionary(triple => triple.Id, triple => triple);

@@ -11,14 +11,14 @@
 @if (!Client.IsConnected)
 {
     <MapText ToShow="You were disconnected from the game."
-             X="@(Skin.Current.PlanetCenter.X)" Y="@(Skin.Current.PlanetCenter.Y)"
-             Font="@Skin.Current.TURN_FONT" FontColor="darkred"
-             BorderWidth="@Skin.Current.TURN_FONT_BORDERWIDTH" BorderColor="white"
+             X="@(Client.CurrentSkin.PlanetCenter.X)" Y="@(Client.CurrentSkin.PlanetCenter.Y)"
+             Font="@Client.CurrentSkin.TURN_FONT" FontColor="darkred"
+             BorderWidth="@Client.CurrentSkin.TURN_FONT_BORDERWIDTH" BorderColor="white"
              Align="@TextAlignment.Center" />
 
     <MapText ToShow="Please wait while the game is trying to reconnect..."
-             X="@(Skin.Current.PlanetCenter.X)" Y="@(1.1f * Skin.Current.PlanetCenter.Y)"
-             Font="@Skin.Current.PLAYERNAME_FONT" FontColor="darkred"
-             BorderWidth="@Skin.Current.PLAYERNAME_FONT_BORDERWIDTH" BorderColor="white"
+             X="@(Client.CurrentSkin.PlanetCenter.X)" Y="@(1.1f * Client.CurrentSkin.PlanetCenter.Y)"
+             Font="@Client.CurrentSkin.PLAYERNAME_FONT" FontColor="darkred"
+             BorderWidth="@Client.CurrentSkin.PLAYERNAME_FONT_BORDERWIDTH" BorderColor="white"
              Align="@TextAlignment.Center" />
 }
