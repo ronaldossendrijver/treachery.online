@@ -39,6 +39,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     //Game in progress
     public Game Game { get; private set; }
+    public string GameName { get; private set; }
     private string GameId { get; set; } = string.Empty;
     public GameStatus Status { get; private set; }
     public List<Type> Actions { get; private set; } = []; 
@@ -146,6 +147,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public void ExitGame()
     {
         Game = null;
+        GameName = null;
         GameId = null;
         Status = null;
         Actions = [];
@@ -578,6 +580,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         if (resultMessage == null)
         {
             Game = result;
+            GameName = initInfo.GameName;
             await PerformPostEventTasks();
             RefreshPopovers();
         }

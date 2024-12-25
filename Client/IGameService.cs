@@ -21,6 +21,7 @@ public interface IGameService
 
     //Game info
     public Game Game { get; }
+    public string GameName { get; }
     public GameStatus Status { get; }
     public bool InGame { get; }
     public bool PlayerNeedsSeating { get; }

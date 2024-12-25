@@ -243,7 +243,6 @@ public class EstablishPlayers : GameEvent
         Game.CurrentMainPhase = MainPhase.Setup;
         Game.Seed = Seed;
         Game.Random = new LoggedRandom(Seed);
-        Game.Name = GameName;
         
         //Settings
 

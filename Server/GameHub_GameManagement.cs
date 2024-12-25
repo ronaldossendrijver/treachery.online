@@ -44,6 +44,7 @@ public partial class GameHub
             CreatorUserId = user.Id,
             GameId = gameId,
             Game = game,
+            Name = $"{user.PlayerName}'s Game",
             HashedPassword = hashedPassword,
             ObserversRequirePassword = false
         };
@@ -61,6 +62,7 @@ public partial class GameHub
         {
             GameId = gameId, 
             GameState = stateData ?? GameState.GetStateAsString(game), 
+            GameName = managedGame.Name,
             Participation = game.Participation
         });
     }
@@ -87,6 +89,7 @@ public partial class GameHub
         {
             GameId = gameId, 
             GameState = stateData, 
+            GameName = game.Name,
             Participation = game.Game.Participation
         });
 
@@ -147,6 +150,7 @@ public partial class GameHub
         {
             GameId = gameId, 
             GameState = GameState.GetStateAsString(game.Game), 
+            GameName = game.Name,
             Participation = game.Game.Participation
         });
     }
@@ -279,6 +283,7 @@ public partial class GameHub
         {
             GameId = gameId,
             GameState = GameState.GetStateAsString(game.Game),
+            GameName = game.Name,
             Participation = game.Game.Participation
         });
     }
@@ -312,6 +317,7 @@ public partial class GameHub
         {
             GameId = gameId, 
             GameState = GameState.GetStateAsString(game.Game), 
+            GameName = game.Name,
             Participation = game.Game.Participation
         }));
     }
@@ -366,7 +372,7 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<List<GameInfo>>(ErrorType.NoHost);
 
-        var result = GamesByGameId.Values.Select(g => GameInfo.Extract(g, user.Id)).ToList();
+        var result = GamesByGameId.Values.Select(g => Utilities.ExtractGameInfo(g, user.Id)).ToList();
         return await Task.FromResult(Success(result));
     }
     

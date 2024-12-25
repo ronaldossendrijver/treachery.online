@@ -27,8 +27,6 @@
             if ((previousPhase == Phase.TradingFactions || previousPhase == Phase.SelectingFactions) &&
                 replay.CurrentPhase != Phase.TradingFactions && replay.CurrentPhase != Phase.SelectingFactions)
             {
-                <h1 class="h1">@replay.Name</h1>
-
                 <h4 class="h4">Setup</h4>
 
                 <div class="mt-1"><strong>Ruleset:</strong> @Client.CurrentSkin.Describe(replay.Ruleset)</div>

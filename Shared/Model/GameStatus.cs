@@ -510,7 +510,7 @@ public class GameStatus
             Phase.None or _ => Status(Express("Unknown phase: " + game.CurrentPhase))
         };
 
-        result.FlashInfo = DetermineFlash(game, me != null ? me.Faction : Faction.None, isPlayer);
+        result.FlashInfo = DetermineFlash(game, me?.Faction ?? Faction.None, isPlayer);
         result.HighlightedTerritories = DetermineHighlights(game);
 
         return result;

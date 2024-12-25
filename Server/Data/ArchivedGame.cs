@@ -7,11 +7,16 @@
 //  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 // */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Treachery.Server;
 
 public class ArchivedGame
 {
     public int Id { get; init; }
+    
+    [MaxLength(128)]
+    public string GameName { get; set; }
     
     public int CreatorUserId { get; init; }
     

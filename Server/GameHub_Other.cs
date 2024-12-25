@@ -88,6 +88,7 @@ public partial class GameHub
                     CreatorUserId = game.CreatorUserId,
                     GameId = game.GameId,
                     GameState = GameState.GetStateAsString(game.Game),
+                    GameName = game.Name,
                     GameParticipation = JsonSerializer.Serialize(game.Game.Participation),
                     HashedPassword = game.HashedPassword,
                     BotsArePaused = game.BotsArePaused,
@@ -120,6 +121,7 @@ public partial class GameHub
             {
                 var id = persistedGame.GameId;
                 var gameState = GameState.Load(persistedGame.GameState);
+                var gameName = persistedGame.GameName;
                 var participation = JsonSerializer.Deserialize<GameParticipation>(persistedGame.GameParticipation);
                 var loadMessage = Game.TryLoad(gameState, participation, false, true, out var game);
                 if (loadMessage == null)
@@ -130,6 +132,7 @@ public partial class GameHub
                         CreatorUserId = persistedGame.CreatorUserId,
                         GameId = persistedGame.GameId,
                         Game = game,
+                        Name = gameName,
                         HashedPassword = persistedGame.HashedPassword,
                         BotsArePaused = persistedGame.BotsArePaused,
                         ObserversRequirePassword = persistedGame.ObserversRequirePassword,

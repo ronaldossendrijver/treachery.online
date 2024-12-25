@@ -40,10 +40,8 @@
     private int afterEventId = -1;
     private Dimensions dimensions = new() { Width = 640, Height = 480 };
 
-    protected override async Task OnParametersSetAsync()
+    private void ApplyDimensions()
     {
-        await base.OnParametersSetAsync();
-
         var nrOfItems = Client.Status != null ? Client.Status.FlashInfo.Count() : 0;
         
         if (dimensions.Height > dimensions.Width)
@@ -91,7 +89,13 @@
 
     protected override async Task OnAfterRenderAsync(bool firstDraw)
     {
-        dimensions = await Browser.GetWindowDimensions();
+        if (firstDraw)
+        {
+            dimensions = await Browser.GetWindowDimensions();
+            ApplyDimensions();
+            StateHasChanged();
+            return;
+        }
         
         if (Time > 0)
         {
