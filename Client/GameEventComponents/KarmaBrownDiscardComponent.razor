@@ -12,10 +12,23 @@
 
     <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to discard any cards from your hand to gain 3 @Client.CurrentSkin.Describe(Concept.Resource) each</Header>
     <Body>
+    
+    @if (Karma.ValidKarmaCards(Game, Player).Count() > 1)
+    {
+        <SelectFromImageComponent @bind-Value="@CardToUse" Values="@Karma.ValidKarmaCards(Game, Player)" T="TreacheryCard" OnChanged="@ChangeCardToUse" ImageWidth="80">
+            <Label>@Name(TreacheryCardType.Karma) card to use</Label>
+        </SelectFromImageComponent>
+    }
+    else
+    {
+        CardToUse = Karma.ValidKarmaCards(Game, Player).FirstOrDefault();
+    }
 
-        <SelectFromImageComponent Selected="selectedCards" Values="KarmaBrownDiscard.ValidCards(Player)" T="TreacheryCard" OnChanged="StateHasChanged" ImageWidth="80" />
-
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Discard" ConfirmError="@Validation" />
+    <SelectFromImageComponent Selected="SelectedCards" Values="@Player.TreacheryCards.Where(c => c != CardToUse)" T="TreacheryCard" OnChanged="StateHasChanged" ImageWidth="80">
+        <Label>Cards to discard</Label>
+    </SelectFromImageComponent>
+    
+    <ButtonRowComponent Confirm="Confirm" ConfirmText="Discard" ConfirmError="@Validation"/>
 
     </Body>
 
@@ -25,7 +38,16 @@
 
     protected override Faction IsFactionSpecific => Faction.Brown;
 
-    private List<TreacheryCard> selectedCards = new();
+    private TreacheryCard CardToUse { get; set; }
 
-    protected override KarmaBrownDiscard ConfirmedResult => new(Game, Faction) { Cards = selectedCards };
+    private List<TreacheryCard> SelectedCards { get; set; } = [];
+
+    protected override KarmaBrownDiscard ConfirmedResult => new(Game, Faction) { CardToUse = CardToUse, Cards = SelectedCards };
+
+    private void ChangeCardToUse(TreacheryCard obj)
+    {
+        SelectedCards.Clear();
+        StateHasChanged();
+    }
+
 }

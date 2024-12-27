@@ -29,6 +29,16 @@ public class Tests
     private void SaveSpecialCases(Game g, GameEvent e)
     {
         /*
+        if (g.Players.Any(player => player.Faction == Faction.Brown &&
+                               !g.KarmaPrevented(player.Faction) &&
+                               !player.SpecialKarmaPowerUsed &&
+                               Karma.ValidKarmaCards(g,player).Count() > 1 &&
+                               g.Applicable(Rule.AdvancedKarama)))
+        {
+            WriteSaveGameIfApplicable(g, null, "Brown Karma can be playerd");
+        }
+        */
+        /*
         if (g.CurrentPhase is Phase.BattleConclusion &&
             !g.TreacheryDiscardPile.IsEmpty &&
             g.TreacheryDiscardPile.Top.Type is TreacheryCardType.PortableAntidote &&

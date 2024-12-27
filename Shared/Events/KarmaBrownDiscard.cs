@@ -14,7 +14,7 @@ namespace Treachery.Shared;
 public class KarmaBrownDiscard : GameEvent
 {
     #region Construction
-
+    
     public KarmaBrownDiscard(Game game, Faction initiator) : base(game, initiator)
     {
     }
@@ -26,6 +26,15 @@ public class KarmaBrownDiscard : GameEvent
     #endregion Construction
 
     #region Properties
+    
+    public int _cardToUse;
+
+    [JsonIgnore]
+    public TreacheryCard CardToUse
+    {
+        get => TreacheryCardManager.Lookup.Find(_cardToUse);
+        set => _cardToUse = TreacheryCardManager.Lookup.GetId(value);
+    }
 
     public string _cardIds;
 
@@ -42,25 +51,13 @@ public class KarmaBrownDiscard : GameEvent
 
     public override Message Validate()
     {
-        var karmaCardToUse = Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
+        var karmaCardToUse = Game.Version < 171 ? Karma.ValidKarmaCards(Game, Player).FirstOrDefault() : CardToUse;
         
-        var clairvoyanceToUse = Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Clairvoyance);
-
-        if (!Player.Occupies(Game.Map.Shrine)) clairvoyanceToUse = null;
-            
-        if (karmaCardToUse == null && clairvoyanceToUse == null) return Message.Express("You don't have a ", TreacheryCardType.Karma, " card");
+        if (karmaCardToUse == null) return Message.Express("You must select a ", TreacheryCardType.Karma, " card to use");
         
-        
-        if (Cards.Contains(karmaCardToUse) && Cards.Contains(clairvoyanceToUse)) return Message.Express(
-            "You can't select the ", TreacheryCardType.Karma, " you need to play to use this power");
+        if (Cards.Contains(karmaCardToUse)) return Message.Express("You can't discard the card you need to play to use this power");
 
         return null;
-    }
-
-    public static IEnumerable<TreacheryCard> ValidCards(Player p)
-    {
-        var karmaCardToUse = p.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
-        return p.TreacheryCards.Where(c => c != karmaCardToUse);
     }
 
     #endregion Validation
