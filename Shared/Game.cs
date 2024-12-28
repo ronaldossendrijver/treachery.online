@@ -916,7 +916,7 @@ public partial class Game
             !(l.Territory.IsStronghold || l.Territory.IsHomeworld) ||
             (p.Is(Faction.Blue) && p.SpecialForcesIn(l) > 0) ||
             (p.Is(Faction.Pink) && p.HasAlly && p.AlliedPlayer.AnyForcesIn(l.Territory) > 0) ||
-            (p.Ally == Faction.Pink && p.AlliedPlayer.AnyForcesIn(l.Territory) > 0) ||
+            (p.Ally == Faction.Pink && p.AlliedPlayer.OccupyingForcesIn(l.Territory) > 0) || //Looks at occupying forces since v171
             NrOfOccupantsExcludingFaction(l, p.Faction) < 2;
     }
 

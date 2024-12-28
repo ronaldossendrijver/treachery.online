@@ -3,7 +3,7 @@
     <option name="AZURE_WEB_APP_PROJECT" value="$PROJECT_DIR$/Client/Treachery.Client.csproj" />
     <option name="AZURE_WEB_APP_CONFIGURATION" value="Release" />
     <option name="AZURE_WEB_APP_PLATFORM" value="Any CPU" />
-    <option name="AZURE_WEB_APP_SUBSCRIPTION_ID" value="b4d71196-1959-47cb-b8e5-70bdafe9a056" />
+    <option name="AZURE_WEB_APP_SUBSCRIPTION_ID" value="" />
     <option name="AZURE_WEB_APP_IS_CREATE_APP" value="0" />
     <option name="AZURE_WEB_APP_ID" value="/subscriptions/b4d71196-1959-47cb-b8e5-70bdafe9a056/resourceGroups/treachery/providers/Microsoft.Web/sites/treachery" />
     <option name="AZURE_WEB_APP_NAME" value="webapp-240426082441" />
@@ -20,7 +20,7 @@
     <option name="AZURE_WEB_APP_IS_DEPLOY_TO_SLOT" value="0" />
     <option name="AZURE_WEB_APP_SLOT_NAME" value="" />
     <option name="AZURE_WEB_APP_OPEN_BROWSER_PUBLISH" value="0" />
-    <option name="AZURE_SQL_DATABASE_SUBSCRIPTION_ID" value="b4d71196-1959-47cb-b8e5-70bdafe9a056" />
+    <option name="AZURE_SQL_DATABASE_SUBSCRIPTION_ID" value="" />
     <option name="AZURE_SQL_DATABASE_IS_ENABLED" value="0" />
     <option name="AZURE_SQL_DATABASE_CONNECTION_STRING_NAME" value="" />
     <option name="AZURE_SQL_DATABASE_IS_CREATE" value="1" />

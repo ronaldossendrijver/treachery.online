@@ -253,6 +253,8 @@ public partial class Player : ICloneable
             return battalion.TotalAmountOfForces;
         return 0;
     }
+    
+    public int OccupyingForcesIn(Territory t) => t.Locations.Sum(OccupyingForcesIn);
 
     public int ForcesIn(Territory t) => t.Locations.Sum(ForcesIn);
 
@@ -477,14 +479,14 @@ public partial class Player : ICloneable
         foreach (var l in t.Locations) FlipForces(l, asAdvisors);
     }
 
-    public int OccupyingForces(Location l)
+    public int OccupyingForcesIn(Location l)
     {
         return ForcesIn(l) + (Faction == Faction.Blue ? 0 : SpecialForcesIn(l));
     }
 
     public bool Occupies(Location l)
     {
-        return OccupyingForces(l) > 0 || Game.Version >= 164 && Ally is Faction.Pink && AnyForcesIn(l) > 0 && AlliedPlayer.OccupyingForces(l) > 0;
+        return OccupyingForcesIn(l) > 0 || Game.Version >= 164 && Ally is Faction.Pink && OccupyingForcesIn(l) > 0 && AlliedPlayer.OccupyingForcesIn(l) > 0;
     }
 
     public bool Occupies(Territory t)

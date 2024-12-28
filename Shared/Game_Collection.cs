@@ -139,7 +139,7 @@ public partial class Game
             foreach (var p in playersToCollect)
             {
                 var collectionRate = ResourceCollectionRate(p);
-                var forcesCollectingDefaultAmountOfSpice = p.Faction != Faction.Grey ? p.OccupyingForces(l.Key) : p.ForcesIn(l.Key);
+                var forcesCollectingDefaultAmountOfSpice = p.Faction != Faction.Grey ? p.OccupyingForcesIn(l.Key) : p.ForcesIn(l.Key);
                 var forcesCollecting3Spice = p.Is(Faction.Grey) ? p.SpecialForcesIn(l.Key) : 0;
                 var maximumSpiceThatCanBeCollected = forcesCollectingDefaultAmountOfSpice * collectionRate + forcesCollecting3Spice * 3;
                 var collectedAmountByThisPlayer = Math.Min(spiceLeft, maximumSpiceThatCanBeCollected);

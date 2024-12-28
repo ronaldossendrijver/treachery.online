@@ -238,7 +238,7 @@ public partial class Player
         LogInfo("DetermineShipment_StrengthenWeakStronghold()");
 
         var myWeakStrongholds = ValidShipmentLocations(false)
-            .Where(s => s.IsStronghold && IDontHaveAdvisorsIn(s) && OccupyingForces(s) > 0 && AllyDoesntBlock(s.Territory) && (!onlyIfThreatened || OccupyingOpponentIn(s.Territory) != null) && !InStorm(s))
+            .Where(s => s.IsStronghold && IDontHaveAdvisorsIn(s) && OccupyingForcesIn(s) > 0 && AllyDoesntBlock(s.Territory) && (!onlyIfThreatened || OccupyingOpponentIn(s.Territory) != null) && !InStorm(s))
             .Select(s => new { Location = s, Difference = MaxPotentialForceShortage(takeReinforcementsIntoAccount, s) });
 
         LogInfo("MyWeakStrongholds:" + string.Join(",", myWeakStrongholds));

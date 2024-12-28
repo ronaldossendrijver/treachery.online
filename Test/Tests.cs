@@ -28,16 +28,16 @@ public class Tests
 {
     private void SaveSpecialCases(Game g, GameEvent e)
     {
-        /*
+        
         if (g.Players.Any(player => player.Faction == Faction.Brown &&
                                !g.KarmaPrevented(player.Faction) &&
                                !player.SpecialKarmaPowerUsed &&
-                               Karma.ValidKarmaCards(g,player).Count() > 1 &&
+                               Karma.ValidKarmaCards(g,player).Any(c => c.Type is TreacheryCardType.Clairvoyance) &&
                                g.Applicable(Rule.AdvancedKarama)))
         {
-            WriteSaveGameIfApplicable(g, null, "Brown Karma can be playerd");
+            WriteSaveGameIfApplicable(g, null, "TT as Karama");
         }
-        */
+        
         /*
         if (g.CurrentPhase is Phase.BattleConclusion &&
             !g.TreacheryDiscardPile.IsEmpty &&
@@ -97,7 +97,8 @@ public class Tests
             if (battleLoser != null)
             {
                 var allyOfBattleLoser = battleLoser.AlliedPlayer;
-                if (battleLoser.AnyForcesIn(g.CurrentBattle.Territory) > 0 || (allyOfBattleLoser != null && allyOfBattleLoser.AnyForcesIn(g.CurrentBattle.Territory) > 0)) return "Loser of battle still has forces in the territory - " + g.History.Count;
+                if (battleLoser.AnyForcesIn(g.CurrentBattle.Territory) > 0 || 
+                    (allyOfBattleLoser != null && (!battleLoser.Is(Faction.Pink) || !allyOfBattleLoser.Is(Faction.Blue)) && allyOfBattleLoser.OccupyingForcesIn(g.CurrentBattle.Territory) > 0)) return "Loser of battle still has forces in the territory - " + g.History.Count;
             }
         }
 
@@ -209,7 +210,26 @@ public class Tests
         if (g.CurrentPhase == Phase.BeginningOfCollection)
         {
             var terr = g.OccupyingForcesOnPlanet.Where(kvp => kvp.Key != g.Map.PolarSink && !g.IsInStorm(kvp.Key.Territory) && kvp.Value.Count(b => b.Faction != Faction.Pink) > 1).Select(kvp => kvp.Key).FirstOrDefault();
-            if (terr != null) return $"{terr} occupied by more than one faction - " + g.History.Count;
+            if (terr != null) return "Territory occupied by more than one faction - " + g.History.Count;
+        }
+
+        var pinkPlayer = g.GetPlayer(Faction.Pink);
+        var pinkAlly = pinkPlayer?.AlliedPlayer;
+
+        if (g.CurrentMainPhase is not MainPhase.ShipmentAndMove)
+        {
+            foreach (var s in g.Map.Strongholds)
+            {
+                var hasPinkAndAllyForces = pinkPlayer != null && pinkAlly != null && pinkPlayer.AnyForcesIn(s) > 0 &&
+                                           (!pinkAlly.Is(Faction.Blue) && pinkAlly.AnyForcesIn(s) > 0 || pinkAlly.Is(Faction.Blue) && pinkAlly.ForcesIn(s) > 0)
+                    ? 1
+                    : 0;
+            
+                if (g.OccupyingForcesOnPlanet.GetValueOrDefault(s, []).Count - hasPinkAndAllyForces > 2)
+                {
+                    return "Stronghold occupied by more than two factions - " + g.History.Count;
+                }
+            }
         }
 
         if (g.CurrentBattle != null)
@@ -349,7 +369,7 @@ public class Tests
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
 
-        var nrOfGames = 20;
+        var nrOfGames = 200;
         var nrOfTurns = 10;
         var nrOfPlayers = 7;
 
