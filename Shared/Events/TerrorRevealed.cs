@@ -128,11 +128,10 @@ public class TerrorRevealed : PassableGameEvent, ILocationEvent
     {
         return g.IsNotFull(p, l) &&
                l.Sector != g.SectorInStorm &&
-               (!p.HasAlly || p.AlliedPlayer.AnyForcesIn(l.Territory) == 0 || (p.Ally == Faction.Blue &&
-                                                                               g.Applicable(Rule
-                                                                                   .AdvisorsDontConflictWithAlly) &&
-                                                                               p.AlliedPlayer.ForcesIn(l.Territory) ==
-                                                                               0));
+               (!p.HasAlly || 
+                p.AlliedPlayer.AnyForcesIn(l.Territory) == 0 || 
+                p.Ally is Faction.Pink ||
+                (p.Ally == Faction.Blue && g.Applicable(Rule.AdvisorsDontConflictWithAlly) && p.AlliedPlayer.ForcesIn(l.Territory) == 0));
     }
 
     #endregion Validation

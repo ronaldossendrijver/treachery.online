@@ -201,7 +201,7 @@ else if (IsVisible(Players))
     {
         SetVisible(Restart);
         Client.ExitGame();
-        Client.Refresh();
+        Client.Refresh(nameof(RestartGame));
     }
 
     private void SetVisible(object o)
@@ -217,7 +217,7 @@ else if (IsVisible(Players))
     private async Task ToggleFullScreen()
     {
         await Browser.ToggleFullScreen();
-        await Task.Delay(2000).ContinueWith(e => Client.Refresh());
+        await Task.Delay(2000).ContinueWith(e => Client.Refresh(nameof(ToggleFullScreen)));
     }
 
     private async Task Save()

@@ -139,8 +139,14 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         _connection.On<GameInitInfo>(nameof(HandleLoadGame), HandleLoadGame);
         _connection.On<Dictionary<int, int>>(nameof(HandleAssignSeats), HandleAssignSeats);
     }
-    
-    public void Refresh() => RefreshHandler?.Invoke();
+
+    public void Refresh(string source = null)
+    {
+        //if (source != null)
+        //    Console.WriteLine(source);
+        
+        RefreshHandler?.Invoke();  
+    } 
 
     private void RefreshPopovers() => RefreshPopoverHandler?.Invoke();
 
@@ -152,7 +158,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         Status = null;
         Actions = [];
         _ = Browser.StopSounds();
-        Refresh();
+        Refresh(nameof(ExitGame));
     }
     
     //IGameClient methods
@@ -166,32 +172,31 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public Task HandleJoinGame(int userId, string userName, int seat)
     {
         Game.AddPlayer(userId, userName, seat);
-        Refresh();
+        Refresh(nameof(HandleJoinGame));
         return Task.CompletedTask;
     }
 
-    public Task HandleSetOrUnsetHost(int userId)
+    public async Task HandleSetOrUnsetHost(int userId)
     {
         Game.SetOrUnsetHost(userId);
-        Refresh();
-        return Task.CompletedTask;
+        await PerformPostEventTasks();
     }
 
     public Task HandleObserveGame(int userId, string userName)
     {
         Game.AddObserver(userId, userName);
-        Refresh();
+        Refresh(nameof(HandleObserveGame));
         return Task.CompletedTask;
     }
 
     public Task HandleOpenOrCloseSeat(int seat)
     {
         Game.OpenOrCloseSeat(seat);
-        Refresh();
+        Refresh(nameof(HandleOpenOrCloseSeat));
         return Task.CompletedTask;
     }
 
-    public Task HandleRemoveUser(int userId, bool kick)
+    public async Task HandleRemoveUser(int userId, bool kick)
     {
         if (userId == UserId)
         {
@@ -200,16 +205,14 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         else
         {
             Game.RemoveUser(userId, kick);
-            Refresh();
+            await PerformPostEventTasks();
         }
-        
-        return Task.CompletedTask;
     }
 
     public Task HandleBotStatus(bool paused)
     {
         Game.Participation.BotsArePaused = paused;
-        Refresh();
+        Refresh(nameof(HandleBotStatus));
         return Task.CompletedTask;
     }
 
@@ -262,17 +265,16 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
         Message.DefaultDescriber = CurrentSkin;
 
-        Refresh();
+        Refresh(nameof(HandleSetSkin));
         RefreshPopovers();
     }
 
     public async Task HandleLoadGame(GameInitInfo initInfo) => await LoadGame(initInfo);
 
-    public Task HandleAssignSeats(Dictionary<int, int> assignment)
+    public async Task HandleAssignSeats(Dictionary<int, int> assignment)
     {
         Game.Participation.SeatedPlayers = assignment;
-        Refresh();
-        return Task.CompletedTask;
+        await PerformPostEventTasks();
     }
 
     public LinkedList<ChatMessage> Messages { get; } = [];
@@ -284,7 +286,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         if (!MuteGlobalChat)
         {
             await Browser.PlaySound(CurrentSkin.Sound_Chatmessage_URL, CurrentChatVolume);
-            Refresh();
+            Refresh(nameof(HandleGlobalChatMessage));
         }
     }
 
@@ -294,7 +296,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         {
             Messages.AddFirst(m);
             await Browser.PlaySound(CurrentSkin.Sound_Chatmessage_URL, CurrentChatVolume);
-            Refresh();
+            Refresh(nameof(HandleChatMessage));
         }
     }
 
@@ -338,7 +340,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         {
             StoredPassword = hashedPassword;
             LoginInfo = result.Contents;
-            Refresh();
+            Refresh(nameof(RequestCreateUser));
             return result;
         }
 
@@ -353,18 +355,19 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         {
             StoredPassword = hashedPassword;
             LoginInfo = result.Contents;
-            Refresh();
+            Refresh(nameof(RequestLogin));
             return result;
         }
 
         StoredPassword = null;
         LoginInfo = null;
-        Refresh();
+        Refresh(nameof(RequestLogin));
         
         return result;
     }
 
-    public async Task<VoidResult> RequestPasswordReset(string usernameOrEmail) => await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestPasswordReset), usernameOrEmail);
+    public async Task<VoidResult> RequestPasswordReset(string usernameOrEmail) 
+        => await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestPasswordReset), usernameOrEmail);
 
     public async Task<Result<LoginInfo>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword)
     {
@@ -374,7 +377,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         {
             StoredPassword = newHashedPassword;
             LoginInfo = result.Contents;
-            Refresh();
+            Refresh(nameof(RequestSetPassword));
             return result;
         }
 
@@ -391,7 +394,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         
         StoredPassword = hashedPassword;
         LoginInfo = result.Contents;
-        Refresh();
+        Refresh(nameof(RequestUpdateUserInfo));
         return null;
     }
     
@@ -556,7 +559,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
                     if (runningGamesResult.Success)
                     {
                         RunningGames = runningGamesResult.Contents;
-                        Refresh();
+                        Refresh(nameof(Heartbeat));
                     }
                     else
                     {
@@ -618,7 +621,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             ResetAutoPassThreshold();
 
         PerformEndOfTurnTasks();
-        Refresh();
+        Refresh(nameof(PerformPostEventTasks));
     }
 
     private void ResetAutoPassThreshold()
@@ -662,7 +665,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     private Task OnDisconnected(Exception arg)
     {
-        Refresh();
+        Refresh(nameof(OnDisconnected));
         return Task.CompletedTask;
     }
     
@@ -676,7 +679,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
                 return;
 
             GameId = result.Contents.GameId;
-            Refresh();
+            Refresh(nameof(RequestReconnectGame));
         }
     }
 

@@ -323,7 +323,7 @@
             lastweapon = weapon;
             lastbankerBoost = bankerBoost;
             Client.BattleUnderConstruction = ConfirmedResult;
-            Client.Refresh();
+            Client.Refresh(nameof(RedrawIfNeeded));
         }
     }
 

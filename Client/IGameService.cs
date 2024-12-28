@@ -39,7 +39,7 @@ public interface IGameService
 
     public event Action RefreshHandler;
     public event Action RefreshPopoverHandler;
-    public void Refresh();
+    public void Refresh(string source = null);
     public Task Start(string userToken = null, string gameId = null);
     public List<GameInfo> RunningGames { get; }
     public void ExitGame();
