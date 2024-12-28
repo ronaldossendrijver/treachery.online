@@ -1,0 +1,8 @@
+﻿@code
+{
+    [Parameter] public EventCallback Click { get; set; }
+
+    [Parameter] public string Fill { get; set; } = "white";
+
+    protected string DetermineStyle => Click.HasDelegate ? "pointer: cursor;" : "";
+}

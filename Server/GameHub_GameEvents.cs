@@ -168,10 +168,10 @@ public partial class GameHub
         e.Initialize(game.Game);
         e.Time = DateTimeOffset.Now;
         
-        return await ValidateAndExecute(gameId, e, game, game.Game.IsHost(user.Id));
+        return await ValidateAndExecute(e, game, game.Game.IsHost(user.Id));
     }
 
-    private async Task<VoidResult> ValidateAndExecute<TEvent>(string gameId, TEvent e, ManagedGame game, bool isHost)
+    private async Task<VoidResult> ValidateAndExecute<TEvent>(TEvent e, ManagedGame game, bool isHost)
         where TEvent : GameEvent
     {
         var validationResult = e.Execute(true, isHost);
@@ -188,12 +188,12 @@ public partial class GameHub
             game.StatisticsSent = true;
         }
 
-        await Clients.Group(gameId).HandleGameEvent(e, game.Game.History.Count);
+        await Clients.Group(game.GameId).HandleGameEvent(e, game.Game.History.Count);
         
-        await SendAsyncPlayMessagesIfApplicable(gameId);
+        await SendAsyncPlayMessagesIfApplicable(game.GameId);
         
         var botDelay = DetermineBotDelay(game.Game.CurrentMainPhase, e);
-        _ = Task.Delay(botDelay).ContinueWith(_ => PerformBotEvent(gameId, game));
+        _ = Task.Delay(botDelay).ContinueWith(_ => PerformBotEvent(game));
         
         return Success();
     }
@@ -282,7 +282,7 @@ public partial class GameHub
         }
     }
 
-    private async Task PerformBotEvent(string gameId, ManagedGame managedGame)
+    private async Task PerformBotEvent(ManagedGame managedGame)
     {
         var game = managedGame.Game;
         if (!managedGame.BotsArePaused && game.CurrentPhase > Phase.AwaitingPlayers)
@@ -299,7 +299,7 @@ public partial class GameHub
                           
                 if (evt != null)
                 {
-                    await ValidateAndExecute(gameId, evt, managedGame, false);
+                    await ValidateAndExecute(evt, managedGame, false);
                     return;
                 }
             }

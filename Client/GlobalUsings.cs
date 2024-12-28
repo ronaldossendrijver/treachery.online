@@ -12,4 +12,3 @@ global using System.Threading.Tasks;
 global using System.Collections.Generic;
 global using Treachery.Shared;
 global using Treachery.Shared.Model;
-global using Treachery.Client.GenericComponents;

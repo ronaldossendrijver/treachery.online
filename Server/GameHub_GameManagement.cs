@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Treachery.Shared;
 
 namespace Treachery.Server;
 
@@ -95,13 +92,17 @@ public partial class GameHub
 
         if (!string.IsNullOrEmpty(skin))
             await Clients.Group(gameId).HandleSetSkin(skin);
-        
+
+        await NudgeBots(game);
+        return Success();
+    }
+
+    private async Task NudgeBots(ManagedGame game)
+    {
         if (!game.BotsArePaused)
         {
-            await PerformBotEvent(gameId, game);
+            await PerformBotEvent(game);
         }
-        
-        return Success();
     }
 
     public async Task<VoidResult> RequestAssignSeats(string userToken, string gameId, Dictionary<int, int> assignment)
@@ -115,6 +116,7 @@ public partial class GameHub
         game.Game.Participation.SeatedPlayers = assignment;
         await Clients.Group(gameId).HandleAssignSeats(assignment);
 
+        await NudgeBots(game);
         return Success();
     }
 
@@ -200,6 +202,8 @@ public partial class GameHub
         game.Game.RemoveUser(user.Id, false);
         await Clients.Group(gameId).HandleRemoveUser(user.Id, false);
         await RemoveFromGroup(gameId, user.Id);
+        
+        await NudgeBots(game);
         return Success();
     }
 
@@ -214,6 +218,8 @@ public partial class GameHub
         game.Game.RemoveUser(userId, true);
         await Clients.Group(gameId).HandleRemoveUser(userId, true);
         await RemoveFromGroup(gameId, userId);
+        
+        await NudgeBots(game);
         return Success();
     }
     
@@ -345,6 +351,8 @@ public partial class GameHub
 
         game.Game = game.Game.Undo(untilEventNr);
         await Clients.Group(gameId).HandleUndo(untilEventNr);
+
+        await NudgeBots(game);
         return Success();
     }
 
@@ -359,11 +367,7 @@ public partial class GameHub
         game.BotsArePaused = !game.BotsArePaused;
         await Clients.All.HandleBotStatus(game.BotsArePaused);
 
-        if (!game.BotsArePaused)
-        {
-            await PerformBotEvent(gameId, game);
-        }
-        
+        await NudgeBots(game);
         return Success();
     }
 
