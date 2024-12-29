@@ -3,6 +3,8 @@
     [Parameter] public EventCallback Click { get; set; }
 
     [Parameter] public string Fill { get; set; } = "white";
+    
+    [Parameter] public int Size { get; set; } = 20;
 
     protected string DetermineStyle => Click.HasDelegate ? "pointer: cursor;" : "";
 }

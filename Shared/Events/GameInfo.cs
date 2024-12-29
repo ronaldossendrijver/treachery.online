@@ -10,6 +10,7 @@
 // ReSharper disable MemberCanBePrivate.Global
 
 using System;
+using System.Text.Json.Serialization;
 
 namespace Treachery.Shared;
 
@@ -36,5 +37,6 @@ public class GameInfo
     public List<AvailableSeatInfo> AvailableSeats { get; init; } = [];
     public override bool Equals(object obj) => obj is GameInfo info && info.GameId == GameId;
 
+    [JsonIgnore] public bool CanBeJoined => CurrentPhase is Phase.AwaitingPlayers || AvailableSeats.Count > 0;
     public override int GetHashCode() => GameId.GetHashCode();
 }

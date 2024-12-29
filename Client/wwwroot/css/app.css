@@ -2,6 +2,7 @@
 
 html, body {
     font-family: Calibri, Tahoma, sans-serif;
+    user-select: none;
 }
 
 a, .btn-link {

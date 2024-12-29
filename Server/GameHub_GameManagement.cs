@@ -130,8 +130,11 @@ public partial class GameHub
             if (!string.IsNullOrEmpty(game.HashedPassword) && !game.HashedPassword.Equals(hashedPassword))
                 return Error<GameInitInfo>(ErrorType.IncorrectGamePassword);
         
-            if (!game.Game.IsOpen(seat) || game.Game.WasKicked(user.Id))
-                return Error<GameInitInfo>(ErrorType.SeatNotAvailable);
+            if (!game.Game.IsOpen(seat))
+                return Error<GameInitInfo>(ErrorType.SeatNotAvailableNotOpen);
+            
+            if (game.Game.WasKicked(user.Id))
+                return Error<GameInitInfo>(ErrorType.SeatNotAvailableKicked);
             
             if (game.Game.IsObserver(user.Id))
                 return Error<GameInitInfo>(ErrorType.AlreadyObserver);

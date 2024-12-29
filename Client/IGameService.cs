@@ -42,6 +42,8 @@ public interface IGameService
     public void Refresh(string source = null);
     public Task Start(string userToken = null, string gameId = null);
     public List<GameInfo> RunningGames { get; }
+    public List<GameInfo> RunningGamesWithOpenSeats { get; }
+    public List<GameInfo> RunningGamesWithoutOpenSeats { get; }
     public void ExitGame();
     public Player Player { get; }
 

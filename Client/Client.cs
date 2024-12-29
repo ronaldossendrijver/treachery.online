@@ -7,6 +7,7 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System.Linq;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
@@ -545,6 +546,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     }
 
     public List<GameInfo> RunningGames { get; private set; } = [];
+    public List<GameInfo> RunningGamesWithOpenSeats { get; private set; } = [];
+    public List<GameInfo> RunningGamesWithoutOpenSeats { get; private set; } = [];
     private async Task Heartbeat()
     {
         try
@@ -559,6 +562,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
                     if (runningGamesResult.Success)
                     {
                         RunningGames = runningGamesResult.Contents;
+                        RunningGamesWithOpenSeats = runningGamesResult.Contents.Where(g => g.CanBeJoined).ToList();
+                        RunningGamesWithoutOpenSeats = runningGamesResult.Contents.Where(g => !g.CanBeJoined).ToList();
                         Refresh(nameof(Heartbeat));
                     }
                     else

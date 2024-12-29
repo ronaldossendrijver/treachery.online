@@ -12,16 +12,19 @@
     <div class="card-header">Join or observe a game</div>
     <div class="card-body">
 
-        @if (!Client.RunningGames.Any())
+        @if (!Client.RunningGamesWithoutOpenSeats.Any() && !Client.RunningGamesWithOpenSeats.Any())
         {
             <div class="text-info">No games hosted...</div>
         }
         else
         {
-            <table class="table table-sm" id="availableGames">
-                <tbody>
+            if (Client.RunningGamesWithOpenSeats.Any())
+            {
+                <div class="text-info">Games with open seats</div>
+                <table class="table table-sm">
+                    <tbody>
 
-                    @foreach (var av in Client.RunningGames)
+                    @foreach (var av in Client.RunningGamesWithOpenSeats)
                     {
                         joinGamePassword.TryAdd(av.GameId, "");
                         JoinErrors.TryAdd(av.GameId, "");
@@ -57,9 +60,9 @@
                                     {
                                         <input class="form-inline input-sm" style="max-width:120px" @bind="joinGamePassword[av.GameId]" maxlength="24" placeholder="Game password"/>
                                     }
-                                    
+
                                     <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsObserver(av.GameId, joinGamePassword[av.GameId]))">Observe</button>
-                                    
+
                                     @if (av.CurrentPhase == Phase.AwaitingPlayers)
                                     {
                                         <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsPlayer(av.GameId, joinGamePassword[av.GameId], -1))">Join</button>
@@ -78,11 +81,81 @@
                                     <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat))">Resume</button>
                                 }
                                 <div class="text-danger">@JoinErrors[av.GameId]</div>
-                            </td>                        
+                            </td>
                         </tr>
                     }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            }
+            if (Client.RunningGamesWithoutOpenSeats.Any())
+            {
+                <div class="text-info">Games without open seats</div>
+                <table class="table table-sm">
+                    <tbody>
+
+                    @foreach (var av in Client.RunningGamesWithoutOpenSeats)
+                    {
+                        joinGamePassword.TryAdd(av.GameId, "");
+                        JoinErrors.TryAdd(av.GameId, "");
+
+                        var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
+
+                        <tr class="small table-dark">
+                            <td class="w-25" style="@fontColorStyle">@av.GameName</td>
+                            <td style="@fontColorStyle">
+                                @if (av.CurrentPhase == Phase.AwaitingPlayers)
+                                {
+                                    <div>
+                                        @av.Players.Length Players, @Client.CurrentSkin.Describe(Game.DetermineApproximateRuleset(av.FactionsInPlay, av.Rules, Game.ExpansionLevel)), maximum players: @av.NumberOfPlayers, maximum turns: @av.MaximumTurns
+                                    </div>
+                                }
+                                else
+                                {
+                                    var factions = av.FactionsInPlay ?? [];
+                                    <div>@Name(Game.DetermineApproximateRuleset(factions, av.Rules, Game.ExpansionLevel)), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
+                                        <br>
+                                        @foreach (var f in factions.Where(f => f != Faction.None))
+                                        {
+                                            <Image Shown="f" Width="20" Shadow=""/>
+                                        }
+                                        @NumberOfBotsMessage(av)
+                                    </div>
+                                }
+                            </td>
+                            <td class="w-25">
+                                @if (!av.YouAreIn)
+                                {
+                                    if (av.HasPassword)
+                                    {
+                                        <input class="form-inline input-sm" style="max-width:120px" @bind="joinGamePassword[av.GameId]" maxlength="24" placeholder="Game password"/>
+                                    }
+
+                                    <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsObserver(av.GameId, joinGamePassword[av.GameId]))">Observe</button>
+
+                                    @if (av.CurrentPhase == Phase.AwaitingPlayers)
+                                    {
+                                        <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsPlayer(av.GameId, joinGamePassword[av.GameId], -1))">Join</button>
+                                    }
+                                    else
+                                    {
+                                        foreach (var availableSeat in av.AvailableSeats)
+                                        {
+                                            var botMessage = availableSeat.IsBot ? "bot" : "human";
+                                            <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsPlayer(av.GameId, joinGamePassword[av.GameId], availableSeat.Seat))">Take over <FactionComponent Faction="@availableSeat.Faction" Diameter="20"/> (@botMessage)</button>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    <button class="btn btn-primary btn-sm" @onclick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat))">Resume</button>
+                                }
+                                <div class="text-danger">@JoinErrors[av.GameId]</div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            }
         }
     </div>
 </div>
