@@ -303,6 +303,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
         {
             if (MayShipCrossPlanet(g, p))
                 return YellowSpawnLocations(g, p).Union(RegularShipmentLocations(g, p, fromPlanet)).Distinct();
+            
             return YellowSpawnLocations(g, p);
         }
 

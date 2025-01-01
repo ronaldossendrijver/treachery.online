@@ -200,7 +200,7 @@ public partial class GameHub
 
     private async Task SendAsyncPlayMessagesIfApplicable(string gameId)
     {
-        if (!GamesByGameId.TryGetValue(gameId, out var game))
+        if (!RunningGamesByGameId.TryGetValue(gameId, out var game))
             return;
         
         if (game.Game.Settings.AsyncPlay)

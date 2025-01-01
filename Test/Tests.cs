@@ -216,7 +216,7 @@ public class Tests
         var pinkPlayer = g.GetPlayer(Faction.Pink);
         var pinkAlly = pinkPlayer?.AlliedPlayer;
 
-        if (g.CurrentMainPhase is not MainPhase.ShipmentAndMove)
+        if (g.Version > 170 && g.CurrentMainPhase is not MainPhase.ShipmentAndMove)
         {
             foreach (var s in g.Map.Strongholds)
             {

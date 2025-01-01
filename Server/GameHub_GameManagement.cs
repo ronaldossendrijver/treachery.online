@@ -14,7 +14,7 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<GameInitInfo>(ErrorType.UserNotFound);
         
-        if (GamesByGameId.Values.Count(g => g.CreatorUserId == user.Id) >= 10)
+        if (RunningGamesByGameId.Values.Count(g => g.CreatorUserId == user.Id) >= 10)
             return Error<GameInitInfo>(ErrorType.TooManyGames);
 
         Game game;
@@ -46,7 +46,7 @@ public partial class GameHub
             ObserversRequirePassword = false
         };
         
-        GamesByGameId[gameId] = managedGame;
+        RunningGamesByGameId[gameId] = managedGame;
 
         game.AddPlayer(user.Id, user.PlayerName);
         game.SetOrUnsetHost(user.Id);
@@ -62,6 +62,29 @@ public partial class GameHub
             GameName = managedGame.Name,
             Participation = game.Participation
         });
+    }
+
+    public async Task<VoidResult> RequestScheduleGame(string userToken, DateTimeOffset dateTime, Ruleset? ruleset,
+        int? numberOfPlayers, int? maximumTurns, List<Faction> allowedFactionsInPlay, bool asyncPlay)
+    {
+        if (!UsersByUserToken.TryGetValue(userToken, out var user))
+            return Error(ErrorType.UserNotFound);
+
+        var gameId = Guid.NewGuid().ToString();
+        var scheduledGame = new ScheduledGame
+        {
+            DateTime = dateTime,
+            CreatorUserId = user.Id,
+            Ruleset = ruleset,
+            NumberOfPlayers = numberOfPlayers,
+            MaximumTurns = maximumTurns,
+            AllowedFactionsInPlay = allowedFactionsInPlay,
+            AsyncPlay = asyncPlay
+        };
+        
+        ScheduledGamesByGameId[gameId] = scheduledGame;
+        
+        return await Task.FromResult(Success());
     }
     
     public async Task<VoidResult> RequestLoadGame(string userToken, string gameId, string stateData, string skin)
@@ -159,6 +182,35 @@ public partial class GameHub
             Participation = game.Game.Participation
         });
     }
+    
+    public async Task<VoidResult> RequestSubscribeGame(string userToken, string gameId, bool certain)
+    {
+        if (gameId == null)
+            return Error(ErrorType.GameNotFound);
+        
+        if (!UsersByUserToken.TryGetValue(userToken, out var user))
+        {
+            return Error(ErrorType.UserNotFound);
+        }
+        
+        if (!ScheduledGamesByGameId.TryGetValue(gameId, out var game))
+        {
+            return Error(ErrorType.GameNotFound);
+        }
+
+        if (certain)
+        {
+            game.SubscribedUsersMaybe.Remove(user.Id);
+            game.SubscribedUsersCertain.Add(user.Id);
+        }
+        else
+        {
+            game.SubscribedUsersCertain.Remove(user.Id);
+            game.SubscribedUsersMaybe.Add(user.Id);
+        }
+
+        return await Task.FromResult(Success());
+    }
 
     public async Task<VoidResult> RequestOpenOrCloseSeat(string userToken, string gameId, int seat)
     {
@@ -241,7 +293,7 @@ public partial class GameHub
             await RemoveFromGroup(gameId, userId);
         }
 
-        GamesByGameId.Remove(gameId, out _);
+        RunningGamesByGameId.Remove(gameId, out _);
         
         return Success();
     }
@@ -379,7 +431,7 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<List<GameInfo>>(ErrorType.NoHost);
 
-        var result = GamesByGameId.Values.Select(g => Utilities.ExtractGameInfo(g, user.Id)).ToList();
+        var result = RunningGamesByGameId.Values.Select(g => Utilities.ExtractGameInfo(g, user.Id)).ToList();
         return await Task.FromResult(Success(result));
     }
     

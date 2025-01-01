@@ -87,6 +87,9 @@ public interface IGameService
     Task<string> RequestOpenOrCloseSeat(int seat);
     Task<string> RequestLeaveGame();
     Task<string> RequestKick(int userId);
+    Task<string> RequestScheduleGame(DateTimeOffset dateTime, Ruleset? ruleset, int? numberOfPlayers, int? maximumTurns,
+        List<Faction> allowedFactionsInPlay, bool asyncPlay);
+    Task<string> RequestSubscribeGame(string gameId, bool certain);
     
     Task<string> RequestLoadGame(string state, string skin = null);
     Task<string> RequestAssignSeats(Dictionary<int, int> seatedPlayers);
@@ -109,4 +112,5 @@ public interface IGameService
     Task<string> AdminCloseGame(string gameId);
     Task<string> AdminDeleteUser(int userId);
     Task<string> GetAdminInfo();
+    
 }

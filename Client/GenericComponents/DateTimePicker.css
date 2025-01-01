@@ -1,0 +1,17 @@
+﻿.form-group {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+label {
+    font-weight: bold;
+}
+
+input[type="date"], input[type="time"] {
+    font-size: 1rem;
+    padding: 0.5rem;
+}
+
+.mt-3, .mt-2 {
+    margin-top: 1rem;
+}

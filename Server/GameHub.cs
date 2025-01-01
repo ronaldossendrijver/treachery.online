@@ -19,8 +19,11 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     private static ConcurrentDictionary<string,TokenInfo> UserTokenInfo { get; } = [];
     private static ConcurrentDictionary<int,UserConnections> ConnectionInfoByUserId { get; } = [];
 
-    //Games
-    private static ConcurrentDictionary<string,ManagedGame> GamesByGameId{ get; } = [];
+    //Started games
+    private static ConcurrentDictionary<string,ManagedGame> RunningGamesByGameId{ get; } = [];
+    
+    //Scheduled games
+    private static ConcurrentDictionary<string,ScheduledGame> ScheduledGamesByGameId{ get; } = [];
     
     //Other
     private static DateTimeOffset MaintenanceDate { get; set; }
@@ -56,7 +59,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         if (gameId == null)
             return false;
 
-        if (!GamesByGameId.TryGetValue(gameId, out game))
+        if (!RunningGamesByGameId.TryGetValue(gameId, out game))
         {
             result = Error<TResult>(ErrorType.GameNotFound);
             return false;
@@ -82,7 +85,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         if (gameId == null)
             return false;
 
-        if (!GamesByGameId.TryGetValue(gameId, out game))
+        if (!RunningGamesByGameId.TryGetValue(gameId, out game))
         {
             result = Error(ErrorType.GameNotFound);
             return false;

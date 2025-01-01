@@ -9,69 +9,112 @@
 @inherits GameComponent
 
 <div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeIn90 1s">
-    <div class="card-header">Games created by you</div>
+    <div class="card-header">Your games</div>
+    
     <div class="card-body">
-        @{
-            var myGames = Client.RunningGames.Where(info => info.CreatorUserId == Client.UserId).OrderByDescending(av => av.LastAction).ToList();
-        }
-        
-        @if (!myGames.Any())
+        <ul class="nav nav-pills mb-2">
+            <li class="nav-item">
+                <button class="nav-link @GetActive(OwnGamesComponentState.List)" aria-current="page" @onclick="@(_ => State = OwnGamesComponentState.List)">Created games</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link @GetActive(OwnGamesComponentState.Create)" @onclick="@(_ => State = OwnGamesComponentState.Create)">Create / load game</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link @GetActive(OwnGamesComponentState.Schedule)" @onclick="@(_ => State = OwnGamesComponentState.Schedule)">Schedule game</button>
+            </li>
+        </ul>
+
+        @switch (State)
         {
-            <div class="text-info mb-2">No games yet...</div>
-        }
-        else
-        {
-            <table class="table table-sm">
-                <thead>
-                <tr class="table-dark">
-                    <th scope="col">Game info</th>
-                    <th scope="col">Last action</th>
-                    <th scope="col">Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach (var av in myGames)
+            case OwnGamesComponentState.List:
+                var myGames = Client.RunningGames.Where(info => info.CreatorUserId == Client.UserId).OrderByDescending(av => av.LastAction).ToList();
+                if (!myGames.Any())
                 {
-                    var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
-                    var factions = av.FactionsInPlay ?? [];
-
-                    <tr class="small table-dark">
-                        <td class="w-50" style="@fontColorStyle">
-                            <div>@Name(Game.DetermineApproximateRuleset(factions, av.Rules, Game.ExpansionLevel)), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
-                                <br>
-                                @foreach (var f in factions.Where(f => f != Faction.None))
-                                {
-                                    <Image Shown="f" Width="20" Shadow=""/>
-                                }
-                            </div>
-                        </td>
-                        <td class="w-25">
-                            @av.LastAction?.DateTime
-                        </td>
-                        <td class="w-25">
-                            <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Close(av))">Close</button>
-                        </td>
-                    </tr>
+                    <div class="text-info mb-2">No games yet...</div>
                 }
-                </tbody>
-            </table>
+                else
+                {
+                    <table class="table table-sm">
+                        <thead>
+                        <tr class="table-dark">
+                            <th scope="col">Game info</th>
+                            <th scope="col">Last action</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var av in myGames)
+                        {
+                            var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
+                            var factions = av.FactionsInPlay ?? [];
+
+                            <tr class="small table-dark">
+                                <td class="w-50" style="@fontColorStyle">
+                                    <div>@Name(Game.DetermineApproximateRuleset(factions, av.Rules, Game.ExpansionLevel)), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
+                                        <br>
+                                        @foreach (var f in factions.Where(f => f != Faction.None))
+                                        {
+                                            <Image Shown="f" Width="20" Shadow=""/>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="w-25">
+                                    @av.LastAction?.DateTime
+                                </td>
+                                <td class="w-25">
+                                    <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Close(av))">Close</button>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+                break;
+                
+            case OwnGamesComponentState.Create:
+                if (!Loading)
+                {
+                    <input type="text" class="form-control" @bind="@CreateGamePassword" maxlength="24" placeholder="Game password (optional)"/>
+                    <div class="text-danger small">@CreateError</div>
+                    <button class="btn btn-primary mt-1" @onclick="@CreateNewGame">Create new game</button>
+                    <label class="btn btn-primary mt-1">Load game from file
+                        <input hidden type="file" id="fileInput" @ref="FileInput" @onchange="@LoadAndCreateGame"/>
+                    </label>
+                }
+                else
+                {
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                }
+                break;
+                
+            case OwnGamesComponentState.Schedule:
+                <DateTimePicker @bind-Value="@ScheduleGameDateTime"/>
+                <SelectNumberComponent @bind-Value="@ScheduleGameMaximumTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns:"/>
+                <SelectNumberComponent @bind-Value="@ScheduleGameNumberOfPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Label="Number of players:"/>
+                <SelectFromImageComponent Selected="@ScheduleGameAllowedFactionsInPlay" Values="EstablishPlayers.AvailableFactions()" T="Faction" OnChanged="@StateHasChanged" ImageWidth="40" Required="false">
+                    <Label>Factions in play:</Label>
+                </SelectFromImageComponent>
+                <SelectComponent @bind-Value="@ScheduleGameRuleset" Values="@Game.GetAvailableRulesets()">
+                    <Label>Ruleset:</Label>
+                </SelectComponent>
+                <CheckboxComponent @bind-Value="@ScheduleGameAsyncPlay">Async play (send e-mail updates)</CheckboxComponent>
+                <div class="text-danger small">@ScheduleError</div>
+                <button class="btn btn-primary mt-1" @onclick="@ScheduleGame">Schedule game</button>
+                <a class="btn btn-dark btn-sm mt-1 p-2 text-start p-0 mt-0 mb-0" href="https://discord.gg/rRGEfn4" target="_blank" title="Find players on Dune Discord">
+                    <svg style="margin-right:2px" width="18" height="18" viewBox="0 -28.5 256 256" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
+                        <g>
+                            <path d="M216.856339,16.5966031 C200.285002,8.84328665 182.566144,3.2084988 164.041564,0 C161.766523,4.11318106 159.108624,9.64549908 157.276099,14.0464379 C137.583995,11.0849896 118.072967,11.0849896 98.7430163,14.0464379 C96.9108417,9.64549908 94.1925838,4.11318106 91.8971895,0 C73.3526068,3.2084988 55.6133949,8.86399117 39.0420583,16.6376612 C5.61752293,67.146514 -3.4433191,116.400813 1.08711069,164.955721 C23.2560196,181.510915 44.7403634,191.567697 65.8621325,198.148576 C71.0772151,190.971126 75.7283628,183.341335 79.7352139,175.300261 C72.104019,172.400575 64.7949724,168.822202 57.8887866,164.667963 C59.7209612,163.310589 61.5131304,161.891452 63.2445898,160.431257 C105.36741,180.133187 151.134928,180.133187 192.754523,160.431257 C194.506336,161.891452 196.298154,163.310589 198.110326,164.667963 C191.183787,168.842556 183.854737,172.420929 176.223542,175.320965 C180.230393,183.341335 184.861538,190.991831 190.096624,198.16893 C211.238746,191.588051 232.743023,181.531619 254.911949,164.955721 C260.227747,108.668201 245.831087,59.8662432 216.856339,16.5966031 Z M85.4738752,135.09489 C72.8290281,135.09489 62.4592217,123.290155 62.4592217,108.914901 C62.4592217,94.5396472 72.607595,82.7145587 85.4738752,82.7145587 C98.3405064,82.7145587 108.709962,94.5189427 108.488529,108.914901 C108.508531,123.290155 98.3405064,135.09489 85.4738752,135.09489 Z M170.525237,135.09489 C157.88039,135.09489 147.510584,123.290155 147.510584,108.914901 C147.510584,94.5396472 157.658606,82.7145587 170.525237,82.7145587 C183.391518,82.7145587 193.761324,94.5189427 193.539891,108.914901 C193.539891,123.290155 183.391518,135.09489 170.525237,135.09489 Z" fill="white" fill-rule="nonzero"/>
+                        </g>
+                    </svg>
+                    Find players on Dune Discord
+                </a>                
+                break;
+            default:
+                <div>Unknown menu option</div>
+                break;
         }
-
-        <input type="text" class="form-control" @bind="createGamePassword" maxlength="24" placeholder="Game password (optional)"/>
-
-        <div class="text-danger small">@error</div>
-        <button class="btn btn-primary mt-1" @onclick="@CreateNewGame">Create new game</button>
-        <label class="btn btn-primary mt-1">Load game from file
-            <input hidden type="file" id="fileInput" @ref="fileInput" @onchange="@LoadAndCreateGame"/>
-        </label>
-        <a class="btn btn-dark btn-sm mt-1 p-2 text-start p-0 mt-0 mb-0" href="https://discord.gg/rRGEfn4" target="_blank" title="Find players on Dune Discord">
-            <svg style="margin-right:2px" width="18" height="18" viewBox="0 -28.5 256 256" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
-                <g>
-                    <path d="M216.856339,16.5966031 C200.285002,8.84328665 182.566144,3.2084988 164.041564,0 C161.766523,4.11318106 159.108624,9.64549908 157.276099,14.0464379 C137.583995,11.0849896 118.072967,11.0849896 98.7430163,14.0464379 C96.9108417,9.64549908 94.1925838,4.11318106 91.8971895,0 C73.3526068,3.2084988 55.6133949,8.86399117 39.0420583,16.6376612 C5.61752293,67.146514 -3.4433191,116.400813 1.08711069,164.955721 C23.2560196,181.510915 44.7403634,191.567697 65.8621325,198.148576 C71.0772151,190.971126 75.7283628,183.341335 79.7352139,175.300261 C72.104019,172.400575 64.7949724,168.822202 57.8887866,164.667963 C59.7209612,163.310589 61.5131304,161.891452 63.2445898,160.431257 C105.36741,180.133187 151.134928,180.133187 192.754523,160.431257 C194.506336,161.891452 196.298154,163.310589 198.110326,164.667963 C191.183787,168.842556 183.854737,172.420929 176.223542,175.320965 C180.230393,183.341335 184.861538,190.991831 190.096624,198.16893 C211.238746,191.588051 232.743023,181.531619 254.911949,164.955721 C260.227747,108.668201 245.831087,59.8662432 216.856339,16.5966031 Z M85.4738752,135.09489 C72.8290281,135.09489 62.4592217,123.290155 62.4592217,108.914901 C62.4592217,94.5396472 72.607595,82.7145587 85.4738752,82.7145587 C98.3405064,82.7145587 108.709962,94.5189427 108.488529,108.914901 C108.508531,123.290155 98.3405064,135.09489 85.4738752,135.09489 Z M170.525237,135.09489 C157.88039,135.09489 147.510584,123.290155 147.510584,108.914901 C147.510584,94.5396472 157.658606,82.7145587 170.525237,82.7145587 C183.391518,82.7145587 193.761324,94.5189427 193.539891,108.914901 C193.539891,123.290155 183.391518,135.09489 170.525237,135.09489 Z" fill="white" fill-rule="nonzero"/>
-                </g>
-            </svg>
-            Find players on Dune Discord
-        </a>
     </div>
 </div>
 
@@ -135,12 +178,24 @@
 
 @code {
 
+    private OwnGamesComponentState State { get; set; } = OwnGamesComponentState.List;
+    
     private const int MaxSaveGameSize = 4194304;
 
-    private string createGamePassword;
-    private object fileInput;
-    private string error = string.Empty;
-    private string loadedGameData;
+    private string CreateGamePassword { get; set; }
+    private object FileInput { get; set; }
+    private string CreateError { get; set; } = string.Empty;
+    private bool Loading { get; set; } = false;
+    private string LoadedGameData { get; set; }
+    
+    private DateTimeOffset ScheduleGameDateTime { get; set; } = DateTimeOffset.Now;
+    private Ruleset ScheduleGameRuleset { get; set; } = Ruleset.AllExpansionsAdvancedGame;
+    private int ScheduleGameNumberOfPlayers { get; set; } = 6;
+    private int ScheduleGameMaximumTurns { get; set; } = 10;
+    private List<Faction> ScheduleGameAllowedFactionsInPlay { get; set; } = [];
+    private bool ScheduleGameAsyncPlay { get; set; } = false;
+    
+    private string ScheduleError { get; set; } = string.Empty;
     private bool EditUser { get; set; }
     private string UserName { get; set; }
     private string PlayerName { get; set; }
@@ -153,15 +208,22 @@
     {
         GetUserInfoFromClient();
     }
+    
+    private async Task ScheduleGame()
+    {
+        await Client.RequestScheduleGame(ScheduleGameDateTime, ScheduleGameRuleset, ScheduleGameNumberOfPlayers, ScheduleGameMaximumTurns, ScheduleGameAllowedFactionsInPlay, ScheduleGameAsyncPlay);
+    }
 
     private async Task CreateNewGame()
     {
-        await Client.RequestCreateGame(createGamePassword);
+        await Client.RequestCreateGame(CreateGamePassword);
     }
     
     private async Task LoadAndCreateGame()
     {
-        error = string.Empty;
+        CreateError = string.Empty;
+        Loading = true;
+        StateHasChanged();
         await Task.Delay(200).ContinueWith(_ => LoadGameOpenFile());
     }
 
@@ -169,26 +231,27 @@
     {
         try
         {
-            loadedGameData = await Browser.LoadFile(fileInput);
+            LoadedGameData = await Browser.LoadFile(FileInput);
 
-            if (!string.IsNullOrEmpty(loadedGameData))
+            if (!string.IsNullOrEmpty(LoadedGameData))
             {
-                if (loadedGameData.Length > MaxSaveGameSize)
+                if (LoadedGameData.Length > MaxSaveGameSize)
                 {
-                    error = "File is too big";
+                    CreateError = "File is too big";
                 }
                 else
                 {
                     var skinData = Client.CurrentSkin == DefaultSkin.Default ? null : Client.CurrentSkin.SkinToString();
-                    error = await Client.RequestCreateGame(createGamePassword, loadedGameData, skinData);    
+                    CreateError = await Client.RequestCreateGame(CreateGamePassword, LoadedGameData, skinData);    
                 }
             }
         }
         catch (Exception e)
         {
-            error = $"Error loading game ({e.Message})";
+            CreateError = $"Error loading game ({e.Message})";
         }
 
+        Loading = true;
         StateHasChanged();
     }
     
@@ -196,7 +259,7 @@
     {
         var result = await Client.RequestCloseGame(av.GameId);
         if (result != null)
-            error = result;
+            CreateError = result;
         
         StateHasChanged();
     }
@@ -245,4 +308,11 @@
     {
         await Client.RequestJoinGame(gameId, Support.GetHash(password), seat);
     }
+    
+    private enum OwnGamesComponentState
+    {
+        List, Create, Schedule
+    }
+
+    private string GetActive(OwnGamesComponentState toCheck) => toCheck == State ? "active" : "";
 }

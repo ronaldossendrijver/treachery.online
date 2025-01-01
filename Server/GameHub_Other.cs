@@ -78,7 +78,7 @@ public partial class GameHub
         {
             await context.PersistedGames.ExecuteDeleteAsync();
             
-            foreach (var gameIdAndManagedGame in GamesByGameId)
+            foreach (var gameIdAndManagedGame in RunningGamesByGameId)
             {
                 var game = gameIdAndManagedGame.Value;
 
@@ -115,7 +115,7 @@ public partial class GameHub
         var amount = 0;
         await using (var context = GetDbContext())
         {
-            GamesByGameId.Clear();
+            RunningGamesByGameId.Clear();
             
             foreach (var persistedGame in context.PersistedGames)
             {
@@ -140,7 +140,7 @@ public partial class GameHub
                         LastAsyncPlayMessageSent = persistedGame.LastAsyncPlayMessageSent,
                     };
                     
-                    GamesByGameId.TryAdd(id, managedGame);
+                    RunningGamesByGameId.TryAdd(id, managedGame);
                     amount++;
                 }
             }
@@ -154,9 +154,9 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
 
-        if (GamesByGameId.TryGetValue(gameId, out var game))
+        if (RunningGamesByGameId.TryGetValue(gameId, out var game))
         {
-            GamesByGameId.Remove(gameId, out _);
+            RunningGamesByGameId.Remove(gameId, out _);
 
             foreach (var userId in game.Game.Participation.Users.Keys)
             {
@@ -190,7 +190,7 @@ public partial class GameHub
             Users = GetDbContext().Users.Select(u => new UserInfo { Id = u.Id, Name = u.Name, PlayerName = u.PlayerName, Email = u.Email, LastLogin = u.LastLogin }).ToList(),
             UsersByUserTokenCount = UsersByUserToken.Count,
             ConnectionInfoByUserIdCount = ConnectionInfoByUserId.Count,
-            GamesByGameIdCount = GamesByGameId.Count,
+            GamesByGameIdCount = RunningGamesByGameId.Count,
         };
 
         await Task.CompletedTask;

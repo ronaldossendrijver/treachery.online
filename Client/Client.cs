@@ -417,6 +417,14 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : CurrentSkin.Describe(result.Error);
     }
     
+    public async Task<string> RequestScheduleGame(DateTimeOffset dateTime, Ruleset? ruleset, int? numberOfPlayers, int? maximumTurns, List<Faction> allowedFactions, bool asyncPlay)
+    {
+        var result = await Invoke(nameof(IGameHub.RequestScheduleGame), UserToken, dateTime, ruleset, numberOfPlayers, maximumTurns, allowedFactions, asyncPlay);
+        
+        return result.Success ? null :
+            result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : CurrentSkin.Describe(result.Error);
+    }
+
     public async Task<string> RequestCloseGame(string gameId)
     {
         var result = await Invoke(nameof(IGameHub.RequestCloseGame), UserToken, gameId);
@@ -434,6 +442,15 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             return loadMessage.ToString();
 
         GameId = result.Contents.GameId;
+        return null;
+    }
+    
+    public async Task<string> RequestSubscribeGame(string gameId, bool certain)
+    {
+        var result = await Invoke(nameof(IGameHub.RequestSubscribeGame), UserToken, gameId, certain);
+        if (!result.Success) 
+            return CurrentSkin.Describe(result.Error);
+
         return null;
     }
 
@@ -634,18 +651,18 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         if (Game.RecentMilestones.Contains(Milestone.AuctionWon) && (!KeepAutoPassSetting || Game.CurrentPhase == Phase.BiddingReport)) AutoPass = false;
     }
 
-    private bool itAlreadyWasMyTurn;
+    private bool _itAlreadyWasMyTurn;
     private async Task TurnAlert()
     {
-        if (itAlreadyWasMyTurn)
+        if (_itAlreadyWasMyTurn)
         {
-            itAlreadyWasMyTurn = !Status.WaitingForOthers(Player, IsHost);
+            _itAlreadyWasMyTurn = !Status.WaitingForOthers(Player, IsHost);
         }
         else
         {
             if (!Status.WaitingForOthers(Player, IsHost) && Game.CurrentMainPhase != MainPhase.Battle)
             {
-                itAlreadyWasMyTurn = true;
+                _itAlreadyWasMyTurn = true;
                 await Browser.PlaySound(CurrentSkin.Sound_YourTurn_URL, CurrentEffectVolume);
             }
         }

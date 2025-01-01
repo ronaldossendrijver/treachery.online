@@ -1,0 +1,55 @@
+﻿<div class="form-group">
+    <label for="datePicker">@Label</label>
+    <input type="date" id="datePicker" class="form-control" 
+           @bind="SelectedDate" @bind:event="oninput" />
+
+    <label for="timePicker" class="mt-2">@TimeLabel</label>
+    <input type="time" id="timePicker" class="form-control" 
+           @bind="SelectedTime" @bind:event="oninput" />
+</div>
+
+@code 
+{
+    [Parameter]
+    public string Label { get; set; } = "Select Date";
+
+    [Parameter]
+    public string TimeLabel { get; set; } = "Select Time";
+
+    [Parameter] public DateTimeOffset Value { get; set; } = DateTimeOffset.Now;
+    
+    [Parameter]
+    public EventCallback<DateTimeOffset> ValueChanged { get; set; }
+
+    private string SelectedDate { get; set; }
+    private string SelectedTime { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        UpdateValue();
+    }
+    
+    private void UpdateValue()
+    {
+        SelectedDate = Value.ToString("yyyy-MM-dd");
+        SelectedTime = Value.ToString("HH:mm");
+    }
+    
+    private async Task UpdateValueAndNotifyChanged()
+    {
+        UpdateValue();
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    private async Task HandleDateChange(ChangeEventArgs e)
+    {
+        SelectedDate = e.Value?.ToString();
+        await UpdateValueAndNotifyChanged();
+    }
+
+    private async Task HandleTimeChange(ChangeEventArgs e)
+    {
+        SelectedTime = e.Value?.ToString();
+        await UpdateValueAndNotifyChanged();
+    }
+}

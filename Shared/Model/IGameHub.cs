@@ -33,6 +33,11 @@ public interface IGameHub
     Task<Result<List<GameInfo>>> RequestRunningGames(string userToken);
     Task<VoidResult> RequestRegisterHeartbeat(string userToken);
     Task<VoidResult> RequestAssignSeats(string userToken, string gameId, Dictionary<int, int> assignment);
+    Task<VoidResult> RequestScheduleGame(string userToken,  
+        DateTimeOffset dateTime, Ruleset? ruleset, int? numberOfPlayers, int? maximumTurns, 
+        List<Faction> allowedFactionsInPlay, bool asyncPlay);
+
+    Task<VoidResult> RequestSubscribeGame(string userToken, string gameId, bool certain);
     
     //Game Events
     Task<VoidResult> RequestChangeSettings(string userToken, string gameId, ChangeSettings e);
