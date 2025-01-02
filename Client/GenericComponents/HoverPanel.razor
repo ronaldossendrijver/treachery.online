@@ -66,7 +66,6 @@
             {
                 case HoverPanelPosition.Top:
                     {
-                        var windowWidth = Math.Max(_dims.Width, 200);
                         var panelWidth = Support.Round(0.7f * _dims.Width);
                         var leftMargin = Support.Round(0.15f * _dims.Width);
 
@@ -79,11 +78,25 @@
                             Support.Round(Height),
                             _shown ? "0" : Support.Round(-Height + HandleWidth));
                     }
+                    
+                case HoverPanelPosition.Right:
+                {
+                    var panelHeight = Support.Round(0.7f * _dims.Height);
+                    var topMargin = Support.Round(0.15f * _dims.Height);
+
+                    return string.Format("position: absolute; right: {0}px; transition: 0.5s; padding: 0px; width: {1}px; border-radius: 5px 0px 0px 5px; background-color: {2}; overflow: auto; height: {5}px; top: {6}px;",
+                        _shown ? "0" : Support.Round(-Width + HandleWidth),
+                        Support.Round(Width),
+                        BackgroundColor,
+                        BorderColor,
+                        BorderWidth,
+                        panelHeight,
+                        topMargin);
+                }
 
                 default:
                 case HoverPanelPosition.Left:
                     {
-                        var windowHeight = Math.Max(_dims.Height, 200);
                         var panelHeight = Support.Round(0.7f * _dims.Height);
                         var topMargin = Support.Round(0.15f * _dims.Height);
 

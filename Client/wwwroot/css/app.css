@@ -3,6 +3,7 @@
 html, body {
     font-family: Calibri, Tahoma, sans-serif;
     user-select: none;
+    overflow-x: hidden;
 }
 
 a, .btn-link {

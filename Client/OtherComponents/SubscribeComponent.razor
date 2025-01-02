@@ -19,7 +19,7 @@
     
     private bool _busy;
 
-    private SubscriptionType CurrentSubscription => ScheduledGame.SubscribedUsers.GetValueOrDefault(Client.UserId, SubscriptionType.None);
+    private SubscriptionType CurrentSubscription => ScheduledGame.SubscribedUsers.GetValueOrDefault(Client.UserId, SubscriptionType.DontParticipate);
     
     private string BtnTypeFromStatus => CurrentSubscription switch
     {
