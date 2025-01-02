@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Treachery.Shared;
 
 namespace Treachery.Server;
 
@@ -30,14 +27,13 @@ public partial class GameHub
 
         LastCleanup = now;
         
-        foreach (var tokenAndInfo in UserTokenInfo.ToArray())
+        foreach (var tokenAndInfo in UsersByUserToken.ToArray())
         {
-            var age = now.Subtract(tokenAndInfo.Value.Issued).TotalMinutes;
+            var age = now.Subtract(tokenAndInfo.Value.LoggedInDateTime).TotalMinutes;
             if (age >= 10080 ||
-                age >= 15 && now.Subtract(tokenAndInfo.Value.Refreshed).TotalMinutes >= 15)
+                age >= 15 && now.Subtract(tokenAndInfo.Value.LastSeenDateTime).TotalMinutes >= 15)
             {
                 UsersByUserToken.Remove(tokenAndInfo.Key, out _);
-                UserTokenInfo.Remove(tokenAndInfo.Key, out _);
             } 
         }
 
@@ -48,15 +44,6 @@ public partial class GameHub
                 await RemoveFromGroup(gameId, userIdAndConnectionInfo.Key);
             }
         }
-    }
-
-    public async Task<VoidResult> RequestRegisterHeartbeat(string userToken)
-    {
-        if (!UserTokenInfo.TryGetValue(userToken, out var tokenInfo))
-            return Error(ErrorType.UserNotFound);
-
-        tokenInfo.Refreshed = DateTime.Now;
-        return await Task.FromResult(Success());
     }
 
     public async Task<Result<string>> AdminUpdateMaintenance(string userToken, DateTimeOffset maintenanceDate)
@@ -73,7 +60,8 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
         
-        var amount = 0;
+        var amountOfGames = 0;
+        var amountOfScheduledGames = 0;
         await using (var context = GetDbContext())
         {
             await context.PersistedGames.ExecuteDeleteAsync();
@@ -86,7 +74,7 @@ public partial class GameHub
                 {
                     CreationDate = game.CreationDate,
                     CreatorUserId = game.CreatorUserId,
-                    GameId = game.GameId,
+                    GameId = gameIdAndManagedGame.Key,
                     GameState = GameState.GetStateAsString(game.Game),
                     GameName = game.Name,
                     GameParticipation = JsonSerializer.Serialize(game.Game.Participation),
@@ -99,12 +87,35 @@ public partial class GameHub
 
                 context.PersistedGames.Add(persisted);
                 await context.SaveChangesAsync();
-                amount++;
+                amountOfGames++;
+            }
+            
+            await context.ScheduledGames.ExecuteDeleteAsync();
+            
+            foreach (var gameIdAndManagedGame in ScheduledGamesByGameId)
+            {
+                var game = gameIdAndManagedGame.Value;
+
+                var persisted = new PersistedScheduledGame
+                {
+                    DateTime = game.DateTime,
+                    CreatorUserId = game.CreatorUserId,
+                    GameId = gameIdAndManagedGame.Key,
+                    Ruleset = game.Ruleset,
+                    MaximumTurns = game.MaximumTurns,
+                    NumberOfPlayers = game.NumberOfPlayers,
+                    AllowedFactionsInPlay = game.AllowedFactionsInPlay,
+                    SubscribedUsers = JsonSerializer.Serialize(game.SubscribedUsers),
+                    AsyncPlay = game.AsyncPlay
+                };
+
+                context.ScheduledGames.Add(persisted);
+                await context.SaveChangesAsync();
+                amountOfScheduledGames++;
             }
         }
             
-        return Success($"Number of games persisted: {amount}");
-
+        return Success($"Persisted: {amountOfGames} running games, {amountOfScheduledGames} scheduled games");
     }
 
     public async Task<Result<string>> AdminRestoreState(string userToken)
@@ -112,7 +123,8 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
         
-        var amount = 0;
+        var amountRunning = 0;
+        var amountScheduled = 0;
         await using (var context = GetDbContext())
         {
             RunningGamesByGameId.Clear();
@@ -141,12 +153,34 @@ public partial class GameHub
                     };
                     
                     RunningGamesByGameId.TryAdd(id, managedGame);
-                    amount++;
+                    amountRunning++;
                 }
+            }
+            
+            ScheduledGamesByGameId.Clear();
+            
+            foreach (var scheduledGame in context.ScheduledGames)
+            {
+                var id = scheduledGame.GameId;
+                var subscriptions = JsonSerializer.Deserialize<Dictionary<int,SubscriptionType>>(scheduledGame.SubscribedUsers);
+                var game = new ScheduledGame
+                {
+                    DateTime = scheduledGame.DateTime,
+                    CreatorUserId = scheduledGame.CreatorUserId,
+                    Ruleset = scheduledGame.Ruleset,
+                    MaximumTurns = scheduledGame.MaximumTurns,
+                    NumberOfPlayers = scheduledGame.NumberOfPlayers,
+                    AllowedFactionsInPlay = scheduledGame.AllowedFactionsInPlay,
+                    SubscribedUsers = subscriptions,
+                    AsyncPlay = scheduledGame.AsyncPlay
+                };
+                
+                ScheduledGamesByGameId.TryAdd(id, game);
+                amountScheduled++;
             }
         }
             
-        return Success($"Number of games restored: {amount}");
+        return Success($"Restored: {amountRunning} running games, {amountScheduled} scheduled games");
     }
 
     public async Task<Result<string>> AdminCloseGame(string userToken, string gameId)

@@ -1,0 +1,123 @@
+﻿@*
+ * Copyright (C) 2020-2024 Ronald Ossendrijver (admin@treachery.online)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
+ * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
+ * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+*@
+
+@inherits GameComponent;
+
+<div class="card border-none" style="background-color:@BackgroundColor;border:none;">
+    <div class="card-body">
+        @foreach (var user in Client.LoggedInUsers.Values.OrderBy(u => u.PlayerName))
+        {
+            <div>
+                <span>@user.PlayerName</span>
+                @switch (user.Status)
+                {
+                    case UserStatus.Away:
+                        <span class="badge text-bg-secondary">away</span>
+                        break;
+                    case UserStatus.Lfg:
+                        <span class="badge text-bg-primary">lfg</span>
+                        break;
+                    case UserStatus.Lfm:
+                        <span class="badge text-bg-success">lfm</span>
+                        break;
+                    case UserStatus.InGame:
+                        <span class="badge bg-light text-dark">playing</span>
+                        break;
+                    case UserStatus.Online:
+                    default:
+                        @*left blank*@
+                        break;
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string BackgroundColor { get; set; } = "transparent";
+
+    private const string LabelGlobalChat = "everyone (on treachery.online)";
+    private const string LabelAllPlayersInGame = "all players (this game)";
+
+    private string message;
+    private string selectedPlayerName;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        
+        if (ShowGameChat)
+        {
+            var firstChatTarget = Game.Players.FirstOrDefault(p => p != Client.Player);
+            selectedPlayerName = firstChatTarget != null ? Game.GetPlayerName(firstChatTarget) : LabelAllPlayersInGame;
+        }
+        else
+        {
+            selectedPlayerName = LabelGlobalChat;
+        }
+    }
+
+    private async Task KeyUp(KeyboardEventArgs e)
+    {
+        if (e.Code is "Enter" or "NumpadEnter")
+        {
+            await Send();
+        }
+    }
+
+    private async Task Send()
+    {
+        await SendMessage(message, selectedPlayerName);
+        message = "";
+    }
+
+    private async Task SendMessage(string msg, string target)
+    {
+        if (target == LabelGlobalChat)
+        {
+            await Client.SendGlobalChatMessage(new GlobalChatMessage
+            {
+                SourceUserId = Client.UserId,
+                Body = msg
+            });
+        }
+        else {
+
+            var targetUserId = target is LabelGlobalChat or LabelAllPlayersInGame ? -1 : Client.Game.GetUserIdByName(target);
+            await Client.SendChatMessage(new GameChatMessage
+            {
+                SourceUserId = Client.UserId,
+                TargetUserId = targetUserId,
+                Body = msg
+            });
+        }
+    }
+
+    private string Placeholder => "Chat to " + selectedPlayerName + "...";
+
+    private string SelectedFactionColor
+    {
+        get
+        {
+            if (Game.CurrentPhase < Phase.SelectingFactions)
+                return "white";
+
+            var p = Client.Game.GetPlayerByName(selectedPlayerName);
+            return p != null ? Client.CurrentSkin.GetFactionColor(p.Faction) : "red";
+        }
+    }
+
+    private string SelectedFactionForegroundColor => Client.Faction == Faction.None ? "black" : "white";
+    
+
+    private bool ShowGameChat => Client.InGame && !Client.IsObserver;
+}
+

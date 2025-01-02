@@ -107,6 +107,7 @@
         return Shown switch
         {
             null => "",
+            string s => s,
             TreacheryCard tc => Client.CurrentSkin.GetPopup(tc),
             ResourceCard rc => Client.CurrentSkin.GetPopup(rc),
             IHero h => Game != null ? Client.CurrentSkin.GetPopup(h, Game) : Client.CurrentSkin.GetPopup(h),

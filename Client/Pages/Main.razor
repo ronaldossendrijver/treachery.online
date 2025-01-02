@@ -88,7 +88,7 @@ else if (Client.PlayerNeedsSeating)
 }
 else
 {
-    <div @ref="@element" class="row">
+    <div @ref="@_element" class="row">
 
         <!--Map Column-->
         <div id="mapdiv" class="@MapGrid">
@@ -125,14 +125,6 @@ else
                     <ReportComponent Report="Client.Game.CurrentReport" />
                 }
             </div>
-            
-            <!--Chat-->
-            @if (Client.CurrentPhase > Phase.AwaitingPlayers)
-            {
-                <HoverPanel Width=400 HandleWidth=12 BackgroundColor="#e8dba6dd">
-                    <ChatComponent/>
-                </HoverPanel>
-            }
         }
         else
         {
@@ -146,10 +138,9 @@ else
                 }
             </div>
             
-            <!--Menu and chat-->
+            <!--Menu-->
             <div class="col-sm-12 col-lg-3">
                 <MenuComponent/>
-                <ChatComponent BackgroundColor="#e8dba6dd" />
             </div>
         }
 
@@ -157,8 +148,21 @@ else
 
     </div>
 }
-<a href="https://www.nullentropy.nl" target="_blank" style="position: fixed; right: 4px; bottom: 4px; opacity: 67%;">
-    <img src="./art/nullentropy.png" alt="Nullentropy" width="122"/>
+@if (!Client.InScheduledMaintenance && Client.IsConnected && Client.LoggedIn)
+{
+    <!--Chat-->
+    <HoverPanel Width=400 HandleWidth=12 BackgroundColor="#e8dba6dd">
+        <ChatComponent/>
+    </HoverPanel>
+    
+    <!--Chat-->
+    <HoverPanel Width=400 HandleWidth=12 BackgroundColor="#e8dba6dd" Position="HoverPanel.HoverPanelPosition.Right">
+        <UserListComponent/>
+    </HoverPanel>
+}
+    
+<a href="https://www.nullentropy.nl" target="_blank" style="position: fixed; right: 0.5rem; bottom: 0.5rem; opacity: 50%;">
+    <img src="./art/nullentropy.png" alt="Nullentropy" width="244"/>
 </a>
 
 @code {
@@ -166,7 +170,7 @@ else
     [Parameter] public string UserToken { get; set; }
     [Parameter] public string GameId { get; set; }
 
-    private ElementReference element;
+    private ElementReference _element;
 
     protected override async Task OnInitializedAsync()
     {
@@ -186,13 +190,13 @@ else
         Client.RefreshPopoverHandler -= RefreshPopovers;
     }
 
-    private bool isFullscreen;
+    private bool _isFullscreen;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         var checkFullscreen = await Browser.IsFullScreen();
-        if (isFullscreen != checkFullscreen)
+        if (_isFullscreen != checkFullscreen)
         {
-            isFullscreen = checkFullscreen;
+            _isFullscreen = checkFullscreen;
             StateHasChanged();
         }
         else
@@ -211,9 +215,9 @@ else
         }
     }
 
-    private void RefreshPopovers() => _ = Browser.RefreshPopovers(element);
+    private void RefreshPopovers() => _ = Browser.RefreshPopovers(_element);
 
-    private string Scrollbars => isFullscreen? "vh-100 overflow-auto" : "";
+    private string Scrollbars => _isFullscreen? "vh-100 overflow-auto" : "";
 
     private string MapGrid => !Client.IsConnected || !Client.LoggedIn || !Client.IsHost ? "col-sm-12 col-lg-5" : "col-sm-12 col-lg-6";
 

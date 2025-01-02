@@ -18,7 +18,7 @@ namespace Treachery.Client;
 
 public class Client : IGameService, IGameClient, IAsyncDisposable
 {
-    private const int HeartbeatDelay = 3000;
+    private const int HeartbeatDelay = 4200;
 
     //General info
     public ServerInfo ServerInfo { get; private set; }
@@ -27,6 +27,13 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     //Admin info
     public AdminInfo AdminInfo { get; private set; }
+    
+    //Server info
+    public List<GameInfo> RunningGames { get; private set; } = [];
+    public List<GameInfo> RunningGamesWithOpenSeats { get; private set; } = [];
+    public List<GameInfo> RunningGamesWithoutOpenSeats { get; private set; } = [];
+    public List<ScheduledGame> ScheduledGames { get; private set; } = [];
+    public Dictionary<int,LoggedInUserInfo> LoggedInUsers { get; private set; } = [];
     
     //Logged in player
     private LoginInfo LoginInfo { get; set; }
@@ -49,6 +56,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public bool PlayerNeedsSeating => InGame && Game.Participation.SeatedPlayers.ContainsValue(-1);
     public Player Player => Game.GetPlayerByUserId(UserId);
     public string PlayerName => LoginInfo.PlayerName;
+    public UserStatus UserStatus => LoginInfo != null ? GetUserStatus(LoginInfo.UserId) : UserStatus.None;
     public Faction Faction => Player?.Faction ?? Faction.None;
     public bool IsObserver => Game.IsObserver(UserId);
     public bool IsHost => Game.IsHost(UserId);
@@ -399,6 +407,13 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return null;
     }
     
+    public async Task<VoidResult> RequestSetUserStatus(UserStatus status)
+    {
+        await Invoke(nameof(IGameHub.RequestSetUserStatus), UserToken, status);
+        Refresh(nameof(RequestSetUserStatus));
+        return null;
+    }
+    
     //Game Management
 
     public async Task<string> RequestCreateGame(string hashedPassword, string stateData = null, string skinData = null)
@@ -421,8 +436,14 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     {
         var result = await Invoke(nameof(IGameHub.RequestScheduleGame), UserToken, dateTime, ruleset, numberOfPlayers, maximumTurns, allowedFactions, asyncPlay);
         
-        return result.Success ? null :
-            result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : CurrentSkin.Describe(result.Error);
+        return result.Success ? null : CurrentSkin.Describe(result.Error);
+    }
+    
+    public async Task<string> RequestCancelGame(string scheduledGameId)
+    {
+        var result = await Invoke(nameof(IGameHub.RequestCancelGame), UserToken, scheduledGameId);
+        
+        return result.Success ? null : CurrentSkin.Describe(result.Error);
     }
 
     public async Task<string> RequestCloseGame(string gameId)
@@ -445,9 +466,9 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return null;
     }
     
-    public async Task<string> RequestSubscribeGame(string gameId, bool certain)
+    public async Task<string> RequestSubscribeGame(string scheduledGameId, SubscriptionType subscription)
     {
-        var result = await Invoke(nameof(IGameHub.RequestSubscribeGame), UserToken, gameId, certain);
+        var result = await Invoke(nameof(IGameHub.RequestSubscribeGame), UserToken, scheduledGameId, subscription);
         if (!result.Success) 
             return CurrentSkin.Describe(result.Error);
 
@@ -562,32 +583,27 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
     }
 
-    public List<GameInfo> RunningGames { get; private set; } = [];
-    public List<GameInfo> RunningGamesWithOpenSeats { get; private set; } = [];
-    public List<GameInfo> RunningGamesWithoutOpenSeats { get; private set; } = [];
     private async Task Heartbeat()
     {
         try
         {
-            if (IsConnected)
+            if (IsConnected && LoggedIn)
             {
-                await _connection.SendAsync(nameof(IGameHub.RequestRegisterHeartbeat), UserToken, GameId);
-
-                if (LoggedIn && !InGame)
+                var status = await Invoke<ServerStatus>(nameof(IGameHub.RequestHeartbeat), UserToken);
+                if (status.Success)
                 {
-                    var runningGamesResult = await _connection.InvokeAsync<Result<List<GameInfo>>>(nameof(IGameHub.RequestRunningGames), UserToken);
-                    if (runningGamesResult.Success)
-                    {
-                        RunningGames = runningGamesResult.Contents;
-                        RunningGamesWithOpenSeats = runningGamesResult.Contents.Where(g => g.CanBeJoined).ToList();
-                        RunningGamesWithoutOpenSeats = runningGamesResult.Contents.Where(g => !g.CanBeJoined).ToList();
-                        Refresh(nameof(Heartbeat));
-                    }
-                    else
-                    {
-                        Support.Log("Server error: " + runningGamesResult.Error);                        
-                    }
+                    RunningGames = status.Contents.RunningGames;
+                    RunningGamesWithOpenSeats = RunningGames.Where(g => g.CanBeJoined).ToList();
+                    RunningGamesWithoutOpenSeats = RunningGames.Where(g => !g.CanBeJoined).ToList();
+                    ScheduledGames = status.Contents.ScheduledGames;
+                    LoggedInUsers = status.Contents.LoggedInUsers.ToDictionary(x => x.Id, x => x);
                 }
+                else
+                {
+                    Support.Log("Server error: " + status.Error);                        
+                }
+                
+                Refresh(nameof(Heartbeat));
             }
         }
         catch (Exception e)
@@ -674,13 +690,13 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             await Browser.PlaySound(CurrentSkin.GetSound(m), CurrentEffectVolume);
     }
 
-    private Phase previousPhase;
+    private Phase _previousPhase;
     private void PerformEndOfTurnTasks()
     {
-        if (Game.CurrentPhase == Phase.TurnConcluded && Game.CurrentPhase != previousPhase) 
+        if (Game.CurrentPhase == Phase.TurnConcluded && Game.CurrentPhase != _previousPhase) 
             Messages.Clear();
 
-        previousPhase = Game.CurrentPhase;
+        _previousPhase = Game.CurrentPhase;
     }
     
     private async Task OnReconnected(string _) => await RequestReconnectGame();
@@ -717,7 +733,9 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             2 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1]),
             3 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2]),
             4 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3]),
-            5 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3], args[5]),
+            5 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3], args[4]),
+            6 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3], args[4], args[5]),
+            7 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3], args[4], args[5], args[6]),
             _ => throw new ArgumentException("Too many arguments")
         };
         
@@ -732,7 +750,9 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
                     2 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1]),
                     3 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2]),
                     4 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3]),
-                    5 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3], args[5]),
+                    5 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3], args[4]),
+                    6 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3], args[4], args[5]),
+                    7 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3], args[4], args[5], args[6]),
                     _ => throw new ArgumentException("Too many arguments")
                 };
             }
@@ -742,5 +762,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     }
    
     private static void LogSerializationError(object sender, ErrorEventArgs e) => Support.Log(e.ErrorContext.Error.ToString());
+
+    public LoggedInUserInfo GetUserInfo(int userId) => LoggedInUsers.GetValueOrDefault(userId, null);
+    
+    public UserStatus GetUserStatus(int userId) =>
+        LoggedInUsers.TryGetValue(userId, out var user) ? user.Status : UserStatus.None;
 }
 

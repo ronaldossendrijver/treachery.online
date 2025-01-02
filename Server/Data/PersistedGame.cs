@@ -18,21 +18,21 @@ public class PersistedGame
     public int Id { get; init; }
     
     [MaxLength(128)]
-    public string GameName { get; set; }
+    public string GameName { get; init; } = string.Empty;
     
     [MaxLength(36)]
-    public string GameId { get; init; }
+    public string GameId { get; init; } = string.Empty;
     
-    public DateTimeOffset CreationDate { get; set; }
+    public DateTimeOffset CreationDate { get; init; }
     
     public int CreatorUserId { get; init; }
     
-    public string GameState { get; init; }
+    public string GameState { get; init; } = string.Empty;
 
-    public string GameParticipation { get; init; }
+    public string GameParticipation { get; init; } = string.Empty;
     
     [MaxLength(4000)]
-    public string HashedPassword { get; init; }
+    public string HashedPassword { get; init; } = string.Empty;
     
     public bool BotsArePaused { get; init; }
     
@@ -40,5 +40,5 @@ public class PersistedGame
     
     public bool StatisticsSent { get; init; }
     
-    public DateTimeOffset LastAsyncPlayMessageSent { get; set; }
+    public DateTimeOffset LastAsyncPlayMessageSent { get; init; }
 }

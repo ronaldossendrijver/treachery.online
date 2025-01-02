@@ -15,7 +15,7 @@ namespace Treachery.Server.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
 
             modelBuilder.Entity("Treachery.Server.ArchivedGame", b =>
                 {
@@ -25,6 +25,10 @@ namespace Treachery.Server.Migrations
 
                     b.Property<int>("CreatorUserId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("GameName")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("GameParticipation")
                         .HasColumnType("TEXT");
@@ -82,6 +86,45 @@ namespace Treachery.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PersistedGames");
+                });
+
+            modelBuilder.Entity("Treachery.Server.PersistedScheduledGame", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.PrimitiveCollection<string>("AllowedFactionsInPlay")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("AsyncPlay")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CreatorUserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset>("DateTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("GameId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("MaximumTurns")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("NumberOfPlayers")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("Ruleset")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SubscribedUsers")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ScheduledGames");
                 });
 
             modelBuilder.Entity("Treachery.Server.User", b =>

@@ -12,11 +12,8 @@ namespace Treachery.Server;
 
 public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfiguration configuration) : Hub<IGameClient>, IGameHub
 {
-    //State
-
     //Users
-    private static ConcurrentDictionary<string,User> UsersByUserToken { get; } = [];
-    private static ConcurrentDictionary<string,TokenInfo> UserTokenInfo { get; } = [];
+    private static ConcurrentDictionary<string,LoggedInUser> UsersByUserToken { get; } = [];
     private static ConcurrentDictionary<int,UserConnections> ConnectionInfoByUserId { get; } = [];
 
     //Started games
@@ -41,7 +38,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     
     private static Result<TResult> Success<TResult>(TResult contents) => new() { Success = true, Contents = contents };
 
-    private static bool AreValid<TResult>(string userToken, string gameId, out User user, out ManagedGame game, out Result<TResult> result)
+    private static bool AreValid<TResult>(string userToken, string gameId, out LoggedInUser user, out ManagedGame game, out Result<TResult> result)
     {
         user = null;
         game = null;
@@ -67,7 +64,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
 
         return true;
     }    
-    private static bool AreValid(string userToken, string gameId, out User user, out ManagedGame game, out VoidResult result)
+    private static bool AreValid(string userToken, string gameId, out LoggedInUser user, out ManagedGame game, out VoidResult result)
     {
         user = null;
         game = null;

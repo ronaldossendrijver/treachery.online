@@ -28,12 +28,15 @@
         {
             case OwnGamesComponentState.List:
                 var myGames = Client.RunningGames.Where(info => info.CreatorUserId == Client.UserId).OrderByDescending(av => av.LastAction).ToList();
-                if (!myGames.Any())
+                var myScheduledGames = Client.ScheduledGames.Where(info => info.CreatorUserId == Client.UserId).OrderByDescending(av => av.DateTime).ToList();
+                if (!myGames.Any() && !myScheduledGames.Any())
                 {
                     <div class="text-info mb-2">No games yet...</div>
                 }
-                else
+
+                if (myGames.Any())
                 {
+                    <div class="text-info mb-2">Active games</div>
                     <table class="table table-sm">
                         <thead>
                         <tr class="table-dark">
@@ -50,7 +53,7 @@
 
                             <tr class="small table-dark">
                                 <td class="w-50" style="@fontColorStyle">
-                                    <div>@Name(Game.DetermineApproximateRuleset(factions, av.Rules, Game.ExpansionLevel)), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
+                                    <div>@Name(av.Ruleset), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
                                         <br>
                                         @foreach (var f in factions.Where(f => f != Faction.None))
                                         {
@@ -63,6 +66,56 @@
                                 </td>
                                 <td class="w-25">
                                     <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Close(av))">Close</button>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+
+                if (myScheduledGames.Any())
+                {
+                    <div class="text-info mb-2">Scheduled games</div>
+                    <table class="table table-sm">
+                        <thead>
+                        <tr class="table-dark">
+                            <th scope="col">Game info</th>
+                            <th scope="col">Subscribed players</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var game in myScheduledGames)
+                        {
+                            <tr class="small table-dark">
+                                <td class="w-50">
+                                    <div>@Name(game.Ruleset), max players: @game.NumberOfPlayers, max turns: @game.MaximumTurns
+                                        <br>
+                                        @foreach (var f in game.AllowedFactionsInPlay)
+                                        {
+                                            <Image Shown="f" Width="20" Shadow=""/>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="w-25">
+                                    @foreach (var p in game.SubscribedUsers.Where(u => u.Value != SubscriptionType.DontParticipate))
+                                    {
+                                        var userInfo = Client.GetUserInfo(p.Key);
+                                        <div class="me-1">
+                                            @if (userInfo != null)
+                                            {
+                                                <span>@(userInfo.PlayerName)</span>
+                                                <span class="badge text-bg-primary">@Name(p.Value)</span>
+                                            }
+                                            else
+                                            {
+                                                <span>unknown player</span>
+                                            }
+                                        </div>
+                                    }                                    
+                                </td>
+                                <td class="w-25">
+                                    <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Cancel(game))">Cancel</button>
                                 </td>
                             </tr>
                         }
@@ -91,8 +144,8 @@
                 
             case OwnGamesComponentState.Schedule:
                 <DateTimePicker @bind-Value="@ScheduleGameDateTime"/>
-                <SelectNumberComponent @bind-Value="@ScheduleGameMaximumTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns:"/>
                 <SelectNumberComponent @bind-Value="@ScheduleGameNumberOfPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Label="Number of players:"/>
+                <SelectNumberComponent @bind-Value="@ScheduleGameMaximumTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns:"/>
                 <SelectFromImageComponent Selected="@ScheduleGameAllowedFactionsInPlay" Values="EstablishPlayers.AvailableFactions()" T="Faction" OnChanged="@StateHasChanged" ImageWidth="40" Required="false">
                     <Label>Factions in play:</Label>
                 </SelectFromImageComponent>
@@ -121,6 +174,7 @@
 <div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeIn90 1s">
     <div class="card-header">Your account</div>
     <div class="card-body">
+        <UserStatusComponent/>
         <div class="row">
             <label for="userName" class="col-4 col-form-label">Username</label>
             <div class="col-8">
@@ -203,10 +257,23 @@
     private string Password2 { get; set; }
     private string Email { get; set; }
     private string ChangeUserInfoMessage { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ScheduleGameAllowedFactionsInPlay = Enumerations.GetValuesExceptDefault(Faction.None).ToList();
+    }
     
     protected override void OnParametersSet()
     {
         GetUserInfoFromClient();
+    }
+    
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            StartRedrawCycle(5000);
+        }
     }
     
     private async Task ScheduleGame()
@@ -315,4 +382,10 @@
     }
 
     private string GetActive(OwnGamesComponentState toCheck) => toCheck == State ? "active" : "";
+
+    private async Task Cancel(ScheduledGame game)
+    {
+        await Client.RequestCancelGame(game.ScheduledGameId);
+        StateHasChanged();
+    }
 }

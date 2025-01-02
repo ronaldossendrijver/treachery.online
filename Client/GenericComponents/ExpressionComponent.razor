@@ -70,7 +70,8 @@
             break;
 
         case Concept monster when monster == Concept.Monster:
-            <img src=@Client.CurrentSkin.Monster_URL width=@Size height=@Size title=@Client.CurrentSkin.Describe(Concept.Monster) style="filter: drop-shadow(2px 2px 2px black);"/>
+            var label = @Client.CurrentSkin.Describe(Concept.Monster);
+            <img src="@Client.CurrentSkin.Monster_URL" alt="@label" width="@Size" height="@Size" title="@label" style="filter: drop-shadow(2px 2px 2px black);"/>
             break;
     
         case FactionForce or FactionSpecialForce or Ambassador:

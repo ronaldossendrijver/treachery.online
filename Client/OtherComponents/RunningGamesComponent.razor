@@ -12,18 +12,17 @@
     <div class="card-header">Join or observe a game</div>
     <div class="card-body">
 
-        @if (!Client.RunningGamesWithoutOpenSeats.Any() && !Client.RunningGamesWithOpenSeats.Any())
+        @if (!Client.RunningGamesWithoutOpenSeats.Any() && !Client.RunningGamesWithOpenSeats.Any() && !Client.ScheduledGames.Any())
         {
-            <div class="text-info">No games hosted...</div>
+            <div class="text-info">No games...</div>
         }
         else
         {
             if (Client.RunningGamesWithOpenSeats.Any())
             {
-                <div class="text-info">Games with open seats</div>
+                <div class="text-info">Active games with open seats (that you can join)</div>
                 <table class="table table-sm">
                     <tbody>
-
                     @foreach (var av in Client.RunningGamesWithOpenSeats)
                     {
                         joinGamePassword.TryAdd(av.GameId, "");
@@ -37,13 +36,13 @@
                                 @if (av.CurrentPhase == Phase.AwaitingPlayers)
                                 {
                                     <div>
-                                        @av.Players.Length Players, @Client.CurrentSkin.Describe(Game.DetermineApproximateRuleset(av.FactionsInPlay, av.Rules, Game.ExpansionLevel)), maximum players: @av.NumberOfPlayers, maximum turns: @av.MaximumTurns
+                                        @av.ActualNumberOfPlayers Players, @Client.CurrentSkin.Describe(av.Ruleset), maximum players: @av.MaximumNumberOfPlayers, maximum turns: @av.MaximumTurns
                                     </div>
                                 }
                                 else
                                 {
                                     var factions = av.FactionsInPlay ?? [];
-                                    <div>@Name(Game.DetermineApproximateRuleset(factions, av.Rules, Game.ExpansionLevel)), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
+                                    <div>@Name(av.Ruleset), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
                                         <br>
                                         @foreach (var f in factions.Where(f => f != Faction.None))
                                         {
@@ -87,9 +86,62 @@
                     </tbody>
                 </table>
             }
+            if (Client.ScheduledGames.Any())
+            {
+                <div class="text-info">Scheduled games</div>
+                <table class="table table-sm">
+                        <thead>
+                        <tr class="table-dark">
+                            <th scope="col">When</th>
+                            <th scope="col">Game info</th>
+                            <th scope="col">Subscribers</th>
+                            <th scope="col">Subscribe?</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var game in Client.ScheduledGames)
+                        {
+                            <tr class="small table-dark">
+                                <td class="w-20">
+                                    @game.DateTime.ToLocalTime().ToString("dd-MM HH:mm")
+                                </td>
+                                <td class="w-40">
+                                    <div>@Name(game.Ruleset), max players: @game.NumberOfPlayers, max turns: @game.MaximumTurns
+                                        <br>
+                                        @foreach (var f in game.AllowedFactionsInPlay)
+                                        {
+                                            <Image Shown="f" Width="20" Shadow=""/>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="w-30">
+                                    @foreach (var p in game.SubscribedUsers.Where(u => u.Value != SubscriptionType.DontParticipate))
+                                    {
+                                        var userInfo = Client.GetUserInfo(p.Key);
+                                        <div class="me-1">
+                                            @if (userInfo != null)
+                                            {
+                                                <span>@(userInfo.PlayerName)</span>
+                                                <span class="badge text-bg-primary">@Name(p.Value)</span>
+                                            }
+                                            else
+                                            {
+                                                <span>unknown player</span>
+                                            }
+                                        </div>
+                                    }                                    
+                                </td>
+                                <td class="w-10">
+                                    <SubscribeComponent ScheduledGame="@game"/>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+            }
             if (Client.RunningGamesWithoutOpenSeats.Any())
             {
-                <div class="text-info">Games without open seats</div>
+                <div class="text-info">Active games without open seats</div>
                 <table class="table table-sm">
                     <tbody>
 
@@ -106,13 +158,13 @@
                                 @if (av.CurrentPhase == Phase.AwaitingPlayers)
                                 {
                                     <div>
-                                        @av.Players.Length Players, @Client.CurrentSkin.Describe(Game.DetermineApproximateRuleset(av.FactionsInPlay, av.Rules, Game.ExpansionLevel)), maximum players: @av.NumberOfPlayers, maximum turns: @av.MaximumTurns
+                                        @av.ActualNumberOfPlayers Players, @Client.CurrentSkin.Describe(av.Ruleset), maximum players: @av.MaximumNumberOfPlayers, maximum turns: @av.MaximumTurns
                                     </div>
                                 }
                                 else
                                 {
                                     var factions = av.FactionsInPlay ?? [];
-                                    <div>@Name(Game.DetermineApproximateRuleset(factions, av.Rules, Game.ExpansionLevel)), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
+                                    <div>@Name(av.Ruleset), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
                                         <br>
                                         @foreach (var f in factions.Where(f => f != Faction.None))
                                         {
@@ -187,9 +239,9 @@
     {
         return av.NumberOfBots switch
         {
-            1 => $" ({av.Players.Length} players, 1 bot)",
-            > 1 => $" ({av.Players.Length} players, {av.NumberOfBots} bots)",
-            _ => $" ({av.Players.Length} players)"
+            1 => $" ({av.ActualNumberOfPlayers} players, 1 bot)",
+            > 1 => $" ({av.ActualNumberOfPlayers} players, {av.NumberOfBots} bots)",
+            _ => $" ({av.ActualNumberOfPlayers} players)"
         };
     }
 }

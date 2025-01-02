@@ -1,11 +1,12 @@
-﻿<div class="form-group">
-    <label for="datePicker">@Label</label>
-    <input type="date" id="datePicker" class="form-control" 
-           @bind="SelectedDate" @bind:event="oninput" />
-
-    <label for="timePicker" class="mt-2">@TimeLabel</label>
-    <input type="time" id="timePicker" class="form-control" 
-           @bind="SelectedTime" @bind:event="oninput" />
+﻿<div class="row mb-1">
+    <div class="col">
+        <label for="datePicker">@Label</label>
+        <input type="date" id="datePicker" class="form-control" @bind:get="@SelectedDate" @bind:set="@HandleDateChanged" @bind:event="oninput"/>
+    </div>
+    <div class="col">
+        <label for="timePicker">@TimeLabel</label>
+        <input type="time" id="timePicker" class="form-control" @bind:get="@SelectedTime" @bind:set="@HandleTimeChanged" @bind:event="oninput" step="@(Step * 60)"/>
+    </div>
 </div>
 
 @code 
@@ -16,23 +17,53 @@
     [Parameter]
     public string TimeLabel { get; set; } = "Select Time";
 
-    [Parameter] public DateTimeOffset Value { get; set; } = DateTimeOffset.Now;
+    [Parameter] 
+    public DateTimeOffset Value { get; set; } = DateTimeOffset.MinValue;
     
     [Parameter]
     public EventCallback<DateTimeOffset> ValueChanged { get; set; }
+    
+    [Parameter] 
+    public int Step { get; set; } = 15;
+    
+    private DateTime? SelectedDate { get; set; }
+    private TimeOnly? SelectedTime { get; set; }
 
-    private string SelectedDate { get; set; }
-    private string SelectedTime { get; set; }
-
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        UpdateValue();
+        bool updated = false;
+        if (Value == DateTimeOffset.MinValue)
+        {
+            Value = Now();
+            updated = true;
+        }
+        else
+        {
+            var fixedValue = Fix(Value);
+            if (fixedValue != Value)
+            {
+                Value = fixedValue;
+                updated = true;
+            }
+        }
+        
+        SelectedDate = Value.DateTime;
+        SelectedTime = TimeOnly.FromDateTime(Value.DateTime);
+        
+        if (updated)
+            await ValueChanged.InvokeAsync(Value);
     }
     
-    private void UpdateValue()
+    private async Task HandleDateChanged(DateTime? value)
     {
-        SelectedDate = Value.ToString("yyyy-MM-dd");
-        SelectedTime = Value.ToString("HH:mm");
+        SelectedDate = value;
+        await UpdateValueAndNotifyChanged();
+    }
+
+    private async Task  HandleTimeChanged(TimeOnly? value)
+    {
+        SelectedTime = value;
+        await UpdateValueAndNotifyChanged();
     }
     
     private async Task UpdateValueAndNotifyChanged()
@@ -40,16 +71,19 @@
         UpdateValue();
         await ValueChanged.InvokeAsync(Value);
     }
-
-    private async Task HandleDateChange(ChangeEventArgs e)
+    
+    private void UpdateValue()
     {
-        SelectedDate = e.Value?.ToString();
-        await UpdateValueAndNotifyChanged();
+        var dateTime = SelectedDate ?? Now();
+        var date = new DateOnly(dateTime.Year, dateTime.Month, dateTime.Day);
+        Value = new DateTimeOffset(date, SelectedTime ?? TimeOnly.MinValue, dateTime.Offset);
     }
 
-    private async Task HandleTimeChange(ChangeEventArgs e)
+    private DateTimeOffset Now() => Fix(DateTimeOffset.Now);
+
+    private DateTimeOffset Fix(DateTimeOffset value)
     {
-        SelectedTime = e.Value?.ToString();
-        await UpdateValueAndNotifyChanged();
+        var roundedMinutes = Step * (value.Minute / 15);
+        return new DateTimeOffset(value.Year, value.Month, value.Day, value.Hour, roundedMinutes, 0, value.Offset);
     }
 }

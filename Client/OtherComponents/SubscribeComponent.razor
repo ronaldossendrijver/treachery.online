@@ -1,0 +1,36 @@
+﻿@inherits GameComponent
+
+<div class="btn-group align-self-end">
+    <button type="button" class="btn @BtnTypeFromStatus dropdown-toggle btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
+        @Name(CurrentSubscription)
+    </button>
+    <ul class="dropdown-menu">
+        @foreach (var status in Enumerations.GetValuesExceptDefault(SubscriptionType.None).Where(s => s != CurrentSubscription))
+        {
+            <li><a class="dropdown-item" href="#" @onclick="@(_ => SetSubscription(status))">@Name(status)</a></li>
+        }
+    </ul>
+</div>
+
+@code 
+{
+    [Parameter, EditorRequired]
+    public required ScheduledGame ScheduledGame { get; set; }
+
+    private SubscriptionType CurrentSubscription => ScheduledGame.SubscribedUsers.GetValueOrDefault(Client.UserId, SubscriptionType.None);
+    
+    private string BtnTypeFromStatus => CurrentSubscription switch
+    {
+        SubscriptionType.None => "btn-dark",
+        SubscriptionType.DontParticipate => "btn-danger",
+        SubscriptionType.MaybeAsPlayer or SubscriptionType.MaybeAsHost => "btn-warning",
+        SubscriptionType.CertainAsPlayer or SubscriptionType.CertainAsHost => "btn-primary",
+        _ => "btn-dark",
+    };
+
+
+    private async Task SetSubscription(SubscriptionType subscription)
+    {
+        await Client.RequestSubscribeGame(ScheduledGame.ScheduledGameId, subscription);
+    }
+}

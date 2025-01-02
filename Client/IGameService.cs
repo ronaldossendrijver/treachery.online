@@ -16,8 +16,18 @@ public interface IGameService
     public string UserName { get; }
     public string UserEmail { get; }
     public string PlayerName { get; }
+    public UserStatus UserStatus { get; }
+    
+    //Server info
     public ServerInfo ServerInfo { get; }
     public AdminInfo AdminInfo { get; }
+    public List<GameInfo> RunningGames { get; }
+    public List<GameInfo> RunningGamesWithOpenSeats { get; }
+    public List<GameInfo> RunningGamesWithoutOpenSeats { get; }
+    public List<ScheduledGame> ScheduledGames { get; }
+    public Dictionary<int,LoggedInUserInfo> LoggedInUsers { get; }
+    public LoggedInUserInfo GetUserInfo(int userId);
+    public UserStatus GetUserStatus(int userId);
 
     //Game info
     public Game Game { get; }
@@ -39,11 +49,9 @@ public interface IGameService
 
     public event Action RefreshHandler;
     public event Action RefreshPopoverHandler;
+    
     public void Refresh(string source = null);
     public Task Start(string userToken = null, string gameId = null);
-    public List<GameInfo> RunningGames { get; }
-    public List<GameInfo> RunningGamesWithOpenSeats { get; }
-    public List<GameInfo> RunningGamesWithoutOpenSeats { get; }
     public void ExitGame();
     public Player Player { get; }
 
@@ -76,6 +84,7 @@ public interface IGameService
     Task<VoidResult> RequestPasswordReset(string usernameOrEmail);
     Task<Result<LoginInfo>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword);
     Task<string> RequestUpdateUserInfo(string hashedPassword, string email, string playerName);
+    Task<VoidResult> RequestSetUserStatus(UserStatus status);
     
     //Game Management
     
@@ -89,7 +98,8 @@ public interface IGameService
     Task<string> RequestKick(int userId);
     Task<string> RequestScheduleGame(DateTimeOffset dateTime, Ruleset? ruleset, int? numberOfPlayers, int? maximumTurns,
         List<Faction> allowedFactionsInPlay, bool asyncPlay);
-    Task<string> RequestSubscribeGame(string gameId, bool certain);
+    Task<string> RequestCancelGame(string scheduledGameId);
+    Task<string> RequestSubscribeGame(string scheduledGameId, SubscriptionType subscription);
     
     Task<string> RequestLoadGame(string state, string skin = null);
     Task<string> RequestAssignSeats(Dictionary<int, int> seatedPlayers);

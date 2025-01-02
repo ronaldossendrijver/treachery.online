@@ -11,15 +11,13 @@ using System;
 
 namespace Treachery.Shared;
 
-public class UserInfo
+public class LoggedInUserInfo
 {
     public int Id { get; init; }
     
-    public string Name { get; init; }
+    public string PlayerName { get; init; }
     
-    public string Email { get; init; }
+    public UserStatus Status { get; init; }
     
-    public DateTimeOffset LastLogin { get; init; }
-    
-    public string PlayerName { get; set; }
+    public DateTimeOffset? LastSeen { get; init; }
 }

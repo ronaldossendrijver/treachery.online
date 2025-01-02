@@ -13,6 +13,7 @@ public interface IGameHub
     Task<Result<LoginInfo>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword);
     Task<Result<LoginInfo>> GetLoginInfo(string userToken);
     Task<Result<LoginInfo>> RequestUpdateUserInfo(string userToken, string hashedPassword, string playerName, string email);
+    Task<VoidResult> RequestSetUserStatus(string userToken, UserStatus status);
 
     //Game Management
     
@@ -30,14 +31,13 @@ public interface IGameHub
     Task<VoidResult> RequestUndo(string userToken, string gameId, int untilEventNr);
     Task<Result<GameInitInfo>> RequestGameState(string userToken, string gameId);
     Task<VoidResult> RequestPauseBots(string userToken, string gameId);
-    Task<Result<List<GameInfo>>> RequestRunningGames(string userToken);
-    Task<VoidResult> RequestRegisterHeartbeat(string userToken);
+    Task<Result<ServerStatus>> RequestHeartbeat(string userToken);
     Task<VoidResult> RequestAssignSeats(string userToken, string gameId, Dictionary<int, int> assignment);
     Task<VoidResult> RequestScheduleGame(string userToken,  
         DateTimeOffset dateTime, Ruleset? ruleset, int? numberOfPlayers, int? maximumTurns, 
         List<Faction> allowedFactionsInPlay, bool asyncPlay);
-
-    Task<VoidResult> RequestSubscribeGame(string userToken, string gameId, bool certain);
+    Task<VoidResult> RequestCancelGame(string userToken, string scheduledGameId);
+    Task<VoidResult> RequestSubscribeGame(string userToken, string scheduledGameId, SubscriptionType subscription);
     
     //Game Events
     Task<VoidResult> RequestChangeSettings(string userToken, string gameId, ChangeSettings e);

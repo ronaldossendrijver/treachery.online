@@ -907,3 +907,23 @@ public enum ShipmentPermission
     ToHomeworld = 2,
     OrangeRate = 4
 }
+
+public enum UserStatus
+{
+    None = 0,
+    Online = 10,
+    Away = 20,
+    Lfg = 30,
+    Lfm = 40,
+    InGame = 50,
+}
+
+public enum SubscriptionType
+{
+    None = 0,
+    DontParticipate = 10,
+    MaybeAsPlayer = 20,
+    CertainAsPlayer = 30,
+    MaybeAsHost = 40,
+    CertainAsHost = 50
+}

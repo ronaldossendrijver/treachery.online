@@ -1,8 +1,6 @@
-﻿using System.Linq;
-using System.Net.Mail;
+﻿using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Treachery.Shared;
 
 namespace Treachery.Server;
 
@@ -17,6 +15,23 @@ public partial class GameHub
             return Error<LoginInfo>(ErrorType.UserNameTooShort);
         }
         
+        if (trimmedUsername.Trim().Length > 40)
+        {
+            return Error<LoginInfo>(ErrorType.UserNameTooLong);
+        }
+        
+        var trimmedPlayerName = playerName.Trim().ToLower();
+        
+        if (trimmedPlayerName.Trim().Length <= 3)
+        {
+            return Error<LoginInfo>(ErrorType.PlayerNameTooShort);
+        }
+        
+        if (trimmedPlayerName.Trim().Length > 40)
+        {
+            return Error<LoginInfo>(ErrorType.PlayerNameTooLong);
+        }
+        
         await using var db = GetDbContext();
         
         if (db.Users.Any(x => x.Name.Trim().ToLower().Equals(trimmedUsername)))
@@ -25,7 +40,7 @@ public partial class GameHub
         }
 
         db.Add(new User
-            { Name = trimmedUsername, HashedPassword = hashedPassword, Email = email, PlayerName = playerName });
+            { Name = trimmedUsername, HashedPassword = hashedPassword, Email = email, PlayerName = trimmedPlayerName });
 
         await db.SaveChangesAsync();
         
@@ -37,23 +52,32 @@ public partial class GameHub
         
         MailMessage mailMessage = new()
         {
-            From = new MailAddress("noreply@treachery.online"),
+            From = new MailAddress("admin@treachery.online"),
             Subject = "Welcome to treachery.online",
             IsBodyHtml = true,
             Body = $"""
                     <p>Welcome to treachery.online, <strong>{trimmedUsername}</strong>.</p>
+                    <p>Your player name is: <strong>{trimmedPlayerName}</strong>.</p>
                     <p>If you ever need to reset your password, a reset token will be sent to this e-mail address.</p>
+                    <p>You can edit your player name, email address and password any time after logging in.</p>
                     """
         };
 
+        var userToken = LoginAndCreateToken(user);
+        
         mailMessage.To.Add(new MailAddress(email));
         await SendMail(mailMessage);
         
-        var userToken = GenerateToken();
-        UsersByUserToken.TryAdd(userToken, user);
-        UserTokenInfo[userToken] = new TokenInfo();
         return Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email });
     }
+
+    private string LoginAndCreateToken(User user)
+    {
+        var userToken = GenerateToken();
+        var loggedInUser = new LoggedInUser(user);
+        UsersByUserToken.TryAdd(userToken, loggedInUser);
+        return userToken;
+    } 
     
     public async Task<Result<LoginInfo>> RequestLogin(int version, string userName, string hashedPassword)
     {
@@ -71,9 +95,7 @@ public partial class GameHub
         user.LastLogin = DateTimeOffset.Now;
         await db.SaveChangesAsync();
 
-        var userToken = GenerateToken();
-        UsersByUserToken.TryAdd(userToken, user);
-        UserTokenInfo[userToken] = new TokenInfo();
+        var userToken = LoginAndCreateToken(user);
         
         return Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email });
     }
@@ -147,8 +169,7 @@ public partial class GameHub
 
         await db.SaveChangesAsync();
         
-        var userToken = GenerateToken();
-        UsersByUserToken.TryAdd(userToken, user);
+        var userToken = LoginAndCreateToken(user);
         return Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email });
     }
     
@@ -162,9 +183,10 @@ public partial class GameHub
     
     public async Task<Result<LoginInfo>> RequestUpdateUserInfo(string userToken, string hashedPassword, string playerName, string email)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user))
+        if (!UsersByUserToken.TryGetValue(userToken, out var loggedInUser))
             return Error<LoginInfo>(ErrorType.UserNotFound);
-        
+
+        var user = loggedInUser.User;
         user.PlayerName = playerName;
         user.Email = email;
         if (!string.IsNullOrEmpty(hashedPassword))
@@ -177,5 +199,14 @@ public partial class GameHub
         return await Task.FromResult(Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email }));
     }
 
+    public async Task<VoidResult> RequestSetUserStatus(string userToken, UserStatus status)
+    {
+        if (!UsersByUserToken.TryGetValue(userToken, out var user))
+            return Error(ErrorType.UserNotFound);
+
+        user.Status = status;
+        
+        return await Task.FromResult(Success());
+    }
 }
 

@@ -73,16 +73,34 @@ public partial class GameHub
         var gameId = Guid.NewGuid().ToString();
         var scheduledGame = new ScheduledGame
         {
+            ScheduledGameId = gameId,
             DateTime = dateTime,
             CreatorUserId = user.Id,
             Ruleset = ruleset,
             NumberOfPlayers = numberOfPlayers,
             MaximumTurns = maximumTurns,
             AllowedFactionsInPlay = allowedFactionsInPlay,
-            AsyncPlay = asyncPlay
+            AsyncPlay = asyncPlay,
+            SubscribedUsers = { [user.Id] = SubscriptionType.CertainAsHost }
         };
-        
+
         ScheduledGamesByGameId[gameId] = scheduledGame;
+        
+        return await Task.FromResult(Success());
+    }
+    
+    public async Task<VoidResult> RequestCancelGame(string userToken, string scheduledGameId)
+    {
+        if (!UsersByUserToken.TryGetValue(userToken, out var user))
+            return Error(ErrorType.UserNotFound);
+        
+        if (!ScheduledGamesByGameId.TryGetValue(scheduledGameId, out var scheduledGame)) 
+            return Error(ErrorType.ScheduledGameNotFound);
+        
+        if (user.Id != scheduledGame.CreatorUserId)
+            return Error(ErrorType.NoHost);
+
+        ScheduledGamesByGameId.Remove(scheduledGameId, out var removed);
         
         return await Task.FromResult(Success());
     }
@@ -183,7 +201,7 @@ public partial class GameHub
         });
     }
     
-    public async Task<VoidResult> RequestSubscribeGame(string userToken, string gameId, bool certain)
+    public async Task<VoidResult> RequestSubscribeGame(string userToken, string gameId, SubscriptionType subscription)
     {
         if (gameId == null)
             return Error(ErrorType.GameNotFound);
@@ -198,16 +216,7 @@ public partial class GameHub
             return Error(ErrorType.GameNotFound);
         }
 
-        if (certain)
-        {
-            game.SubscribedUsersMaybe.Remove(user.Id);
-            game.SubscribedUsersCertain.Add(user.Id);
-        }
-        else
-        {
-            game.SubscribedUsersCertain.Remove(user.Id);
-            game.SubscribedUsersMaybe.Add(user.Id);
-        }
+        game.SubscribedUsers[user.Id] = subscription;
 
         return await Task.FromResult(Success());
     }
@@ -426,13 +435,29 @@ public partial class GameHub
         return Success();
     }
 
-    public async Task<Result<List<GameInfo>>> RequestRunningGames(string userToken)
+    public async Task<Result<ServerStatus>> RequestHeartbeat(string userToken)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user))
-            return Error<List<GameInfo>>(ErrorType.NoHost);
+        if (!UsersByUserToken.TryGetValue(userToken, out var loggedInUser))
+            return Error<ServerStatus>(ErrorType.UserNotFound);
 
-        var result = RunningGamesByGameId.Values.Select(g => Utilities.ExtractGameInfo(g, user.Id)).ToList();
-        return await Task.FromResult(Success(result));
+        loggedInUser.LastSeenDateTime = DateTime.Now;
+        
+        var result = new ServerStatus
+        {
+            RunningGames = RunningGamesByGameId.Values.Select(g => Utilities.ExtractGameInfo(g, loggedInUser.Id)).ToList(),
+            ScheduledGames = ScheduledGamesByGameId.Values.ToList(),
+            LoggedInUsers = UsersByUserToken.Select(u => new LoggedInUserInfo
+            {
+                Id = u.Value.Id, 
+                Status = u.Value.Status,
+                PlayerName = u.Value.User.PlayerName, 
+                LastSeen = u.Value.LastSeenDateTime,
+            }).ToList()
+        };
+
+        await Task.CompletedTask;
+        
+        return Success(result);
     }
     
     private async Task SendEndOfGameMail(string content, GameInfo info)
@@ -442,8 +467,7 @@ public partial class GameHub
         if (from == null || to == null)
             return;
         
-        var ruleset = Game.DetermineApproximateRuleset(info.FactionsInPlay, info.Rules, info.ExpansionLevel);
-        var subject = $"{info.GameName} ({info.Players.Length} Players, {info.NumberOfBots} Bots, Turn {info.CurrentTurn} - {ruleset})";
+        var subject = $"{info.GameName} ({info.ActualNumberOfPlayers} Players, {info.NumberOfBots} Bots, Turn {info.CurrentTurn} - {info.Ruleset})";
         var saveGameToAttach = new Attachment(GenerateStreamFromString(content), "savegame" + DateTime.Now.ToString("yyyyMMdd.HHmm") + ".json");
         
         MailMessage mailMessage = new()
@@ -452,7 +476,7 @@ public partial class GameHub
             Subject = subject,
             IsBodyHtml = true,
             Body = "Game finished!",
-            Priority = info.NumberOfBots < 0.5f * info.Players.Length ? MailPriority.Normal : MailPriority.Low
+            Priority = info.NumberOfBots < 0.5f * info.ActualNumberOfPlayers ? MailPriority.Normal : MailPriority.Low
         };
 
         mailMessage.To.Add(new MailAddress(to));

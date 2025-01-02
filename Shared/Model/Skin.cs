@@ -287,12 +287,14 @@ public class Skin : IDescriber
             Message msg => msg.ToString(this),
             MessagePart part => part.ToString(this),
             Payment payment => Format("{0} {1}", payment.Amount, Concept.Resource),
+            UserStatus us => Describe(us),
+            SubscriptionType st => Describe(st),
             Concept c => Describe(c),
             Faction faction => Describe(faction),
             Ambassador ambassador => Describe(ambassador),
             FactionForce ff => Describe(ff),
             FactionSpecialForce fsf => Describe(fsf),
-            FactionAdvantage factionadvantage => Describe(factionadvantage),
+            FactionAdvantage factionAdvantage => Describe(factionAdvantage),
             ResourceCard rc => Describe(rc),
             TreacheryCard tc => Describe(tc),
             TreacheryCardType tct => Describe(tct),
@@ -316,7 +318,7 @@ public class Skin : IDescriber
             CaptureDecision cd => Describe(cd),
             StrongholdAdvantage sa => Describe(sa),
             ClairVoyanceAnswer cva => Describe(cva),
-            IEnumerable ienum => Join(ienum.Cast<object>()),
+            IEnumerable iEnum => Join(iEnum.Cast<object>()),
             _ => value.ToString()
         };
     }
@@ -378,6 +380,33 @@ public class Skin : IDescriber
     public string Describe(Concept c)
     {
         return GetLabel(Concept_STR, c);
+    }
+
+    private static string Describe(UserStatus us)
+    {
+        return us switch
+        {
+            UserStatus.None => "No status",
+            UserStatus.Online => "Online",
+            UserStatus.Away => "Away (not available)",
+            UserStatus.Lfg => "Looking for game",
+            UserStatus.Lfm => "Looking for others to join",
+            UserStatus.InGame => "In game",
+            _ => "Unknown status"
+        };
+    }
+    
+    private static string Describe(SubscriptionType st)
+    {
+        return st switch
+        {
+            SubscriptionType.DontParticipate => "no",
+            SubscriptionType.MaybeAsPlayer => "maybe",
+            SubscriptionType.CertainAsPlayer => "yes",
+            SubscriptionType.MaybeAsHost => "maybe (host)",
+            SubscriptionType.CertainAsHost => "yes (host)",
+            _ => "unknown"
+        };
     }
 
     public string Describe(TreacheryCardType t)
@@ -907,7 +936,11 @@ public class Skin : IDescriber
             ErrorType.None => string.Empty,
             ErrorType.UserNotFound => "User not found",
             ErrorType.GameNotFound => "Game not found",
+            ErrorType.ScheduledGameNotFound => "Game not found",
             ErrorType.UserNameTooShort => "Username must be more than 3 characters",
+            ErrorType.PlayerNameTooShort => "Player name must be more than 3 characters",
+            ErrorType.UserNameTooLong => "Username must be 40 characters or less",
+            ErrorType.PlayerNameTooLong => "Player name must be 40 characters or less",
             ErrorType.UserNameExists => "This username already exists",
             ErrorType.EmailExists => "This e-mail address is already in use",
             ErrorType.UserCreationFailed => "User creation failed",
@@ -929,7 +962,8 @@ public class Skin : IDescriber
             ErrorType.NoCreator => "You are not the creator of this game",
             ErrorType.AlreadyPlayer => "You are already a player in this game",
             ErrorType.UserNotInGame => "User not found in game",
-            _ => "Unknown error"
+            
+            _ => throw new ArgumentOutOfRangeException(nameof(e), e, null)
         };
     }
 

@@ -1,0 +1,33 @@
+﻿@inherits GameComponent
+
+<div class="btn-group">
+    <button type="button" class="btn @BtnTypeFromStatus(Client.UserStatus) dropdown-toggle btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
+        @Name(Client.UserStatus)
+    </button>
+    <ul class="dropdown-menu">
+        @foreach (var status in Enumerations.GetValuesExceptDefault(UserStatus.None).Where(s => s != Client.UserStatus))
+        {
+            <li><a class="dropdown-item" href="#" @onclick="@(_ => SetUserStatus(status))">@Name(status)</a></li>
+        }
+    </ul>
+</div>
+
+@code 
+{
+    private string BtnTypeFromStatus(UserStatus status) => status switch
+    {
+        UserStatus.None => "btn-dark",
+        UserStatus.Online => "btn-success",
+        UserStatus.Away => "btn-dark",
+        UserStatus.Lfg => "btn-primary",
+        UserStatus.Lfm => "btn-primary",
+        UserStatus.InGame => "btn-secondary",
+        _ => "btn-dark",
+    };
+
+
+    private async Task SetUserStatus(UserStatus status)
+    {
+        await Client.RequestSetUserStatus(status);
+    }
+}
