@@ -1,7 +1,7 @@
 ﻿@inherits GameComponent
 
 <div class="btn-group align-self-end">
-    <button type="button" class="btn @BtnTypeFromStatus dropdown-toggle btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
+    <button type="button" class="btn @BtnTypeFromStatus dropdown-toggle btn-sm" data-bs-toggle="dropdown" aria-expanded="false" disabled="@_busy">
         @Name(CurrentSubscription)
     </button>
     <ul class="dropdown-menu">
@@ -16,6 +16,8 @@
 {
     [Parameter, EditorRequired]
     public required ScheduledGame ScheduledGame { get; set; }
+    
+    private bool _busy;
 
     private SubscriptionType CurrentSubscription => ScheduledGame.SubscribedUsers.GetValueOrDefault(Client.UserId, SubscriptionType.None);
     
@@ -31,6 +33,10 @@
 
     private async Task SetSubscription(SubscriptionType subscription)
     {
+        _busy = true;
+        StateHasChanged();
         await Client.RequestSubscribeGame(ScheduledGame.ScheduledGameId, subscription);
+        _busy = false;
+        StateHasChanged();
     }
 }

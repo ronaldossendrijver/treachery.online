@@ -8,7 +8,7 @@
 *@
 @inherits GameComponent
 
-<div class="card p-1 mb-2">
+<div class="card p-1 ml-1">
     <div class="card-body">
         @if (Game.CurrentPhase is Phase.AwaitingPlayers)
         {
@@ -30,15 +30,15 @@
                     {
                         if (isHost && Game.NumberOfHosts > 1)
                         {
-                            <button class="btn btn-primary btn-sm m-1" @onclick="@(_ => SetOrUnsetHost(userId))">Unmake host</button>
+                            <CommandButton Small MarginClass="m-1" OnClick="@(_ => SetOrUnsetHost(userId))">Unmake host</CommandButton>
                         }
                         else if (!isHost)
                         {
-                            <button class="btn btn-primary btn-sm m-1" @onclick="@(_ => SetOrUnsetHost(userId))">Make host</button>
+                            <CommandButton Small MarginClass="m-1" OnClick="@(_ => SetOrUnsetHost(userId))">Make host</CommandButton>
                         }
                         if (!isMe)
                         {
-                            <button class="btn btn-danger btn-sm m-1" @onclick="@(_ => Remove(userId, true))">Kick</button>
+                            <CommandButton Small Class="btn-danger" MarginClass="m-1" OnClick="@(_ => Remove(userId, true))">Kick</CommandButton>
                         }
                     }
                 </div>
@@ -74,20 +74,20 @@
                     }
                     @if (Client.IsHost)
                     {
-                        <button class="btn btn-primary btn-sm m-1" @onclick="@(_ => OpenSeat(player.Seat))">@makeAvailableText seat</button>
+                        <CommandButton Small MarginClass="m-1" OnClick="@(_ => OpenSeat(player.Seat))">@makeAvailableText seat</CommandButton>
                         @if (!Game.IsBot(player))
                         {
                             if (!isMe)
                             {
-                                <button class="btn btn-primary btn-sm m-1" @onclick="@(_ => Remove(userId, true))">Kick</button>
+                                <CommandButton Small Class="btn-danger" MarginClass="m-1" OnClick="@(_ => Remove(userId, true))">Kick</CommandButton>
                             }
                             if (isHost && Game.NumberOfHosts > 1)
                             {
-                                <button class="btn btn-primary btn-sm m-1" @onclick="@(_ => SetOrUnsetHost(userId))">Unmake host</button>
+                                <CommandButton Small MarginClass="m-1" OnClick="@(_ => SetOrUnsetHost(userId))">Unmake host</CommandButton>
                             }
                             else if (!isHost)
                             {
-                                <button class="btn btn-primary btn-sm m-1" @onclick="@(_ => SetOrUnsetHost(userId))">Make host</button>
+                                <CommandButton Small MarginClass="m-1" OnClick="@(_ => SetOrUnsetHost(userId))">Make host</CommandButton>
                             }
                         }
                         <br>
@@ -95,7 +95,7 @@
                 </div>
             }
         }
-        <button class="btn btn-danger btn-sm m-1" @onclick="@(_ => Remove(Client.UserId, false))">Leave game</button>
+        <CommandButton Small Class="btn-danger" MarginClass="m-1" OnClick="@(_ => Remove(Client.UserId, false))">Leave game</CommandButton>
         <div class="text-danger">@ActionResult</div>
     </div>
 </div>

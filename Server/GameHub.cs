@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Treachery.Shared;
 
 namespace Treachery.Server;
 
-public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfiguration configuration) : Hub<IGameClient>, IGameHub
+public partial class GameHub: Hub<IGameClient>, IGameHub
 {
+    private const int CleanupTimeout = 3600000;
+    
     //Users
     private static ConcurrentDictionary<string,LoggedInUser> UsersByUserToken { get; } = [];
     private static ConcurrentDictionary<int,UserConnections> ConnectionInfoByUserId { get; } = [];
@@ -25,8 +26,20 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     //Other
     private static DateTimeOffset MaintenanceDate { get; set; }
     private static DateTimeOffset LastCleanup { get; set; }
-    
-    private TreacheryContext GetDbContext() => new(dbContextOptions, configuration);
+
+    private IConfiguration Configuration { get; set; }
+
+    private DbContextOptions<TreacheryContext> DbContextOptions { get; set; }
+
+    public GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfiguration configuration)
+    {
+        DbContextOptions = dbContextOptions;
+        Configuration = configuration;
+
+        _ = Task.Delay(CleanupTimeout).ContinueWith(_ => Cleanup());
+    }
+
+    private TreacheryContext GetDbContext() => new(DbContextOptions, Configuration);
 
     private static string GenerateToken() => Convert.ToBase64String(Guid.NewGuid().ToByteArray())[..16];
     
@@ -106,11 +119,11 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         */
         try
         {
-            var username = configuration["GameEndEmailUsername"];
+            var username = Configuration["GameEndEmailUsername"];
             if (string.IsNullOrEmpty(username)) 
                 return;
             
-            var password = configuration["GameEndEmailPassword"];
+            var password = Configuration["GameEndEmailPassword"];
 
             SmtpClient client = new()
             {

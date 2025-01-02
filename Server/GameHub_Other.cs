@@ -8,15 +8,23 @@ public partial class GameHub
 {
     public async Task<Result<ServerInfo>> Connect()
     {
-        await CleanupUserTokens();
-
+        await Task.CompletedTask;
+        
         var result = new ServerInfo
         {
-            AdminName = configuration["GameAdminUsername"],
+            AdminName = Configuration["GameAdminUsername"],
             ScheduledMaintenance = MaintenanceDate,
         };
 
         return Success(result);
+    }
+    
+    private async Task Cleanup()
+    {
+        await CleanupUserTokens();
+        CleanupScheduledGames();
+        
+        _ = Task.Delay(CleanupTimeout).ContinueWith(_ => Cleanup());
     }
     
     private async Task CleanupUserTokens()
@@ -46,9 +54,18 @@ public partial class GameHub
         }
     }
 
+    private void CleanupScheduledGames()
+    {
+        var thresholdDateTime = DateTimeOffset.Now.AddHours(-4);
+        foreach (var gameIdAndGame in ScheduledGamesByGameId.Where(g => g.Value.DateTime < thresholdDateTime).ToArray())
+        {
+            ScheduledGamesByGameId.Remove(gameIdAndGame.Key, out _);
+        }
+    }
+
     public async Task<Result<string>> AdminUpdateMaintenance(string userToken, DateTimeOffset maintenanceDate)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
+        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
 
         MaintenanceDate = maintenanceDate;
@@ -57,7 +74,7 @@ public partial class GameHub
 
     public async Task<Result<string>> AdminPersistState(string userToken)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
+        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
         
         var amountOfGames = 0;
@@ -120,7 +137,7 @@ public partial class GameHub
 
     public async Task<Result<string>> AdminRestoreState(string userToken)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
+        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
         
         var amountRunning = 0;
@@ -185,7 +202,7 @@ public partial class GameHub
 
     public async Task<Result<string>> AdminCloseGame(string userToken, string gameId)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
+        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
 
         if (RunningGamesByGameId.TryGetValue(gameId, out var game))
@@ -205,7 +222,7 @@ public partial class GameHub
     
     public async Task<Result<string>> AdminDeleteUser(string userToken, int userId)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
+        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
 
         await using var db = GetDbContext();
@@ -216,7 +233,7 @@ public partial class GameHub
     
     public async Task<Result<AdminInfo>> GetAdminInfo(string userToken)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != configuration["GameAdminUsername"])
+        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != Configuration["GameAdminUsername"])
             return Error<AdminInfo>(ErrorType.InvalidUserNameOrPassword);
 
         var result = new AdminInfo

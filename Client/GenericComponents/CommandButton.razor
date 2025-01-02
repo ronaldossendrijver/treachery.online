@@ -1,0 +1,31 @@
+﻿<button class="btn @Class @SizeClass @MarginClass" @onclick="@HandleClick" disabled="@Disabled">@ChildContent</button>
+
+@code 
+{
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    
+    [Parameter] public string Class { get; set; } = "btn-primary";
+    
+    [Parameter] public bool Small { get; set; }
+
+    [Parameter] public bool Enabled { get; set; } = true;
+
+    [Parameter] public string MarginClass { get; set; } = "me-1";
+    
+    private string SizeClass => Small ? "btn-sm" : string.Empty;
+
+    private bool Disabled => !Enabled || _busy;
+
+    private bool _busy;
+
+    private async Task HandleClick()
+    {
+        _busy = true;
+        StateHasChanged();
+        await OnClick.InvokeAsync();
+        _busy = false;
+        StateHasChanged();
+    }
+}

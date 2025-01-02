@@ -12,15 +12,15 @@
     <div class="card-header">Your games</div>
     
     <div class="card-body">
-        <ul class="nav nav-pills mb-2">
+        <ul class="nav nav-tabs mb-2">
             <li class="nav-item">
-                <button class="nav-link @GetActive(OwnGamesComponentState.List)" aria-current="page" @onclick="@(_ => State = OwnGamesComponentState.List)">Created games</button>
+                <button class="nav-link @GetActive(OwnGamesComponentState.List)" aria-current="page" @onclick="@(_ => State = OwnGamesComponentState.List)">Your games</button>
             </li>
             <li class="nav-item">
-                <button class="nav-link @GetActive(OwnGamesComponentState.Create)" @onclick="@(_ => State = OwnGamesComponentState.Create)">Create / load game</button>
+                <button class="nav-link @GetActive(OwnGamesComponentState.Create)" @onclick="@(_ => State = OwnGamesComponentState.Create)">Create or load a game</button>
             </li>
             <li class="nav-item">
-                <button class="nav-link @GetActive(OwnGamesComponentState.Schedule)" @onclick="@(_ => State = OwnGamesComponentState.Schedule)">Schedule game</button>
+                <button class="nav-link @GetActive(OwnGamesComponentState.Schedule)" @onclick="@(_ => State = OwnGamesComponentState.Schedule)">Schedule a game</button>
             </li>
         </ul>
 
@@ -65,7 +65,7 @@
                                     @av.LastAction?.DateTime
                                 </td>
                                 <td class="w-25">
-                                    <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Close(av))">Close</button>
+                                    <CommandButton Small OnClick="@(_ => Close(av))">Close</CommandButton>
                                 </td>
                             </tr>
                         }
@@ -115,7 +115,7 @@
                                     }                                    
                                 </td>
                                 <td class="w-25">
-                                    <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Cancel(game))">Cancel</button>
+                                    <CommandButton Small OnClick="@(_ => Cancel(game))">Cancel</CommandButton>
                                 </td>
                             </tr>
                         }
@@ -129,7 +129,7 @@
                 {
                     <input type="text" class="form-control" @bind="@CreateGamePassword" maxlength="24" placeholder="Game password (optional)"/>
                     <div class="text-danger small">@CreateError</div>
-                    <button class="btn btn-primary mt-1" @onclick="@CreateNewGame">Create new game</button>
+                    <CommandButton MarginClass="mt-1" OnClick="@CreateNewGame">Create new game</CommandButton>
                     <label class="btn btn-primary mt-1">Load game from file
                         <input hidden type="file" id="fileInput" @ref="FileInput" @onchange="@LoadAndCreateGame"/>
                     </label>
@@ -154,7 +154,7 @@
                 </SelectComponent>
                 <CheckboxComponent @bind-Value="@ScheduleGameAsyncPlay">Async play (send e-mail updates)</CheckboxComponent>
                 <div class="text-danger small">@ScheduleError</div>
-                <button class="btn btn-primary mt-1" @onclick="@ScheduleGame">Schedule game</button>
+                <CommandButton MarginClass="mt-1" OnClick="@ScheduleGame">Schedule game</CommandButton>
                 <a class="btn btn-dark btn-sm mt-1 p-2 text-start p-0 mt-0 mb-0" href="https://discord.gg/rRGEfn4" target="_blank" title="Find players on Dune Discord">
                     <svg style="margin-right:2px" width="18" height="18" viewBox="0 -28.5 256 256" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
                         <g>
@@ -225,7 +225,7 @@
             </div>
             <div class="text-danger small">@ChangeUserInfoMessage</div>
             <button class="btn btn-secondary btn-sm me-1" @onclick="@CancelEdit">Cancel</button>
-            <button class="btn btn-primary btn-sm me-1" @onclick="@UpdateUserInfo">Apply changes</button>
+            <CommandButton OnClick="@ScheduleGame" Small>Apply changes</CommandButton>
         }
     </div>
 </div>

@@ -100,7 +100,7 @@ public partial class GameHub
         if (user.Id != scheduledGame.CreatorUserId)
             return Error(ErrorType.NoHost);
 
-        ScheduledGamesByGameId.Remove(scheduledGameId, out var removed);
+        ScheduledGamesByGameId.Remove(scheduledGameId, out _);
         
         return await Task.FromResult(Success());
     }
@@ -462,8 +462,8 @@ public partial class GameHub
     
     private async Task SendEndOfGameMail(string content, GameInfo info)
     {
-        var from = configuration["GameEndEmailFrom"];
-        var to = configuration["GameEndEmailTo"];
+        var from = Configuration["GameEndEmailFrom"];
+        var to = Configuration["GameEndEmailTo"];
         if (from == null || to == null)
             return;
         

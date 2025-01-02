@@ -1,7 +1,7 @@
 ﻿@inherits GameComponent
 
 <div class="btn-group">
-    <button type="button" class="btn @BtnTypeFromStatus(Client.UserStatus) dropdown-toggle btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
+    <button type="button" class="btn @BtnTypeFromStatus(Client.UserStatus) dropdown-toggle btn-sm" data-bs-toggle="dropdown" aria-expanded="false" disabled="@_busy">
         @Name(Client.UserStatus)
     </button>
     <ul class="dropdown-menu">
@@ -14,6 +14,8 @@
 
 @code 
 {
+    private bool _busy;
+    
     private string BtnTypeFromStatus(UserStatus status) => status switch
     {
         UserStatus.None => "btn-dark",
@@ -28,6 +30,10 @@
 
     private async Task SetUserStatus(UserStatus status)
     {
+        _busy = true;
+        StateHasChanged();
         await Client.RequestSetUserStatus(status);
+        _busy = false;
+        StateHasChanged();
     }
 }
