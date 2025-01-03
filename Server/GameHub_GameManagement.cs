@@ -441,12 +441,13 @@ public partial class GameHub
             return Error<ServerStatus>(ErrorType.UserNotFound);
 
         loggedInUser.LastSeenDateTime = DateTime.Now;
-        
+
+        var lastSeenThreshold = DateTimeOffset.Now.AddSeconds(-30);
         var result = new ServerStatus
         {
             RunningGames = RunningGamesByGameId.Values.Select(g => Utilities.ExtractGameInfo(g, loggedInUser.Id)).ToList(),
             ScheduledGames = ScheduledGamesByGameId.Values.ToList(),
-            LoggedInUsers = UsersByUserToken.Select(u => new LoggedInUserInfo
+            LoggedInUsers = UsersByUserToken.Where(u => u.Value.LastSeenDateTime > lastSeenThreshold).Select(u => new LoggedInUserInfo
             {
                 Id = u.Value.Id, 
                 Status = u.Value.Status,

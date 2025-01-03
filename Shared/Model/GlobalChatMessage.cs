@@ -11,17 +11,18 @@ namespace Treachery.Shared;
 
 public class GlobalChatMessage : ChatMessage
 {
-    public override Message GetBodyIncludingPlayerInfo(int receivingUserId, Game game, bool contextIsGlobal)
+    public override Message GetBodyIncludingPlayerInfo(int receivingUserId, Dictionary<int,LoggedInUserInfo> users, Game game, bool contextIsGlobal)
     {
+        var sourcePlayerName = users.TryGetValue(SourceUserId, out var info) ? info.PlayerName : "Offline player";
         if (contextIsGlobal)
         {
             return SourceUserId == receivingUserId ? 
                 Message.Express("You: ", Body) : 
-                Message.Express(game.GetPlayerName(SourceUserId), ": ", Body);
+                Message.Express(sourcePlayerName, ": ", Body);
         }
 
         return SourceUserId == receivingUserId ? 
             Message.Express("You: ", Body, " ⇒ GLOBAL") : 
-            Message.Express(game.GetPlayerName(SourceUserId), ": ", Body, " ⇒ GLOBAL");
+            Message.Express(sourcePlayerName, ": ", Body, " ⇒ GLOBAL");
     }
 }

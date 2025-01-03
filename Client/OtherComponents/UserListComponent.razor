@@ -10,11 +10,14 @@
 @inherits GameComponent;
 
 <div class="card border-none" style="background-color:@BackgroundColor;border:none;">
+
+    <div class="card-header">Online users</div>
+    
     <div class="card-body">
-        @foreach (var user in Client.LoggedInUsers.Values.OrderBy(u => u.PlayerName))
+        @foreach (var user in Client.RecentlySeenUsers.Values.OrderBy(u => u.PlayerName))
         {
             <div>
-                <span>@user.PlayerName</span>
+                <span>@user.PlayerName </span>
                 @switch (user.Status)
                 {
                     case UserStatus.Away:

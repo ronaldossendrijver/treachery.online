@@ -13,38 +13,33 @@ public class GameChatMessage : ChatMessage
 {
     public int TargetUserId { get; init; }
 
-    public override Message GetBodyIncludingPlayerInfo(int receivingUserId, Game game, bool contextIsGlobal)
+    public override Message GetBodyIncludingPlayerInfo(int receivingUserId, Dictionary<int,LoggedInUserInfo> users, Game game, bool contextIsGlobal)
     {
+        var sourcePlayerName = GetPlayerName(SourceUserId, users);
+        
         if (SourceUserId == receivingUserId)
         {
+            var targetFaction = GetFaction(TargetUserId, game);
+            
             return TargetUserId < 0 ? 
                 Message.Express("You: ", Body, " ⇒ ALL") : 
-                Message.Express("You: ", Body, " ⇒ ", GetTargetFaction(game));
+                Message.Express("You: ", Body, " ⇒ ", targetFaction != Faction.None ? targetFaction : GetPlayerName(TargetUserId, users));
         }
 
-        var sourceFaction = GetSourceFaction(game);
+        var sourceFaction = GetFaction(SourceUserId, game);
 
         if (TargetUserId < 0)
         {
             return sourceFaction != Faction.None ? 
-                Message.Express(GetSourceFaction(game), " (to ALL) ", Body) : 
-                Message.Express(SourceUserId, " (to ALL) ", Body);
+                Message.Express(sourceFaction, " (to ALL) ", Body) : 
+                Message.Express(sourcePlayerName, " (to ALL) ", Body);
         }
 
-        return Message.Express(
-            sourceFaction != Faction.None ? GetSourceFaction(game) : game.GetPlayerName(SourceUserId), 
-            Body);
+        return Message.Express(sourceFaction != Faction.None ? sourceFaction : sourcePlayerName, " ", Body);
     }
 
-    public Faction GetSourceFaction(Game game)
-    {
-        var player = game.GetPlayerByUserId(SourceUserId);
-        return player?.Faction ?? Faction.None;
-    }
+    private string GetPlayerName(int userId, Dictionary<int, LoggedInUserInfo> users)
+        => users.TryGetValue(userId, out var sourcePlayerInfo) ? sourcePlayerInfo.PlayerName : "Offline player";
 
-    public Faction GetTargetFaction(Game game)
-    {
-        var player = game.GetPlayerByUserId(TargetUserId);
-        return player?.Faction ?? Faction.None;
-    }
+    public Faction GetFaction(int userId, Game game) => game?.GetPlayerByUserId(userId)?.Faction ?? Faction.None;
 }

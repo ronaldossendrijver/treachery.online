@@ -73,6 +73,10 @@ public partial class GameHub
 
     private string LoginAndCreateToken(User user)
     {
+        var existingLoggedInUser = UsersByUserToken.FirstOrDefault(x => x.Value.Id == user.Id);
+        if (existingLoggedInUser.Value != null && existingLoggedInUser.Value.Id == user.Id)
+            return existingLoggedInUser.Key;
+        
         var userToken = GenerateToken();
         var loggedInUser = new LoggedInUser(user);
         UsersByUserToken.TryAdd(userToken, loggedInUser);

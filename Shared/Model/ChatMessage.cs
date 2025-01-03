@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public abstract class ChatMessage
@@ -18,5 +16,5 @@ public abstract class ChatMessage
 
     public string Body { get; init; }
 
-    public abstract Message GetBodyIncludingPlayerInfo(int receivingUserId, Game game, bool contextIsGlobal);
+    public abstract Message GetBodyIncludingPlayerInfo(int receivingUserId, Dictionary<int,LoggedInUserInfo> users, Game game, bool contextIsGlobal);
 }

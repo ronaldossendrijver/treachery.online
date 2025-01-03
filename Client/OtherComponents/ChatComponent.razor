@@ -11,6 +11,8 @@
 
 <div class="card border-none" style="background-color:@BackgroundColor;border:none;">
 
+    <div class="card-header">Chat</div>
+    
     <div class="card-body">
 
         <div class="d-flex flex-row-reverse">
@@ -29,7 +31,7 @@
 
                     @if (!Client.MuteGlobalChat)
                     {
-                        <option style="color:red;font-weight:bold;background-color:white" value="@LabelGlobalChat">@LabelGlobalChat</option>
+                        <option style="color:lightcoral;font-weight:bold;background-color:white" value="@LabelGlobalChat">@LabelGlobalChat</option>
                     }
 
                     <option style="color:red;font-weight:bold;background-color:white" value="@LabelAllPlayersInGame">@LabelAllPlayersInGame</option>
@@ -53,13 +55,13 @@
         {
             var color = m switch
             {
-                GameChatMessage gcm => Client.CurrentSkin.GetFactionColor(gcm.GetSourceFaction(Client.Game)),
-                GlobalChatMessage gcm => "grey",
+                GameChatMessage gcm => Client.CurrentSkin.GetFactionColor(gcm.GetFaction(gcm.SourceUserId, Client.Game)),
+                GlobalChatMessage => "grey",
                 _ => "grey"
             };
 
             <div class='text-break p-1 mt-1 small' style="background-color:@color">
-                <ExpressionComponent Game="@Game" Expression="@m.GetBodyIncludingPlayerInfo(Client.UserId, Client.Game, !Client.InGame).Expression" Size="20"/>
+                <ExpressionComponent Game="@Game" Expression="@m.GetBodyIncludingPlayerInfo(Client.UserId, Client.RecentlySeenUsers, Client.Game, !Client.InGame).Expression" Size="20"/>
             </div>
         }
 
@@ -79,8 +81,8 @@
     [Parameter]
     public string BackgroundColor { get; set; } = "transparent";
 
-    private const string LabelGlobalChat = "everyone (on treachery.online)";
-    private const string LabelAllPlayersInGame = "all players (this game)";
+    private const string LabelGlobalChat = "all on server";
+    private const string LabelAllPlayersInGame = "all in game";
 
     private string message;
     private string selectedPlayerName;

@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <UserSecretsId>3e2de633-6199-4be5-b1d8-57372ba868e8</UserSecretsId>
     <LangVersion>13</LangVersion>
+    <Version>171</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -105,12 +105,12 @@
                                             @if (userInfo != null)
                                             {
                                                 <span>@(userInfo.PlayerName)</span>
-                                                <span class="badge text-bg-primary">@Name(p.Value)</span>
                                             }
                                             else
                                             {
-                                                <span>unknown player</span>
+                                                <UserIcon Title="Offline player"/>
                                             }
+                                            <span class="badge text-bg-primary">@Name(p.Value)</span>
                                         </div>
                                     }                                    
                                 </td>

@@ -33,7 +33,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public List<GameInfo> RunningGamesWithOpenSeats { get; private set; } = [];
     public List<GameInfo> RunningGamesWithoutOpenSeats { get; private set; } = [];
     public List<ScheduledGame> ScheduledGames { get; private set; } = [];
-    public Dictionary<int,LoggedInUserInfo> LoggedInUsers { get; private set; } = [];
+    public Dictionary<int,LoggedInUserInfo> RecentlySeenUsers { get; private set; } = [];
     
     //Logged in player
     private LoginInfo LoginInfo { get; set; }
@@ -596,7 +596,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
                     RunningGamesWithOpenSeats = RunningGames.Where(g => g.CanBeJoined).ToList();
                     RunningGamesWithoutOpenSeats = RunningGames.Where(g => !g.CanBeJoined).ToList();
                     ScheduledGames = status.Contents.ScheduledGames;
-                    LoggedInUsers = status.Contents.LoggedInUsers.ToDictionary(x => x.Id, x => x);
+                    RecentlySeenUsers = status.Contents.LoggedInUsers.ToDictionary(x => x.Id, x => x);
                 }
                 else
                 {
@@ -763,9 +763,9 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
    
     private static void LogSerializationError(object sender, ErrorEventArgs e) => Support.Log(e.ErrorContext.Error.ToString());
 
-    public LoggedInUserInfo GetUserInfo(int userId) => LoggedInUsers.GetValueOrDefault(userId, null);
+    public LoggedInUserInfo GetUserInfo(int userId) => RecentlySeenUsers.GetValueOrDefault(userId, null);
     
     public UserStatus GetUserStatus(int userId) =>
-        LoggedInUsers.TryGetValue(userId, out var user) ? user.Status : UserStatus.None;
+        RecentlySeenUsers.TryGetValue(userId, out var user) ? user.Status : UserStatus.None;
 }
 
