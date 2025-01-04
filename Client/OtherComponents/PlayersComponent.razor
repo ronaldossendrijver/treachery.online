@@ -8,7 +8,8 @@
 *@
 @inherits GameComponent
 
-<div class="card p-1 ml-1">
+<div class="card p-1 ml-1 mb-2 border-primary">
+    <div class="card-header">Participants</div>
     <div class="card-body">
         @if (Game.CurrentPhase is Phase.AwaitingPlayers)
         {
@@ -16,15 +17,15 @@
             {
                 var isMe = Client.UserId == userId;
                 var isHost = Game.IsHost(userId);
-                var emphasis = isMe ? "fw-bold" : string.Empty;
-                
-                <div style="border-bottom: 1px solid darkgrey; min-height: 2rem;">
-                    <span class="@emphasis">
+                var emphasis = isMe ? "gold" : "white";
+
+                <div style="border-bottom: 1px solid darkgrey; min-height: 2rem; vertical-align: center;">
+                    <span class="@emphasis" style="font: normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif; color: @emphasis;">
                         @Game.GetPlayerName(userId)
                     </span>
                     @if (isHost)
                     {
-                        <HostIcon/>
+                        <HostIcon Size="18"/>
                     }
                     @if (Client.IsHost)
                     {
@@ -36,6 +37,7 @@
                         {
                             <CommandButton Small MarginClass="m-1" OnClick="@(_ => SetOrUnsetHost(userId))">Make host</CommandButton>
                         }
+
                         if (!isMe)
                         {
                             <CommandButton Small Class="btn-danger" MarginClass="m-1" OnClick="@(_ => Remove(userId, true))">Kick</CommandButton>
@@ -52,21 +54,21 @@
                 var makeAvailableText = Game.SeatIsAvailable(player.Seat) ? "Close" : "Open";
                 var isMe = Client.UserId == userId;
                 var isHost = Game.IsHost(userId);
-                
+
                 <div style="border-bottom: 1px solid darkgrey; min-height: 2rem;">
                     <FactionComponent Faction="@player.Faction" Diameter="20"/>
                     @if (Game.IsBot(player))
                     {
-                        <BotIcon/>
+                        <BotIcon Size="18"/>
                     }
                     else
                     {
-                        var emphasis = isMe ? "fw-bold" : string.Empty;
-                        <span class="m-1 @emphasis">@Game.GetPlayerName(player)</span>
+                        var emphasis = isMe ? "gold" : "white";
+                        <span class="m-1" style="font: normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif; color: @emphasis;">@Game.GetPlayerName(player)</span>
                     }
                     @if (isHost)
                     {
-                        <HostIcon/>
+                        <HostIcon Size="18"/>
                     }
                     @if (Game.SeatIsAvailable(player.Seat))
                     {
@@ -81,6 +83,7 @@
                             {
                                 <CommandButton Small Class="btn-danger" MarginClass="m-1" OnClick="@(_ => Remove(userId, true))">Kick</CommandButton>
                             }
+
                             if (isHost && Game.NumberOfHosts > 1)
                             {
                                 <CommandButton Small MarginClass="m-1" OnClick="@(_ => SetOrUnsetHost(userId))">Unmake host</CommandButton>
@@ -90,13 +93,14 @@
                                 <CommandButton Small MarginClass="m-1" OnClick="@(_ => SetOrUnsetHost(userId))">Make host</CommandButton>
                             }
                         }
+
                         <br>
                     }
                 </div>
             }
         }
-        <CommandButton Small Class="btn-danger" MarginClass="m-1" OnClick="@(_ => Remove(Client.UserId, false))">Leave game</CommandButton>
-        <div class="text-danger">@ActionResult</div>
+        <div class="text-danger align-bottom">@ActionResult</div>
+        <CommandButton Small Class="btn-danger" MarginClass="mt-2" OnClick="@(_ => Remove(Client.UserId, false))">Leave game</CommandButton>
     </div>
 </div>
 

@@ -117,6 +117,7 @@ public partial class GameHub
                 {
                     DateTime = game.DateTime,
                     CreatorUserId = game.CreatorUserId,
+                    CreatorPlayerName = game.CreatorPlayerName,
                     GameId = gameIdAndManagedGame.Key,
                     Ruleset = game.Ruleset,
                     MaximumTurns = game.MaximumTurns,
@@ -184,6 +185,7 @@ public partial class GameHub
                 {
                     DateTime = scheduledGame.DateTime,
                     CreatorUserId = scheduledGame.CreatorUserId,
+                    CreatorPlayerName = scheduledGame.CreatorPlayerName,
                     Ruleset = scheduledGame.Ruleset,
                     MaximumTurns = scheduledGame.MaximumTurns,
                     NumberOfPlayers = scheduledGame.NumberOfPlayers,

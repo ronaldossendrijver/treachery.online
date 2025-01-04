@@ -88,17 +88,17 @@ else if (Client.PlayerNeedsSeating)
 }
 else
 {
-    <div @ref="@_element" class="row">
+    <div @ref="@_element" class="row" style="@InGameScreenStyle">
 
         <!--Map Column-->
-        <div id="mapdiv" class="@MapGrid">
+        <div id="mapdiv" class="col-sm-12 col-lg-6">
             <GameBoard OnLocationClick="@Client.LocationClick" />
         </div>
         
         @if (!Client.IsObserver)
         {
             <!--Actions-->
-            <div class="@ActionGrid @Scrollbars">
+            <div class="col-sm-12 col-lg-3 @Scrollbars">
                 <GameStatusComponent CanEndPhase="@Client.Actions.Contains(typeof(EndPhase))" />
                 <ActionPanel/>
             </div>
@@ -217,11 +217,9 @@ else
 
     private void RefreshPopovers() => _ = Browser.RefreshPopovers(_element);
 
-    private string Scrollbars => _isFullscreen? "vh-100 overflow-auto" : "";
-
-    private string MapGrid => !Client.IsConnected || !Client.LoggedIn || !Client.IsHost ? "col-sm-12 col-lg-5" : "col-sm-12 col-lg-6";
-
-    private string ActionGrid => !Client.IsConnected || !Client.LoggedIn || !Client.IsHost ? "col-sm-12 col-lg-4" : "col-sm-12 col-lg-3";
+    private string Scrollbars => _isFullscreen? "vh-97 overflow-auto" : "";
 
     private const string StartScreenStyle = "min-height: 97vh; background-image: url('art/planet.png'); background-size: 1024px; background-position-x: center; background-position-y: -50px; background-repeat: no-repeat;";
+    
+    private const string InGameScreenStyle = "overflow-y: hidden;";
 }

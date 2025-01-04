@@ -76,6 +76,7 @@ public partial class GameHub
             ScheduledGameId = gameId,
             DateTime = dateTime,
             CreatorUserId = user.Id,
+            CreatorPlayerName = user.PlayerName,
             Ruleset = ruleset,
             NumberOfPlayers = numberOfPlayers,
             MaximumTurns = maximumTurns,

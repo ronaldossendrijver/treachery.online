@@ -96,7 +96,7 @@ else
         var maxWidth = MaxWidth > 0 ? $"max-width:{Px(MaxWidth)}" : "";
         var wrapping = MaxWidth > 0 ? "" : "white-space:nowrap";
 
-        style = $"position:absolute;text-align:{textAlign};transform:{transformX}translateY(-50%);left:{Px(X)};top:{Px(Y)};user-select:none;font:{Font};color:{FontColor};{maxWidth};{wrapping};{border};{pointerevents};";
+        style = $"position:absolute;text-align:{textAlign};transform:{transformX} translateY(-40%);left:{Px(X)};top:{Px(Y)};user-select:none;font:{Font};color:{FontColor};{maxWidth};{wrapping};{border};{pointerevents};";
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

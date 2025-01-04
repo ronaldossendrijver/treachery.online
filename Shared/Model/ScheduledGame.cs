@@ -10,6 +10,8 @@ public class ScheduledGame
     
     public int CreatorUserId { get; init; }
     
+    public string CreatorPlayerName { get; init; }
+    
     public int? NumberOfPlayers { get; init; } = 6;
     
     public int? MaximumTurns { get; init; } = 10;

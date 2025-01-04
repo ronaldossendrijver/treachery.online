@@ -22,6 +22,9 @@ public class PersistedScheduledGame
     
     public int CreatorUserId { get; init; }
     
+    [MaxLength(128)]
+    public string CreatorPlayerName { get; init; } = string.Empty;
+    
     public DateTimeOffset DateTime { get; init; }
     
     public int? NumberOfPlayers { get; init; }

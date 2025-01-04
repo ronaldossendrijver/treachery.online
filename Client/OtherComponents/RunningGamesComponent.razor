@@ -31,7 +31,9 @@
                         var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
 
                         <tr class="small table-dark">
-                            <td class="w-25" style="@fontColorStyle">@av.GameName</td>
+                            <td class="w-25" style="@fontColorStyle">
+                                <span style="font: normal normal normal 14px Advokat, Calibri, Tahoma, sans-serif;">@av.GameName</span>
+                            </td>
                             <td style="@fontColorStyle">
                                 @if (av.CurrentPhase == Phase.AwaitingPlayers)
                                 {
@@ -90,11 +92,12 @@
                 <div class="text-info">Scheduled games</div>
                 <table class="table table-sm">
                         <thead>
-                        <tr class="table-dark">
+                        <tr class="small table-dark">
+                            <th scope="col">Host</th>
                             <th scope="col">When</th>
                             <th scope="col">Game info</th>
                             <th scope="col">Subscribers</th>
-                            <th scope="col">Subscribe?</th>
+                            <th scope="col">Join?</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -102,35 +105,44 @@
                         {
                             <tr class="small table-dark">
                                 <td class="w-20">
+                                    <span style="font: normal normal normal 14px Advokat, Calibri, Tahoma, sans-serif;">@game.CreatorPlayerName</span>
+                                </td>
+                                <td class="w-20">
                                     @game.DateTime.ToLocalTime().ToString("dd-MM HH:mm")
                                 </td>
-                                <td class="w-40">
-                                    <div>@Name(game.Ruleset), max players: @game.NumberOfPlayers, max turns: @game.MaximumTurns
-                                        <br>
-                                        @foreach (var f in game.AllowedFactionsInPlay)
+                                <td class="w-30">
+                                    <div>@Name(game.Ruleset), @game.NumberOfPlayers players, @game.MaximumTurns turns
+                                        @if (game.AllowedFactionsInPlay.Count == 12)
                                         {
-                                            <Image Shown="f" Width="20" Shadow=""/>
+                                            <span>(all factions)</span>
+                                        }
+                                        else
+                                        {
+                                            @foreach (var f in game.AllowedFactionsInPlay)
+                                            {
+                                                <Image Shown="f" Width="20" Shadow=""/>
+                                            }
                                         }
                                     </div>
                                 </td>
-                                <td class="w-30">
+                                <td class="w-25">
                                     @foreach (var p in game.SubscribedUsers.Where(u => u.Value != SubscriptionType.DontParticipate))
                                     {
                                         var userInfo = Client.GetUserInfo(p.Key);
                                         <div class="me-1">
                                             @if (userInfo != null)
                                             {
-                                                <span>@(userInfo.PlayerName)</span>
+                                                <span style="font: normal normal normal 14px Advokat, Calibri, Tahoma, sans-serif;">@userInfo.PlayerName</span>
                                             }
                                             else
                                             {
                                                 <UserIcon Title="Offline player"/>
                                             }
-                                            <span class="badge text-bg-primary">@Name(p.Value)</span>
+                                            <span class="badge text-bg-primary ms-1">@Name(p.Value)</span>
                                         </div>
                                     }                                    
                                 </td>
-                                <td class="w-10">
+                                <td class="w-5">
                                     <SubscribeComponent ScheduledGame="@game"/>
                                 </td>
                             </tr>
@@ -152,7 +164,9 @@
                         var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
 
                         <tr class="small table-dark">
-                            <td class="w-25" style="@fontColorStyle">@av.GameName</td>
+                            <td class="w-25" style="@fontColorStyle">
+                                <span style="font: normal normal normal 14px Advokat, Calibri, Tahoma, sans-serif;">@av.GameName</span>
+                            </td>
                             <td style="@fontColorStyle">
                                 @if (av.CurrentPhase == Phase.AwaitingPlayers)
                                 {
