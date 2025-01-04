@@ -65,7 +65,7 @@ public partial class GameHub
 
     public async Task<Result<string>> AdminUpdateMaintenance(string userToken, DateTimeOffset maintenanceDate)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != Configuration["GameAdminUsername"])
+        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
 
         MaintenanceDate = maintenanceDate;
@@ -74,7 +74,7 @@ public partial class GameHub
 
     public async Task<Result<string>> AdminPersistState(string userToken)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != Configuration["GameAdminUsername"])
+        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
         
         var amountOfGames = 0;
@@ -137,7 +137,7 @@ public partial class GameHub
 
     public async Task<Result<string>> AdminRestoreState(string userToken)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != Configuration["GameAdminUsername"])
+        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
         
         var amountRunning = 0;
@@ -202,7 +202,7 @@ public partial class GameHub
 
     public async Task<Result<string>> AdminCloseGame(string userToken, string gameId)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != Configuration["GameAdminUsername"])
+        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
 
         if (RunningGamesByGameId.TryGetValue(gameId, out var game))
@@ -222,7 +222,7 @@ public partial class GameHub
     
     public async Task<Result<string>> AdminDeleteUser(string userToken, int userId)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != Configuration["GameAdminUsername"])
+        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
 
         await using var db = GetDbContext();
@@ -233,12 +233,12 @@ public partial class GameHub
     
     public async Task<Result<AdminInfo>> GetAdminInfo(string userToken)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Name != Configuration["GameAdminUsername"])
+        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
             return Error<AdminInfo>(ErrorType.InvalidUserNameOrPassword);
 
         var result = new AdminInfo
         {
-            Users = GetDbContext().Users.Select(u => new UserInfo { Id = u.Id, Name = u.Name, PlayerName = u.PlayerName, Email = u.Email, LastLogin = u.LastLogin }).ToList(),
+            Users = GetDbContext().Users.Select(u => new UserInfo { Id = u.Id, Username = u.Name, PlayerName = u.PlayerName, Email = u.Email, LastLogin = u.LastLogin }).ToList(),
             UsersByUserTokenCount = UsersByUserToken.Count,
             ConnectionInfoByUserIdCount = ConnectionInfoByUserId.Count,
             GamesByGameIdCount = RunningGamesByGameId.Count,

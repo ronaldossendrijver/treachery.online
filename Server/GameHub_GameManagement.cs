@@ -183,7 +183,7 @@ public partial class GameHub
             game.Game.AddPlayer(user.Id, user.PlayerName, seat);
             await Clients.Group(gameId).HandleJoinGame(user.Id, user.PlayerName, seat);
             
-            if (game.Game.NumberOfPlayers == 1)
+            if (game.Game.NumberOfPlayers == 1 || game.CreatorUserId == user.Id)
             {
                 game.Game.SetOrUnsetHost(user.Id);
                 await Clients.Group(gameId).HandleSetOrUnsetHost(user.Id);

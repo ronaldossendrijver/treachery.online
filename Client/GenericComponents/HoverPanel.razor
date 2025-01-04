@@ -7,9 +7,13 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-<div style="@Style" @onmouseover="@(e => {_shown = true;})" @onmouseout="@(e => {_shown = false;})">
+<div style="@Style" @onmouseover="@(e => {_shown = true;})" @onmouseout="@(e => {_shown = Pinned;})">
 
     @ChildContent
+
+    <div class="position-absolute top-0 @PinPosition p-2">
+        <PinIcon Click="@(_ => Pinned = !Pinned)" Slashed="@Pinned"/>
+    </div>
 
 </div>
 
@@ -38,6 +42,8 @@
 
     [Parameter]
     public HoverPanelPosition Position { get; set; } = HoverPanelPosition.Left;
+    
+    private bool Pinned { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -52,8 +58,13 @@
             _dims = currentDimensions;
             StateHasChanged();
         }
-        
     }
+
+    private string PinPosition => Position switch
+    {
+        HoverPanelPosition.Right => "start-0",
+        _ => "end-0",
+    };
 
     private Dimensions _dims = new() { Width = 640, Height = 480 };
     private bool _shown = false;

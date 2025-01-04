@@ -15,7 +15,7 @@ public class LoggedInUser(User user)
 
     public int Id => User.Id;
     
-    public string Name => User.Name;
+    public string Username => User.Name;
     
     public string PlayerName => User.PlayerName;
     

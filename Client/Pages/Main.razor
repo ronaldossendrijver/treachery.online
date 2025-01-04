@@ -151,12 +151,12 @@ else
 @if (!Client.InScheduledMaintenance && Client.IsConnected && Client.LoggedIn)
 {
     <!--Chat-->
-    <HoverPanel Width=400 HandleWidth=12 BackgroundColor="#e8dba6dd">
+    <HoverPanel Width=400 HandleWidth=14 BackgroundColor="#e8dba6ee">
         <ChatComponent/>
     </HoverPanel>
     
-    <!--Chat-->
-    <HoverPanel Width=400 HandleWidth=12 BackgroundColor="#e8dba6dd" Position="HoverPanel.HoverPanelPosition.Right">
+    <!--Users-->
+    <HoverPanel Width=200 HandleWidth=14 BackgroundColor="#e8dba6ee" Position="HoverPanel.HoverPanelPosition.Right">
         <UserListComponent/>
     </HoverPanel>
 }

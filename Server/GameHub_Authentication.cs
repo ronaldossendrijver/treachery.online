@@ -8,44 +8,44 @@ public partial class GameHub
 {
     public async Task<Result<LoginInfo>> RequestCreateUser(string userName, string hashedPassword, string email, string playerName)
     {
-        var trimmedUsername = userName.Trim().ToLower();
+        var cleanedUsername = userName.Trim().ToLower();
         
-        if (trimmedUsername.Trim().Length <= 3)
+        if (cleanedUsername.Length <= 3)
         {
             return Error<LoginInfo>(ErrorType.UserNameTooShort);
         }
         
-        if (trimmedUsername.Trim().Length > 40)
+        if (cleanedUsername.Length > 40)
         {
             return Error<LoginInfo>(ErrorType.UserNameTooLong);
         }
         
-        var trimmedPlayerName = playerName.Trim().ToLower();
+        var trimmedPlayerName = playerName.Trim();
         
-        if (trimmedPlayerName.Trim().Length <= 3)
+        if (trimmedPlayerName.Length <= 3)
         {
             return Error<LoginInfo>(ErrorType.PlayerNameTooShort);
         }
         
-        if (trimmedPlayerName.Trim().Length > 40)
+        if (trimmedPlayerName.Length > 40)
         {
             return Error<LoginInfo>(ErrorType.PlayerNameTooLong);
         }
         
         await using var db = GetDbContext();
         
-        if (db.Users.Any(x => x.Name.Trim().ToLower().Equals(trimmedUsername)))
+        if (db.Users.Any(x => x.Name.Equals(cleanedUsername)))
         {
             return Error<LoginInfo>(ErrorType.UserNameExists);
         }
 
         db.Add(new User
-            { Name = trimmedUsername, HashedPassword = hashedPassword, Email = email, PlayerName = trimmedPlayerName });
+            { Name = cleanedUsername, HashedPassword = hashedPassword, Email = email, PlayerName = trimmedPlayerName });
 
         await db.SaveChangesAsync();
         
         var user = await db.Users.FirstOrDefaultAsync(x =>
-            x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()) && x.HashedPassword == hashedPassword);
+            x.Name.Equals(cleanedUsername) && x.HashedPassword == hashedPassword);
         
         if (user == null)
             return Error<LoginInfo>(ErrorType.UserCreationFailed);
@@ -56,7 +56,7 @@ public partial class GameHub
             Subject = "Welcome to treachery.online",
             IsBodyHtml = true,
             Body = $"""
-                    <p>Welcome to treachery.online, <strong>{trimmedUsername}</strong>.</p>
+                    <p>Welcome to treachery.online, <strong>{cleanedUsername}</strong>.</p>
                     <p>Your player name is: <strong>{trimmedPlayerName}</strong>.</p>
                     <p>If you ever need to reset your password, a reset token will be sent to this e-mail address.</p>
                     <p>You can edit your player name, email address and password any time after logging in.</p>
@@ -182,7 +182,7 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<LoginInfo>(ErrorType.UserNotFound);
             
-        return await Task.FromResult(Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email }));
+        return await Task.FromResult(Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Username, Email = user.Email }));
     }
     
     public async Task<Result<LoginInfo>> RequestUpdateUserInfo(string userToken, string hashedPassword, string playerName, string email)
@@ -191,7 +191,7 @@ public partial class GameHub
             return Error<LoginInfo>(ErrorType.UserNotFound);
 
         var user = loggedInUser.User;
-        user.PlayerName = playerName;
+        user.PlayerName = playerName.Trim();
         user.Email = email;
         if (!string.IsNullOrEmpty(hashedPassword))
             user.HashedPassword = hashedPassword;

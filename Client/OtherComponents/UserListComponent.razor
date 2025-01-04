@@ -11,12 +11,12 @@
 
 <div class="card border-none" style="background-color:@BackgroundColor;border:none;">
 
-    <div class="card-header">Online users</div>
+    <div class="card-header" style="text-align: right;">Online users</div>
     
     <div class="card-body">
         @foreach (var user in Client.RecentlySeenUsers.Values.OrderBy(u => u.PlayerName))
         {
-            <div>
+            <div class='text-break p-1 mt-1 small' style="background-color:gray">
                 <span>@user.PlayerName </span>
                 @switch (user.Status)
                 {
