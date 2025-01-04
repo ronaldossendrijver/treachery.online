@@ -377,7 +377,7 @@
     
     private async Task JoinGameAsPlayer(string gameId, string password, int seat = -1)
     {
-        await Client.RequestJoinGame(gameId, Support.GetHash(password), seat);
+        await Client.RequestJoinGame(gameId, password, seat);
     }
     
     private enum OwnGamesComponentState

@@ -416,9 +416,9 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     //Game Management
 
-    public async Task<string> RequestCreateGame(string hashedPassword, string stateData = null, string skinData = null)
+    public async Task<string> RequestCreateGame(string password, string stateData = null, string skinData = null)
     {
-        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestCreateGame), UserToken, hashedPassword, stateData, skinData);
+        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestCreateGame), UserToken, password, stateData, skinData);
         if (result.Success)
         {
             var loadMessage = await LoadGame(result.Contents);
@@ -452,9 +452,9 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return result.Success ? string.Empty : CurrentSkin.Describe(result.Error);
     }
 
-    public async Task<string> RequestJoinGame(string gameId, string hashedPassword, int seat)
+    public async Task<string> RequestJoinGame(string gameId, string password, int seat)
     {
-        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestJoinGame), UserToken, gameId, hashedPassword, seat);
+        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestJoinGame), UserToken, gameId, password, seat);
         if (!result.Success) 
             return CurrentSkin.Describe(result.Error);
         
@@ -475,9 +475,9 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return null;
     }
 
-    public async Task<string> RequestObserveGame(string gameId, string hashedPassword)
+    public async Task<string> RequestObserveGame(string gameId, string password)
     {
-        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestObserveGame), UserToken, gameId, hashedPassword);
+        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestObserveGame), UserToken, gameId, password);
         if (!result.Success) 
             return CurrentSkin.Describe(result.Error);
         

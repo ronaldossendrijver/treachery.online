@@ -41,7 +41,7 @@ public partial class GameHub
             CreatorUserId = user.Id,
             GameId = gameId,
             Game = game,
-            Name = $"{user.PlayerName}'s Game",
+            Name = user.PlayerName,
             HashedPassword = hashedPassword,
             ObserversRequirePassword = false
         };

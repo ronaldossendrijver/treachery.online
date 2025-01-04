@@ -117,7 +117,7 @@
     {
         await Request(new EstablishPlayers
         {
-            GameName = $"{Client.PlayerName}'s Game",
+            GameName = Client.PlayerName,
             Settings = Settings,
             Seed = new Random().Next()
         });

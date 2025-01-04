@@ -46,7 +46,7 @@ public class EstablishPlayers : GameEvent
     [JsonIgnore]
     public string GameName
     {
-        get => _gameName == null || _gameName == "" ? string.Format("{0}'s Game", Players.FirstOrDefault()) : _gameName;
+        get => _gameName == null || _gameName == "" ? Players.FirstOrDefault() : _gameName;
         set => _gameName = value;
     }
 

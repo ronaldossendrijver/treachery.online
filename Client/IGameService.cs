@@ -88,10 +88,10 @@ public interface IGameService
     
     //Game Management
     
-    Task<string> RequestCreateGame(string hashedPassword, string stateData = null, string skinData = null);
+    Task<string> RequestCreateGame(string password, string stateData = null, string skinData = null);
     Task<string> RequestCloseGame(string gameId);
-    Task<string> RequestJoinGame(string gameId, string hashedPassword, int seat);
-    Task<string> RequestObserveGame(string gameId, string hashedPassword);
+    Task<string> RequestJoinGame(string gameId, string password, int seat);
+    Task<string> RequestObserveGame(string gameId, string password);
     Task<string> RequestSetOrUnsetHost(int userId);
     Task<string> RequestOpenOrCloseSeat(int seat);
     Task<string> RequestLeaveGame();
