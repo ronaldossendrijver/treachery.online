@@ -183,6 +183,7 @@ public partial class GameHub
                 var subscriptions = JsonSerializer.Deserialize<Dictionary<int,SubscriptionType>>(scheduledGame.SubscribedUsers);
                 var game = new ScheduledGame
                 {
+                    ScheduledGameId = scheduledGame.GameId,
                     DateTime = scheduledGame.DateTime,
                     CreatorUserId = scheduledGame.CreatorUserId,
                     CreatorPlayerName = scheduledGame.CreatorPlayerName,
