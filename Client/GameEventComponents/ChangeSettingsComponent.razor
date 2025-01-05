@@ -6,6 +6,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
+@implements IDisposable
 @inherits GameEventComponent<ChangeSettings>
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsible="false">
@@ -80,6 +81,7 @@
     };
     
     private bool _advancedOptions;
+    private bool _disposed;
 
     private Ruleset _ruleset;
     private Ruleset Ruleset
@@ -90,6 +92,26 @@
             _ruleset = value;
             RulesetChanged(value);
         }
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized(); 
+        _ = Task.Delay(3600).ContinueWith(_ => UpdateSettings());
+    }
+
+    public override void Dispose()
+    {
+        _disposed = true;
+    }
+
+    private async Task UpdateSettings()
+    {
+        if (_disposed)
+            return;
+        
+        await Client.RequestUpdateSettings(Client.GameId, Settings);
+        _ = Task.Delay(3600).ContinueWith(_ => UpdateSettings());
     }
 
     private void RulesetChanged(Ruleset ruleset)

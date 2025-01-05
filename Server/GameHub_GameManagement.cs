@@ -288,6 +288,21 @@ public partial class GameHub
         return Success();
     }
     
+    public async Task<VoidResult> RequestUpdateSettings(string userToken, string gameId, GameSettings settings)
+    {
+        if (!AreValid(userToken, gameId, out var user, out var game, out var error))
+            return error;
+        
+        if (game.CreatorUserId != user.Id)
+            return Error(ErrorType.NoCreator);
+
+        game.Game.Settings = settings;
+        
+        await Clients.Group(gameId).HandleUpdateSettings(settings);
+        
+        return Success();
+    }
+    
     public async Task<VoidResult> RequestCloseGame(string userToken, string gameId)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))

@@ -12,7 +12,7 @@
 {
     <div class="card mb-2 border-white">
 
-        <div class="card-header">Welcome to @Client.GameName</div>
+        <div class="card-header">Welcome to @(Client.GameName)'s game</div>
 
         <div class="card-body">
 
@@ -87,4 +87,11 @@
     private string StyleDef(Faction f) => $"color:{Client.CurrentSkin.GetFactionColor(f)}";
 
     private string DetermineRuleClass(bool applicable) => applicable ? "color:white" : "color:grey";
+/*
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        StartRedrawCycle(3600);
+    }
+    */
 }

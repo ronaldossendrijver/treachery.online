@@ -39,7 +39,7 @@
                     <div class="text-info mb-2">Active games</div>
                     <table class="table table-sm">
                         <thead>
-                        <tr class="table-dark">
+                        <tr class="small table-dark">
                             <th scope="col">Game info</th>
                             <th scope="col">Last action</th>
                             <th scope="col">Actions</th>
@@ -78,7 +78,7 @@
                     <div class="text-info mb-2">Scheduled games</div>
                     <table class="table table-sm">
                         <thead>
-                        <tr class="table-dark">
+                        <tr class="small table-dark">
                             <th scope="col">Game info</th>
                             <th scope="col">Subscribed players</th>
                             <th scope="col">Actions</th>
@@ -88,16 +88,25 @@
                         @foreach (var game in myScheduledGames)
                         {
                             <tr class="small table-dark">
-                                <td class="w-50">
-                                    <div>@Name(game.Ruleset), max players: @game.NumberOfPlayers, max turns: @game.MaximumTurns
-                                        <br>
-                                        @foreach (var f in game.AllowedFactionsInPlay)
+                                <td class="w-20">
+                                    @game.DateTime.ToLocalTime().ToString("dd-MM HH:mm")
+                                </td>
+                                <td class="w-40">
+                                    <div>@Name(game.Ruleset), @game.NumberOfPlayers players, @game.MaximumTurns turns
+                                        @if (game.AllowedFactionsInPlay.Count == 12)
                                         {
-                                            <Image Shown="f" Width="20" Shadow=""/>
+                                            <span>(all factions)</span>
+                                        }
+                                        else
+                                        {
+                                            @foreach (var f in game.AllowedFactionsInPlay)
+                                            {
+                                                <Image Shown="f" Width="20" Shadow=""/>
+                                            }
                                         }
                                     </div>
                                 </td>
-                                <td class="w-25">
+                                <td class="w-20">
                                     @foreach (var p in game.SubscribedUsers.Where(u => u.Value != SubscriptionType.DontParticipate))
                                     {
                                         var userInfo = Client.GetUserInfo(p.Key);
@@ -114,7 +123,7 @@
                                         </div>
                                     }                                    
                                 </td>
-                                <td class="w-25">
+                                <td class="w-20">
                                     <CommandButton Small OnClick="@(_ => Cancel(game))">Cancel</CommandButton>
                                 </td>
                             </tr>

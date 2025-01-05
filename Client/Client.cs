@@ -48,7 +48,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     //Game in progress
     public Game Game { get; private set; }
     public string GameName { get; private set; }
-    private string GameId { get; set; } = string.Empty;
+    public string GameId { get; set; } = string.Empty;
     public GameStatus Status { get; private set; }
     public List<Type> Actions { get; private set; } = []; 
     
@@ -136,6 +136,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         _connection.On<GameEvent,int>(nameof(HandleGameEvent), HandleGameEvent);
         _connection.On<GameChatMessage>(nameof(HandleChatMessage), HandleChatMessage);
         _connection.On<GlobalChatMessage>(nameof(HandleGlobalChatMessage), HandleGlobalChatMessage);
+        _connection.On<GameSettings>(nameof(HandleUpdateSettings), HandleUpdateSettings);
         _connection.On<int>(nameof(HandleSetTimer), HandleSetTimer);
         _connection.On<string>(nameof(HandleSetSkin), HandleSetSkin);
         _connection.On<int>(nameof(HandleUndo), HandleUndo);
@@ -182,6 +183,13 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     {
         Game.AddPlayer(userId, userName, seat);
         Refresh(nameof(HandleJoinGame));
+        return Task.CompletedTask;
+    }
+    
+    public Task HandleUpdateSettings(GameSettings settings)
+    {
+        Game.Settings = settings;
+        Refresh(nameof(HandleUpdateSettings));
         return Task.CompletedTask;
     }
 
@@ -449,6 +457,12 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public async Task<string> RequestCloseGame(string gameId)
     {
         var result = await Invoke(nameof(IGameHub.RequestCloseGame), UserToken, gameId);
+        return result.Success ? string.Empty : CurrentSkin.Describe(result.Error);
+    }
+    
+    public async Task<string> RequestUpdateSettings(string gameId, GameSettings settings)
+    {
+        var result = await Invoke(nameof(IGameHub.RequestUpdateSettings), UserToken, gameId, settings);
         return result.Success ? string.Empty : CurrentSkin.Describe(result.Error);
     }
 

@@ -32,6 +32,7 @@ public interface IGameService
     //Game info
     public Game Game { get; }
     public string GameName { get; }
+    public string GameId { get; }
     public GameStatus Status { get; }
     public bool InGame { get; }
     public bool PlayerNeedsSeating { get; }
@@ -90,6 +91,7 @@ public interface IGameService
     
     Task<string> RequestCreateGame(string password, string stateData = null, string skinData = null);
     Task<string> RequestCloseGame(string gameId);
+    Task<string> RequestUpdateSettings(string gameId, GameSettings settings);
     Task<string> RequestJoinGame(string gameId, string password, int seat);
     Task<string> RequestObserveGame(string gameId, string password);
     Task<string> RequestSetOrUnsetHost(int userId);
