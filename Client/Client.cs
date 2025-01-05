@@ -18,7 +18,7 @@ namespace Treachery.Client;
 
 public class Client : IGameService, IGameClient, IAsyncDisposable
 {
-    private const int HeartbeatDelay = 4200;
+    private const int HeartbeatDelay = 3200;
 
     //General info
     public ServerInfo ServerInfo { get; private set; }
@@ -560,6 +560,12 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public async Task<string> AdminCloseGame(string gameId)
     {
         var result = await Invoke<string>(nameof(IGameHub.AdminCloseGame), UserToken, gameId);
+        return result.Success ? result.Contents : CurrentSkin.Describe(result.Error);
+    }
+    
+    public async Task<string> AdminCancelGame(string scheduledGameId)
+    {
+        var result = await Invoke<string>(nameof(IGameHub.AdminCancelGame), UserToken, scheduledGameId);
         return result.Success ? result.Contents : CurrentSkin.Describe(result.Error);
     }
     

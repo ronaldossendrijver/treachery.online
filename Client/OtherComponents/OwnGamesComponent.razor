@@ -65,7 +65,7 @@
                                     @av.LastAction?.DateTime
                                 </td>
                                 <td class="w-25">
-                                    <CommandButton Small OnClick="@(_ => Close(av))">Close</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => Delete(av))">Delete</CommandButton>
                                 </td>
                             </tr>
                         }
@@ -269,7 +269,7 @@
     {
         if (firstRender)
         {
-            StartRedrawCycle(5000);
+            StartRedrawCycle(3200);
         }
     }
     
@@ -326,7 +326,7 @@
         StateHasChanged();
     }
     
-    private async Task Close(GameInfo av)
+    private async Task Delete(GameInfo av)
     {
         var result = await Client.RequestCloseGame(av.GameId);
         if (result != null)

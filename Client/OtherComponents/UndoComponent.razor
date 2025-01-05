@@ -38,10 +38,10 @@
 
     private int undoEventId;
 
-    protected override void Redraw()
+    protected override void OnInitialized()
     {
+        base.OnInitialized();
         undoEventId = Game.History.Count - 1;
-        base.Redraw();
     }
 
     private async Task ConfirmUndo()

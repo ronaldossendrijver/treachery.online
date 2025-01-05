@@ -35,31 +35,33 @@ else if (!Client.LoggedIn)
 else 
 {
     <div class="row" style="@StartScreenStyle">
-        <div class="card mb-2">
-            <div class="card-header">Server info</div>
-            <div class="card-body">
-                <h3 class="h3">Info</h3>
-                <button class="btn btn-primary me-1" @onclick="@GetAdminInfo">Get admin info</button>
-                <h3 class="h3">Maintenance window</h3>
-                <input type="text" class="form-control" @bind="@MaintenanceDate" @bind:event="oninput"/>
-                <button class="btn btn-primary me-1" @onclick="@UpdateMaintenance" disabled="@(!MaintenanceDateIsValid)">Ok</button>
-                <h3 class="h3">Persist data</h3>
-                <button class="btn btn-primary me-1" @onclick="@PersistState">Persist data</button>
-                <h3 class="h3">Restore persisted data</h3>
-                <button class="btn btn-primary me-1" @onclick="@RestoreState">Restore data</button>
-            </div>
-        </div>
-        @if (Client.AdminInfo != null)
-        {
+        <div class="col-sm-12 col-lg-2"></div>
+        <div class="col-sm-12 col-lg-6">
             <div class="card mb-2">
-                <div class="card-header">Info</div>
+                <div class="card-header">Server info</div>
                 <div class="card-body">
-                    <p><strong>Users by User Token: </strong>@Client.AdminInfo.UsersByUserTokenCount</p>
-                    <p><strong>Games by Game Id: </strong>@Client.AdminInfo.GamesByGameIdCount</p>
-                    <p><strong>Total Users: </strong>@Client.AdminInfo.Users.Count</p>
-                    <p><strong>ConnectionInfo by UserId: </strong>@Client.AdminInfo.ConnectionInfoByUserIdCount</p>
-                    <table class="table table-sm">
-                        <thead>
+                    <h3 class="h3">Info</h3>
+                    <button class="btn btn-primary me-1" @onclick="@GetAdminInfo">Get admin info</button>
+                    <h3 class="h3">Maintenance window</h3>
+                    <input type="text" class="form-control" @bind="@MaintenanceDate" @bind:event="oninput"/>
+                    <button class="btn btn-primary me-1" @onclick="@UpdateMaintenance" disabled="@(!MaintenanceDateIsValid)">Ok</button>
+                    <h3 class="h3">Persist data</h3>
+                    <button class="btn btn-primary me-1" @onclick="@PersistState">Persist data</button>
+                    <h3 class="h3">Restore persisted data</h3>
+                    <button class="btn btn-primary me-1" @onclick="@RestoreState">Restore data</button>
+                </div>
+            </div>
+            @if (Client.AdminInfo != null)
+            {
+                <div class="card mb-2">
+                    <div class="card-header">Info</div>
+                    <div class="card-body">
+                        <p><strong>Users by User Token: </strong>@Client.AdminInfo.UsersByUserTokenCount</p>
+                        <p><strong>Games by Game Id: </strong>@Client.AdminInfo.GamesByGameIdCount</p>
+                        <p><strong>Total Users: </strong>@Client.AdminInfo.Users.Count</p>
+                        <p><strong>ConnectionInfo by UserId: </strong>@Client.AdminInfo.ConnectionInfoByUserIdCount</p>
+                        <table class="table table-sm">
+                            <thead>
                             <tr class="small table-dark">
                                 <th class="w-10">User id</th>
                                 <th class="w-15">Username</th>
@@ -68,60 +70,89 @@ else
                                 <th class="w-15">Last login</th>
                                 <th class="w-10">Actions</th>
                             </tr>
-                        </thead>
+                            </thead>
+                            <tbody>
+                            @foreach (var av in Client.AdminInfo.Users)
+                            {
+                                <tr class="small table-dark">
+                                    <td class="w-10">@av.Id</td>
+                                    <td class="w-15">@av.Username</td>
+                                    <td class="w-15">@av.PlayerName</td>
+                                    <td class="w-50">@av.Email</td>
+                                    <td class="w-15">
+                                        @if (av.LastLogin != default)
+                                        {
+                                            @av.LastLogin.LocalDateTime
+                                        }
+                                    </td>
+                                    <td class="w-10"><button class="btn btn-primary btn-sm me-1" @onclick="@(_ => DeleteUser(av))">Delete</button></td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            <div class="card mb-2">
+                <div class="card-header">Running games</div>
+                <div class="card-body">
+                    <table class="table table-sm">
                         <tbody>
-                        @foreach (var av in Client.AdminInfo.Users)
+                        @foreach (var av in Client.RunningGames.OrderByDescending(av => av.LastAction))
                         {
+                            var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
                             <tr class="small table-dark">
-                                <td class="w-10">@av.Id</td>
-                                <td class="w-15">@av.Username</td>
-                                <td class="w-15">@av.PlayerName</td>
-                                <td class="w-50">@av.Email</td>
-                                <td class="w-15">
-                                    @if (av.LastLogin != default)
-                                    {
-                                        @av.LastLogin.LocalDateTime   
-                                    }
+                                <td class="w-25" style="@fontColorStyle">
+                                    @av.LastAction
                                 </td>
-                                <td class="w-10"><button class="btn btn-primary btn-sm me-1" @onclick="@(_ => DeleteUser(av))">Delete</button></td>
+                                <td class="w-25" style="@fontColorStyle">
+                                    @av.GameName
+                                </td>
+                                <td class="w-25">
+                                    <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Close(av))">Close</button>
+                                </td>
                             </tr>
                         }
                         </tbody>
                     </table>
                 </div>
-            </div>            
-        }
-        <div class="card mb-2">
-            <div class="card-header">Running games</div>
-            <div class="card-body">
-                <table class="table table-sm">
-                    <tbody>
-                    @foreach (var av in Client.RunningGames.OrderByDescending(av => av.LastAction))
+            </div>
+            <div class="card mb-2">
+                <div class="card-header">Scheduled games</div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tbody>
+                        @foreach (var av in Client.ScheduledGames.OrderByDescending(av => av.DateTime))
+                        {
+                            <tr class="small table-dark">
+                                <td class="w-25">
+                                    @av.DateTime
+                                </td>
+                                <td class="w-25">
+                                    @av.CreatorPlayerName
+                                </td>
+                                <td class="w-25">
+                                    <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Cancel(av))">Cancel</button>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-lg-2">
+            <div class="card mb-2">
+                <div class="card-header">Log</div>
+                <div class="card-body">
+                    @foreach (var m in Messages)
                     {
-                    var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
-
-                    <tr class="small table-dark">
-                        <td class="w-25" style="@fontColorStyle">
-                            @av.GameName
-                        </td>
-                        <td class="w-25">
-                            <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Close(av))">Close</button>
-                        </td>
-                    </tr>
+                        <div>@m</div>
                     }
-                    </tbody>
-                </table>
+                </div>
             </div>
         </div>
-        <div class="card mb-2">
-            <div class="card-header">Log</div>
-            <div class="card-body">
-                @foreach (var m in Messages)
-                {
-                <div>@m</div>
-                }
-            </div>
-        </div>
+        <div class="col-sm-12 col-lg-2"></div>
     </div>
 }
 
@@ -172,6 +203,12 @@ else
     private async Task Close(GameInfo av)
     {
         Messages.Add(await Client.AdminCloseGame(av.GameId));
+        StateHasChanged();
+    }
+    
+    private async Task Cancel(ScheduledGame av)
+    {
+        Messages.Add(await Client.AdminCancelGame(av.ScheduledGameId));
         StateHasChanged();
     }
     

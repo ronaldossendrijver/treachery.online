@@ -192,6 +192,7 @@ public interface IGameHub
     Task<Result<string>> AdminPersistState(string userToken);
     Task<Result<string>> AdminRestoreState(string userToken);
     Task<Result<string>> AdminCloseGame(string userToken, string gameId);
+    Task<Result<string>> AdminCancelGame(string userToken, string scheduledGameId);
     Task<Result<string>> AdminDeleteUser(string userToken, int userId);
     Task<Result<AdminInfo>> GetAdminInfo(string userToken);
 }

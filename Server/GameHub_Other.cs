@@ -222,6 +222,19 @@ public partial class GameHub
         return Success("Game removed");
     }
     
+    public async Task<Result<string>> AdminCancelGame(string userToken, string scheduledGameId)
+    {
+        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
+            return Error<string>(ErrorType.InvalidUserNameOrPassword);
+
+        if (ScheduledGamesByGameId.TryGetValue(scheduledGameId, out var game))
+        {
+            ScheduledGamesByGameId.Remove(scheduledGameId, out _);
+        }
+        
+        return await Task.FromResult(Success("Scheduled game cancelled"));
+    }
+    
     public async Task<Result<string>> AdminDeleteUser(string userToken, int userId)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])

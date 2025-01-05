@@ -17,17 +17,17 @@
 
         <div class="d-flex flex-row-reverse">
 
-            <input @bind-value="message" class="form-control" type="text" maxlength="512" placeholder="@Placeholder" @onkeyup="@(KeyUp)"/>
+            <input @bind-value="_message" class="form-control form-control-sm" type="text" maxlength="512" placeholder="@Placeholder" @onkeyup="@(KeyUp)"/>
 
         </div>
 
         <div class="d-flex flex-row-reverse mt-1">
 
-            <button class="btn btn-primary" @onclick="e => Send()">Send</button>
+            <button class="btn btn-primary btn-sm" @onclick="e => Send()">Send</button>
 
             @if (ShowGameChat)
             {
-                <select class="form-select" style="color:@SelectedFactionForegroundColor;background-color:@SelectedFactionColor" @bind="@selectedPlayerName">
+                <select class="form-select form-select-sm me-1" style="color:@SelectedFactionForegroundColor;background-color:@SelectedFactionColor" @bind="@_selectedPlayerName">
 
                     @if (!Client.MuteGlobalChat)
                     {
@@ -46,7 +46,7 @@
             }
             else
             {
-                selectedPlayerName = LabelGlobalChat;
+                _selectedPlayerName = LabelGlobalChat;
             }
 
         </div>
@@ -84,8 +84,8 @@
     private const string LabelGlobalChat = "all on server";
     private const string LabelAllPlayersInGame = "all in game";
 
-    private string message;
-    private string selectedPlayerName;
+    private string _message;
+    private string _selectedPlayerName;
 
     protected override void OnInitialized()
     {
@@ -94,11 +94,11 @@
         if (ShowGameChat)
         {
             var firstChatTarget = Game.Players.FirstOrDefault(p => p != Client.Player);
-            selectedPlayerName = firstChatTarget != null ? Game.GetPlayerName(firstChatTarget) : LabelAllPlayersInGame;
+            _selectedPlayerName = firstChatTarget != null ? Game.GetPlayerName(firstChatTarget) : LabelAllPlayersInGame;
         }
         else
         {
-            selectedPlayerName = LabelGlobalChat;
+            _selectedPlayerName = LabelGlobalChat;
         }
     }
 
@@ -112,8 +112,8 @@
 
     private async Task Send()
     {
-        await SendMessage(message, selectedPlayerName);
-        message = "";
+        await SendMessage(_message, _selectedPlayerName);
+        _message = "";
     }
 
     private async Task SendMessage(string msg, string target)
@@ -138,7 +138,7 @@
         }
     }
 
-    private string Placeholder => "Chat to " + selectedPlayerName + "...";
+    private string Placeholder => "Chat to " + _selectedPlayerName + "...";
 
     private string SelectedFactionColor
     {
@@ -147,7 +147,7 @@
             if (Game.CurrentPhase < Phase.SelectingFactions)
                 return "white";
 
-            var p = Client.Game.GetPlayerByName(selectedPlayerName);
+            var p = Client.Game.GetPlayerByName(_selectedPlayerName);
             return p != null ? Client.CurrentSkin.GetFactionColor(p.Faction) : "red";
         }
     }
