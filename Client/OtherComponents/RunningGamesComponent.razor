@@ -38,7 +38,7 @@
                                 @if (av.CurrentPhase == Phase.AwaitingPlayers)
                                 {
                                     <div>
-                                        @av.ActualNumberOfPlayers Players, @Client.CurrentSkin.Describe(av.Ruleset), maximum players: @av.MaximumNumberOfPlayers, maximum turns: @av.MaximumTurns
+                                        @Name(av.Ruleset), @av.ActualNumberOfPlayers of @av.MaximumNumberOfPlayers players, @av.MaximumTurns turns
                                     </div>
                                 }
                                 else
@@ -171,7 +171,7 @@
                                 @if (av.CurrentPhase == Phase.AwaitingPlayers)
                                 {
                                     <div>
-                                        @av.ActualNumberOfPlayers Players, @Client.CurrentSkin.Describe(av.Ruleset), maximum players: @av.MaximumNumberOfPlayers, maximum turns: @av.MaximumTurns
+                                        @Name(av.Ruleset), @av.ActualNumberOfPlayers of @av.MaximumNumberOfPlayers players, @av.MaximumTurns turns
                                     </div>
                                 }
                                 else

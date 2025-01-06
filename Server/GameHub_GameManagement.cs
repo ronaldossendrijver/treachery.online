@@ -14,7 +14,7 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<GameInitInfo>(ErrorType.UserNotFound);
         
-        if (RunningGamesByGameId.Values.Count(g => g.CreatorUserId == user.Id) >= 10)
+        if (RunningGamesByGameId.Values.Count(g => g.CreatorUserId == user.Id) >= 5)
             return Error<GameInitInfo>(ErrorType.TooManyGames);
 
         Game game;
@@ -69,6 +69,10 @@ public partial class GameHub
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error(ErrorType.UserNotFound);
+        
+        if (ScheduledGamesByGameId.Values.Count(g => g.CreatorUserId == user.Id) >= 5)
+            return Error(ErrorType.TooManyScheduledGames);
+
 
         var gameId = Guid.NewGuid().ToString();
         var scheduledGame = new ScheduledGame

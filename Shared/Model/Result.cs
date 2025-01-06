@@ -47,6 +47,7 @@ public enum ErrorType
     NoHost,
     InvalidGameEvent,
     TooManyGames,
+    TooManyScheduledGames,
     IncorrectGamePassword,
     SeatNotAvailableNotOpen,
     SeatNotAvailableKicked,

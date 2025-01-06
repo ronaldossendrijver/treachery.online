@@ -70,8 +70,17 @@ else
                     break;
             }
         </div>
-        <div class="card-footer">Version @Game.LatestVersion (January 2025)</div>
+        <div class="card-footer">
+            <div class="row">
+                <span class="col">Version @Game.LatestVersion (January 2025)</span>
+                <span class="col" @onclick=@(_ => ShowWhatsNew = true) style="text-align: right; cursor: pointer; color: red; font-weight: bolder; text-shadow: 0 0 2px gold;">Click here to see what's new!</span>
+            </div>
+        </div>
     </div>
+}
+@if (ShowWhatsNew)
+{
+    <img src='./art/whatsnew.png' alt='New features' style="z-index:1000; position: absolute; width: 80%; left: 10%; top:  10%; border:  0.25rem solid white; cursor: pointer;" @onclick=@(_ => ShowWhatsNew = false)/>
 }
 
 @code {
@@ -99,6 +108,8 @@ else
     private string _resetPassword;
     private string _resetPasswordConfirm;
     private string ResetPasswordMessage { get; set; }
+    
+    private bool ShowWhatsNew { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
