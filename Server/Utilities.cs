@@ -7,6 +7,9 @@ public static class Utilities
         GameId = managedGame.GameId,
         CreatorUserId = managedGame.CreatorUserId,
         YourCurrentSeat = managedGame.Game.Participation.SeatedPlayers.GetValueOrDefault(userId, -1),
+        YouAreIn = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? 
+            managedGame.Game.Participation.StandingPlayers.Contains(userId) :
+            managedGame.Game.Participation.SeatedPlayers.ContainsKey(userId),
         NumberOfObservers = managedGame.Game.Participation.Observers.Count,
         FactionsInPlay = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? 
             managedGame.Game.Settings.AllowedFactionsInPlay : 
@@ -21,7 +24,6 @@ public static class Utilities
         CurrentMainPhase = managedGame.Game.CurrentMainPhase,
         CurrentPhase = managedGame.Game.CurrentPhase,
         CurrentTurn = managedGame.Game.CurrentTurn,
-        ExpansionLevel = Game.ExpansionLevel,
         GameName = managedGame.Name,
         HasPassword = managedGame.HashedPassword != null,
         MaximumNumberOfPlayers = managedGame.Game.Settings.NumberOfPlayers,

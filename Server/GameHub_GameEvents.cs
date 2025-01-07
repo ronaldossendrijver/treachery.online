@@ -182,7 +182,7 @@ public partial class GameHub
             return Error(ErrorType.InvalidGameEvent, validationResult.ToString());
         }
 
-        if (game.Game.CurrentMainPhase is MainPhase.Ended && !game.StatisticsSent)
+        if (game.Game.CurrentMainPhase is MainPhase.Ended && !game.StatisticsSent && game.Game.NumberOfBots < 0.5f * game.Game.NumberOfPlayers)
         {
             await SendMailAndStatistics(game);
             game.StatisticsSent = true;
