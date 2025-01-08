@@ -48,13 +48,13 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     //Game in progress
     public Game Game { get; private set; }
     public string GameName { get; private set; }
-    public string GameId { get; set; } = string.Empty;
+    public string GameId { get; private set; } = string.Empty;
     public GameStatus Status { get; private set; }
     public List<Type> Actions { get; private set; } = []; 
     
     public bool InGame => Game != null;
     public bool PlayerNeedsSeating => InGame && Game.Participation.SeatedPlayers.ContainsValue(-1);
-    public Player Player => Game.GetPlayerByUserId(UserId);
+    public Player Player => Game.GetPlayerByUserId(UserId) ?? new Player(Game, Faction.None);
     public string PlayerName => LoginInfo.PlayerName;
     public UserStatus UserStatus => LoginInfo != null ? GetUserStatus(LoginInfo.UserId) : UserStatus.None;
     public Faction Faction => Player?.Faction ?? Faction.None;

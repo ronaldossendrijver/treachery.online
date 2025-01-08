@@ -47,7 +47,5 @@ Global
 		SolutionGuid = {387FE242-80A2-4B85-A899-72D8DD0796D8}
 	EndGlobalSection
 	GlobalSection(RiderSharedRunConfigurations) = postSolution
-		File = Server\.deployment\treachery-tst.run.xml
-		File = Server\.deployment\treachery.run.xml
 	EndGlobalSection
 EndGlobal
