@@ -75,7 +75,7 @@ public partial class Game
                 break;
         }
 
-        //if (CurrentMainPhase >= MainPhase.Setup) result.Add(typeof(PlayerReplaced));
+        if (Version < 170 && CurrentMainPhase >= MainPhase.Setup) result.Add(typeof(PlayerReplaced));
     }
 
     private void AddPlayerActions(Player player, bool isHost, List<Type> result)
