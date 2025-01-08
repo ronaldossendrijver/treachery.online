@@ -152,9 +152,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public void Refresh(string source = null)
     {
-        //if (source != null)
-        //    Console.WriteLine(source);
-        
         RefreshHandler?.Invoke();  
     } 
 
