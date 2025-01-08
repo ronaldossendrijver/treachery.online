@@ -18,8 +18,6 @@ public class ManagedGame
 
     public bool ObserversRequirePassword { get; init; }
     
-    public bool BotsArePaused { get; set; }
-    
     public bool StatisticsSent { get; set; }
 
     public DateTimeOffset LastAsyncPlayMessageSent { get; set; }

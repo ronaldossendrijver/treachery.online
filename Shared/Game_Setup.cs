@@ -58,23 +58,16 @@ public partial class Game
 
     private void DeterminePositionsAtTable()
     {
-        var positions = new Deck<int>(Random);
+        var seats = new Deck<int>(Random);
         for (var i = 0; i < Settings.NumberOfPlayers; i++)
-            positions.PutOnTop(i);
+            seats.PutOnTop(i);
         
-        positions.Shuffle();
+        seats.Shuffle();
 
-        //Seat players and bots
-        for (int i = 0; i < Players.Count; i++)
+        //Seat players
+        foreach (var p in Players)
         {
-            var p = Players[i];
-            p.Seat = positions.Draw();
-            if (Version >= 170 && i < Participation.StandingPlayers.Count)
-            {
-                var userIdToSeat = Participation.StandingPlayers[i];
-                Participation.SeatedPlayers[userIdToSeat] = p.Seat;
-            }
-            //Console.WriteLine($"Seat of player {i} ({p.Faction}): {p.Seat}");
+            p.Seat = seats.Draw();
         }
     }
 

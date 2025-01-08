@@ -12,16 +12,18 @@ namespace Treachery.Shared;
 public partial class Game
 {
     public List<Player> Players { get; private set; } = [];
+    
+    public List<Player> Bots => Players.Where(p => p.IsBot).ToList();
 
     public Dictionary<Player, string> LegacyNames { get; } = [];
     
-    public GameParticipation Participation { get; } = new();
+    public Participation Participation { get; } = new();
     
     public bool IsPlaying(Faction faction) => Players.Any(p => p.Faction == faction);
 
     public Player GetPlayer(Faction? f) => Players.FirstOrDefault(p => p.Faction == f);
-    
-    public Player GetPlayerInSeat(int seat) => Players.FirstOrDefault(p => p.Seat == seat);
+
+    private Player GetPlayerInSeat(int seat) => Players.FirstOrDefault(p => p.Seat == seat);
     
     public Faction GetFactionInSeat(int seat) => GetPlayerInSeat(seat)?.Faction ?? Faction.None;
     
@@ -31,34 +33,38 @@ public partial class Game
 
     public int GetUserIdOfPlayer(Player player) => UserIdInSeat(player.Seat);
     
-    public string GetPlayerName(int userId) => Participation.Users.GetValueOrDefault(userId);
+    public string GetPlayerName(int userId) => Participation.PlayerNames.GetValueOrDefault(userId, "?");
 
     public string GetPlayerName(Player player) => Version >= 170
-        ? player.IsBot ? "Bot" : Participation.Users.GetValueOrDefault(UserIdInSeat(player.Seat))
+        ? player.IsBot ? "Bot" : Participation.PlayerNames.GetValueOrDefault(UserIdInSeat(player.Seat), "?")
         : LegacyNames.GetValueOrDefault(player);
     
     public Player GetPlayerByUserId(int userId) => GetPlayerBySeat(SeatOf(userId));
 
     public Player GetPlayerByName(string name) => Players.FirstOrDefault(p => GetPlayerName(p) == name);
 
-    public int GetUserIdByName(string name) => Participation.Users.FirstOrDefault(u => u.Value == name).Key;
+    public int GetUserIdByName(string name) => Participation.PlayerNames.FirstOrDefault(u => u.Value == name).Key;
     
     public Player GetPlayerBySeat(int seatNr) => Players.FirstOrDefault(p => p.Seat == seatNr);
+
+    public int UserIdInSeat(int seat)
+    {
+        foreach (var userIdAndSeat in Participation.SeatedPlayers)
+            if (userIdAndSeat.Value == seat)
+                return userIdAndSeat.Key;
+
+        return -1;
+    } 
     
-    private int UserIdInSeat(int seat) => Participation.SeatedPlayers.FirstOrDefault(seatedUser => seatedUser.Value == seat).Key;
-    
-    private int SeatOf(int userId) => Participation.SeatedPlayers.GetValueOrDefault(userId);
+    private int SeatOf(int userId) => Participation.SeatedPlayers.GetValueOrDefault(userId, -1);
 
     public bool IsOpen(int seat) => 
-        CurrentPhase is Phase.AwaitingPlayers && Participation.StandingPlayers.Count < MaximumPlayers || 
-        Participation.AvailableSeats.Contains(seat);
+        CurrentPhase is Phase.AwaitingPlayers && Participation.SeatedPlayers.Count < MaximumPlayers || 
+        SeatIsAvailable(seat);
     
-    public bool IsBot(Player p) => IsBot(p.Seat);
-    public bool IsBot(int seat) => !Participation.SeatedPlayers.ContainsValue(seat);
+    public bool IsBot(Player p) => !Participation.SeatedPlayers.ContainsValue(p.Seat);
     
-    public bool SeatIsAvailable(int seat) => 
-        Participation.AvailableSeats.Contains(seat) || 
-        Participation.BotPositionsAreAvailable && IsBot(seat);
+    public bool SeatIsAvailable(int seat) => Participation.AvailableSeats.Contains(seat);
     
     public int NumberOfHosts => Participation.Hosts.Count;
 
@@ -66,72 +72,59 @@ public partial class Game
     
     public int NumberOfObservers => Participation.Observers.Count;
     
-    public int NumberOfPlayers => CurrentPhase is Phase.AwaitingPlayers ? Participation.StandingPlayers.Count : Participation.SeatedPlayers.Count;
+    public int NumberOfPlayers => Participation.SeatedPlayers.Count;
     
     public IEnumerable<string> PlayerNames =>
-        Participation.Users
+        Participation.PlayerNames
             .Where(idAndName => !Participation.Observers.Contains(idAndName.Key))
             .Select(idAndName => idAndName.Value);
     
     public IEnumerable<string> ObserverNames => 
-        Participation.Users
+        Participation.PlayerNames
             .Where(idAndName => Participation.Observers.Contains(idAndName.Key))
             .Select(idAndName => idAndName.Value);
 
-    public bool IsPlayer(int userId) =>
-        CurrentPhase is Phase.AwaitingPlayers && Participation.StandingPlayers.Contains(userId) ||
-        Participation.SeatedPlayers.ContainsKey(userId);
+    public bool IsPlayer(int userId) => Participation.SeatedPlayers.ContainsKey(userId);
     
     public bool IsHost(int userId) => Participation.Hosts.Contains(userId);
     
     public bool IsObserver(int userId) => Participation.Observers.Contains(userId);
     
-    public bool IsParticipant(int userId) => Participation.Users.ContainsKey(userId);
+    public bool IsParticipant(int userId) => Participation.PlayerNames.ContainsKey(userId);
 
     public bool WasKicked(int userId) => Participation.Kicked.Contains(userId);
     
     public void AddPlayer(int userId, string playerName, int seat = -1)
     {
-        if (CurrentPhase is Phase.AwaitingPlayers)
+        if (seat >= 0)
         {
-            Participation.StandingPlayers.Add(userId);            
-        }
-        else
-        {
-            var replacedPlayer = GetPlayerInSeat(seat);
-            if (Participation.SeatedPlayers.ContainsValue(seat))
-            {
-                var currentUserId = Participation.SeatedPlayers.First(keyValue => keyValue.Value == seat).Key;
-                Participation.SeatedPlayers.Remove(currentUserId);
-                AddObserver(userId, Participation.Users.GetValueOrDefault(userId));
-            }
-            
-            Log(playerName, " now controls ", replacedPlayer?.Faction);
-            Participation.SeatedPlayers[userId] = seat;
-            Participation.AvailableSeats.Remove(seat);
+            var player = GetPlayerInSeat(seat);
+            Log(playerName, " now controls ", player.Faction);
         }
 
-        Participation.Users[userId] = playerName;
+        Participation.SeatedPlayers[userId] = seat;
+        Participation.PlayerNames[userId] = playerName;
+        Participation.AvailableSeats.Remove(seat);
+        Participation.Observers.Remove(userId);
     }
     
     public void AddObserver(int userId, string observerName)
     {
         if (CurrentReport != null)
-            Log(observerName, " is now observing this game");
+            Log(observerName, " is now observing");
         
         Participation.Observers.Add(userId);
-        Participation.Users[userId] = observerName;
+        Participation.PlayerNames[userId] = observerName;
     }
 
     public void RemoveUser(int userId, bool kick)
     {
         if (CurrentReport != null)
-            Log(Participation.Users.GetValueOrDefault(userId), kick ? " was kicked" : " was removed", " from the game");
+            Log(GetPlayerName(userId), kick ? " was kicked from" : " left", " the game");
         
-        Participation.StandingPlayers.Remove(userId);
         Participation.SeatedPlayers.Remove(userId);
         Participation.Observers.Remove(userId);
-        Participation.Users.Remove(userId);
+        Participation.PlayerNames.Remove(userId);
         Participation.Hosts.Remove(userId);
 
         if (kick)

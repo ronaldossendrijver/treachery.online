@@ -89,11 +89,11 @@ public partial class Game
 
     #region Initialization
 
-    public Game() : this(LatestVersion, new GameParticipation())
+    public Game() : this(LatestVersion, new Participation())
     {
     }
 
-    public Game(int version, GameParticipation participation)
+    public Game(int version, Participation participation)
     {
         if (version < LowestSupportedVersion) 
             throw new ArgumentException($"Game version {version} is not supported. The lowest supported version is: {LowestSupportedVersion}.");
@@ -640,7 +640,7 @@ public partial class Game
 
     #region TechnicalSupport
 
-    public static Message TryLoad(GameState state, GameParticipation participation, bool performValidation, bool isHost, out Game result)
+    public static Message TryLoad(GameState state, Participation participation, bool performValidation, bool isHost, out Game result)
     {
         try
         {

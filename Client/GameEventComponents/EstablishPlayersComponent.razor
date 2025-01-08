@@ -6,8 +6,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-@implements IDisposable
-@inherits GameEventComponent<ChangeSettings>
+
+@inherits GameEventComponent<EstablishPlayers>
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsible="false">
 
@@ -26,15 +26,8 @@
             <Label>Ruleset:</Label>
         </SelectComponent>
 
-        @if (Game.CurrentPhase == Phase.AwaitingPlayers)
-        {
-            <ButtonRowComponent Confirm="@StartGame" ConfirmText="Start" ConfirmError="@Validation" />
-        }
-        else
-        {
-            <ButtonRowComponent Confirm="@Confirm" ConfirmText="Change Settings" ConfirmError="@Validation" />            
-        }
-
+        <ButtonRowComponent Confirm="@Confirm" ConfirmText="Start" ConfirmError="@Validation" />
+        <CheckboxComponent @bind-Value="@Settings.AutoOpenEmptySeats">Auto open all bot seats to other players at start</CheckboxComponent>
         <CheckboxComponent @bind-Value="@Settings.AsyncPlay">Async play (send e-mail updates)</CheckboxComponent>
         @if (Settings.AsyncPlay)
         {
@@ -129,20 +122,11 @@
         StateHasChanged();
     }
 
-    protected override ChangeSettings ConfirmedResult =>
+    protected override EstablishPlayers ConfirmedResult =>
         new(Game, Faction.None)
-        {
-            Settings = Settings
-        };
-    
-    private async Task StartGame()
-    {
-        await Request(new EstablishPlayers
         {
             GameName = Client.PlayerName,
             Settings = Settings,
             Seed = new Random().Next()
-        });
-        StateHasChanged();
-    }
+        };
 }

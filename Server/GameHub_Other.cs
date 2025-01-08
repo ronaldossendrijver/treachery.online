@@ -96,7 +96,6 @@ public partial class GameHub
                     GameName = game.Name,
                     GameParticipation = JsonSerializer.Serialize(game.Game.Participation),
                     HashedPassword = game.HashedPassword,
-                    BotsArePaused = game.BotsArePaused,
                     ObserversRequirePassword = game.ObserversRequirePassword,
                     StatisticsSent = game.StatisticsSent,
                     LastAsyncPlayMessageSent = game.LastAsyncPlayMessageSent,
@@ -152,7 +151,7 @@ public partial class GameHub
                 var id = persistedGame.GameId;
                 var gameState = GameState.Load(persistedGame.GameState);
                 var gameName = persistedGame.GameName;
-                var participation = JsonSerializer.Deserialize<GameParticipation>(persistedGame.GameParticipation);
+                var participation = JsonSerializer.Deserialize<Participation>(persistedGame.GameParticipation);
                 var loadMessage = Game.TryLoad(gameState, participation, false, true, out var game);
                 if (loadMessage == null)
                 {
@@ -164,7 +163,6 @@ public partial class GameHub
                         Game = game,
                         Name = gameName,
                         HashedPassword = persistedGame.HashedPassword,
-                        BotsArePaused = persistedGame.BotsArePaused,
                         ObserversRequirePassword = persistedGame.ObserversRequirePassword,
                         StatisticsSent = persistedGame.StatisticsSent,
                         LastAsyncPlayMessageSent = persistedGame.LastAsyncPlayMessageSent,
@@ -212,7 +210,7 @@ public partial class GameHub
         {
             RunningGamesByGameId.Remove(gameId, out _);
 
-            foreach (var userId in game.Game.Participation.Users.Keys)
+            foreach (var userId in game.Game.Participation.PlayerNames.Keys)
             {
                 game.Game.RemoveUser(userId, true);
                 await Clients.Group(gameId).HandleRemoveUser(userId, true);

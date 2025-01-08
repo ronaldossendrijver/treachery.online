@@ -29,8 +29,8 @@
 {
     switch (a.Name)
     {
-        case nameof(ChangeSettings):
-            <ChangeSettingsComponent/>
+        case nameof(EstablishPlayers):
+            <EstablishPlayersComponent/>
             break;
 
         case nameof(FactionSelected):
@@ -587,7 +587,7 @@
     <DealComponent/>
 }
 
-@if (Client.Game.AssistedNotekeepingEnabled(Player))
+@if (!Client.IsObserver && Client.Game.AssistedNotekeepingEnabled(Player))
 {
     <NoteComponent/>
 }

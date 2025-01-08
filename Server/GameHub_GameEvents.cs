@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Net.Mail;
+﻿using System.Net.Mail;
 using System.Threading.Tasks;
 using Treachery.Client;
 using Treachery.Shared;
@@ -9,8 +8,36 @@ namespace Treachery.Server;
 
 public partial class GameHub
 {
-    public async Task<VoidResult> RequestChangeSettings(string userToken, string gameId, ChangeSettings e) => await ProcessGameEvent(userToken, gameId, e);
-    public async Task<VoidResult> RequestEstablishPlayers(string userToken, string gameId, EstablishPlayers e) => await ProcessGameEvent(userToken, gameId, e);
+    public async Task<VoidResult> RequestEstablishPlayers(string userToken, string gameId, EstablishPlayers e)
+    {
+        if (!AreValid(userToken, gameId, out var user, out var game, out var error))
+            return error;
+        
+        await ProcessGameEvent(userToken, gameId, e);
+
+        var playerNr = 0;
+        foreach (var p in game.Game.Participation.SeatedPlayers)
+        {
+            if (playerNr >= game.Game.Players.Count)
+                break;
+            
+            game.Game.Participation.SeatedPlayers[p.Key] = game.Game.Players[playerNr++].Seat;
+        }
+
+        if (e.Settings.AutoOpenEmptySeats)
+        {
+            foreach (var bot in game.Game.Bots)
+            {
+                game.Game.OpenOrCloseSeat(bot.Seat);
+                await Clients.Group(gameId).HandleOpenOrCloseSeat(bot.Seat);
+            }
+        }
+        
+        await Clients.Group(gameId).HandleAssignSeats(game.Game.Participation.SeatedPlayers);
+
+        return Success();
+    }
+    
     public async Task<VoidResult> RequestEndPhase(string userToken, string gameId, EndPhase e) => await ProcessGameEvent(userToken, gameId, e);
     public async Task<VoidResult> RequestDonated(string userToken, string gameId, Donated e) => await ProcessGameEvent(userToken, gameId, e);
     public async Task<VoidResult> RequestResourcesTransferred(string userToken, string gameId, ResourcesTransferred e) => await ProcessGameEvent(userToken, gameId, e);
@@ -285,7 +312,7 @@ public partial class GameHub
     private async Task PerformBotEvent(ManagedGame managedGame)
     {
         var game = managedGame.Game;
-        if (!managedGame.BotsArePaused && game.CurrentPhase > Phase.AwaitingPlayers)
+        if (!managedGame.Game.Participation.BotsArePaused && game.CurrentPhase > Phase.AwaitingPlayers)
         {
             var bots = Deck<Player>.Randomize(game.Players.Where(p => p.IsBot));
             foreach (var bot in bots)

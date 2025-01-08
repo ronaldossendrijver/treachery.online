@@ -9,6 +9,8 @@ public class GameSettings
     public List<Rule> InitialRules { get; set; } = [];
 
     public List<Faction> AllowedFactionsInPlay { get; set; } = [];
+
+    public bool AutoOpenEmptySeats { get; set; } = true;
     
     public bool AsyncPlay { get; set; }
     

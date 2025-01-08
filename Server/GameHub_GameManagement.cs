@@ -22,7 +22,7 @@ public partial class GameHub
         if (loadGame)
         {
             var state = GameState.Load(stateData);
-            var errorMessage = Game.TryLoad(state, new GameParticipation(), false, false, out var loadedGame);
+            var errorMessage = Game.TryLoad(state, new Participation(), false, false, out var loadedGame);
 
             if (errorMessage == null)
                 game = loadedGame;
@@ -145,7 +145,7 @@ public partial class GameHub
 
     private async Task NudgeBots(ManagedGame game)
     {
-        if (!game.BotsArePaused)
+        if (!game.Game.Participation.BotsArePaused)
         {
             await PerformBotEvent(game);
         }
@@ -182,9 +182,16 @@ public partial class GameHub
             if (game.Game.WasKicked(user.Id))
                 return Error<GameInitInfo>(ErrorType.SeatNotAvailableKicked);
             
-            if (game.Game.IsObserver(user.Id))
-                return Error<GameInitInfo>(ErrorType.AlreadyObserver);
-
+            if (seat >= 0)
+            {
+                var currentUserId = game.Game.UserIdInSeat(seat);
+                if (currentUserId >= 0)
+                {
+                    game.Game.RemoveUser(currentUserId, false);
+                    await Clients.Group(gameId).HandleRemoveUser(currentUserId, false);
+                }
+            }
+            
             game.Game.AddPlayer(user.Id, user.PlayerName, seat);
             await Clients.Group(gameId).HandleJoinGame(user.Id, user.PlayerName, seat);
             
@@ -315,7 +322,7 @@ public partial class GameHub
         if (game.CreatorUserId != user.Id)
             return Error(ErrorType.NoCreator);
 
-        foreach (var userId in game.Game.Participation.Users.Keys)
+        foreach (var userId in game.Game.Participation.PlayerNames.Keys)
         {
             game.Game.RemoveUser(userId, true);
             await Clients.Group(gameId).HandleRemoveUser(userId, true);
@@ -448,8 +455,8 @@ public partial class GameHub
         if (!game.Game.IsHost(user.Id))
             return Error(ErrorType.NoHost);
 
-        game.BotsArePaused = !game.BotsArePaused;
-        await Clients.All.HandleBotStatus(game.BotsArePaused);
+        game.Game.Participation.BotsArePaused = !game.Game.Participation.BotsArePaused;
+        await Clients.All.HandleBotStatus(game.Game.Participation.BotsArePaused);
 
         await NudgeBots(game);
         return Success();

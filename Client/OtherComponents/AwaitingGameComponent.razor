@@ -22,12 +22,13 @@
 
             <div class="mt-1 mb-0"><strong>Players:</strong> @Client.CurrentSkin.Join(Client.Game.PlayerNames)</div>
 
-            <div class="mt-1 mb-0"><strong>Bots:</strong> @Client.CurrentSkin.Join(Settings.InitialRules.Where(r => Game.GetRuleGroup(r) == RuleGroup.Bots).Select(r => Client.CurrentSkin.Describe(r)))</div>
-
-            <div class="mt-1 mb-0"><strong>Factions:</strong> @Client.CurrentSkin.Join(Settings.AllowedFactionsInPlay)</div>
-
-            <div class="mt-2 mb-0"><strong>Ruleset:</strong> @Client.CurrentSkin.Describe(Game.Ruleset)</div>
-
+            <div class="mt-1 mb-0">
+                @foreach (var faction in Settings.AllowedFactionsInPlay)
+                {
+                    <FactionComponent Faction="@faction"/>
+                }
+            </div>
+            
             <label class="mt-1 mb-0 small">Core Game, Advanced Rules</label>
             <ul class="mt-0 mb-1">
                 @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvanced, Game.ExpansionLevel))

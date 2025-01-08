@@ -47,9 +47,6 @@ namespace Treachery.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("BotsArePaused")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTimeOffset>("CreationDate")
                         .HasColumnType("TEXT");
 

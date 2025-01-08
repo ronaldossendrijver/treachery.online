@@ -8,12 +8,12 @@
 *@
 @inherits GameComponent
 
-<div class="card p-1 ml-1 mb-2 border-primary">
+<div class="card p-1 ml-1 mb-2 border-primary" style="min-width: 16rem;">
     <div class="card-header">Participants</div>
     <div class="card-body">
         @if (Game.CurrentPhase is Phase.AwaitingPlayers)
         {
-            foreach (var userId in Game.Participation.StandingPlayers)
+            foreach (var userId in Game.Participation.SeatedPlayers.Keys)
             {
                 var isMe = Client.UserId == userId;
                 var isHost = Game.IsHost(userId);
@@ -29,15 +29,10 @@
                     }
                     @if (Client.IsHost)
                     {
-                        if (isHost && Game.NumberOfHosts > 1)
-                        {
-                            <CommandButton Small MarginClass="m-1" OnClick="@(_ => SetOrUnsetHost(userId))">Unmake host</CommandButton>
-                        }
-                        else if (!isHost)
+                        if (!isHost)
                         {
                             <CommandButton Small MarginClass="m-1" OnClick="@(_ => SetOrUnsetHost(userId))">Make host</CommandButton>
                         }
-
                         if (!isMe)
                         {
                             <CommandButton Small Class="btn-danger" MarginClass="m-1" OnClick="@(_ => Remove(userId, true))">Kick</CommandButton>
@@ -79,21 +74,15 @@
                         <CommandButton Small MarginClass="m-1" OnClick="@(_ => OpenSeat(player.Seat))">@makeAvailableText seat</CommandButton>
                         @if (!Game.IsBot(player))
                         {
+                            if (!isHost)
+                            {
+                                <CommandButton Small MarginClass="m-1" OnClick="@(_ => SetOrUnsetHost(userId))">Make host</CommandButton>
+                            }
                             if (!isMe)
                             {
                                 <CommandButton Small Class="btn-danger" MarginClass="m-1" OnClick="@(_ => Remove(userId, true))">Kick</CommandButton>
                             }
-
-                            if (isHost && Game.NumberOfHosts > 1)
-                            {
-                                <CommandButton Small MarginClass="m-1" OnClick="@(_ => SetOrUnsetHost(userId))">Unmake host</CommandButton>
-                            }
-                            else if (!isHost)
-                            {
-                                <CommandButton Small MarginClass="m-1" OnClick="@(_ => SetOrUnsetHost(userId))">Make host</CommandButton>
-                            }
                         }
-
                         <br>
                     }
                 </div>
@@ -101,6 +90,18 @@
         }
         <div class="text-danger align-bottom">@ActionResult</div>
         <CommandButton Small Class="btn-danger" MarginClass="mt-2" OnClick="@(_ => Remove(Client.UserId, false))">Leave game</CommandButton>
+        @if (Game.NumberOfObservers > 0)
+        {
+            <div>
+                <label class="mt-1 mb-0">Observers</label>
+            </div>
+            <div>
+                @foreach (var o in Game.ObserverNames)
+                {
+                    <span class="me-1" style="font: normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif; color: white;">@o</span>
+                }
+            </div>
+        }
     </div>
 </div>
 

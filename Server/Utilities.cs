@@ -7,9 +7,7 @@ public static class Utilities
         GameId = managedGame.GameId,
         CreatorUserId = managedGame.CreatorUserId,
         YourCurrentSeat = managedGame.Game.Participation.SeatedPlayers.GetValueOrDefault(userId, -1),
-        YouAreIn = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? 
-            managedGame.Game.Participation.StandingPlayers.Contains(userId) :
-            managedGame.Game.Participation.SeatedPlayers.ContainsKey(userId),
+        YouAreIn = managedGame.Game.Participation.SeatedPlayers.ContainsKey(userId),
         NumberOfObservers = managedGame.Game.Participation.Observers.Count,
         FactionsInPlay = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? 
             managedGame.Game.Settings.AllowedFactionsInPlay : 
@@ -28,14 +26,14 @@ public static class Utilities
         HasPassword = managedGame.HashedPassword != null,
         MaximumNumberOfPlayers = managedGame.Game.Settings.NumberOfPlayers,
         MaximumTurns = managedGame.Game.Settings.MaximumTurns,
-        ActualNumberOfPlayers = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? 
-            managedGame.Game.Participation.StandingPlayers.Count :
-            managedGame.Game.Participation.SeatedPlayers.Count,
-        AvailableSeats = managedGame.Game.Participation.AvailableSeats.Select(seat => new AvailableSeatInfo
+        ActualNumberOfPlayers = managedGame.Game.Participation.SeatedPlayers.Count,
+        AvailableSeats = managedGame.Game.Players
+            .Where(p => managedGame.Game.SeatIsAvailable(p.Seat))
+            .Select(p => new AvailableSeatInfo
         {
-            Seat = seat, 
-            Faction = managedGame.Game.GetFactionInSeat(seat), 
-            IsBot = managedGame.Game.IsBot(seat)
+            Seat = p.Seat, 
+            Faction = p.Faction, 
+            IsBot = p.IsBot
         }).ToList()
     };
 }

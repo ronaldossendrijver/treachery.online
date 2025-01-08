@@ -41,7 +41,6 @@ public interface IGameHub
     Task<VoidResult> RequestSubscribeGame(string userToken, string scheduledGameId, SubscriptionType subscription);
     
     //Game Events
-    Task<VoidResult> RequestChangeSettings(string userToken, string gameId, ChangeSettings e);
     Task<VoidResult> SetTimer(string userToken, string gameId, int value);
     Task<VoidResult> RequestEstablishPlayers(string userToken, string gameId, EstablishPlayers e);
     Task<VoidResult> RequestEndPhase(string userToken, string gameId, EndPhase e);

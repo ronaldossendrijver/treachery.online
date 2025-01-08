@@ -24,19 +24,6 @@
                  Align="@TextAlignment.Right"/>
     }
 
-    if (Game.NumberOfObservers > 0)
-    {
-        <MapText ToShow="@string.Format("observers: {0}", Game.NumberOfObservers)"
-                 X="@(Client.CurrentSkin.PlanetCenter.X)"
-                 Y="@(Client.CurrentSkin.MapDimensions.Y - TurnFontHeight)"
-                 Popover="@ObserverPopover"
-                 Font="@Client.CurrentSkin.FORCETOKEN_FONT"
-                 FontColor="@Client.CurrentSkin.FORCETOKEN_FONTCOLOR"
-                 BorderWidth="@Client.CurrentSkin.FORCETOKEN_FONT_BORDERWIDTH"
-                 BorderColor="@Client.CurrentSkin.FORCETOKEN_FONT_BORDERCOLOR"
-                 Align="@TextAlignment.Center"/>
-    }
-
     if (Game.CurrentMainPhase > MainPhase.Setup)
     {
         var posX = x;
@@ -101,8 +88,6 @@
     private const float TurnFontHeight = 16;
     private const float ActiveFontHeight = 16;
     private const float PassiveFontHeight = 8;   
-
-    private string ObserverPopover => string.Join(", ", Game.ObserverNames);
 
     private string TurnPopover
     {

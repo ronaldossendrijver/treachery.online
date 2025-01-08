@@ -268,7 +268,7 @@ public class Tests
 
                 var fs = File.OpenText(f);
                 var state = GameState.Load(fs.ReadToEnd());
-                var game = new Game(state.Version, new GameParticipation());
+                var game = new Game(state.Version, new Participation());
                 var testcase = new Testcase();
 
                 foreach (var e in state.Events)
@@ -642,7 +642,7 @@ public class Tests
         var state = GameState.Load(fs.ReadToEnd());
         fs.Close();
         Console.WriteLine("Checking {0} (version {1})...", fileName, state.Version);
-        var game = new Game(state.Version, new GameParticipation());
+        var game = new Game(state.Version, new Participation());
 
         fs = File.OpenText(testcaseFileName);
         var tc = LoadObject<Testcase>(fs.ReadToEnd());

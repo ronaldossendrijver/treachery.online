@@ -34,8 +34,6 @@ public class PersistedGame
     [MaxLength(4000)]
     public string HashedPassword { get; init; } = string.Empty;
     
-    public bool BotsArePaused { get; init; }
-    
     public bool ObserversRequirePassword { get; init; }
     
     public bool StatisticsSent { get; init; }

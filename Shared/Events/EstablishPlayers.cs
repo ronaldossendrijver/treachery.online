@@ -55,8 +55,8 @@ public class EstablishPlayers : GameEvent
     [JsonIgnore]
     public IEnumerable<string> Players
     {
-        get => _players == "" ? Array.Empty<string>() : _players.Split('>');
-        set => _players = string.Join('>', value);
+        get => _players == "" ? [] : _players.Split('>');
+        init => _players = string.Join('>', value);
     }
 
     [Obsolete]
@@ -66,7 +66,7 @@ public class EstablishPlayers : GameEvent
     [JsonIgnore]
     public List<Faction> FactionsInPlay
     {
-        get => _factionsInPlay == null || _factionsInPlay.Length == 0 ? [] : _factionsInPlay.Split(',').Select(f => Enum.Parse<Faction>(f)).ToList();
+        get => string.IsNullOrEmpty(_factionsInPlay) ? [] : _factionsInPlay.Split(',').Select(Enum.Parse<Faction>).ToList();
         set => _factionsInPlay = string.Join(',', value);
     }
 
@@ -76,57 +76,14 @@ public class EstablishPlayers : GameEvent
 
     public override Message Validate()
     {
-        if (Game.CurrentPhase != Phase.AwaitingPlayers) return Message.Express("Invalid game phase");
-
-        var settingsToCheck = Game.Version >= 170
-            ? Settings
-            : new GameSettings
-            {
-                AllowedFactionsInPlay = FactionsInPlay,
-                InitialRules = ApplicableRules.ToList(),
-                NumberOfPlayers = MaximumNumberOfPlayers,
-                MaximumTurns = MaximumTurns
-            };
-
-        var extraSpotsForBots =
-            (settingsToCheck.InitialRules.Contains(Rule.PurpleBot) && settingsToCheck.AllowedFactionsInPlay.Contains(Faction.Purple) ? 1 : 0) +
-            (settingsToCheck.InitialRules.Contains(Rule.BlackBot) && settingsToCheck.AllowedFactionsInPlay.Contains(Faction.Black) ? 1 : 0) +
-            (settingsToCheck.InitialRules.Contains(Rule.OrangeBot) && settingsToCheck.AllowedFactionsInPlay.Contains(Faction.Orange) ? 1 : 0) +
-            (settingsToCheck.InitialRules.Contains(Rule.RedBot) && settingsToCheck.AllowedFactionsInPlay.Contains(Faction.Red) ? 1 : 0) +
-            (settingsToCheck.InitialRules.Contains(Rule.GreenBot) && settingsToCheck.AllowedFactionsInPlay.Contains(Faction.Green) ? 1 : 0) +
-            (settingsToCheck.InitialRules.Contains(Rule.BlueBot) && settingsToCheck.AllowedFactionsInPlay.Contains(Faction.Blue) ? 1 : 0) +
-            (settingsToCheck.InitialRules.Contains(Rule.YellowBot) && settingsToCheck.AllowedFactionsInPlay.Contains(Faction.Yellow) ? 1 : 0) +
-            (settingsToCheck.InitialRules.Contains(Rule.GreyBot) && settingsToCheck.AllowedFactionsInPlay.Contains(Faction.Grey) ? 1 : 0);
-
-        if (Game.Participation.StandingPlayers.Count + extraSpotsForBots > settingsToCheck.AllowedFactionsInPlay.Count) return Message.Express("More factions required");
-        if (settingsToCheck.InitialRules.Contains(Rule.FillWithBots) && settingsToCheck.AllowedFactionsInPlay.Count < settingsToCheck.NumberOfPlayers) return Message.Express("More factions required");
-
-        var nrOfBots =
-            (settingsToCheck.InitialRules.Contains(Rule.PurpleBot) ? 1 : 0) +
-            (settingsToCheck.InitialRules.Contains(Rule.BlackBot) ? 1 : 0) +
-            (settingsToCheck.InitialRules.Contains(Rule.OrangeBot) ? 1 : 0) +
-            (settingsToCheck.InitialRules.Contains(Rule.RedBot) ? 1 : 0) +
-            (settingsToCheck.InitialRules.Contains(Rule.GreenBot) ? 1 : 0) +
-            (settingsToCheck.InitialRules.Contains(Rule.YellowBot) ? 1 : 0) +
-            (settingsToCheck.InitialRules.Contains(Rule.GreyBot) ? 1 : 0) +
-            (settingsToCheck.InitialRules.Contains(Rule.BlueBot) ? 1 : 0);
-
-        if (settingsToCheck.NumberOfPlayers < 2) return Message.Express("At least two players required");
         if (Game.Version < 170)
-        {
-            #pragma warning disable CS0612 // Type or member is obsolete
-            if (Players.Count() + nrOfBots == 0 && !ApplicableRules.Contains(Rule.FillWithBots)) return Message.Express("At least one player required");
-            if (Players.Count() + nrOfBots < 2 && !ApplicableRules.Contains(Rule.FillWithBots)) return Message.Express("At least two players required");
-            if (Players.Count() + nrOfBots > MaximumNumberOfPlayers) return Message.Express("Too many players");
-            #pragma warning restore CS0612 // Type or member is obsolete
-        }
-        else
-        {
-            if (settingsToCheck.NumberOfPlayers < 2) return Message.Express("At least one player required");
-            if (Game.Participation.StandingPlayers.Count > settingsToCheck.NumberOfPlayers) return Message.Express("More players than seats at the table");            
-        }
-
-        if (settingsToCheck.AllowedFactionsInPlay.Any(f => !AvailableFactions().Contains(f))) return Message.Express("Invalid faction");
+            return null;
+        
+        if (Game.CurrentPhase != Phase.AwaitingPlayers) return Message.Express("Invalid game phase");
+        if (Game.Settings.NumberOfPlayers < 2) return Message.Express("At least two players required");
+        if (Game.Settings.NumberOfPlayers > Settings.AllowedFactionsInPlay.Count) return Message.Express("More factions required");
+        if (Game.Participation.SeatedPlayers.Count > Game.Settings.NumberOfPlayers) return Message.Express("More players than seats at the table");            
+        if (Game.Settings.AllowedFactionsInPlay.Any(f => !AvailableFactions().Contains(f))) return Message.Express("Invalid faction");
 
         return null;
     }
