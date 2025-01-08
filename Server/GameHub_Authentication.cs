@@ -40,7 +40,7 @@ public partial class GameHub
         }
 
         db.Add(new User
-            { Name = cleanedUsername, HashedPassword = hashedPassword, Email = email, PlayerName = trimmedPlayerName });
+            { Name = cleanedUsername, HashedPassword = hashedPassword, Email = email, PlayerName = trimmedPlayerName, LastLogin = DateTimeOffset.Now });
 
         await db.SaveChangesAsync();
         

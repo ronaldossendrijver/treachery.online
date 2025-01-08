@@ -54,7 +54,7 @@
                                     </div>
                                 }
                             </td>
-                            <td class="w-25">
+                            <td class="w-30">
                                 @if (!av.YouAreIn)
                                 {
                                     if (av.HasPassword)
@@ -72,7 +72,13 @@
                                     {
                                         foreach (var availableSeat in av.AvailableSeats)
                                         {
-                                            <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, _joinGamePassword[av.GameId], availableSeat.Seat))" MarginClass="m-1">Play <FactionComponent Faction="@availableSeat.Faction" Diameter="20"/></CommandButton>
+                                            <CommandButton 
+                                                Small 
+                                                OnClick="@(_ => JoinGameAsPlayer(av.GameId, _joinGamePassword[av.GameId], availableSeat.Seat))" 
+                                                MarginClass="m-1"
+                                                Title="@JoinButtonTitle(availableSeat.Faction)">
+                                                <FactionComponent Faction="@availableSeat.Faction" Diameter="20"/>
+                                            </CommandButton>
                                         }
                                     }
                                 }
@@ -244,4 +250,8 @@
             _ => $" ({av.ActualNumberOfPlayers} players)"
         };
     }
+
+    private string JoinButtonTitle(Faction faction) => $"Join as {Name(faction)}";
+
+
 }
