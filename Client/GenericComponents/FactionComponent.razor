@@ -7,7 +7,7 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-<img class="img-fluid" src="@Client.CurrentSkin.GetImageUrl(Faction)" width="@Diameter" height="@Diameter" alt="@DetermineTitle" title="@DetermineTitle" style="@Shadow;@Pointer" @onclick="@OnClick"/>
+<img class="img-fluid @MarginClass" src="@Client.CurrentSkin.GetImageUrl(Faction)" width="@Diameter" height="@Diameter" alt="@DetermineTitle" title="@DetermineTitle" style="@Shadow;@Pointer" @onclick="@OnClick"/>
 
 @code {
 
@@ -21,6 +21,9 @@
 
     [Parameter]
     public bool HasShadow { get; set; } = true;
+    
+    [Parameter]
+    public string MarginClass { get; set; } = string.Empty;
     
     [Parameter]
     public EventCallback OnClick { get; set; }

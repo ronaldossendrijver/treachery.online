@@ -89,10 +89,7 @@
                                     {
                                         <input class="form-inline input-sm m-1" style="max-width:120px" @bind="_joinGamePassword[av.GameId]" maxlength="24" placeholder="Game password"/>
                                     }
-
-                                    <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, _joinGamePassword[av.GameId]))" MarginClass="m-1">Observe</CommandButton>
-
-                                    @if (av.Phase == Phase.AwaitingPlayers)
+                                    if (av.Phase == Phase.AwaitingPlayers)
                                     {
                                         <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, _joinGamePassword[av.GameId], -1))" MarginClass="m-1">Join</CommandButton>
                                     }
@@ -100,9 +97,15 @@
                                     {
                                         foreach (var availableSeat in av.AvailableSeats)
                                         {
-                                            <FactionComponent Faction="@availableSeat.Faction" Diameter="20" OnClick="@(_ => JoinGameAsPlayer(av.GameId, _joinGamePassword[av.GameId], availableSeat.Seat))" Title="@JoinButtonTitle(availableSeat.Faction)"/>
+                                            <FactionComponent 
+                                                Faction="@availableSeat.Faction" 
+                                                Diameter="20" 
+                                                OnClick="@(_ => JoinGameAsPlayer(av.GameId, _joinGamePassword[av.GameId], availableSeat.Seat))" 
+                                                Title="@JoinButtonTitle(availableSeat.Faction)"
+                                                MarginClass="me-1"/>
                                         }
                                     }
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, _joinGamePassword[av.GameId]))" MarginClass="m-1">Observe</CommandButton>
                                 }
                                 else
                                 {
@@ -222,7 +225,6 @@
                                     {
                                         <input class="form-inline input-sm m-1" style="max-width:120px" @bind="_joinGamePassword[av.GameId]" maxlength="24" placeholder="Game password"/>
                                     }
-
                                     <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, _joinGamePassword[av.GameId]))" MarginClass="m-1">Observe</CommandButton>
                                 }
                                 else
