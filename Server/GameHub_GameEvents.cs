@@ -339,15 +339,15 @@ public partial class GameHub
     private static int DetermineBotDelay(MainPhase phase, GameEvent e)
     {
         if (phase is MainPhase.Resurrection or MainPhase.Charity || e is AllyPermission || e is DealOffered || e is SetShipmentPermission)
-            return 300;
+            return 400;
         
         if (e is Bid)
-            return 800;
+            return 1000;
         
         if (phase is MainPhase.ShipmentAndMove or MainPhase.Battle)
-            return 3200;
+            return 4800;
         
-        return 1600;
+        return 2000;
     }
 
     private async Task SendMailAndStatistics(ManagedGame game)

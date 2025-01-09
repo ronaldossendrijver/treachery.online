@@ -474,15 +474,22 @@ public partial class GameHub
         
         var result = new ServerStatus
         {
-            RunningGames = RunningGamesByGameId.Values.Where(mg => Utilities.DetermineLastAction(mg) > lastActiveGameThreshold).Select(g => Utilities.ExtractGameInfo(g, loggedInUser.Id)).ToList(),
+            RunningGames = RunningGamesByGameId.Values
+                .Where(mg => mg.CreatorUserId == loggedInUser.Id || Utilities.DetermineLastAction(mg) > lastActiveGameThreshold)
+                .Select(g => Utilities.ExtractGameInfo(g, loggedInUser.Id)).ToList(),
+            
             ScheduledGames = ScheduledGamesByGameId.Values.ToList(),
-            LoggedInUsers = UsersByUserToken.Where(u => u.Value.LastSeenDateTime > lastSeenUserThreshold).Select(u => new LoggedInUserInfo
-            {
-                Id = u.Value.Id, 
-                Status = u.Value.Status,
-                PlayerName = u.Value.User.PlayerName, 
-                LastSeen = u.Value.LastSeenDateTime,
-            }).ToList()
+            
+            LoggedInUsers = UsersByUserToken
+                .Where(u => u.Value.LastSeenDateTime > lastSeenUserThreshold)
+                .Select(u => new LoggedInUserInfo
+                    {
+                        Id = u.Value.Id, 
+                        Status = u.Value.Status,
+                        PlayerName = u.Value.User.PlayerName, 
+                        LastSeen = u.Value.LastSeenDateTime,
+                    })
+                .ToList()
         };
 
         await Task.CompletedTask;
