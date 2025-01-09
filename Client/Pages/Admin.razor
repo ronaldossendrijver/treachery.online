@@ -164,6 +164,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         Client.RefreshHandler += StateHasChanged;
+        Client.FetchActiveGamesOnly = false;
         await Client.Start();
         MaintenanceDate = Client.ServerInfo.ScheduledMaintenance.ToString(CultureInfo.CurrentUICulture);
     }
