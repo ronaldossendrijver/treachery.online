@@ -10,7 +10,7 @@ public static class Utilities
         YouAreIn = managedGame.Game.Participation.SeatedPlayers.ContainsKey(userId),
         FactionsInPlay = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? 
             managedGame.Game.Settings.AllowedFactionsInPlay.ToArray() : 
-            managedGame.Game.Players.Select(p => p.Faction).ToArray(),
+            managedGame.Game.Players.Where(p => p.Faction != Faction.None).Select(p => p.Faction).ToArray(),
         NrOfBots = managedGame.Game.NumberOfBots,
         Ruleset = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? 
             Game.DetermineApproximateRuleset(managedGame.Game.Settings.AllowedFactionsInPlay, managedGame.Game.Settings.InitialRules, Game.ExpansionLevel)  : 

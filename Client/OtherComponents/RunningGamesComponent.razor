@@ -17,7 +17,7 @@
                     <button type="button" class="btn btn-secondary dropdown-toggle btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
                         @if (Client.FetchActiveGamesOnly)
                         {
-                            <span>Active (and your) games</span>
+                            <span>Active games</span>
                         }
                         else
                         {
@@ -31,7 +31,7 @@
                         }
                         else
                         {
-                            <li><a class="dropdown-item" href="#" @onclick="@(_ => Client.FetchActiveGamesOnly = true)">Active (and your) games</a></li>
+                            <li><a class="dropdown-item" href="#" @onclick="@(_ => Client.FetchActiveGamesOnly = true)">Active games</a></li>
                         }
                     </ul>
                 </div>                
@@ -60,25 +60,40 @@
 
                         <tr class="small table-dark">
                             <td class="w-20" style="@fontColorStyle">
-                                <span style="font: normal normal normal 14px Advokat, Calibri, Tahoma, sans-serif;">@av.Name</span>
+                                <span style="font: normal normal normal 15px Advokat, Calibri, Tahoma, sans-serif;">@av.Name</span>
                             </td>
                             <td style="@fontColorStyle">
                                 @if (av.Phase == Phase.AwaitingPlayers)
                                 {
                                     <div>
-                                        @Name(av.Ruleset), @av.NrOfPlayers of @av.MaxPlayers players, @av.MaxTurns turns
+                                        <UserIcon Size="20" Title="Players"/><span class="me-1">@av.NrOfPlayers</span> (of @av.MaxPlayers)
                                     </div>
                                 }
                                 else
                                 {
-                                    var factions = av.FactionsInPlay ?? [];
+                                    <div>
+                                        <UserIcon Size="20" Title="Players"/><span class="me-1">@av.NrOfPlayers</span>
+                                        @if (av.NrOfBots > 0)
+                                        {
+                                            <BotIcon Size="16" Title="Bots"/><span>@av.NrOfBots</span>
+                                        }
+                                    </div>
+                                }
+                            </td>
+                            <td style="@fontColorStyle">
+                                @if (av.Phase == Phase.AwaitingPlayers)
+                                {
+                                    <div>
+                                        @Name(av.Ruleset), @av.MaxTurns turns
+                                    </div>
+                                }
+                                else
+                                {
                                     <div>@Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)
-                                        <br>
-                                        @foreach (var f in factions.Where(f => f != Faction.None))
+                                        @foreach (var f in av.FactionsInPlay)
                                         {
                                             <Image Shown="f" Width="20" Shadow=""/>
                                         }
-                                        @NumberOfBotsMessage(av)
                                     </div>
                                 }
                             </td>
@@ -137,7 +152,7 @@
                         {
                             <tr class="small table-dark">
                                 <td class="w-20">
-                                    <span style="font: normal normal normal 14px Advokat, Calibri, Tahoma, sans-serif;">@game.CreatorPlayerName</span>
+                                    <span style="font: normal normal normal 15px Advokat, Calibri, Tahoma, sans-serif;">@game.CreatorPlayerName</span>
                                 </td>
                                 <td class="w-20">
                                     @game.DateTime.ToLocalTime().ToString("dd-MM HH:mm")
@@ -164,7 +179,7 @@
                                         <div class="me-1">
                                             @if (userInfo != null)
                                             {
-                                                <span style="font: normal normal normal 14px Advokat, Calibri, Tahoma, sans-serif;">@userInfo.PlayerName</span>
+                                                <span style="font: normal normal normal 15px Advokat, Calibri, Tahoma, sans-serif;">@userInfo.PlayerName</span>
                                             }
                                             else
                                             {
@@ -197,25 +212,41 @@
 
                         <tr class="small table-dark">
                             <td class="w-25" style="@fontColorStyle">
-                                <span style="font: normal normal normal 14px Advokat, Calibri, Tahoma, sans-serif;">@av.Name</span>
+                                <span style="font: normal normal normal 15px Advokat, Calibri, Tahoma, sans-serif;">@av.Name</span>
                             </td>
                             <td style="@fontColorStyle">
                                 @if (av.Phase == Phase.AwaitingPlayers)
                                 {
                                     <div>
-                                        @Name(av.Ruleset), @av.NrOfPlayers of @av.MaxPlayers players, @av.MaxTurns turns
+                                        <UserIcon Size="20" Title="Players"/><span class="me-1">@av.NrOfPlayers</span> (of @av.MaxPlayers)
                                     </div>
                                 }
                                 else
                                 {
-                                    var factions = av.FactionsInPlay ?? [];
-                                    <div>@Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)
-                                        <br>
-                                        @foreach (var f in factions.Where(f => f != Faction.None))
+                                    <div>
+                                        <UserIcon Size="20" Title="Players"/><span class="me-1">@av.NrOfPlayers</span>
+                                        @if (av.NrOfBots > 0)
+                                        {
+                                            <BotIcon Size="16" Title="Bots"/><span>@av.NrOfBots</span>
+                                        }
+                                    </div>
+                                }
+                            </td>
+                            <td style="@fontColorStyle">
+                                @if (av.Phase == Phase.AwaitingPlayers)
+                                {
+                                    <div>
+                                        @Name(av.Ruleset), @av.MaxTurns turns
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div>
+                                        @Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)
+                                        @foreach (var f in av.FactionsInPlay)
                                         {
                                             <Image Shown="f" Width="20" Shadow=""/>
                                         }
-                                        @NumberOfBotsMessage(av)
                                     </div>
                                 }
                             </td>
