@@ -29,6 +29,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public AdminInfo AdminInfo { get; private set; }
     
     //Server info
+    public bool FetchActiveGamesOnly { get; set; } = true;
     public List<GameInfo> RunningGames { get; private set; } = [];
     public List<GameInfo> RunningGamesWithOpenSeats { get; private set; } = [];
     public List<GameInfo> RunningGamesWithoutOpenSeats { get; private set; } = [];
@@ -621,7 +622,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         {
             if (IsConnected && LoggedIn)
             {
-                var status = await Invoke<ServerStatus>(nameof(IGameHub.RequestHeartbeat), UserToken);
+                var status = await Invoke<ServerStatus>(nameof(IGameHub.RequestHeartbeat), UserToken, FetchActiveGamesOnly);
                 if (status.Success)
                 {
                     RunningGames = status.Contents.RunningGames;

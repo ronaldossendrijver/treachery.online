@@ -60,11 +60,11 @@ public class FactionSelected : GameEvent
         if (initiator != null)
         {
             initiator.Faction = Faction;
+            if (Game.Version < 172)
+                Game.FactionsInPlay.Remove(Faction);
+            
             Log();
         }
-
-        if (Game.Players.All(p => p.Faction != Faction.None))
-            Game.AssignFactionsAndEnterFactionTrade();
     }
 
     public override Message GetMessage()

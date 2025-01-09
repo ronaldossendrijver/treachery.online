@@ -32,7 +32,7 @@ public interface IGameHub
     Task<VoidResult> RequestUndo(string userToken, string gameId, int untilEventNr);
     Task<Result<GameInitInfo>> RequestGameState(string userToken, string gameId);
     Task<VoidResult> RequestPauseBots(string userToken, string gameId);
-    Task<Result<ServerStatus>> RequestHeartbeat(string userToken);
+    Task<Result<ServerStatus>> RequestHeartbeat(string userToken, bool activeGamesOnly);
     Task<VoidResult> RequestAssignSeats(string userToken, string gameId, Dictionary<int, int> assignment);
     Task<VoidResult> RequestScheduleGame(string userToken,  
         DateTimeOffset dateTime, Ruleset? ruleset, int? numberOfPlayers, int? maximumTurns, 

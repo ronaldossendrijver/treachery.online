@@ -70,6 +70,7 @@ public interface IGameService
 
     public Phase CurrentPhase { get; }
     public Skin CurrentSkin { get; set; }
+    public bool FetchActiveGamesOnly { get; set; }
 
     public event EventHandler<Location> OnLocationSelected;
     public event EventHandler<Location> OnLocationSelectedWithCtrlOrAlt;

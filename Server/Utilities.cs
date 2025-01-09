@@ -15,9 +15,7 @@ public static class Utilities
         Ruleset = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? 
             Game.DetermineApproximateRuleset(managedGame.Game.Settings.AllowedFactionsInPlay, managedGame.Game.Settings.InitialRules, Game.ExpansionLevel)  : 
             Game.DetermineApproximateRuleset(managedGame.Game.Players.Select(p => p.Faction).ToList(), managedGame.Game.Rules, Game.ExpansionLevel),
-        LastAction = managedGame.Game.CurrentPhase > Phase.AwaitingPlayers ? 
-            managedGame.Game.History.Last().Time : 
-            managedGame.CreationDate,
+        LastAction = DetermineLastAction(managedGame),
         MainPhase = managedGame.Game.CurrentMainPhase,
         Phase = managedGame.Game.CurrentPhase,
         Turn = managedGame.Game.CurrentTurn,
@@ -35,4 +33,11 @@ public static class Utilities
             IsBot = p.IsBot
         }).ToArray()
     };
+
+    public static DateTimeOffset DetermineLastAction(ManagedGame managedGame)
+    {
+        return managedGame.Game.CurrentPhase > Phase.AwaitingPlayers ? 
+            managedGame.Game.History.Last().Time : 
+            managedGame.CreationDate;
+    }
 }

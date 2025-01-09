@@ -462,19 +462,21 @@ public partial class GameHub
         return Success();
     }
 
-    public async Task<Result<ServerStatus>> RequestHeartbeat(string userToken)
+    public async Task<Result<ServerStatus>> RequestHeartbeat(string userToken, bool activeGamesOnly)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var loggedInUser))
             return Error<ServerStatus>(ErrorType.UserNotFound);
 
         loggedInUser.LastSeenDateTime = DateTime.Now;
 
-        var lastSeenThreshold = DateTimeOffset.Now.AddSeconds(-30);
+        var lastSeenUserThreshold = DateTimeOffset.Now.AddSeconds(-30);
+        var lastActiveGameThreshold = activeGamesOnly ? DateTimeOffset.Now.AddMinutes(-20) : DateTimeOffset.MinValue;
+        
         var result = new ServerStatus
         {
-            RunningGames = RunningGamesByGameId.Values.Select(g => Utilities.ExtractGameInfo(g, loggedInUser.Id)).ToList(),
+            RunningGames = RunningGamesByGameId.Values.Where(mg => Utilities.DetermineLastAction(mg) > lastActiveGameThreshold).Select(g => Utilities.ExtractGameInfo(g, loggedInUser.Id)).ToList(),
             ScheduledGames = ScheduledGamesByGameId.Values.ToList(),
-            LoggedInUsers = UsersByUserToken.Where(u => u.Value.LastSeenDateTime > lastSeenThreshold).Select(u => new LoggedInUserInfo
+            LoggedInUsers = UsersByUserToken.Where(u => u.Value.LastSeenDateTime > lastSeenUserThreshold).Select(u => new LoggedInUserInfo
             {
                 Id = u.Value.Id, 
                 Status = u.Value.Status,

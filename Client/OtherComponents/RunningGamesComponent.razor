@@ -9,7 +9,33 @@
 @inherits GameComponent
 
 <div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeIn90 1s">
-    <div class="card-header">Join or observe a game</div>
+    <div class="card-header">
+        <div>Join or observe a game</div>
+        <div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary dropdown-toggle btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
+                    @if (Client.FetchActiveGamesOnly)
+                    {
+                        <span>Only active games</span>
+                    }
+                    else
+                    {
+                        <span>All games</span>
+                    }
+                </button>
+                <ul class="dropdown-menu">
+                    @if (Client.FetchActiveGamesOnly)
+                    {
+                        <li><a class="dropdown-item" href="#" @onclick="@(_ => Client.FetchActiveGamesOnly = false)">All games</a></li>
+                    }
+                    else
+                    {
+                        <li><a class="dropdown-item" href="#" @onclick="@(_ => Client.FetchActiveGamesOnly = true)">Only active games</a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
     <div class="card-body">
 
         @if (!Client.RunningGamesWithoutOpenSeats.Any() && !Client.RunningGamesWithOpenSeats.Any() && !Client.ScheduledGames.Any())
@@ -20,7 +46,7 @@
         {
             if (Client.RunningGamesWithOpenSeats.Any())
             {
-                <div class="text-info">Active games with open seats (that you can join)</div>
+                <div class="text-info">Games with open seats (that you can join)</div>
                 <table class="table table-sm">
                     <tbody>
                     @foreach (var av in Client.RunningGamesWithOpenSeats)
@@ -152,7 +178,7 @@
             }
             if (Client.RunningGamesWithoutOpenSeats.Any())
             {
-                <div class="text-info">Active games without open seats</div>
+                <div class="text-info">Games without open seats</div>
                 <table class="table table-sm">
                     <tbody>
 

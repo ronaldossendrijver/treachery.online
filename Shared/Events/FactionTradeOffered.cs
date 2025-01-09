@@ -60,7 +60,10 @@ public class FactionTradeOffered : GameEvent
         if (!Game.IsPlaying(Target))
         {
             Log(Initiator, " switch to ", Target);
-            Game.FactionsInPlay.Add(Initiator);
+            
+            if (Game.Version < 172)
+                Game.FactionsInPlay.Add(Initiator);
+            
             Player.Faction = Target;
         }
         else
