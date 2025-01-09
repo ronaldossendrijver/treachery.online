@@ -17,7 +17,7 @@
                     <button type="button" class="btn btn-secondary dropdown-toggle btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
                         @if (Client.FetchActiveGamesOnly)
                         {
-                            <span>Only active games</span>
+                            <span>Active (and your) games</span>
                         }
                         else
                         {
@@ -31,7 +31,7 @@
                         }
                         else
                         {
-                            <li><a class="dropdown-item" href="#" @onclick="@(_ => Client.FetchActiveGamesOnly = true)">Only active games</a></li>
+                            <li><a class="dropdown-item" href="#" @onclick="@(_ => Client.FetchActiveGamesOnly = true)">Active (and your) games</a></li>
                         }
                     </ul>
                 </div>                
@@ -97,12 +97,13 @@
                                     {
                                         foreach (var availableSeat in av.AvailableSeats)
                                         {
-                                            <FactionComponent 
-                                                Faction="@availableSeat.Faction" 
-                                                Diameter="20" 
+                                            <CommandButton 
+                                                Small 
                                                 OnClick="@(_ => JoinGameAsPlayer(av.GameId, _joinGamePassword[av.GameId], availableSeat.Seat))" 
-                                                Title="@JoinButtonTitle(availableSeat.Faction)"
-                                                MarginClass="me-1"/>
+                                                MarginClass="m-1"
+                                                Title="@JoinButtonTitle(availableSeat.Faction)">
+                                                <FactionComponent Faction="@availableSeat.Faction" Diameter="20"/>
+                                            </CommandButton>
                                         }
                                     }
                                     <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, _joinGamePassword[av.GameId]))" MarginClass="m-1">Observe</CommandButton>
