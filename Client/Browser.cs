@@ -136,17 +136,6 @@ public class Browser(IJSRuntime jsRuntime)
         await Storage.SetAsync(name, value);
     }
 
-    public async Task ClearSettingsStartingWith(string startOfName)
-    {
-        var keys = await Storage.GetKeys();
-        foreach (var key in keys.Where(k => k.StartsWith(startOfName))) await ClearSetting(key);
-    }
-
-    private async Task ClearSetting(string name)
-    {
-        await Storage.RemoveAsync(name);
-    }
-
     public async Task SaveStringSetting(string name, string value)
     {
         await Storage.SetStringAsync(name, value);

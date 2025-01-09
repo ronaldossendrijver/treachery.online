@@ -282,7 +282,10 @@ public class EstablishPlayers : GameEvent
         AddPlayersToGame();
         FillSeats();
         RemoveClaimedFactions();
-
+        
+        if (Game.Version >= 172)
+            Game.DeterminePositionsAtTable();        
+        
         Game.Enter(Game.Applicable(Rule.PlayersChooseFactions), Phase.SelectingFactions, Game.AssignFactionsAndEnterFactionTrade);
     }
 

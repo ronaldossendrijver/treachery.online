@@ -20,9 +20,9 @@ public abstract class GameEvent
     {
     }
 
-    protected GameEvent(Game game, int seat)
+    protected GameEvent(Game game)
     {
-        Initialize(game, seat);
+        Initialize(game, Faction.None);
     }
     
     protected GameEvent(Game game, Faction initiator)
@@ -81,6 +81,7 @@ public abstract class GameEvent
     {
         Game = game;
         Initiator = Faction.None;
+        
         Player = game.GetPlayerBySeat(seat);
     }
 

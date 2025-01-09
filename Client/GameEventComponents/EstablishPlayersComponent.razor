@@ -7,6 +7,7 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
+@using System.Text.Json
 @inherits GameEventComponent<EstablishPlayers>
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsible="false">
@@ -75,6 +76,7 @@
     
     private bool _advancedOptions;
     private bool _disposed;
+    private bool _initializing = true;
 
     private Ruleset _ruleset;
     private Ruleset Ruleset
@@ -87,28 +89,84 @@
         }
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         base.OnInitialized(); 
+        await LoadSettings();
         _ = Task.Delay(3600).ContinueWith(_ => UpdateSettings());
+        _initializing = false;
+    }
+
+    private async Task LoadSettings()
+    {
+        var loadedSettingsAsString = await Browser.LoadStringSetting("treachery.online;setting.establishPlayersSettings");
+        if (!string.IsNullOrEmpty(loadedSettingsAsString))
+        {
+            try
+            {
+                var loadedSettings = JsonSerializer.Deserialize<EstablishPlayersSettings>(loadedSettingsAsString);
+                
+                if (loadedSettings.Settings != null)
+                    Settings = loadedSettings.Settings;
+                
+                if (loadedSettings.Ruleset != Ruleset.None)
+                    Ruleset = loadedSettings.Ruleset;
+                
+                _advancedOptions = loadedSettings.AdvancedOptions;
+            }
+            catch (Exception)
+            {
+                //Ignore locally stored settings
+            }
+        }
     }
 
     public override void Dispose()
     {
         _disposed = true;
     }
+    
+    protected override async Task Confirm()
+    {
+        await StoreSettings();
+        await base.Confirm();
+    }
 
     private async Task UpdateSettings()
     {
         if (_disposed)
             return;
-        
+
         await Client.RequestUpdateSettings(Client.GameId, Settings);
         _ = Task.Delay(3600).ContinueWith(_ => UpdateSettings());
     }
 
+    private async Task StoreSettings()
+    {
+        var savedSettings = new EstablishPlayersSettings
+        {
+            Settings = Settings,
+            Ruleset = Ruleset,
+            AdvancedOptions = _advancedOptions
+        };
+        
+        var settingsAsString = JsonSerializer.Serialize(savedSettings);
+
+        try
+        {
+            await Browser.SaveStringSetting("treachery.online;setting.establishPlayersSettings", settingsAsString);
+        }
+        catch (Exception)
+        {
+            //Don't store settings
+        }
+    }
+
     private void RulesetChanged(Ruleset ruleset)
     {
+        if (_initializing)
+            return;
+        
         var botRules = Settings.InitialRules.Where(r => Game.GetRuleGroup(r) == RuleGroup.Bots).ToArray();
 
         Settings.InitialRules.Clear();
@@ -129,4 +187,11 @@
             Settings = Settings,
             Seed = new Random().Next()
         };
+
+    public class EstablishPlayersSettings
+    {
+        public GameSettings Settings { get; init; }
+        public bool AdvancedOptions { get; init; }
+        public Ruleset Ruleset { get; init; }  
+    }
 }

@@ -17,7 +17,7 @@ public partial class Game
 
     public Dictionary<Player, string> LegacyNames { get; } = [];
     
-    public Participation Participation { get; } = new();
+    public Participation Participation { get; set;  } = new();
     
     public bool IsPlaying(Faction faction) => Players.Any(p => p.Faction == faction);
 

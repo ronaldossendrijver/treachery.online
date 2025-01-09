@@ -13,7 +13,7 @@ public class FactionSelected : GameEvent
 {
     #region Construction
 
-    public FactionSelected(Game game, int seatId) : base(game, seatId)
+    public FactionSelected(Game game) : base(game)
     {
     }
 
@@ -44,7 +44,7 @@ public class FactionSelected : GameEvent
 
     public static IEnumerable<Faction> ValidFactions(Game g)
     {
-        return g.FactionsInPlay.Where(f => !g.Players.Any(p => p.Faction == f));
+        return g.FactionsInPlay.Where(f => g.Players.All(p => p.Faction != f));
     }
 
     #endregion Validation
@@ -57,12 +57,14 @@ public class FactionSelected : GameEvent
             Game.Players.FirstOrDefault(p => p.Name == InitiatorPlayerName) :
             Game.GetPlayerBySeat(Seat);
         
-        if (initiator != null && Game.FactionsInPlay.Contains(Faction))
+        if (initiator != null)
         {
             initiator.Faction = Faction;
-            Game.FactionsInPlay.Remove(Faction);
             Log();
         }
+
+        if (Game.Players.All(p => p.Faction != Faction.None))
+            Game.AssignFactionsAndEnterFactionTrade();
     }
 
     public override Message GetMessage()

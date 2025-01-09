@@ -1,7 +1,6 @@
 ﻿using System.Net.Mail;
 using System.Threading.Tasks;
 using Treachery.Client;
-using Treachery.Shared;
 using Treachery.Shared.Model;
 
 namespace Treachery.Server;
@@ -15,26 +14,30 @@ public partial class GameHub
         
         await ProcessGameEvent(userToken, gameId, e);
 
-        var playerNr = 0;
-        foreach (var p in game.Game.Participation.SeatedPlayers)
+        var participation = game.Game.Participation;
+
+        var userIds = participation.SeatedPlayers.Keys.ToList();
+        var participantIndex = 0;
+        foreach (var player in game.Game.Players)
         {
-            if (playerNr >= game.Game.Players.Count)
+            if (participantIndex >= userIds.Count)
                 break;
             
-            game.Game.Participation.SeatedPlayers[p.Key] = game.Game.Players[playerNr++].Seat;
-        }
-
-        if (e.Settings.AutoOpenEmptySeats)
-        {
-            foreach (var bot in game.Game.Bots)
-            {
-                game.Game.OpenOrCloseSeat(bot.Seat);
-                await Clients.Group(gameId).HandleOpenOrCloseSeat(bot.Seat);
-            }
+            var userId =  userIds[participantIndex++]; 
+            participation.SeatedPlayers[userId] = player.Seat;
         }
         
         await Clients.Group(gameId).HandleAssignSeats(game.Game.Participation.SeatedPlayers);
-
+        
+        if (e.Settings.AutoOpenEmptySeats)
+        {
+            foreach (var player in game.Game.Players.Where(p => !participation.SeatedPlayers.ContainsValue(p.Seat)))
+            {
+                participation.AvailableSeats.Add(player.Seat);
+                await Clients.Group(gameId).HandleOpenOrCloseSeat(player.Seat);    
+            }
+        }
+        
         return Success();
     }
     

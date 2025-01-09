@@ -27,7 +27,7 @@
         @switch (State)
         {
             case OwnGamesComponentState.List:
-                var myGames = Client.RunningGames.Where(info => info.CreatorUserId == Client.UserId).OrderByDescending(av => av.LastAction).ToList();
+                var myGames = Client.RunningGames.Where(info => info.CreatorId == Client.UserId).OrderByDescending(av => av.LastAction).ToList();
                 var myScheduledGames = Client.ScheduledGames.Where(info => info.CreatorUserId == Client.UserId).OrderByDescending(av => av.DateTime).ToList();
                 if (!myGames.Any() && !myScheduledGames.Any())
                 {
@@ -53,7 +53,7 @@
 
                             <tr class="small table-dark">
                                 <td class="w-50" style="@fontColorStyle">
-                                    <div>@Name(av.Ruleset), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
+                                    <div>@Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)
                                         <br>
                                         @foreach (var f in factions.Where(f => f != Faction.None))
                                         {

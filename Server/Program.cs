@@ -15,7 +15,7 @@ using Treachery.Shared;
 
 namespace Treachery.Server;
 
-public class Program
+public static class Program
 {
     public static void Main(string[] args)
     {

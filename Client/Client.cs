@@ -534,6 +534,21 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public async Task<string> SetTimer(int value) =>
         CurrentSkin.Describe((await Invoke(nameof(IGameHub.SetTimer), value)).Error);
 
+    /*
+    public async Task<string> RequestEstablishPlayers(EstablishPlayers e)
+    {
+        var result = await Invoke<Participation>(nameof(IGameHub.RequestEstablishPlayers), UserToken, GameId, e);
+        if (!result.Success)
+        {
+            return result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : CurrentSkin.Describe(result.Error);
+        }
+
+        Game.Participation = result.Contents;
+        return null;
+    }
+    */
+    
+    //TODO: make strongly typed methods
     public async Task<string> RequestGameEvent<T>(T gameEvent) where T : GameEvent
     {
         var result = await Invoke($"Request{typeof(T).Name}", UserToken, GameId, gameEvent);

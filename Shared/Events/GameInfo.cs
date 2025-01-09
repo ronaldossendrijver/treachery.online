@@ -16,27 +16,26 @@ namespace Treachery.Shared;
 
 public class GameInfo
 {
-    public int CreatorUserId { get; init; }
+    public int CreatorId { get; init; }
     public string GameId { get; init; }
     public bool HasPassword { get; init; }
-    public string GameName { get; init; }
-    public int MaximumNumberOfPlayers { get; init; }
-    public int MaximumTurns { get; init; }
-    public MainPhase CurrentMainPhase { get; init; }
-    public Phase CurrentPhase { get; init; }
-    public int CurrentTurn { get; init; }
-    public int NumberOfBots { get; init; }
-    public int ActualNumberOfPlayers { get; init; }
-    public int NumberOfObservers { get; init; }
-    public List<Faction> FactionsInPlay { get; init; }
+    public string Name { get; init; }
+    public int MaxPlayers { get; init; }
+    public int MaxTurns { get; init; }
+    public MainPhase MainPhase { get; init; }
+    public Phase Phase { get; init; }
+    public int Turn { get; init; }
+    public int NrOfBots { get; init; }
+    public int NrOfPlayers { get; init; }
+    public Faction[] FactionsInPlay { get; init; }
     public Ruleset Ruleset { get; init; }
     public DateTimeOffset? LastAction { get; init; }
     public int YourCurrentSeat { get; init; }
-    public bool YouAreIn { get; set; }
-    public List<AvailableSeatInfo> AvailableSeats { get; init; } = [];
+    public bool YouAreIn { get; init; }
+    public AvailableSeatInfo[] AvailableSeats { get; init; } = [];
     
     [JsonIgnore] 
-    public bool CanBeJoined => CurrentPhase is Phase.AwaitingPlayers || AvailableSeats.Count > 0;
+    public bool CanBeJoined => Phase is Phase.AwaitingPlayers || AvailableSeats.Length > 0;
 
     public override bool Equals(object obj) => obj is GameInfo info && info.GameId == GameId;
 

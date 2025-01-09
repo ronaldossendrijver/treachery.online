@@ -44,14 +44,14 @@ else if (!Client.LoggedIn)
 else if (!Client.InGame)
 {
     <div class="row" style="@StartScreenStyle">
-        <div class="col-sm-12 col-lg-2"></div>
-        <div class="col-sm-12 col-lg-4">
+        <div class="col-sm-12 col-lg-1"></div>
+        <div class="col-sm-12 col-lg-6">
             <RunningGamesComponent/>
         </div>
         <div class="col-sm-12 col-lg-4">
             <OwnGamesComponent/>
         </div>
-        <div class="col-sm-12 col-lg-2"></div>
+        <div class="col-sm-12 col-lg-1"></div>
     </div>
 }
 else if (Client.Game.CurrentPhase is Phase.AwaitingPlayers)

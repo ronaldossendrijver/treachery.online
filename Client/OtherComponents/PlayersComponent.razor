@@ -51,7 +51,10 @@
                 var isHost = Game.IsHost(userId);
 
                 <div style="border-bottom: 1px solid darkgrey; min-height: 2rem;">
-                    <FactionComponent Faction="@player.Faction" Diameter="20"/>
+                    @if (player.Faction != Faction.None)
+                    {
+                        <FactionComponent Faction="@player.Faction" Diameter="20"/>    
+                    } 
                     @if (Game.IsBot(player))
                     {
                         <BotIcon Size="18"/>
@@ -78,11 +81,13 @@
                             {
                                 <CommandButton Small MarginClass="m-1" OnClick="@(_ => SetOrUnsetHost(userId))">Make host</CommandButton>
                             }
+
                             if (!isMe)
                             {
                                 <CommandButton Small Class="btn-danger" MarginClass="m-1" OnClick="@(_ => Remove(userId, true))">Kick</CommandButton>
                             }
                         }
+
                         <br>
                     }
                 </div>

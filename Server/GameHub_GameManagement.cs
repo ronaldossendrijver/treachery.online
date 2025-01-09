@@ -495,7 +495,7 @@ public partial class GameHub
         if (from == null || to == null)
             return;
         
-        var subject = $"{info.GameName} ({info.ActualNumberOfPlayers} Players, {info.NumberOfBots} Bots, Turn {info.CurrentTurn} - {info.Ruleset})";
+        var subject = $"{info.Name} ({info.NrOfPlayers} Players, {info.NrOfBots} Bots, Turn {info.Turn} - {info.Ruleset})";
         var saveGameToAttach = new Attachment(GenerateStreamFromString(content), "savegame" + DateTime.Now.ToString("yyyyMMdd.HHmm") + ".json");
         
         MailMessage mailMessage = new()
@@ -504,7 +504,7 @@ public partial class GameHub
             Subject = subject,
             IsBodyHtml = true,
             Body = "Game finished!",
-            Priority = info.NumberOfBots < 0.5f * info.ActualNumberOfPlayers ? MailPriority.Normal : MailPriority.Low
+            Priority = info.NrOfBots < 0.5f * info.NrOfPlayers ? MailPriority.Normal : MailPriority.Low
         };
 
         mailMessage.To.Add(new MailAddress(to));

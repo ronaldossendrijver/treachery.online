@@ -13,7 +13,7 @@
     <Header>Choose your faction. If you don't, it will be assigned at random.</Header>
     <Body>
 
-        <SelectFromImageComponent @bind-Value="faction" Values="FactionSelected.ValidFactions(Game)" Required="true" ImageWidth="40" />
+        <SelectFromImageComponent @bind-Value="_faction" Values="FactionSelected.ValidFactions(Game)" Required="true" ImageWidth="40" />
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Choose Faction" ConfirmError="@Validation" />
 
     </Body>
@@ -22,7 +22,7 @@
 
 @code {
 
-    private Faction faction;
+    private Faction _faction;
 
-    protected override FactionSelected ConfirmedResult => new(Game, Player.Seat) { InitiatorPlayerName = Client.PlayerName, Faction = faction };
+    protected override FactionSelected ConfirmedResult => new(Game) { InitiatorPlayerName = Client.PlayerName, Seat = Player.Seat, Faction = _faction };
 }

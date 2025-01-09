@@ -32,19 +32,19 @@
 
                         <tr class="small table-dark">
                             <td class="w-20" style="@fontColorStyle">
-                                <span style="font: normal normal normal 14px Advokat, Calibri, Tahoma, sans-serif;">@av.GameName</span>
+                                <span style="font: normal normal normal 14px Advokat, Calibri, Tahoma, sans-serif;">@av.Name</span>
                             </td>
                             <td style="@fontColorStyle">
-                                @if (av.CurrentPhase == Phase.AwaitingPlayers)
+                                @if (av.Phase == Phase.AwaitingPlayers)
                                 {
                                     <div>
-                                        @Name(av.Ruleset), @av.ActualNumberOfPlayers of @av.MaximumNumberOfPlayers players, @av.MaximumTurns turns
+                                        @Name(av.Ruleset), @av.NrOfPlayers of @av.MaxPlayers players, @av.MaxTurns turns
                                     </div>
                                 }
                                 else
                                 {
                                     var factions = av.FactionsInPlay ?? [];
-                                    <div>@Name(av.Ruleset), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
+                                    <div>@Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)
                                         <br>
                                         @foreach (var f in factions.Where(f => f != Faction.None))
                                         {
@@ -64,21 +64,15 @@
 
                                     <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, _joinGamePassword[av.GameId]))" MarginClass="m-1">Observe</CommandButton>
 
-                                    @if (av.CurrentPhase == Phase.AwaitingPlayers)
+                                    @if (av.Phase == Phase.AwaitingPlayers)
                                     {
                                         <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, _joinGamePassword[av.GameId], -1))" MarginClass="m-1">Join</CommandButton>
                                     }
-                                    else
+                                    else if (av.Phase != Phase.SelectingFactions)
                                     {
                                         foreach (var availableSeat in av.AvailableSeats)
                                         {
-                                            <CommandButton 
-                                                Small 
-                                                OnClick="@(_ => JoinGameAsPlayer(av.GameId, _joinGamePassword[av.GameId], availableSeat.Seat))" 
-                                                MarginClass="m-1"
-                                                Title="@JoinButtonTitle(availableSeat.Faction)">
-                                                <FactionComponent Faction="@availableSeat.Faction" Diameter="20"/>
-                                            </CommandButton>
+                                            <FactionComponent Faction="@availableSeat.Faction" Diameter="20" OnClick="@(_ => JoinGameAsPlayer(av.GameId, _joinGamePassword[av.GameId], availableSeat.Seat))" Title="@JoinButtonTitle(availableSeat.Faction)"/>
                                         }
                                     }
                                 }
@@ -171,19 +165,19 @@
 
                         <tr class="small table-dark">
                             <td class="w-25" style="@fontColorStyle">
-                                <span style="font: normal normal normal 14px Advokat, Calibri, Tahoma, sans-serif;">@av.GameName</span>
+                                <span style="font: normal normal normal 14px Advokat, Calibri, Tahoma, sans-serif;">@av.Name</span>
                             </td>
                             <td style="@fontColorStyle">
-                                @if (av.CurrentPhase == Phase.AwaitingPlayers)
+                                @if (av.Phase == Phase.AwaitingPlayers)
                                 {
                                     <div>
-                                        @Name(av.Ruleset), @av.ActualNumberOfPlayers of @av.MaximumNumberOfPlayers players, @av.MaximumTurns turns
+                                        @Name(av.Ruleset), @av.NrOfPlayers of @av.MaxPlayers players, @av.MaxTurns turns
                                     </div>
                                 }
                                 else
                                 {
                                     var factions = av.FactionsInPlay ?? [];
-                                    <div>@Name(av.Ruleset), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
+                                    <div>@Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)
                                         <br>
                                         @foreach (var f in factions.Where(f => f != Faction.None))
                                         {
@@ -243,11 +237,11 @@
 
     private static string NumberOfBotsMessage(GameInfo av)
     {
-        return av.NumberOfBots switch
+        return av.NrOfBots switch
         {
-            1 => $" ({av.ActualNumberOfPlayers} players, 1 bot)",
-            > 1 => $" ({av.ActualNumberOfPlayers} players, {av.NumberOfBots} bots)",
-            _ => $" ({av.ActualNumberOfPlayers} players)"
+            1 => $" ({av.NrOfPlayers} players, 1 bot)",
+            > 1 => $" ({av.NrOfPlayers} players, {av.NrOfBots} bots)",
+            _ => $" ({av.NrOfPlayers} players)"
         };
     }
 

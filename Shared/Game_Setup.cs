@@ -35,28 +35,22 @@ public partial class Game
 
     internal void AssignFactionsAndEnterFactionTrade()
     {
-        //Console.WriteLine($"AssignFactionsAndEnterFactionTrade, seed: {Seed}, random count: {Random.GetCount()}");
-        
-        //Console.WriteLine("In play: " + string.Join(", ", FactionsInPlay));
-        
         var inPlay = new Deck<Faction>(FactionsInPlay, Random);
         Stone(Milestone.Shuffled);
         inPlay.Shuffle();
-        
-        //Console.WriteLine("In play after shuffling: " + string.Join(", ", inPlay.Items));
 
         foreach (var p in Players.Where(p => p.Faction == Faction.None))
         {
             p.Faction = inPlay.Draw();
-            //Console.WriteLine($"Player: {p.Seat}:{p.Faction}");
         }
 
-        DeterminePositionsAtTable();            
+        if (Version < 172)
+            DeterminePositionsAtTable();            
 
         Enter(Applicable(Rule.CustomDecks) && Version < 134, Phase.CustomizingDecks, EnterPhaseTradingFactions);
     }
 
-    private void DeterminePositionsAtTable()
+    internal void DeterminePositionsAtTable()
     {
         var seats = new Deck<int>(Random);
         for (var i = 0; i < Settings.NumberOfPlayers; i++)

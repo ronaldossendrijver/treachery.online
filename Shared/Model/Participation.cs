@@ -6,11 +6,6 @@ public class Participation
     /// For each User (player or observer) in the game, hold the player name
     /// </summary>
     public Dictionary<int, string> PlayerNames { get; init; } = [];
-
-    /// <summary>
-    /// All Users (UserIds) that wish to participate while awaiting players (before the game has actually started)
-    /// </summary>
-    //public List<int> StandingPlayers { get; init;  } = [];
     
     /// <summary>
     /// For all Users (UserIds) that are players, hold their Seat. Seat is -1 when player is not yet seated.

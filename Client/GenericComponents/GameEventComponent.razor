@@ -24,7 +24,7 @@
 
     protected virtual string Background { get; set; } = "";
 
-    protected async Task Confirm()
+    protected virtual async Task Confirm()
     {
         await Request(ConfirmedResult);
         StateHasChanged();
