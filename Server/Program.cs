@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Treachery.Client;
-using Treachery.Shared;
 
 namespace Treachery.Server;
 

@@ -129,7 +129,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             }
         }
         
-        _ = Heartbeat();
+        _ = Task.Delay(HeartbeatDelay).ContinueWith(_ => Heartbeat());
     }
     
     private void RegisterHandlers()
@@ -370,7 +370,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         {
             StoredPassword = hashedPassword;
             LoginInfo = result.Contents;
-            Refresh(nameof(RequestLogin));
+            await SendHeartbeatAndGetServerStatus();
             return result;
         }
 
@@ -622,21 +622,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         {
             if (IsConnected && LoggedIn)
             {
-                var status = await Invoke<ServerStatus>(nameof(IGameHub.RequestHeartbeat), UserToken, FetchActiveGamesOnly);
-                if (status.Success)
-                {
-                    RunningGames = status.Contents.RunningGames;
-                    RunningGamesWithOpenSeats = RunningGames.Where(g => g.CanBeJoined).ToArray();
-                    RunningGamesWithoutOpenSeats = RunningGames.Where(g => !g.CanBeJoined).ToArray();
-                    ScheduledGames = status.Contents.ScheduledGames;
-                    RecentlySeenUsers = status.Contents.LoggedInUsers.ToDictionary(x => x.Id, x => x);
-                }
-                else
-                {
-                    Support.Log("Server error: " + status.Error);                        
-                }
-                
-                Refresh(nameof(Heartbeat));
+                await SendHeartbeatAndGetServerStatus();
             }
         }
         catch (Exception e)
@@ -645,6 +631,20 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
 
         _ = Task.Delay(HeartbeatDelay).ContinueWith(_ => Heartbeat());
+    }
+
+    private async Task SendHeartbeatAndGetServerStatus()
+    {
+        var status = await Invoke<ServerStatus>(nameof(IGameHub.RequestHeartbeat), UserToken, FetchActiveGamesOnly);
+        if (status.Success)
+        {
+            RunningGames = status.Contents.RunningGames;
+            RunningGamesWithOpenSeats = RunningGames.Where(g => g.CanBeJoined).ToArray();
+            RunningGamesWithoutOpenSeats = RunningGames.Where(g => !g.CanBeJoined).ToArray();
+            ScheduledGames = status.Contents.ScheduledGames;
+            RecentlySeenUsers = status.Contents.LoggedInUsers.ToDictionary(x => x.Id, x => x);
+            Refresh(nameof(Heartbeat));
+        }
     }
 
     private async Task<Message> LoadGame(GameInitInfo initInfo)

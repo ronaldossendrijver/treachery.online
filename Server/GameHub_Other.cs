@@ -27,13 +27,20 @@ public partial class GameHub
         await CleanupUserTokens();
     }
 
+    private static void Log(string message)
+    {
+        Console.WriteLine($"{DateTime.Now:hh:mm:ss} - {message} - ");
+    }
+
     private async Task CleanupUserTokens()
     {
         var now = DateTimeOffset.Now;
         if (LastCleanedUp.AddMilliseconds(CleanupFrequency) > now)
             return;
-
+        
         LastCleanedUp = now;
+        
+        Log($"{nameof(CleanupUserTokensIfNeeded)} {UsersByUserToken.Count} {ConnectionInfoByUserId.Count}");
         
         foreach (var tokenAndInfo in UsersByUserToken.ToArray())
         {
@@ -56,6 +63,8 @@ public partial class GameHub
 
     public static void RunAndRescheduleCleanupScheduledGames()
     {
+        Log($"{nameof(RunAndRescheduleCleanupScheduledGames)} {ScheduledGamesByGameId.Count}");
+        
         var thresholdDateTime = DateTimeOffset.Now.AddHours(-4);
         foreach (var gameIdAndGame in ScheduledGamesByGameId.Where(g => g.Value.DateTime < thresholdDateTime).ToArray())
         {
@@ -157,6 +166,8 @@ public partial class GameHub
             }
         }
         
+        Log($"{nameof(PersistGames)} {amountOfGames} {amountOfScheduledGames}");
+        
         return (amountOfGames, amountOfScheduledGames);
     }
 
@@ -229,6 +240,8 @@ public partial class GameHub
                 amountScheduled++;
             }
         }
+        
+        Log($"{nameof(PersistGames)} {amountRunning} {amountScheduled}");
 
         return (amountRunning, amountScheduled);
     }

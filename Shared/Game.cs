@@ -27,7 +27,6 @@ public partial class Game
     internal LoggedRandom Random { get; set; }
     public int MaximumTurns => Settings.MaximumTurns;
     public int MaximumPlayers => Settings.NumberOfPlayers;
-    //public string Name { get; internal set; }
     public List<Milestone> RecentMilestones { get; } = [];
     public int Version { get; }
     public Map Map { get; } = new();
