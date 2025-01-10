@@ -9,9 +9,12 @@ using Microsoft.Extensions.Configuration;
 
 namespace Treachery.Server;
 
-public partial class GameHub: Hub<IGameClient>, IGameHub
+public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfiguration configuration)
+    : Hub<IGameClient>, IGameHub
 {
-    private const int CleanupTimeout = 3600000;
+    private const int CleanupFrequency = 3600000; // Each hour
+    private const int ServerStatusFrequency = 6000; // Each 6 seconds
+    private const int PersistFrequency = 600000; // Each 10 minutes
     
     //Users
     private static ConcurrentDictionary<string,LoggedInUser> UsersByUserToken { get; } = [];
@@ -22,22 +25,18 @@ public partial class GameHub: Hub<IGameClient>, IGameHub
     
     //Scheduled games
     private static ConcurrentDictionary<string,ScheduledGame> ScheduledGamesByGameId{ get; } = [];
+
+    private static ServerStatus ServerStatus { get; set; } = new();
     
     //Other
+    private static DateTimeOffset LastStarted { get; set; }
     private static DateTimeOffset MaintenanceDate { get; set; }
-    private static DateTimeOffset LastCleanup { get; set; }
+    private static DateTimeOffset LastCleanedUp { get; set; }
+    private static DateTimeOffset LastPersisted { get; set; }
+    
+    private IConfiguration Configuration { get; } = configuration;
 
-    private IConfiguration Configuration { get; set; }
-
-    private DbContextOptions<TreacheryContext> DbContextOptions { get; set; }
-
-    public GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfiguration configuration)
-    {
-        DbContextOptions = dbContextOptions;
-        Configuration = configuration;
-
-        _ = Task.Delay(CleanupTimeout).ContinueWith(_ => Cleanup());
-    }
+    private DbContextOptions<TreacheryContext> DbContextOptions { get; set; } = dbContextOptions;
 
     private TreacheryContext GetDbContext() => new(DbContextOptions, Configuration);
 
@@ -106,17 +105,6 @@ public partial class GameHub: Hub<IGameClient>, IGameHub
     
     private async Task SendMail(MailMessage mail)
     {
-        /*
-        Console.WriteLine($"""
-                           Sending mail
-                           ============
-                           Time    : {DateTimeOffset.Now}
-                           From    : {mail.From}
-                           To      : {mail.To}
-                           Subject : {mail.Subject}
-                           Body    : {mail.Body}
-                           """);
-        */
         try
         {
             var username = Configuration["GameEndEmailUsername"];

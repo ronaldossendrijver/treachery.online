@@ -21,10 +21,10 @@ public interface IGameService
     //Server info
     public ServerInfo ServerInfo { get; }
     public AdminInfo AdminInfo { get; }
-    public List<GameInfo> RunningGames { get; }
-    public List<GameInfo> RunningGamesWithOpenSeats { get; }
-    public List<GameInfo> RunningGamesWithoutOpenSeats { get; }
-    public List<ScheduledGame> ScheduledGames { get; }
+    public GameInfo[] RunningGames { get; }
+    public GameInfo[] RunningGamesWithOpenSeats { get; }
+    public GameInfo[] RunningGamesWithoutOpenSeats { get; }
+    public ScheduledGame[] ScheduledGames { get; }
     public Dictionary<int,LoggedInUserInfo> RecentlySeenUsers { get; }
     public LoggedInUserInfo GetUserInfo(int userId);
     public UserStatus GetUserStatus(int userId);

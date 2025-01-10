@@ -18,22 +18,22 @@ public partial class GameHub
 
         return Success(result);
     }
-    
-    private async Task Cleanup()
+
+    private async Task CleanupUserTokensIfNeeded()
     {
+        if (LastCleanedUp.AddMilliseconds(CleanupFrequency) > DateTimeOffset.Now)
+            return;
+
         await CleanupUserTokens();
-        CleanupScheduledGames();
-        
-        _ = Task.Delay(CleanupTimeout).ContinueWith(_ => Cleanup());
     }
-    
+
     private async Task CleanupUserTokens()
     {
         var now = DateTimeOffset.Now;
-        if (!(now.Subtract(LastCleanup).TotalMinutes >= 15)) 
+        if (LastCleanedUp.AddMilliseconds(CleanupFrequency) > now)
             return;
 
-        LastCleanup = now;
+        LastCleanedUp = now;
         
         foreach (var tokenAndInfo in UsersByUserToken.ToArray())
         {
@@ -54,13 +54,15 @@ public partial class GameHub
         }
     }
 
-    private void CleanupScheduledGames()
+    public static void RunAndRescheduleCleanupScheduledGames()
     {
         var thresholdDateTime = DateTimeOffset.Now.AddHours(-4);
         foreach (var gameIdAndGame in ScheduledGamesByGameId.Where(g => g.Value.DateTime < thresholdDateTime).ToArray())
         {
             ScheduledGamesByGameId.Remove(gameIdAndGame.Key, out _);
         }
+        
+        _ = Task.Delay(CleanupFrequency).ContinueWith(_ => RunAndRescheduleCleanupScheduledGames());
     }
 
     public async Task<Result<string>> AdminUpdateMaintenance(string userToken, DateTimeOffset maintenanceDate)
@@ -77,21 +79,46 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
         
+        var (amountRunning, amountScheduled)  = await PersistGames();
+            
+        return Success($"Persisted: {amountRunning} running games, {amountScheduled} scheduled games");
+    }
+
+    private async Task RestoreGamesIfNeeded()
+    {
+        if (LastStarted == default)
+        {
+            LastStarted = DateTimeOffset.Now;
+            await RestoreGames();
+        }
+    } 
+    
+    private async Task PersistGamesIfNeeded()
+    {
+        if (LastPersisted.AddMilliseconds(PersistFrequency) > DateTimeOffset.Now)
+            return;
+
+        await PersistGames();
+    } 
+    
+    private async Task<(int amountRunning, int amountScheduled)> PersistGames()
+    {
+        LastPersisted = DateTimeOffset.Now;
+        
         var amountOfGames = 0;
         var amountOfScheduledGames = 0;
+        
         await using (var context = GetDbContext())
         {
             await context.PersistedGames.ExecuteDeleteAsync();
             
-            foreach (var gameIdAndManagedGame in RunningGamesByGameId)
+            foreach (var (key, game) in RunningGamesByGameId)
             {
-                var game = gameIdAndManagedGame.Value;
-
                 var persisted = new PersistedGame
                 {
                     CreationDate = game.CreationDate,
                     CreatorUserId = game.CreatorUserId,
-                    GameId = gameIdAndManagedGame.Key,
+                    GameId = key,
                     GameState = GameState.GetStateAsString(game.Game),
                     GameName = game.Name,
                     GameParticipation = JsonSerializer.Serialize(game.Game.Participation),
@@ -108,16 +135,14 @@ public partial class GameHub
             
             await context.ScheduledGames.ExecuteDeleteAsync();
             
-            foreach (var gameIdAndManagedGame in ScheduledGamesByGameId)
+            foreach (var (key, game) in ScheduledGamesByGameId)
             {
-                var game = gameIdAndManagedGame.Value;
-
                 var persisted = new PersistedScheduledGame
                 {
                     DateTime = game.DateTime,
                     CreatorUserId = game.CreatorUserId,
                     CreatorPlayerName = game.CreatorPlayerName,
-                    GameId = gameIdAndManagedGame.Key,
+                    GameId = key,
                     Ruleset = game.Ruleset,
                     MaximumTurns = game.MaximumTurns,
                     NumberOfPlayers = game.NumberOfPlayers,
@@ -131,8 +156,8 @@ public partial class GameHub
                 amountOfScheduledGames++;
             }
         }
-            
-        return Success($"Persisted: {amountOfGames} running games, {amountOfScheduledGames} scheduled games");
+        
+        return (amountOfGames, amountOfScheduledGames);
     }
 
     public async Task<Result<string>> AdminRestoreState(string userToken)
@@ -140,6 +165,13 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
         
+        var (amountRunning, amountScheduled) = await RestoreGames();
+
+        return Success($"Restored: {amountRunning} running games, {amountScheduled} scheduled games");
+    }
+
+    private async Task<(int amountRunning, int amountScheduled)> RestoreGames()
+    {
         var amountRunning = 0;
         var amountScheduled = 0;
         await using (var context = GetDbContext())
@@ -197,8 +229,8 @@ public partial class GameHub
                 amountScheduled++;
             }
         }
-            
-        return Success($"Restored: {amountRunning} running games, {amountScheduled} scheduled games");
+
+        return (amountRunning, amountScheduled);
     }
 
     public async Task<Result<string>> AdminCloseGame(string userToken, string gameId)

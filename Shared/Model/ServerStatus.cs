@@ -13,9 +13,9 @@ namespace Treachery.Shared;
 
 public class ServerStatus
 {
-    public List<GameInfo> RunningGames { get; set; } = [];
+    public GameInfo[] RunningGames { get; init; } = [];
     
-    public List<ScheduledGame> ScheduledGames { get; set; } = [];
+    public ScheduledGame[] ScheduledGames { get; init; } = [];
     
-    public List<LoggedInUserInfo> LoggedInUsers { get; set; } = [];
+    public LoggedInUserInfo[] LoggedInUsers { get; init; } = [];
 }

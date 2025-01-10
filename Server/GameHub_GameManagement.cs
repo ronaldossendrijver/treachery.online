@@ -4,6 +4,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Treachery.Client;
 
 namespace Treachery.Server;
 
@@ -467,52 +468,93 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var loggedInUser))
             return Error<ServerStatus>(ErrorType.UserNotFound);
 
+        await RestoreGamesIfNeeded();
+        await PersistGamesIfNeeded();
+        await CleanupUserTokensIfNeeded();
+
         loggedInUser.LastSeenDateTime = DateTime.Now;
 
-        var lastSeenUserThreshold = DateTimeOffset.Now.AddSeconds(-30);
-        var lastActiveGameThreshold = activeGamesOnly ? DateTimeOffset.Now.AddMinutes(-20) : DateTimeOffset.MinValue;
-        
-        var result = new ServerStatus
+        if (activeGamesOnly)
         {
-            RunningGames = RunningGamesByGameId.Values
-                .Where(mg => mg.CreatorUserId == loggedInUser.Id || Utilities.DetermineLastAction(mg) > lastActiveGameThreshold)
-                .Select(g => Utilities.ExtractGameInfo(g, loggedInUser.Id)).ToList(),
+            var lastActiveGameThreshold = DateTimeOffset.Now.AddMinutes(-20);
+            var filteredServerStatus = new ServerStatus
+            {
+                RunningGames = ServerStatus.RunningGames.Where(mg => mg.CreatorId == loggedInUser.Id || mg.LastAction >= lastActiveGameThreshold).ToArray(),
+                ScheduledGames = ServerStatus.ScheduledGames,
+                LoggedInUsers = ServerStatus.LoggedInUsers,
+            };
             
-            ScheduledGames = ScheduledGamesByGameId.Values.ToList(),
+            return await Task.FromResult(Success(filteredServerStatus));
+        }
+        else
+        {
+            return await Task.FromResult(Success(ServerStatus));
+        }
+    }
+
+    public static void RunAndRescheduleUpdateServerStatus()
+    {
+        ServerStatus = new ServerStatus
+        {
+            RunningGames = RunningGamesByGameId.Values.Select(Utilities.ExtractGameInfo).ToArray(),
+            
+            ScheduledGames = ScheduledGamesByGameId.Values.ToArray(),
             
             LoggedInUsers = UsersByUserToken
-                .Where(u => u.Value.LastSeenDateTime > lastSeenUserThreshold)
                 .Select(u => new LoggedInUserInfo
-                    {
-                        Id = u.Value.Id, 
-                        Status = u.Value.Status,
-                        PlayerName = u.Value.User.PlayerName, 
-                        LastSeen = u.Value.LastSeenDateTime,
-                    })
-                .ToList()
+                {
+                    Id = u.Value.Id, 
+                    Status = u.Value.Status,
+                    PlayerName = u.Value.User.PlayerName, 
+                    LastSeen = u.Value.LastSeenDateTime,
+                })
+                .ToArray()
         };
-
-        await Task.CompletedTask;
         
-        return Success(result);
+        _ = Task.Delay(ServerStatusFrequency).ContinueWith(_ => RunAndRescheduleUpdateServerStatus());
     }
-    
-    private async Task SendEndOfGameMail(string content, GameInfo info)
+
+    private async Task SendEndOfGameMail(ManagedGame game)
     {
+        var info = Utilities.ExtractGameInfo(game);
+        var state = GameState.GetStateAsString(game.Game);
+        
         var from = Configuration["GameEndEmailFrom"];
         var to = Configuration["GameEndEmailTo"];
         if (from == null || to == null)
             return;
         
         var subject = $"{info.Name} ({info.NrOfPlayers} Players, {info.NrOfBots} Bots, Turn {info.Turn} - {info.Ruleset})";
-        var saveGameToAttach = new Attachment(GenerateStreamFromString(content), "savegame" + DateTime.Now.ToString("yyyyMMdd.HHmm") + ".json");
+        var saveGameToAttach = new Attachment(GenerateStreamFromString(state), "savegame" + DateTime.Now.ToString("yyyyMMdd.HHmm") + ".json");
+
+        var sb = new StringBuilder();
+        sb.AppendLine("<h1>Player table in HTML format</h1>");
+        sb.AppendLine("<table>");
+        sb.AppendLine("<thead>");
+        sb.AppendLine("<tr><th>Faction</th><th>Seat</th><th>UserId</th>");
+        sb.AppendLine("</thead>");
+        sb.AppendLine("<tbody>");
+        foreach (var player in game.Game.Players)
+        {
+            sb.AppendLine($"<tr><td>{DefaultSkin.Default.Describe(player.Faction)}</td><td>{player.Seat}</td><td>{game.Game.UserIdInSeat(player.Seat)}</td></tr>");
+        }
+        sb.AppendLine("</tbody>");
+        sb.AppendLine("</table>");
+        sb.AppendLine("<h1>Player table in CSV format</h1>");
+        sb.AppendLine("<p>");
+        sb.AppendLine("Faction;Seat;UserId");
+        foreach (var player in game.Game.Players)
+        {
+            sb.AppendLine($"{DefaultSkin.Default.Describe(player.Faction)};{player.Seat};{game.Game.UserIdInSeat(player.Seat)}");
+        }
+        sb.AppendLine("</p>");
         
         MailMessage mailMessage = new()
         {
             From = new MailAddress(from),
             Subject = subject,
             IsBodyHtml = true,
-            Body = "Game finished!",
+            Body = sb.ToString(),
             Priority = info.NrOfBots < 0.5f * info.NrOfPlayers ? MailPriority.Normal : MailPriority.Low
         };
 

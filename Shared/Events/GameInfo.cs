@@ -30,12 +30,15 @@ public class GameInfo
     public Faction[] FactionsInPlay { get; init; }
     public Ruleset Ruleset { get; init; }
     public DateTimeOffset? LastAction { get; init; }
-    public int YourCurrentSeat { get; init; }
-    public bool YouAreIn { get; init; }
+    public Dictionary<int, int> SeatedPlayers { get; set; }
     public AvailableSeatInfo[] AvailableSeats { get; init; } = [];
     
     [JsonIgnore] 
     public bool CanBeJoined => Phase is Phase.AwaitingPlayers || AvailableSeats.Length > 0;
+
+    public int YourCurrentSeat(int userId) => SeatedPlayers.GetValueOrDefault(userId, -1);
+
+    public bool YouAreIn(int userId) => SeatedPlayers.ContainsKey(userId);
 
     public override bool Equals(object obj) => obj is GameInfo info && info.GameId == GameId;
 

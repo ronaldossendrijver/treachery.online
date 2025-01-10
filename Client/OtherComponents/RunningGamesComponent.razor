@@ -101,7 +101,7 @@
                                 }
                             </td>
                             <td class="w-30">
-                                @if (!av.YouAreIn)
+                                @if (!av.YouAreIn(Client.UserId))
                                 {
                                     if (av.HasPassword)
                                     {
@@ -128,7 +128,7 @@
                                 }
                                 else
                                 {
-                                    <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat))" MarginClass="m-1">Resume</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" MarginClass="m-1">Resume</CommandButton>
                                 }
                                 <div class="text-danger">@JoinErrors[av.GameId]</div>
                             </td>
@@ -257,7 +257,7 @@
                                 }
                             </td>
                             <td class="w-25">
-                                @if (!av.YouAreIn)
+                                @if (!av.YouAreIn(Client.UserId))
                                 {
                                     if (av.HasPassword)
                                     {
@@ -267,7 +267,7 @@
                                 }
                                 else
                                 {
-                                    <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat))" MarginClass="m-1">Resume</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" MarginClass="m-1">Resume</CommandButton>
                                 }
                                 <div class="text-danger">@JoinErrors[av.GameId]</div>
                             </td>

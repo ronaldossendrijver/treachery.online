@@ -18,7 +18,7 @@ namespace Treachery.Client;
 
 public class Client : IGameService, IGameClient, IAsyncDisposable
 {
-    private const int HeartbeatDelay = 3200;
+    private const int HeartbeatDelay = 6000;
 
     //General info
     public ServerInfo ServerInfo { get; private set; }
@@ -30,10 +30,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     //Server info
     public bool FetchActiveGamesOnly { get; set; } = true;
-    public List<GameInfo> RunningGames { get; private set; } = [];
-    public List<GameInfo> RunningGamesWithOpenSeats { get; private set; } = [];
-    public List<GameInfo> RunningGamesWithoutOpenSeats { get; private set; } = [];
-    public List<ScheduledGame> ScheduledGames { get; private set; } = [];
+    public GameInfo[] RunningGames { get; private set; } = [];
+    public GameInfo[] RunningGamesWithOpenSeats { get; private set; } = [];
+    public GameInfo[] RunningGamesWithoutOpenSeats { get; private set; } = [];
+    public ScheduledGame[] ScheduledGames { get; private set; } = [];
     public Dictionary<int,LoggedInUserInfo> RecentlySeenUsers { get; private set; } = [];
     
     //Logged in player
@@ -626,8 +626,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
                 if (status.Success)
                 {
                     RunningGames = status.Contents.RunningGames;
-                    RunningGamesWithOpenSeats = RunningGames.Where(g => g.CanBeJoined).ToList();
-                    RunningGamesWithoutOpenSeats = RunningGames.Where(g => !g.CanBeJoined).ToList();
+                    RunningGamesWithOpenSeats = RunningGames.Where(g => g.CanBeJoined).ToArray();
+                    RunningGamesWithoutOpenSeats = RunningGames.Where(g => !g.CanBeJoined).ToArray();
                     ScheduledGames = status.Contents.ScheduledGames;
                     RecentlySeenUsers = status.Contents.LoggedInUsers.ToDictionary(x => x.Id, x => x);
                 }

@@ -2,12 +2,10 @@
 
 public static class Utilities
 {
-    public static GameInfo ExtractGameInfo(ManagedGame managedGame, int userId) => new()
+    public static GameInfo ExtractGameInfo(ManagedGame managedGame) => new()
     {
         GameId = managedGame.GameId,
         CreatorId = managedGame.CreatorUserId,
-        YourCurrentSeat = managedGame.Game.Participation.SeatedPlayers.GetValueOrDefault(userId, -1),
-        YouAreIn = managedGame.Game.Participation.SeatedPlayers.ContainsKey(userId),
         FactionsInPlay = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? 
             managedGame.Game.Settings.AllowedFactionsInPlay.ToArray() : 
             managedGame.Game.Players.Where(p => p.Faction != Faction.None).Select(p => p.Faction).ToArray(),
@@ -24,6 +22,7 @@ public static class Utilities
         MaxPlayers = managedGame.Game.Settings.NumberOfPlayers,
         MaxTurns = managedGame.Game.Settings.MaximumTurns,
         NrOfPlayers = managedGame.Game.Participation.SeatedPlayers.Count,
+        SeatedPlayers = managedGame.Game.Participation.SeatedPlayers,
         AvailableSeats = managedGame.Game.Players
             .Where(p => managedGame.Game.SeatIsAvailable(p.Seat))
             .Select(p => new AvailableSeatInfo
