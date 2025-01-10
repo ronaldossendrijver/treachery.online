@@ -14,6 +14,8 @@
     [Parameter] public string Fill { get; set; } = "white";
     
     [Parameter] public int Size { get; set; } = 20;
+    
+    [Parameter] public string MarginClass { get; set; } = "m-1";
 
     protected string DetermineStyle => Click.HasDelegate ? "cursor: pointer;" : "";
 }

@@ -66,16 +66,16 @@
                                 @if (av.Phase == Phase.AwaitingPlayers)
                                 {
                                     <div>
-                                        <UserIcon Size="20" Title="Players"/><span class="me-1">@av.NrOfPlayers</span> (of @av.MaxPlayers)
+                                        <UserIcon Size="20" Title="Players" MarginClass=""/><span class="me-1">@av.NrOfPlayers</span> (of @av.MaxPlayers)
                                     </div>
                                 }
                                 else
                                 {
                                     <div>
-                                        <UserIcon Size="20" Title="Players"/><span class="me-1">@av.NrOfPlayers</span>
+                                        <UserIcon Size="20" Title="Players" MarginClass=""/><span class="me-1">@av.NrOfPlayers</span>
                                         @if (av.NrOfBots > 0)
                                         {
-                                            <BotIcon Size="16" Title="Bots"/><span>@av.NrOfBots</span>
+                                            <BotIcon Size="16" Title="Bots" MarginClass=""/><span>@av.NrOfBots</span>
                                         }
                                     </div>
                                 }
@@ -84,12 +84,15 @@
                                 @if (av.Phase == Phase.AwaitingPlayers)
                                 {
                                     <div>
-                                        @Name(av.Ruleset), @av.MaxTurns turns
+                                        @Name(av.Ruleset), @av.MaxTurns turns 
                                     </div>
                                 }
                                 else
                                 {
-                                    <div>@Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)
+                                    <div>
+                                        @Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)
+                                    </div>
+                                    <div>
                                         @foreach (var f in av.FactionsInPlay)
                                         {
                                             <Image Shown="f" Width="20" Shadow=""/>
@@ -158,19 +161,22 @@
                                     @game.DateTime.ToLocalTime().ToString("dd-MM HH:mm")
                                 </td>
                                 <td class="w-30">
-                                    <div>@Name(game.Ruleset), @game.NumberOfPlayers players, @game.MaximumTurns turns
-                                        @if (game.AllowedFactionsInPlay.Count == 12)
-                                        {
-                                            <span>(all factions)</span>
-                                        }
-                                        else
-                                        {
+                                    <div>
+                                        @Name(game.Ruleset), @game.NumberOfPlayers players, @game.MaximumTurns turns
+                                    </div>
+                                    @if (game.AllowedFactionsInPlay.Count == 12)
+                                    {
+                                        <span> (all factions)</span>
+                                    }
+                                    else
+                                    {
+                                        <div>
                                             @foreach (var f in game.AllowedFactionsInPlay)
                                             {
                                                 <Image Shown="f" Width="20" Shadow=""/>
                                             }
-                                        }
-                                    </div>
+                                        </div>
+                                    }
                                 </td>
                                 <td class="w-25">
                                     @foreach (var p in game.SubscribedUsers.Where(u => u.Value != SubscriptionType.DontParticipate))
@@ -218,16 +224,16 @@
                                 @if (av.Phase == Phase.AwaitingPlayers)
                                 {
                                     <div>
-                                        <UserIcon Size="20" Title="Players"/><span class="me-1">@av.NrOfPlayers</span> (of @av.MaxPlayers)
+                                        <UserIcon Size="20" Title="Players" MarginClass=""/><span class="me-1">@av.NrOfPlayers</span> (of @av.MaxPlayers)
                                     </div>
                                 }
                                 else
                                 {
                                     <div>
-                                        <UserIcon Size="20" Title="Players"/><span class="me-1">@av.NrOfPlayers</span>
+                                        <UserIcon Size="20" Title="Players" MarginClass=""/><span class="me-1">@av.NrOfPlayers</span>
                                         @if (av.NrOfBots > 0)
                                         {
-                                            <BotIcon Size="16" Title="Bots"/><span>@av.NrOfBots</span>
+                                            <BotIcon Size="16" Title="Bots" MarginClass=""/><span>@av.NrOfBots</span>
                                         }
                                     </div>
                                 }
