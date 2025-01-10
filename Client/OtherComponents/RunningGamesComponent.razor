@@ -208,7 +208,6 @@
                 <div class="text-info">Games without open seats</div>
                 <table class="table table-sm">
                     <tbody>
-
                     @foreach (var av in Client.RunningGamesWithoutOpenSeats)
                     {
                         _joinGamePassword.TryAdd(av.GameId, "");
@@ -217,7 +216,7 @@
                         var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
 
                         <tr class="small table-dark">
-                            <td class="w-25" style="@fontColorStyle">
+                            <td class="w-20" style="@fontColorStyle">
                                 <span style="font: normal normal normal 15px Advokat, Calibri, Tahoma, sans-serif;">@av.Name</span>
                             </td>
                             <td style="@fontColorStyle">
@@ -256,7 +255,7 @@
                                     </div>
                                 }
                             </td>
-                            <td class="w-25">
+                            <td class="w-30">
                                 @if (!av.YouAreIn(Client.UserId))
                                 {
                                     if (av.HasPassword)

@@ -129,7 +129,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             }
         }
         
-        _ = Task.Delay(HeartbeatDelay).ContinueWith(_ => Heartbeat());
+        _ = Heartbeat();
     }
     
     private void RegisterHandlers()
