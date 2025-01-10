@@ -192,7 +192,8 @@
             <div class="row">
                 <label for="playerName" class="col-4 col-form-label">Player name</label>
                 <div class="col-8">
-                    <input type="text" readonly class="form-control-plaintext" id="playerName" @bind="@PlayerName">
+                    <input type="text" readonly class="form-control-plaintext" id="playerName" @bind="@PlayerName"
+                           style="font: normal normal normal 15px Advokat, Calibri, Tahoma, sans-serif;">
                 </div>
             </div>
             <div class="row">
@@ -206,9 +207,10 @@
         else
         {
             <div class="row">
-                <label for="playerName" class="col-4 col-form-label">Player name (in game)</label>
+                <label for="playerName" class="col-4 col-form-label">Player name</label>
                 <div class="col-8">
-                    <input type="text" class="form-control" id="playerName" @bind="@PlayerName">
+                    <input type="text" class="form-control" id="playerName" @bind="@PlayerName"
+                           style="font: normal normal normal 15px Advokat, Calibri, Tahoma, sans-serif;">
                 </div>
             </div>
             <div class="row">
