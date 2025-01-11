@@ -14,7 +14,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
 {
     private const int CleanupFrequency = 3600000; // Each hour
     private const int ServerStatusFrequency = 6000; // Each 6 seconds
-    private const int PersistFrequency = 600000; // Each 10 minutes
+    private const int PersistFrequency = 300000; // Each 5 minutes
     
     //Users
     private static ConcurrentDictionary<string,LoggedInUser> UsersByUserToken { get; } = [];
@@ -30,9 +30,11 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     
     //Other
     private static DateTimeOffset LastRestored { get; set; }
+    private static bool Restoring { get; set; }
+    private static DateTimeOffset LastPersisted { get; set; }
+    private static bool Persisting { get; set; }
     private static DateTimeOffset MaintenanceDate { get; set; }
     private static DateTimeOffset LastCleanedUp { get; set; }
-    private static DateTimeOffset LastPersisted { get; set; }
     
     private IConfiguration Configuration { get; } = configuration;
 

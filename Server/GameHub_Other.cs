@@ -103,7 +103,7 @@ public partial class GameHub
     
     private async Task PersistGamesIfNeeded()
     {
-        if (LastRestored == default || LastPersisted.AddMilliseconds(PersistFrequency) > DateTimeOffset.Now)
+        if (LastPersisted.AddMilliseconds(PersistFrequency) > DateTimeOffset.Now)
             return;
 
         await PersistGames();
@@ -111,8 +111,11 @@ public partial class GameHub
     
     private async Task<(int amountRunning, int amountScheduled)> PersistGames()
     {
-        LastPersisted = DateTimeOffset.Now;
-        
+        if (LastRestored == default || Restoring || Persisting)
+            return (0, 0);
+
+        Persisting = true;
+
         var amountOfGames = 0;
         var amountOfScheduledGames = 0;
         
@@ -167,6 +170,9 @@ public partial class GameHub
         
         Log($"{nameof(PersistGames)} {amountOfGames} {amountOfScheduledGames}");
         
+        LastPersisted = DateTimeOffset.Now;
+        Persisting = false;
+        
         return (amountOfGames, amountOfScheduledGames);
     }
 
@@ -182,6 +188,11 @@ public partial class GameHub
 
     private async Task<(int amountRunning, int amountScheduled)> RestoreGames()
     {
+        if (Restoring || Persisting)
+            return (0,0);
+        
+        Restoring = true;
+         
         var amountRunning = 0;
         var amountScheduled = 0;
         
@@ -244,7 +255,7 @@ public partial class GameHub
         Log($"{nameof(RestoreGames)} {amountRunning} {amountScheduled}");
         
         LastRestored = DateTimeOffset.Now;
-        LastPersisted = LastRestored;
+        Restoring = false;
 
         return (amountRunning, amountScheduled);
     }
