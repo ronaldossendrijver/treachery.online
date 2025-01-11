@@ -98,6 +98,7 @@ public partial class GameHub
         if (LastStarted == default)
         {
             LastStarted = DateTimeOffset.Now;
+            LastPersisted = LastStarted;
             await RestoreGames();
         }
     } 
@@ -241,7 +242,7 @@ public partial class GameHub
             }
         }
         
-        Log($"{nameof(PersistGames)} {amountRunning} {amountScheduled}");
+        Log($"{nameof(RestoreGames)} {amountRunning} {amountScheduled}");
 
         return (amountRunning, amountScheduled);
     }
