@@ -20,7 +20,6 @@ public static class Program
     {
         GameHub.RunAndRescheduleCleanupScheduledGames();
         GameHub.RunAndRescheduleUpdateServerStatus();
-        
         Message.DefaultDescriber = DefaultSkin.Default;
         CreateHostBuilder(args).Build().Run();
     }

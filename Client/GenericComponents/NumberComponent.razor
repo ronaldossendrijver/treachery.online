@@ -7,7 +7,7 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-<div style="display: inline-block; position: relative; height: @SymbolSize; width: @SymbolSize;" title="@Title">
+<div style="display: inline-block; position: relative; height: @SymbolSize; width: @SymbolSize; @Pointer;" title="@Title" @onclick="@OnClick">
 
     @if (DrawSymbolBackground)
     {
@@ -73,6 +73,9 @@
 
     [Parameter]
     public string Title { get; set; } = "";
+    
+    [Parameter]
+    public EventCallback OnClick { get; set; }
 
     private string SymbolSize => "" + Size + "px";
 
@@ -211,4 +214,6 @@
     }
 
     private string NumberBorder => NumberBorderWidth > 0 ? Support.TextBorder(NumberBorderWidth, NumberBorderColor) : "";
+    
+    private string Pointer => OnClick.HasDelegate ? "cursor: pointer;" : string.Empty;
 }

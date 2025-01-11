@@ -54,7 +54,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public List<Type> Actions { get; private set; } = []; 
     
     public bool InGame => Game != null;
-    public bool PlayerNeedsSeating => InGame && Game.Participation.SeatedPlayers.ContainsValue(-1);
+    public bool PlayersNeedSeating => InGame && Game.CurrentPhase >= Phase.TradingFactions && Game.Participation.SeatedPlayers.ContainsValue(-1);
     public Player Player => Game.GetPlayerByUserId(UserId) ?? new Player(Game, Faction.None);
     public string PlayerName => LoginInfo.PlayerName;
     public UserStatus UserStatus => LoginInfo != null ? GetUserStatus(LoginInfo.UserId) : UserStatus.None;

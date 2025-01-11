@@ -29,7 +29,7 @@ public partial class GameHub
 
     private static void Log(string message)
     {
-        Console.WriteLine($"{DateTime.Now:hh:mm:ss} - {message} - ");
+        Console.WriteLine(message);
     }
 
     private async Task CleanupUserTokens()
@@ -95,17 +95,15 @@ public partial class GameHub
 
     private async Task RestoreGamesIfNeeded()
     {
-        if (LastStarted == default)
+        if (LastRestored == default)
         {
-            LastStarted = DateTimeOffset.Now;
-            LastPersisted = LastStarted;
             await RestoreGames();
         }
     } 
     
     private async Task PersistGamesIfNeeded()
     {
-        if (LastPersisted.AddMilliseconds(PersistFrequency) > DateTimeOffset.Now)
+        if (LastRestored == default || LastPersisted.AddMilliseconds(PersistFrequency) > DateTimeOffset.Now)
             return;
 
         await PersistGames();
@@ -186,6 +184,7 @@ public partial class GameHub
     {
         var amountRunning = 0;
         var amountScheduled = 0;
+        
         await using (var context = GetDbContext())
         {
             RunningGamesByGameId.Clear();
@@ -243,6 +242,9 @@ public partial class GameHub
         }
         
         Log($"{nameof(RestoreGames)} {amountRunning} {amountScheduled}");
+        
+        LastRestored = DateTimeOffset.Now;
+        LastPersisted = LastRestored;
 
         return (amountRunning, amountScheduled);
     }

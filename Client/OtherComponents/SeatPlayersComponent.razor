@@ -8,8 +8,8 @@
 *@
 @inherits GameComponent
 
-<div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeIn90 3s;">
-    <div class="card-header">Assign factions to players</div>
+<div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeInLate 3s;">
+    <div class="card-header">Assign seats to players</div>
     <div class="card-body">
         <table class="table table-sm">
             <thead>
@@ -21,17 +21,36 @@
             <tbody>
             @foreach (var userId in SeatedPlayers.Keys)
             {
+                var currentSeatOfUserId = SeatedPlayers.GetValueOrDefault(userId, int.MinValue); 
                 <tr class="table-dark">
                     <td>
                         @Game.GetPlayerName(userId)
                     </td>
                     <td>
-                        <SelectFromImageComponent T="Faction" 
-                                                  OnChanged="@(f => AssignFaction(userId, f))" 
-                                                  Value="@GetAssignedFaction(userId)" 
-                                                  Values="@Client.Game.Players.Select(p => p.Faction)" 
-                                                  Required="false" 
-                                                  ImageWidth="40" />
+                        @if (Game.Players.Any(p => p.Faction is Faction.None))
+                        {
+                            foreach (var p in Game.Players)
+                            {
+                                var size = p.Seat == currentSeatOfUserId ? 60 : 30;
+                                if (p.Faction != Faction.None)
+                                {
+                                    <FactionComponent Diameter="@size" Faction="@p.Faction" OnClick="@(f => AssignFaction(userId, p.Faction))"/>
+                                }
+                                else
+                                {
+                                    <NumberComponent Size="@size" Value="@p.Seat" OnClick="@(f => AssignSeat(userId, p.Seat))" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black"/>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <SelectFromImageComponent T="Faction"
+                                                      OnChanged="@(f => AssignFaction(userId, f))"
+                                                      Value="@GetAssignedFaction(userId)"
+                                                      Values="@Game.Players.Select(p => p.Faction)"
+                                                      Required="false"
+                                                      ImageWidth="40"/>
+                        }
                     </td>
                 </tr>
             }
@@ -59,6 +78,11 @@
     private void AssignFaction(int userId, Faction faction)
     {
         var seat = Game.GetPlayer(faction)?.Seat ?? -1;
+        AssignSeat(userId, seat);
+    }
+    
+    private void AssignSeat(int userId, int seat)
+    {
         foreach (var existingSeatedPlayer in SeatedPlayers.Where(sp => sp.Key != userId && sp.Value == seat).ToArray())
         {
             SeatedPlayers[existingSeatedPlayer.Key] = -1;    

@@ -35,7 +35,7 @@ public interface IGameService
     public string GameId { get; }
     public GameStatus Status { get; }
     public bool InGame { get; }
-    public bool PlayerNeedsSeating { get; }
+    public bool PlayersNeedSeating { get; }
     public bool IsObserver { get; }
     
     //Client State
