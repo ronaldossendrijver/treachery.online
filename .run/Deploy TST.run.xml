@@ -1,0 +1,17 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Deploy TST" type="AzureWebAppDeploy">
+    <option name="appServicePlanName" value="treachery-tst" />
+    <option name="appServicePlanResourceGroupName" value="treachery" />
+    <option name="operatingSystem" value="Linux" />
+    <option name="pricingSize" value="B1" />
+    <option name="pricingTier" value="Basic" />
+    <option name="projectConfiguration" value="Release" />
+    <option name="projectPlatform" value="Any CPU" />
+    <option name="publishableProjectPath" value="$PROJECT_DIR$/Server/Treachery.Server.csproj" />
+    <option name="region" value="germanywestcentral" />
+    <option name="resourceGroupName" value="treachery" />
+    <option name="subscriptionId" value="b4d71196-1959-47cb-b8e5-70bdafe9a056" />
+    <option name="webAppName" value="treachery-tst" />
+    <method v="2" />
+  </configuration>
+</component>
