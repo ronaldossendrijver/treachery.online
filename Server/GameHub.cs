@@ -14,7 +14,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
 {
     private const int CleanupFrequency = 3600000; // Each hour
     private const int ServerStatusFrequency = 6000; // Each 6 seconds
-    private const int PersistFrequency = 300000; // Each 5 minutes
+    private const int PersistFrequency = 600000; // Each 10 minutes
     
     //Users
     private static ConcurrentDictionary<string,LoggedInUser> UsersByUserToken { get; } = [];
