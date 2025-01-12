@@ -73,18 +73,18 @@
                                 {
                                     <div>
                                         <UserIcon Size="20" Title="Players" MarginClass=""/><span class="me-1">@av.NrOfPlayers</span>
-                                        @if (av.NrOfBots > 0)
-                                        {
-                                            <BotIcon Size="16" Title="Bots" MarginClass=""/><span>@av.NrOfBots</span>
-                                        }
                                     </div>
+                                    @if (av.NrOfBots > 0)
+                                    {
+                                        <div><BotIcon Size="16" Title="Bots" MarginClass="me-1"/><span>@av.NrOfBots</span></div>
+                                    }
                                 }
                             </td>
                             <td style="@fontColorStyle">
                                 @if (av.Phase == Phase.AwaitingPlayers)
                                 {
                                     <div>
-                                        @Name(av.Ruleset), @av.MaxTurns turns 
+                                        @Name(av.Ruleset), @av.MaxTurns turns, not yet started
                                     </div>
                                 }
                                 else
@@ -220,21 +220,12 @@
                                 <span style="font: normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif;">@av.Name</span>
                             </td>
                             <td style="@fontColorStyle">
-                                @if (av.Phase == Phase.AwaitingPlayers)
+                                <div>
+                                    <UserIcon Size="20" Title="Players" MarginClass=""/><span class="me-1">@av.NrOfPlayers</span>
+                                </div>
+                                @if (av.NrOfBots > 0)
                                 {
-                                    <div>
-                                        <UserIcon Size="20" Title="Players" MarginClass=""/><span class="me-1">@av.NrOfPlayers</span> (of @av.MaxPlayers)
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div>
-                                        <UserIcon Size="20" Title="Players" MarginClass=""/><span class="me-1">@av.NrOfPlayers</span>
-                                        @if (av.NrOfBots > 0)
-                                        {
-                                            <BotIcon Size="16" Title="Bots" MarginClass=""/><span>@av.NrOfBots</span>
-                                        }
-                                    </div>
+                                    <div><BotIcon Size="16" Title="Bots" MarginClass="me-1"/><span>@av.NrOfBots</span></div>
                                 }
                             </td>
                             <td style="@fontColorStyle">
@@ -288,7 +279,7 @@
     {
         if (firstRender)
         {
-            StartRedrawCycle(3200);
+            StartRedrawCycle(IGameService.HeartbeatDelay);
         }
     }
 
@@ -302,17 +293,5 @@
         JoinErrors[gameId] = await Client.RequestObserveGame(gameId, password);
     }
 
-    private static string NumberOfBotsMessage(GameInfo av)
-    {
-        return av.NrOfBots switch
-        {
-            1 => $" ({av.NrOfPlayers} players, 1 bot)",
-            > 1 => $" ({av.NrOfPlayers} players, {av.NrOfBots} bots)",
-            _ => $" ({av.NrOfPlayers} players)"
-        };
-    }
-
     private string JoinButtonTitle(Faction faction) => $"Join as {Name(faction)}";
-
-
 }

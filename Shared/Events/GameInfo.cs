@@ -34,7 +34,7 @@ public class GameInfo
     public AvailableSeatInfo[] AvailableSeats { get; init; } = [];
     
     [JsonIgnore] 
-    public bool CanBeJoined => Phase is Phase.AwaitingPlayers || AvailableSeats.Length > 0;
+    public bool CanBeJoined => Phase is Phase.AwaitingPlayers && SeatedPlayers.Count < MaxPlayers || AvailableSeats.Length > 0;
 
     public int YourCurrentSeat(int userId) => SeatedPlayers.GetValueOrDefault(userId, -1);
 

@@ -26,7 +26,7 @@ else if (!Client.LoggedIn)
         <div class="col-sm-12 col-lg-3"></div>
         <div class="col-sm-12 col-lg-6">
             <div class="d-flex justify-content-center">
-                <LoginComponent  />
+                <LoginComponent/>
             </div>
         </div>
         <div class="col-sm-12 col-lg-3"></div>
@@ -43,8 +43,8 @@ else
                     <h3 class="h3">Info</h3>
                     <button class="btn btn-primary me-1" @onclick="@GetAdminInfo">Get admin info</button>
                     <h3 class="h3">Maintenance window</h3>
-                    <input type="text" class="form-control" @bind="@MaintenanceDate" @bind:event="oninput"/>
-                    <button class="btn btn-primary me-1" @onclick="@UpdateMaintenance" disabled="@(!MaintenanceDateIsValid)">Ok</button>
+                    <DateTimePicker @bind-Value="@MaintenanceDate"/>
+                    <button class="btn btn-primary me-1" @onclick="@UpdateMaintenance">Update</button>
                     <h3 class="h3">Persist data</h3>
                     <button class="btn btn-primary me-1" @onclick="@PersistState">Persist data</button>
                     <h3 class="h3">Restore persisted data</h3>
@@ -63,29 +63,29 @@ else
                         <table class="table table-sm">
                             <thead>
                             <tr class="small table-dark">
-                                <th class="w-10">User id</th>
-                                <th class="w-15">Username</th>
-                                <th class="w-15">Player name</th>
-                                <th class="w-50">Email</th>
-                                <th class="w-15">Last login</th>
-                                <th class="w-10">Actions</th>
+                                <th>User id</th>
+                                <th>Username</th>
+                                <th>Player name</th>
+                                <th>Email</th>
+                                <th>Last login</th>
+                                <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
                             @foreach (var av in Client.AdminInfo.Users)
                             {
                                 <tr class="small table-dark">
-                                    <td class="w-10">@av.Id</td>
-                                    <td class="w-15">@av.Username</td>
-                                    <td class="w-15">@av.PlayerName</td>
-                                    <td class="w-50">@av.Email</td>
-                                    <td class="w-15">
+                                    <td>@av.Id</td>
+                                    <td>@av.Username</td>
+                                    <td>@av.PlayerName</td>
+                                    <td>@av.Email</td>
+                                    <td>
                                         @if (av.LastLogin != default)
                                         {
                                             @av.LastLogin.LocalDateTime
                                         }
                                     </td>
-                                    <td class="w-10"><button class="btn btn-primary btn-sm me-1" @onclick="@(_ => DeleteUser(av))">Delete</button></td>
+                                    <td><button class="btn btn-primary btn-sm me-1" @onclick="@(_ => DeleteUser(av))">Delete</button></td>
                                 </tr>
                             }
                             </tbody>
@@ -158,7 +158,7 @@ else
 
 @code {
 
-    private string MaintenanceDate { get; set; }
+    private DateTimeOffset MaintenanceDate { get; set; }
     private List<string> Messages { get; } = [];
 
     protected override async Task OnInitializedAsync()
@@ -166,7 +166,7 @@ else
         Client.RefreshHandler += StateHasChanged;
         Client.FetchActiveGamesOnly = false;
         await Client.Start();
-        MaintenanceDate = Client.ServerInfo.ScheduledMaintenance.ToString(CultureInfo.CurrentUICulture);
+        MaintenanceDate = Client.ServerInfo.ScheduledMaintenance;
     }
 
     public void Dispose()
@@ -178,8 +178,7 @@ else
 
     private async Task UpdateMaintenance()
     {
-        DateTimeOffset.TryParse(MaintenanceDate, CultureInfo.CurrentUICulture, DateTimeStyles.AssumeUniversal, out var date);
-        Messages.Add(await Client.AdminUpdateMaintenance(date));
+        Messages.Add(await Client.AdminUpdateMaintenance(MaintenanceDate));
         StateHasChanged();
     }
     
@@ -218,6 +217,4 @@ else
         Messages.Add(await Client.AdminDeleteUser(av.Id));
         StateHasChanged();
     }
-
-    private bool MaintenanceDateIsValid => DateTimeOffset.TryParse(MaintenanceDate, CultureInfo.CurrentUICulture, DateTimeStyles.AssumeUniversal, out _);
 }

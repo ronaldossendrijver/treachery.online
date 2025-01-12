@@ -10,6 +10,8 @@ namespace Treachery.Client;
 
 public interface IGameService
 {
+    public const int HeartbeatDelay = 6000;
+
     //Logged in?
     public bool LoggedIn { get; }
     public int UserId { get; }

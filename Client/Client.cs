@@ -18,8 +18,6 @@ namespace Treachery.Client;
 
 public class Client : IGameService, IGameClient, IAsyncDisposable
 {
-    private const int HeartbeatDelay = 6000;
-
     //General info
     public ServerInfo ServerInfo { get; private set; }
     public Skin CurrentSkin { get; set; } = DefaultSkin.Default;
@@ -129,7 +127,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             }
         }
         
-        _ = Task.Delay(HeartbeatDelay).ContinueWith(_ => Heartbeat());
+        _ = Task.Delay(IGameService.HeartbeatDelay).ContinueWith(_ => Heartbeat());
     }
     
     private void RegisterHandlers()
@@ -630,7 +628,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             Support.Log(e.ToString());
         }
 
-        _ = Task.Delay(HeartbeatDelay).ContinueWith(_ => Heartbeat());
+        _ = Task.Delay(IGameService.HeartbeatDelay).ContinueWith(_ => Heartbeat());
     }
 
     private async Task SendHeartbeatAndGetServerStatus()
