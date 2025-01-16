@@ -45,7 +45,7 @@ public partial class GameHub
         foreach (var tokenAndInfo in UsersByUserToken.ToArray())
         {
             var age = now.Subtract(tokenAndInfo.Value.LoggedInDateTime).TotalMinutes;
-            if (age >= 10080 ||
+            if (age >= MaximumLoginTime ||
                 age >= 15 && now.Subtract(tokenAndInfo.Value.LastSeenDateTime).TotalMinutes >= 15)
             {
                 UsersByUserToken.Remove(tokenAndInfo.Key, out _);
@@ -54,7 +54,7 @@ public partial class GameHub
 
         foreach (var userIdAndConnectionInfo in ConnectionInfoByUserId)
         {
-            foreach (var gameId in userIdAndConnectionInfo.Value.GetGameIdsWithOldConnections(10080).ToArray())
+            foreach (var gameId in userIdAndConnectionInfo.Value.GetGameIdsWithOldConnections(MaximumLoginTime).ToArray())
             {
                 await RemoveFromGroup(gameId, userIdAndConnectionInfo.Key);
             }

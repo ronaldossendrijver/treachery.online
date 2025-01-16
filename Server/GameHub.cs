@@ -12,9 +12,10 @@ namespace Treachery.Server;
 public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfiguration configuration)
     : Hub<IGameClient>, IGameHub
 {
-    private const int CleanupFrequency = 3600000; // Each hour
-    private const int ServerStatusFrequency = 6000; // Each 6 seconds
-    private const int PersistFrequency = 600000; // Each 10 minutes
+    private const int CleanupFrequency = 3600000; // 3600000 ms = Each hour
+    private const int ServerStatusFrequency = 6000; // 6000 ms = Each 6 seconds
+    private const int PersistFrequency = 600000; // 600000 ms = Each 10 minutes
+    private const int MaximumLoginTime = 10080; // 10080 minutes = 7 days 
     
     //Users
     private static ConcurrentDictionary<string,LoggedInUser> UsersByUserToken { get; } = [];
