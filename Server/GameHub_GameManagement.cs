@@ -3,9 +3,7 @@ using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Treachery.Client;
-using Treachery.Shared.Model;
 
 namespace Treachery.Server;
 
@@ -620,13 +618,5 @@ public partial class GameHub
         }
     }
 
-    private static string GetStatisticsAsString(GameStatistics g)
-    {
-        var serializer = JsonSerializer.CreateDefault();
-        serializer.TypeNameHandling = TypeNameHandling.None;
-        var writer = new StringWriter();
-        serializer.Serialize(writer, g);
-        writer.Close();
-        return writer.ToString();
-    }
+    private static string GetStatisticsAsString(GameStatistics g) => JsonSerializer.Serialize(g);
 }

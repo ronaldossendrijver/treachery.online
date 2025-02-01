@@ -932,6 +932,26 @@ public class Tests
             }
         }
     }
+    
+    [TestMethod]
+    public void PrintSubtypesOf()
+    {
+        var baseType = typeof(GameEvent);
+        var subtypes = Assembly.GetAssembly(baseType)?
+            .GetTypes()
+            .Where(t => t.IsClass && !t.IsAbstract && baseType.IsAssignableFrom(t));
+
+        if (subtypes == null || !subtypes.Any())
+        {
+            Console.WriteLine($"No subtypes found for {baseType.Name}.");
+            return;
+        }
+
+        foreach (var type in subtypes)
+        {
+            Console.WriteLine($"[JsonDerivedType(typeof({type.Name}),nameof({type.Name}))]",  type.Name);
+        }
+    }
 
     [TestMethod]
     public void ScanForMapErrors()

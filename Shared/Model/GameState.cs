@@ -8,7 +8,6 @@
  */
 
 using System.IO;
-using Newtonsoft.Json;
 
 namespace Treachery.Shared;
 
@@ -28,37 +27,13 @@ public class GameState
     public static GameState Load(string data)
     {
         var fixedStateData = FixGameStateString(data);
-        var serializer = JsonSerializer.CreateDefault();
-        serializer.TypeNameHandling = TypeNameHandling.All;
-        var textReader = new StringReader(fixedStateData);
-        var jsonReader = new JsonTextReader(textReader);
-        var result = serializer.Deserialize<GameState>(jsonReader);
-        return result;
+        return JsonSerializer.Deserialize<GameState>(fixedStateData);
     }
 
     public static string GetStateAsString(Game g)
     {
-        //https://wellsb.com/csharp/aspnet/blazor-jsinterop-save-file/
-        var serializer = JsonSerializer.CreateDefault();
-        serializer.TypeNameHandling = TypeNameHandling.All;
-        var writer = new StringWriter();
-
-        /*
-         * Check if there are problems serializing one of the GameEvents
-         *
-        var testlist = new List<GameEvent>();
-        foreach (var e in g.History)
-        {
-            var testwriter = new StringWriter();
-            testlist.Add(e);
-            var teststate = new GameState() { Version = g.Version, Events = testlist };
-            serializer.Serialize(testwriter, teststate);
-        }*/
-
         var state = new GameState { Version = g.Version, Events = g.History };
-        serializer.Serialize(writer, state);
-        writer.Close();
-        return writer.ToString();
+        return JsonSerializer.Serialize(state);
     }
 
     private static string FixGameStateString(string state)

@@ -7,14 +7,11 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
 
 namespace Treachery.Server;
 
@@ -30,10 +27,6 @@ public class Startup
             {
                 hubOptions.EnableDetailedErrors = true;
                 hubOptions.MaximumReceiveMessageSize = 4194304;
-            })
-            .AddNewtonsoftJsonProtocol(options =>
-            {
-                options.PayloadSerializerSettings.TypeNameHandling = TypeNameHandling.All;
             });
         services.AddDbContext<TreacheryContext>();
     }

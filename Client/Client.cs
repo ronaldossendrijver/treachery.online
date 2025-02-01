@@ -10,9 +10,6 @@
 using System.Linq;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Treachery.Client;
 
@@ -84,11 +81,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         _connection = new HubConnectionBuilder()
             .WithUrl(navigationManager.ToAbsoluteUri("/gameHub"))
             .WithAutomaticReconnect(new RetryPolicy())
-            .AddNewtonsoftJsonProtocol(configuration =>
-            {
-                configuration.PayloadSerializerSettings.TypeNameHandling = TypeNameHandling.All;
-                configuration.PayloadSerializerSettings.Error += LogSerializationError;
-            })
             .Build();
         
         _connection.Reconnected += OnReconnected;
@@ -795,8 +787,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return result;
     }
    
-    private static void LogSerializationError(object sender, ErrorEventArgs e) => Support.Log(e.ErrorContext.Error.ToString());
-
     public LoggedInUserInfo GetUserInfo(int userId) => RecentlySeenUsers.GetValueOrDefault(userId, null);
     
     public UserStatus GetUserStatus(int userId) =>

@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -28,8 +27,6 @@
 
   <ItemGroup>
     <None Remove="Properties\PublishProfiles\treachery - Zip Deploy.pubxml" />
-    <None Include=".deployment\treachery-tst.run.xml" />
-    <None Include=".deployment\treachery.run.xml" />
   </ItemGroup>
 
 

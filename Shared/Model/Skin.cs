@@ -10,7 +10,6 @@
 using System;
 using System.Collections;
 using System.IO;
-using Newtonsoft.Json;
 
 namespace Treachery.Shared;
 
@@ -1536,11 +1535,7 @@ public class Skin : IDescriber
 
     public static Skin Load(string data, Skin donor)
     {
-        var serializer = JsonSerializer.CreateDefault();
-        serializer.Formatting = Formatting.Indented;
-        var textReader = new StringReader(data);
-        var jsonReader = new JsonTextReader(textReader);
-        var result = serializer.Deserialize<Skin>(jsonReader);
+        var result = JsonSerializer.Deserialize<Skin>(data);
         Fix(result, donor);
         return result;
     }
@@ -1694,15 +1689,7 @@ public class Skin : IDescriber
         if (toFix == null || toFix.Equals(default(T))) toFix = donor;
     }
 
-    public string SkinToString()
-    {
-        var serializer = JsonSerializer.CreateDefault();
-        serializer.Formatting = Formatting.Indented;
-        var writer = new StringWriter();
-        serializer.Serialize(writer, this);
-        writer.Close();
-        return writer.ToString();
-    }
+    public string SkinToString() => JsonSerializer.Serialize(this);
 
     #endregion LoadingAndSaving
 }
