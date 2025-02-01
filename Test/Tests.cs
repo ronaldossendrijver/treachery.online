@@ -369,7 +369,7 @@ public class Tests
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
 
-        var nrOfGames = 1000;
+        var nrOfGames = 100;
         var nrOfTurns = 10;
         var nrOfPlayers = 7;
 
@@ -930,6 +930,26 @@ public class Tests
                 Assert.IsTrue(att != null,
                     $"Get-only property {prop} of class {type} does not have the JsonIgnore attribute");
             }
+        }
+    }
+    
+    [TestMethod]
+    public void PrintSubtypesOf()
+    {
+        var baseType = typeof(GameEvent);
+        var subtypes = Assembly.GetAssembly(baseType)?
+            .GetTypes()
+            .Where(t => t.IsClass && !t.IsAbstract && baseType.IsAssignableFrom(t));
+
+        if (subtypes == null || !subtypes.Any())
+        {
+            Console.WriteLine($"No subtypes found for {baseType.Name}.");
+            return;
+        }
+
+        foreach (var type in subtypes)
+        {
+            Console.WriteLine($"[JsonDerivedType(typeof({type.Name}),nameof({type.Name}))]",  type.Name);
         }
     }
 

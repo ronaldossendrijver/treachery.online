@@ -10,9 +10,11 @@
 // ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
 
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Treachery.Server;
 
+[Index(nameof(GameId))]
 public class PersistedGame
 {
     public int Id { get; init; }
@@ -27,16 +29,18 @@ public class PersistedGame
     
     public int CreatorUserId { get; init; }
     
-    public string GameState { get; init; } = string.Empty;
+    public string GameState { get; set; } = string.Empty;
 
-    public string GameParticipation { get; init; } = string.Empty;
+    public string GameParticipation { get; set; } = string.Empty;
     
     [MaxLength(4000)]
     public string HashedPassword { get; init; } = string.Empty;
     
     public bool ObserversRequirePassword { get; init; }
     
-    public bool StatisticsSent { get; init; }
+    public bool StatisticsSent { get; set; }
     
-    public DateTimeOffset LastAsyncPlayMessageSent { get; init; }
+    public DateTimeOffset LastAsyncPlayMessageSent { get; set; }
+    
+    public DateTimeOffset LastAction { get; set; }
 }

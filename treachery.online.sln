@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Treachery.Test", "Test\Trea
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Treachery.Client", "Client\Treachery.Client.csproj", "{D6557A57-D384-4CD7-82CE-EFB385924510}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Treachery.Bots", "Bots\Treachery.Bots\Treachery.Bots.csproj", "{D8DE65CE-383A-4F0D-9103-33B32C12133D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{D6557A57-D384-4CD7-82CE-EFB385924510}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6557A57-D384-4CD7-82CE-EFB385924510}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6557A57-D384-4CD7-82CE-EFB385924510}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D8DE65CE-383A-4F0D-9103-33B32C12133D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D8DE65CE-383A-4F0D-9103-33B32C12133D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D8DE65CE-383A-4F0D-9103-33B32C12133D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D8DE65CE-383A-4F0D-9103-33B32C12133D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
