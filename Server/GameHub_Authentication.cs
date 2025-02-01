@@ -73,7 +73,7 @@ public partial class GameHub
         return Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email });
     }
 
-    private string LoginAndCreateToken(User user)
+    private static string LoginAndCreateToken(User user)
     {
         var existingLoggedInUser = UsersByUserToken.FirstOrDefault(x => x.Value.Id == user.Id);
         if (existingLoggedInUser.Value != null && existingLoggedInUser.Value.Id == user.Id)
@@ -132,7 +132,7 @@ public partial class GameHub
 
         await db.SaveChangesAsync();
 
-        string usersMessage = users.Count == 1 ? 
+        var usersMessage = users.Count == 1 ? 
             "user: " + users[0].Name : 
             "users: " + string.Join(", ", users.Select(u => u.Name));
         
@@ -201,6 +201,8 @@ public partial class GameHub
         await using var db = GetDbContext();
         db.Users.Update(user);
         await db.SaveChangesAsync();
+        
+        UsersById[user.Id] = user;
             
         return await Task.FromResult(Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email }));
     }
