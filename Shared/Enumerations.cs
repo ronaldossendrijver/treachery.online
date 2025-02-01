@@ -927,3 +927,10 @@ public enum SubscriptionType
     MaybeAsHost = 40,
     CertainAsHost = 50
 }
+
+public enum GameListScope
+{
+    None = 1,
+    ActiveAndOwned = 2,
+    All = 3
+}

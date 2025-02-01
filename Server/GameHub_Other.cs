@@ -21,7 +21,7 @@ public partial class GameHub
 
     private async Task CleanupUserTokensIfNeeded()
     {
-        if (LastCleanedUp.AddMilliseconds(CleanupFrequency) > DateTimeOffset.Now)
+        if (LastCleanedUpUserTokens.AddMilliseconds(CleanupFrequency) > DateTimeOffset.Now)
             return;
 
         await CleanupUserTokens();
@@ -35,10 +35,10 @@ public partial class GameHub
     private async Task CleanupUserTokens()
     {
         var now = DateTimeOffset.Now;
-        if (LastCleanedUp.AddMilliseconds(CleanupFrequency) > now)
+        if (LastCleanedUpUserTokens.AddMilliseconds(CleanupFrequency) > now)
             return;
         
-        LastCleanedUp = now;
+        LastCleanedUpUserTokens = now;
         
         Log($"{nameof(CleanupUserTokensIfNeeded)} {UsersByUserToken.Count} {ConnectionInfoByUserId.Count}");
         
@@ -61,9 +61,12 @@ public partial class GameHub
         }
     }
 
-    public static void RunAndRescheduleCleanupScheduledGames()
+    private static void CleanupScheduledGamesIfNeeded()
     {
-        Log($"{nameof(RunAndRescheduleCleanupScheduledGames)} {ScheduledGamesByGameId.Count}");
+        if (LastCleanedUpScheduledGames.AddMilliseconds(CleanupFrequency) > DateTimeOffset.Now)
+            return;
+        
+        Log($"{nameof(CleanupScheduledGamesIfNeeded)} {ScheduledGamesByGameId.Count}");
         
         var thresholdDateTime = DateTimeOffset.Now.AddHours(-4);
         foreach (var gameIdAndGame in ScheduledGamesByGameId.Where(g => g.Value.DateTime < thresholdDateTime).ToArray())
@@ -71,7 +74,7 @@ public partial class GameHub
             ScheduledGamesByGameId.Remove(gameIdAndGame.Key, out _);
         }
         
-        _ = Task.Delay(CleanupFrequency).ContinueWith(_ => RunAndRescheduleCleanupScheduledGames());
+        LastCleanedUpUserTokens = DateTimeOffset.Now;
     }
 
     public async Task<Result<string>> AdminUpdateMaintenance(string userToken, DateTimeOffset maintenanceDate)

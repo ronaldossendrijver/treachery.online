@@ -633,7 +633,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     private async Task SendHeartbeatAndGetServerStatus()
     {
-        var status = await Invoke<ServerStatus>(nameof(IGameHub.RequestHeartbeat), UserToken, FetchActiveGamesOnly);
+        var scope = InGame ? GameListScope.None :
+            FetchActiveGamesOnly ? GameListScope.ActiveAndOwned : GameListScope.All;
+        
+        var status = await Invoke<ServerStatus>(nameof(IGameHub.RequestHeartbeat), UserToken, scope);
         if (status.Success)
         {
             RunningGames = status.Contents.RunningGames;

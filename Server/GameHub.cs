@@ -36,7 +36,10 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     private static DateTimeOffset LastPersisted { get; set; }
     private static bool Persisting { get; set; }
     private static DateTimeOffset MaintenanceDate { get; set; }
-    private static DateTimeOffset LastCleanedUp { get; set; }
+    private static DateTimeOffset LastCleanedUpUserTokens { get; set; }
+    private static DateTimeOffset LastCleanedUpScheduledGames { get; set; }
+    
+    private static DateTimeOffset LastUpdatedServerStatus { get; set; }
     
     private IConfiguration Configuration { get; } = configuration;
 

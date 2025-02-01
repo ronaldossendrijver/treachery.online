@@ -463,37 +463,61 @@ public partial class GameHub
         return Success();
     }
 
-    public async Task<Result<ServerStatus>> RequestHeartbeat(string userToken, bool activeGamesOnly)
+    public async Task<Result<ServerStatus>> RequestHeartbeat(string userToken, GameListScope scope)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var loggedInUser))
             return Error<ServerStatus>(ErrorType.UserNotFound);
 
-        await RestoreGamesIfNeeded();
-        await PersistGamesIfNeeded();
-        await CleanupUserTokensIfNeeded();
+        await RunTasksIfNeeded();
 
         loggedInUser.LastSeenDateTime = DateTime.Now;
 
-        if (activeGamesOnly)
+        switch (scope)
         {
-            var lastActiveGameThreshold = DateTimeOffset.Now.AddMinutes(-20);
-            var filteredServerStatus = new ServerStatus
+            case GameListScope.ActiveAndOwned:
             {
-                RunningGames = ServerStatus.RunningGames.Where(mg => mg.CreatorId == loggedInUser.Id || mg.LastAction >= lastActiveGameThreshold).ToArray(),
-                ScheduledGames = ServerStatus.ScheduledGames,
-                LoggedInUsers = ServerStatus.LoggedInUsers,
-            };
+                var lastActiveGameThreshold = DateTimeOffset.Now.AddMinutes(-20);
+                var filteredServerStatus = new ServerStatus
+                {
+                    RunningGames = ServerStatus.RunningGames.Where(mg => mg.CreatorId == loggedInUser.Id || mg.LastAction >= lastActiveGameThreshold).ToArray(),
+                    ScheduledGames = ServerStatus.ScheduledGames,
+                    LoggedInUsers = ServerStatus.LoggedInUsers,
+                };
             
-            return await Task.FromResult(Success(filteredServerStatus));
-        }
-        else
-        {
-            return await Task.FromResult(Success(ServerStatus));
+                return await Task.FromResult(Success(filteredServerStatus));
+            }
+            
+            case GameListScope.All:
+                return await Task.FromResult(Success(ServerStatus));
+            
+            default:
+            {
+                var filteredServerStatus = new ServerStatus
+                {
+                    RunningGames = [],
+                    ScheduledGames = [],
+                    LoggedInUsers = ServerStatus.LoggedInUsers,
+                };
+            
+                return await Task.FromResult(Success(filteredServerStatus));
+            }
         }
     }
 
-    public static void RunAndRescheduleUpdateServerStatus()
+    private async Task RunTasksIfNeeded()
     {
+        await RestoreGamesIfNeeded();
+        CleanupScheduledGamesIfNeeded();
+        await PersistGamesIfNeeded();
+        await CleanupUserTokensIfNeeded();
+        UpdateServerStatusIfNeeded();
+    }
+
+    private static void UpdateServerStatusIfNeeded()
+    {
+        if (LastUpdatedServerStatus.AddMilliseconds(ServerStatusFrequency) > DateTimeOffset.Now)
+            return;
+        
         ServerStatus = new ServerStatus
         {
             RunningGames = RunningGamesByGameId.Values.Select(Utilities.ExtractGameInfo).ToArray(),
@@ -511,7 +535,7 @@ public partial class GameHub
                 .ToArray()
         };
         
-        _ = Task.Delay(ServerStatusFrequency).ContinueWith(_ => RunAndRescheduleUpdateServerStatus());
+        LastUpdatedServerStatus = DateTimeOffset.Now;
     }
 
     private static ScheduledGameInfo ExtractScheduledGameInfo(ScheduledGame g) => new()
