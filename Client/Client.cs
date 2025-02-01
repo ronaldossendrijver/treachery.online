@@ -692,7 +692,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         if (Game.CurrentMainPhase == MainPhase.Bidding) 
             ResetAutoPassThreshold();
 
-        PerformEndOfTurnTasks();
         Refresh(nameof(PerformPostEventTasks));
     }
 
@@ -724,15 +723,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             await Browser.PlaySound(CurrentSkin.GetSound(m), CurrentEffectVolume);
     }
 
-    private Phase _previousPhase;
-    private void PerformEndOfTurnTasks()
-    {
-        if (Game.CurrentPhase == Phase.TurnConcluded && Game.CurrentPhase != _previousPhase) 
-            Messages.Clear();
-
-        _previousPhase = Game.CurrentPhase;
-    }
-    
     private async Task OnReconnected(string _) => await RequestReconnectGame();
 
     private Task OnDisconnected(Exception arg)
