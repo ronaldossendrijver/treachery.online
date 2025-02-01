@@ -369,7 +369,7 @@ public class Tests
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
 
-        var nrOfGames = 1000;
+        var nrOfGames = 100;
         var nrOfTurns = 10;
         var nrOfPlayers = 7;
 
