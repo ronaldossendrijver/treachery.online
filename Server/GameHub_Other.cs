@@ -119,33 +119,64 @@ public partial class GameHub
 
         Persisting = true;
 
-        var amountOfGames = 0;
+        var amountOfNewGames = 0;
+        var amountOfUpdatedGames = 0;
+        var amountOfDeletedGames = 0;
+        var amountOfUnchanged = 0;
+        
         var amountOfScheduledGames = 0;
         
         await using (var context = GetDbContext())
         {
-            await context.PersistedGames.ExecuteDeleteAsync();
-            
             foreach (var (key, game) in RunningGamesByGameId)
             {
-                var persisted = new PersistedGame
+                var persistedGame = await context.PersistedGames.FirstOrDefaultAsync(g => g.GameId == game.GameId);
+                if (persistedGame != null)
                 {
-                    CreationDate = game.CreationDate,
-                    CreatorUserId = game.CreatorUserId,
-                    GameId = key,
-                    GameState = GameState.GetStateAsString(game.Game),
-                    GameName = game.Name,
-                    GameParticipation = JsonSerializer.Serialize(game.Game.Participation),
-                    HashedPassword = game.HashedPassword,
-                    ObserversRequirePassword = game.ObserversRequirePassword,
-                    StatisticsSent = game.StatisticsSent,
-                    LastAsyncPlayMessageSent = game.LastAsyncPlayMessageSent,
-                };
+                    var lastAction = game.Game.History.LastOrDefault()?.Time ?? game.CreationDate;
 
-                context.PersistedGames.Add(persisted);
-                await context.SaveChangesAsync();
-                amountOfGames++;
+                    if (persistedGame.LastAction == lastAction)
+                    {
+                        amountOfUnchanged++;
+                        continue;
+                    }
+                    
+                    persistedGame.GameState = GameState.GetStateAsString(game.Game);
+                    persistedGame.GameParticipation = JsonSerializer.Serialize(game.Game.Participation);
+                    persistedGame.StatisticsSent = game.StatisticsSent;
+                    persistedGame.LastAsyncPlayMessageSent = game.LastAsyncPlayMessageSent;
+                    persistedGame.LastAction = lastAction;
+                    context.PersistedGames.Update(persistedGame);
+                    amountOfUpdatedGames++;
+                }
+                else
+                {
+                    context.PersistedGames.Add(new PersistedGame
+                    {
+                        CreationDate = game.CreationDate,
+                        CreatorUserId = game.CreatorUserId,
+                        GameId = key,
+                        GameState = GameState.GetStateAsString(game.Game),
+                        GameName = game.Name,
+                        GameParticipation = JsonSerializer.Serialize(game.Game.Participation),
+                        HashedPassword = game.HashedPassword,
+                        ObserversRequirePassword = game.ObserversRequirePassword,
+                        StatisticsSent = game.StatisticsSent,
+                        LastAsyncPlayMessageSent = game.LastAsyncPlayMessageSent,
+                        LastAction = game.Game.History.LastOrDefault()?.Time ?? game.CreationDate
+                    });
+                    amountOfNewGames++;
+                }
             }
+
+            foreach (var persistedGame in (await context.PersistedGames.ToListAsync())
+                     .Where(persistedGame => !RunningGamesByGameId.ContainsKey(persistedGame.GameId)))
+            {
+                context.Remove(persistedGame);
+                amountOfDeletedGames++;
+            }
+                
+            await context.SaveChangesAsync();
             
             await context.ScheduledGames.ExecuteDeleteAsync();
             
@@ -171,12 +202,12 @@ public partial class GameHub
             }
         }
         
-        Log($"{nameof(PersistGames)} {amountOfGames} {amountOfScheduledGames}");
+        Log($"{nameof(PersistGames)} new:{amountOfNewGames}, updated:{amountOfUpdatedGames}, deleted:{amountOfDeletedGames}, unchanged:{amountOfUnchanged}, scheduled: {amountOfScheduledGames}");
         
         LastPersisted = DateTimeOffset.Now;
         Persisting = false;
         
-        return (amountOfGames, amountOfScheduledGames);
+        return (amountOfNewGames + amountOfUpdatedGames + amountOfUnchanged, amountOfScheduledGames);
     }
 
     public async Task<Result<string>> AdminRestoreState(string userToken)
