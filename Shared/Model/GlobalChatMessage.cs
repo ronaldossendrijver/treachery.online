@@ -13,7 +13,7 @@ public class GlobalChatMessage : ChatMessage
 {
     public override Message GetBodyIncludingPlayerInfo(int receivingUserId, Dictionary<int,LoggedInUserInfo> users, Game game, bool contextIsGlobal)
     {
-        var sourcePlayerName = users.TryGetValue(SourceUserId, out var info) ? info.PlayerName : "Offline player";
+        var sourcePlayerName = users.TryGetValue(SourceUserId, out var info) ? info.Name : "Offline player";
         if (contextIsGlobal)
         {
             return SourceUserId == receivingUserId ? 

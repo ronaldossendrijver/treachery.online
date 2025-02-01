@@ -107,18 +107,10 @@
                                     </div>
                                 </td>
                                 <td class="w-20">
-                                    @foreach (var p in game.SubscribedUsers.Where(u => u.Value != SubscriptionType.DontParticipate))
+                                    @foreach (var p in game.Subscribers.Where(u => u.Value != SubscriptionType.DontParticipate))
                                     {
-                                        var userInfo = Client.GetUserInfo(p.Key);
                                         <div class="me-1">
-                                            @if (userInfo != null)
-                                            {
-                                                <span style="font: normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif;">@(userInfo.PlayerName)</span>
-                                            }
-                                            else
-                                            {
-                                                <UserIcon Title="Offline player"/>
-                                            }
+                                            <span style="font: normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif;">@(game.SubscriberNames.GetValueOrDefault(p.Key, "?"))</span>
                                             <span class="badge text-bg-primary ms-1">@Name(p.Value)</span>
                                         </div>
                                     }                                    
@@ -416,7 +408,7 @@
 
     private string GetActive(OwnGamesComponentState toCheck) => toCheck == State ? "active" : "";
 
-    private async Task Cancel(ScheduledGame game)
+    private async Task Cancel(ScheduledGameInfo game)
     {
         await Client.RequestCancelGame(game.ScheduledGameId);
         StateHasChanged();

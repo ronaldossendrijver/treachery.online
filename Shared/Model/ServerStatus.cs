@@ -7,15 +7,13 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class ServerStatus
 {
     public GameInfo[] RunningGames { get; init; } = [];
     
-    public ScheduledGame[] ScheduledGames { get; init; } = [];
+    public ScheduledGameInfo[] ScheduledGames { get; init; } = [];
     
     public LoggedInUserInfo[] LoggedInUsers { get; init; } = [];
 }

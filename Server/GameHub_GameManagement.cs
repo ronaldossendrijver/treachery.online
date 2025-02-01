@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Treachery.Client;
+using Treachery.Shared.Model;
 
 namespace Treachery.Server;
 
@@ -497,14 +498,14 @@ public partial class GameHub
         {
             RunningGames = RunningGamesByGameId.Values.Select(Utilities.ExtractGameInfo).ToArray(),
             
-            ScheduledGames = ScheduledGamesByGameId.Values.ToArray(),
+            ScheduledGames = ScheduledGamesByGameId.Values.Select(ExtractScheduledGameInfo).ToArray(),
             
             LoggedInUsers = UsersByUserToken
                 .Select(u => new LoggedInUserInfo
                 {
                     Id = u.Value.Id, 
                     Status = u.Value.Status,
-                    PlayerName = u.Value.User.PlayerName, 
+                    Name = u.Value.User.PlayerName, 
                     LastSeen = u.Value.LastSeenDateTime,
                 })
                 .ToArray()
@@ -512,6 +513,22 @@ public partial class GameHub
         
         _ = Task.Delay(ServerStatusFrequency).ContinueWith(_ => RunAndRescheduleUpdateServerStatus());
     }
+
+    private static ScheduledGameInfo ExtractScheduledGameInfo(ScheduledGame g) => new()
+    {
+        ScheduledGameId = g.ScheduledGameId,
+        Ruleset = g.Ruleset,
+        AsyncPlay = g.AsyncPlay,
+        DateTime = g.DateTime,
+        CreatorUserId = g.CreatorUserId,
+        CreatorName = g.CreatorPlayerName,
+        NumberOfPlayers = g.NumberOfPlayers,
+        MaximumTurns = g.MaximumTurns,
+        Subscribers = g.SubscribedUsers,
+        SubscriberNames = g.SubscribedUsers.Keys.ToDictionary(x => x, x => UsersById.TryGetValue(x, out var user) ? user.Name : "?"),
+        AllowedFactionsInPlay = g.AllowedFactionsInPlay
+    };
+    
 
     private async Task SendEndOfGameMail(ManagedGame game)
     {

@@ -155,7 +155,7 @@
                         {
                             <tr class="small table-dark">
                                 <td class="w-20">
-                                    <span style="font: normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif;">@game.CreatorPlayerName</span>
+                                    <span style="font: normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif;">@game.CreatorName</span>
                                 </td>
                                 <td class="w-20">
                                     @game.DateTime.ToLocalTime().ToString("dd-MM HH:mm")
@@ -179,18 +179,10 @@
                                     }
                                 </td>
                                 <td class="w-25">
-                                    @foreach (var p in game.SubscribedUsers.Where(u => u.Value != SubscriptionType.DontParticipate))
+                                    @foreach (var p in game.Subscribers.Where(u => u.Value != SubscriptionType.DontParticipate))
                                     {
-                                        var userInfo = Client.GetUserInfo(p.Key);
                                         <div class="me-1">
-                                            @if (userInfo != null)
-                                            {
-                                                <span style="font: normal normal normal 15px Advokat, Calibri, Tahoma, sans-serif;">@userInfo.PlayerName</span>
-                                            }
-                                            else
-                                            {
-                                                <UserIcon Title="Offline player"/>
-                                            }
+                                            <span style="font: normal normal normal 15px Advokat, Calibri, Tahoma, sans-serif;">@game.SubscriberNames.GetValueOrDefault(p.Key, "?")</span>
                                             <span class="badge text-bg-primary ms-1">@Name(p.Value)</span>
                                         </div>
                                     }                                    
@@ -238,11 +230,15 @@
                                 else
                                 {
                                     <div>
-                                        @Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)
-                                        @foreach (var f in av.FactionsInPlay)
-                                        {
-                                            <Image Shown="f" Width="20" Shadow=""/>
-                                        }
+                                        <div>
+                                           @Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)
+                                        </div>
+                                        <div>
+                                            @foreach (var f in av.FactionsInPlay)
+                                            {
+                                                <Image Shown="f" Width="20" Shadow=""/>
+                                            }
+                                        </div>
                                     </div>
                                 }
                             </td>

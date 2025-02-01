@@ -24,11 +24,11 @@
 @code 
 {
     [Parameter, EditorRequired]
-    public required ScheduledGame ScheduledGame { get; set; }
+    public required ScheduledGameInfo ScheduledGame { get; set; }
     
     private bool _busy;
 
-    private SubscriptionType CurrentSubscription => ScheduledGame.SubscribedUsers.GetValueOrDefault(Client.UserId, SubscriptionType.DontParticipate);
+    private SubscriptionType CurrentSubscription => ScheduledGame.Subscribers.GetValueOrDefault(Client.UserId, SubscriptionType.DontParticipate);
     
     private string BtnTypeFromStatus => CurrentSubscription switch
     {

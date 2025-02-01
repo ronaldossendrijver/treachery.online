@@ -26,7 +26,7 @@ public interface IGameService
     public GameInfo[] RunningGames { get; }
     public GameInfo[] RunningGamesWithOpenSeats { get; }
     public GameInfo[] RunningGamesWithoutOpenSeats { get; }
-    public ScheduledGame[] ScheduledGames { get; }
+    public ScheduledGameInfo[] ScheduledGames { get; }
     public Dictionary<int,LoggedInUserInfo> RecentlySeenUsers { get; }
     public LoggedInUserInfo GetUserInfo(int userId);
     public UserStatus GetUserStatus(int userId);

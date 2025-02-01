@@ -14,10 +14,10 @@
     <div class="card-header" style="text-align: right;">Online users</div>
     
     <div class="card-body">
-        @foreach (var user in Client.RecentlySeenUsers.Values.OrderBy(u => u.PlayerName))
+        @foreach (var user in Client.RecentlySeenUsers.Values.OrderBy(u => u.Name))
         {
             <div class='text-break p-1 mt-1 small' style="background-color:gray">
-                <span>@user.PlayerName </span>
+                <span>@user.Name </span>
                 @switch (user.Status)
                 {
                     case UserStatus.Away:

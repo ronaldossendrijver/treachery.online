@@ -15,7 +15,7 @@ public class LoggedInUserInfo
 {
     public int Id { get; init; }
     
-    public string PlayerName { get; init; }
+    public string Name { get; init; }
     
     public UserStatus Status { get; init; }
     

@@ -46,9 +46,11 @@ public partial class GameHub
         
         var user = await db.Users.FirstOrDefaultAsync(x =>
             x.Name.Equals(cleanedUsername) && x.HashedPassword == hashedPassword);
-        
+
         if (user == null)
             return Error<LoginInfo>(ErrorType.UserCreationFailed);
+
+        UsersById.TryAdd(user.Id, user);
         
         MailMessage mailMessage = new()
         {

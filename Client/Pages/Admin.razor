@@ -129,7 +129,7 @@ else
                                     @av.DateTime
                                 </td>
                                 <td class="w-25">
-                                    @av.CreatorPlayerName
+                                    @av.CreatorName
                                 </td>
                                 <td class="w-25">
                                     <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Cancel(av))">Cancel</button>
@@ -206,7 +206,7 @@ else
         StateHasChanged();
     }
     
-    private async Task Cancel(ScheduledGame av)
+    private async Task Cancel(ScheduledGameInfo av)
     {
         Messages.Add(await Client.AdminCancelGame(av.ScheduledGameId));
         StateHasChanged();

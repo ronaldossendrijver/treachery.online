@@ -31,7 +31,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public GameInfo[] RunningGames { get; private set; } = [];
     public GameInfo[] RunningGamesWithOpenSeats { get; private set; } = [];
     public GameInfo[] RunningGamesWithoutOpenSeats { get; private set; } = [];
-    public ScheduledGame[] ScheduledGames { get; private set; } = [];
+    public ScheduledGameInfo[] ScheduledGames { get; private set; } = [];
     public Dictionary<int,LoggedInUserInfo> RecentlySeenUsers { get; private set; } = [];
     
     //Logged in player

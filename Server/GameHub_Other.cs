@@ -97,7 +97,7 @@ public partial class GameHub
     {
         if (LastRestored == default)
         {
-            await RestoreGames();
+            await RestoreGamesAndUserCache();
         }
     } 
     
@@ -181,12 +181,12 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
         
-        var (amountRunning, amountScheduled) = await RestoreGames();
+        var (amountRunning, amountScheduled) = await RestoreGamesAndUserCache();
 
         return Success($"Restored: {amountRunning} running games, {amountScheduled} scheduled games");
     }
 
-    private async Task<(int amountRunning, int amountScheduled)> RestoreGames()
+    private async Task<(int amountRunning, int amountScheduled)> RestoreGamesAndUserCache()
     {
         if (Restoring || Persisting)
             return (0,0);
@@ -198,6 +198,12 @@ public partial class GameHub
         
         await using (var context = GetDbContext())
         {
+            UsersById.Clear();
+            foreach (var user in context.Users)
+            {
+                UsersById.TryAdd(user.Id, user);
+            }
+
             RunningGamesByGameId.Clear();
             
             foreach (var persistedGame in context.PersistedGames)
@@ -252,7 +258,7 @@ public partial class GameHub
             }
         }
         
-        Log($"{nameof(RestoreGames)} {amountRunning} {amountScheduled}");
+        Log($"{nameof(RestoreGamesAndUserCache)} {amountRunning} {amountScheduled}");
         
         LastRestored = DateTimeOffset.Now;
         Restoring = false;

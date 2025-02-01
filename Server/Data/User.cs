@@ -9,6 +9,7 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using Treachery.Shared.Model;
 
 namespace Treachery.Server;
 

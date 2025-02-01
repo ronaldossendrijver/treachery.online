@@ -39,7 +39,7 @@ public class GameChatMessage : ChatMessage
     }
 
     private string GetPlayerName(int userId, Dictionary<int, LoggedInUserInfo> users)
-        => users.TryGetValue(userId, out var sourcePlayerInfo) ? sourcePlayerInfo.PlayerName : "Offline player";
+        => users.TryGetValue(userId, out var sourcePlayerInfo) ? sourcePlayerInfo.Name : "Offline player";
 
     public Faction GetFaction(int userId, Game game) => game?.GetPlayerByUserId(userId)?.Faction ?? Faction.None;
 }
