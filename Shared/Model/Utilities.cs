@@ -30,4 +30,12 @@ public static class Utilities
 
         return result;
     }
+
+    private static readonly JsonSerializerOptions Options = new() { IncludeFields = true };
+    
+    public static T Deserialize<T>(string serialized)
+        => JsonSerializer.Deserialize<T>(serialized, Options);
+    
+    public static string Serialize<T>(T value)
+        => JsonSerializer.Serialize(value, Options);
 }

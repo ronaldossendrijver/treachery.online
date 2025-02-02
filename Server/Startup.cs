@@ -23,11 +23,11 @@ public class Startup
     {
         services.AddControllersWithViews();
         services.AddRazorPages();
-        services.AddSignalR(hubOptions =>
+        services.AddSignalR(options =>
             {
-                hubOptions.EnableDetailedErrors = true;
-                hubOptions.MaximumReceiveMessageSize = 4194304;
-            });
+                options.EnableDetailedErrors = true;
+                options.MaximumReceiveMessageSize = 4194304;
+            }).AddJsonProtocol(jsonOptions => jsonOptions.PayloadSerializerOptions.IncludeFields = true);
         services.AddDbContext<TreacheryContext>();
     }
 

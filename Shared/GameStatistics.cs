@@ -23,7 +23,7 @@ public class GameStatistics
     {
         var result = new GameStatistics
         {
-            date = game.History.Last().Time.DateTime,
+            date = game.LastAction,
             method = ToString(game.WinMethod),
             players = game.Players.Select(p => new GameStatisticsPlayerInfo
             {
@@ -32,7 +32,7 @@ public class GameStatistics
                 id = ""
             }).ToArray(),
             ruleset = ToString(game.Ruleset),
-            time = RoundToHalves((game.History.Last().Time - game.History.First().Time).TotalHours),
+            time = RoundToHalves((game.LastAction - game.FirstAction).TotalHours),
             turn = game.CurrentTurn,
             winners = game.Winners.Select(p => ToString(p.Faction)).ToArray()
         };

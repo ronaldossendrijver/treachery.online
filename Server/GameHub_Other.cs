@@ -142,7 +142,7 @@ public partial class GameHub
                     }
                     
                     persistedGame.GameState = GameState.GetStateAsString(game.Game);
-                    persistedGame.GameParticipation = JsonSerializer.Serialize(game.Game.Participation);
+                    persistedGame.GameParticipation = Utilities.Serialize(game.Game.Participation);
                     persistedGame.StatisticsSent = game.StatisticsSent;
                     persistedGame.LastAsyncPlayMessageSent = game.LastAsyncPlayMessageSent;
                     persistedGame.LastAction = lastAction;
@@ -158,7 +158,7 @@ public partial class GameHub
                         GameId = key,
                         GameState = GameState.GetStateAsString(game.Game),
                         GameName = game.Name,
-                        GameParticipation = JsonSerializer.Serialize(game.Game.Participation),
+                        GameParticipation = Utilities.Serialize(game.Game.Participation),
                         HashedPassword = game.HashedPassword,
                         ObserversRequirePassword = game.ObserversRequirePassword,
                         StatisticsSent = game.StatisticsSent,
@@ -192,7 +192,7 @@ public partial class GameHub
                     MaximumTurns = game.MaximumTurns,
                     NumberOfPlayers = game.NumberOfPlayers,
                     AllowedFactionsInPlay = game.AllowedFactionsInPlay,
-                    SubscribedUsers = JsonSerializer.Serialize(game.SubscribedUsers),
+                    SubscribedUsers = Utilities.Serialize(game.SubscribedUsers),
                     AsyncPlay = game.AsyncPlay
                 };
 
@@ -245,7 +245,7 @@ public partial class GameHub
                 var id = persistedGame.GameId;
                 var gameState = GameState.Load(persistedGame.GameState);
                 var gameName = persistedGame.GameName;
-                var participation = JsonSerializer.Deserialize<Participation>(persistedGame.GameParticipation);
+                var participation = Utilities.Deserialize<Participation>(persistedGame.GameParticipation);
                 var loadMessage = Game.TryLoad(gameState, participation, false, true, out var game);
                 if (loadMessage == null)
                 {
@@ -272,7 +272,7 @@ public partial class GameHub
             foreach (var scheduledGame in context.ScheduledGames)
             {
                 var id = scheduledGame.GameId;
-                var subscriptions = JsonSerializer.Deserialize<Dictionary<int,SubscriptionType>>(scheduledGame.SubscribedUsers);
+                var subscriptions = Utilities.Deserialize<Dictionary<int,SubscriptionType>>(scheduledGame.SubscribedUsers);
                 var game = new ScheduledGame
                 {
                     ScheduledGameId = scheduledGame.GameId,

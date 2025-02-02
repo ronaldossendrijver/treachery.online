@@ -15,8 +15,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Text.Json.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using Treachery.Client;
 using Treachery.Shared;
 using Treachery.Shared.Model;
@@ -102,31 +102,31 @@ public class Tests
             }
         }
 
-        var p = g.Players.FirstOrDefault(x => x.ForcesInReserve < 0 || x.SpecialForcesInReserve < 0);
-        if (p != null) return "Negative forces " + p.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
+        var player = g.Players.FirstOrDefault(x => x.ForcesInReserve < 0 || x.SpecialForcesInReserve < 0);
+        if (player != null) return "Negative forces " + player.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
 
-        p = g.Players.FirstOrDefault(x => x.Faction == Faction.White && (x.SpecialForcesInReserve != 0 || x.SpecialForcesKilled != 0));
-        if (p != null) return "Invalid forces " + p.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
+        player = g.Players.FirstOrDefault(x => x.Faction == Faction.White && (x.SpecialForcesInReserve != 0 || x.SpecialForcesKilled != 0));
+        if (player != null) return "Invalid forces " + player.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
 
         if (g.CurrentTurn > 1 || g.CurrentMainPhase > MainPhase.Storm)
         {
-            p = g.Players.FirstOrDefault(x => x.ForcesInLocations.Keys.Any(l => l is AttachedLocation al && al.AttachedToLocation == null));
-            if (p != null) return "Forces in unattached location - " + p.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
+            player = g.Players.FirstOrDefault(x => x.ForcesInLocations.Keys.Any(l => l is AttachedLocation al && al.AttachedToLocation == null));
+            if (player != null) return "Forces in unattached location - " + player.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
         }
 
         if (g.Version >= 142)
         {
-            p = g.Players.FirstOrDefault(x => x.Resources < 0);
-            if (p != null) return "Negative spice " + p.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
+            player = g.Players.FirstOrDefault(x => x.Resources < 0);
+            if (player != null) return "Negative spice " + player.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
         }
 
         if (g.CurrentTurn >= 1)
         {
-            p = g.Players.FirstOrDefault(x =>
+            player = g.Players.FirstOrDefault(x =>
                 x.ForcesKilled + x.ForcesInLocations.Sum(b => b.Value.AmountOfForces) +
                 (x.Faction != Faction.White ? x.SpecialForcesKilled + x.ForcesInLocations.Sum(b => b.Value.AmountOfSpecialForces) : 0) != 20);
 
-            if (p != null && (g.Version >= 157 || !p.Is(Faction.Purple))) return "Illegal number of forces " + p.Faction + " - " + g.History.Count;
+            if (player != null && (g.Version >= 157 || !player.Is(Faction.Purple))) return "Illegal number of forces " + player.Faction + " - " + g.History.Count;
         }
 
         if (g.Players.Any(x => x.Leaders.Count(g.IsInFrontOfShield) > 1)) return "More than 1 leader in front of shield after " + e.GetType().Name + " - " + g.History.Count;
@@ -146,12 +146,12 @@ public class Tests
         {
             var previousNumberOfCardsInPlay = _cardCount.CountOf(g.Seed);
             var currentNumberOfCards =
-                g.Players.Sum(player => player.TreacheryCards.Count)
+                g.Players.Sum(p => p.TreacheryCards.Count)
                 + g.TreacheryDeck.Items.Count
                 + g.TreacheryDiscardPile.Items.Count
-                + (g.WhiteCache != null ? g.WhiteCache.Count : 0)
+                + (g.WhiteCache?.Count ?? 0)
                 + (g.CardsOnAuction != null ? g.CardsOnAuction.Items.Count : 0)
-                + (g.Players.Any(player => g.GetCardSetAsideForBid(player) != null) ? 1 : 0)
+                + (g.Players.Any(p => g.GetCardSetAsideForBid(p) != null) ? 1 : 0)
                 + g.RemovedTreacheryCards.Count;
 
             if (previousNumberOfCardsInPlay == 0)
@@ -169,7 +169,7 @@ public class Tests
         if (g.CurrentTurn >= 1)
         {
             var previousNumberOfLeadersInPlay = _leaderCount.CountOf(g.Seed);
-            var currentNumberOfLeaders = g.Players.Sum(player => player.Leaders.Where(l => l.HeroType != HeroType.Vidal).Count());
+            var currentNumberOfLeaders = g.Players.Sum(p => p.Leaders.Count(l => l.HeroType != HeroType.Vidal));
             if (previousNumberOfLeadersInPlay == 0)
                 lock (_leaderCount)
                 {
@@ -185,7 +185,7 @@ public class Tests
         if (g.TreacheryDeck != null)
         {
             var allCards = g.TreacheryDeck.Items.Concat(g.TreacheryDiscardPile.Items).Concat(g.Players.SelectMany(x => x.TreacheryCards)).ToArray();
-            if (allCards.Any(item => allCards.Count(c => c == item) > 1)) return "Duplicate card in Treachery Card Deck" + " after " + e.GetType().Name + " - " + g.History.Count;
+            if (allCards.Any(item => allCards.Count(c => c.Equals(item)) > 1)) return "Duplicate card in Treachery Card Deck" + " after " + e.GetType().Name + " - " + g.History.Count;
         }
 
         if (g.ResourceCardDeck != null)
@@ -194,8 +194,8 @@ public class Tests
             if (allCards.Any(item => allCards.Count(c => c == item) > 1)) return "Duplicate card in Spice Deck" + " after " + e.GetType().Name + " - " + g.History.Count;
         }
 
-        p = g.Players.FirstOrDefault(p => p.TreacheryCards.Count > p.MaximumNumberOfCards);
-        if (p != null && g.CurrentPhase != Phase.PerformingKarmaHandSwap && g.CurrentPhase != Phase.Discarding) return "Too many cards after " + e.GetType().Name + " - " + g.History.Count;
+        player = g.Players.FirstOrDefault(p => p.TreacheryCards.Count > p.MaximumNumberOfCards);
+        if (player != null && g.CurrentPhase != Phase.PerformingKarmaHandSwap && g.CurrentPhase != Phase.Discarding) return "Too many cards after " + e.GetType().Name + " - " + g.History.Count;
 
         var blue = g.GetPlayer(Faction.Blue);
         if (blue != null &&
@@ -209,7 +209,7 @@ public class Tests
 
         if (g.CurrentPhase == Phase.BeginningOfCollection)
         {
-            var terr = g.OccupyingForcesOnPlanet.Where(kvp => kvp.Key != g.Map.PolarSink && !g.IsInStorm(kvp.Key.Territory) && kvp.Value.Count(b => b.Faction != Faction.Pink) > 1).Select(kvp => kvp.Key).FirstOrDefault();
+            var terr = g.OccupyingForcesOnPlanet.Where(kvp => kvp.Key.Equals(g.Map.PolarSink) && !g.IsInStorm(kvp.Key.Territory) && kvp.Value.Count(b => b.Faction != Faction.Pink) > 1).Select(kvp => kvp.Key).FirstOrDefault();
             if (terr != null) return "Territory occupied by more than one faction - " + g.History.Count;
         }
 
@@ -310,22 +310,22 @@ public class Tests
 
 
         foreach (var toTest in allFactions) //10
-            for (var battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.1f; battle_MimimumChanceToAssumeEnemyHeroSurvives <= 1; battle_MimimumChanceToAssumeEnemyHeroSurvives += 0.2f) // 5
-            for (var battle_MimimumChanceToAssumeMyLeaderSurvives = 0.1f; battle_MimimumChanceToAssumeMyLeaderSurvives <= 1; battle_MimimumChanceToAssumeMyLeaderSurvives += 0.2f) //5
-            for (var Battle_MaxStrengthOfDialledForces = 8; Battle_MaxStrengthOfDialledForces <= 18; Battle_MaxStrengthOfDialledForces += 5) //3
-            for (var Battle_DialShortageThresholdForThrowing = 0; Battle_DialShortageThresholdForThrowing <= 6; Battle_DialShortageThresholdForThrowing += 3) //3
+            for (var battleMimimumChanceToAssumeEnemyHeroSurvives = 0.1f; battleMimimumChanceToAssumeEnemyHeroSurvives <= 1; battleMimimumChanceToAssumeEnemyHeroSurvives += 0.2f) // 5
+            for (var battleMimimumChanceToAssumeMyLeaderSurvives = 0.1f; battleMimimumChanceToAssumeMyLeaderSurvives <= 1; battleMimimumChanceToAssumeMyLeaderSurvives += 0.2f) //5
+            for (var battleMaxStrengthOfDialledForces = 8; battleMaxStrengthOfDialledForces <= 18; battleMaxStrengthOfDialledForces += 5) //3
+            for (var battleDialShortageThresholdForThrowing = 0; battleDialShortageThresholdForThrowing <= 6; battleDialShortageThresholdForThrowing += 3) //3
             {
                 //10*5*5*3*3 = 2250 lines
                 var p = BotParameters.GetDefaultParameters(toTest);
-                p.Battle_MimimumChanceToAssumeEnemyHeroSurvives = battle_MimimumChanceToAssumeEnemyHeroSurvives;
-                p.Battle_MimimumChanceToAssumeMyLeaderSurvives = battle_MimimumChanceToAssumeMyLeaderSurvives;
-                p.Battle_DialShortageThresholdForThrowing = Battle_DialShortageThresholdForThrowing;
+                p.Battle_MimimumChanceToAssumeEnemyHeroSurvives = battleMimimumChanceToAssumeEnemyHeroSurvives;
+                p.Battle_MimimumChanceToAssumeMyLeaderSurvives = battleMimimumChanceToAssumeMyLeaderSurvives;
+                p.Battle_DialShortageThresholdForThrowing = battleDialShortageThresholdForThrowing;
 
                 var pDict = new Dictionary<Faction, BotParameters> { { toTest, p } };
                 DetermineWins(Environment.ProcessorCount * 3, rulesAsArray, nrOfPlayers, nrOfTurns, pDict, toTest, out var wins, out var spice, out var points, out var forcesOnPlanet);
 
                 File.AppendAllLines("results.csv", new[] { string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
-                    battle_MimimumChanceToAssumeEnemyHeroSurvives, battle_MimimumChanceToAssumeMyLeaderSurvives, Battle_MaxStrengthOfDialledForces, Battle_DialShortageThresholdForThrowing,
+                    battleMimimumChanceToAssumeEnemyHeroSurvives, battleMimimumChanceToAssumeMyLeaderSurvives, battleMaxStrengthOfDialledForces, battleDialShortageThresholdForThrowing,
                     wins, spice, points, forcesOnPlanet, toTest) });
             }
     }
@@ -343,7 +343,7 @@ public class Tests
             MaxDegreeOfParallelism = Environment.ProcessorCount
         };
         Parallel.For(0, nrOfGames, po,
-            i =>
+            _ =>
             {
                 var game = LetBotsPlay(rules, nrOfPlayers, nrOfTurns, p, false, null, 30, f);
                 var playerToCheck = game.Players.Single(x => x.Faction == f);
@@ -419,8 +419,8 @@ public class Tests
         foreach (var winner in game.Winners) winCounter.Count(winner.Faction);
     }
 
-    private readonly List<Game> failedGames = [];
-    private Game LetBotsPlay(Rule[] rules, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool performTests, Statistics statistics, int timeout, Faction mustPlay = Faction.None)
+    private readonly List<Game> _failedGames = [];
+    private Game LetBotsPlay(Rule[] rules, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> parameters, bool performTests, Statistics statistics, int timeout, Faction mustPlay = Faction.None)
     {
         BattleOutcome previousBattleOutcome = null;
         IBid previousWinningBid = null;
@@ -458,8 +458,8 @@ public class Tests
             };
             start.Execute(false, true);
 
-            if (p != null)
-                foreach (var kvp in p) game.Players.Single(p => p.Faction == kvp.Key).Param = kvp.Value;
+            if (parameters != null)
+                foreach (var kvp in parameters) game.Players.Single(p => p.Faction == kvp.Key).Param = kvp.Value;
 
             var maxNumberOfEvents = game.CurrentTurn * game.Players.Count * 60;
 
@@ -475,7 +475,7 @@ public class Tests
                 if (game.History.Count == maxNumberOfEvents) File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
                 Assert.AreNotEqual(maxNumberOfEvents, game.History.Count, "bots got stuck");
 
-                Assert.IsFalse(failedGames.Contains(game), "timeout");
+                Assert.IsFalse(_failedGames.Contains(game), "timeout");
 
                 if (performTests)
                 {
@@ -503,7 +503,7 @@ public class Tests
     {
         var game = sender as Game;
         File.WriteAllText("timeout" + game?.Seed + ".json", GameState.GetStateAsString(game));
-        failedGames.Add(game);
+        _failedGames.Add(game);
     }
 
     private static GameEvent PerformBotEvent(Game game, bool performTests)
@@ -626,7 +626,7 @@ public class Tests
             throw;
         }
             
-        statistics?.Output(DefaultSkin.Default);
+        statistics.Output(DefaultSkin.Default);
             
         foreach (var item in centralStyleStatistics)
         {
@@ -639,13 +639,14 @@ public class Tests
     private void ReplayGame(string fileName, string testcaseFileName, Statistics statistics, ConcurrentBag<string> centralStyleStatistics)
     {
         var fs = File.OpenText(fileName);
-        var state = GameState.Load(fs.ReadToEnd());
+        var stateData = fs.ReadToEnd();
+        var state = GameState.Load(stateData);
         fs.Close();
         Console.WriteLine("Checking {0} (version {1})...", fileName, state.Version);
         var game = new Game(state.Version, new Participation());
 
         fs = File.OpenText(testcaseFileName);
-        var tc = LoadObject<Testcase>(fs.ReadToEnd());
+        var tc = Utilities.Deserialize<Testcase>(fs.ReadToEnd());
         fs.Close();
 
         var valueId = 0;
@@ -683,19 +684,9 @@ public class Tests
         }
 
         var centralStyleStats = GameStatistics.GetStatistics(game);
-        var data = GetStatisticsAsString(centralStyleStats);
+        var data = Utilities.Serialize(centralStyleStats);
         centralStyleStatistics.Add(data);
         //var json = new StringContent(data, Encoding.UTF8, "application/json");
-    }
-
-    private static string GetStatisticsAsString(GameStatistics g)
-    {
-        var serializer = JsonSerializer.CreateDefault();
-        serializer.TypeNameHandling = TypeNameHandling.None;
-        var writer = new StringWriter();
-        serializer.Serialize(writer, g);
-        writer.Close();
-        return writer.ToString();
     }
 
     private static void GatherStatistics(Statistics statistics, Game game, ref BattleOutcome previousBattleOutcome, ref IBid previousWinningBid)
@@ -874,43 +865,21 @@ public class Tests
         return result;
     }
 
-    private static T LoadObject<T>(string data)
-    {
-        var serializer = JsonSerializer.CreateDefault();
-        serializer.TypeNameHandling = TypeNameHandling.All;
-        var textReader = new StringReader(data);
-        var jsonReader = new JsonTextReader(textReader);
-        return serializer.Deserialize<T>(jsonReader);
-    }
-
-
     [TestMethod]
     public void SaveAndLoadSkin()
     {
         var leader = LeaderManager.LeaderLookup.Find(1008);
         var oldName = DefaultSkin.Default.Describe(leader);
-        var serializer = JsonSerializer.CreateDefault();
-        serializer.Formatting = Formatting.Indented;
-        var writer = new StringWriter();
-        serializer.Serialize(writer, DefaultSkin.Default);
-        writer.Close();
-        var skinData = writer.ToString();
+        var skinData = Utilities.Serialize(DefaultSkin.Default);
         File.WriteAllText("skin.json", skinData);
 
-        var textReader = new StringReader(File.ReadAllText("skin.json"));
-        var jsonReader = new JsonTextReader(textReader);
-        var skinToTest = serializer.Deserialize<Skin>(jsonReader);
+        var skinToTest = Utilities.Deserialize<Skin>(File.ReadAllText("skin.json"));
         Assert.AreEqual(oldName, skinToTest.Describe(leader));
     }
 
     private static void SaveObject(object toSave, string filename)
     {
-        var serializer = JsonSerializer.CreateDefault();
-        serializer.Formatting = Formatting.Indented;
-        var writer = new StringWriter();
-        serializer.Serialize(writer, toSave);
-        writer.Close();
-        var skinData = writer.ToString();
+        var skinData = Utilities.Serialize(toSave);
         File.WriteAllText(filename, skinData);
     }
 
@@ -939,9 +908,10 @@ public class Tests
         var baseType = typeof(GameEvent);
         var subtypes = Assembly.GetAssembly(baseType)?
             .GetTypes()
-            .Where(t => t.IsClass && !t.IsAbstract && baseType.IsAssignableFrom(t));
+            .Where(t => t.IsClass && !t.IsAbstract && baseType.IsAssignableFrom(t))
+            .ToArray();
 
-        if (subtypes == null || !subtypes.Any())
+        if (subtypes == null || subtypes.Length == 0)
         {
             Console.WriteLine($"No subtypes found for {baseType.Name}.");
             return;

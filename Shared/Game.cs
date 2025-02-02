@@ -996,9 +996,11 @@ public partial class Game
         }
     }
 
+    public DateTime FirstAction => History.FirstOrDefault()?.Time.DateTime ?? DateTime.MinValue;
     
+    public DateTime LastAction => History.LastOrDefault()?.Time.DateTime ?? DateTime.MinValue;
 
     #endregion Information
-    
-    
+
+
 }

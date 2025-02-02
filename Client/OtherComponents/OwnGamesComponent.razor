@@ -308,7 +308,7 @@
 
     private async Task CreateNewGame()
     {
-        await Client.RequestCreateGame(CreateGamePassword);
+        CreateError = await Client.RequestCreateGame(CreateGamePassword);
     }
     
     private async Task LoadAndCreateGame()
@@ -349,10 +349,7 @@
     
     private async Task Delete(GameInfo av)
     {
-        var result = await Client.RequestCloseGame(av.GameId);
-        if (result != null)
-            CreateError = result;
-        
+        CreateError = await Client.RequestCloseGame(av.GameId) ?? string.Empty;
         StateHasChanged();
     }
 

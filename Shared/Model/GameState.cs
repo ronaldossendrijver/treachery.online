@@ -15,7 +15,7 @@ public class GameState
 {
     public int Version { get; set; }
 
-    public GameEvent[] _events;
+    public GameEvent[] _events = [];
 
     [JsonIgnore]
     public IEnumerable<GameEvent> Events
@@ -27,13 +27,13 @@ public class GameState
     public static GameState Load(string data)
     {
         var fixedStateData = FixGameStateString(data);
-        return JsonSerializer.Deserialize<GameState>(fixedStateData);
+        return Utilities.Deserialize<GameState>(fixedStateData);
     }
 
     public static string GetStateAsString(Game g)
     {
         var state = new GameState { Version = g.Version, Events = g.History };
-        return JsonSerializer.Serialize(state);
+        return Utilities.Serialize(state);
     }
 
     private static string FixGameStateString(string state)

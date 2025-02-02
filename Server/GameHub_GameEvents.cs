@@ -218,6 +218,8 @@ public partial class GameHub
             game.StatisticsSent = true;
         }
 
+        Console.WriteLine($"Sending event nr: {game.Game.History.Count}, type: {e.GetType()}");
+        
         await Clients.Group(game.GameId).HandleGameEvent(e, game.Game.History.Count);
         
         await SendAsyncPlayMessagesIfApplicable(game.GameId);

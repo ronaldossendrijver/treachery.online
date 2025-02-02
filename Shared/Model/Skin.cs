@@ -1535,7 +1535,7 @@ public class Skin : IDescriber
 
     public static Skin Load(string data, Skin donor)
     {
-        var result = JsonSerializer.Deserialize<Skin>(data);
+        var result = Utilities.Deserialize<Skin>(data);
         Fix(result, donor);
         return result;
     }
@@ -1689,7 +1689,7 @@ public class Skin : IDescriber
         if (toFix == null || toFix.Equals(default(T))) toFix = donor;
     }
 
-    public string SkinToString() => JsonSerializer.Serialize(this);
+    public string SkinToString() => Utilities.Serialize(this);
 
     #endregion LoadingAndSaving
 }

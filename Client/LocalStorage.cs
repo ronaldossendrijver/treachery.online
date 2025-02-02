@@ -26,7 +26,7 @@ public class LocalStorage
 
     public async Task SetAsync<T>(string key, T value)
     {
-        var jsVal = value != null ? JsonSerializer.Serialize(value) : null;
+        var jsVal = value != null ? Utilities.Serialize(value) : null;
         await _jsRuntime.InvokeVoidAsync("localStorage.setItem", key, jsVal);
     }
 
@@ -43,7 +43,7 @@ public class LocalStorage
 
         try
         {
-            var result = JsonSerializer.Deserialize<T>(val);
+            var result = Utilities.Deserialize<T>(val);
             return result;
         }
         catch (Exception)

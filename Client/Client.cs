@@ -10,6 +10,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Treachery.Client;
 
@@ -79,6 +80,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         Browser = browser;
         
         _connection = new HubConnectionBuilder()
+            .AddJsonProtocol(jsonOptions => jsonOptions.PayloadSerializerOptions.IncludeFields = true)
             .WithUrl(navigationManager.ToAbsoluteUri("/gameHub"))
             .WithAutomaticReconnect(new RetryPolicy())
             .Build();
@@ -226,6 +228,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         Message resultMessage;
         e.Initialize(Game);
         var expectedEventNumber = Game.EventCount + 1;
+        Console.WriteLine($"Handling event nr: {newEventNumber}, expected: {expectedEventNumber}, type: {e.GetType()}");
         
         if (newEventNumber == expectedEventNumber)
         {
