@@ -21,7 +21,7 @@ public partial class Game
     public int NumberOfMonsters { get; internal set; }
 
     internal List<NexusVoted> NexusVotes { get; } = new();
-    internal bool ThumperUsed { get; set; }
+    internal bool ThumperCallsMonster { get; set; }
 
     private ResourceCard IgnoredSandtrout { get; set; }
     public ResourceCard SandTrout { get; private set; }
@@ -57,11 +57,11 @@ public partial class Game
     internal void DrawResourceCard()
     {
         ResourceCard drawn = null;
-        while (ThumperUsed || !(drawn = DrawAndDiscardResourceCard(CurrentDiscardPile)).IsSpiceBlow)
+        while (ThumperCallsMonster || !(drawn = DrawAndDiscardResourceCard(CurrentDiscardPile)).IsSpiceBlow)
         {
-            if (ThumperUsed && Version <= 150)
+            if (ThumperCallsMonster && Version <= 150)
             {
-                ThumperUsed = false;
+                ThumperCallsMonster = false;
                 NumberOfMonsters++;
                 LetMonsterAppear(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud || PreviousBlowCard.IsGreatMaker ? null : PreviousBlowCard.Territory, false);
                 if (CurrentPhase == Phase.YellowSendingMonsterA || CurrentPhase == Phase.YellowSendingMonsterB) break;
@@ -71,9 +71,9 @@ public partial class Game
                 Log(drawn.IsShaiHulud ? Concept.Monster : Concept.GreatMonster, " on turn 1 was ignored");
                 IgnoredMonsters.Add(CurrentDiscardPile.Draw());
             }
-            else if ((ThumperUsed && Version > 150) || drawn.IsShaiHulud || drawn.IsGreatMaker)
+            else if ((ThumperCallsMonster && Version > 150) || drawn.IsShaiHulud || drawn.IsGreatMaker)
             {
-                if (!ThumperUsed)
+                if (!ThumperCallsMonster)
                 {
                     if (drawn.IsShaiHulud)
                         Stone(Milestone.Monster);
@@ -85,7 +85,7 @@ public partial class Game
                 {
                     SandTroutDoublesResources = false;
                     NumberOfMonsters++;
-                    LetMonsterAppear(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud || PreviousBlowCard.IsGreatMaker ? null : PreviousBlowCard.Territory, !ThumperUsed && drawn.IsGreatMaker);
+                    LetMonsterAppear(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud || PreviousBlowCard.IsGreatMaker ? null : PreviousBlowCard.Territory, !ThumperCallsMonster && drawn.IsGreatMaker);
                     if (CurrentPhase == Phase.YellowSendingMonsterA || CurrentPhase == Phase.YellowSendingMonsterB) break;
                 }
                 else
@@ -120,7 +120,7 @@ public partial class Game
                 }
             }
 
-            ThumperUsed = false;
+            ThumperCallsMonster = false;
         }
 
         if (CurrentPhase != Phase.YellowSendingMonsterA && CurrentPhase != Phase.YellowSendingMonsterB)

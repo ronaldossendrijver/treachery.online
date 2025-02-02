@@ -150,12 +150,12 @@ public partial class Game
                 if (TestingStationUsed.CanBePlayed(this, player)) result.Add(typeof(TestingStationUsed));
                 break;
             case Phase.Thumper:
-                if (player.Has(TreacheryCardType.Thumper) && CurrentTurn > 1) result.Add(typeof(ThumperPlayed));
+                if (player.Has(TreacheryCardType.Thumper)) result.Add(typeof(ThumperPlayed));
                 if (Version < 103 && player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
                 break;
             case Phase.VoteAllianceA:
             case Phase.VoteAllianceB:
-                if (!NexusVotes.Any(v => v.Initiator == faction)) result.Add(typeof(NexusVoted));
+                if (NexusVotes.All(v => v.Initiator != faction)) result.Add(typeof(NexusVoted));
                 break;
             case Phase.HarvesterA:
             case Phase.HarvesterB:

@@ -39,7 +39,7 @@ public class ThumperPlayed : GameEvent
         Game.Discard(Player, TreacheryCardType.Thumper);
         Log();
         Game.Stone(Milestone.Thumper);
-        Game.ThumperUsed = true;
+        Game.ThumperCallsMonster = Game.CurrentTurn > 1;
         Game.EnterBlowA();
     }
 
