@@ -35,13 +35,16 @@ public static class Utilities
     private static readonly JsonSerializerOptions Options = new() { IncludeFields = true };
 
     private const string NewtonsoftIndicator = "Treachery.Shared";
-    private const string Pattern = "\"\\$type\":\"Treachery\\.Shared\\.([A-Za-z0-9_\\[\\]]+), Treachery\\.Shared\",";
+    private const string ValuePattern = "\"\\$values\"\":(\\[.*?\\])";
+    private const string TypePattern = "\"\\$type\":\"Treachery\\.Shared\\.([A-Za-z0-9_\\[\\]]+), Treachery\\.Shared\",";
 
-    public static T Deserialize<T>(string serialized)
+    public static T Deserialize<T>(string serializedValue)
     {
-        if (serialized.Substring(0, 100).Contains(NewtonsoftIndicator))
+        if (serializedValue[..50].Contains(NewtonsoftIndicator))
         {
-            var adjustedSerialized = Regex.Replace(serialized, Pattern, match =>
+            var valueMetadataRemoved = Regex.Replace(serializedValue, ValuePattern, "$1");
+            
+            var typeMetadataUpdated = Regex.Replace(valueMetadataRemoved, TypePattern, match =>
             {
                 string typeName = match.Groups[1].Value;
                 if (IsGameEvent(typeName))
@@ -55,12 +58,10 @@ public static class Utilities
                     return string.Empty; // Remove the match
                 }
             });
-            return JsonSerializer.Deserialize<T>(adjustedSerialized, Options);
+            return JsonSerializer.Deserialize<T>(typeMetadataUpdated, Options);
         }
         
-        
-        return JsonSerializer.Deserialize<T>(serialized, Options);
-
+        return JsonSerializer.Deserialize<T>(serializedValue, Options);
     }
     
     private static bool IsGameEvent(string typeName)
