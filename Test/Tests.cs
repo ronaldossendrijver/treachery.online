@@ -209,7 +209,7 @@ public class Tests
 
         if (g.CurrentPhase == Phase.BeginningOfCollection)
         {
-            var terr = g.OccupyingForcesOnPlanet.Where(kvp => kvp.Key.Equals(g.Map.PolarSink) && !g.IsInStorm(kvp.Key.Territory) && kvp.Value.Count(b => b.Faction != Faction.Pink) > 1).Select(kvp => kvp.Key).FirstOrDefault();
+            var terr = g.OccupyingForcesOnPlanet.Where(kvp => !kvp.Key.Equals(g.Map.PolarSink) && !g.IsInStorm(kvp.Key.Territory) && kvp.Value.Count(b => b.Faction != Faction.Pink) > 1).Select(kvp => kvp.Key).FirstOrDefault();
             if (terr != null) return "Territory occupied by more than one faction - " + g.History.Count;
         }
 

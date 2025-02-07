@@ -13,40 +13,36 @@
     <div class="card-header">Select up to (including) which action should be undone</div>
 
     <div class="card-body">
-
-        <select class="form-select" @bind="undoEventId" id="undoEventNr">
-
+        <select class="form-select" @bind="_undoEventId" id="undoEventNr">
             @foreach (var group in UndoableEvents)
             {
                 <optgroup label="@group.Key">
-
                     @foreach (var evt in group.Value)
                     {
-                        <option value=@evt.Key>@DetermineEventDescription(evt.Key, evt.Value)</option>
+                        <option value=@evt.Key selected="@(evt.Key == _undoEventId)">@DetermineEventDescription(evt.Key, evt.Value)</option>
                     }
-
                 </optgroup>
             }
-
         </select>
-        
+       
         <button class="btn btn-primary mt-1" @onclick="ConfirmUndo">Confirm</button>
     </div>
 </div>
 
 @code {
 
-    private int undoEventId;
+    private int _undoEventId;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        undoEventId = Game.History.Count - 1;
+        _undoEventId = Game.History.Count - 1;
     }
 
     private async Task ConfirmUndo()
     {
-        await Client.RequestUndo(undoEventId);
+        await Client.RequestUndo(_undoEventId);
+        _undoEventId = Game.History.Count - 1;
     }
 
     private string DetermineEventDescription(int eventnumber, GameEvent e)
@@ -68,18 +64,18 @@
             for (var i = Client.Game.History.Count - 1; i > 0; i--)
             {
                 var e = Client.Game.History[i];
-                if (!(e is AllyPermission) && !(e is BattleRevision))
+                if (e is AllyPermission or BattleRevision) 
+                    continue;
+                
+                var group = DetermineGroup(Client.Game.Moments[i-1]);
+                if (!result.ContainsKey(group))
                 {
-                    var group = DetermineGroup(Client.Game.Moments[i-1]);
-                    if (!result.ContainsKey(group))
-                    {
-                        result.Add(group, new Dictionary<int, GameEvent>());
-                    }
-
-                    var groupedEvents = result[group];
-
-                    groupedEvents.Add(i, e);
+                    result.Add(group, new Dictionary<int, GameEvent>());
                 }
+
+                var groupedEvents = result[group];
+
+                groupedEvents.Add(i, e);
             }
 
             return result;

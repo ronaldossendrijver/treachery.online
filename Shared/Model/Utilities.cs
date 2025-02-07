@@ -1,73 +1,89 @@
 ﻿using System;
-using System.Text.RegularExpressions;
+using System.Text.Json.Nodes;
 
 namespace Treachery.Shared;
 
 public static class Utilities
 {
     public static List<T> CloneList<T>(List<T> toClone) where T : ICloneable
-    {
-        var result = new List<T>();
+        => toClone.Select(item => (T)item.Clone()).ToList();
 
-        foreach (var item in toClone) result.Add((T)item.Clone());
+    public static Dictionary<TX, TY> CloneObjectDictionary<TX, TY>(Dictionary<TX, TY> toClone) where TY : ICloneable
+        => toClone.ToDictionary(item => item.Key, item => (TY)item.Value.Clone());
 
-        return result;
-    }
-
-    public static Dictionary<X, Y> CloneObjectDictionary<X, Y>(Dictionary<X, Y> toClone) where Y : ICloneable
-    {
-        var result = new Dictionary<X, Y>();
-
-        foreach (var item in toClone) result.Add(item.Key, (Y)item.Value.Clone());
-
-        return result;
-    }
-
-    public static Dictionary<X, Y> CloneEnumDictionary<X, Y>(Dictionary<X, Y> toClone) where Y : struct, Enum
-    {
-        var result = new Dictionary<X, Y>();
-
-        foreach (var item in toClone) result.Add(item.Key, item.Value);
-
-        return result;
-    }
+    public static Dictionary<TX, TY> CloneEnumDictionary<TX, TY>(Dictionary<TX, TY> toClone) where TY : struct, Enum
+        => toClone.ToDictionary(item => item.Key, item => item.Value);
 
     private static readonly JsonSerializerOptions Options = new() { IncludeFields = true };
 
-    private const string NewtonsoftIndicator = "Treachery.Shared";
-    private const string ValuePattern = "\"\\$values\"\":(\\[.*?\\])";
-    private const string TypePattern = "\"\\$type\":\"Treachery\\.Shared\\.([A-Za-z0-9_\\[\\]]+), Treachery\\.Shared\",";
+    private const string NewtonsoftIndicator = "{\"$type\":\"Treachery.Shared.GameState";
 
     public static T Deserialize<T>(string serializedValue)
     {
-        if (serializedValue[..50].Contains(NewtonsoftIndicator))
+        if (!serializedValue.StartsWith(NewtonsoftIndicator))
+            return JsonSerializer.Deserialize<T>(serializedValue, Options);
+        
+        var convertedValue = ConvertNewtonsoftJsonToPlainJson(serializedValue);
+        var res = JsonSerializer.Deserialize<T>(convertedValue, Options);
+        return res;
+    }
+
+    private static string ConvertNewtonsoftJsonToPlainJson(string value)
+    {
+        var jsonNode = JsonNode.Parse(value);
+        ReplaceTypeMetadataAndNestedArrays(jsonNode);
+        return jsonNode?.ToJsonString(new JsonSerializerOptions {WriteIndented = false}) ?? string.Empty;
+    }
+
+    private static void ReplaceTypeMetadataAndNestedArrays(JsonNode node)
+    {
+        if (node is JsonObject obj)
         {
-            var valueMetadataRemoved = Regex.Replace(serializedValue, ValuePattern, "$1");
-            
-            var typeMetadataUpdated = Regex.Replace(valueMetadataRemoved, TypePattern, match =>
+            if (obj.ContainsKey("$type"))
             {
-                string typeName = match.Groups[1].Value;
-                if (IsGameEvent(typeName))
+                var eventType = DetermineGameEvent(obj["$type"]!.GetValue<string>());
+                if (eventType != null)
                 {
-                    var newValue = "\"$type\":\"" + match.Value + "\",";
-                    
-                    return newValue;
+                    obj["$type"] = eventType.Name;
                 }
                 else
                 {
-                    return string.Empty; // Remove the match
+                    obj.Remove("$type");
                 }
-            });
-            return JsonSerializer.Deserialize<T>(typeMetadataUpdated, Options);
+            }
+            
+            if (obj.Count == 1 && obj.ContainsKey("$values") && obj["$values"] is JsonArray valuesArray)
+            {
+                var newArray = new JsonArray();
+                foreach (var item in valuesArray)
+                {
+                    var clone = item.DeepClone();
+                    ReplaceTypeMetadataAndNestedArrays(clone);
+                    newArray.Add(clone);
+                }
+                obj.ReplaceWith(newArray);
+            }
+            else
+            {
+                foreach (var key in ((IDictionary<string, JsonNode>)obj).Keys)
+                {
+                    ReplaceTypeMetadataAndNestedArrays(obj[key]);
+                }                
+            }
         }
-        
-        return JsonSerializer.Deserialize<T>(serializedValue, Options);
+        else if (node is JsonArray array)
+        {
+            foreach (var item in array)
+            {
+                ReplaceTypeMetadataAndNestedArrays(item);
+            }
+        }
     }
-    
-    private static bool IsGameEvent(string typeName)
+
+    private static Type DetermineGameEvent(string fullTypeName)
     {
-        var foundType = Type.GetType($"Treachery.Shared.{typeName}");
-        return foundType != null && !foundType.IsAbstract && !foundType.IsInterface && foundType.IsSubclassOf(typeof(GameEvent));
+        var foundType = Type.GetType(fullTypeName);
+        return foundType is { IsAbstract: false, IsInterface: false } && foundType.IsSubclassOf(typeof(GameEvent)) ? foundType : null;
     }
 
     public static string Serialize<T>(T value)
