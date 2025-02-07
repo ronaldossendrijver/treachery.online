@@ -35,13 +35,13 @@ public partial class Game
 
     internal void AssignFactionsAndEnterFactionTrade()
     {
-        var inPlay = new Deck<Faction>(FactionsInPlay, Random);
+        var selectable = new Deck<Faction>(FactionsInPlay.Where(f => !IsPlaying(f)), Random);
         Stone(Milestone.Shuffled);
-        inPlay.Shuffle();
+        selectable.Shuffle();
 
         foreach (var p in Players.Where(p => p.Faction == Faction.None))
         {
-            p.Faction = inPlay.Draw();
+            p.Faction = selectable.Draw();
         }
 
         if (Version < 172)

@@ -16,11 +16,11 @@ public static class Utilities
 
     private static readonly JsonSerializerOptions Options = new() { IncludeFields = true };
 
-    private const string NewtonsoftIndicator = "{\"$type\":\"Treachery.Shared.GameState";
+    private const string NewtonsoftIndicator = "Treachery.Shared.GameState";
 
     public static T Deserialize<T>(string serializedValue)
     {
-        if (!serializedValue.StartsWith(NewtonsoftIndicator))
+        if (serializedValue.Length < 128 || !serializedValue[..128].Contains(NewtonsoftIndicator))
             return JsonSerializer.Deserialize<T>(serializedValue, Options);
         
         var convertedValue = ConvertNewtonsoftJsonToPlainJson(serializedValue);

@@ -433,24 +433,31 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     public async Task<string> RequestScheduleGame(DateTimeOffset dateTime, Ruleset? ruleset, int? numberOfPlayers, int? maximumTurns, List<Faction> allowedFactions, bool asyncPlay)
     {
-        var result = await Invoke(nameof(IGameHub.RequestScheduleGame), UserToken, dateTime, ruleset, numberOfPlayers, maximumTurns, allowedFactions, asyncPlay);
-        
-        return result.Success ? null : CurrentSkin.Describe(result.Error);
+        var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestScheduleGame), UserToken, dateTime, ruleset, numberOfPlayers, maximumTurns, allowedFactions, asyncPlay);
+        return UpdateServerStatusOnSuccess(result);
     }
     
     public async Task<string> RequestCancelGame(string scheduledGameId)
     {
-        var result = await Invoke(nameof(IGameHub.RequestCancelGame), UserToken, scheduledGameId);
-        
-        return result.Success ? null : CurrentSkin.Describe(result.Error);
+        var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestCancelGame), UserToken, scheduledGameId);
+        return UpdateServerStatusOnSuccess(result);
     }
 
     public async Task<string> RequestCloseGame(string gameId)
     {
-        var result = await Invoke(nameof(IGameHub.RequestCloseGame), UserToken, gameId);
-        return result.Success ? string.Empty : CurrentSkin.Describe(result.Error);
+        var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestCloseGame), UserToken, gameId);
+        return UpdateServerStatusOnSuccess(result);
     }
-    
+
+    private string UpdateServerStatusOnSuccess(Result<ServerStatus> result)
+    {
+        if (!result.Success) 
+            return CurrentSkin.Describe(result.Error);
+        
+        HandleUpdatedServerStatus(result.Contents);
+        return string.Empty;
+    }
+
     public async Task<string> RequestUpdateSettings(string gameId, GameSettings settings)
     {
         var result = await Invoke(nameof(IGameHub.RequestUpdateSettings), UserToken, gameId, settings);
@@ -473,11 +480,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     public async Task<string> RequestSubscribeGame(string scheduledGameId, SubscriptionType subscription)
     {
-        var result = await Invoke(nameof(IGameHub.RequestSubscribeGame), UserToken, scheduledGameId, subscription);
-        if (!result.Success) 
-            return CurrentSkin.Describe(result.Error);
-
-        return null;
+        var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestSubscribeGame), UserToken, scheduledGameId, subscription);
+        return UpdateServerStatusOnSuccess(result);
     }
 
     public async Task<string> RequestObserveGame(string gameId, string password)
@@ -500,9 +504,12 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public async Task<string> RequestOpenOrCloseSeat(int seat) =>
         CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestOpenOrCloseSeat), UserToken, GameId, seat)).Error);
 
-    public async Task<string> RequestLeaveGame() =>
-        CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestLeaveGame), UserToken, GameId)).Error);
-    
+    public async Task<string> RequestLeaveGame()
+    {
+        var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestLeaveGame), UserToken, GameId);
+        return UpdateServerStatusOnSuccess(result);
+    }
+
     public async Task<string> RequestKick(int userId) => 
         CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestKick), UserToken, GameId, userId)).Error);
 
@@ -631,16 +638,18 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         var scope = InGame ? GameListScope.None :
             FetchActiveGamesOnly ? GameListScope.ActiveAndOwned : GameListScope.All;
         
-        var status = await Invoke<ServerStatus>(nameof(IGameHub.RequestHeartbeat), UserToken, scope);
-        if (status.Success)
-        {
-            RunningGames = status.Contents.RunningGames;
-            RunningGamesWithOpenSeats = RunningGames.Where(g => g.CanBeJoined).ToArray();
-            RunningGamesWithoutOpenSeats = RunningGames.Where(g => !g.CanBeJoined).ToArray();
-            ScheduledGames = status.Contents.ScheduledGames;
-            RecentlySeenUsers = status.Contents.LoggedInUsers.ToDictionary(x => x.Id, x => x);
-            Refresh(nameof(Heartbeat));
-        }
+        var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestHeartbeat), UserToken, scope);
+        UpdateServerStatusOnSuccess(result);
+    }
+
+    private void HandleUpdatedServerStatus(ServerStatus status)
+    {
+        RunningGames = status.RunningGames;
+        RunningGamesWithOpenSeats = RunningGames.Where(g => g.CanBeJoined).ToArray();
+        RunningGamesWithoutOpenSeats = RunningGames.Where(g => !g.CanBeJoined).ToArray();
+        ScheduledGames = status.ScheduledGames;
+        RecentlySeenUsers = status.LoggedInUsers.ToDictionary(x => x.Id, x => x);
+        Refresh(nameof(HandleUpdatedServerStatus));
     }
 
     private async Task<Message> LoadGame(GameInitInfo initInfo)

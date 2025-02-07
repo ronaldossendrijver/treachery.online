@@ -64,14 +64,14 @@ public partial class GameHub
         });
     }
 
-    public async Task<VoidResult> RequestScheduleGame(string userToken, DateTimeOffset dateTime, Ruleset? ruleset,
+    public async Task<Result<ServerStatus>> RequestScheduleGame(string userToken, DateTimeOffset dateTime, Ruleset? ruleset,
         int? numberOfPlayers, int? maximumTurns, List<Faction> allowedFactionsInPlay, bool asyncPlay)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
-            return Error(ErrorType.UserNotFound);
+            return Error<ServerStatus>(ErrorType.UserNotFound);
         
         if (ScheduledGamesByGameId.Values.Count(g => g.CreatorUserId == user.Id) >= 3)
-            return Error(ErrorType.TooManyScheduledGames);
+            return Error<ServerStatus>(ErrorType.TooManyScheduledGames);
 
         var gameId = Guid.NewGuid().ToString();
         var scheduledGame = new ScheduledGame
@@ -89,24 +89,25 @@ public partial class GameHub
         };
 
         ScheduledGamesByGameId[gameId] = scheduledGame;
-        
-        return await Task.FromResult(Success());
+        UpdateServerStatusIfNeeded(true);
+        return await Task.FromResult(Success(ServerStatus));
     }
     
-    public async Task<VoidResult> RequestCancelGame(string userToken, string scheduledGameId)
+    public async Task<Result<ServerStatus>> RequestCancelGame(string userToken, string scheduledGameId)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
-            return Error(ErrorType.UserNotFound);
+            return Error<ServerStatus>(ErrorType.UserNotFound);
         
         if (!ScheduledGamesByGameId.TryGetValue(scheduledGameId, out var scheduledGame)) 
-            return Error(ErrorType.ScheduledGameNotFound);
+            return Error<ServerStatus>(ErrorType.ScheduledGameNotFound);
         
         if (user.Id != scheduledGame.CreatorUserId)
-            return Error(ErrorType.NoHost);
+            return Error<ServerStatus>(ErrorType.NoHost);
 
         ScheduledGamesByGameId.Remove(scheduledGameId, out _);
         
-        return await Task.FromResult(Success());
+        UpdateServerStatusIfNeeded(true);
+        return await Task.FromResult(Success(ServerStatus));
     }
     
     public async Task<VoidResult> RequestLoadGame(string userToken, string gameId, string stateData, string skin)
@@ -212,24 +213,25 @@ public partial class GameHub
         });
     }
     
-    public async Task<VoidResult> RequestSubscribeGame(string userToken, string gameId, SubscriptionType subscription)
+    public async Task<Result<ServerStatus>> RequestSubscribeGame(string userToken, string gameId, SubscriptionType subscription)
     {
         if (gameId == null)
-            return Error(ErrorType.GameNotFound);
+            return Error<ServerStatus>(ErrorType.GameNotFound);
         
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
         {
-            return Error(ErrorType.UserNotFound);
+            return Error<ServerStatus>(ErrorType.UserNotFound);
         }
         
         if (!ScheduledGamesByGameId.TryGetValue(gameId, out var game))
         {
-            return Error(ErrorType.GameNotFound);
+            return Error<ServerStatus>(ErrorType.GameNotFound);
         }
 
         game.SubscribedUsers[user.Id] = subscription;
 
-        return await Task.FromResult(Success());
+        UpdateServerStatusIfNeeded(true);
+        return await Task.FromResult(Success(ServerStatus));
     }
 
     public async Task<VoidResult> RequestOpenOrCloseSeat(string userToken, string gameId, int seat)
@@ -261,9 +263,9 @@ public partial class GameHub
         return Success();
     }
 
-    public async Task<VoidResult> RequestLeaveGame(string userToken, string gameId)
+    public async Task<Result<ServerStatus>> RequestLeaveGame(string userToken, string gameId)
     {
-        if (!AreValid(userToken, gameId, out var user, out var game, out var error))
+        if (!AreValid<ServerStatus>(userToken, gameId, out var user, out var game, out var error))
             return error;
         
         if (game.Game.IsHost(user.Id) && game.Game.NumberOfHosts == 1)
@@ -279,7 +281,9 @@ public partial class GameHub
         await RemoveFromGroup(gameId, user.Id);
         
         await NudgeBots(game);
-        return Success();
+        
+        UpdateServerStatusIfNeeded(true);
+        return Success(ServerStatus);
     }
 
     public async Task<VoidResult> RequestKick(string userToken, string gameId, int userId)
@@ -313,13 +317,13 @@ public partial class GameHub
         return Success();
     }
     
-    public async Task<VoidResult> RequestCloseGame(string userToken, string gameId)
+    public async Task<Result<ServerStatus>> RequestCloseGame(string userToken, string gameId)
     {
-        if (!AreValid(userToken, gameId, out var user, out var game, out var error))
+        if (!AreValid<ServerStatus>(userToken, gameId, out var user, out var game, out var error))
             return error;
         
         if (game.CreatorUserId != user.Id)
-            return Error(ErrorType.NoCreator);
+            return Error<ServerStatus>(ErrorType.NoCreator);
 
         foreach (var userId in game.Game.Participation.PlayerNames.Keys)
         {
@@ -330,7 +334,8 @@ public partial class GameHub
 
         RunningGamesByGameId.Remove(gameId, out _);
         
-        return Success();
+        UpdateServerStatusIfNeeded(true);
+        return Success(ServerStatus);
     }
 
     private async Task AddToGroup(string gameId, int userId, string connectionId)
@@ -511,9 +516,9 @@ public partial class GameHub
         UpdateServerStatusIfNeeded();
     }
 
-    private static void UpdateServerStatusIfNeeded()
+    private static void UpdateServerStatusIfNeeded(bool forceUpdate = false)
     {
-        if (LastUpdatedServerStatus.AddMilliseconds(ServerStatusFrequency) > DateTimeOffset.Now)
+        if (!forceUpdate && LastUpdatedServerStatus.AddMilliseconds(ServerStatusFrequency) > DateTimeOffset.Now)
             return;
         
         ServerStatus = new ServerStatus

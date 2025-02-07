@@ -19,13 +19,13 @@ public interface IGameHub
     
     Task<Result<GameInitInfo>> RequestCreateGame(string userToken, string hashedPassword, string stateData, string skinData);
     Task<VoidResult> RequestUpdateSettings(string userToken, string gameId, GameSettings settings);
-    Task<VoidResult> RequestCloseGame(string userToken, string gameId);
+    Task<Result<ServerStatus>> RequestCloseGame(string userToken, string gameId);
     Task<Result<GameInitInfo>> RequestJoinGame(string userToken, string gameId, string hashedPassword, int seat);
     Task<Result<GameInitInfo>> RequestObserveGame(string userToken, string gameId, string hashedPassword);
     Task<Result<GameInitInfo>> RequestReconnectGame(string userToken, string gameId);
     Task<VoidResult> RequestSetOrUnsetHost(string userToken, string gameId, int userId);
     Task<VoidResult> RequestOpenOrCloseSeat(string userToken, string gameId, int seat);
-    Task<VoidResult> RequestLeaveGame(string userToken, string gameId);
+    Task<Result<ServerStatus>> RequestLeaveGame(string userToken, string gameId);
     Task<VoidResult> RequestKick(string userToken, string gameId, int userId);
     Task<VoidResult> RequestLoadGame(string userToken, string hashedPassword, string state, string skin);
     Task<VoidResult> RequestSetSkin(string userToken, string gameId, string skin);
@@ -34,11 +34,11 @@ public interface IGameHub
     Task<VoidResult> RequestPauseBots(string userToken, string gameId);
     Task<Result<ServerStatus>> RequestHeartbeat(string userToken, GameListScope scope);
     Task<VoidResult> RequestAssignSeats(string userToken, string gameId, Dictionary<int, int> assignment);
-    Task<VoidResult> RequestScheduleGame(string userToken,  
+    Task<Result<ServerStatus>> RequestScheduleGame(string userToken,  
         DateTimeOffset dateTime, Ruleset? ruleset, int? numberOfPlayers, int? maximumTurns, 
         List<Faction> allowedFactionsInPlay, bool asyncPlay);
-    Task<VoidResult> RequestCancelGame(string userToken, string scheduledGameId);
-    Task<VoidResult> RequestSubscribeGame(string userToken, string scheduledGameId, SubscriptionType subscription);
+    Task<Result<ServerStatus>> RequestCancelGame(string userToken, string scheduledGameId);
+    Task<Result<ServerStatus>> RequestSubscribeGame(string userToken, string scheduledGameId, SubscriptionType subscription);
     
     //Game Events
     Task<VoidResult> SetTimer(string userToken, string gameId, int value);

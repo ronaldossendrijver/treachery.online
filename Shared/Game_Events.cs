@@ -17,7 +17,8 @@ public partial class Game
     {
         List<Type> result = new();
 
-        if (player != null && (CurrentPhase == Phase.SelectingFactions || player.Faction != Faction.None)) AddPlayerActions(player, isHost, result);
+        if (player != null && (CurrentPhase == Phase.SelectingFactions || player.Faction != Faction.None)) 
+                AddPlayerActions(player, isHost, result);
 
         if (isHost) AddHostActions(result);
 
