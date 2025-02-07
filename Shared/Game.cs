@@ -16,7 +16,7 @@ public partial class Game
     #region Settings
 
     private const int LowestSupportedVersion = 100;
-    public const int LatestVersion = 173;
+    public const int LatestVersion = 174;
     public const int ExpansionLevel = 3;
     
     #endregion Settings
@@ -502,8 +502,11 @@ public partial class Game
 
     #region Support
 
-    internal void FlipBeneGesseritWhenAlone()
+    internal void FlipBlueAdvisorsWhenAlone()
     {
+        if (CurrentMainPhase >= MainPhase.Battle && Applicable(Rule.DisableNovaFlipping))
+            return;
+        
         var bg = GetPlayer(Faction.Blue);
         if (bg != null)
         {

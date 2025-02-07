@@ -174,7 +174,7 @@ public partial class Game
             if (killCount > 0) Log("The storm kills ", killCount, battalion.Faction, " forces in ", l.Key);
         }
 
-        if (Version >= 163) FlipBeneGesseritWhenAlone();
+        if (Version >= 163) FlipBlueAdvisorsWhenAlone();
 
         foreach (var t in Strongholds.Where(s => s.Locations.Any(l => l.Sector == SectorInStorm && !IsProtectedFromStorm(l))))
         {

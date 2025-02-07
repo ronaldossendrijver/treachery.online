@@ -166,6 +166,7 @@ public class EndPhase : GameEvent
             case Phase.TurnConcluded:
                 if (Game.Version < 108) Game.AddBribesToPlayerResources();
                 Game.EnterStormPhase();
+                Game.FlipBlueAdvisorsWhenAlone();
                 break;
         }
     }

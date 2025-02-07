@@ -55,7 +55,7 @@ public interface IGameService
     
     public void Refresh(string source = null);
     public Task Start(string userToken = null, string gameId = null);
-    public void ExitGame();
+    public Task ExitGame();
     public Player Player { get; }
 
     public Faction Faction { get; }

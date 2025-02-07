@@ -335,7 +335,7 @@ public partial class Game
         var devouredResources = RemoveResources(m.Territory);
         LogIf(devouredResources > 0, m.DescribingConcept, " devours ", Payment.Of(devouredResources), " in ", m.Territory);
 
-        FlipBeneGesseritWhenAlone();
+        FlipBlueAdvisorsWhenAlone();
     }
 
     internal void EnterBlowA()

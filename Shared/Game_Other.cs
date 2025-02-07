@@ -63,7 +63,7 @@ public partial class Game
                     player.ShipForces(noFieldLocation, nrOfForces);
                     Log(player.Faction, " reveal ", nrOfForces, FactionForce.White, " under ", FactionSpecialForce.White, " in ", noFieldLocation);
 
-                    if (CurrentNoFieldValue == 0) FlipBeneGesseritWhenAlone();
+                    if (CurrentNoFieldValue == 0) FlipBlueAdvisorsWhenAlone();
 
                     CurrentNoFieldValue = -1;
                 }

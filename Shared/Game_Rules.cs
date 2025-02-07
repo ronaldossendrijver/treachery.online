@@ -15,18 +15,11 @@ public partial class Game
 {
     public IEnumerable<Rule> GetCustomRules()
     {
-        return Rules.Where(rule =>
-            GetRuleGroup(rule) == RuleGroup.House ||
-            GetRuleGroup(rule) == RuleGroup.CoreBasicExceptions ||
-            GetRuleGroup(rule) == RuleGroup.CoreAdvancedExceptions ||
-            GetRuleGroup(rule) == RuleGroup.ExpansionIxAndBtBasicExceptions ||
-            GetRuleGroup(rule) == RuleGroup.ExpansionIxAndBtAdvancedExceptions ||
-            GetRuleGroup(rule) == RuleGroup.ExpansionBrownAndWhiteBasicExceptions ||
-            GetRuleGroup(rule) == RuleGroup.ExpansionBrownAndWhiteAdvancedExceptions ||
-            GetRuleGroup(rule) == RuleGroup.ExpansionPinkAndCyanAdvancedExceptions ||
-            GetRuleGroup(rule) == RuleGroup.ExpansionPinkAndCyanBasicExceptions ||
-            GetRuleGroup(rule) == RuleGroup.ExpansionPinkAndCyanAdvancedExceptions ||
-            GetRuleGroup(rule) == RuleGroup.CoreBasicExceptions);
+        return Rules.Where(rule => GetRuleGroup(rule) is 
+            RuleGroup.House or RuleGroup.CoreBasicExceptions or RuleGroup.CoreAdvancedExceptions or
+            RuleGroup.ExpansionIxAndBtBasicExceptions or RuleGroup.ExpansionIxAndBtAdvancedExceptions or 
+            RuleGroup.ExpansionBrownAndWhiteBasicExceptions or RuleGroup.ExpansionBrownAndWhiteAdvancedExceptions or 
+            RuleGroup.ExpansionPinkAndCyanAdvancedExceptions or RuleGroup.ExpansionPinkAndCyanBasicExceptions);
     }
 
     public static Ruleset DetermineApproximateRuleset(List<Faction> factions, List<Rule> rules, int expansionLevel)
@@ -351,7 +344,7 @@ public partial class Game
             or Rule.AssistedNotekeeping or Rule.AssistedNotekeepingForGreen or Rule.ResourceBonusForStrongholds
             or Rule.BattleWithoutLeader or Rule.CapturedLeadersAreTraitorsToOwnFaction
             or Rule.DisableEndOfGameReport or Rule.DisableOrangeSpecialVictory or Rule.DisableResourceTransfers
-            or Rule.YellowAllyGetsDialedResourcesRefunded => RuleGroup.House,
+            or Rule.DisableNovaFlipping or Rule.YellowAllyGetsDialedResourcesRefunded => RuleGroup.House,
         Rule.BotsCannotAlly => RuleGroup.Bots,
         Rule.TechTokens or Rule.CheapHeroTraitor or Rule.ExpansionTreacheryCards or Rule.SandTrout => RuleGroup
             .ExpansionIxAndBtBasic,
@@ -451,6 +444,7 @@ public partial class Game
             case Rule.DisableOrangeSpecialVictory:
             case Rule.DisableResourceTransfers:
             case Rule.YellowAllyGetsDialedResourcesRefunded:
+            case Rule.DisableNovaFlipping:
                 return 0;
 
             case Rule.FillWithBots:

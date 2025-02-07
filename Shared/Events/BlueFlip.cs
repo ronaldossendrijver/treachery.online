@@ -53,7 +53,7 @@ public class BlueFlip : GameEvent
 
         Player.FlipForces(Game.LastShipmentOrMovement.To.Territory, AsAdvisors);
 
-        if (Game.Version >= 102) Game.FlipBeneGesseritWhenAlone();
+        if (Game.Version >= 102) Game.FlipBlueAdvisorsWhenAlone();
 
         Game.DequeueIntrusion(IntrusionType.BlueIntrusion);
         Game.DetermineNextShipmentAndMoveSubPhase();

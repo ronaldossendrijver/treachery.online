@@ -437,7 +437,7 @@ public class NexusPlayed : GameEvent, ILocationEvent
                 var pinksAlly = Game.GetPlayer(Faction.Pink).AlliedPlayer;
                 pinksAlly.ForcesToReserves(PinkTerritory);
                 Game.PlayNexusCard(Player, "return all ", pinksAlly.Faction, " forces in ", PinkTerritory, " to reserves");
-                Game.FlipBeneGesseritWhenAlone();
+                Game.FlipBlueAdvisorsWhenAlone();
                 break;
 
             case Faction.Cyan:

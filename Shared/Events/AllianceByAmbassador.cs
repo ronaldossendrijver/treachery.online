@@ -49,7 +49,7 @@ public class AllianceByAmbassador : PassableGameEvent
 
             if (Game.HasActedOrPassed.Contains(Initiator) && Game.HasActedOrPassed.Contains(Game.CurrentAmbassadorActivated.Initiator)) Game.CheckIfForcesShouldBeDestroyedByAllyPresence(Player);
 
-            Game.FlipBeneGesseritWhenAlone();
+            Game.FlipBlueAdvisorsWhenAlone();
         }
         else
         {

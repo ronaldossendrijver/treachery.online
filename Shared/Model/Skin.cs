@@ -902,7 +902,8 @@ public class Skin : IDescriber
             Rule.AssistedNotekeeping => "Mentat: auto notekeeping of knowable info (spice owned, cards seen, ...)",
             Rule.AssistedNotekeepingForGreen => Format("Mentat: auto notekeeping for {0}", Faction.Green),
             Rule.ResourceBonusForStrongholds => "Stronghold spice bonus (even without increased spice flow)",
-
+            Rule.DisableNovaFlipping  => "No Nova flipping (advisors will not auto flip after shipment phase)",
+            
             Rule.FillWithBots => "Fill empty seats with random Bots",
             Rule.OrangeBot => Format("{0}Bot", Faction.Orange),
             Rule.RedBot => Format("{0}Bot", Faction.Red),

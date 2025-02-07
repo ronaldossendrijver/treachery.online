@@ -82,7 +82,7 @@ public class Move : PlacementEvent
 
         Game.DetermineNextShipmentAndMoveSubPhase();
         Game.CheckIfForcesShouldBeDestroyedByAllyPresence(Player);
-        Game.FlipBeneGesseritWhenAlone();
+        Game.FlipBlueAdvisorsWhenAlone();
 
         if (!Game.Applicable(Rule.FullPhaseKarma)) Game.Allow(FactionAdvantage.YellowExtraMove);
         if (!Game.Applicable(Rule.FullPhaseKarma)) Game.Allow(FactionAdvantage.GreyCyborgExtraMove);

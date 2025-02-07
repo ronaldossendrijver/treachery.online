@@ -150,7 +150,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     private void RefreshPopovers() => RefreshPopoverHandler?.Invoke();
 
-    public void ExitGame()
+    public async Task ExitGame()
     {
         Game = null;
         GameName = null;
@@ -159,6 +159,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         Actions = [];
         _ = Browser.StopSounds();
         Refresh(nameof(ExitGame));
+        await SendHeartbeatAndGetServerStatus();
     }
     
     //IGameClient methods
@@ -207,7 +208,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     {
         if (userId == UserId)
         {
-            ExitGame();
+            await ExitGame();
         }
         else
         {

@@ -633,6 +633,7 @@ public enum Rule
     StormDeckWithoutYellow = 116,
     AssistedNotekeepingForGreen = 117,
     YellowAllyGetsDialedResourcesRefunded = 118,
+    DisableNovaFlipping = 119,
 
     ExtraKaramaCards = 999,
 

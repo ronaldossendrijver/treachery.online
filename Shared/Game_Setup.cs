@@ -35,7 +35,8 @@ public partial class Game
 
     internal void AssignFactionsAndEnterFactionTrade()
     {
-        var selectable = new Deck<Faction>(FactionsInPlay.Where(f => !IsPlaying(f)), Random);
+        var availableFactions = Version < 174 ? FactionsInPlay : FactionsInPlay.Where(f => !IsPlaying(f));
+        var selectable = new Deck<Faction>(availableFactions, Random);
         Stone(Milestone.Shuffled);
         selectable.Shuffle();
 

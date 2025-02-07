@@ -130,14 +130,14 @@
                 <div class="text-danger small">@CreateError</div>
                 <CommandButton MarginClass="mt-1" OnClick="@CreateNewGame">Create new game</CommandButton>
                 <label class="btn btn-primary mt-1" disabled="@Loading">Load game from file
+                    @if (Loading)
+                    {
+                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    }
                     <input hidden type="file" id="fileInput" @ref="FileInput" @onchange="@LoadAndCreateGame"/>
                 </label>
-                @if (Loading)
-                {
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                }
                 break;
                 
             case OwnGamesComponentState.Schedule:
@@ -233,7 +233,7 @@
 <div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeIn90 1s">
     <div class="card-header">About...</div>
     <div class="card-body">
-        <div class="mb-1">Game version: @Game.LatestVersion (January 2025)</div>
+        <div class="mb-1">Game version: @Game.LatestVersion (February 2025)</div>
         <div>
             <a href="https://ko-fi.com/N4N618W4XV" target="_blank"><img height="36" style="border:0;height:36px;" src="https://storage.ko-fi.com/cdn/kofi2.png?v=6" alt="Donate" /></a>    
         </div>

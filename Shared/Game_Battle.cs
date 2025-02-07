@@ -113,7 +113,7 @@ public partial class Game
 
         if (Version < 116) CaptureLeaderIfApplicable();
 
-        FlipBeneGesseritWhenAlone();
+        FlipBlueAdvisorsWhenAlone();
         if (Version >= 162) DetermineOccupation(CurrentBattle.Territory);
             
         if (BattleTriggeredBureaucracy != null)

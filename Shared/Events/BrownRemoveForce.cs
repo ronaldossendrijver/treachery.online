@@ -120,7 +120,7 @@ public class BrownRemoveForce : GameEvent
         else
             target.ForcesToReserves(Location, 1);
 
-        Game.FlipBeneGesseritWhenAlone();
+        Game.FlipBlueAdvisorsWhenAlone();
         Game.Stone(Milestone.SpecialUselessPlayed);
     }
 

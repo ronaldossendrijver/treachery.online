@@ -169,7 +169,7 @@ public class YellowRidesMonster : PlacementEvent
                     To);
             }
 
-            Game.FlipBeneGesseritWhenAlone();
+            Game.FlipBlueAdvisorsWhenAlone();
             Game.CheckIntrusion(this);
         }
         else

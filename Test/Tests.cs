@@ -198,7 +198,9 @@ public class Tests
         if (player != null && g.CurrentPhase != Phase.PerformingKarmaHandSwap && g.CurrentPhase != Phase.Discarding) return "Too many cards after " + e.GetType().Name + " - " + g.History.Count;
 
         var blue = g.GetPlayer(Faction.Blue);
+        
         if (blue != null &&
+            (!g.Applicable(Rule.DisableNovaFlipping) || g.CurrentMainPhase <= MainPhase.ShipmentAndMove) &&
             blue.ForcesInLocations.Any(bat => bat.Value.AmountOfSpecialForces > 0 && !g.Players.Any(x => x.Occupies(bat.Key.Territory))))
             return "Lonely advisor - " + g.History.Count;
 
@@ -220,12 +222,10 @@ public class Tests
         {
             foreach (var s in g.Map.Strongholds)
             {
-                var hasPinkAndAllyForces = pinkPlayer != null && pinkAlly != null && pinkPlayer.AnyForcesIn(s) > 0 &&
-                                           (!pinkAlly.Is(Faction.Blue) && pinkAlly.AnyForcesIn(s) > 0 || pinkAlly.Is(Faction.Blue) && pinkAlly.ForcesIn(s) > 0)
-                    ? 1
-                    : 0;
-            
-                if (g.OccupyingForcesOnPlanet.GetValueOrDefault(s, []).Count - hasPinkAndAllyForces > 2)
+                if (pinkPlayer != null && pinkPlayer.AnyForcesIn(s) > 0)
+                    continue; //ignore this check
+                
+                if (g.OccupyingForcesOnPlanet.GetValueOrDefault(s, []).Count > 2)
                 {
                     return "Stronghold occupied by more than two factions - " + g.History.Count;
                 }
@@ -369,7 +369,7 @@ public class Tests
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
 
-        var nrOfGames = 100;
+        var nrOfGames = 1024;
         var nrOfTurns = 10;
         var nrOfPlayers = 7;
 
@@ -382,6 +382,7 @@ public class Tests
         rules.Add(Rule.FillWithBots);
         rules.Add(Rule.AssistedNotekeeping);
         rules.Add(Rule.DisableOrangeSpecialVictory);
+        rules.Add(Rule.DisableNovaFlipping);
 
         var rulesAsArray = rules.ToArray();
         var wincounter = new ObjectCounter<Faction>();

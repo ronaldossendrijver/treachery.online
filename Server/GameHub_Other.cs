@@ -74,7 +74,7 @@ public partial class GameHub
             ScheduledGamesByGameId.Remove(gameIdAndGame.Key, out _);
         }
         
-        LastCleanedUpUserTokens = DateTimeOffset.Now;
+        LastCleanedUpScheduledGames = DateTimeOffset.Now;
     }
 
     public async Task<Result<string>> AdminUpdateMaintenance(string userToken, DateTimeOffset maintenanceDate)

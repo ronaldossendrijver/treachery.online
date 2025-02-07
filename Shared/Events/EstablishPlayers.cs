@@ -79,10 +79,10 @@ public class EstablishPlayers : GameEvent
             return null;
         
         if (Game.CurrentPhase != Phase.AwaitingPlayers) return Message.Express("Invalid game phase");
-        if (Game.Settings.NumberOfPlayers < 2) return Message.Express("At least two players required");
-        if (Game.Settings.NumberOfPlayers > Settings.AllowedFactionsInPlay.Count) return Message.Express("More factions required");
-        if (Game.Participation.SeatedPlayers.Count > Game.Settings.NumberOfPlayers) return Message.Express("More players than seats at the table");            
-        if (Game.Settings.AllowedFactionsInPlay.Any(f => !AvailableFactions().Contains(f))) return Message.Express("Invalid faction");
+        if (Settings.NumberOfPlayers < 2) return Message.Express("At least two players required");
+        if (Settings.NumberOfPlayers > Settings.AllowedFactionsInPlay.Count) return Message.Express("More factions required");
+        if (Game.Participation.SeatedPlayers.Count > Settings.NumberOfPlayers) return Message.Express("More players than seats at the table");            
+        if (Settings.AllowedFactionsInPlay.Any(f => !AvailableFactions().Contains(f))) return Message.Express("Invalid faction");
 
         return null;
     }
