@@ -217,7 +217,7 @@ public class NexusPlayed : GameEvent, ILocationEvent
             Faction.Orange when cunning => g.CurrentPhase == Phase.OrangeMove && !g.InOrangeCunningShipment,
             Faction.Orange when secretAlly => g.CurrentPhase == Phase.NonOrangeShip,
 
-            Faction.Blue when betrayal => gameIsInBattle && g.CurrentBattle.IsAggressorOrDefender(Faction.Blue),
+            Faction.Blue when betrayal => gameIsInBattle && g.CurrentBattle.IsInvolved(Faction.Blue),
             Faction.Blue when cunning => g.CurrentMainPhase == MainPhase.ShipmentAndMove,
 
             Faction.Grey when betrayal => g.CurrentMainPhase == MainPhase.Bidding && g.CurrentPhase < Phase.BiddingReport,
@@ -419,17 +419,29 @@ public class NexusPlayed : GameEvent, ILocationEvent
             case Faction.White:
                 var paymentToWhite = Game.QuiteRecentPaymentTo(Faction.White);
                 var white = GetPlayer(Faction.White);
-
                 if (paymentToWhite != null)
                 {
                     var amountReceived = paymentToWhite.Amount - (Game.WasVictimOfBureaucracy == Faction.White ? 2 : 0);
-                    Game.PlayNexusCard(Player, "let ", Faction.White, " lose the payment of ", Payment.Of(amountReceived), " they just received");
+                    Game.PlayNexusCard(Player, "let ", Faction.White, " return the payment of ", Payment.Of(amountReceived), " they just received");
                     white.Resources -= amountReceived;
                 }
                 else if (white.Has(Game.CardJustWon))
                 {
-                    Game.PlayNexusCard(Player, "force ", Faction.White, " to discard the card they just won");
+                    Game.PlayNexusCard(Player, "force ", Faction.White, " to discard the card they just won, refunding payment");
                     Game.Discard(white, Game.CardJustWon);
+                    if (Game.Version >= 174 && Game.WinningBid != null && Game.WinningBid.KarmaCard == null &&
+                        Game.WinningBid.Initiator == Faction.White)
+                    {
+                        white.Resources += Game.WinningBid.Amount;
+                        if (Game.WinningBid.AllyContributionAmount > 0)
+                        {
+                            white.AlliedPlayer.Resources += Game.WinningBid.AllyContributionAmount;
+                        }
+                        if (Game.WinningBid.RedContributionAmount > 0)
+                        {
+                            white.AlliedPlayer.Resources += Game.WinningBid.RedContributionAmount;
+                        }
+                    }
                 }
                 break;
 

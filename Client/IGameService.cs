@@ -28,8 +28,6 @@ public interface IGameService
     public GameInfo[] RunningGamesWithoutOpenSeats { get; }
     public ScheduledGameInfo[] ScheduledGames { get; }
     public Dictionary<int,LoggedInUserInfo> RecentlySeenUsers { get; }
-    public LoggedInUserInfo GetUserInfo(int userId);
-    public UserStatus GetUserStatus(int userId);
 
     //Game info
     public Game Game { get; }
@@ -99,6 +97,7 @@ public interface IGameService
     Task<string> RequestObserveGame(string gameId, string password);
     Task<string> RequestSetOrUnsetHost(int userId);
     Task<string> RequestOpenOrCloseSeat(int seat);
+    void RequestReseat();
     Task<string> RequestLeaveGame();
     Task<string> RequestKick(int userId);
     Task<string> RequestScheduleGame(DateTimeOffset dateTime, Ruleset? ruleset, int? numberOfPlayers, int? maximumTurns,

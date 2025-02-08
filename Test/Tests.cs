@@ -381,8 +381,6 @@ public class Tests
         var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
         rules.Add(Rule.FillWithBots);
         rules.Add(Rule.AssistedNotekeeping);
-        rules.Add(Rule.DisableOrangeSpecialVictory);
-        rules.Add(Rule.DisableNovaFlipping);
 
         var rulesAsArray = rules.ToArray();
         var wincounter = new ObjectCounter<Faction>();

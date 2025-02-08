@@ -95,6 +95,10 @@
         }
         <div class="text-danger align-bottom">@ActionResult</div>
         <CommandButton Small Class="btn-danger" MarginClass="mt-2" OnClick="@(_ => Remove(Client.UserId, false))">Leave game</CommandButton>
+        @if (Client.IsHost && Client.InGame && Game.CurrentPhase >= Phase.TradingFactions)
+        {
+            <CommandButton Small Class="btn-warning" MarginClass="mt-2 ms-1" OnClick="@(_ => Reseat())">Re-seat players</CommandButton>
+        }
         @if (Game.NumberOfObservers > 0)
         {
             <div>
@@ -135,5 +139,10 @@
     private async Task OpenSeat(int seatId)
     {
         ActionResult = await Client.RequestOpenOrCloseSeat(seatId);
+    }
+    
+    private void Reseat()
+    {
+        Client.RequestReseat();
     }
 }

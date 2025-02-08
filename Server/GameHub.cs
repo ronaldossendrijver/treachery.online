@@ -14,7 +14,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
 {
     private const int CleanupFrequency = 3600000; // 3600000 ms = Each hour
     private const int ServerStatusFrequency = 6000; // 6000 ms = Each 6 seconds
-    private const int PersistFrequency = 1800000; // 600000 ms = Each 30 minutes
+    private const int PersistFrequency = 900000; // 900000 ms = Each 15 minutes
     private const int MaximumLoginTime = 10080; // 10080 minutes = 7 days 
     
     //Users

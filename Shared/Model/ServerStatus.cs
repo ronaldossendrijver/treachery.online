@@ -15,5 +15,5 @@ public class ServerStatus
     
     public ScheduledGameInfo[] ScheduledGames { get; init; } = [];
     
-    public LoggedInUserInfo[] LoggedInUsers { get; init; } = [];
+    public LoggedInUserInfo[] RecentlySeenUsers { get; init; } = [];
 }

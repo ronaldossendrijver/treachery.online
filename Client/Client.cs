@@ -50,7 +50,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public List<Type> Actions { get; private set; } = []; 
     
     public bool InGame => Game != null;
-    public bool PlayersNeedSeating => InGame && Game.CurrentPhase >= Phase.TradingFactions && Game.Participation.SeatedPlayers.ContainsValue(-1);
+    private bool ReseatRequested { get; set; }
+    public bool PlayersNeedSeating => InGame && (ReseatRequested || Game.CurrentPhase >= Phase.TradingFactions && Game.Participation.SeatedPlayers.ContainsValue(-1));
     public Player Player => Game.GetPlayerByUserId(UserId) ?? new Player(Game, Faction.None);
     public string PlayerName => LoginInfo.PlayerName;
     public UserStatus UserStatus => LoginInfo != null ? GetUserStatus(LoginInfo.UserId) : UserStatus.None;
@@ -505,6 +506,12 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public async Task<string> RequestOpenOrCloseSeat(int seat) =>
         CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestOpenOrCloseSeat), UserToken, GameId, seat)).Error);
 
+    public void RequestReseat()
+    {
+        ReseatRequested = true;
+        Refresh(nameof(RequestReseat));
+    } 
+    
     public async Task<string> RequestLeaveGame()
     {
         var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestLeaveGame), UserToken, GameId);
@@ -520,8 +527,12 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return result.Success ? null :
             result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : CurrentSkin.Describe(result.Error);
     }
-    public async Task<string> RequestAssignSeats(Dictionary<int, int> assignment) =>
-        CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestAssignSeats), UserToken, GameId, assignment)).Error);
+
+    public async Task<string> RequestAssignSeats(Dictionary<int, int> assignment)
+    {
+        ReseatRequested = false;
+        return CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestAssignSeats), UserToken, GameId, assignment)).Error);
+    }
 
     public async Task<string> RequestSetSkin(string skin)
     {
@@ -649,7 +660,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         RunningGamesWithOpenSeats = RunningGames.Where(g => g.CanBeJoined).ToArray();
         RunningGamesWithoutOpenSeats = RunningGames.Where(g => !g.CanBeJoined).ToArray();
         ScheduledGames = status.ScheduledGames;
-        RecentlySeenUsers = status.LoggedInUsers.ToDictionary(x => x.Id, x => x);
+        RecentlySeenUsers = status.RecentlySeenUsers.ToDictionary(x => x.Id, x => x);
         Refresh(nameof(HandleUpdatedServerStatus));
     }
 
@@ -790,9 +801,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return result;
     }
    
-    public LoggedInUserInfo GetUserInfo(int userId) => RecentlySeenUsers.GetValueOrDefault(userId, null);
-    
     public UserStatus GetUserStatus(int userId) =>
         RecentlySeenUsers.TryGetValue(userId, out var user) ? user.Status : UserStatus.None;
 }
-

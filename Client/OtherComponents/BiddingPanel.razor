@@ -154,7 +154,7 @@
     [Parameter]
     public bool CanBid { get; set; }
 
-    private string BidLabel => "Bid " + (amount + allyContributionAmount + redContributionAmount);
+    private string BidLabel => "Bid " + (amount + allyContributionAmount + redContributionAmount) + (karmaCard != null ? $" (with {Name(TreacheryCardType.Karma)})" : string.Empty);
 
     private void AutoPassChanged(bool value)
     {

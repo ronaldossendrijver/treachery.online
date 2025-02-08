@@ -60,7 +60,7 @@
                 _ => "grey"
             };
 
-            <div class='text-break p-1 mt-1 small' style="background-color:@color">
+            <div class='text-break p-1 mt-1 small' style="background-color:@color;user-select: text;">
                 <ExpressionComponent Game="@Game" Expression="@m.GetBodyIncludingPlayerInfo(Client.UserId, Client.RecentlySeenUsers, Client.Game, !Client.InGame).Expression" Size="20"/>
             </div>
         }

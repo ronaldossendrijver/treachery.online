@@ -484,7 +484,7 @@ public partial class GameHub
                 {
                     RunningGames = ServerStatus.RunningGames.Where(mg => mg.CreatorId == loggedInUser.Id || mg.LastAction >= lastActiveGameThreshold).ToArray(),
                     ScheduledGames = ServerStatus.ScheduledGames,
-                    LoggedInUsers = ServerStatus.LoggedInUsers,
+                    RecentlySeenUsers = ServerStatus.RecentlySeenUsers,
                 };
             
                 return await Task.FromResult(Success(filteredServerStatus));
@@ -499,7 +499,7 @@ public partial class GameHub
                 {
                     RunningGames = [],
                     ScheduledGames = [],
-                    LoggedInUsers = ServerStatus.LoggedInUsers,
+                    RecentlySeenUsers = ServerStatus.RecentlySeenUsers,
                 };
             
                 return await Task.FromResult(Success(filteredServerStatus));
@@ -518,7 +518,9 @@ public partial class GameHub
 
     private static void UpdateServerStatusIfNeeded(bool forceUpdate = false)
     {
-        if (!forceUpdate && LastUpdatedServerStatus.AddMilliseconds(ServerStatusFrequency) > DateTimeOffset.Now)
+        var now = DateTimeOffset.Now;
+        
+        if (!forceUpdate && LastUpdatedServerStatus.AddMilliseconds(ServerStatusFrequency) > now)
             return;
         
         ServerStatus = new ServerStatus
@@ -527,7 +529,8 @@ public partial class GameHub
             
             ScheduledGames = ScheduledGamesByGameId.Values.Select(ExtractScheduledGameInfo).ToArray(),
             
-            LoggedInUsers = UsersByUserToken
+            RecentlySeenUsers = UsersByUserToken
+                .Where(u => u.Value.LastSeenDateTime.AddMinutes(1) > now)
                 .Select(u => new LoggedInUserInfo
                 {
                     Id = u.Value.Id, 
