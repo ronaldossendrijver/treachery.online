@@ -521,10 +521,10 @@ public partial class Game
         ProcessPinkOccupationLoserLosses(territory, loser);
 
         Log(forceSupplier.Faction, " lose all ", forceSupplier.AnyForcesIn(territory), " forces ", InOrOn(territory), territory);
+        PayDialedSpice(loser, loserGambit, false);
         forceSupplier.KillAllForces(territory, true);
         LoseCards(loserGambit, MayKeepCardsAfterLosingBattle(loser));
-        PayDialedSpice(loser, loserGambit, false);
-
+        
         if (loser.MessiahAvailable && !hadMessiahBeforeLosses) Stone(Milestone.Messiah);
     }
 

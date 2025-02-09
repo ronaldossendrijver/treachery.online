@@ -28,51 +28,10 @@ public class Tests
 {
     private void SaveSpecialCases(Game g, GameEvent e)
     {
-        
-        if (g.Players.Any(player => player.Faction == Faction.Brown &&
-                               !g.KarmaPrevented(player.Faction) &&
-                               !player.SpecialKarmaPowerUsed &&
-                               Karma.ValidKarmaCards(g,player).Any(c => c.Type is TreacheryCardType.Clairvoyance) &&
-                               g.Applicable(Rule.AdvancedKarama)))
+        if (e is NexusPlayed { IsBetrayal: true, Faction: Faction.White } && g.WinningBid?.Initiator == Faction.White)
         {
-            WriteSaveGameIfApplicable(g, null, "TT as Karama");
+            WriteSaveGameIfApplicable(g, e.Player, "White betrayal");
         }
-        
-        /*
-        if (g.CurrentPhase is Phase.BattleConclusion &&
-            !g.TreacheryDiscardPile.IsEmpty &&
-            g.TreacheryDiscardPile.Top.Type is TreacheryCardType.PortableAntidote &&
-            g.RecentlyDiscarded.ContainsKey(g.TreacheryDiscardPile.Top) &&
-            g.AggressorPlan?.Defense != null && g.AggressorPlan.Defense.Type is not TreacheryCardType.PortableAntidote &&
-            g.DefenderPlan?.Defense != null && g.DefenderPlan.Defense.Type is not TreacheryCardType.PortableAntidote &&
-            g.CurrentPortableAntidoteUsed == null)
-        {
-            WriteSaveGameIfApplicable(g, null, "Why is portable snooper discarded");
-        }
-        */
-/*
-        if (g.Version > 165 && g.CurrentRecruitsPlayed == null)
-        {
-            var ix = g.GetPlayer(Faction.Grey);
-            if (ix != null &&
-                g.CurrentPhase is Phase.Resurrection &&
-                ix.HasHighThreshold() &&
-                ix.Resources > 2 &&
-                ix.SpecialForcesKilled > 2 &&
-                ix.ForcesKilled > 0 &&
-                !g.HasActedOrPassed.Contains(Faction.Grey))
-            {
-                WriteSaveGameIfApplicable(g, null, "Ix gets high threshold revival");
-            }
-        }
-
-        if (e is Revival r &&
-            r.By(Faction.Grey) &&
-            r.AmountOfForces + r.AmountOfSpecialForces >= 3 &&
-            Revival.DetermineCost(g, r.Player, r.Hero, r.AmountOfForces, r.AmountOfSpecialForces, 0, 0, false).TotalCost == 0)
-        {
-            WriteSaveGameIfApplicable(g, null, "Is this correct free revival for Ix");
-        }*/
     }
 
     private readonly List<string> _writtenCases = new();
@@ -369,7 +328,7 @@ public class Tests
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
 
-        var nrOfGames = 1024;
+        var nrOfGames = 2 * 1024;
         var nrOfTurns = 10;
         var nrOfPlayers = 7;
 

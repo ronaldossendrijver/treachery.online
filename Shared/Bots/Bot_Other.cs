@@ -180,9 +180,9 @@ public partial class Player
                     var white = Game.GetPlayer(Faction.White);
                     if (white.Has(Game.CardJustWon))
                     {
-                        if (CardQuality(Game.CardJustWon, white) > 3) return result;
+                        if (CardQuality(Game.CardJustWon, white) > 2) return result;
                     }
-                    else if (Game.RecentlyPaidTotalAmount > 5)
+                    else if (Game.RecentlyPaidTotalAmount > 4)
                     {
                         return result;
                     }
