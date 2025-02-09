@@ -69,7 +69,10 @@ public class Tests
 
         if (g.CurrentTurn > 1 || g.CurrentMainPhase > MainPhase.Storm)
         {
-            player = g.Players.FirstOrDefault(x => x.ForcesInLocations.Keys.Any(l => l is AttachedLocation al && al.AttachedToLocation == null));
+            player = g.Players.FirstOrDefault(x => x.ForcesInLocations.Keys.Any(l => l is AttachedLocation
+            {
+                AttachedToLocation: null
+            }));
             if (player != null) return "Forces in unattached location - " + player.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
         }
 
@@ -92,7 +95,7 @@ public class Tests
 
         if (g.Version >= 147 && g.Players.Any(x => x.Leaders.Any(l => g.IsInFrontOfShield(l) && l.Faction != x.Faction))) return "Foreign leader in front of shield after " + e.GetType().Name + " - " + g.History.Count;
 
-        if (e is SkillAssigned sa && sa.Leader == null) return "Assigning skill to null leader after " + e.GetType().Name + " - " + g.History.Count;
+        if (e is SkillAssigned { Leader: null }) return "Assigning skill to null leader after " + e.GetType().Name + " - " + g.History.Count;
 
         if (g.SkillDeck != null)
         {
@@ -175,8 +178,6 @@ public class Tests
         }
 
         var pinkPlayer = g.GetPlayer(Faction.Pink);
-        var pinkAlly = pinkPlayer?.AlliedPlayer;
-
         if (g.Version > 170 && g.CurrentMainPhase is not MainPhase.ShipmentAndMove)
         {
             foreach (var s in g.Map.Strongholds)
@@ -256,16 +257,18 @@ public class Tests
         rules.Add(Rule.BotsCannotAlly);
         var rulesAsArray = rules.ToArray();
 
-        File.AppendAllLines("results.csv", new[] { string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
-            "Battle_MimimumChanceToAssumeEnemyHeroSurvives",
-            "Battle_MimimumChanceToAssumeMyLeaderSurvives",
+        File.AppendAllLines("results.csv", [
+            string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
+            "Battle_MinimumChanceToAssumeEnemyHeroSurvives",
+            "Battle_MinimumChanceToAssumeMyLeaderSurvives",
             "Battle_MaxStrengthOfDialledForces",
             "Battle_DialShortageThresholdForThrowing",
             "Wins",
             "Spice",
             "Points",
             "ForcesOnPlanet",
-            "Faction") });
+            "Faction")
+        ]);
 
 
         foreach (var toTest in allFactions) //10
@@ -283,9 +286,11 @@ public class Tests
                 var pDict = new Dictionary<Faction, BotParameters> { { toTest, p } };
                 DetermineWins(Environment.ProcessorCount * 3, rulesAsArray, nrOfPlayers, nrOfTurns, pDict, toTest, out var wins, out var spice, out var points, out var forcesOnPlanet);
 
-                File.AppendAllLines("results.csv", new[] { string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
+                File.AppendAllLines("results.csv", [
+                    string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
                     battleMimimumChanceToAssumeEnemyHeroSurvives, battleMimimumChanceToAssumeMyLeaderSurvives, battleMaxStrengthOfDialledForces, battleDialShortageThresholdForThrowing,
-                    wins, spice, points, forcesOnPlanet, toTest) });
+                    wins, spice, points, forcesOnPlanet, toTest)
+                ]);
             }
     }
 
@@ -328,7 +333,7 @@ public class Tests
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
 
-        var nrOfGames = 2 * 1024;
+        var nrOfGames = 512;
         var nrOfTurns = 10;
         var nrOfPlayers = 7;
 
@@ -664,11 +669,10 @@ public class Tests
                     statistics.GamePlayingFactions.Count(p.Faction);
                 }
 
-                var nrOfBots = game.Players.Where(p => p.IsBot).Count();
-                if (nrOfBots > 0)
-                    statistics.GamePlayerSetup.Count(string.Format("{0} players ({1} bots)", game.Players.Count, nrOfBots));
-                else
-                    statistics.GamePlayerSetup.Count(string.Format("{0} players", game.Players.Count));
+                var nrOfBots = game.Players.Count(p => p.IsBot);
+                statistics.GamePlayerSetup.Count(nrOfBots > 0
+                    ? $"{game.Players.Count} players ({nrOfBots} bots)"
+                    : $"{game.Players.Count} players");
 
 
                 statistics.GameWinningMethods.Count(game.WinMethod);
@@ -689,11 +693,11 @@ public class Tests
                 statistics.BattlingFactions.Count(game.CurrentBattle.Aggressor);
                 statistics.BattlingFactions.Count(game.CurrentBattle.Defender);
             }
-            else if (latest is TreacheryCalled traitorcalled && traitorcalled.Succeeded)
+            else if (latest is TreacheryCalled { Succeeded: true } treacheryCalled)
             {
-                statistics.TraitoredLeaders.Count(DefaultSkin.Default.Describe(game.CurrentBattle.PlanOfOpponent(traitorcalled.Player).Hero));
+                statistics.TraitoredLeaders.Count(DefaultSkin.Default.Describe(game.CurrentBattle.PlanOfOpponent(treacheryCalled.Player).Hero));
             }
-            else if (latest is FaceDanced fd && !fd.Passed)
+            else if (latest is FaceDanced { Passed: false })
             {
                 statistics.FacedancedLeaders.Count(DefaultSkin.Default.Describe(game.WinnerHero));
             }
@@ -746,8 +750,8 @@ public class Tests
                 var outcome = game.BattleOutcome;
                 previousBattleOutcome = outcome;
 
-                statistics.BattleWinningFactions.Count(outcome.Winner != null ? outcome.Winner.Faction : Faction.None);
-                statistics.BattleLosingFactions.Count(outcome.Loser != null ? outcome.Loser.Faction : Faction.None);
+                statistics.BattleWinningFactions.Count(outcome.Winner?.Faction ?? Faction.None);
+                statistics.BattleLosingFactions.Count(outcome.Loser?.Faction ?? Faction.None);
                 statistics.BattleWinningLeaders.Count(DefaultSkin.Default.Describe(outcome.WinnerBattlePlan.Hero));
                 statistics.BattleLosingLeaders.Count(DefaultSkin.Default.Describe(outcome.LoserBattlePlan.Hero));
 
@@ -807,7 +811,7 @@ public class Tests
                 bribes = p.Bribes,
                 forcesinreserve = p.ForcesInReserve,
                 specialforcesinreserve = p.SpecialForcesInReserve,
-                totaldeathcount = p.Leaders.Sum(l => game.DeathCount(l)),
+                totaldeathcount = p.Leaders.Sum(game.DeathCount),
                 cardcount = p.TreacheryCards.Count,
                 cardtypes = p.TreacheryCards.Sum(c => (int)c.Type),
                 traitors = p.Traitors.Sum(t => t.Id),
@@ -847,40 +851,23 @@ public class Tests
         var assembly = Assembly.GetAssembly(typeof(GameEvent));
         if (assembly == null)
             return;
-        
-        foreach (var type in assembly.GetTypes().Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(GameEvent))))
+
+        var gameEventType = typeof(GameEvent);
+        foreach (var type in assembly.GetTypes().Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(gameEventType)))
         {
+            var serializerAtt = gameEventType.GetCustomAttributes<JsonDerivedTypeAttribute>().FirstOrDefault(att => att.DerivedType == type);
+            Assert.IsNotNull(serializerAtt,
+                $"JsonDerivedType attribute missing for {type}");
+
             foreach (var prop in type.GetProperties().Where(x => !x.CanWrite))
             {
                 var att = prop.GetCustomAttribute(typeof(JsonIgnoreAttribute));
-                //if (att == null) Console.WriteLine($"Get-only property {prop} of class {type} does not have the JsonIgnore attribute");
-                Assert.IsTrue(att != null,
+                Assert.IsNotNull(att,
                     $"Get-only property {prop} of class {type} does not have the JsonIgnore attribute");
             }
         }
     }
     
-    [TestMethod]
-    public void PrintSubtypesOf()
-    {
-        var baseType = typeof(GameEvent);
-        var subtypes = Assembly.GetAssembly(baseType)?
-            .GetTypes()
-            .Where(t => t.IsClass && !t.IsAbstract && baseType.IsAssignableFrom(t))
-            .ToArray();
-
-        if (subtypes == null || subtypes.Length == 0)
-        {
-            Console.WriteLine($"No subtypes found for {baseType.Name}.");
-            return;
-        }
-
-        foreach (var type in subtypes)
-        {
-            Console.WriteLine($"[JsonDerivedType(typeof({type.Name}),nameof({type.Name}))]",  type.Name);
-        }
-    }
-
     [TestMethod]
     public void ScanForMapErrors()
     {

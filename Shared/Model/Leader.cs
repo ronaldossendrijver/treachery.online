@@ -55,10 +55,10 @@ public class Leader : IHero
 
     public int SkinId => Id;
 
-    public override bool Equals(object obj)
+    /*public override bool Equals(object obj)
     {
         return obj is Leader l && l.Id == Id;
-    }
+    }*/
 
     public override int GetHashCode()
     {

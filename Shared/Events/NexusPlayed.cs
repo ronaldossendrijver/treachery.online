@@ -234,7 +234,7 @@ public class NexusPlayed : GameEvent, ILocationEvent
                     g.Version >= 164 ? 
                 
                     (g.WhiteBiddingJustFinished || g.CardSoldOnBlackMarket != null) 
-                    && (g.HasQuiteRecentPaymentTo(Shared.Faction.White) || g.GetPlayer(Shared.Faction.White).Has(g.CardJustWon)) :
+                    && (g.HasQuiteRecentPaymentTo(Faction.White) || g.GetPlayer(Faction.White).Has(g.CardJustWon)) :
 
                     g.WhiteBiddingJustFinished && g.CardJustWon != null,
 

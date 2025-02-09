@@ -43,7 +43,7 @@ public class TreacheryCard(int id, int skinId, TreacheryCardType type, Rule[] ru
 
     public HeroType HeroType => HeroType.Mercenary;
 
-    public override bool Equals(object obj) => obj is TreacheryCard c && c.Id == Id;
+    //public override bool Equals(object obj) => obj is TreacheryCard c && c.Id == Id;
 
     public override int GetHashCode() => Id.GetHashCode();
 
