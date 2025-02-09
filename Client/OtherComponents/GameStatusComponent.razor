@@ -27,19 +27,27 @@
 
                 <div class="row row-cols-6 d-flex justify-content-center mt-2 mb-3">
 
-                    @if (IsBiddingPhase && ToBid.Count() > 0)
+                    @if (IsBiddingPhase && ToBid.Any())
                     {
-                        var showTurnInSequence = Client.Game.CurrentPhase == Phase.BlackMarketBidding || Client.Game.CurrentPhase == Phase.Bidding || Client.Game.CurrentPhase == Phase.BiddingReport;
+                        var showTurnInSequence = Client.Game.CurrentPhase is Phase.BlackMarketBidding or Phase.Bidding or Phase.BiddingReport;
                         var hasTurn = Client.Status.WaitingForPlayers.Count() == 1 && !showTurnInSequence ? Client.Status.WaitingForPlayers.First() : null;
 
                         foreach (var se in ToBid)
                         {
+                            if (se.Player == null)
+                                continue;
+                            
                             <div class="col" style="filter:drop-shadow(1px 1px 1px black)">
-                                <NumberComponent Value="Game.CardsOwnedBy(se.Player).Count()" Size="@(se.Player == hasTurn || (showTurnInSequence && se.HasTurn) ? 36 : 28)"
-                                                SymbolSRC="@Client.CurrentSkin.GetImageUrl(se.Player.Faction)"
-                                                BehindNumberSRC="@Client.CurrentSkin.CardBack_TreacheryCard_URL"
+                                <NumberComponent Value="@Game.CardsOwnedBy(se.Player).Count()" Size="@(se.Player == hasTurn || (showTurnInSequence && se.HasTurn) ? 38 : 32)"
+                                                SymbolSrc="@Client.CurrentSkin.GetImageUrl(se.Player.Faction)"
+                                                BehindNumberSrc="@Client.CurrentSkin.CardBack_TreacheryCard_URL"
                                                 Title="@PlayerWithCardsTitle(se.Player)"
-                                                NumberColor="@(se.Player.HasRoomForCards ? "black" : "red")" NumberBorderColor="white" NumberBorderWidth=1 NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+                                                NumberColor="@(se.Player.HasRoomForCards ? "black" : "red")" 
+                                                NumberBorderColor="white" 
+                                                NumberBorderWidth=1 
+                                                NumberAlignment="NumberAlignment.BottomRight" 
+                                                NumberBackgroundFillColor="white" 
+                                                NumberBackgroundBorderColor="black" />
                             </div>
                         }
                     }

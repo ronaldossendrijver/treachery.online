@@ -41,7 +41,7 @@
                 foreach (var message in MessagesInOrder)
                 {
                     <div style="@FontStyle(message)">
-                        <ExpressionComponent Expression=message.Expression Game=Game Size=20/>
+                        <ExpressionComponent Expression="@message.Expression" Game="@Game" Size="20"/>
                     </div>
                 }
             }

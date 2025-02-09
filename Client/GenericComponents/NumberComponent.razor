@@ -1,4 +1,5 @@
-﻿@*
+﻿@using System.Globalization
+@*
  * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
@@ -11,22 +12,22 @@
 
     @if (DrawSymbolBackground)
     {
-        <svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0px; top: 0px; width: @SymbolSize; height: @SymbolSize;" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="15.5" stroke="@SymbolBackgroundBorderColor" stroke-width="2%" fill="@SymbolBackgroundFillColor" /></svg>
+        <svg style="position: absolute; left: 0; top: 0; width: @SymbolSize; height: @SymbolSize;" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="15.5" stroke="@SymbolBackgroundBorderColor" stroke-width="2%" fill="@SymbolBackgroundFillColor" /></svg>
     }
 
-    @if (SymbolSRC != null)
+    @if (SymbolSrc != null)
     {
-        <img src="@SymbolSRC" style="position: absolute; left: 0px; top: 0px; width: @SymbolSize;" />
+        <img src="@SymbolSrc" style="position: absolute; left: 0; top: 0; width: @SymbolSize;" />
     }
 
     @if (DrawNumberBackground)
     {
-        <svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0px; top: 0px; width: @SymbolSize; height: @SymbolSize;" width="16" height="16" viewBox="0 0 16 16"><circle cx="@NumberBackgroundOffsetX" cy="@NumberBackgroundOffsetY" r="@NumberBackgroundRadius" stroke="@NumberBackgroundBorderColor" stroke-width="2%" fill="@NumberBackgroundFillColor" /></svg>
+        <svg style="position: absolute; left: 0; top: 0; width: @SymbolSize; height: @SymbolSize;" width="16" height="16" viewBox="0 0 16 16"><circle cx="@NumberBackgroundOffsetX" cy="@NumberBackgroundOffsetY" r="@NumberBackgroundRadius" stroke="@NumberBackgroundBorderColor" stroke-width="2%" fill="@NumberBackgroundFillColor" /></svg>
     }
 
-    @if (BehindNumberSRC != null)
+    @if (BehindNumberSrc != null)
     {
-        <img src="@BehindNumberSRC" style="position: absolute; left: @BehindNumberImageOffsetX; top:@BehindNumberImageOffsetY; width: @BehindNumberImageSize;" />
+        <img src="@BehindNumberSrc" style="position: absolute; left: @BehindNumberImageOffsetX; top:@BehindNumberImageOffsetY; width: @BehindNumberImageSize;" alt="@Value"/>
     }
 
     <span style="position: absolute; left: @NumberBoxOffsetX; top:@NumberBoxOffsetY; width: @NumberBoxSize; font-size: @NumberFontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap; @NumberBorder">@Value</span>
@@ -39,13 +40,13 @@
     public float Value { get; set; }
 
     [Parameter]
-    public string SymbolSRC { get; set; } = null;
+    public string SymbolSrc { get; set; }
 
     [Parameter]
-    public string SymbolBackgroundFillColor { get; set; } = null;
+    public string SymbolBackgroundFillColor { get; set; }
 
     [Parameter]
-    public string SymbolBackgroundBorderColor { get; set; } = null;
+    public string SymbolBackgroundBorderColor { get; set; }
 
     [Parameter]
     public string NumberColor { get; set; } = "black";
@@ -54,19 +55,19 @@
     public string NumberBorderColor { get; set; } = "white";
 
     [Parameter]
-    public int NumberBorderWidth { get; set; } = 0;
+    public int NumberBorderWidth { get; set; }
 
     [Parameter]
     public NumberAlignment NumberAlignment { get; set; } = NumberAlignment.Center;
 
     [Parameter]
-    public string NumberBackgroundFillColor { get; set; } = null;
+    public string NumberBackgroundFillColor { get; set; }
 
     [Parameter]
-    public string NumberBackgroundBorderColor { get; set; } = null;
+    public string NumberBackgroundBorderColor { get; set; }
 
     [Parameter]
-    public string BehindNumberSRC { get; set; } = null;
+    public string BehindNumberSrc { get; set; }
 
     [Parameter]
     public int Size { get; set; } = 36;
@@ -102,9 +103,9 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => "0px",
-                NumberAlignment.BottomRight => "" + (int)(0.4f * Size) + "px",
-                _ => "0px"
+                NumberAlignment.Center => "0",
+                NumberAlignment.BottomRight => Px(0.4f * Size),
+                _ => "0"
             };
         }
     }
@@ -115,9 +116,9 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => "" + (int)(0.2f * Size) + "px",
-                NumberAlignment.BottomRight => "" + (int)(0.45f * Size) + "px",
-                _ => "0px"
+                NumberAlignment.Center => Px(0.05f * Size),
+                NumberAlignment.BottomRight => Px(0.45f * Size),
+                _ => "0"
             };
         }
     }
@@ -128,9 +129,9 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => "" + (int)(1.2 * Size) + "px",
-                NumberAlignment.BottomRight => "" + (int)(0.7 * Size) + "px",
-                _ => "0px"
+                NumberAlignment.Center => Px(1.2 * Size),
+                NumberAlignment.BottomRight => Px(0.7 * Size),
+                _ => "0"
             };
         }
     }
@@ -141,9 +142,9 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => "" + (int)(-0.1 * Size) + "px",
-                NumberAlignment.BottomRight => "" + (int)(0.35f * Size) + "px",
-                _ => "0px"
+                NumberAlignment.Center => Px(-0.1 * Size),
+                NumberAlignment.BottomRight => Px(0.35f * Size),
+                _ => "0"
             };
         }
     }
@@ -154,9 +155,9 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => "" + (int)(-0.1 * Size) + "px",
-                NumberAlignment.BottomRight => "" + (int)(0.35f * Size) + "px",
-                _ => "0px"
+                NumberAlignment.Center => Px(-0.1 * Size),
+                NumberAlignment.BottomRight => Px(0.35f * Size),
+                _ => "0"
             };
         }
     }
@@ -167,9 +168,9 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => "" + (int)(0.6f * Size) + "px",
-                NumberAlignment.BottomRight => "" + (int)(0.55f * Size) + "px",
-                _ => "0px"
+                NumberAlignment.Center => Px(0.8f * Size),
+                NumberAlignment.BottomRight => Px(0.8f * Size),
+                _ => "0"
             };
         }
     }
@@ -180,9 +181,9 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => "7.5px",
-                NumberAlignment.BottomRight => "4.75px",
-                _ => "0px"
+                NumberAlignment.Center => "7.5",
+                NumberAlignment.BottomRight => "4.75",
+                _ => "0"
             };
         }
     }
@@ -193,8 +194,8 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => 8,
-                NumberAlignment.BottomRight => 11,
+                NumberAlignment.Center => 7,
+                NumberAlignment.BottomRight => 10,
                 _ => 0
             };
         }
@@ -206,8 +207,8 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => 8,
-                NumberAlignment.BottomRight => 11,
+                NumberAlignment.Center => 7,
+                NumberAlignment.BottomRight => 10,
                 _ => 0
             };
         }
@@ -216,4 +217,7 @@
     private string NumberBorder => NumberBorderWidth > 0 ? Support.TextBorder(NumberBorderWidth, NumberBorderColor) : "";
     
     private string Pointer => OnClick.HasDelegate ? "cursor: pointer;" : string.Empty;
+
+    private static string Px(double x)
+        => x.ToString(CultureInfo.InvariantCulture) + "px";
 }

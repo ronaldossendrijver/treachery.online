@@ -14,7 +14,7 @@
 
 @code {
 
-    protected override BlackMarketBid ConfirmedResult => new(Game, Faction) { Passed = false, Amount = amount, AllyContributionAmount = allyContributionAmount, RedContributionAmount = redContributionAmount };
+    protected override BlackMarketBid ConfirmedResult => new(Game, Faction) { Passed = false, Amount = Amount, AllyContributionAmount = AllyContributionAmount, RedContributionAmount = RedContributionAmount };
 
     protected override BlackMarketBid PassedResult => new(Game, Faction) { Passed = true };
 

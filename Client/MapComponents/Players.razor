@@ -41,7 +41,7 @@
                        Popover="@Intel(p.AlliedPlayer)"/>
             }
 
-            var positionOnCircle = TWOPI / 180 + (4.5f - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
+            var positionOnCircle = TwoPi / 180 + (4.5f - positionSector) * TwoPi / Map.NUMBER_OF_SECTORS;
                         
             //Homeworlds
             foreach (var homeworld in p.HomeWorlds)
@@ -123,7 +123,7 @@
 
             foreach (var tt in p.TechTokens)
             {
-                positionOnCircle += TWOPI / 90;
+                positionOnCircle += TwoPi / 90;
                 <MapImage XY=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
                        Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
                        Src="@Client.CurrentSkin.GetImageUrl(tt)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
@@ -132,7 +132,7 @@
 
             if (p.Faction == Faction.Pink && Game.PinkLoyalLeader != null)
             {
-                positionOnCircle += TWOPI / 90;
+                positionOnCircle += TwoPi / 90;
 
                 <MapImage XY=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
                        Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
@@ -142,7 +142,7 @@
                         
             foreach (var skilledLeader in Game.GetSkilledLeaders(p).Where(l => Game.IsInFrontOfShield(l))) {
 
-                positionOnCircle += TWOPI / 90;
+                positionOnCircle += TwoPi / 90;
 
                 <MapImage XY=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
                         Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
@@ -159,7 +159,7 @@
 
             if (p.Faction == Faction.Pink && p.Ambassadors.Any())
             {
-                positionOnCircle += TWOPI / 90;
+                positionOnCircle += TwoPi / 90;
 
                 var ambassadorXY = Pos(positionOnCircle, 0.5f * Client.CurrentSkin.PlayerTokenRadius);
                 var yOffset = -0.5f * p.Ambassadors.Count() * 0.2f * Client.CurrentSkin.PlayerTokenRadius;
@@ -179,7 +179,7 @@
 
             if (p.Faction == Faction.White && Game.LatestRevealedNoFieldValue >= 0)
             {
-                positionOnCircle += TWOPI / 90;
+                positionOnCircle += TwoPi / 90;
 
                 <MapImage XY=@Pos(positionOnCircle, Client.CurrentSkin.FORCETOKEN_RADIUS) Diameter=@(2 * Client.CurrentSkin.FORCETOKEN_RADIUS) Src="@Client.CurrentSkin.FactionSpecialForceImage_URL[Faction.White]"
                        ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
@@ -196,7 +196,7 @@
 
             if (totalSpiceToReceiveLater > 0)
             {
-                positionOnCircle += TWOPI / 90;
+                positionOnCircle += TwoPi / 90;
                 var tooltip = Client.CurrentSkin.Format("To be collected during {0}", MainPhase.Contemplate);
 
                 <MapImage 
@@ -219,7 +219,7 @@
 
             if (p.ResourcesAfterBidding > 0)
             {
-                positionOnCircle += TWOPI / 90;
+                positionOnCircle += TwoPi / 90;
                 var tooltip = Client.CurrentSkin.Format("Subbed {0}", Concept.Resource);
 
                 <MapImage 

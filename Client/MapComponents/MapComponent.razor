@@ -84,21 +84,17 @@
         }
     }
 
-    protected const float TWOPI = 6.2831853072f;
+    protected const float TwoPi = 6.2831853072f;
 
     protected Game Game => Client.Game;
 
     protected Player Player => Client.Player;
 
-    protected string Px(double x)
-    {
-        return Round(x) + "px";
-    }
+    protected static string Px(double x)
+        => x.ToString(CultureInfo.InvariantCulture) + "px";
 
-    protected string Round(double x)
-    {
-        return Math.Round(x, 3).ToString(CultureInfo.InvariantCulture);
-    }
+    protected static string Round(double x)
+        => x.ToString(CultureInfo.InvariantCulture);
 
     private string _id;
     protected string Id
@@ -133,7 +129,7 @@
     protected PointD PlayerTokenPosition(Game game, int positionAtTable)
     {
         var positionSector = Math.Floor((float)positionAtTable * Map.NUMBER_OF_SECTORS / game.MaximumPlayers);
-        var angle = (4.5 - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
+        var angle = (4.5 - positionSector) * TwoPi / Map.NUMBER_OF_SECTORS;
         var x = Client.CurrentSkin.PlanetCenter.X + (float)(Client.CurrentSkin.MapRadius * Math.Cos(angle));
         var y = Client.CurrentSkin.PlanetCenter.Y + (float)(Client.CurrentSkin.MapRadius * Math.Sin(angle));
         return new PointD(x, y);

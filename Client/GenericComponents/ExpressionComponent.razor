@@ -18,18 +18,14 @@
             <span class="fw-bold">none</span>
             break;
 
-        case string str:
+        case string:
             <span style=@TextBorder>@part</span>
             break;
 
         case IEnumerable e:
+            foreach (var expression in DetermineElements(e))
             {
-                var elts = DetermineElements(e);
-
-                for (var i = 0; i < elts.Count; i++)
-                {
-                    <ExpressionComponent Expression=elts[i] Size=@Size Game=Game TextBorder=@TextBorder/>
-                }
+                <ExpressionComponent Expression="@expression" Size=@Size Game=Game TextBorder=@TextBorder/>
             }
             break;
 
@@ -54,7 +50,7 @@
             break;
 
         case Payment payment:
-            <TextBeforeImage ImageURL="@Client.CurrentSkin.Harvester_URL" Size=@Size Title="@Client.CurrentSkin.Describe(Concept.Resource)">@payment.Amount</TextBeforeImage>
+            <TextBeforeImage ImageUrl="@Client.CurrentSkin.Harvester_URL" Size=@Size Title="@Client.CurrentSkin.Describe(Concept.Resource)">@payment.Amount</TextBeforeImage>
             @if (payment.By != Faction.None)
             {
                 <span> by <FactionComponent Faction=payment.By Diameter=@Size/></span>

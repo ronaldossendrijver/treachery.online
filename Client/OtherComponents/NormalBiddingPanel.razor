@@ -16,14 +16,14 @@
 
     protected override Bid ConfirmedResult => new(Game, Faction) { 
         Passed = false, 
-        Amount = amount, 
+        Amount = Amount, 
         KarmaBid = false, 
-        KarmaCard = karmaCard, 
-        UsesRedSecretAlly = useRedSecretAlly,
-        AllyContributionAmount = allyContributionAmount, 
-        RedContributionAmount = redContributionAmount };
+        KarmaCard = KarmaCard, 
+        UsesRedSecretAlly = UseRedSecretAlly,
+        AllyContributionAmount = AllyContributionAmount, 
+        RedContributionAmount = RedContributionAmount };
 
-    protected override Bid OtherResult => new(Game, Faction) { Passed = false, KarmaBid = true, KarmaCard = karmaCard };
+    protected override Bid OtherResult => new(Game, Faction) { Passed = false, KarmaBid = true, KarmaCard = KarmaCard };
 
     protected override Bid PassedResult => new(Game, Faction) { Passed = true, KarmaBid = false };
 
@@ -35,7 +35,7 @@
 
     protected override int MaxAllyBidAmount => Bid.ValidMaxAllyAmount(Game, Player);
 
-    protected override int MaxBidAmount => Bid.ValidMaxAmount(Player, karmaCard != null);
+    protected override int MaxBidAmount => Bid.ValidMaxAmount(Player, KarmaCard != null);
 
     protected override string AuctionDescription {
 

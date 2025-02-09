@@ -6,8 +6,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-@inherits GameEventComponent<BidType>
-@typeparam BidType
+@inherits GameEventComponent<TBid>
+@typeparam TBid
 
 <div class="card p-1 mb-2 border-white" style="animation:fadeIn 1s;">
 
@@ -19,11 +19,11 @@
 
                 @if (CardIsVisible) 
                 {
-                    <Image Shown=@Game.CardsOnAuction.Top Width=150 />
+                    <Image Shown=@Game.CardsOnAuction.Top Width="150" />
                 }
                 else 
                 {
-                    <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" width="150" />
+                    <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" width="150" alt="Card on sale"/>
                 }
 
                 <div style="position: absolute; top: 80px; left: 5px; width: 180px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
@@ -34,8 +34,8 @@
                             
                     @if (ShowCurrentBid)
                     {
-                        <img src="@Client.CurrentSkin.GetImageUrl(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />
-                        <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSRC="@Client.CurrentSkin.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
+                        <img src="@Client.CurrentSkin.GetImageUrl(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" alt="@Name(Game.CurrentBid.Initiator)"/>
+                        <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSrc="@Client.CurrentSkin.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
                     }
                 </div>
 
@@ -66,49 +66,49 @@
                 {
                     if (CanUseRedSecretAlly)
                     {
-                        <CheckboxComponent @bind-Value=@useRedSecretAlly>Use your Nexus card to get this card for free?</CheckboxComponent>
+                        <CheckboxComponent @bind-Value=@UseRedSecretAlly>Use your Nexus card to get this card for free?</CheckboxComponent>
                     }
                     else
                     {
-                        useRedSecretAlly = false;
+                        UseRedSecretAlly = false;
                     }
 
                     if (CanUseKarma)
                     {
                         <div class="mt-1">
-                            <SelectFromImageComponent @bind-Value="karmaCard" Values="Bid.ValidKarmaCards(Game, Player)" Required="false" ImageWidth="80">
+                            <SelectFromImageComponent @bind-Value="KarmaCard" Values="Bid.ValidKarmaCards(Game, Player)" Required="false" ImageWidth="80">
                                 <Label>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to bid without limit or win immediately? <InfoComponent Contents="@KarmaInfoMessage" /></Label>
                             </SelectFromImageComponent>
                         </div>
                     }
                     else
                     {
-                        karmaCard = null;
+                        KarmaCard = null;
                     }
 
                     <div class="mt-1">
 
                         @if (Player.Ally != Faction.None && MaxAllyBidAmount > 0)
                         {
-                            <SelectResourcesFromFactionComponent @bind-Value="amount" Min="0" Max="MaxBidAmount" Faction="Faction" />
-                            <SelectResourcesFromFactionComponent @bind-Value="allyContributionAmount" Min="0" Max="MaxAllyBidAmount" Faction="Player.Ally" />
+                            <SelectResourcesFromFactionComponent @bind-Value="Amount" Min="0" Max="MaxBidAmount" Faction="Faction" />
+                            <SelectResourcesFromFactionComponent @bind-Value="AllyContributionAmount" Min="0" Max="MaxAllyBidAmount" Faction="Player.Ally" />
                         }
                         else
                         {
-                            <SelectResourcesComponent @bind-Value="amount" Min="0" Max="MaxBidAmount" />
-                            allyContributionAmount = 0;
+                            <SelectResourcesComponent @bind-Value="Amount" Min="0" Max="MaxBidAmount" />
+                            AllyContributionAmount = 0;
                         }
 
                         @if (Game.SpiceForBidsRedCanPay(Faction) > 0)
                         {
-                            <SelectResourcesFromFactionComponent @bind-Value="redContributionAmount" Min="0" Max="Game.SpiceForBidsRedCanPay(Faction)" Faction="Faction.Red" />
+                            <SelectResourcesFromFactionComponent @bind-Value="RedContributionAmount" Min="0" Max="Game.SpiceForBidsRedCanPay(Faction)" Faction="Faction.Red" />
                         }
 
                     </div>
 
                     @if (IsSilentAuction)
                     {
-                        @if (karmaCard != null)
+                        @if (KarmaCard != null)
                         {
                             <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError=@Validation Other="Other" OtherText="Win immediately" Alignment="justify-content-start" />
                         }
@@ -119,7 +119,7 @@
                     }
                     else
                     {
-                        @if (karmaCard != null)
+                        @if (KarmaCard != null)
                         {
                             <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError=@Validation Pass="Pass" PassText="Pass" Other="Other" OtherText="Win immediately" Alignment="justify-content-start" />
                         }
@@ -143,18 +143,18 @@
 
     protected override bool IsUrgent => true;
 
-    protected int amount;
-    protected int allyContributionAmount;
-    protected int redContributionAmount;
-    protected TreacheryCard karmaCard;
-    protected bool useRedSecretAlly;
+    protected int Amount;
+    protected int AllyContributionAmount;
+    protected int RedContributionAmount;
+    protected TreacheryCard KarmaCard;
+    protected bool UseRedSecretAlly;
 
     private bool _canBid;
 
     [Parameter]
     public bool CanBid { get; set; }
 
-    private string BidLabel => "Bid " + (amount + allyContributionAmount + redContributionAmount) + (karmaCard != null ? $" (with {Name(TreacheryCardType.Karma)})" : string.Empty);
+    private string BidLabel => "Bid " + (Amount + AllyContributionAmount + RedContributionAmount) + (KarmaCard != null ? $" (with {Name(TreacheryCardType.Karma)})" : string.Empty);
 
     private void AutoPassChanged(bool value)
     {
@@ -185,8 +185,8 @@
             var allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllyResources(Faction);
             var playerResources = Player.Resources;
             var bidToDo = Game.CurrentBid != null ? Game.CurrentBid.TotalAmount + 1 : 1;
-            allyContributionAmount = Math.Min(bidToDo, allyResources);
-            amount = Math.Min(bidToDo - allyContributionAmount, playerResources);
+            AllyContributionAmount = Math.Min(bidToDo, allyResources);
+            Amount = Math.Min(bidToDo - AllyContributionAmount, playerResources);
         }
 
         await StartTimerCycleAsync(1000);
