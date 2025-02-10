@@ -207,7 +207,7 @@ public class PlayerSequence
 
     public static Player DetermineFirstPlayer(Game g)
     {
-        var startLookingInSector = (int)Math.Ceiling((float)g.SectorInStorm * g.MaximumPlayers / Map.NUMBER_OF_SECTORS) % g.MaximumPlayers;
+        var startLookingInSector = (int)Math.Ceiling((float)g.SectorInStorm * g.MaximumPlayers / Map.NumberOfSectors) % g.MaximumPlayers;
 
         Player result = null;
 

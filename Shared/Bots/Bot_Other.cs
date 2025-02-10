@@ -35,10 +35,10 @@ public partial class Player
 
     private TestingStationUsed DetermineTestingStationUsed()
     {
-        var currentStormEnd = (Game.SectorInStorm + Game.NextStormMoves) % Map.NUMBER_OF_SECTORS;
+        var currentStormEnd = (Game.SectorInStorm + Game.NextStormMoves) % Map.NumberOfSectors;
         var locationsInSector = Game.Map.Locations(false).Where(l => l.Sector == currentStormEnd && !l.IsProtectedFromStorm).ToList();
-        var locationsInSectorMinus1 = Game.Map.Locations(false).Where(l => !l.IsProtectedFromStorm && l.Sector == (currentStormEnd == 0 ? Map.NUMBER_OF_SECTORS : currentStormEnd - 1)).ToList();
-        var locationsInSectorPlus1 = Game.Map.Locations(false).Where(l => !l.IsProtectedFromStorm && l.Sector == (currentStormEnd == Map.NUMBER_OF_SECTORS ? 0 : currentStormEnd + 1)).ToList();
+        var locationsInSectorMinus1 = Game.Map.Locations(false).Where(l => !l.IsProtectedFromStorm && l.Sector == (currentStormEnd == 0 ? Map.NumberOfSectors : currentStormEnd - 1)).ToList();
+        var locationsInSectorPlus1 = Game.Map.Locations(false).Where(l => !l.IsProtectedFromStorm && l.Sector == (currentStormEnd == Map.NumberOfSectors ? 0 : currentStormEnd + 1)).ToList();
 
         var myForcesKilledInSector = locationsInSector.Sum(l => Game.BattalionsIn(l).Where(b => b.Faction == Faction && b.Faction == Ally).Sum(b => b.TotalAmountOfForces));
         var myForcesKilledInSectorMinus1 = locationsInSectorMinus1.Sum(l => Game.BattalionsIn(l).Where(b => b.Faction == Faction && b.Faction == Ally).Sum(b => b.TotalAmountOfForces));
@@ -815,7 +815,7 @@ public partial class Player
 
         for (moves = 1; moves <= 10; moves++)
         {
-            var affectedLocations = Game.Map.Locations(false).Where(l => l.Sector == (Game.SectorInStorm + moves) % Map.NUMBER_OF_SECTORS && !Game.IsProtectedFromStorm(l));
+            var affectedLocations = Game.Map.Locations(false).Where(l => l.Sector == (Game.SectorInStorm + moves) % Map.NumberOfSectors && !Game.IsProtectedFromStorm(l));
             var myAndAllyForces = affectedLocations.Sum(l => Game.BattalionsIn(l).Where(bat => bat.Faction == Faction || bat.Faction == Ally).Sum(bat => bat.TotalAmountOfForces));
             var enemyForces = affectedLocations.Sum(l => Game.BattalionsIn(l).Where(bat => bat.Faction != Faction && bat.Faction != Ally).Sum(bat => bat.TotalAmountOfForces));
             myKills.Add(moves, myKills[moves - 1] + myAndAllyForces);

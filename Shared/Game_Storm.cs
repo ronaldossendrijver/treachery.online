@@ -130,7 +130,7 @@ public partial class Game
 
         for (var i = 0; i < amount; i++)
         {
-            SectorInStorm = (SectorInStorm + 1) % Map.NUMBER_OF_SECTORS;
+            SectorInStorm = (SectorInStorm + 1) % Map.NumberOfSectors;
             PerformStorm();
         }
 

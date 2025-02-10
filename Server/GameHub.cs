@@ -12,10 +12,11 @@ namespace Treachery.Server;
 public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfiguration configuration)
     : Hub<IGameClient>, IGameHub
 {
-    private const int CleanupFrequency = 3600000; // 3600000 ms = Each hour
-    private const int ServerStatusFrequency = 6000; // 6000 ms = Each 6 seconds
-    private const int PersistFrequency = 900000; // 900000 ms = Each 15 minutes
-    private const int MaximumLoginTime = 10080; // 10080 minutes = 7 days 
+    private const int CleanupFrequencyMs = 3600000; // 3600000 ms = Each hour
+    private const int ServerStatusFrequencyMs = 6000; // 6000 ms = Each 6 seconds
+    private const int PersistFrequencyMs = 900000; // 900000 ms = Each 15 minutes
+    private const int MaximumLoginTimeMinutes = 10080; // 10080 minutes = 7 days 
+    private const int ActiveGameThresholdMinutes = 20;
     
     //Users
     private static ConcurrentDictionary<string,LoggedInUser> UsersByUserToken { get; } = [];
@@ -28,7 +29,10 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     //Scheduled games
     private static ConcurrentDictionary<string,ScheduledGame> ScheduledGamesByGameId{ get; } = [];
 
-    private static ServerStatus ServerStatus { get; set; } = new();
+    //Server status
+    public static GameInfo[] RunningGames { get; set; } = [];
+    public static ScheduledGameInfo[] ScheduledGames { get; set; } = [];
+    public static LoggedInUserInfo[] RecentlySeenUsers { get; set; } = [];
     
     //Other
     private static DateTimeOffset LastRestored { get; set; }
@@ -81,6 +85,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
             return false;
         }
 
+        game.LastActivity = DateTimeOffset.Now;
         return true;
     }    
     private static bool AreValid(string userToken, string gameId, out LoggedInUser user, out ManagedGame game, out VoidResult result)
@@ -107,6 +112,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
             return false;
         }
         
+        game.LastActivity = DateTimeOffset.Now;
         return true;
     }
     

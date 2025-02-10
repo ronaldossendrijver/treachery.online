@@ -29,7 +29,7 @@ public class GameInfo
     public int NrOfPlayers { get; init; }
     public Faction[] FactionsInPlay { get; init; }
     public Ruleset Ruleset { get; init; }
-    public DateTimeOffset? LastAction { get; init; }
+    public DateTimeOffset? LastActivity { get; init; }
     public Dictionary<int, int> SeatedPlayers { get; set; }
     public AvailableSeatInfo[] AvailableSeats { get; init; } = [];
     

@@ -75,7 +75,7 @@ public class StormDialled : GameEvent
 
     private void PositionFirstStorm()
     {
-        Game.SectorInStorm = Game.NextStormMoves % Map.NUMBER_OF_SECTORS;
+        Game.SectorInStorm = Game.NextStormMoves % Map.NumberOfSectors;
         Log("The first storm moves ", Game.SectorInStorm, " sectors");
         Game.PerformStorm();
 

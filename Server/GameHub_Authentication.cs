@@ -207,14 +207,16 @@ public partial class GameHub
         return await Task.FromResult(Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email }));
     }
 
-    public async Task<VoidResult> RequestSetUserStatus(string userToken, UserStatus status)
+    public async Task<Result<ServerStatus>> RequestSetUserStatus(string userToken, UserStatus status)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
-            return Error(ErrorType.UserNotFound);
+            return Error<ServerStatus>(ErrorType.UserNotFound);
 
         user.Status = status;
+        UpdateServerStatusIfNeeded(true);
+        await Task.CompletedTask;
         
-        return await Task.FromResult(Success());
+        return Success(FilteredServerStatus(GameListScope.Active, user.Id));
     }
 }
 

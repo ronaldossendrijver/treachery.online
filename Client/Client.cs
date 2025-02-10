@@ -25,10 +25,11 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public AdminInfo AdminInfo { get; private set; }
     
     //Server info
-    public bool FetchActiveGamesOnly { get; set; } = true;
-    public GameInfo[] RunningGames { get; private set; } = [];
-    public GameInfo[] RunningGamesWithOpenSeats { get; private set; } = [];
-    public GameInfo[] RunningGamesWithoutOpenSeats { get; private set; } = [];
+    public bool IsAdmin { get; set; } = false;
+    public GameInfo[] OwnGames { get; private set; } = [];
+    public GameInfo[] ActiveGames { get; private set; } = [];
+    public GameInfo[] ActiveGamesWithOpenSeats { get; private set; } = [];
+    public GameInfo[] ActiveGamesWithoutOpenSeats { get; private set; } = [];
     public ScheduledGameInfo[] ScheduledGames { get; private set; } = [];
     public Dictionary<int,LoggedInUserInfo> RecentlySeenUsers { get; private set; } = [];
     
@@ -230,7 +231,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         Message resultMessage;
         e.Initialize(Game);
         var expectedEventNumber = Game.EventCount + 1;
-        Console.WriteLine($"Handling event nr: {newEventNumber}, expected: {expectedEventNumber}, type: {e.GetType()}");
         
         if (newEventNumber == expectedEventNumber)
         {
@@ -408,11 +408,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return null;
     }
     
-    public async Task<VoidResult> RequestSetUserStatus(UserStatus status)
+    public async Task<string> RequestSetUserStatus(UserStatus status)
     {
-        await Invoke(nameof(IGameHub.RequestSetUserStatus), UserToken, status);
-        Refresh(nameof(RequestSetUserStatus));
-        return null;
+        var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestSetUserStatus), UserToken, status);
+        return UpdateServerStatusOnSuccess(result);
     }
     
     //Game Management
@@ -648,7 +647,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     private async Task SendHeartbeatAndGetServerStatus()
     {
         var scope = InGame ? GameListScope.None :
-            FetchActiveGamesOnly ? GameListScope.ActiveAndOwned : GameListScope.All;
+            IsAdmin ? GameListScope.All : GameListScope.Active;
         
         var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestHeartbeat), UserToken, scope);
         UpdateServerStatusOnSuccess(result);
@@ -656,9 +655,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     private void HandleUpdatedServerStatus(ServerStatus status)
     {
-        RunningGames = status.RunningGames;
-        RunningGamesWithOpenSeats = RunningGames.Where(g => g.CanBeJoined).ToArray();
-        RunningGamesWithoutOpenSeats = RunningGames.Where(g => !g.CanBeJoined).ToArray();
+        OwnGames = status.OwnGames;
+        ActiveGames = status.RunningGames;
+        ActiveGamesWithOpenSeats = ActiveGames.Where(g => g.CanBeJoined).ToArray();
+        ActiveGamesWithoutOpenSeats = ActiveGames.Where(g => !g.CanBeJoined).ToArray();
         ScheduledGames = status.ScheduledGames;
         RecentlySeenUsers = status.RecentlySeenUsers.ToDictionary(x => x.Id, x => x);
         Refresh(nameof(HandleUpdatedServerStatus));

@@ -98,12 +98,12 @@ else
                 <div class="card-body">
                     <table class="table table-sm">
                         <tbody>
-                        @foreach (var av in Client.RunningGames.OrderByDescending(av => av.LastAction))
+                        @foreach (var av in Client.ActiveGames.OrderByDescending(av => av.LastActivity))
                         {
-                            var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
+                            var fontColorStyle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20 ? "color:grey" : "color:white";
                             <tr class="small table-dark">
                                 <td class="w-25" style="@fontColorStyle">
-                                    @av.LastAction
+                                    @av.LastActivity
                                 </td>
                                 <td class="w-25" style="@fontColorStyle">
                                     @av.Name
@@ -164,7 +164,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         Client.RefreshHandler += StateHasChanged;
-        Client.FetchActiveGamesOnly = false;
+        Client.IsAdmin = true;
         await Client.Start();
         MaintenanceDate = Client.ServerInfo.ScheduledMaintenance;
     }

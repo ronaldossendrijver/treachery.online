@@ -11,52 +11,28 @@
 <div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeIn90 1s">
     <div class="card-header">
         <div class="d-flex justify-content-between">
-            <div>Join or observe a game</div>
-            <div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-secondary dropdown-toggle btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
-                        @if (Client.FetchActiveGamesOnly)
-                        {
-                            <span>Active games</span>
-                        }
-                        else
-                        {
-                            <span>All games</span>
-                        }
-                    </button>
-                    <ul class="dropdown-menu">
-                        @if (Client.FetchActiveGamesOnly)
-                        {
-                            <li><a class="dropdown-item" href="#" @onclick="@(_ => Client.FetchActiveGamesOnly = false)">All games</a></li>
-                        }
-                        else
-                        {
-                            <li><a class="dropdown-item" href="#" @onclick="@(_ => Client.FetchActiveGamesOnly = true)">Active games</a></li>
-                        }
-                    </ul>
-                </div>                
-            </div>
+            <div>Active games</div>
         </div>
     </div>
     <div class="card-body">
 
-        @if (!Client.RunningGamesWithoutOpenSeats.Any() && !Client.RunningGamesWithOpenSeats.Any() && !Client.ScheduledGames.Any())
+        @if (!Client.ActiveGamesWithoutOpenSeats.Any() && !Client.ActiveGamesWithOpenSeats.Any() && !Client.ScheduledGames.Any())
         {
             <div class="text-info">No games...</div>
         }
         else
         {
-            if (Client.RunningGamesWithOpenSeats.Any())
+            if (Client.ActiveGamesWithOpenSeats.Any())
             {
                 <div class="text-info">Games with open seats (that you can join)</div>
                 <table class="table table-sm">
                     <tbody>
-                    @foreach (var av in Client.RunningGamesWithOpenSeats)
+                    @foreach (var av in Client.ActiveGamesWithOpenSeats)
                     {
                         _joinGamePassword.TryAdd(av.GameId, "");
                         JoinErrors.TryAdd(av.GameId, "");
 
-                        var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
+                        var fontColorStyle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20 ? "color:grey" : "color:white";
 
                         <tr class="small table-dark">
                             <td class="w-20" style="@fontColorStyle">
@@ -195,17 +171,17 @@
                         </tbody>
                     </table>
             }
-            if (Client.RunningGamesWithoutOpenSeats.Any())
+            if (Client.ActiveGamesWithoutOpenSeats.Any())
             {
                 <div class="text-info">Games without open seats</div>
                 <table class="table table-sm">
                     <tbody>
-                    @foreach (var av in Client.RunningGamesWithoutOpenSeats)
+                    @foreach (var av in Client.ActiveGamesWithoutOpenSeats)
                     {
                         _joinGamePassword.TryAdd(av.GameId, "");
                         JoinErrors.TryAdd(av.GameId, "");
 
-                        var fontColorStyle = av.LastAction != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastAction).TotalMinutes > 20 ? "color:grey" : "color:white";
+                        var fontColorStyle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20 ? "color:grey" : "color:white";
 
                         <tr class="small table-dark">
                             <td class="w-20" style="@fontColorStyle">

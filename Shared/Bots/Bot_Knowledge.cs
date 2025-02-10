@@ -253,7 +253,7 @@ public partial class Player
         if (Game.IsProtectedFromStorm(l) || LastTurn) return false;
 
         for (var i = 1; i <= MaxExpectedStormMoves; i++)
-            if ((Game.SectorInStorm + i) % Map.NUMBER_OF_SECTORS == l.Sector) return true;
+            if ((Game.SectorInStorm + i) % Map.NumberOfSectors == l.Sector) return true;
 
         return false;
     }

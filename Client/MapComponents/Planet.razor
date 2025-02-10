@@ -13,7 +13,7 @@
      style="position: absolute; left: 0; top: 0; height: 100%; width: 100%;" pointer-events="none">
 
     <!-- Clipping areas of each sector -->
-    @for (var i = 0; i < Map.NUMBER_OF_SECTORS; i++) {
+    @for (var i = 0; i < Map.NumberOfSectors; i++) {
 
         <clipPath id="@SectorClipName(i)">
             <path d="
@@ -121,7 +121,7 @@
     {
         for (var i = 1; i <= Game.NextStormMoves; i++)
         {
-            if ((Game.SectorInStorm + i) % Map.NUMBER_OF_SECTORS == l.Sector)
+            if ((Game.SectorInStorm + i) % Map.NumberOfSectors == l.Sector)
             {
                 return true;
             }
@@ -138,26 +138,26 @@
         await OnLocationClick.InvokeAsync(new LocationEventArgs { Location = l, AltKey = e.AltKey, CtrlKey = e.CtrlKey, ShiftKey = e.ShiftKey });
     }
 
-    private float Angle => 360f / Map.NUMBER_OF_SECTORS;
+    private float Angle => 360f / Map.NumberOfSectors;
 
     private double StartX(int sector)
     {
-        return Math.Cos(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Client.CurrentSkin.PlanetRadius + Client.CurrentSkin.PlanetCenter.X;
+        return Math.Cos(2f * Math.PI * (6 - sector) / Map.NumberOfSectors) * Client.CurrentSkin.PlanetRadius + Client.CurrentSkin.PlanetCenter.X;
     }
 
     private double StartY(int sector)
     {
-        return Math.Sin(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Client.CurrentSkin.PlanetRadius + Client.CurrentSkin.PlanetCenter.Y;
+        return Math.Sin(2f * Math.PI * (6 - sector) / Map.NumberOfSectors) * Client.CurrentSkin.PlanetRadius + Client.CurrentSkin.PlanetCenter.Y;
     }
 
     private double EndX(int sector)
     {
-        return Math.Cos(2f * Math.PI * (5 - sector) / Map.NUMBER_OF_SECTORS) * Client.CurrentSkin.PlanetRadius + Client.CurrentSkin.PlanetCenter.X;
+        return Math.Cos(2f * Math.PI * (5 - sector) / Map.NumberOfSectors) * Client.CurrentSkin.PlanetRadius + Client.CurrentSkin.PlanetCenter.X;
     }
 
     private double EndY(int sector)
     {
-        return Math.Sin(2f * Math.PI * (5 - sector) / Map.NUMBER_OF_SECTORS) * Client.CurrentSkin.PlanetRadius + Client.CurrentSkin.PlanetCenter.Y;
+        return Math.Sin(2f * Math.PI * (5 - sector) / Map.NumberOfSectors) * Client.CurrentSkin.PlanetRadius + Client.CurrentSkin.PlanetCenter.Y;
     }
 
     private double ScaleX => 563f / Client.CurrentSkin.MapDimensions.X;

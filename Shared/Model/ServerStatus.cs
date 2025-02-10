@@ -13,6 +13,8 @@ public class ServerStatus
 {
     public GameInfo[] RunningGames { get; init; } = [];
     
+    public GameInfo[] OwnGames { get; init; } = [];
+    
     public ScheduledGameInfo[] ScheduledGames { get; init; } = [];
     
     public LoggedInUserInfo[] RecentlySeenUsers { get; init; } = [];

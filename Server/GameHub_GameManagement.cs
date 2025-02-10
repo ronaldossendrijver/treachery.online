@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,6 +37,7 @@ public partial class GameHub
         var managedGame = new ManagedGame
         {
             CreationDate = DateTimeOffset.Now,
+            LastActivity = DateTimeOffset.Now,
             CreatorUserId = user.Id,
             GameId = gameId,
             Game = game,
@@ -89,8 +89,11 @@ public partial class GameHub
         };
 
         ScheduledGamesByGameId[gameId] = scheduledGame;
+        
         UpdateServerStatusIfNeeded(true);
-        return await Task.FromResult(Success(ServerStatus));
+        await Task.CompletedTask;
+        
+        return Success(FilteredServerStatus(GameListScope.Active, user.Id));
     }
     
     public async Task<Result<ServerStatus>> RequestCancelGame(string userToken, string scheduledGameId)
@@ -107,7 +110,9 @@ public partial class GameHub
         ScheduledGamesByGameId.Remove(scheduledGameId, out _);
         
         UpdateServerStatusIfNeeded(true);
-        return await Task.FromResult(Success(ServerStatus));
+        await Task.CompletedTask;
+        
+        return Success(FilteredServerStatus(GameListScope.Active, user.Id));
     }
     
     public async Task<VoidResult> RequestLoadGame(string userToken, string gameId, string stateData, string skin)
@@ -231,7 +236,9 @@ public partial class GameHub
         game.SubscribedUsers[user.Id] = subscription;
 
         UpdateServerStatusIfNeeded(true);
-        return await Task.FromResult(Success(ServerStatus));
+        await Task.CompletedTask;
+        
+        return Success(FilteredServerStatus(GameListScope.Active, user.Id));
     }
 
     public async Task<VoidResult> RequestOpenOrCloseSeat(string userToken, string gameId, int seat)
@@ -283,7 +290,7 @@ public partial class GameHub
         await NudgeBots(game);
         
         UpdateServerStatusIfNeeded(true);
-        return Success(ServerStatus);
+        return Success(FilteredServerStatus(GameListScope.Active, user.Id));
     }
 
     public async Task<VoidResult> RequestKick(string userToken, string gameId, int userId)
@@ -335,7 +342,7 @@ public partial class GameHub
         RunningGamesByGameId.Remove(gameId, out _);
         
         UpdateServerStatusIfNeeded(true);
-        return Success(ServerStatus);
+        return Success(FilteredServerStatus(GameListScope.Active, user.Id));
     }
 
     private async Task AddToGroup(string gameId, int userId, string connectionId)
@@ -475,34 +482,50 @@ public partial class GameHub
 
         loggedInUser.LastSeenDateTime = DateTime.Now;
 
+        return Success(FilteredServerStatus(scope, loggedInUser.Id));
+    }
+
+    private static ServerStatus FilteredServerStatus(GameListScope scope, int userId)
+    {
         switch (scope)
         {
-            case GameListScope.ActiveAndOwned:
+            case GameListScope.Active:
             {
-                var lastActiveGameThreshold = DateTimeOffset.Now.AddMinutes(-20);
+                var lastActiveGameThreshold = DateTimeOffset.Now.AddMinutes(-ActiveGameThresholdMinutes);
                 var filteredServerStatus = new ServerStatus
                 {
-                    RunningGames = ServerStatus.RunningGames.Where(mg => mg.CreatorId == loggedInUser.Id || mg.LastAction >= lastActiveGameThreshold).ToArray(),
-                    ScheduledGames = ServerStatus.ScheduledGames,
-                    RecentlySeenUsers = ServerStatus.RecentlySeenUsers,
+                    RunningGames = RunningGames.Where(mg => mg.LastActivity >= lastActiveGameThreshold).ToArray(),
+                    OwnGames = RunningGames.Where(mg => mg.CreatorId == userId).ToArray(),
+                    ScheduledGames = ScheduledGames,
+                    RecentlySeenUsers = RecentlySeenUsers,
                 };
-            
-                return await Task.FromResult(Success(filteredServerStatus));
+                return filteredServerStatus;
             }
             
             case GameListScope.All:
-                return await Task.FromResult(Success(ServerStatus));
-            
+            {
+                var completeServerStatus = new ServerStatus
+                {
+                    RunningGames = RunningGames,
+                    OwnGames = RunningGames.Where(mg => mg.CreatorId == userId).ToArray(),
+                    ScheduledGames = ScheduledGames,
+                    RecentlySeenUsers = RecentlySeenUsers,
+                };
+                return completeServerStatus;
+            }
+
+            case GameListScope.None:
             default:
             {
-                var filteredServerStatus = new ServerStatus
+                var minimalServerStatus = new ServerStatus
                 {
                     RunningGames = [],
+                    OwnGames = [],
                     ScheduledGames = [],
-                    RecentlySeenUsers = ServerStatus.RecentlySeenUsers,
+                    RecentlySeenUsers = RecentlySeenUsers,
                 };
             
-                return await Task.FromResult(Success(filteredServerStatus));
+                return minimalServerStatus;
             }
         }
     }
@@ -520,26 +543,23 @@ public partial class GameHub
     {
         var now = DateTimeOffset.Now;
         
-        if (!forceUpdate && LastUpdatedServerStatus.AddMilliseconds(ServerStatusFrequency) > now)
+        if (!forceUpdate && LastUpdatedServerStatus.AddMilliseconds(ServerStatusFrequencyMs) > now)
             return;
-        
-        ServerStatus = new ServerStatus
-        {
-            RunningGames = RunningGamesByGameId.Values.Select(ExtractGameInfo).ToArray(),
-            
-            ScheduledGames = ScheduledGamesByGameId.Values.Select(ExtractScheduledGameInfo).ToArray(),
-            
-            RecentlySeenUsers = UsersByUserToken
-                .Where(u => u.Value.LastSeenDateTime.AddMinutes(1) > now)
-                .Select(u => new LoggedInUserInfo
-                {
-                    Id = u.Value.Id, 
-                    Status = u.Value.Status,
-                    Name = u.Value.User.PlayerName, 
-                    LastSeen = u.Value.LastSeenDateTime,
-                })
-                .ToArray()
-        };
+
+        RunningGames = RunningGamesByGameId.Values.Select(ExtractGameInfo).ToArray();
+
+        ScheduledGames = ScheduledGamesByGameId.Values.Select(ExtractScheduledGameInfo).ToArray();
+
+        RecentlySeenUsers = UsersByUserToken
+            .Where(u => u.Value.LastSeenDateTime.AddMinutes(1) > now)
+            .Select(u => new LoggedInUserInfo
+            {
+                Id = u.Value.Id,
+                Status = u.Value.Status,
+                Name = u.Value.User.PlayerName,
+                LastSeen = u.Value.LastSeenDateTime,
+            })
+            .ToArray();
         
         LastUpdatedServerStatus = DateTimeOffset.Now;
     }
@@ -639,7 +659,7 @@ public partial class GameHub
         Ruleset = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? 
             Game.DetermineApproximateRuleset(managedGame.Game.Settings.AllowedFactionsInPlay, managedGame.Game.Settings.InitialRules, Game.ExpansionLevel)  : 
             Game.DetermineApproximateRuleset(managedGame.Game.Players.Select(p => p.Faction).ToList(), managedGame.Game.Rules, Game.ExpansionLevel),
-        LastAction = DetermineLastAction(managedGame),
+        LastActivity = managedGame.LastActivity,
         MainPhase = managedGame.Game.CurrentMainPhase,
         Phase = managedGame.Game.CurrentPhase,
         Turn = managedGame.Game.CurrentTurn,
@@ -658,11 +678,4 @@ public partial class GameHub
                 IsBot = p.IsBot
             }).ToArray()
     };
-
-    private static DateTimeOffset DetermineLastAction(ManagedGame managedGame)
-    {
-        return managedGame.Game.CurrentPhase > Phase.AwaitingPlayers ? 
-            managedGame.Game.History.Last().Time : 
-            managedGame.CreationDate;
-    }
 }

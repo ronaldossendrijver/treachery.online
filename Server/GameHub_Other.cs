@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace Treachery.Server;
@@ -21,7 +20,7 @@ public partial class GameHub
 
     private async Task CleanupUserTokensIfNeeded()
     {
-        if (LastCleanedUpUserTokens.AddMilliseconds(CleanupFrequency) > DateTimeOffset.Now)
+        if (LastCleanedUpUserTokens.AddMilliseconds(CleanupFrequencyMs) > DateTimeOffset.Now)
             return;
 
         await CleanupUserTokens();
@@ -35,7 +34,7 @@ public partial class GameHub
     private async Task CleanupUserTokens()
     {
         var now = DateTimeOffset.Now;
-        if (LastCleanedUpUserTokens.AddMilliseconds(CleanupFrequency) > now)
+        if (LastCleanedUpUserTokens.AddMilliseconds(CleanupFrequencyMs) > now)
             return;
         
         LastCleanedUpUserTokens = now;
@@ -45,7 +44,7 @@ public partial class GameHub
         foreach (var tokenAndInfo in UsersByUserToken.ToArray())
         {
             var age = now.Subtract(tokenAndInfo.Value.LoggedInDateTime).TotalMinutes;
-            if (age >= MaximumLoginTime ||
+            if (age >= MaximumLoginTimeMinutes ||
                 age >= 15 && now.Subtract(tokenAndInfo.Value.LastSeenDateTime).TotalMinutes >= 15)
             {
                 UsersByUserToken.Remove(tokenAndInfo.Key, out _);
@@ -54,7 +53,7 @@ public partial class GameHub
 
         foreach (var userIdAndConnectionInfo in ConnectionInfoByUserId)
         {
-            foreach (var gameId in userIdAndConnectionInfo.Value.GetGameIdsWithOldConnections(MaximumLoginTime).ToArray())
+            foreach (var gameId in userIdAndConnectionInfo.Value.GetGameIdsWithOldConnections(MaximumLoginTimeMinutes).ToArray())
             {
                 await RemoveFromGroup(gameId, userIdAndConnectionInfo.Key);
             }
@@ -63,7 +62,7 @@ public partial class GameHub
 
     private static void CleanupScheduledGamesIfNeeded()
     {
-        if (LastCleanedUpScheduledGames.AddMilliseconds(CleanupFrequency) > DateTimeOffset.Now)
+        if (LastCleanedUpScheduledGames.AddMilliseconds(CleanupFrequencyMs) > DateTimeOffset.Now)
             return;
         
         Log($"{nameof(CleanupScheduledGamesIfNeeded)} {ScheduledGamesByGameId.Count}");
@@ -106,7 +105,7 @@ public partial class GameHub
     
     private async Task PersistGamesIfNeeded()
     {
-        if (LastPersisted.AddMilliseconds(PersistFrequency) > DateTimeOffset.Now)
+        if (LastPersisted.AddMilliseconds(PersistFrequencyMs) > DateTimeOffset.Now)
             return;
 
         await PersistGames();
@@ -133,9 +132,7 @@ public partial class GameHub
                 var persistedGame = await context.PersistedGames.FirstOrDefaultAsync(g => g.GameId == game.GameId);
                 if (persistedGame != null)
                 {
-                    var lastAction = game.Game.History.LastOrDefault()?.Time ?? game.CreationDate;
-
-                    if (persistedGame.LastAction == lastAction)
+                    if (persistedGame.LastAction == game.LastActivity)
                     {
                         amountOfUnchanged++;
                         continue;
@@ -145,7 +142,7 @@ public partial class GameHub
                     persistedGame.GameParticipation = Utilities.Serialize(game.Game.Participation);
                     persistedGame.StatisticsSent = game.StatisticsSent;
                     persistedGame.LastAsyncPlayMessageSent = game.LastAsyncPlayMessageSent;
-                    persistedGame.LastAction = lastAction;
+                    persistedGame.LastAction = game.LastActivity;
                     context.PersistedGames.Update(persistedGame);
                     amountOfUpdatedGames++;
                 }
@@ -259,6 +256,7 @@ public partial class GameHub
                         HashedPassword = persistedGame.HashedPassword,
                         ObserversRequirePassword = persistedGame.ObserversRequirePassword,
                         StatisticsSent = persistedGame.StatisticsSent,
+                        LastActivity = persistedGame.LastAction,
                         LastAsyncPlayMessageSent = persistedGame.LastAsyncPlayMessageSent,
                     };
                     
@@ -325,11 +323,7 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
 
-        if (ScheduledGamesByGameId.TryGetValue(scheduledGameId, out var game))
-        {
-            ScheduledGamesByGameId.Remove(scheduledGameId, out _);
-        }
-        
+        ScheduledGamesByGameId.Remove(scheduledGameId, out _);
         return await Task.FromResult(Success("Scheduled game cancelled"));
     }
     

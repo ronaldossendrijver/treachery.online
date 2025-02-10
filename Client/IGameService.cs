@@ -23,9 +23,10 @@ public interface IGameService
     //Server info
     public ServerInfo ServerInfo { get; }
     public AdminInfo AdminInfo { get; }
-    public GameInfo[] RunningGames { get; }
-    public GameInfo[] RunningGamesWithOpenSeats { get; }
-    public GameInfo[] RunningGamesWithoutOpenSeats { get; }
+    public GameInfo[] OwnGames { get; }
+    public GameInfo[] ActiveGames { get; }
+    public GameInfo[] ActiveGamesWithOpenSeats { get; }
+    public GameInfo[] ActiveGamesWithoutOpenSeats { get; }
     public ScheduledGameInfo[] ScheduledGames { get; }
     public Dictionary<int,LoggedInUserInfo> RecentlySeenUsers { get; }
 
@@ -67,10 +68,11 @@ public interface IGameService
     public bool IsConnected { get; }
 
     public bool IsHost { get; }
+    
+    public bool IsAdmin { get; set; }
 
     public Phase CurrentPhase { get; }
     public Skin CurrentSkin { get; set; }
-    public bool FetchActiveGamesOnly { get; set; }
 
     public event EventHandler<Location> OnLocationSelected;
     public event EventHandler<Location> OnLocationSelectedWithCtrlOrAlt;
@@ -86,7 +88,7 @@ public interface IGameService
     Task<VoidResult> RequestPasswordReset(string usernameOrEmail);
     Task<Result<LoginInfo>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword);
     Task<string> RequestUpdateUserInfo(string hashedPassword, string email, string playerName);
-    Task<VoidResult> RequestSetUserStatus(UserStatus status);
+    Task<string> RequestSetUserStatus(UserStatus status);
     
     //Game Management
     

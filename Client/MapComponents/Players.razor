@@ -26,7 +26,7 @@
             var x = position.X - radiusModifier * Client.CurrentSkin.PlayerTokenRadius;
             var y = position.Y - radiusModifier * Client.CurrentSkin.PlayerTokenRadius;
             var factionTokenDiameter = radiusModifier * Client.CurrentSkin.PlayerTokenRadius * 2;
-            var positionSector = (float)Math.Floor((float)p.Seat * Map.NUMBER_OF_SECTORS / Game.MaximumPlayers);
+            var positionSector = (float)Math.Floor((float)p.Seat * Map.NumberOfSectors / Game.MaximumPlayers);
 
             <Circle X="@position.X" Y="@position.Y" Radius="@(1.35f * Client.CurrentSkin.PlayerTokenRadius)" FillColor="@Client.CurrentSkin.TABLEPOSITION_BACKGROUNDCOLOR" />
 
@@ -41,7 +41,7 @@
                        Popover="@Intel(p.AlliedPlayer)"/>
             }
 
-            var positionOnCircle = TwoPi / 180 + (4.5f - positionSector) * TwoPi / Map.NUMBER_OF_SECTORS;
+            var positionOnCircle = TwoPi / 180 + (4.5f - positionSector) * TwoPi / Map.NumberOfSectors;
                         
             //Homeworlds
             foreach (var homeworld in p.HomeWorlds)

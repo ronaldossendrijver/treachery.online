@@ -13,7 +13,7 @@ namespace Treachery.Shared;
 
 public class Map
 {
-    public const int NUMBER_OF_SECTORS = 18;
+    public const int NumberOfSectors = 18;
     private List<Location> _locations;
 
     public readonly LocationFetcher LocationLookup;
@@ -117,7 +117,7 @@ public class Map
         return _locations.Where(l => includeHomeworlds || l is not Homeworld);
     }
 
-    public IEnumerable<Homeworld> Homeworlds => _locations.Where(l => l is Homeworld).Select(l => l as Homeworld);
+    public IEnumerable<Homeworld> Homeworlds => _locations.OfType<Homeworld>();
 
     public IEnumerable<Territory> Territories(bool includeHomeworlds)
     {
@@ -131,7 +131,9 @@ public class Map
     public static IEnumerable<ResourceCard> GetResourceCardsInAndOutsidePlay(Map m)
     {
         var result = new List<ResourceCard>();
-        foreach (var location in m._locations.Where(l => l.SpiceBlowAmount > 0)) result.Add(new ResourceCard(location.Territory.Id) { Location = location });
+        
+        foreach (var location in m._locations.Where(l => l.SpiceBlowAmount > 0)) 
+            result.Add(new ResourceCard(location.Territory.Id) { Location = location });
 
         for (var i = 1; i <= 6; i++) result.Add(new ResourceCard(98));
 
@@ -1298,11 +1300,10 @@ public class Map
         ProcessingStation = AddDiscoveredLocation(60, id, DiscoveryToken.ProcessingStation, false);
     }
 
-    private Homeworld AddHomeworld(int territoryId, int locationId, World world, Faction faction, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int threshold, int battleBonusAtHighThreshold, int battleBonusAtLowThreshold, int resourceAmount)
+    private void AddHomeworld(int territoryId, int locationId, World world, Faction faction, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int threshold, int battleBonusAtHighThreshold, int battleBonusAtLowThreshold, int resourceAmount)
     {
         var result = new Homeworld(world, faction, new Territory(territoryId) { IsHomeworld = true, HasReducedShippingCost = true, IsStronghold = false, IsDiscovery = false, IsProtectedFromStorm = true, IsProtectedFromWorm = true }, isHomeOfNormalForces, isHomeOfSpecialForces, threshold, battleBonusAtHighThreshold, battleBonusAtLowThreshold, resourceAmount, locationId);
         _locations.Add(result);
-        return result;
     }
 
     private DiscoveredLocation AddDiscoveredLocation(int territoryId, int locationId, DiscoveryToken discovery, bool isStronghold)
@@ -1696,7 +1697,7 @@ public class Map
         _locations[13].Neighbours.Add(_locations[16]);
     }
 
-    private struct NeighbourCacheKey
+    private struct NeighbourCacheKey : IEquatable<NeighbourCacheKey>
     {
         internal Location Start;
         internal int Distance;
@@ -1713,14 +1714,23 @@ public class Map
                 c.IgnoreStorm == IgnoreStorm;
         }
 
+        public bool Equals(NeighbourCacheKey obj)
+        {
+            return
+                obj.Start.Id == Start.Id &&
+                obj.Distance == Distance &&
+                obj.Faction == Faction &&
+                obj.IgnoreStorm == IgnoreStorm;
+        }
+
         public override int GetHashCode()
         {
             return HashCode.Combine(Start, Distance, Faction);
         }
     }
 
-    private int neighbourCacheTimestamp = -1;
-    private readonly Dictionary<NeighbourCacheKey, List<Location>> neighbourCache = new();
+    private int _neighbourCacheTimestamp = -1;
+    private readonly Dictionary<NeighbourCacheKey, List<Location>> _neighbourCache = new();
 
     public List<Location> FindNeighbours(Location start, int distance, bool ignoreStorm, Faction f, Game game, bool checkForceObstacles = true)
     {
@@ -1728,12 +1738,12 @@ public class Map
 
         if (checkForceObstacles)
         {
-            if (neighbourCacheTimestamp != game.History.Count)
+            if (_neighbourCacheTimestamp != game.History.Count)
             {
-                neighbourCache.Clear();
-                neighbourCacheTimestamp = game.History.Count;
+                _neighbourCache.Clear();
+                _neighbourCacheTimestamp = game.History.Count;
             }
-            else if (neighbourCache.TryGetValue(cacheKey, out var value))
+            else if (_neighbourCache.TryGetValue(cacheKey, out var value))
             {
                 return value;
             }
@@ -1742,12 +1752,12 @@ public class Map
         var forceObstacles = new List<Location>();
         if (checkForceObstacles) forceObstacles = DetermineForceObstacles(f, game);
 
-        List<Location> neighbours = new();
+        List<Location> neighbours = [];
         FindNeighbours(neighbours, start, null, 0, distance, ignoreStorm ? 99 : game.SectorInStorm, forceObstacles);
 
         neighbours.Remove(start);
 
-        if (checkForceObstacles) neighbourCache.Add(cacheKey, neighbours);
+        if (checkForceObstacles) _neighbourCache.Add(cacheKey, neighbours);
 
         return neighbours;
     }
@@ -1778,7 +1788,7 @@ public class Map
     {
         if (!found.Contains(current)) found.Add(current);
 
-        foreach (var neighbour in current.Neighbours.Where(n => n != previous && n.Sector != sectorInStorm && !forceObstacles.Contains(n)))
+        foreach (var neighbour in current.Neighbours.Where(n => n.Id != previous?.Id && n.Sector != sectorInStorm && !forceObstacles.Contains(n)))
         {
             var distance = current.Territory == neighbour.Territory ? 0 : 1;
 
@@ -1791,11 +1801,11 @@ public class Map
         var paths = new List<List<Location>>();
         var route = new Stack<Location>();
         var obstacles = DetermineForceObstacles(f, game);
-        FindPaths(paths, route, start, destination, null, 0, distance, f, ignoreStorm ? 99 : game.SectorInStorm, obstacles);
+        FindPaths(paths, route, start, destination, null, 0, distance, ignoreStorm ? 99 : game.SectorInStorm, obstacles);
         return paths;
     }
 
-    private static void FindPaths(List<List<Location>> foundPaths, Stack<Location> currentPath, Location current, Location destination, Location previous, int currentDistance, int maxDistance, Faction f, int sectorInStorm, List<Location> obstacles)
+    private static void FindPaths(List<List<Location>> foundPaths, Stack<Location> currentPath, Location current, Location destination, Location previous, int currentDistance, int maxDistance, int sectorInStorm, List<Location> obstacles)
     {
         currentPath.Push(current);
 
@@ -1806,14 +1816,14 @@ public class Map
         else
         {
             foreach (var neighbour in current.Neighbours.Where(neighbour =>
-                         neighbour != previous &&
+                         neighbour.Id != previous?.Id &&
                          neighbour.Sector != sectorInStorm &&
                          !currentPath.Contains(neighbour) &&
                          !obstacles.Contains(neighbour)))
                 {
                     var distance = current.Territory == neighbour.Territory ? 0 : 1;
                     if (currentDistance + distance <= maxDistance) 
-                        FindPaths(foundPaths, currentPath, neighbour, destination, current, currentDistance + distance, maxDistance, f, sectorInStorm, obstacles);
+                        FindPaths(foundPaths, currentPath, neighbour, destination, current, currentDistance + distance, maxDistance, sectorInStorm, obstacles);
                 }
         }
             
@@ -1826,13 +1836,13 @@ public class Map
         var obstacles = DetermineForceObstacles(f, game);
         for (var i = 0; i <= 4; i++)
         {
-            var path = FindPath(route, start, destination, null, 0, i, f, ignoreStorm ? 99 : game.SectorInStorm, obstacles);
+            var path = FindPath(route, start, destination, null, 0, i, ignoreStorm ? 99 : game.SectorInStorm, obstacles);
             if (path != null) return path;
         }
         return null;
     }
 
-    private static List<Location> FindPath(Stack<Location> currentRoute, Location current, Location destination, Location previous, int currentDistance, int maxDistance, Faction f, int sectorInStorm, List<Location> obstacles)
+    private static List<Location> FindPath(Stack<Location> currentRoute, Location current, Location destination, Location previous, int currentDistance, int maxDistance, int sectorInStorm, List<Location> obstacles)
     {
         currentRoute.Push(current);
 
@@ -1840,18 +1850,18 @@ public class Map
             return currentRoute.Reverse().ToList();
         
         foreach (var neighbour in current.Neighbours.Where(neighbour =>
-                     neighbour != previous &&
+                     neighbour.Id != previous?.Id &&
                      neighbour.Sector != sectorInStorm &&
                      !currentRoute.Contains(neighbour) &&
                      !obstacles.Contains(neighbour)))
             {
                 var distance = current.Territory == neighbour.Territory ? 0 : 1;
 
-                if (currentDistance + distance <= maxDistance)
-                {
-                    var found = FindPath(currentRoute, neighbour, destination, current, currentDistance + distance, maxDistance, f, sectorInStorm, obstacles);
-                    if (found != null) return found;
-                }
+                if (currentDistance + distance > maxDistance) 
+                    continue;
+                
+                var found = FindPath(currentRoute, neighbour, destination, current, currentDistance + distance, maxDistance, sectorInStorm, obstacles);
+                if (found != null) return found;
             }
 
         currentRoute.Pop();
@@ -1872,7 +1882,7 @@ public class Map
             found.Add(current);
 
         foreach (var neighbour in current.Neighbours.Where(n =>
-                     n != previous &&
+                     n.Id != previous?.Id &&
                      (ignoreStorm || n.Sector != sectorInStorm)))
         {
             var distance = current.Territory == neighbour.Territory ? 0 : 1;
@@ -1897,7 +1907,7 @@ public class Map
 
         foreach (var neighbour in current.Neighbours.Where(l =>
                      l.Territory == current.Territory &&
-                     l != previous &&
+                     l.Id != previous?.Id &&
                      (ignoreStorm || l.Sector != sectorInStorm)))
         {
             FindNeighboursWithinTerritory(found, neighbour, current, ignoreStorm, sectorInStorm);

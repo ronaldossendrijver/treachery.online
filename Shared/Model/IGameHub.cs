@@ -13,7 +13,7 @@ public interface IGameHub
     Task<Result<LoginInfo>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword);
     Task<Result<LoginInfo>> GetLoginInfo(string userToken);
     Task<Result<LoginInfo>> RequestUpdateUserInfo(string userToken, string hashedPassword, string playerName, string email);
-    Task<VoidResult> RequestSetUserStatus(string userToken, UserStatus status);
+    Task<Result<ServerStatus>> RequestSetUserStatus(string userToken, UserStatus status);
 
     //Game Management
     

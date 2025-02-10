@@ -6,6 +6,8 @@ public class ManagedGame
 {
     public DateTimeOffset CreationDate { get; init; }
     
+    public DateTimeOffset LastActivity { get; set; }
+    
     public int CreatorUserId { get; init; }
     
     public string GameId { get; init; }

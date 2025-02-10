@@ -932,6 +932,6 @@ public enum SubscriptionType
 public enum GameListScope
 {
     None = 1,
-    ActiveAndOwned = 2,
+    Active = 2,
     All = 3
 }
