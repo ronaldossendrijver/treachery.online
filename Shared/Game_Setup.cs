@@ -20,7 +20,6 @@ public partial class Game
     internal Phase PhaseBeforeSkillAssignment { get; set; }
     public Faction NextFactionToPerformCustomSetup => Players.Select(p => p.Faction).FirstOrDefault(f => !HasActedOrPassed.Contains(f));
     public Deck<TreacheryCard> StartingTreacheryCards { get; private set; }
-    private TreacheryCard ExtraStartingCardForBlack { get; set; }
 
     #endregion State
 
@@ -338,7 +337,7 @@ public partial class Game
         {
             StartingTreacheryCards.Items.Add(TreacheryDeck.Draw());
 
-            if (p.Is(Faction.Black)) ExtraStartingCardForBlack = TreacheryDeck.Draw();
+            if (p.Is(Faction.Black)) StartingTreacheryCards.Items.Add(TreacheryDeck.Draw());
         }
 
         Enter(IsPlaying(Faction.Grey), Phase.GreySelectingCard, DealRemainingStartingTreacheryCardsToNonGrey);
@@ -354,8 +353,9 @@ public partial class Game
 
             if (p.Is(Faction.Black))
             {
-                p.TreacheryCards.Add(ExtraStartingCardForBlack);
-                LogTo(Faction.Black, "Your extra card is: ", ExtraStartingCardForBlack);
+                var extraCard = StartingTreacheryCards.Draw();
+                p.TreacheryCards.Add(extraCard);
+                LogTo(Faction.Black, "Your extra card is: ", extraCard);
             }
         }
 
