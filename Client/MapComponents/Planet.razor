@@ -9,7 +9,7 @@
 @inherits MapComponent
 @implements IDisposable
  
-<svg @ref="@element" width="@Client.CurrentSkin.MapDimensions.X" height="@Client.CurrentSkin.MapDimensions.Y" viewBox="0 0 @Client.CurrentSkin.MapDimensions.X @Client.CurrentSkin.MapDimensions.Y" 
+<svg @ref="@Element" width="@Client.CurrentSkin.MapDimensions.X" height="@Client.CurrentSkin.MapDimensions.Y" viewBox="0 0 @Client.CurrentSkin.MapDimensions.X @Client.CurrentSkin.MapDimensions.Y" 
      style="position: absolute; left: 0; top: 0; height: 100%; width: 100%;" pointer-events="none">
 
     <!-- Clipping areas of each sector -->
@@ -79,11 +79,11 @@
     {
         if (firstRender) {
 
-            await Browser.EnablePopovers(element);
+            await Browser.EnablePopovers(Element);
         }
         else
         {
-            await Browser.RefreshPopovers(element);
+            await Browser.RefreshPopovers(Element);
         }
     }
 
@@ -173,7 +173,7 @@
 
     public new void Dispose()
     {
-        _ = Browser.RemovePopovers(element);
+        _ = Browser.RemovePopovers(Element);
         base.Dispose();
     }
 }

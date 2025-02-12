@@ -12,7 +12,7 @@
 @if (Popover != null && !PopoverAsTooltip)
 {
 
-    <span @ref=@element
+    <span @ref=@Element
           style=@style
           data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-container="body" data-bs-content="@Popover" data-bs-template="@PopoverTemplate">
         @ToShow
@@ -105,12 +105,12 @@ else
         {
             if (firstRender && Popover != null)
             {
-                await Browser.EnablePopover(element);
+                await Browser.EnablePopover(Element);
             }
             else if (_popoverNeedsUpdate)
             {
                 _popoverNeedsUpdate = false;
-                await Browser.RefreshPopover(element);
+                await Browser.RefreshPopover(Element);
             }
         }
     }
@@ -119,7 +119,7 @@ else
     {
         if (Popover != null && !PopoverAsTooltip)
         {
-            _ = Browser.RemovePopover(element);
+            _ = Browser.RemovePopover(Element);
         }
         
         base.Dispose();

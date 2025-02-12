@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.Json.Nodes;
-
+using System.Globalization;
+    
 namespace Treachery.Shared;
 
 public static class Utilities
@@ -88,4 +89,37 @@ public static class Utilities
 
     public static string Serialize<T>(T value)
         => JsonSerializer.Serialize(value, Options);
+    
+    public static string ScaleFont(string font, float scale)
+    {
+        var fontsizeLower = font.ToLower();
+        var result = "";
+
+        foreach (var fontDefinitionPart in fontsizeLower.Split(' ')) {
+
+            if (fontDefinitionPart.Contains("px")) {
+
+                if (float.TryParse(fontDefinitionPart.Remove(fontDefinitionPart.IndexOf("px", StringComparison.InvariantCulture)), out var fontsizeNumber))
+                {
+                    result += " " + Px(scale * fontsizeNumber);
+                }
+                else
+                {
+                    result += " " + fontDefinitionPart;
+                }
+            }
+            else
+            {
+                result += " " + fontDefinitionPart;
+            }
+        }
+
+        return result;
+    }
+    
+    public static string Px(double x)
+        => x.ToString(CultureInfo.InvariantCulture) + "px";
+
+    public static string Round(double x)
+        => x.ToString(CultureInfo.InvariantCulture);
 }

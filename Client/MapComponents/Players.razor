@@ -8,7 +8,7 @@
 *@
 @inherits MapComponent
 
-<div @ref="@element">
+<div @ref="@Element">
 
     @if (Game.CurrentPhase > Phase.SelectingFactions)
     {
@@ -124,7 +124,7 @@
             foreach (var tt in p.TechTokens)
             {
                 positionOnCircle += TwoPi / 90;
-                <MapImage XY=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
+                <MapImage Xy=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
                        Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
                        Src="@Client.CurrentSkin.GetImageUrl(tt)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                        Popover="@Client.CurrentSkin.GetPopup(tt)" PopoverStyle=""/>
@@ -134,7 +134,7 @@
             {
                 positionOnCircle += TwoPi / 90;
 
-                <MapImage XY=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
+                <MapImage Xy=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
                        Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
                        Src="@Client.CurrentSkin.GetImageUrl(Game.PinkLoyalLeader)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
                 Popover=@Client.CurrentSkin.Format("{0} is Loyal to {1}", Game.PinkLoyalLeader, Faction.Pink) PopoverAsTooltip="true"/>
@@ -144,13 +144,13 @@
 
                 positionOnCircle += TwoPi / 90;
 
-                <MapImage XY=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
+                <MapImage Xy=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
                         Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
                         Src="@Client.CurrentSkin.GetImageUrl(skilledLeader)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                         Popover="@Client.CurrentSkin.GetPopup(skilledLeader, Client.Game.Skill(skilledLeader))" PopoverStyle=""/>
 
                 <MapText ToShow="@Client.CurrentSkin.Describe(Game.Skill(skilledLeader))"
-                        XY=@Pos(positionOnCircle)
+                        Xy=@Pos(positionOnCircle)
                         Font="@Client.CurrentSkin.SKILL_FONT" FontColor="@Client.CurrentSkin.SKILL_FONTCOLOR"
                         BorderWidth="@Client.CurrentSkin.SKILL_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.SKILL_FONT_BORDERCOLOR"
                         Align="@TextAlignment.Center" MaxWidth="3f * Client.CurrentSkin.PlayerTokenRadius"
@@ -181,12 +181,12 @@
             {
                 positionOnCircle += TwoPi / 90;
 
-                <MapImage XY=@Pos(positionOnCircle, Client.CurrentSkin.FORCETOKEN_RADIUS) Diameter=@(2 * Client.CurrentSkin.FORCETOKEN_RADIUS) Src="@Client.CurrentSkin.FactionSpecialForceImage_URL[Faction.White]"
+                <MapImage Xy=@Pos(positionOnCircle, Client.CurrentSkin.FORCETOKEN_RADIUS) Diameter=@(2 * Client.CurrentSkin.FORCETOKEN_RADIUS) Src="@Client.CurrentSkin.FactionSpecialForceImage_URL[Faction.White]"
                        ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
                        Popover="@Client.CurrentSkin.Format("Latest revealed No-Field: {0}", Game.LatestRevealedNoFieldValue)" PopoverAsTooltip="true"/>
 
                 <MapText ToShow="@Game.LatestRevealedNoFieldValue.ToString()"
-                         XY=@Pos(positionOnCircle)
+                         Xy=@Pos(positionOnCircle)
                          Font="@Client.CurrentSkin.FORCETOKEN_FONT" FontColor="@Client.CurrentSkin.FORCETOKEN_FONTCOLOR"
                          BorderWidth="@Client.CurrentSkin.FORCETOKEN_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.FORCETOKEN_FONT_BORDERCOLOR"
                          Align="@TextAlignment.Center"/>
@@ -200,7 +200,7 @@
                 var tooltip = Client.CurrentSkin.Format("To be collected during {0}", MainPhase.Contemplate);
 
                 <MapImage 
-                    XY=@Pos(positionOnCircle, Client.CurrentSkin.FORCETOKEN_RADIUS) 
+                    Xy=@Pos(positionOnCircle, Client.CurrentSkin.FORCETOKEN_RADIUS) 
                     Diameter=@(2 * Client.CurrentSkin.FORCETOKEN_RADIUS)
                     Src="@Client.CurrentSkin.Harvester_URL"
                     Popover=@tooltip PopoverAsTooltip=true
@@ -210,7 +210,7 @@
 
                 <MapText 
                     ToShow=@totalSpiceToReceiveLater.ToString()
-                    XY=@Pos(positionOnCircle)
+                    Xy=@Pos(positionOnCircle)
                     Font="@Client.CurrentSkin.RESOURCETOKEN_FONT" FontColor="@Client.CurrentSkin.RESOURCETOKEN_FONTCOLOR"
                     Popover=@tooltip PopoverAsTooltip=true
                     BorderWidth="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERCOLOR"
@@ -223,7 +223,7 @@
                 var tooltip = Client.CurrentSkin.Format("Subbed {0}", Concept.Resource);
 
                 <MapImage 
-                    XY=@Pos(positionOnCircle, Client.CurrentSkin.FORCETOKEN_RADIUS) 
+                    Xy=@Pos(positionOnCircle, Client.CurrentSkin.FORCETOKEN_RADIUS) 
                     Diameter=@(2 * Client.CurrentSkin.FORCETOKEN_RADIUS) 
                     Src="@Client.CurrentSkin.Harvester_URL"
                     Popover=@tooltip PopoverAsTooltip=true
@@ -232,7 +232,7 @@
                     ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
 
                 <MapText ToShow=@tooltip
-                    XY=@Pos(positionOnCircle)
+                    Xy=@Pos(positionOnCircle)
                     Font="@Client.CurrentSkin.RESOURCETOKEN_FONT" FontColor="@Client.CurrentSkin.RESOURCETOKEN_FONTCOLOR"
                     Popover=@tooltip PopoverAsTooltip=true
                     BorderWidth="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERCOLOR"

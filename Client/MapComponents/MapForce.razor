@@ -8,7 +8,7 @@
 *@
 @inherits MapComponent;
 
-<div @ref="@element" @attributes="_attributes" style=@($"position:absolute;left:{Px(X)};top:{Px(Y)};")>
+<div @ref="@Element" @attributes="_attributes" style=@($"position:absolute;left:{Px(X)};top:{Px(Y)};")>
 
     @for (var i = 0; i < Amount; i++)
     {
@@ -72,12 +72,12 @@
     {
         if (firstRender)
         {
-            await Browser.EnablePopover(element);
+            await Browser.EnablePopover(Element);
         }
         else if (_popoverNeedsRefresh)
         {
             _popoverNeedsRefresh = false;
-            await Browser.RefreshPopover(element);
+            await Browser.RefreshPopover(Element);
         }
     }
 
@@ -97,7 +97,7 @@
 
     public new void Dispose()
     {
-        _ = Browser.RemovePopover(element);
+        _ = Browser.RemovePopover(Element);
         base.Dispose();
     }
 }

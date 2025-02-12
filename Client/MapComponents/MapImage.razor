@@ -22,11 +22,11 @@
 
 @if (OnClick.HasDelegate || OnMouseOver.HasDelegate || OnMouseExited.HasDelegate) 
 {
-    <img @attributes=_attributes @ref=@element @onclick="@OnClick" @onmouseenter="@OnMouseOver" @onmouseout="@OnMouseExited"  />
+    <img @attributes=_attributes @ref=@Element @onclick="@OnClick" @onmouseenter="@OnMouseOver" @onmouseout="@OnMouseExited"  />
 }
 else
 {
-    <img @attributes=_attributes @ref=@element />
+    <img @attributes=_attributes @ref=@Element />
 }
 
 @code {
@@ -118,12 +118,12 @@ else
         {
             if (firstRender && Popover != null)
             {
-                await Browser.EnablePopover(element);
+                await Browser.EnablePopover(Element);
             }
             else if (_popoverNeedsRefresh)
             {
                 _popoverNeedsRefresh = false;
-                await Browser.RefreshPopover(element);
+                await Browser.RefreshPopover(Element);
             }
         }
     }
@@ -168,7 +168,7 @@ else
     {
         if (Popover != null && !PopoverAsTooltip)
         {
-            _ = Browser.RemovePopover(element);
+            _ = Browser.RemovePopover(Element);
         }
         
         base.Dispose();
