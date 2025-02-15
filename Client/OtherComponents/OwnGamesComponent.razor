@@ -130,7 +130,11 @@
                 break;
                 
             case OwnGamesComponentState.Create:
-                <input type="text" class="form-control" @bind="@CreateGamePassword" maxlength="24" placeholder="Game password (optional)"/>
+                <CheckboxComponent @bind-Value="@CreateGameHasPassword">Require a password to join?</CheckboxComponent>
+                @if (CreateGameHasPassword)
+                {
+                    <input type="text" class="form-control" @bind="@CreateGamePassword" maxlength="24" placeholder="Password"/>    
+                }
                 <div class="text-danger small">@CreateError</div>
                 <CommandButton MarginClass="mt-1" OnClick="@CreateNewGame">Create new game</CommandButton>
                 <label class="btn btn-primary mt-1" disabled="@Loading">Load game from file
@@ -259,6 +263,7 @@
     
     private const int MaxSaveGameSize = 4194304;
 
+    private bool CreateGameHasPassword { get; set; }
     private string CreateGamePassword { get; set; }
     private object FileInput { get; set; }
     private string CreateError { get; set; } = string.Empty;
@@ -313,7 +318,7 @@
 
     private async Task CreateNewGame()
     {
-        CreateError = await Client.RequestCreateGame(CreateGamePassword);
+        CreateError = await Client.RequestCreateGame(CreateGameHasPassword ? CreateGamePassword : null);
     }
     
     private async Task LoadAndCreateGame()

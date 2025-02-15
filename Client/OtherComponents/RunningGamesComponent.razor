@@ -29,8 +29,8 @@
                     <tbody>
                     @foreach (var av in Client.ActiveGamesWithOpenSeats)
                     {
-                        _joinGamePassword.TryAdd(av.GameId, "");
-                        JoinErrors.TryAdd(av.GameId, "");
+                        Passwords.TryAdd(av.GameId, string.Empty);
+                        JoinErrors.TryAdd(av.GameId, string.Empty);
 
                         var fontColorStyle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20 ? "color:grey" : "color:white";
 
@@ -81,11 +81,11 @@
                                 {
                                     if (av.HasPassword)
                                     {
-                                        <input class="form-inline input-sm m-1" style="max-width:120px" @bind="_joinGamePassword[av.GameId]" maxlength="24" placeholder="Game password"/>
+                                        <input class="form-inline input-sm m-1" style="max-width:120px" @bind="Passwords[av.GameId]" maxlength="24" placeholder="Game password"/>
                                     }
                                     if (av.Phase == Phase.AwaitingPlayers)
                                     {
-                                        <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, _joinGamePassword[av.GameId], -1))" MarginClass="m-1">Join</CommandButton>
+                                        <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, Passwords[av.GameId], -1))" MarginClass="m-1">Join</CommandButton>
                                     }
                                     else if (av.Phase != Phase.SelectingFactions)
                                     {
@@ -93,14 +93,14 @@
                                         {
                                             <CommandButton 
                                                 Small 
-                                                OnClick="@(_ => JoinGameAsPlayer(av.GameId, _joinGamePassword[av.GameId], availableSeat.Seat))" 
+                                                OnClick="@(_ => JoinGameAsPlayer(av.GameId, Passwords[av.GameId], availableSeat.Seat))" 
                                                 MarginClass="m-1"
                                                 Title="@JoinButtonTitle(availableSeat.Faction)">
                                                 <FactionComponent Faction="@availableSeat.Faction" Diameter="20"/>
                                             </CommandButton>
                                         }
                                     }
-                                    <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, _joinGamePassword[av.GameId]))" MarginClass="m-1">Observe</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, Passwords[av.GameId]))" MarginClass="m-1">Observe</CommandButton>
                                 }
                                 else
                                 {
@@ -178,8 +178,8 @@
                     <tbody>
                     @foreach (var av in Client.ActiveGamesWithoutOpenSeats)
                     {
-                        _joinGamePassword.TryAdd(av.GameId, "");
-                        JoinErrors.TryAdd(av.GameId, "");
+                        Passwords.TryAdd(av.GameId, string.Empty);
+                        JoinErrors.TryAdd(av.GameId, string.Empty);
 
                         var fontColorStyle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20 ? "color:grey" : "color:white";
 
@@ -221,11 +221,7 @@
                             <td class="w-30">
                                 @if (!av.YouAreIn(Client.UserId))
                                 {
-                                    if (av.HasPassword)
-                                    {
-                                        <input class="form-inline input-sm m-1" style="max-width:120px" @bind="_joinGamePassword[av.GameId]" maxlength="24" placeholder="Game password"/>
-                                    }
-                                    <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, _joinGamePassword[av.GameId]))" MarginClass="m-1">Observe</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, Passwords[av.GameId]))" MarginClass="m-1">Observe</CommandButton>
                                 }
                                 else
                                 {
@@ -244,8 +240,8 @@
 
 @code {
 
-    private Dictionary<string, string> JoinErrors { get; } = new();
-    private readonly Dictionary<string, string> _joinGamePassword = [];
+    private Dictionary<string, string> JoinErrors { get; } = [];
+    private Dictionary<string, string> Passwords { get; } = [];
 
     protected override void OnAfterRender(bool firstRender)
     {
