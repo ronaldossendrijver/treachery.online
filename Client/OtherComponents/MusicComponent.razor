@@ -14,13 +14,13 @@
         <div class="card-body">
             
             <label for="musicVolume" class="form-label">&nbsp;Music volume</label>
-            <input id="musicVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredMusicVolume" @bind:event="oninput" @onchange=@(e => SetMusicVolume(e))/>
+            <input id="musicVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredMusicVolume" @bind:event="oninput" @onchange="@AdjustVolume"/>
 
             <label for="effectVolume" class="form-label">&nbsp;Sound effects volume</label>
-            <input id="effectVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredEffectVolume" @bind:event="oninput" @onchange=@(e => SetEffectVolume(e)) />
+            <input id="effectVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredEffectVolume" @bind:event="oninput" @onchange="@AdjustVolume" />
                         
             <label for="chatVolume" class="form-label">&nbsp;Chat notification volume</label>
-            <input id="chatVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredChatVolume" @bind:event="oninput" @onchange=@(e => SetChatVolume(e)) />
+            <input id="chatVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredChatVolume" @bind:event="oninput" @onchange="@AdjustVolume" />
                         
         </div>
     </div>
@@ -30,13 +30,13 @@
 @code {
 
     [Parameter]
-    public bool Visible { get; set; } = false;
+    public bool Visible { get; set; }
 
-    private float DesiredMusicVolume = 0;
-    private float DesiredEffectVolume = 0;
-    private float DesiredChatVolume = 0;
-    private string CurrentSoundtrack = "";
-    private float CurrentMusicVolume = -1;
+    private float DesiredMusicVolume { get; set; } = 0;
+    private float DesiredEffectVolume { get; set; } = 0;
+    private float DesiredChatVolume { get; set; } = 0;
+    private string CurrentSoundtrack { get; set; } = "";
+    private float CurrentMusicVolume { get; set; } = -1;
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,46 +45,43 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
-        {
-            await UpdateMusicAndSound();
-        }
+        await UpdateMusicAndSound();
     }
 
     private async Task UpdateMusicAndSound()
     {
-        if (Client.InGame)
+        if (!Client.InGame)
+            return;
+        
+        var soundtrackToPlay = DetermineSoundtrack();
+
+        if (CurrentSoundtrack != soundtrackToPlay)
         {
-            var soundtrackToPlay = DetermineSoundtrack();
-
-            if (CurrentSoundtrack != soundtrackToPlay)
+            if (CurrentSoundtrack != "")
             {
-                if (CurrentSoundtrack != "")
-                {
-                    await Browser.StopSound(CurrentSoundtrack);
-                }
-
-                CurrentSoundtrack = soundtrackToPlay;
-                await Browser.PlaySound(soundtrackToPlay, DesiredMusicVolume, true);
-            }
-            else if (Math.Abs(CurrentMusicVolume - DesiredMusicVolume) > 0.001f)
-            {
-                CurrentMusicVolume = DesiredMusicVolume;
-
-                if (DesiredMusicVolume <= 4)
-                {
-                    await Browser.StopSounds();
-                    CurrentSoundtrack = "";
-                }
-                else
-                {
-                    await Browser.ChangeSoundVolume(soundtrackToPlay, DesiredMusicVolume);
-                }
+                await Browser.StopSound(CurrentSoundtrack);
             }
 
-            Client.CurrentEffectVolume = DesiredEffectVolume;
-            Client.CurrentChatVolume = DesiredChatVolume;
+            CurrentSoundtrack = soundtrackToPlay;
+            await Browser.PlaySound(soundtrackToPlay, DesiredMusicVolume, true);
         }
+        else if (Math.Abs(CurrentMusicVolume - DesiredMusicVolume) > 0.001f)
+        {
+            CurrentMusicVolume = DesiredMusicVolume;
+
+            if (DesiredMusicVolume <= 4)
+            {
+                await Browser.StopSounds();
+                CurrentSoundtrack = "";
+            }
+            else
+            {
+                await Browser.ChangeSoundVolume(soundtrackToPlay, DesiredMusicVolume);
+            }
+        }
+
+        Client.CurrentEffectVolume = DesiredEffectVolume;
+        Client.CurrentChatVolume = DesiredChatVolume;
     }
 
     private string DetermineSoundtrack()
@@ -107,7 +104,7 @@
         };
     }
 
-    private async Task SaveSettings()
+    private async Task AdjustVolume()
     {
         await Browser.SaveSetting("treachery.online;setting.music", DesiredMusicVolume);
         await Browser.SaveSetting("treachery.online;setting.effect", DesiredEffectVolume);
@@ -129,20 +126,5 @@
         {
             //Do nothing
         }
-    }
-
-    private async Task SetMusicVolume(ChangeEventArgs e)
-    {
-        await SaveSettings();
-    }
-
-    private async Task SetEffectVolume(ChangeEventArgs e)
-    {
-        await SaveSettings();
-    }
-
-    private async Task SetChatVolume(ChangeEventArgs e)
-    {
-        await SaveSettings();
     }
 }
