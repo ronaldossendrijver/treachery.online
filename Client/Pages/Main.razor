@@ -90,13 +90,13 @@ else
 {
     <div @ref="@_element" class="row" style="@InGameScreenStyle">
 
-        <!--Map Column-->
-        <div id="mapdiv" class="col-sm-12 col-lg-6">
-            <GameBoard OnLocationClick="@Client.LocationClick" />
-        </div>
-        
         @if (!Client.IsObserver)
         {
+            <!--Map Column-->
+            <div id="mapdiv" class="col-sm-12 col-lg-6">
+                <GameBoard OnLocationClick="@Client.LocationClick" />
+            </div>
+
             <!--Actions-->
             <div class="col-sm-12 col-lg-3 @Scrollbars">
                 <GameStatusComponent CanEndPhase="@Client.Actions.Contains(typeof(EndPhase))" />
@@ -128,20 +128,26 @@ else
         }
         else
         {
+            <div class="col-sm-12 col-lg-1"></div>
+            
+            <!--Map Column-->
+            <div id="mapdiv" class="col-sm-12 col-lg-6">
+                <GameBoard OnLocationClick="@Client.LocationClick" />
+            </div>
+
             <!--Actions-->
-            <div class="col-sm-12 col-lg-3 cursor-hand @Scrollbars">
+            <div class="col-sm-12 col-lg-4 cursor-hand @Scrollbars">
+                <MenuComponent/>
                 <GameStatusComponent/>
                 <ActionPanel/>
                 @if (Client.Game.CurrentReport != null)
                 {
-                    <ReportComponent Report="Client.Game.CurrentReport" />
+                    <ReportComponent Report="Client.Game.CurrentReport"/>
                 }
             </div>
             
             <!--Menu-->
-            <div class="col-sm-12 col-lg-3">
-                <MenuComponent/>
-            </div>
+            <div class="col-sm-12 col-lg-1"></div>
         }
 
         <ImageFlashComponent  />

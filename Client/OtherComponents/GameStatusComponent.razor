@@ -16,12 +16,12 @@
 
         if (Client.Status.TimedEvent != null)
         {
-            <div style="position:absolute;left:5px;top:0px;color:@TimerColor(Client.Status.WaitingForMe(Player, Client.IsHost));font-weight:bolder;">@TimerText(Client.Status.TimedEvent)</div>
+            <div style="position:absolute;left:5px;top:0;color:@TimerColor(Client.Status.WaitingForMe(Player, Client.IsHost));font-weight:bolder;">@TimerText(Client.Status.TimedEvent)</div>
         }
 
         if (IsBiddingPhase || OneOrMorePlayersNeedToAct || PlayersAreInSequence) {
 
-            <ErrorBoundary @ref=errorBoundary>
+            <ErrorBoundary @ref=_errorBoundary>
 
                 <ChildContent>
 
@@ -53,21 +53,23 @@
                     }
                     else if (OneOrMorePlayersNeedToAct)
                     {
-                        if (Client.Status.WaitingForPlayers.Count() == 1) {
+                        if (Client.Status.WaitingForPlayers.Count() == 1)
+                        {
 
                             var player = Client.Status.WaitingForPlayers.First();
 
                             <div style="position: relative; width: 64px; height: 64px;">
-                                <img title="@player.Name" src="@Client.CurrentSkin.GetImageUrl(player.Faction)" width="64" style="position: absolute; left: 0px; filter: drop-shadow(2px 2px 2px black)" />
-                                <img src="./art/worm.gif" width="94" style="position: absolute; top: -14px; left: -20px; filter: drop-shadow(1px 1px 1px black)" />
+                                <img title="@player.Name" src="@Client.CurrentSkin.GetImageUrl(player.Faction)" style="position: absolute; left: 0; filter: drop-shadow(2px 2px 2px black); width: 64px;" alt="@player.Name"/>
+                                <img src="./art/worm.gif" style="position: absolute; top: -14px; left: -20px; filter: drop-shadow(1px 1px 1px black); width:94px;" alt="Worm"/>
                             </div>
                         }
-                        else {
+                        else
+                        {
 
                             foreach (var p in Client.Status.WaitingForPlayers)
                             {
                                 <div style="position: relative; width: 48px;">
-                                    <img class="p-2" title="@p.Name" src="@Client.CurrentSkin.GetImageUrl(p.Faction)" width="48" style="filter:drop-shadow(2px 2px 2px black)" />
+                                    <img class="p-2" title="@p.Name" src="@Client.CurrentSkin.GetImageUrl(p.Faction)" style="filter:drop-shadow(2px 2px 2px black);width:48px;" alt="@p.Name"/>
                                 </div>
                             }
                         }
@@ -79,12 +81,12 @@
                             <div class="align-self-center p-0 m-0" style="position: relative; width: 64px;">
                                 @if (f.HasTurn)
                                 {
-                                    <img title="@f.Player.Name" src="@Client.CurrentSkin.GetImageUrl(f.Player.Faction)" width="64" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
-                                    <img src="./art/worm.gif" width="90" style="position: absolute; top: -12px; left: -18px; filter: drop-shadow(1px 1px 1px black)" />
+                                    <img title="@f.Player.Name" src="@Client.CurrentSkin.GetImageUrl(f.Player.Faction)" style="position: relative; filter: drop-shadow(2px 2px 2px black);width:64px;" alt="@f.Player.Name"/>
+                                    <img src="./art/worm.gif" style="position: absolute; top: -12px; left: -18px; filter: drop-shadow(1px 1px 1px black); width: 90px" alt="Worm"/>
                                 }
                                 else
                                 {
-                                    <img class="align-self-center p-2" title="@f.Player.Name" src="@Client.CurrentSkin.GetImageUrl(f.Player.Faction)" width="48" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
+                                    <img class="align-self-center p-2" title="@f.Player.Name" src="@Client.CurrentSkin.GetImageUrl(f.Player.Faction)" width="48" style="position: relative; filter: drop-shadow(2px 2px 2px black)" alt="@f.Player.Name"/>
                                 }
                             </div>
                         }
@@ -107,25 +109,25 @@
             <ExpressionComponent Game=Game Expression=@Client.Status.GetMessage(Client.Player, Client.IsHost).Expression Size="20"/>
         </div>
 
-        @if (!autoConfirm && CanEndPhase)
+        @if (!AutoConfirm && CanEndPhase)
         {
             <ButtonRowComponent Confirm="Confirm" ConfirmText="Continue" ConfirmError=@Validation/>
         }
 
-        @if (autoConfirm || CanEndPhase)
+        @if (AutoConfirm || CanEndPhase)
         {
             <div class="mt-1 mb-n3 float-end" style="color:black;">
-                <CheckboxComponent @bind-Value=autoConfirm>Continue automatically</CheckboxComponent>
+                <CheckboxComponent @bind-Value=AutoConfirm>Continue automatically</CheckboxComponent>
             </div>
         }
 
         @if (Client.IsHost && Game.CurrentMainPhase == MainPhase.Bidding && Game.Players.Count(p => !p.IsBot) > 1)
         {
             <div class="mt-1" style="color:black;">
-                <CheckboxComponent @bind-Value="@timeLimitSet" OnChanged=EnableOrDisableTimer>Time limit (seconds)</CheckboxComponent>
-                @if (timeLimitSet)
+                <CheckboxComponent @bind-Value="@TimeLimitSet" OnChanged=EnableOrDisableTimer>Time limit (seconds)</CheckboxComponent>
+                @if (TimeLimitSet)
                 {
-                    <SelectNumberComponent Disabled=@(!timeLimitSet) @bind-Value=@timeLimit OnChanged=@UpdateTimer Min="10" Max="600" StepUp="TimerStepUp" StepDown="TimerStepDown" Size="30"/>
+                    <SelectNumberComponent Disabled=@(!TimeLimitSet) @bind-Value=@TimeLimit OnChanged=@UpdateTimer Min="10" Max="600" StepUp="TimerStepUp" StepDown="TimerStepDown" Size="30"/>
                 }
             </div>
         }
@@ -137,47 +139,53 @@
 
 @code {
 
-    [Parameter]
-    public bool CanEndPhase { get; set; }
+    [Parameter] public bool CanEndPhase { get; set; }
 
-    private bool autoConfirm = false;
-    private int ticksPassed = 0;
-    private bool timeLimitSet = false;
-    private int timeLimit = 20;
+    private bool AutoConfirm { get; set; }
+    private int TicksPassed { get; set; } = 0;
+    private bool TimeLimitSet { get; set; }
+    private int TimeLimit { get; set; } = 20;
+
+    private ErrorBoundary _errorBoundary;
 
     protected override async Task OnInitializedAsync()
     {
+        Client.RefreshHandler += CheckAutoContinueCancelled;
         await StartRedrawCycleAsync(1000);
     }
 
-    private ErrorBoundary errorBoundary;
+    private void CheckAutoContinueCancelled()
+    {
+        if (AutoConfirm && Game.Players.Any(p => !p.IsBot) && (
+                Game.CurrentPhase == Phase.AllianceA && _previousPhase != Phase.AllianceA ||
+                Game.CurrentPhase == Phase.AllianceB && _previousPhase != Phase.AllianceB ||
+                Game.CurrentPhase == Phase.ClaimingCharity && _previousPhase != Phase.ClaimingCharity ||
+                Game.CurrentTurn > 1 && (Game.CurrentPhase == Phase.Resurrection && _previousPhase != Phase.Resurrection || Game.CurrentPhase == Phase.ResurrectionReport && Game.IsPlaying(Faction.Pink))) || 
+                Game.CurrentPhase == Phase.Contemplate && (Game.IsPlaying(Faction.Brown) || Game.IsPlaying(Faction.Cyan)))
+        {
+            TicksPassed = 0;
+            AutoConfirm = false;
+        }
+    }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        errorBoundary?.Recover();
+        _errorBoundary?.Recover();
     }
 
     private Phase _previousPhase;
+
     protected override async Task RedrawAsync()
     {
-        if (CancelAutoConfirm)
-        {
-            ticksPassed = 0;
-            autoConfirm = false;
-            StateHasChanged();
-        }
-        else
-        {
-            ticksPassed++;
+        TicksPassed++;
 
-            if (autoConfirm && CanEndPhase && ticksPassed >= 3 + Client.Status.FlashInfo.Count)
-            {
-                ticksPassed = 0;
-                await Confirm();
-            }
-
-            await base.RedrawAsync();
+        if (AutoConfirm && CanEndPhase && TicksPassed >= 3 + Client.Status.FlashInfo.Count)
+        {
+            TicksPassed = 0;
+            await Confirm();
         }
+
+        await base.RedrawAsync();
 
         _previousPhase = Game.CurrentPhase;
     }
@@ -190,7 +198,7 @@
         }
         else
         {
-            UpdateTimer(timeLimit);
+            UpdateTimer(TimeLimit);
         }
     }
 
@@ -198,15 +206,6 @@
     {
         _ = Client.SetTimer(value);
     }
-
-    private bool CancelAutoConfirm =>
-        Game.Players.Any(p => !p.IsBot) && (
-        (Game.CurrentPhase == Phase.AllianceA && _previousPhase != Phase.AllianceA) ||
-        (Game.CurrentPhase == Phase.AllianceB && _previousPhase != Phase.AllianceB) ||
-        (Game.CurrentPhase == Phase.ClaimingCharity && _previousPhase != Phase.ClaimingCharity) ||
-        (Game.CurrentTurn > 1 && Game.CurrentPhase == Phase.Resurrection && _previousPhase != Phase.Resurrection) ||
-        (Game.CurrentPhase == Phase.ResurrectionReport && Game.IsPlaying(Faction.Pink)) ||
-        (Game.CurrentPhase == Phase.Contemplate && (Game.IsPlaying(Faction.Brown) || Game.IsPlaying(Faction.Cyan))));
 
     protected override EndPhase ConfirmedResult => new(Game, Faction);
 
@@ -236,7 +235,7 @@
         return player.Name;
     }
 
-    protected string TimerText(GameEvent timedEvent)
+    private string TimerText(GameEvent timedEvent)
     {
         if (timedEvent == null) return "";
 
@@ -246,25 +245,18 @@
 
         if (elapsed.TotalSeconds >= 1)
         {
-            if (elapsed.TotalHours >= 1)
-            {
-                result = elapsed.ToString(@"hh\:mm\:ss");
-            }
-            else
-            {
-                result = elapsed.ToString(@"m\:ss");
-            }
+            result = elapsed.ToString(elapsed.TotalHours >= 1 ? @"hh\:mm\:ss" : @"m\:ss");
 
             if (Game.CurrentPhase == Phase.Bidding && Client.Timer > 0)
             {
-                result += string.Format(" (limit: {0}s)", Client.Timer);
+                result += $" (limit: {Client.Timer}s)";
             }
         }
 
         return result;
     }
 
-    protected string TimerColor(bool hasTurn)
+    private string TimerColor(bool hasTurn)
     {
         return hasTurn ? "red" : "black";
     }
@@ -273,8 +265,8 @@
     {
         get
         {
-            if (timeLimit < 20) return 5;
-            if (timeLimit < 60) return 10;
+            if (TimeLimit < 20) return 5;
+            if (TimeLimit < 60) return 10;
             return 30;
         }
     }
@@ -283,9 +275,15 @@
     {
         get
         {
-            if (timeLimit > 60) return 30;
-            if (timeLimit > 20) return 10;
+            if (TimeLimit > 60) return 30;
+            if (TimeLimit > 20) return 10;
             return 5;
         }
+    }
+    
+    public override void Dispose()
+    {
+        Client.RefreshHandler -= CheckAutoContinueCancelled;
+        base.Dispose();
     }
 }
