@@ -207,10 +207,6 @@ public abstract class GameEvent
     {
         Game = game;
         Initiator = initiator;
-        // if (game.GetPlayer(initiator) == null)
-        // {
-        //     Console.WriteLine("issue");
-        // }
         Player = game.GetPlayer(initiator);
     }
 

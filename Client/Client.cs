@@ -154,6 +154,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public async Task ExitGame()
     {
+        await SendHeartbeatAndGetServerStatus();
         Game = null;
         GameName = null;
         GameId = null;
@@ -161,7 +162,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         Actions = [];
         _ = Browser.StopSounds();
         Refresh(nameof(ExitGame));
-        await SendHeartbeatAndGetServerStatus();
     }
     
     //IGameClient methods
@@ -256,6 +256,9 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     public async Task HandleUndo(int untilEventNr)
     {
+        if (!InGame)
+            return;
+        
         try
         {
             Game = Game.Undo(untilEventNr);
@@ -315,7 +318,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         ServerInfo.ScheduledMaintenance.AddMinutes(15) > DateTime.UtcNow &&
         ((InGame && ServerInfo.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 6 && CurrentPhase <= Phase.AwaitingPlayers) ||
          ServerInfo.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 1);
-
   
     public event EventHandler<Location> OnLocationSelected;
     public event EventHandler<Location> OnLocationSelectedWithCtrlOrAlt;
