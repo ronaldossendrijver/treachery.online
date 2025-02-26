@@ -210,14 +210,6 @@ public abstract class GameEvent
         Player = game.GetPlayer(initiator);
     }
 
-    private void Initialize(Game game, int seat)
-    {
-        Game = game;
-        Initiator = Faction.None;
-        
-        Player = game.GetPlayerBySeat(seat);
-    }
-
     public void Initialize(Game game)
     {
         Initialize(game, Initiator);

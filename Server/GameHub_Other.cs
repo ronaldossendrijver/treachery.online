@@ -90,14 +90,14 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
         
-        var (amountRunning, amountScheduled)  = await PersistGames();
+        var (amountOfNewGames, amountOfUpdatedGames, amountOfUnchanged, amountOfScheduledGames)  = await PersistGames();
             
-        return Success($"Persisted: {amountRunning} running games, {amountScheduled} scheduled games");
+        return Success($"Persisted: {amountOfNewGames} new, {amountOfUpdatedGames} updated, {amountOfUnchanged} unchanged, Scheduled games: {amountOfScheduledGames}.");
     }
 
     private async Task RestoreGamesIfNeeded()
     {
-        if (LastRestored == default)
+        if (LastRestored == default && !Restoring)
         {
             await RestoreGamesAndUserCache();
         }
@@ -110,13 +110,14 @@ public partial class GameHub
 
         await PersistGames();
     } 
-    
-    private async Task<(int amountRunning, int amountScheduled)> PersistGames()
+    private async Task<(int amountOfNewGames, int amountOfUpdatedGames, int amountOfUnchanged, int amountOfScheduledGames)> PersistGames()
     {
         if (LastRestored == default)
-            return (0, 0);
+            return (0, 0, 0, 0);
 
         LastPersisted = DateTimeOffset.Now;
+        
+        Log($"{nameof(PersistGames)} started...");
 
         var amountOfNewGames = 0;
         var amountOfUpdatedGames = 0;
@@ -164,6 +165,9 @@ public partial class GameHub
                     });
                     amountOfNewGames++;
                 }
+
+                await context.SaveChangesAsync();
+                context.ChangeTracker.Clear();
             }
 
             foreach (var persistedGame in (await context.PersistedGames.ToListAsync())
@@ -174,6 +178,7 @@ public partial class GameHub
             }
                 
             await context.SaveChangesAsync();
+            context.ChangeTracker.Clear();
             
             await context.ScheduledGames.ExecuteDeleteAsync();
             
@@ -201,7 +206,7 @@ public partial class GameHub
         
         Log($"{nameof(PersistGames)} new:{amountOfNewGames}, updated:{amountOfUpdatedGames}, deleted:{amountOfDeletedGames}, unchanged:{amountOfUnchanged}, scheduled: {amountOfScheduledGames}");
         
-        return (amountOfNewGames + amountOfUpdatedGames + amountOfUnchanged, amountOfScheduledGames);
+        return (amountOfNewGames, amountOfUpdatedGames, amountOfUnchanged, amountOfScheduledGames);
     }
 
     public async Task<Result<string>> AdminRestoreState(string userToken)
@@ -214,22 +219,28 @@ public partial class GameHub
         return Success($"Restored: {amountRunning} running games, {amountScheduled} scheduled games");
     }
 
+    private static bool Restoring { get; set; } = true;
+    
     private async Task<(int amountRunning, int amountScheduled)> RestoreGamesAndUserCache()
     {
+        Restoring = true;
+        
+        Log($"{nameof(RestoreGamesAndUserCache)} started...");
+        
         var amountRunning = 0;
         var amountScheduled = 0;
         
         await using (var context = GetDbContext())
         {
             UsersById.Clear();
-            foreach (var user in context.Users)
+            foreach (var user in context.Users.AsNoTracking())
             {
                 UsersById.TryAdd(user.Id, user);
             }
 
             RunningGamesByGameId.Clear();
             
-            foreach (var persistedGame in context.PersistedGames)
+            foreach (var persistedGame in context.PersistedGames.AsNoTracking())
             {
                 var id = persistedGame.GameId;
                 var gameState = GameState.Load(persistedGame.GameState);
@@ -259,7 +270,7 @@ public partial class GameHub
             
             ScheduledGamesByGameId.Clear();
             
-            foreach (var scheduledGame in context.ScheduledGames)
+            foreach (var scheduledGame in context.ScheduledGames.AsNoTracking())
             {
                 var id = scheduledGame.GameId;
                 var subscriptions = Utilities.Deserialize<Dictionary<int,SubscriptionType>>(scheduledGame.SubscribedUsers);
@@ -282,10 +293,12 @@ public partial class GameHub
             }
         }
         
-        Log($"{nameof(RestoreGamesAndUserCache)} {amountRunning} {amountScheduled}");
-        
         LastRestored = DateTimeOffset.Now;
+        
+        Log($"{nameof(RestoreGamesAndUserCache)} {amountRunning} {amountScheduled}");
 
+        Restoring = false;
+        
         return (amountRunning, amountScheduled);
     }
 
