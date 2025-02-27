@@ -90,18 +90,10 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
         
-        var (amountOfNewGames, amountOfUpdatedGames, amountOfUnchanged, amountOfScheduledGames)  = await PersistGames();
+        var (amountOfNewGames, amountOfUpdatedGames, amountOfUnchanged, amountOfDeletedGames, amountOfScheduledGames)  = await PersistGames();
             
-        return Success($"Persisted: {amountOfNewGames} new, {amountOfUpdatedGames} updated, {amountOfUnchanged} unchanged, Scheduled games: {amountOfScheduledGames}.");
+        return Success($"Games: {amountOfNewGames} new, {amountOfUpdatedGames} updated, {amountOfUnchanged} unchanged, {amountOfDeletedGames} deleted. Scheduled games: {amountOfScheduledGames}.");
     }
-
-    private async Task RestoreGamesIfNeeded()
-    {
-        if (LastRestored == default && !Restoring)
-        {
-            await RestoreGamesAndUserCache();
-        }
-    } 
     
     private async Task PersistGamesIfNeeded()
     {
@@ -110,10 +102,10 @@ public partial class GameHub
 
         await PersistGames();
     } 
-    private async Task<(int amountOfNewGames, int amountOfUpdatedGames, int amountOfUnchanged, int amountOfScheduledGames)> PersistGames()
+    private async Task<(int amountOfNewGames, int amountOfUpdatedGames, int amountOfUnchanged, int amountOfDeletedGames, int amountOfScheduledGames)> PersistGames()
     {
         if (LastRestored == default)
-            return (0, 0, 0, 0);
+            return (0, 0, 0, 0, 0);
 
         LastPersisted = DateTimeOffset.Now;
         
@@ -204,9 +196,9 @@ public partial class GameHub
             }
         }
         
-        Log($"{nameof(PersistGames)} new:{amountOfNewGames}, updated:{amountOfUpdatedGames}, deleted:{amountOfDeletedGames}, unchanged:{amountOfUnchanged}, scheduled: {amountOfScheduledGames}");
+        Log($"{nameof(PersistGames)} -> Games: {amountOfNewGames} new, {amountOfUpdatedGames} updated, {amountOfUnchanged} unchanged, {amountOfDeletedGames} deleted. Scheduled games: {amountOfScheduledGames}.");
         
-        return (amountOfNewGames, amountOfUpdatedGames, amountOfUnchanged, amountOfScheduledGames);
+        return (amountOfNewGames, amountOfUpdatedGames, amountOfUnchanged, amountOfDeletedGames, amountOfScheduledGames);
     }
 
     public async Task<Result<string>> AdminRestoreState(string userToken)
@@ -219,7 +211,15 @@ public partial class GameHub
         return Success($"Restored: {amountRunning} running games, {amountScheduled} scheduled games");
     }
 
-    private static bool Restoring { get; set; } = true;
+    private static bool Restoring { get; set; }
+    
+    private async Task RestoreGamesIfServerJustStarted()
+    {
+        if (LastRestored == default && !Restoring)
+        {
+            await RestoreGamesAndUserCache();
+        }
+    } 
     
     private async Task<(int amountRunning, int amountScheduled)> RestoreGamesAndUserCache()
     {

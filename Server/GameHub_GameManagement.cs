@@ -532,7 +532,7 @@ public partial class GameHub
 
     private async Task RunTasksIfNeeded()
     {
-        await RestoreGamesIfNeeded();
+        await RestoreGamesIfServerJustStarted();
         CleanupScheduledGamesIfNeeded();
         await PersistGamesIfNeeded();
         await CleanupUserTokensIfNeeded();
