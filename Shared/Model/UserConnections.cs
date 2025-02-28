@@ -11,10 +11,12 @@ public class UserConnections
         ConnectionInfoByGameId[gameId] = new ConnectionInfo { ConnectionId = connectionId };
     }
 
-    public IEnumerable<string> GetGameIdsWithOldConnections(int ageInMinutes)
+    public IEnumerable<string> GetGameIdsWithOldConnections(int ageInDays)
     {
         return ConnectionInfoByGameId.Where(idAndInfo =>
-            DateTimeOffset.Now.Subtract(idAndInfo.Value.Created).TotalMinutes > ageInMinutes).Select(idAndInfo => idAndInfo.Key);
+            DateTimeOffset.Now
+                .Subtract(idAndInfo.Value.Created).TotalDays > ageInDays)
+            .Select(idAndInfo => idAndInfo.Key);
     }
 
     public bool TryGetConnectionId(string gameId, out string connectionId)

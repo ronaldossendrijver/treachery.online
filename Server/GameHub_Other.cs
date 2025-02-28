@@ -20,7 +20,7 @@ public partial class GameHub
 
     private async Task CleanupUserTokensIfNeeded()
     {
-        if (LastCleanedUpUserTokens.AddMilliseconds(CleanupFrequencyMs) > DateTimeOffset.Now)
+        if (LastCleanedUpUserTokens.AddHours(CleanupFrequencyHours) > DateTimeOffset.Now)
             return;
 
         await CleanupUserTokens();
@@ -34,7 +34,7 @@ public partial class GameHub
     private async Task CleanupUserTokens()
     {
         var now = DateTimeOffset.Now;
-        if (LastCleanedUpUserTokens.AddMilliseconds(CleanupFrequencyMs) > now)
+        if (LastCleanedUpUserTokens.AddHours(CleanupFrequencyHours) > now)
             return;
         
         LastCleanedUpUserTokens = now;
@@ -43,9 +43,8 @@ public partial class GameHub
         
         foreach (var tokenAndInfo in UsersByUserToken.ToArray())
         {
-            var age = now.Subtract(tokenAndInfo.Value.LoggedInDateTime).TotalMinutes;
-            if (age >= MaximumLoginTimeMinutes ||
-                age >= 15 && now.Subtract(tokenAndInfo.Value.LastSeenDateTime).TotalMinutes >= 15)
+            var age = now.Subtract(tokenAndInfo.Value.LoggedInDateTime).TotalDays;
+            if (age >= MaximumLoginTimeDays)
             {
                 UsersByUserToken.Remove(tokenAndInfo.Key, out _);
             } 
@@ -53,7 +52,7 @@ public partial class GameHub
 
         foreach (var userIdAndConnectionInfo in ConnectionInfoByUserId)
         {
-            foreach (var gameId in userIdAndConnectionInfo.Value.GetGameIdsWithOldConnections(MaximumLoginTimeMinutes).ToArray())
+            foreach (var gameId in userIdAndConnectionInfo.Value.GetGameIdsWithOldConnections(MaximumLoginTimeDays).ToArray())
             {
                 await RemoveFromGroup(gameId, userIdAndConnectionInfo.Key);
             }
@@ -62,7 +61,7 @@ public partial class GameHub
 
     private static void CleanupScheduledGamesIfNeeded()
     {
-        if (LastCleanedUpScheduledGames.AddMilliseconds(CleanupFrequencyMs) > DateTimeOffset.Now)
+        if (LastCleanedUpScheduledGames.AddHours(CleanupFrequencyHours) > DateTimeOffset.Now)
             return;
         
         Log($"{nameof(CleanupScheduledGamesIfNeeded)} {ScheduledGamesByGameId.Count}");
@@ -97,7 +96,7 @@ public partial class GameHub
     
     private async Task PersistGamesIfNeeded()
     {
-        if (LastPersisted.AddMilliseconds(PersistFrequencyMs) > DateTimeOffset.Now)
+        if (LastPersisted.AddMinutes(PersistFrequencyMinutes) > DateTimeOffset.Now)
             return;
 
         await PersistGames();

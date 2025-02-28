@@ -7,9 +7,7 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Linq;
-
-namespace Treachery.Client;
+namespace Treachery.Shared;
 
 public static class DefaultSkin
 {

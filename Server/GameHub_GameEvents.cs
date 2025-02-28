@@ -1,7 +1,4 @@
-﻿using System.Net.Mail;
-using System.Threading.Tasks;
-using Treachery.Client;
-using Treachery.Shared.Model;
+﻿using Treachery.Shared.Model;
 
 namespace Treachery.Server;
 

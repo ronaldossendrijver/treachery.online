@@ -1,8 +1,5 @@
 ﻿using System.Net.Http;
-using System.Net.Mail;
 using System.Text;
-using System.Threading.Tasks;
-using Treachery.Client;
 
 namespace Treachery.Server;
 

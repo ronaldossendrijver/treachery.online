@@ -1,22 +1,13 @@
-﻿using System.Collections.Concurrent;
-using System.IO;
-using System.Net;
-using System.Net.Mail;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-
-namespace Treachery.Server;
+﻿namespace Treachery.Server;
 
 public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfiguration configuration)
     : Hub<IGameClient>, IGameHub
 {
-    private const int CleanupFrequencyMs = 3600000; // 3600000 ms = Each hour
-    private const int ServerStatusFrequencyMs = 6000; // 6000 ms = Each 6 seconds
-    private const int PersistFrequencyMs = 900000; // 900000 ms = Each 15 minutes
-    private const int MaximumLoginTimeMinutes = 10080; // 10080 minutes = 7 days 
-    private const int ActiveGameThresholdMinutes = 20;
+    private const int CleanupFrequencyHours = 7;
+    private const int ServerStatusFrequencyMs = 6000;
+    private const int PersistFrequencyMinutes = 20;
+    private const int MaximumLoginTimeDays = 90; 
+    private const int ActiveGameThresholdMinutes = 30;
     
     //Users
     private static ConcurrentDictionary<string,LoggedInUser> UsersByUserToken { get; } = [];
@@ -45,15 +36,17 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     
     private IConfiguration Configuration { get; } = configuration;
 
-    private DbContextOptions<TreacheryContext> DbContextOptions { get; set; } = dbContextOptions;
+    private DbContextOptions<TreacheryContext> DbContextOptions { get; } = dbContextOptions;
 
     private TreacheryContext GetDbContext() => new(DbContextOptions, Configuration);
 
     private static string GenerateToken() => Convert.ToBase64String(Guid.NewGuid().ToByteArray())[..16];
     
-    private static VoidResult Error(ErrorType error, string errorDetails = "") => new() { Error = error, ErrorDetails = errorDetails, Success = false }; 
+    private static VoidResult Error(ErrorType error, string errorDetails = "") 
+        => new() { Error = error, ErrorDetails = errorDetails, Success = false }; 
     
-    private static Result<TResult> Error<TResult>(ErrorType error, string errorDetails = "") => new() { Error = error, ErrorDetails = errorDetails, Success = false }; 
+    private static Result<TResult> Error<TResult>(ErrorType error, string errorDetails = "") 
+        => new() { Error = error, ErrorDetails = errorDetails, Success = false }; 
     
     private static VoidResult Success() => new() { Success = true, Contents = new VoidContents()}; 
     
