@@ -338,13 +338,22 @@ public class Revival : GameEvent, ILocationEvent
         {
             if (initiator.Is(Faction.Purple) && !purpleDiscountPrevented) price = (int)Math.Ceiling(0.5 * price);
 
-            if (!NormallyRevivableHeroes(g, initiator).Contains(hero) && g.EarlyRevivalsOffers.ContainsKey(hero)) price = g.EarlyRevivalsOffers[hero];
+            if (!NormallyRevivableHeroes(g, initiator).Contains(hero) && g.EarlyRevivalsOffers.TryGetValue(hero, out var offer)) price = offer;
         }
         else
         {
             if (initiator.Is(Faction.Purple) && !purpleDiscountPrevented)
+            {
                 price = (int)Math.Ceiling(0.5 * price);
-            else if (!NormallyRevivableHeroes(g, initiator).Contains(hero) && g.EarlyRevivalsOffers.ContainsKey(hero)) price = g.EarlyRevivalsOffers[hero];
+            }
+            else if (!NormallyRevivableHeroes(g, initiator).Contains(hero) && g.EarlyRevivalsOffers.TryGetValue(hero, out var offer))
+            {
+                price = offer;
+            }
+            else if (g.Version >= 176 && initiator.Ally is Faction.Purple && g.PurpleAllowsRevivalDiscount && !purpleDiscountPrevented)
+            {
+                price = (int)Math.Ceiling(0.5 * price);
+            }
         }
 
         return price;
