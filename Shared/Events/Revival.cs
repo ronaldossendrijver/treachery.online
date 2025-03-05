@@ -493,9 +493,11 @@ public class Revival : GameEvent, ILocationEvent
 
             if (totalProfitsForPurple >= 5) Game.ApplyBureaucracy(Initiator, Faction.Purple);
 
-            if (cost.TotalCost - totalProfitsForPurple >= 4) Game.ActivateBanker(Player);
+            if (Game.Version < 176 && cost.TotalCost - totalProfitsForPurple >= 4) Game.ActivateBanker(Player);
         }
-
+        
+        if (Game.Version >= 176 && cost.TotalCost - totalProfitsForPurple >= 4) Game.ActivateBanker(Player);
+        
         //Hero revival
         var asGhola = false;
         if (Hero != null)

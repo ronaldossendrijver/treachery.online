@@ -213,6 +213,9 @@ public partial class GameHub
         await AddToGroup(gameId, user.Id, Context.ConnectionId);
         
         await PersistGameIfNeeded(game);
+        
+        if (game.Game.NumberOfPlayers == 1)
+            await NudgeBots(game);
             
         return Success(new GameInitInfo
         {
