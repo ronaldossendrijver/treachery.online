@@ -17,7 +17,7 @@
 
     @if (SymbolSrc != null)
     {
-        <img src="@SymbolSrc" style="position: absolute; left: 0; top: 0; width: @SymbolSize;" />
+        <img src="@SymbolSrc" style="position: absolute; left: 0; top: 0; width: @SymbolSize;" alt="@Value"/>
     }
 
     @if (DrawNumberBackground)
@@ -194,8 +194,8 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => 7,
-                NumberAlignment.BottomRight => 10,
+                NumberAlignment.Center => 8,
+                NumberAlignment.BottomRight => 11,
                 _ => 0
             };
         }
@@ -207,8 +207,8 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => 7,
-                NumberAlignment.BottomRight => 10,
+                NumberAlignment.Center => 8,
+                NumberAlignment.BottomRight => 11,
                 _ => 0
             };
         }

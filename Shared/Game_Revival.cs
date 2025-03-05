@@ -70,12 +70,13 @@ public partial class Game
             case Faction.Pink: nrOfFreeRevivals = 2; break;
             case Faction.Cyan: nrOfFreeRevivals = 2; break;
         }
+        
+        if (Version < 176 && CurrentRecruitsPlayed != null) nrOfFreeRevivals *= 2;
 
-        if (CurrentRecruitsPlayed != null) nrOfFreeRevivals *= 2;
-
-        if (player.Ally == Faction.Yellow && player.Ally == Faction.Yellow && YellowAllowsThreeFreeRevivals) nrOfFreeRevivals = 3;
-
-        if (CurrentYellowSecretAlly != null && CurrentYellowSecretAlly.Player == player) nrOfFreeRevivals = 3;
+        if (player.Ally == Faction.Yellow && YellowAllowsThreeFreeRevivals ||
+            CurrentYellowSecretAlly != null && CurrentYellowSecretAlly.Player == player) nrOfFreeRevivals = 3;
+        
+        if (Version >= 176 && CurrentRecruitsPlayed != null) nrOfFreeRevivals *= 2;
 
         if (usesRedSecretAlly) nrOfFreeRevivals += 3;
 

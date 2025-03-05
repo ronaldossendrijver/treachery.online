@@ -89,38 +89,34 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
         
-        var (amountOfNewGames, amountOfUpdatedGames, amountOfUnchanged, amountOfDeletedGames, amountOfScheduledGames)  = await PersistGames();
+        var (amountOfNewGames, amountOfUpdatedGames, amountOfUnchanged, amountOfDeletedGames) = await PersistRunningGames();
+        var amountOfScheduledGames = await PersistScheduledGames();
             
         return Success($"Games: {amountOfNewGames} new, {amountOfUpdatedGames} updated, {amountOfUnchanged} unchanged, {amountOfDeletedGames} deleted. Scheduled games: {amountOfScheduledGames}.");
     }
     
     private async Task PersistScheduledGamesIfNeeded()
     {
-        if (LastPersisted.AddMinutes(PersistFrequencyMinutes) > DateTimeOffset.Now)
+        if (LastPersistedScheduledGames.AddMinutes(PersistFrequencyMinutes) > DateTimeOffset.Now)
             return;
 
-        await PersistGames();
+        await PersistScheduledGames();
     } 
     
-    private async Task<(int amountOfNewGames, int amountOfUpdatedGames, int amountOfUnchanged, int amountOfDeletedGames, int amountOfScheduledGames)> PersistGames()
+    private async Task<(int amountOfNewGames, int amountOfUpdatedGames, int amountOfUnchanged, int amountOfDeletedGames)> PersistRunningGames()
     {
         if (LastRestored == default)
-            return (0, 0, 0, 0, 0);
-
-        LastPersisted = DateTimeOffset.Now;
+            return (0, 0, 0, 0);
         
-        Log($"{nameof(PersistGames)} started...");
+        Log($"{nameof(PersistRunningGames)} started...");
 
         var amountOfNewGames = 0;
         var amountOfUpdatedGames = 0;
         var amountOfDeletedGames = 0;
         var amountOfUnchanged = 0;
         
-        var amountOfScheduledGames = 0;
-        
         await using (var context = GetDbContext())
         {
-            /*
             foreach (var (key, game) in RunningGamesByGameId)
             {
                 var persistedGame = await context.PersistedGames.FirstOrDefaultAsync(g => g.GameId == game.GameId);
@@ -172,8 +168,26 @@ public partial class GameHub
                 
             await context.SaveChangesAsync();
             context.ChangeTracker.Clear();
-            */
-            
+        }
+        
+        Log($"{nameof(PersistRunningGames)}: {amountOfNewGames} new, {amountOfUpdatedGames} updated, {amountOfUnchanged} unchanged, {amountOfDeletedGames} deleted.");
+        
+        return (amountOfNewGames, amountOfUpdatedGames, amountOfUnchanged, amountOfDeletedGames);
+    }
+    
+    private async Task<int> PersistScheduledGames()
+    {
+        if (LastRestored == default)
+            return 0;
+
+        LastPersistedScheduledGames = DateTimeOffset.Now;
+        
+        Log($"{nameof(PersistScheduledGames)} started...");
+        
+        var amountOfScheduledGames = 0;
+        
+        await using (var context = GetDbContext())
+        {
             await context.ScheduledGames.ExecuteDeleteAsync();
             
             foreach (var (key, game) in ScheduledGamesByGameId)
@@ -198,9 +212,9 @@ public partial class GameHub
             }
         }
         
-        Log($"{nameof(PersistGames)} -> Games: {amountOfNewGames} new, {amountOfUpdatedGames} updated, {amountOfUnchanged} unchanged, {amountOfDeletedGames} deleted. Scheduled games: {amountOfScheduledGames}.");
+        Log($"{nameof(PersistScheduledGames)}: {amountOfScheduledGames}.");
         
-        return (amountOfNewGames, amountOfUpdatedGames, amountOfUnchanged, amountOfDeletedGames, amountOfScheduledGames);
+        return amountOfScheduledGames;
     }
     
     private async Task EraseGame(ManagedGame game)

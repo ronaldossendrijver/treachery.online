@@ -14,12 +14,9 @@
     var x = 1.5f * Client.CurrentSkin.FORCETOKEN_RADIUS;
     var leaderDiameter = 3.2f * Client.CurrentSkin.FORCETOKEN_RADIUS;
     var leaderPctHeight = .25f * leaderDiameter * Client.CurrentSkin.BattleWheelHeroHeight / Client.CurrentSkin.BattleWheelHeroWidth;
-    var spacing = 0.85f;
-
+    
     foreach (var p in Client.Game.Players)
     {
-        var color = Client.CurrentSkin.GetFactionColor(p.Faction);
-
         if (p.ForcesKilled > 0 || p.SpecialForcesKilled > 0)
         {
             if (p.ForcesKilled > 0)
@@ -33,18 +30,18 @@
                 <MapForce X=@(x + dX) Y=@y Special=@true Amount=@p.SpecialForcesKilled Faction=@p.Faction />
             }
 
-            y += spacing * 2 * Client.CurrentSkin.FORCETOKEN_RADIUS;
+            y += Spacing * 2 * Client.CurrentSkin.FORCETOKEN_RADIUS;
         }
 
         var corpses = p.Leaders
             .Where(l => !Client.Game.IsAlive(l))
             .Select(l => new Tuple<Leader, LeaderState>(l, Client.Game.LeaderState[l]))
-            .OrderBy(l => l.Item2.TimeOfDeath).Select(l => l.Item1);
+            .OrderBy(l => l.Item2.TimeOfDeath).Select(l => l.Item1)
+            .ToArray();
 
-        var corpseNr = 0;
         if (corpses.Any())
         {
-            y += spacing * (leaderPctHeight * (corpses.Count() - 1));
+            y += Spacing * (leaderPctHeight * (corpses.Count() - 1));
             var dy = 0;
             var displaceX = (int)(0.2f * leaderDiameter);
             foreach (var leader in corpses)
@@ -60,46 +57,46 @@
                 }
                 else
                 {
-                    <MapLeader  ToShow="leader" X=@(l.X + displaceX) Y=@(l.Y) Diameter="leaderDiameter"/>
+                    <MapLeader ToShow="leader" X=@(l.X + displaceX) Y=@(l.Y) Diameter="leaderDiameter"/>
                 }
 
                 displaceX *= -1;
                 dy += (int)leaderPctHeight;
-                corpseNr++;
             }
 
-            y += spacing * leaderDiameter;
+            y += Spacing * leaderDiameter;
         }
 
         if (p.Faction == Faction.Green && !Client.Game.MessiahIsAlive)
         {
-            var l = new PointD(x, y);
             <MapImage X="@(x)" Y="@(y)" Diameter="@(0.5f * leaderDiameter)"
                    Src="@Client.CurrentSkin.Messiah_URL"
                    ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" Popover="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
             
-            y += spacing * leaderDiameter;
+            y += Spacing * leaderDiameter;
         }
 
-        NextColumnIfNecessary(ref y, ref x, spacing);
+        NextColumnIfNecessary(ref y, ref x, Spacing);
     }
 }
 
-@code {
-        
-    private Situation situation = new();
+@code 
+{
+    const float Spacing = 0.85f;
+    private Situation _situation = new();
+    
     protected override bool ShouldRender()
     {
-        return Client.InGame && situation.RequiresUpdate(Client);
+        return Client.InGame && _situation.RequiresUpdate(Client);
     }
 
     private void NextColumnIfNecessary(ref float y, ref float x, float spacing)
     {
-        if (y > 15 * Client.CurrentSkin.FORCETOKEN_RADIUS - 0.8f * x)
-        {
-            y = 1.75f * Client.CurrentSkin.FORCETOKEN_RADIUS;
-            x += 4.25f * Client.CurrentSkin.FORCETOKEN_RADIUS;
-        }
+        if (!(y > 15 * Client.CurrentSkin.FORCETOKEN_RADIUS - 0.8f * x)) 
+            return;
+        
+        y = 1.75f * Client.CurrentSkin.FORCETOKEN_RADIUS;
+        x += 4.25f * Client.CurrentSkin.FORCETOKEN_RADIUS;
     }
 
     private string Popover(Leader l)

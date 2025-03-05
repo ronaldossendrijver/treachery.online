@@ -8,7 +8,7 @@
 *@
 @inherits MapComponent;
 
-<MapImage X="X" Y="Y" Diameter="@Diameter" Src="@LeaderURL" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" Popover="@Popover" PopoverStyle=""/>
+<MapImage X="X" Y="Y" Diameter="@Diameter" Src="@LeaderUrl" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" Popover="@Popover" PopoverStyle=""/>
 
 @code {
 
@@ -18,7 +18,7 @@
     [Parameter]
     public bool ShowPopover { get; set; } = true;
 
-    private string LeaderURL => Client.CurrentSkin.GetImageUrl(ToShow);
+    private string LeaderUrl => Client.CurrentSkin.GetImageUrl(ToShow);
 
     private string Popover => ShowPopover ? Client.CurrentSkin.GetPopup(ToShow, Game) : null;
 }
