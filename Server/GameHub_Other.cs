@@ -94,13 +94,14 @@ public partial class GameHub
         return Success($"Games: {amountOfNewGames} new, {amountOfUpdatedGames} updated, {amountOfUnchanged} unchanged, {amountOfDeletedGames} deleted. Scheduled games: {amountOfScheduledGames}.");
     }
     
-    private async Task PersistGamesIfNeeded()
+    private async Task PersistScheduledGamesIfNeeded()
     {
         if (LastPersisted.AddMinutes(PersistFrequencyMinutes) > DateTimeOffset.Now)
             return;
 
         await PersistGames();
     } 
+    
     private async Task<(int amountOfNewGames, int amountOfUpdatedGames, int amountOfUnchanged, int amountOfDeletedGames, int amountOfScheduledGames)> PersistGames()
     {
         if (LastRestored == default)
@@ -119,6 +120,7 @@ public partial class GameHub
         
         await using (var context = GetDbContext())
         {
+            /*
             foreach (var (key, game) in RunningGamesByGameId)
             {
                 var persistedGame = await context.PersistedGames.FirstOrDefaultAsync(g => g.GameId == game.GameId);
@@ -170,6 +172,7 @@ public partial class GameHub
                 
             await context.SaveChangesAsync();
             context.ChangeTracker.Clear();
+            */
             
             await context.ScheduledGames.ExecuteDeleteAsync();
             
@@ -198,6 +201,65 @@ public partial class GameHub
         Log($"{nameof(PersistGames)} -> Games: {amountOfNewGames} new, {amountOfUpdatedGames} updated, {amountOfUnchanged} unchanged, {amountOfDeletedGames} deleted. Scheduled games: {amountOfScheduledGames}.");
         
         return (amountOfNewGames, amountOfUpdatedGames, amountOfUnchanged, amountOfDeletedGames, amountOfScheduledGames);
+    }
+    
+    private async Task EraseGame(ManagedGame game)
+    {
+        await using var context = GetDbContext();
+        var persistedGame = await context.PersistedGames.FirstOrDefaultAsync(g => g.GameId == game.GameId);
+        if (persistedGame != null)
+            context.Remove(persistedGame);
+
+        await context.SaveChangesAsync();
+        context.ChangeTracker.Clear();
+    }
+
+    private async Task PersistGameIfNeeded(ManagedGame game)
+    {
+        if (game.LastPersisted.AddMinutes(GamePersistFrequencyMinutes) > DateTimeOffset.Now)
+            return;
+        
+        await PersistGame(game);
+    }
+
+    private async Task PersistGame(ManagedGame game)
+    {
+        game.LastPersisted = DateTimeOffset.Now;
+        
+        await using var context = GetDbContext();
+        
+        var persistedGame = await context.PersistedGames.FirstOrDefaultAsync(g => g.GameId == game.GameId);
+        if (persistedGame != null)
+        {
+            if (persistedGame.LastAction == game.LastActivity)
+                return;
+
+            persistedGame.GameState = GameState.GetStateAsString(game.Game);
+            persistedGame.GameParticipation = Utilities.Serialize(game.Game.Participation);
+            persistedGame.StatisticsSent = game.StatisticsSent;
+            persistedGame.LastAsyncPlayMessageSent = game.LastAsyncPlayMessageSent;
+            persistedGame.LastAction = game.LastActivity;
+            context.PersistedGames.Update(persistedGame);
+        }
+        else
+        {
+            context.PersistedGames.Add(new PersistedGame
+            {
+                CreationDate = game.CreationDate,
+                CreatorUserId = game.CreatorUserId,
+                GameId = game.GameId,
+                GameState = GameState.GetStateAsString(game.Game),
+                GameName = game.Name,
+                GameParticipation = Utilities.Serialize(game.Game.Participation),
+                HashedPassword = game.HashedPassword,
+                ObserversRequirePassword = game.ObserversRequirePassword,
+                StatisticsSent = game.StatisticsSent,
+                LastAsyncPlayMessageSent = game.LastAsyncPlayMessageSent,
+                LastAction = game.Game.History.LastOrDefault()?.Time ?? game.CreationDate
+            });
+        }
+
+        await context.SaveChangesAsync();
     }
 
     public async Task<Result<string>> AdminRestoreState(string userToken)
@@ -299,6 +361,38 @@ public partial class GameHub
         Restoring = false;
         
         return (amountRunning, amountScheduled);
+    }
+    
+    private async Task RestoreGame(string gameId)
+    {
+        await using var context = GetDbContext();
+        var persistedGame = await context.PersistedGames.FirstOrDefaultAsync(g => g.GameId == gameId);
+        if (persistedGame == null)
+            return;
+        
+        var id = persistedGame.GameId;
+        var gameState = GameState.Load(persistedGame.GameState);
+        var gameName = persistedGame.GameName;
+        var participation = Utilities.Deserialize<Participation>(persistedGame.GameParticipation);
+        var loadMessage = Game.TryLoad(gameState, participation, false, true, out var game);
+        if (loadMessage == null)
+        {
+            var managedGame = new ManagedGame
+            {
+                CreationDate = persistedGame.CreationDate,
+                CreatorUserId = persistedGame.CreatorUserId,
+                GameId = persistedGame.GameId,
+                Game = game,
+                Name = gameName,
+                HashedPassword = persistedGame.HashedPassword,
+                ObserversRequirePassword = persistedGame.ObserversRequirePassword,
+                StatisticsSent = persistedGame.StatisticsSent,
+                LastActivity = persistedGame.LastAction,
+                LastAsyncPlayMessageSent = persistedGame.LastAsyncPlayMessageSent,
+            };
+                    
+            RunningGamesByGameId[id] = managedGame;
+        }
     }
 
     public async Task<Result<string>> AdminCloseGame(string userToken, string gameId)

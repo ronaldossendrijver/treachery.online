@@ -52,6 +52,8 @@ public partial class GameHub
         if (!string.IsNullOrEmpty(skin))
             await Clients.Group(gameId).HandleSetSkin(skin);
         
+        await PersistGameIfNeeded(managedGame);
+        
         return Success(new GameInitInfo
         {
             GameId = gameId, 
@@ -140,6 +142,8 @@ public partial class GameHub
 
         if (!string.IsNullOrEmpty(skin))
             await Clients.Group(gameId).HandleSetSkin(skin);
+        
+        await PersistGameIfNeeded(game);
 
         await NudgeBots(game);
         return Success();
@@ -163,6 +167,8 @@ public partial class GameHub
 
         game.Game.Participation.SeatedPlayers = assignment;
         await Clients.Group(gameId).HandleAssignSeats(assignment);
+        
+        await PersistGameIfNeeded(game);
 
         await NudgeBots(game);
         return Success();
@@ -205,6 +211,8 @@ public partial class GameHub
         }
       
         await AddToGroup(gameId, user.Id, Context.ConnectionId);
+        
+        await PersistGameIfNeeded(game);
             
         return Success(new GameInitInfo
         {
@@ -233,6 +241,7 @@ public partial class GameHub
         game.SubscribedUsers[user.Id] = subscription;
 
         UpdateServerStatusIfNeeded(true);
+
         await Task.CompletedTask;
         
         return Success(FilteredServerStatus(GameListScope.Active, user.Id));
@@ -248,6 +257,9 @@ public partial class GameHub
 
         game.Game.OpenOrCloseSeat(seat);
         await Clients.Group(gameId).HandleOpenOrCloseSeat(seat);
+        
+        await PersistGameIfNeeded(game);
+        
         return Success();
     }
     
@@ -264,6 +276,9 @@ public partial class GameHub
         
         game.Game.SetOrUnsetHost(userId);
         await Clients.Group(gameId).HandleSetOrUnsetHost(userId);
+        
+        await PersistGameIfNeeded(game);
+        
         return Success();
     }
 
@@ -284,9 +299,11 @@ public partial class GameHub
         await Clients.Group(gameId).HandleRemoveUser(user.Id, false);
         await RemoveFromGroup(gameId, user.Id);
         
-        await NudgeBots(game);
+        await PersistGameIfNeeded(game);
         
+        await NudgeBots(game);
         UpdateServerStatusIfNeeded(true);
+        
         return Success(FilteredServerStatus(GameListScope.Active, user.Id));
     }
 
@@ -301,6 +318,8 @@ public partial class GameHub
         game.Game.RemoveUser(userId, true);
         await Clients.Group(gameId).HandleRemoveUser(userId, true);
         await RemoveFromGroup(gameId, userId);
+        
+        await PersistGameIfNeeded(game);
         
         await NudgeBots(game);
         return Success();
@@ -317,6 +336,8 @@ public partial class GameHub
         game.Game.Settings = settings;
         
         await Clients.Group(gameId).HandleUpdateSettings(settings);
+        
+        await PersistGameIfNeeded(game);
         
         return Success();
     }
@@ -337,6 +358,8 @@ public partial class GameHub
         }
 
         RunningGamesByGameId.Remove(gameId, out _);
+        
+        await EraseGame(game);
         
         UpdateServerStatusIfNeeded(true);
         return Success(FilteredServerStatus(GameListScope.Active, user.Id));
@@ -383,6 +406,8 @@ public partial class GameHub
         }
 
         await AddToGroup(gameId, user.Id, Context.ConnectionId);
+        
+        await PersistGameIfNeeded(game);
 
         return Success(new GameInitInfo
         {
@@ -402,6 +427,9 @@ public partial class GameHub
             return Error<GameInitInfo>(ErrorType.UserNotInGame);
        
         await AddToGroup(gameId, user.Id, Context.ConnectionId);
+        
+        await PersistGameIfNeeded(game);
+        
         return Success(new GameInitInfo
         {
             GameId = gameId, 
@@ -451,6 +479,8 @@ public partial class GameHub
         game.Game = game.Game.Undo(untilEventNr);
         await Clients.Group(gameId).HandleUndo(untilEventNr);
 
+        await PersistGameIfNeeded(game);
+        
         await NudgeBots(game);
         return Success();
     }
@@ -465,6 +495,8 @@ public partial class GameHub
 
         game.Game.Participation.BotsArePaused = !game.Game.Participation.BotsArePaused;
         await Clients.All.HandleBotStatus(game.Game.Participation.BotsArePaused);
+        
+        await PersistGameIfNeeded(game);
 
         await NudgeBots(game);
         return Success();
@@ -531,7 +563,7 @@ public partial class GameHub
     {
         await RestoreGamesIfServerJustStarted();
         CleanupScheduledGamesIfNeeded();
-        await PersistGamesIfNeeded();
+        await PersistScheduledGamesIfNeeded();
         await CleanupUserTokensIfNeeded();
         UpdateServerStatusIfNeeded();
     }

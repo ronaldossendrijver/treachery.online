@@ -35,6 +35,8 @@ public partial class GameHub
             }
         }
         
+        await PersistGameIfNeeded(game);
+        
         return Success();
     }
     
@@ -218,6 +220,8 @@ public partial class GameHub
         await Clients.Group(game.GameId).HandleGameEvent(e, game.Game.History.Count);
         
         await SendAsyncPlayMessagesIfApplicable(game.GameId);
+        
+        await PersistGameIfNeeded(game);
         
         var botDelay = DetermineBotDelay(game.Game.CurrentMainPhase, e);
         _ = Task.Delay(botDelay).ContinueWith(_ => PerformBotEvent(game));

@@ -8,6 +8,8 @@ public class ManagedGame
     
     public DateTimeOffset LastActivity { get; set; }
     
+    public DateTimeOffset LastPersisted { get; set; }
+    
     public int CreatorUserId { get; init; }
     
     public string GameId { get; init; }
