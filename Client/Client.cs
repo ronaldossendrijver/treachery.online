@@ -802,7 +802,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
         return result;
     }
-   
-    public UserStatus GetUserStatus(int userId) =>
+
+    private UserStatus GetUserStatus(int userId) =>
         RecentlySeenUsers.TryGetValue(userId, out var user) ? user.Status : UserStatus.None;
 }

@@ -7,20 +7,18 @@ public class RetryPolicy : IRetryPolicy
 {
     public TimeSpan? NextRetryDelay(RetryContext retryContext)
     {
-        if (retryContext.PreviousRetryCount == 0)
-            return TimeSpan.FromSeconds(0);
-        if (retryContext.PreviousRetryCount < 5)
-            return TimeSpan.FromSeconds(1);
-        //until 30 seconds after disconnect
-        if (retryContext.PreviousRetryCount < 30)
-            return TimeSpan.FromSeconds(2);
-        //until 30 seconds after disconnect
-        if (retryContext.PreviousRetryCount < 100)
-            return TimeSpan.FromSeconds(10);
-        //until 12 minutes after disconnect
-        if (retryContext.PreviousRetryCount < 200)
-            return TimeSpan.FromSeconds(30);
+        return retryContext.PreviousRetryCount switch
+        {
+            0 => TimeSpan.FromSeconds(0),
+            < 5 => TimeSpan.FromSeconds(1),
+            //until 30 seconds after disconnect
+            < 30 => TimeSpan.FromSeconds(2),
+            //until 30 seconds after disconnect
+            < 100 => TimeSpan.FromSeconds(10),
+            //until 12 minutes after disconnect
+            < 200 => TimeSpan.FromSeconds(30),
+            _ => null
+        };
         //until about 1 our after disconnect
-        return null;
     }
 }

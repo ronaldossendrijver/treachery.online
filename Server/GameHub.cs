@@ -22,9 +22,9 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     private static ConcurrentDictionary<string,ScheduledGame> ScheduledGamesByGameId{ get; } = [];
 
     //Server status
-    public static GameInfo[] RunningGames { get; set; } = [];
-    public static ScheduledGameInfo[] ScheduledGames { get; set; } = [];
-    public static LoggedInUserInfo[] RecentlySeenUsers { get; set; } = [];
+    private static GameInfo[] RunningGames { get; set; } = [];
+    private static ScheduledGameInfo[] ScheduledGames { get; set; } = [];
+    private static LoggedInUserInfo[] RecentlySeenUsers { get; set; } = [];
     
     //Other
     private static DateTimeOffset LastRestored { get; set; }

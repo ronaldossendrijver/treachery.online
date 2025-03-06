@@ -11,8 +11,8 @@ namespace Treachery.Client;
 
 public class LocationEventArgs
 {
-    public Location Location { get; set; }
-    public bool CtrlKey { get; set; }
-    public bool ShiftKey { get; set; }
-    public bool AltKey { get; set; }
+    public Location Location { get; init; }
+    public bool CtrlKey { get; init; }
+    public bool ShiftKey { get; init; }
+    public bool AltKey { get; init; }
 }

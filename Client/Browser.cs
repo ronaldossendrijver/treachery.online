@@ -7,7 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Linq;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -15,36 +14,36 @@ namespace Treachery.Client;
 
 public class Browser(IJSRuntime jsRuntime)
 {
-    private LocalStorage Storage { get; set; } = new LocalStorage(jsRuntime);
+    private LocalStorage Storage { get; } = new(jsRuntime);
 
     public async Task EnablePopover(ElementReference element)
     {
-        if (!element.Equals(default(ElementReference))) await JsInvoke("EnablePopover", element);
+        if (!string.IsNullOrEmpty(element.Id)) await JsInvoke("EnablePopover", element);
     }
 
     public async Task EnablePopovers(ElementReference element)
     {
-        if (!element.Equals(default(ElementReference))) await JsInvoke("EnablePopovers", element);
+        if (!string.IsNullOrEmpty(element.Id)) await JsInvoke("EnablePopovers", element);
     }
 
     public async Task RemovePopover(ElementReference element)
     {
-        if (!element.Equals(default(ElementReference))) await JsInvoke("RemovePopover", element);
+        if (!string.IsNullOrEmpty(element.Id)) await JsInvoke("RemovePopover", element);
     }
 
     public async Task RemovePopovers(ElementReference element)
     {
-        if (!element.Equals(default(ElementReference))) await JsInvoke("RemovePopovers", element);
+        if (!string.IsNullOrEmpty(element.Id)) await JsInvoke("RemovePopovers", element);
     }
 
     public async Task RefreshPopover(ElementReference element)
     {
-        if (!element.Equals(default(ElementReference))) await JsInvoke("RefreshPopover", element);
+        if (!string.IsNullOrEmpty(element.Id)) await JsInvoke("RefreshPopover", element);
     }
 
     public async Task RefreshPopovers(ElementReference element)
     {
-        if (!element.Equals(default(ElementReference))) await JsInvoke("RefreshPopovers", element);
+        if (!string.IsNullOrEmpty(element.Id)) await JsInvoke("RefreshPopovers", element);
     }
 
     public async Task RemoveFocusFromButtons()

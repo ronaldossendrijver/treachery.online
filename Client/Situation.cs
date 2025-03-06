@@ -4,7 +4,7 @@ public class Situation
 {
     private Skin _skin;
     private Game _game;
-    public int _eventCount;
+    private int _eventCount;
 
     public bool RequiresUpdate(IGameService service)
     {

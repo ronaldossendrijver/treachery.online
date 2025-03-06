@@ -17,18 +17,18 @@ public class GreenIntelligence
 
     public Dictionary<Faction, Dictionary<int, int>> TrackedTreacheryCards { get; }
 
-    private readonly Dictionary<Tuple<Faction, int>, int> trackedTraitors = new();
-    private readonly Dictionary<int, int> trackedDiscardedTraitors = new();
-    private readonly List<int> discardedCards = new();
-    private readonly List<int> removedCards = new();
-    private readonly TreacheryCard[] CardsInPlay;
-    private IGameService _client;
+    private readonly Dictionary<Tuple<Faction, int>, int> _trackedTraitors = new();
+    private readonly Dictionary<int, int> _trackedDiscardedTraitors = new();
+    private readonly List<int> _discardedCards = [];
+    private readonly List<int> _removedCards = [];
+    private readonly TreacheryCard[] _cardsInPlay;
+    private readonly IGameService _client;
 
     public GreenIntelligence(IGameService client)
     {
         _client = client;
-        var whiteCards = client.Game.IsPlaying(Faction.White) ? TreacheryCardManager.GetWhiteCards().ToArray() : Array.Empty<TreacheryCard>();
-        CardsInPlay = TreacheryCardManager.GetCardsInPlay(client.Game).Union(whiteCards).ToArray();
+        var whiteCards = client.Game.IsPlaying(Faction.White) ? TreacheryCardManager.GetWhiteCards().ToArray() : [];
+        _cardsInPlay = TreacheryCardManager.GetCardsInPlay(client.Game).Union(whiteCards).ToArray();
         TrackedTreacheryCards = new Dictionary<Faction, Dictionary<int, int>>();
         foreach (var p in client.Game.Players)
         {
@@ -38,16 +38,16 @@ public class GreenIntelligence
         }
     }
 
-    private static int DefaultSelectedCard(Faction p, int cardnr)
+    private static int DefaultSelectedCard(Faction p, int cardNr)
     {
-        if (cardnr == 0) return TreacheryCard.Unknown;
-        if (cardnr == 1 && p == Faction.Black) return TreacheryCard.Unknown;
+        if (cardNr == 0) return TreacheryCard.Unknown;
+        if (cardNr == 1 && p == Faction.Black) return TreacheryCard.Unknown;
         return TreacheryCard.None;
     }
 
-    public IEnumerable<TreacheryCard> DiscardedCards => discardedCards.Select(id => TreacheryCardManager.Lookup.Find(id));
+    public IEnumerable<TreacheryCard> DiscardedCards => _discardedCards.Select(id => TreacheryCardManager.Lookup.Find(id));
 
-    public IEnumerable<TreacheryCard> RemovedCards => removedCards.Select(id => TreacheryCardManager.Lookup.Find(id));
+    public IEnumerable<TreacheryCard> RemovedCards => _removedCards.Select(id => TreacheryCardManager.Lookup.Find(id));
 
     public IEnumerable<TreacheryCard> AvailableDistinctCards(Faction f, int cardNumber)
     {
@@ -55,22 +55,21 @@ public class GreenIntelligence
 
         var cardsSelectedElsewhere = AllTrackedCardsExcept(f, cardNumber);
 
-        foreach (var c in CardsInPlay)
-            if (result.All(added => _client.CurrentSkin.Describe(added) != _client.CurrentSkin.Describe(c)) && !removedCards.Contains(c.Id) && !discardedCards.Contains(c.Id) && !cardsSelectedElsewhere.Contains(c.Id)) result.Add(c);
+        foreach (var c in _cardsInPlay)
+            if (result.All(added => _client.CurrentSkin.Describe(added) != _client.CurrentSkin.Describe(c)) && !_removedCards.Contains(c.Id) && !_discardedCards.Contains(c.Id) && !cardsSelectedElsewhere.Contains(c.Id)) result.Add(c);
 
         return result;
     }
 
-    public IEnumerable<int> AllTrackedCardsExcept(Faction f, int cardNumber)
+    private List<int> AllTrackedCardsExcept(Faction f, int cardNumber)
     {
         var result = new List<int>();
         foreach (var kvp in TrackedTreacheryCards)
         {
             var cardsOfPlayer = kvp.Value;
-            if (kvp.Key != f)
-                result.AddRange(cardsOfPlayer.Values);
-            else
-                result.AddRange(cardsOfPlayer.Where(c => c.Key != cardNumber).Select(c => c.Value));
+            result.AddRange(kvp.Key != f
+                ? cardsOfPlayer.Values
+                : cardsOfPlayer.Where(c => c.Key != cardNumber).Select(c => c.Value));
         }
         return result;
     }
@@ -78,31 +77,27 @@ public class GreenIntelligence
     public int GetSelectedTraitor(Faction f, int nr)
     {
         var key = new Tuple<Faction, int>(f, nr);
-        if (trackedTraitors.ContainsKey(key))
-            return trackedTraitors[key];
-        return -1;
+        return _trackedTraitors.GetValueOrDefault(key, -1);
     }
 
-    public void ChangeSelectedTraitor(Faction f, int cardNumber, int? leaderID)
+    public void ChangeSelectedTraitor(Faction f, int cardNumber, int? leaderId)
     {
         var key = new Tuple<Faction, int>(f, cardNumber);
-        if (trackedTraitors.ContainsKey(key)) trackedTraitors.Remove(key);
+        if (_trackedTraitors.ContainsKey(key)) _trackedTraitors.Remove(key);
 
-        if (leaderID != null) trackedTraitors.Add(key, (int)leaderID);
+        if (leaderId != null) _trackedTraitors.Add(key, (int)leaderId);
     }
 
     public int GetDiscardedTraitor(int nr)
     {
-        if (trackedDiscardedTraitors.ContainsKey(nr))
-            return trackedDiscardedTraitors[nr];
-        return -1;
+        return _trackedDiscardedTraitors.GetValueOrDefault(nr, -1);
     }
 
-    public void ChangeDiscardedTraitor(int nr, int? leaderID)
+    public void ChangeDiscardedTraitor(int nr, int? leaderId)
     {
-        if (trackedDiscardedTraitors.ContainsKey(nr)) trackedDiscardedTraitors.Remove(nr);
+        if (_trackedDiscardedTraitors.ContainsKey(nr)) _trackedDiscardedTraitors.Remove(nr);
 
-        if (leaderID != null) trackedDiscardedTraitors.Add(nr, (int)leaderID);
+        if (leaderId != null) _trackedDiscardedTraitors.Add(nr, (int)leaderId);
     }
 
     public void Discard(Faction f, int cardNumber)
@@ -111,25 +106,25 @@ public class GreenIntelligence
         TrackedTreacheryCards[f][cardNumber] = TreacheryCard.None;
 
         if (current.Type == TreacheryCardType.Metheor)
-            removedCards.Add(current.Id);
+            _removedCards.Add(current.Id);
         else
-            discardedCards.Add(current.Id);
+            _discardedCards.Add(current.Id);
     }
 
     public void SetNotDiscarded(TreacheryCard card)
     {
         if (card.Type == TreacheryCardType.Metheor)
-            removedCards.Remove(card.Id);
+            _removedCards.Remove(card.Id);
         else
-            discardedCards.Remove(card.Id);
+            _discardedCards.Remove(card.Id);
     }
 
     public void ClearDiscarded()
     {
-        discardedCards.Clear();
+        _discardedCards.Clear();
     }
 
-    public static void Write(ref string target, object item)
+    private static void Write(ref string target, object item)
     {
         if (item == null)
             target += ';';
@@ -143,38 +138,38 @@ public class GreenIntelligence
 
         //Treachery cards
         foreach (var faction in TrackedTreacheryCards.Keys)
-        foreach (var cardnr in TrackedTreacheryCards[faction].Keys) Write(ref result, TrackedTreacheryCards[faction][cardnr]);
+        foreach (var cardNr in TrackedTreacheryCards[faction].Keys) Write(ref result, TrackedTreacheryCards[faction][cardNr]);
 
         //Traitors
-        Write(ref result, trackedTraitors.Keys.Count);
-        foreach (var key in trackedTraitors.Keys)
+        Write(ref result, _trackedTraitors.Keys.Count);
+        foreach (var key in _trackedTraitors.Keys)
         {
             Write(ref result, key.Item1);
             Write(ref result, key.Item2);
-            Write(ref result, trackedTraitors[key]);
+            Write(ref result, _trackedTraitors[key]);
         }
 
         //Discarded traitors
-        Write(ref result, trackedDiscardedTraitors.Keys.Count);
-        foreach (var key in trackedDiscardedTraitors.Keys)
+        Write(ref result, _trackedDiscardedTraitors.Keys.Count);
+        foreach (var key in _trackedDiscardedTraitors.Keys)
         {
             Write(ref result, key);
-            Write(ref result, trackedDiscardedTraitors[key]);
+            Write(ref result, _trackedDiscardedTraitors[key]);
         }
 
         //Spice blow card
         Write(ref result, TrackedSpiceCard);
 
         //Discarded treachery cards
-        Write(ref result, discardedCards.Count);
-        foreach (var card in discardedCards) Write(ref result, card);
+        Write(ref result, _discardedCards.Count);
+        foreach (var card in _discardedCards) Write(ref result, card);
 
         return result;
     }
 
     public static GreenIntelligence Parse(IGameService client, string data)
     {
-        var elts = data.Split(';');
+        var elements = data.Split(';');
         var elt = 0;
 
         try
@@ -185,32 +180,32 @@ public class GreenIntelligence
             foreach (var faction in result.TrackedTreacheryCards.Keys.ToList())
             foreach (var cardNumber in result.TrackedTreacheryCards[faction].Keys.ToList())
             {
-                var cardID = int.Parse(elts[elt++]);
-                result.TrackedTreacheryCards[faction][cardNumber] = cardID;
+                var cardId = int.Parse(elements[elt++]);
+                result.TrackedTreacheryCards[faction][cardNumber] = cardId;
             }
 
             //Traitors
-            var count = int.Parse(elts[elt++]);
+            var count = int.Parse(elements[elt++]);
             for (var i = 0; i < count; i++)
             {
-                var faction = Enum.Parse<Faction>(elts[elt++]);
-                var cardNumber = int.Parse(elts[elt++]);
-                var traitorID = int.Parse(elts[elt++]);
-                result.ChangeSelectedTraitor(faction, cardNumber, traitorID);
+                var faction = Enum.Parse<Faction>(elements[elt++]);
+                var cardNumber = int.Parse(elements[elt++]);
+                var traitorId = int.Parse(elements[elt++]);
+                result.ChangeSelectedTraitor(faction, cardNumber, traitorId);
             }
 
             //Discarded traitors
-            count = int.Parse(elts[elt++]);
-            for (var i = 0; i < count; i++) result.ChangeDiscardedTraitor(int.Parse(elts[elt++]), int.Parse(elts[elt++]));
+            count = int.Parse(elements[elt++]);
+            for (var i = 0; i < count; i++) result.ChangeDiscardedTraitor(int.Parse(elements[elt++]), int.Parse(elements[elt++]));
 
             //Spice blow card
-            result.TrackedSpiceCard = elts[elt++];
+            result.TrackedSpiceCard = elements[elt++];
 
             //Discarded treachery cards
-            if (elt < elts.Length)
+            if (elt < elements.Length)
             {
-                count = int.Parse(elts[elt++]);
-                for (var i = 0; i < count; i++) result.discardedCards.Add(int.Parse(elts[elt++]));
+                count = int.Parse(elements[elt++]);
+                for (var i = 0; i < count; i++) result._discardedCards.Add(int.Parse(elements[elt++]));
             }
 
             return result;

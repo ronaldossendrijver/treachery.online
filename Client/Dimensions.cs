@@ -11,7 +11,7 @@ namespace Treachery.Client;
 
 public class Dimensions
 {
-    public float Width { get; set; }
+    public float Width { get; init; }
 
-    public float Height { get; set; }
+    public float Height { get; init; }
 }
