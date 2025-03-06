@@ -111,8 +111,6 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
         {
             var player = Player;
             var ambassador = GetAmbassador(Game);
-            var victim = GetVictim(Game);
-            var victimPlayer = Game.GetPlayer(victim);
 
             if (ambassador == Ambassador.Blue)
             {
@@ -129,7 +127,9 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
                 case Ambassador.Pink:
                     if (PinkOfferAlliance && !AllianceCanBeOffered(Game, player)) return Message.Express("You can't offer an alliance");
                     if (PinkTakeVidal && !VidalCanBeTaken(Game, Player)) return Message.Express("You can't take ", Game.Vidal);
+                    if (PinkOfferAlliance && PinkGiveVidalToAlly && !VidalCanBeOfferedToNewAlly(Game, player)) return Message.Express("You can't offer ", Game.Vidal, " to your ally");
                     if (Game.Version >= 167 && PinkTakeVidal && PinkGiveVidalToAlly) return Message.Express("You don't have ", Game.Vidal, " yet");
+                    if (Game.Version >= 176 && PinkTakeVidal && PinkOfferAlliance) return Message.Express("You can't both take ", Game.Vidal, " AND offer an alliance");
                     break;
 
                 case Ambassador.Yellow:
@@ -195,7 +195,7 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
     
     public static bool VidalCanBeOfferedToNewAlly(Game g, Player p)
     {
-        return g.VidalIsAlive && p.Has(g.Vidal);
+        return g.VidalIsAlive;
     }
 
     public static bool VidalCanBeTaken(Game g, Player p)

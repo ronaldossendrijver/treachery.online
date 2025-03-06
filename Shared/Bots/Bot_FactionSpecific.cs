@@ -17,18 +17,20 @@ public partial class Player
 
     private SetShipmentPermission DetermineSetShipmentPermission()
     {
-        if (Game.CurrentPhase == Phase.BeginningOfShipAndMove)
-        {
-            var toDeny = Game.ShipmentPermissions.Keys.Where(f => IsWinningOpponent(f));
-            if (toDeny.Any()) return new SetShipmentPermission(Game, Faction) { Factions = toDeny.ToArray(), Permission = ShipmentPermission.None };
+        if (Game.CurrentPhase != Phase.BeginningOfShipAndMove) 
+            return null;
+        
+        var toDeny = Game.ShipmentPermissions.Keys.Where(IsWinningOpponent).ToArray();
+        if (toDeny.Length != 0) return new SetShipmentPermission(Game, Faction) { Factions = toDeny.ToArray(), Permission = ShipmentPermission.None };
 
-            var discountPermission = Resources > 10 || WinningOpponentsIWishToAttack(99, true).Any() ? ShipmentPermission.OrangeRate : ShipmentPermission.None;
-            var permission = ShipmentPermission.Cross | ShipmentPermission.ToHomeworld | discountPermission;
-            var toAllow = SetShipmentPermission.ValidTargets(Game, this).Where(f => !IsWinningOpponent(f) && (!Game.ShipmentPermissions.TryGetValue(f, out var currentpermission) || currentpermission != permission));
-            if (toAllow.Any()) return new SetShipmentPermission(Game, Faction) { Factions = toAllow.ToArray(), Permission = permission };
-        }
-
-        return null;
+        var discountPermission = Resources > 10 || WinningOpponentsIWishToAttack(99, true).Any() ? ShipmentPermission.OrangeRate : ShipmentPermission.None;
+        var permission = ShipmentPermission.Cross | ShipmentPermission.ToHomeworld | discountPermission;
+        var toAllow = SetShipmentPermission.ValidTargets(Game, this)
+            .Where(f => !IsWinningOpponent(f) && (!Game.ShipmentPermissions.TryGetValue(f, out var currentPermission) || currentPermission != permission))
+            .ToArray();
+        return toAllow.Length != 0 
+            ? new SetShipmentPermission(Game, Faction) { Factions = toAllow.ToArray(), Permission = permission } 
+            : null;
     }
 
     #endregion
@@ -85,7 +87,7 @@ public partial class Player
         return new GreyRemovedCardFromAuction(Game, Faction) { Card = toBeRemoved, PutOnTop = putOnTop };
     }
 
-    protected GreySwappedCardOnBid DetermineGreySwappedCardOnBid()
+    private GreySwappedCardOnBid DetermineGreySwappedCardOnBid()
     {
         var card = TreacheryCards.LowestOrDefault(c => CardQuality(c, this));
 
@@ -94,7 +96,7 @@ public partial class Player
         return new GreySwappedCardOnBid(Game, Faction) { Passed = true };
     }
 
-    protected GreySelectedStartingCard DetermineGreySelectedStartingCard()
+    private GreySelectedStartingCard DetermineGreySelectedStartingCard()
     {
         var cards = Game.StartingTreacheryCards.Items;
 
@@ -107,18 +109,18 @@ public partial class Player
         if (card == null && cards.Any(c => c.IsProjectileWeapon) && !cards.Any(c => c.IsProjectileDefense)) card = cards.FirstOrDefault(c => c.IsProjectileWeapon);
 
         card ??= cards.FirstOrDefault(c => c.Type == TreacheryCardType.WeirdingWay);
-        card ??= card = cards.FirstOrDefault(c => c.Type == TreacheryCardType.Chemistry);
-        card ??= card = cards.FirstOrDefault(c => c.IsProjectileWeapon);
-        card ??= card = cards.FirstOrDefault(c => c.IsPoisonWeapon);
-        card ??= card = cards.FirstOrDefault(c => c.IsProjectileDefense);
-        card ??= card = cards.FirstOrDefault(c => c.IsPoisonDefense);
-        card ??= card = cards.FirstOrDefault(c => c.Type != TreacheryCardType.Useless);
-        card ??= card = cards.FirstOrDefault();
+        card ??= cards.FirstOrDefault(c => c.Type == TreacheryCardType.Chemistry);
+        card ??= cards.FirstOrDefault(c => c.IsProjectileWeapon);
+        card ??= cards.FirstOrDefault(c => c.IsPoisonWeapon);
+        card ??= cards.FirstOrDefault(c => c.IsProjectileDefense);
+        card ??= cards.FirstOrDefault(c => c.IsPoisonDefense);
+        card ??= cards.FirstOrDefault(c => c.Type != TreacheryCardType.Useless);
+        card ??= cards.FirstOrDefault();
 
         return new GreySelectedStartingCard(Game, Faction) { Card = card };
     }
 
-    protected PerformHmsMovement DeterminePerformHmsMovement()
+    private PerformHmsMovement DeterminePerformHmsMovement()
     {
         var currentLocation = Game.Map.HiddenMobileStronghold.AttachedToLocation;
 
@@ -130,11 +132,11 @@ public partial class Player
         var richestReachableSpiceLocation = reachableFromCurrentLocation.Where(l => l != currentLocation && ResourcesIn(l) > 0).HighestOrDefault(l => ResourcesIn(l));
         if (richestReachableSpiceLocation != null)
         {
-            var nextStepTowardsSpice = PerformHmsMovement.ValidLocations(Game).Where(l => WithinDistance(l, richestReachableSpiceLocation, 1)).FirstOrDefault();
+            var nextStepTowardsSpice = PerformHmsMovement.ValidLocations(Game).FirstOrDefault(l => WithinDistance(l, richestReachableSpiceLocation, 1));
 
             if (nextStepTowardsSpice != null) return new PerformHmsMovement(Game, Faction) { Passed = false, Target = nextStepTowardsSpice };
 
-            nextStepTowardsSpice = PerformHmsMovement.ValidLocations(Game).Where(l => WithinDistance(l, richestReachableSpiceLocation, 2)).FirstOrDefault();
+            nextStepTowardsSpice = PerformHmsMovement.ValidLocations(Game).FirstOrDefault(l => WithinDistance(l, richestReachableSpiceLocation, 2));
             return new PerformHmsMovement(Game, Faction) { Passed = false, Target = nextStepTowardsSpice };
         }
 
@@ -150,17 +152,17 @@ public partial class Player
             var nextStepTowardsAlternative = PerformHmsMovement.ValidLocations(Game).FirstOrDefault(l => l == alternativeLocation);
             if (nextStepTowardsAlternative != null) return new PerformHmsMovement(Game, Faction) { Passed = false, Target = nextStepTowardsAlternative };
 
-            nextStepTowardsAlternative = PerformHmsMovement.ValidLocations(Game).Where(l => WithinDistance(l, alternativeLocation, 1)).FirstOrDefault();
+            nextStepTowardsAlternative = PerformHmsMovement.ValidLocations(Game).FirstOrDefault(l => WithinDistance(l, alternativeLocation, 1));
             if (nextStepTowardsAlternative != null) return new PerformHmsMovement(Game, Faction) { Passed = false, Target = nextStepTowardsAlternative };
 
-            nextStepTowardsAlternative = PerformHmsMovement.ValidLocations(Game).Where(l => WithinDistance(l, alternativeLocation, 2)).FirstOrDefault();
+            nextStepTowardsAlternative = PerformHmsMovement.ValidLocations(Game).FirstOrDefault(l => WithinDistance(l, alternativeLocation, 2));
             if (nextStepTowardsAlternative != null) return new PerformHmsMovement(Game, Faction) { Passed = false, Target = nextStepTowardsAlternative };
         }
 
         return new PerformHmsMovement(Game, Faction) { Passed = true };
     }
 
-    protected PerformHmsPlacement DeterminePerformHmsPlacement()
+    private PerformHmsPlacement DeterminePerformHmsPlacement()
     {
         if (Faction == Faction.Grey)
         {
@@ -176,7 +178,7 @@ public partial class Player
 
     #region Yellow
 
-    protected TakeLosses DetermineTakeLosses()
+    private TakeLosses DetermineTakeLosses()
     {
         var normalForces = Math.Min(TakeLosses.LossesToTake(Game).Amount, TakeLosses.ValidMaxForceAmount(Game, this));
         var specialForces = TakeLosses.LossesToTake(Game).Amount - normalForces;
@@ -184,7 +186,7 @@ public partial class Player
         return new TakeLosses(Game, Faction) { ForceAmount = normalForces, SpecialForceAmount = specialForces, UseUselessCard = useUseless };
     }
 
-    protected PerformYellowSetup DeterminePerformYellowSetup()
+    private PerformYellowSetup DeterminePerformYellowSetup()
     {
         var forceLocations = new Dictionary<Location, Battalion>
         {
@@ -390,8 +392,8 @@ public partial class Player
         if (Game.CurrentBattle.IsAggressorOrDefender(this))
         {
             voicePlan = BestVoice(Game.CurrentBattle, this, Game.CurrentBattle.OpponentOf(Faction));
-            LogInfo(voicePlan.voice.GetMessage());
-            return voicePlan.voice;
+            LogInfo(voicePlan.Voice.GetMessage());
+            return voicePlan.Voice;
         }
 
         return null;
@@ -401,18 +403,18 @@ public partial class Player
     {
         var result = new VoicePlan
         {
-            battle = battle,
-            playerHeroWillCertainlySurvive = false,
-            opponentHeroWillCertainlyBeZero = false
+            Battle = battle,
+            PlayerHeroWillCertainlySurvive = false,
+            OpponentHeroWillCertainlyBeZero = false
         };
 
         if (WinWasPredictedByMeThisTurn(opponent.Faction))
         {
-            result.weaponToUse = null;
-            result.defenseToUse = null;
-            result.voice = new Voice(Game, Faction) { Must = true, Type = TreacheryCardType.Laser };
-            result.opponentHeroWillCertainlyBeZero = true;
-            result.playerHeroWillCertainlySurvive = true;
+            result.WeaponToUse = null;
+            result.DefenseToUse = null;
+            result.Voice = new Voice(Game, Faction) { Must = true, Type = TreacheryCardType.Laser };
+            result.OpponentHeroWillCertainlyBeZero = true;
+            result.PlayerHeroWillCertainlySurvive = true;
         }
 
         var knownOpponentDefenses = KnownOpponentDefenses(opponent);
@@ -420,10 +422,10 @@ public partial class Player
         var nrOfUnknownOpponentCards = NrOfUnknownOpponentCards(opponent);
 
         var weapons = Weapons(null, null, null).Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth);
-        result.weaponToUse = weapons.FirstOrDefault(w => w.Type == TreacheryCardType.ProjectileAndPoison); //use poisonblade if available
-        result.weaponToUse ??= weapons.FirstOrDefault(w => w.Type == TreacheryCardType.Laser); //use lasgun if available
-        result.weaponToUse ??= weapons.FirstOrDefault(w => Game.KnownCards(this).Contains(w)); //use a known weapon if available
-        result.weaponToUse ??= weapons.FirstOrDefault(); //use any weapon
+        result.WeaponToUse = weapons.FirstOrDefault(w => w.Type == TreacheryCardType.ProjectileAndPoison); //use poisonblade if available
+        result.WeaponToUse ??= weapons.FirstOrDefault(w => w.Type == TreacheryCardType.Laser); //use lasgun if available
+        result.WeaponToUse ??= weapons.FirstOrDefault(w => Game.KnownCards(this).Contains(w)); //use a known weapon if available
+        result.WeaponToUse ??= weapons.FirstOrDefault(); //use any weapon
 
         var type = TreacheryCardType.None;
         var must = false;
@@ -432,12 +434,12 @@ public partial class Player
 
         var cardsPlayerHasOrMightHave = CardsPlayerHasOrMightHave(opponent);
 
-        if (opponentMightHaveDefenses && result.weaponToUse != null)
+        if (opponentMightHaveDefenses && result.WeaponToUse != null)
         {
-            result.opponentHeroWillCertainlyBeZero = true;
+            result.OpponentHeroWillCertainlyBeZero = true;
 
             //opponent might have defenses and player has a weapon. Use voice to disable the corresponding defense, if possible by forcing use of the wrong defense and otherwise by forcing not to use the correct defense.
-            if (result.weaponToUse.Type == TreacheryCardType.ProjectileAndPoison)
+            if (result.WeaponToUse.Type == TreacheryCardType.ProjectileAndPoison)
             {
                 var uselessDefense = knownOpponentDefenses.FirstOrDefault(d => d.Type != TreacheryCardType.ShieldAndAntidote);
                 if (uselessDefense != null)
@@ -451,7 +453,7 @@ public partial class Player
                     type = TreacheryCardType.ShieldAndAntidote;
                 }
             }
-            else if (result.weaponToUse.IsLaser)
+            else if (result.WeaponToUse.IsLaser)
             {
                 var uselessDefense = knownOpponentDefenses.FirstOrDefault(d => d.IsPoisonDefense && !d.IsShield);
                 if (uselessDefense != null)
@@ -465,7 +467,7 @@ public partial class Player
                     type = TreacheryCardType.Shield;
                 }
             }
-            else if (result.weaponToUse.IsProjectileWeapon)
+            else if (result.WeaponToUse.IsProjectileWeapon)
             {
                 var uselessDefense = knownOpponentDefenses.FirstOrDefault(d => d.IsPoisonDefense && !d.IsProjectileDefense);
                 if (uselessDefense != null)
@@ -489,7 +491,7 @@ public partial class Player
                     else if (cardsPlayerHasOrMightHave.Any(c => c.Type == TreacheryCardType.Shield)) type = TreacheryCardType.Shield;
                 }
             }
-            else if (result.weaponToUse.IsPoisonWeapon)
+            else if (result.WeaponToUse.IsPoisonWeapon)
             {
                 var uselessDefense = knownOpponentDefenses.FirstOrDefault(d => d.IsProjectileDefense && !d.IsProjectileDefense);
                 if (uselessDefense != null)
@@ -519,7 +521,7 @@ public partial class Player
                 }
             }
 
-            LogInfo("Using {0}, disable enemy defense: {1} {2}", result.weaponToUse, must ? "must use" : "may not use", type);
+            LogInfo("Using {0}, disable enemy defense: {1} {2}", result.WeaponToUse, must ? "must use" : "may not use", type);
         }
 
         if (type == TreacheryCardType.None)
@@ -527,19 +529,19 @@ public partial class Player
             var opponentMightHaveWeapons = !(knownOpponentWeapons.Any() && nrOfUnknownOpponentCards == 0);
 
             //I have no weapon or the opponent has no defense. Focus on disabling their weapon.
-            DetermineBestDefense(opponent, null, out result.defenseToUse);
+            DetermineBestDefense(opponent, null, out result.DefenseToUse);
 
-            if (opponentMightHaveWeapons && result.defenseToUse != null)
+            if (opponentMightHaveWeapons && result.DefenseToUse != null)
             {
                 //opponent might have weapons and player has a defense. Use voice to disable the corresponding weapon, if possible by forcing use of the wrong weapon and otherwise by forcing not to use the correct weapon.
-                if (result.defenseToUse.Type == TreacheryCardType.ShieldAndAntidote)
+                if (result.DefenseToUse.Type == TreacheryCardType.ShieldAndAntidote)
                 {
                     var uselessWeapon = knownOpponentWeapons.FirstOrDefault(w => w.Type != TreacheryCardType.Laser && w.Type != TreacheryCardType.PoisonTooth && w.Type != TreacheryCardType.Rockmelter);
                     if (uselessWeapon != null)
                     {
                         must = true;
                         type = uselessWeapon.Type;
-                        result.playerHeroWillCertainlySurvive = true;
+                        result.PlayerHeroWillCertainlySurvive = true;
                     }
                     else if (knownOpponentWeapons.Any(w => w.Type == TreacheryCardType.PoisonTooth))
                     {
@@ -557,28 +559,28 @@ public partial class Player
                         type = TreacheryCardType.Rockmelter;
                     }
 
-                    LogInfo("Using {0}, disable enemy weapon: {1} {2}", result.defenseToUse, must ? "must use" : "may not use", type);
+                    LogInfo("Using {0}, disable enemy weapon: {1} {2}", result.DefenseToUse, must ? "must use" : "may not use", type);
                 }
-                else if (result.defenseToUse.IsProjectileDefense)
+                else if (result.DefenseToUse.IsProjectileDefense)
                 {
                     var uselessWeapon = knownOpponentWeapons.FirstOrDefault(w => w.IsProjectileWeapon && !w.IsPoisonWeapon);
                     if (uselessWeapon != null)
                     {
                         must = true;
                         type = uselessWeapon.Type;
-                        result.playerHeroWillCertainlySurvive = true;
+                        result.PlayerHeroWillCertainlySurvive = true;
                     }
                     else if (knownOpponentWeapons.Any(w => w.Type == TreacheryCardType.Laser))
                     {
                         must = false;
                         type = TreacheryCardType.Laser;
-                        result.playerHeroWillCertainlySurvive = nrOfUnknownOpponentCards == 0;
+                        result.PlayerHeroWillCertainlySurvive = nrOfUnknownOpponentCards == 0;
                     }
                     else if (knownOpponentWeapons.Any(w => w.Type == TreacheryCardType.PoisonTooth))
                     {
                         must = false;
                         type = TreacheryCardType.PoisonTooth;
-                        result.playerHeroWillCertainlySurvive = nrOfUnknownOpponentCards == 0;
+                        result.PlayerHeroWillCertainlySurvive = nrOfUnknownOpponentCards == 0;
                     }
                     else
                     {
@@ -597,28 +599,28 @@ public partial class Player
                         }
                     }
 
-                    LogInfo("Using {0}, disable enemy weapon: {1} {2}", result.defenseToUse, must ? "must use" : "may not use", type);
+                    LogInfo("Using {0}, disable enemy weapon: {1} {2}", result.DefenseToUse, must ? "must use" : "may not use", type);
                 }
-                else if (result.defenseToUse.IsPoisonDefense)
+                else if (result.DefenseToUse.IsPoisonDefense)
                 {
                     var uselessWeapon = knownOpponentWeapons.FirstOrDefault(w => !w.IsProjectileWeapon && w.IsPoisonWeapon);
                     if (uselessWeapon != null)
                     {
                         must = true;
                         type = uselessWeapon.Type;
-                        result.playerHeroWillCertainlySurvive = true;
+                        result.PlayerHeroWillCertainlySurvive = true;
                     }
                     else if (knownOpponentWeapons.Any(w => w.Type == TreacheryCardType.Laser))
                     {
                         must = false;
                         type = TreacheryCardType.Laser;
-                        result.playerHeroWillCertainlySurvive = nrOfUnknownOpponentCards == 0;
+                        result.PlayerHeroWillCertainlySurvive = nrOfUnknownOpponentCards == 0;
                     }
                     else if (knownOpponentWeapons.Any(w => w.Type == TreacheryCardType.PoisonTooth))
                     {
                         must = false;
                         type = TreacheryCardType.PoisonTooth;
-                        result.playerHeroWillCertainlySurvive = nrOfUnknownOpponentCards == 0;
+                        result.PlayerHeroWillCertainlySurvive = nrOfUnknownOpponentCards == 0;
                     }
                     else if (cardsPlayerHasOrMightHave.Any(c => c.IsProjectileWeapon))
                     {
@@ -626,7 +628,7 @@ public partial class Player
                         type = TreacheryCardType.Projectile;
                     }
 
-                    LogInfo("Using {0}, disable enemy weapon: {1} {2}", result.defenseToUse, must ? "must use" : "may not use", type);
+                    LogInfo("Using {0}, disable enemy weapon: {1} {2}", result.DefenseToUse, must ? "must use" : "may not use", type);
                 }
             }
         }
@@ -659,7 +661,7 @@ public partial class Player
         }
 
         var voice = new Voice(Game, player.Faction) { Must = must, Type = type };
-        result.voice = voice;
+        result.Voice = voice;
 
         return result;
     }
@@ -1052,7 +1054,6 @@ public partial class Player
 
     protected virtual AmbassadorActivated DetermineAmbassadorActivated()
     {
-        var victim = AmbassadorActivated.GetVictim(Game);
         var victimPlayer = AmbassadorActivated.GetVictimPlayer(Game);
         var ambassador = AmbassadorActivated.GetAmbassador(Game);
         var blueSelectedAmbassador = Ambassador.None;
@@ -1067,18 +1068,21 @@ public partial class Player
         switch (ambassador)
         {
             case Ambassador.Brown:
-                var toDiscard = AmbassadorActivated.GetValidBrownCards(this).Where(c => CardQuality(c, this) < 2);
+                var toDiscard = AmbassadorActivated.GetValidBrownCards(this).Where(c => CardQuality(c, this) < 2).ToArray();
                 if (toDiscard.Any())
                     return new AmbassadorActivated(Game, Faction) { BlueSelectedAmbassador = blueSelectedAmbassador, BrownCards = toDiscard };
                 return PassAmbassadorActivated();
 
             case Ambassador.Pink:
                 var offerAlliance = AmbassadorActivated.AllianceCanBeOffered(Game, this) && PlayerStanding(victimPlayer) > 0.33 * PlayerStanding(this);
-                var takeVidal = AmbassadorActivated.VidalCanBeTaken(Game, this);
-                var offerVidal = offerAlliance && AmbassadorActivated.VidalCanBeOfferedToNewAlly(Game, this) && takeVidal && HeroesForBattle(this, true).Count() >= 3 && HeroesForBattle(victimPlayer, true).Count() < 3;
+                var takeVidal = !offerAlliance && AmbassadorActivated.VidalCanBeTaken(Game, this);
+                var offerVidal = offerAlliance && AmbassadorActivated.VidalCanBeOfferedToNewAlly(Game, this) &&
+                                 HeroesForBattle(this, true).Count() >= 3 &&
+                                 HeroesForBattle(victimPlayer, true).Count() < 3;
 
-                if (offerAlliance || takeVidal || offerVidal)
+                if (offerAlliance || takeVidal)
                     return new AmbassadorActivated(Game, Faction) { BlueSelectedAmbassador = blueSelectedAmbassador, PinkOfferAlliance = offerAlliance, PinkTakeVidal = takeVidal, PinkGiveVidalToAlly = offerVidal };
+                
                 return PassAmbassadorActivated();
 
             case Ambassador.Yellow:
@@ -1122,10 +1126,10 @@ public partial class Player
 
                 var potentialTargets = AmbassadorActivated.ValidOrangeTargets(Game, this).Where(l => l.IsStronghold);
 
-                var dangerousOpponents = Opponents.Where(p => IsAlmostWinningOpponent(p));
+                var dangerousOpponents = Opponents.Where(IsAlmostWinningOpponent).ToArray();
 
                 var possibleAttacks = potentialTargets
-                    .Where(l => !dangerousOpponents.Any() || dangerousOpponents.Any(p => p.Occupies(l)))
+                    .Where(l => dangerousOpponents.Length == 0 || dangerousOpponents.Any(p => p.Occupies(l)))
                     .Where(l => l.Territory.IsStronghold && AnyForcesIn(l) == 0 && AllyDoesntBlock(l.Territory) && !StormWillProbablyHit(l) && !InStorm(l) && IDontHaveAdvisorsIn(l))
                     .Select(l => ConstructAttack(l, 0, 0, 4))
                     .Where(s => s.ForcesToShip <= 4 && s.HasOpponent && !WinWasPredictedByMeThisTurn(s.Opponent.Faction));
@@ -1213,10 +1217,10 @@ public partial class Player
 
 public class VoicePlan
 {
-    public BattleInitiated battle;
-    public Voice voice;
-    public TreacheryCard weaponToUse;
-    public TreacheryCard defenseToUse;
-    public bool playerHeroWillCertainlySurvive;
-    public bool opponentHeroWillCertainlyBeZero;
+    public BattleInitiated Battle;
+    public Voice Voice;
+    public TreacheryCard WeaponToUse;
+    public TreacheryCard DefenseToUse;
+    public bool PlayerHeroWillCertainlySurvive;
+    public bool OpponentHeroWillCertainlyBeZero;
 }

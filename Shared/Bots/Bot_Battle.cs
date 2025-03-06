@@ -172,7 +172,7 @@ public partial class Player
 
         var forcesAvailable = Battle.MaxForces(Game, this, false);
         var specialForcesAvailable = Battle.MaxForces(Game, this, true);
-        var voice = voicePlan != null && voicePlan.battle == Game.CurrentBattle ? voicePlan : null;
+        var voice = voicePlan != null && voicePlan.Battle == Game.CurrentBattle ? voicePlan : null;
 
         var dialNeeded = GetDialNeededForBattle(
             this,
@@ -555,10 +555,10 @@ public partial class Player
             return 1;
         }
 
-        if (voicePlan != null && voicePlan.defenseToUse != null)
+        if (voicePlan != null && voicePlan.DefenseToUse != null)
         {
-            mostEffectiveDefense = voicePlan.defenseToUse;
-            return voicePlan.playerHeroWillCertainlySurvive ? 1 : 0.5f;
+            mostEffectiveDefense = voicePlan.DefenseToUse;
+            return voicePlan.PlayerHeroWillCertainlySurvive ? 1 : 0.5f;
         }
 
         var availableDefenses = Defenses(chosenWeapon, Game.CurrentBattle?.Territory).Where(def =>
@@ -747,10 +747,10 @@ public partial class Player
             return 0f;
         }
 
-        if (voicePlan != null && voicePlan.weaponToUse != null)
+        if (voicePlan != null && voicePlan.WeaponToUse != null)
         {
-            mostEffectiveWeapon = voicePlan.weaponToUse;
-            return voicePlan.opponentHeroWillCertainlyBeZero ? 1 : 0.5f;
+            mostEffectiveWeapon = voicePlan.WeaponToUse;
+            return voicePlan.OpponentHeroWillCertainlyBeZero ? 1 : 0.5f;
         }
 
         var availableWeapons = Weapons(null, null, null).Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth && w.Type != TreacheryCardType.Rockmelter && w.Type != TreacheryCardType.HarassAndWithdraw && w.Type != TreacheryCardType.Recruits)
