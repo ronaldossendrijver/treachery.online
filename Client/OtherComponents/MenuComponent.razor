@@ -20,7 +20,7 @@
             </a>
         </div>
         
-        if (Client.IsHost || Client.PlayerName == Client.ServerInfo.AdminName)
+        if (Client.IsHost || Client.UserName == Client.ServerInfo.AdminName)
         {
             <div class="col col-xs-auto p-0">
             <a class="btn btn-link p-1" title="Save game..." @onclick="Save">
