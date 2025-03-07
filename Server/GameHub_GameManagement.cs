@@ -526,7 +526,7 @@ public partial class GameHub
                 var lastActiveGameThreshold = DateTimeOffset.Now.AddMinutes(-ActiveGameThresholdMinutes);
                 var filteredServerStatus = new ServerStatus
                 {
-                    RunningGames = RunningGames.Where(mg => mg.LastActivity >= lastActiveGameThreshold).ToArray(),
+                    RunningGames = RunningGames.Where(mg => mg.LastActivity >= lastActiveGameThreshold || mg.YouAreIn(userId)).ToArray(),
                     OwnGames = RunningGames.Where(mg => mg.CreatorId == userId).ToArray(),
                     ScheduledGames = ScheduledGames,
                     RecentlySeenUsers = RecentlySeenUsers,

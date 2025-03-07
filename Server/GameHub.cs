@@ -41,7 +41,18 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
 
     private TreacheryContext GetDbContext() => new(DbContextOptions, Configuration);
 
-    private static string GenerateToken() => Convert.ToBase64String(Guid.NewGuid().ToByteArray())[..16];
+    
+    private static readonly char[] TokenChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".ToCharArray();
+    private static readonly Random TokenRandom = new();
+    private static string GenerateToken() 
+    {
+        var result = new char[16];
+        for (var i = 0; i < 16; i++)
+        {
+            result[i] = TokenChars[TokenRandom.Next(TokenChars.Length)];
+        }
+        return new string(result);
+    }
     
     private static VoidResult Error(ErrorType error, string errorDetails = "") 
         => new() { Error = error, ErrorDetails = errorDetails, Success = false }; 

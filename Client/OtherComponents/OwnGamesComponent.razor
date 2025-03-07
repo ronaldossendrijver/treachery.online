@@ -62,9 +62,9 @@
                                     </div>
                                 </td>
                                 <td class="w-25">
-                                    @av.LastActivity?.DateTime.ToShortDateString() @av.LastActivity?.DateTime.ToShortTimeString()
+                                    @av.LastActivity?.DateTime.ToLocalTime().ToString("dd-MM HH:mm")
                                 </td>
-                                <td class="w-25">
+                                <td class="w-25" style="text-align: right;">
                                     @if (av.YouAreIn(Client.UserId))
                                     {
                                         <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" MarginClass="m-1">Resume</CommandButton>
@@ -110,7 +110,7 @@
                                         }
                                     </div>
                                 </td>
-                                <td class="w-20">
+                                <td class="w-20" style="text-align: right;">
                                     @foreach (var p in game.Subscribers.Where(u => u.Value != SubscriptionType.DontParticipate))
                                     {
                                         <div class="me-1">

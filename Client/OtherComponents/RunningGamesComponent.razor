@@ -25,7 +25,7 @@
             if (Client.ActiveGamesWithOpenSeats.Any())
             {
                 <div class="text-info">Games with open seats (that you can join)</div>
-                <table class="table table-sm">
+                <table class="table table-sm table-running-games">
                     <tbody>
                     @foreach (var av in Client.ActiveGamesWithOpenSeats)
                     {
@@ -35,24 +35,24 @@
                         var fontColorStyle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20 ? "color:grey" : "color:white";
 
                         <tr class="small table-dark">
-                            <td class="w-20" style="@fontColorStyle">
+                            <td style="@fontColorStyle">
                                 <span style="font: normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif;">@av.Name</span>
                             </td>
                             <td style="@fontColorStyle">
                                 @if (av.Phase == Phase.AwaitingPlayers)
                                 {
                                     <div>
-                                        <UserIcon Size="20" Title="Players" MarginClass=""/><span class="me-1">@av.NrOfPlayers</span> (of @av.MaxPlayers)
+                                        <UserIcon Size="20" Title="Players" MarginClass=""/><span class="me-1">@(av.NrOfPlayers)/@av.MaxPlayers</span>
                                     </div>
                                 }
                                 else
                                 {
-                                    <div>
+                                    <div style="display: inline-block;">
                                         <UserIcon Size="20" Title="Players" MarginClass=""/><span class="me-1">@av.NrOfPlayers</span>
                                     </div>
                                     @if (av.NrOfBots > 0)
                                     {
-                                        <div><BotIcon Size="16" Title="Bots" MarginClass="me-1"/><span>@av.NrOfBots</span></div>
+                                        <div style="display: inline-block;"><BotIcon Size="16" Title="Bots" MarginClass="me-1"/><span>@av.NrOfBots</span></div>
                                     }
                                 }
                             </td>
@@ -76,7 +76,7 @@
                                     </div>
                                 }
                             </td>
-                            <td class="w-30">
+                            <td>
                                 @if (!av.YouAreIn(Client.UserId))
                                 {
                                     if (av.HasPassword)
@@ -116,7 +116,7 @@
             if (Client.ScheduledGames.Any())
             {
                 <div class="text-info">Scheduled games</div>
-                <table class="table table-sm">
+                <table class="table table-sm table-scheduled-games">
                         <thead>
                         <tr class="small table-dark">
                             <th scope="col">Host</th>
@@ -130,31 +130,31 @@
                         @foreach (var game in Client.ScheduledGames)
                         {
                             <tr class="small table-dark">
-                                <td class="w-20">
+                                <td>
                                     <span style="font: normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif;">@game.CreatorName</span>
                                 </td>
-                                <td class="w-20">
+                                <td>
                                     @game.DateTime.ToLocalTime().ToString("dd-MM HH:mm")
                                 </td>
-                                <td class="w-30">
+                                <td>
                                     <div>
                                         @Name(game.Ruleset), @game.NumberOfPlayers players, @game.MaximumTurns turns
+                                        @if (game.AllowedFactionsInPlay.Count == 12)
+                                        {
+                                            <span> (all factions)</span>
+                                        }
+                                        else
+                                        {
+                                            <div>
+                                                @foreach (var f in game.AllowedFactionsInPlay)
+                                                {
+                                                    <Image Shown="f" Width="20" Shadow=""/>
+                                                }
+                                            </div>
+                                        }
                                     </div>
-                                    @if (game.AllowedFactionsInPlay.Count == 12)
-                                    {
-                                        <span> (all factions)</span>
-                                    }
-                                    else
-                                    {
-                                        <div>
-                                            @foreach (var f in game.AllowedFactionsInPlay)
-                                            {
-                                                <Image Shown="f" Width="20" Shadow=""/>
-                                            }
-                                        </div>
-                                    }
                                 </td>
-                                <td class="w-25">
+                                <td>
                                     @foreach (var p in game.Subscribers.Where(u => u.Value != SubscriptionType.DontParticipate))
                                     {
                                         <div class="me-1">
@@ -163,7 +163,7 @@
                                         </div>
                                     }                                    
                                 </td>
-                                <td class="w-5">
+                                <td>
                                     <SubscribeComponent ScheduledGame="@game"/>
                                 </td>
                             </tr>
@@ -174,7 +174,7 @@
             if (Client.ActiveGamesWithoutOpenSeats.Any())
             {
                 <div class="text-info">Games without open seats</div>
-                <table class="table table-sm">
+                <table class="table table-sm table-running-games">
                     <tbody>
                     @foreach (var av in Client.ActiveGamesWithoutOpenSeats)
                     {
@@ -184,16 +184,16 @@
                         var fontColorStyle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20 ? "color:grey" : "color:white";
 
                         <tr class="small table-dark">
-                            <td class="w-20" style="@fontColorStyle">
+                            <td style="@fontColorStyle">
                                 <span style="font: normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif;">@av.Name</span>
                             </td>
                             <td style="@fontColorStyle">
-                                <div>
+                                <div style="display: inline-block;">
                                     <UserIcon Size="20" Title="Players" MarginClass=""/><span class="me-1">@av.NrOfPlayers</span>
                                 </div>
                                 @if (av.NrOfBots > 0)
                                 {
-                                    <div><BotIcon Size="16" Title="Bots" MarginClass="me-1"/><span>@av.NrOfBots</span></div>
+                                    <div style="display: inline-block;"><BotIcon Size="16" Title="Bots" MarginClass="me-1"/><span>@av.NrOfBots</span></div>
                                 }
                             </td>
                             <td style="@fontColorStyle">
@@ -218,7 +218,7 @@
                                     </div>
                                 }
                             </td>
-                            <td class="w-30">
+                            <td>
                                 @if (!av.YouAreIn(Client.UserId))
                                 {
                                     <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, Passwords[av.GameId]))" MarginClass="m-1">Observe</CommandButton>
