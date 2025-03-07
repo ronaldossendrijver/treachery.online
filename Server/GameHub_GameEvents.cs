@@ -6,7 +6,7 @@ public partial class GameHub
 {
     public async Task<VoidResult> RequestEstablishPlayers(string userToken, string gameId, EstablishPlayers e)
     {
-        if (!AreValid(userToken, gameId, out var user, out var game, out var error))
+        if (!AreValid(userToken, gameId, out _, out var game, out var error))
             return error;
         
         await ProcessGameEvent(userToken, gameId, e);
@@ -223,8 +223,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
         
-        var botDelay = DetermineBotDelay(game.Game.CurrentMainPhase, e);
-        _ = Task.Delay(botDelay).ContinueWith(_ => PerformBotEvent(game));
+        PerformBotEvent(game);
         
         return Success();
     }
@@ -290,7 +289,7 @@ public partial class GameHub
 
                 var userToken = UsersByUserToken.FirstOrDefault(tokenAndUser => tokenAndUser.Value.Id == userId).Key;
 
-                var link = userToken == default
+                var link = userToken == null
                     ? "Join game at: <a href=\"https://treachery.online/\">https://treachery.online/</a>"
                     : $"Jump to game: <a href=\"https://treachery.online/{userToken}/{game.GameId}\">https://treachery.online/</a>";
 
@@ -313,27 +312,68 @@ public partial class GameHub
         }
     }
 
-    private async Task PerformBotEvent(ManagedGame managedGame)
+    private void PerformBotEvent(ManagedGame managedGame)
     {
+        if (managedGame.BotEventIsScheduled)
+            return;
+
+        managedGame.BotEventIsScheduled = true;
+        
+        _ = Task.Delay(DetermineBotDelay(managedGame.Game.CurrentMainPhase, managedGame.Game.LatestEvent()))
+            .ContinueWith(_ => PerformBotEventAfterDelay(managedGame));
+    }
+
+    private async Task PerformBotEventAfterDelay(ManagedGame managedGame)
+    {
+        managedGame.BotEventIsScheduled = false;
         var game = managedGame.Game;
-        if (!managedGame.Game.Participation.BotsArePaused && game.CurrentPhase > Phase.AwaitingPlayers)
+        var botsActAsHosts = game.Participation.Hosts.Count == 0 && game.NumberOfObservers > 0;
+        
+        if (!game.Participation.BotsArePaused && game.CurrentPhase > Phase.AwaitingPlayers)
         {
             var bots = Deck<Player>.Randomize(game.Players.Where(p => p.IsBot));
+            var eventsPerBot = bots.ToDictionary(x => x.Seat, x => game.GetApplicableEvents(x, botsActAsHosts));
+
             foreach (var bot in bots)
             {
-                var events = game.GetApplicableEvents(bot, false);
-                var evt = 
-                    bot.DetermineHighestPrioInPhaseAction(events) ??
-                    bot.DetermineHighPrioInPhaseAction(events) ??
-                    bot.DetermineMiddlePrioInPhaseAction(events) ??
-                    bot.DetermineLowPrioInPhaseAction(events);
-                          
-                if (evt != null)
+                var evt = bot.DetermineHighestPrioInPhaseAction(eventsPerBot[bot.Seat]);
+                if (evt == null) continue;
+                await ValidateAndExecute(evt, managedGame, false);
+                return;
+            }
+            
+            foreach (var bot in bots)
+            {
+                var evt = bot.DetermineHighPrioInPhaseAction(eventsPerBot[bot.Seat]);
+                if (evt == null) continue;
+                await ValidateAndExecute(evt, managedGame, false);
+                return;
+            }
+            
+            foreach (var bot in bots)
+            {
+                var evt = bot.DetermineMiddlePrioInPhaseAction(eventsPerBot[bot.Seat]);
+                if (evt == null) continue;
+                await ValidateAndExecute(evt, managedGame, false);
+                return;
+            }
+            
+            foreach (var bot in bots)
+            {
+                var evt = bot.DetermineLowPrioInPhaseAction(eventsPerBot[bot.Seat]);
+                if (evt == null) continue;
+                await ValidateAndExecute(evt, managedGame, false);
+                return;
+            }
+            
+            if (botsActAsHosts)
+                foreach (var bot in bots)
                 {
-                    await ValidateAndExecute(evt, managedGame, false);
+                    var evt = bot.DetermineEndPhaseAction(eventsPerBot[bot.Seat]);
+                    if (evt == null) continue;
+                    await ValidateAndExecute(evt, managedGame, true);
                     return;
                 }
-            }
         }
     }
     

@@ -145,16 +145,8 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
 
-        await NudgeBots(game);
+        PerformBotEvent(game);
         return Success();
-    }
-
-    private async Task NudgeBots(ManagedGame game)
-    {
-        if (!game.Game.Participation.BotsArePaused)
-        {
-            await PerformBotEvent(game);
-        }
     }
 
     public async Task<VoidResult> RequestAssignSeats(string userToken, string gameId, Dictionary<int, int> assignment)
@@ -170,7 +162,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
 
-        await NudgeBots(game);
+        PerformBotEvent(game);
         return Success();
     }
 
@@ -215,7 +207,7 @@ public partial class GameHub
         await PersistGameIfNeeded(game);
         
         if (game.Game.NumberOfPlayers == 1)
-            await NudgeBots(game);
+            PerformBotEvent(game);
             
         return Success(new GameInitInfo
         {
@@ -304,7 +296,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
         
-        await NudgeBots(game);
+        PerformBotEvent(game);
         UpdateServerStatusIfNeeded(true);
         
         return Success(FilteredServerStatus(GameListScope.Active, user.Id));
@@ -324,7 +316,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
         
-        await NudgeBots(game);
+        PerformBotEvent(game);
         return Success();
     }
     
@@ -411,6 +403,8 @@ public partial class GameHub
         await AddToGroup(gameId, user.Id, Context.ConnectionId);
         
         await PersistGameIfNeeded(game);
+        
+        PerformBotEvent(game);
 
         return Success(new GameInitInfo
         {
@@ -484,7 +478,7 @@ public partial class GameHub
 
         await PersistGameIfNeeded(game);
         
-        await NudgeBots(game);
+        PerformBotEvent(game);
         return Success();
     }
 
@@ -501,7 +495,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
 
-        await NudgeBots(game);
+        PerformBotEvent(game);
         return Success();
     }
 

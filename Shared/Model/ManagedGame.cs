@@ -25,4 +25,6 @@ public class ManagedGame
     public bool StatisticsSent { get; set; }
 
     public DateTimeOffset LastAsyncPlayMessageSent { get; set; }
+    
+    public bool BotEventIsScheduled { get; set; }
 }
