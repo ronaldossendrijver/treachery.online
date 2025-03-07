@@ -22,11 +22,11 @@
 
 @if (OnClick.HasDelegate || OnMouseOver.HasDelegate || OnMouseExited.HasDelegate) 
 {
-    <img @attributes=_attributes @ref=@Element @onclick="@OnClick" @onmouseenter="@OnMouseOver" @onmouseout="@OnMouseExited"  />
+    <img src="@Src" style="@Style" @attributes="@_attributes" @ref=@Element  @onclick="@OnClick" @onmouseenter="@OnMouseOver" @onmouseout="@OnMouseExited" alt="@Alt"/>
 }
 else
 {
-    <img @attributes=_attributes @ref=@Element />
+    <img src="@Src" style="@Style" @attributes="@_attributes" @ref=@Element alt="@Alt"/>
 }
 
 @code {
@@ -35,13 +35,13 @@ else
     public string Src { get; set; }
 
     [Parameter]
-    public float ShadowX { get; set; } = 0;
+    public float ShadowX { get; set; }
 
     [Parameter]
-    public float ShadowY { get; set; } = 0;
+    public float ShadowY { get; set; }
 
     [Parameter]
-    public float ShadowBlur { get; set; } = 0;
+    public float ShadowBlur { get; set; }
 
     [Parameter]
     public string ShadowColor { get; set; } = "black";
@@ -50,16 +50,16 @@ else
     public string Filter { get; set; } = "";
 
     [Parameter]
-    public string Animation { get; set; } = null;
+    public string Animation { get; set; }
 
     [Parameter]
-    public string BackgroundCircleColor { get; set; } = null;
+    public string BackgroundCircleColor { get; set; }
 
     [Parameter]
-    public double BackgroundCircleDiameter { get; set; } = 0;
+    public double BackgroundCircleDiameter { get; set; }
 
     [Parameter]
-    public string BackgroundRectangleColor { get; set; } = null;
+    public string BackgroundRectangleColor { get; set; }
 
     [Parameter]
     public EventCallback<MouseEventArgs> OnClick { get; set; }
@@ -77,6 +77,8 @@ else
 
     [Parameter]
     public bool PopoverAsTooltip { get; set; }
+
+    private string Alt => PopoverAsTooltip ? Popover : string.Empty;
 
     private Dictionary<string, object> _attributes;
 
@@ -107,9 +109,6 @@ else
         {
             _attributes.Add("title", Popover);
         }
-
-        _attributes.Add("style", Style);
-        _attributes.Add("src", Src);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -128,15 +127,15 @@ else
         }
     }
 
-    private string BackgroundCircleStyle => string.Format("position:absolute;left:{0};top:{1};", Px(X + 0.5f*Width), Px(Y + 0.5f*Height));
+    private string BackgroundCircleStyle => $"position:absolute;left:{Px(X + 0.5f * Width)};top:{Px(Y + 0.5f * Height)};";
 
-    private string BackgroundRectangleStyle => string.Format("position:absolute;left:{0};top:{1};", Px(X), Px(Y));
+    private string BackgroundRectangleStyle => $"position:absolute;left:{Px(X)};top:{Px(Y)};";
 
     private string Style
     {
         get
         {
-            var result = string.Format("position:absolute;left:{0};top:{1};width:{2};height:{3};opacity:{4};", Px(X), Px(Y), Px(Width), Px(Height), Round(Opacity));
+            var result = $"position:absolute;left:{Px(X)};top:{Px(Y)};width:{Px(Width)};height:{Px(Height)};opacity:{Round(Opacity)};";
 
             if (OnClick.HasDelegate || OnMouseOver.HasDelegate || Popover != null)
             {
@@ -150,19 +149,19 @@ else
             var shadowFilter = ShadowFilter;
             if (shadowFilter.Length > 0 || Filter.Length > 0)
             {
-                result += string.Format("filter:{0} {1};", ShadowFilter, Filter);
+                result += $"filter:{ShadowFilter} {Filter};";
             }
 
             if (Animation != null)
             {
-                result += string.Format("animation:{0};", Animation);
+                result += $"animation:{Animation};";
             }
 
             return result;
         }
     }
 
-    private string ShadowFilter => ShadowX > 0 || ShadowY > 0 ? string.Format("drop-shadow({0} {1} {2} {3})", Px(ShadowX), Px(ShadowY), Px(ShadowBlur), ShadowColor) : "";
+    private string ShadowFilter => ShadowX > 0 || ShadowY > 0 ? $"drop-shadow({Px(ShadowX)} {Px(ShadowY)} {Px(ShadowBlur)} {ShadowColor})" : "";
 
     public new void Dispose()
     {

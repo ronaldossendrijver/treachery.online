@@ -9,19 +9,21 @@
 
 @inherits MapComponent
 
-@if (Src.Substring(Src.Length - 3).ToUpper() == "SVG")
+@if (Src[^3..].ToUpper() == "SVG")
 {
-    <object style="@Style;color-scheme: light only;" type="image/svg+xml" data=@Src/>
+    <object style="@Style;color-scheme: light only;" type="image/svg+xml" data=@Src>
+        
+    </object>
 }
-else {
-
-    <img style="@Style" src=@Src />
+else 
+{
+    <img style="@Style" src=@Src alt="Map"/>
 }
 
-@code {
-
+@code 
+{
     [Parameter]
     public string Src { get; set; }
 
-    private string Style => string.Format("position:absolute;left:{0};top:{1};width:{2};height:{3};pointer-events:none", Px(X), Px(Y), Px(Width), Px(Height));
+    private string Style => $"position:absolute;left:{Px(X)};top:{Px(Y)};width:{Px(Width)};height:{Px(Height)};pointer-events:none";
 }
