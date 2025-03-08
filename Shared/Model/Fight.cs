@@ -19,10 +19,7 @@ public class Fight : IIdentifiable
 
     public Fight(Territory territory, Faction faction)
     {
-
         Territory = territory;
         Faction = faction;
     }
-
-
 }

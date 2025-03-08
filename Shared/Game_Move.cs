@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public partial class Game
@@ -39,7 +37,7 @@ public partial class Game
     private Player PlayerToSetAsideVidal { get; set; }
     private VidalMoment WhenToSetAsideVidal { get; set; }
     internal Phase PausedTerrorPhase { get; set; }
-    public bool AllianceByTerrorWasOffered { get; internal set; } = false;
+    public bool AllianceByTerrorWasOffered { get; internal set; }
     public Faction AllianceByTerrorOfferedTo { get; internal set; }
     public bool InOrangeCunningShipment { get; internal set; }
     public List<Territory> CurrentBlockedTerritories { get; } = new();
@@ -98,7 +96,7 @@ public partial class Game
                 }
             }
 
-            if (mostSpice > 0)
+            if (pathWithMostSpice != null && mostSpice > 0)
             {
                 foreach (var loc in pathWithMostSpice)
                     if (ResourcesOnPlanet.ContainsKey(loc)) ChangeResourcesOnPlanet(loc, -1);
@@ -144,7 +142,7 @@ public partial class Game
     {
         if (from == null || to == null) return false;
 
-        var max = DetermineMaximumMoveDistance(initiator, new[] { moved });
+        var max = DetermineMaximumMoveDistance(initiator, [moved]);
         var targetsAvoidingStorm = Map.FindNeighbours(from, max, false, initiator.Faction, this);
         var targetsIgnoringStorm = Map.FindNeighbours(from, max, true, initiator.Faction, this);
         return !targetsAvoidingStorm.Contains(to) && targetsIgnoringStorm.Contains(to);
@@ -367,7 +365,6 @@ public partial class Game
             case Phase.TerrorTriggeredByRevival:
             case Phase.AmbassadorTriggeredByRevival:
             {
-                //TODO This code is really ugly. Only way to solve this is to put ALL interrupting effects (including skill assignment) on one stack.
                 var nextPhase = PhaseBeforeRevivalCausedIntrusion;
                 if (PhaseBeforeRevivalCausedIntrusion is Phase.AssigningSkill && !SkillAssigned.PlayersMustChooseLeaderSkills(this))
                 {
@@ -667,7 +664,7 @@ public partial class Game
         {
             Enter(
                 EveryoneActedOrPassed, ConcludeShipmentAndMove,
-                IsPlaying(Faction.Orange) && !HasActedOrPassed.Any(p => p == Faction.Orange) && OrangeMayShipOutOfTurnOrder, Phase.OrangeShip,
+                IsPlaying(Faction.Orange) && HasActedOrPassed.All(p => p != Faction.Orange) && OrangeMayShipOutOfTurnOrder, Phase.OrangeShip,
                 Phase.NonOrangeShip);
         }
     }
@@ -704,19 +701,17 @@ public partial class Game
     private void CheckIfCyanGainsVidal()
     {
         var cyan = GetPlayer(Faction.Cyan);
-        if (cyan != null && !Prevented(FactionAdvantage.CyanGainingVidal))
-        {
-            var vidal = Vidal;
+        if (cyan == null || Prevented(FactionAdvantage.CyanGainingVidal)) 
+            return;
 
-            if (VidalIsAlive)
-            {
-                var pink = GetPlayer(Faction.Pink);
-                var nrOfBattlesInStrongholds = Battle.BattlesToBeFought(this, cyan).Select(batt => batt.Territory)
-                    .Where(t => (pink == null || pink.AnyForcesIn(t) == 0) && (t.IsStronghold || IsSpecialStronghold(t))).Distinct().Count();
+        if (!VidalIsAlive) 
+            return;
+        
+        var pink = GetPlayer(Faction.Pink);
+        var nrOfBattlesInStrongholds = Battle.BattlesToBeFought(this, cyan).Select(b => b.Territory)
+            .Where(t => (pink == null || pink.AnyForcesIn(t) == 0) && (t.IsStronghold || IsSpecialStronghold(t))).Distinct().Count();
 
-                if (nrOfBattlesInStrongholds >= 2 && !VidalIsCapturedOrGhola && OccupierOf(World.Pink) == null) TakeVidal(cyan, VidalMoment.EndOfTurn);
-            }
-        }
+        if (nrOfBattlesInStrongholds >= 2 && !VidalIsCapturedOrGhola && OccupierOf(World.Pink) == null) TakeVidal(cyan, VidalMoment.EndOfTurn);
     }
 
     private void ReceiveShipsTechIncome()

@@ -48,7 +48,7 @@ public class ResourcesTransferred : GameEvent
 
     public static bool MayTransfer(Game g, Player p)
     {
-        return !(g.HasBidToPay(p) || g.CurrentPhaseIsUnInterruptable);
+        return !(g.HasBidToPay(p) || g.CurrentPhaseCannotBeInterrupted);
     }
 
     public static int MaxAmount(Player p)

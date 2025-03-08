@@ -16,8 +16,8 @@ public partial class Game
     internal bool ExtortionToBeReturned { get; set; }
     public Dictionary<Location, Faction> StrongholdOwnership { get; private set; } = new();
     public bool CyanHasPlantedTerror { get; internal set; }
-    public List<Player> Winners { get; } = new();
-    public WinMethod WinMethod { get; set; }
+    public List<Player> Winners { get; } = [];
+    public WinMethod WinMethod { get; private set; }
 
     #endregion State
 
@@ -41,7 +41,7 @@ public partial class Game
                 p.BankedResources = 0;
             }
 
-        Enter(Version >= 103, EnterMentatPause, ContinueMentatPhase);
+        Enter(Version >= 103, EnterContemplatePause, ContinueContemplatePhase);
     }
 
     private void HandleEconomics()
@@ -69,7 +69,7 @@ public partial class Game
         }
     }
 
-    private void EnterMentatPause()
+    private void EnterContemplatePause()
     {
         DetermineIfCyanDrawsNewTraitor();
         ExtortionToBeReturned = Players.Any(p => p.Extortion > 0);
@@ -122,10 +122,10 @@ public partial class Game
         }
     }
 
-    internal void ContinueMentatPhase()
+    internal void ContinueContemplatePhase()
     {
         CheckNormalWin();
-        CheckBeneGesseritPrediction();
+        CheckBluePrediction();
         CheckFinalTurnWin();
 
         if (Winners.Count > 0 || CurrentTurn == MaximumTurns)
@@ -175,9 +175,9 @@ public partial class Game
 
     private void DetermineStrongholdOwnership(Location location)
     {
-        var currentOwner = StrongholdOwnership.TryGetValue(location, out var value) ? value : Faction.None;
+        var currentOwner = StrongholdOwnership.GetValueOrDefault(location, Faction.None);
         var newOwningPlayer = Players.FirstOrDefault(p => p.Controls(this, location, Applicable(Rule.ContestedStongholdsCountAsOccupied)));
-        var newOwner = newOwningPlayer != null ? newOwningPlayer.Faction : Faction.None;
+        var newOwner = newOwningPlayer?.Faction ?? Faction.None;
 
         if (currentOwner != newOwner)
         {
@@ -206,27 +206,27 @@ public partial class Game
 
     private void CheckFinalTurnWin()
     {
-        if (CurrentTurn == MaximumTurns)
-        {
-            if (Winners.Count == 0) CheckSpecialWinConditions();
+        if (CurrentTurn != MaximumTurns) 
+            return;
+        
+        if (Winners.Count == 0) CheckSpecialWinConditions();
 
-            if (Winners.Count == 0)
-            {
-                CheckOtherWinConditions();
-                CheckBeneGesseritPrediction();
-            }
-        }
+        if (Winners.Count != 0) 
+            return;
+        
+        CheckOtherWinConditions();
+        CheckBluePrediction();
     }
 
-    private void CheckBeneGesseritPrediction()
+    private void CheckBluePrediction()
     {
-        var benegesserit = GetPlayer(Faction.Blue);
-        if (benegesserit != null && benegesserit.PredictedTurn == CurrentTurn && Winners.Any(w => w.Faction == benegesserit.PredictedFaction))
+        var blue = GetPlayer(Faction.Blue);
+        if (blue != null && blue.PredictedTurn == CurrentTurn && Winners.Any(w => w.Faction == blue.PredictedFaction))
         {
-            Log(Faction.Blue, " predicted ", benegesserit.PredictedFaction, " victory in turn ", benegesserit.PredictedTurn, "! They had everything planned...");
+            Log(Faction.Blue, " predicted ", blue.PredictedFaction, " victory in turn ", blue.PredictedTurn, "! They had everything planned...");
             WinMethod = WinMethod.Prediction;
             Winners.Clear();
-            Winners.Add(benegesserit);
+            Winners.Add(blue);
         }
     }
 
@@ -256,30 +256,30 @@ public partial class Game
         }
     }
 
-    private void LogNormalWin(Player p, Player ally)
+    private void LogNormalWin(Player player, Player ally)
     {
         if (Players.Any(p => !Winners.Contains(p) && MeetsNormalVictoryCondition(p, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
         {
             if (ally == null)
-                Log(p.Faction, " are the first in front of the storm with enough victory points to win the game");
+                Log(player.Faction, " are the first in front of the storm with enough victory points to win the game");
             else
-                Log(p.Faction, " and ", p.Ally, " are the first in front of the storm with enough victory points to win the game");
+                Log(player.Faction, " and ", player.Ally, " are the first in front of the storm with enough victory points to win the game");
         }
         else
         {
             if (ally == null)
-                Log(p.Faction, " have enough victory points to win the game");
+                Log(player.Faction, " have enough victory points to win the game");
             else
-                Log(p.Faction, " and ", p.Ally, " have enough victory points to win the game");
+                Log(player.Faction, " and ", player.Ally, " have enough victory points to win the game");
         }
     }
 
-    public bool MeetsNormalVictoryCondition(Player p, bool contestedStongholdsCountAsOccupied)
+    public bool MeetsNormalVictoryCondition(Player p, bool contestedStrongholdsCountAsOccupied)
     {
         return
-            MeetsPinkVictoryCondition(p, contestedStongholdsCountAsOccupied) ||
-            MeetsHighThresholdPinkVictoryCondition(p, contestedStongholdsCountAsOccupied) ||
-            NumberOfVictoryPoints(p, contestedStongholdsCountAsOccupied) >= TresholdForWin(p);
+            MeetsPinkVictoryCondition(p, contestedStrongholdsCountAsOccupied) ||
+            MeetsHighThresholdPinkVictoryCondition(p, contestedStrongholdsCountAsOccupied) ||
+            NumberOfVictoryPoints(p, contestedStrongholdsCountAsOccupied) >= ThresholdForWin(p);
     }
 
     public int CountChallengedVictoryPoints(Player p)
@@ -287,7 +287,7 @@ public partial class Game
         return NumberOfVictoryPoints(p, true) - NumberOfVictoryPoints(p, false);
     }
 
-    public int TresholdForWin(Player p)
+    public int ThresholdForWin(Player p)
     {
         if (p.Ally != Faction.None)
             return 4;
@@ -296,71 +296,71 @@ public partial class Game
 
     private IEnumerable<Territory> Strongholds => Map.Territories(false).Where(t => t.IsStronghold || IsSpecialStronghold(t));
 
-    public bool MeetsPinkVictoryCondition(Player p, bool contestedStongholdsCountAsOccupied)
+    private bool MeetsPinkVictoryCondition(Player p, bool contestedStrongholdsCountAsOccupied)
     {
         return ((p.Is(Faction.Pink) && p.HasAlly) || p.Ally == Faction.Pink) &&
                Strongholds.Count(t =>
-                   p.Controls(this, t, contestedStongholdsCountAsOccupied) &&
-                   p.AlliedPlayer.Controls(this, t, contestedStongholdsCountAsOccupied)) >= 3;
+                   p.Controls(this, t, contestedStrongholdsCountAsOccupied) &&
+                   p.AlliedPlayer.Controls(this, t, contestedStrongholdsCountAsOccupied)) >= 3;
     }
 
-    public bool MeetsHighThresholdPinkVictoryCondition(Player p, bool contestedStongholdsCountAsOccupied)
+    private bool MeetsHighThresholdPinkVictoryCondition(Player p, bool contestedStrongholdsCountAsOccupied)
     {
         return HasHighThreshold(Faction.Pink) &&
                ((p.Is(Faction.Pink) && p.HasAlly) || p.Ally == Faction.Pink) &&
                Strongholds.Any(t =>
-                   p.Controls(this, t, contestedStongholdsCountAsOccupied) &&
-                   p.AlliedPlayer.Controls(this, t, contestedStongholdsCountAsOccupied)) &&
+                   p.Controls(this, t, contestedStrongholdsCountAsOccupied) &&
+                   p.AlliedPlayer.Controls(this, t, contestedStrongholdsCountAsOccupied)) &&
                HomeworldOccupation.Values.Count(f => f == p.Faction || f == p.Ally) >= 2;
     }
 
-    public int NumberOfVictoryPoints(Player p, bool contestedStongholdsCountAsOccupied)
+    public int NumberOfVictoryPoints(Player p, bool contestedStrongholdsCountAsOccupied)
     {
         var ally = GetPlayer(p.Ally);
 
         if (ally != null)
         {
             var techTokenPoint = p.TechTokens.Count == 3 || p.AlliedPlayer.TechTokens.Count == 3 ? 1 : 0;
-            return techTokenPoint + Map.Territories(false).Where(t => t.IsStronghold || IsSpecialStronghold(t)).Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied) || ally.Controls(this, l, contestedStongholdsCountAsOccupied));
+            return techTokenPoint + Map.Territories(false).Where(t => t.IsStronghold || IsSpecialStronghold(t)).Count(l => p.Controls(this, l, contestedStrongholdsCountAsOccupied) || ally.Controls(this, l, contestedStrongholdsCountAsOccupied));
         }
         else
         {
             var techTokenPoint = p.TechTokens.Count == 3 ? 1 : 0;
-            return techTokenPoint + NumberOfOccupiedStrongholds(p, contestedStongholdsCountAsOccupied);
+            return techTokenPoint + NumberOfOccupiedStrongholds(p, contestedStrongholdsCountAsOccupied);
         }
     }
 
-    public int NumberOfOccupiedStrongholds(Player p, bool contestedStongholdsCountAsOccupied)
+    private int NumberOfOccupiedStrongholds(Player p, bool contestedStrongholdsCountAsOccupied)
     {
         return Map.Territories(false).Where(t => t.IsStronghold || IsSpecialStronghold(t))
-            .Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied));
+            .Count(l => p.Controls(this, l, contestedStrongholdsCountAsOccupied));
     }
 
     private void CheckSpecialWinConditions()
     {
-        var fremen = GetPlayer(Faction.Yellow);
-        var guild = GetPlayer(Faction.Orange);
+        var yellow = GetPlayer(Faction.Yellow);
+        var orange = GetPlayer(Faction.Orange);
 
-        if (fremen != null && YellowVictoryConditionMet)
+        if (yellow != null && YellowVictoryConditionMet)
         {
             Log(Faction.Yellow, " special victory conditions are met!");
             WinMethod = WinMethod.YellowSpecial;
-            Winners.Add(fremen);
-            if (fremen.Ally != Faction.None) Winners.Add(GetPlayer(fremen.Ally));
+            Winners.Add(yellow);
+            if (yellow.Ally != Faction.None) Winners.Add(GetPlayer(yellow.Ally));
         }
-        else if (guild != null && !Applicable(Rule.DisableOrangeSpecialVictory))
+        else if (orange != null && !Applicable(Rule.DisableOrangeSpecialVictory))
         {
             Log(Faction.Orange, " special victory conditions are met!");
             WinMethod = WinMethod.OrangeSpecial;
-            Winners.Add(guild);
-            if (guild.Ally != Faction.None) Winners.Add(GetPlayer(guild.Ally));
+            Winners.Add(orange);
+            if (orange.Ally != Faction.None) Winners.Add(GetPlayer(orange.Ally));
         }
-        else if (fremen != null && !Applicable(Rule.DisableOrangeSpecialVictory))
+        else if (yellow != null && !Applicable(Rule.DisableOrangeSpecialVictory))
         {
             Log(Faction.Yellow, " win because ", Faction.Orange, " are not playing and no one else won");
             WinMethod = WinMethod.OrangeSpecial;
-            Winners.Add(fremen);
-            if (fremen.Ally != Faction.None) Winners.Add(GetPlayer(fremen.Ally));
+            Winners.Add(yellow);
+            if (yellow.Ally != Faction.None) Winners.Add(GetPlayer(yellow.Ally));
         }
     }
 
@@ -368,11 +368,11 @@ public partial class Game
     {
         get
         {
-            var sietchTabrOccupiedByOtherThanFremen = Players.Any(p => p.Faction != Faction.Yellow && (p.Faction != Faction.Pink || p.Ally != Faction.Yellow) && p.Occupies(Map.SietchTabr));
-            var habbanyaSietchOccupiedByOtherThanFremen = Players.Any(p => p.Faction != Faction.Yellow && (p.Faction != Faction.Pink || p.Ally != Faction.Yellow) && p.Occupies(Map.HabbanyaSietch));
-            var tueksSietchOccupiedByAtreidesOrHarkonnenOrEmperorOrRichese = Players.Any(p => (p.Is(Faction.Green) || p.Is(Faction.Black) || p.Is(Faction.Red) || p.Is(Faction.White)) && p.Occupies(Map.TueksSietch));
+            var sietchTabrOccupiedByOtherThanYellow = Players.Any(p => p.Faction != Faction.Yellow && (p.Faction != Faction.Pink || p.Ally != Faction.Yellow) && p.Occupies(Map.SietchTabr));
+            var habbanyaSietchOccupiedByOtherThanYellow = Players.Any(p => p.Faction != Faction.Yellow && (p.Faction != Faction.Pink || p.Ally != Faction.Yellow) && p.Occupies(Map.HabbanyaSietch));
+            var tueksSietchOccupiedByGreenOrBlackOrRedOrWhite = Players.Any(p => (p.Is(Faction.Green) || p.Is(Faction.Black) || p.Is(Faction.Red) || p.Is(Faction.White)) && p.Occupies(Map.TueksSietch));
 
-            return CurrentTurn == MaximumTurns && !sietchTabrOccupiedByOtherThanFremen && !habbanyaSietchOccupiedByOtherThanFremen && !tueksSietchOccupiedByAtreidesOrHarkonnenOrEmperorOrRichese;
+            return CurrentTurn == MaximumTurns && !sietchTabrOccupiedByOtherThanYellow && !habbanyaSietchOccupiedByOtherThanYellow && !tueksSietchOccupiedByGreenOrBlackOrRedOrWhite;
         }
     }
 

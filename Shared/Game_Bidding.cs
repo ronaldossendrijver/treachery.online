@@ -21,7 +21,7 @@ public partial class Game
     public Dictionary<Faction, IBid> Bids { get; } = new();
     public TreacheryCard CardJustWon { get; internal set; }
     public IBid WinningBid { get; internal set; }
-    internal bool BiddingRoundWasStarted { get; set; }
+    internal bool BiddingRoundWasStarted { get; private set; }
     internal bool RegularBiddingIsDone { get; set; }
     public TreacheryCard CardThatMustBeKeptOrGivenToAlly { get; internal set; }
     internal int NumberOfCardsOnAuction { get; set; }
@@ -172,7 +172,7 @@ public partial class Game
 
     internal void RegisterWonCardAsKnown(TreacheryCard card)
     {
-        foreach (var p in Players.Where(p => HasBiddingPrescience(p))) RegisterKnown(p, card);
+        foreach (var p in Players.Where(HasBiddingPrescience)) RegisterKnown(p, card);
     }
 
     internal void SkipPlayersThatCantBid(PlayerSequence sequence)
@@ -207,7 +207,7 @@ public partial class Game
             Version >= 165 && receiverAndAllyAreWhite && red != null && !Prevented(FactionAdvantage.RedReceiveBid) ? bidAllyContributionAmount : 0;
 
         var redReceivedInsteadMessage = MessagePart.Express();
-        if (totalAmountReceivedByRedInsteadOfWhite > 0)
+        if (red != null && totalAmountReceivedByRedInsteadOfWhite > 0)
         {
             ModifyIncomeBecauseOfLowThresholdOrOccupation(receiver, ref totalAmountReceivedByRedInsteadOfWhite);
             red.Resources += totalAmountReceivedByRedInsteadOfWhite;
@@ -548,7 +548,7 @@ public partial class Game
 
     public TreacheryCard GetCardSetAsideForBid(Player p)
     {
-        return CurrentBid?.Player == p && CurrentBid.UsingKarmaToRemoveBidLimit ? CurrentBid.KarmaCard : null;
+        return CurrentBid != null && CurrentBid.Player == p && CurrentBid.UsingKarmaToRemoveBidLimit ? CurrentBid.KarmaCard : null;
     }
 
     #endregion Information

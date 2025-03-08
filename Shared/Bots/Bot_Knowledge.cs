@@ -528,7 +528,7 @@ public partial class Player
     private bool IsAlmostWinningOpponent(Player p)
     {
         return p != this && p != AlliedPlayer &&
-               Game.NumberOfVictoryPoints(p, true) + 1 >= Game.TresholdForWin(p) &&
+               Game.NumberOfVictoryPoints(p, true) + 1 >= Game.ThresholdForWin(p) &&
                (CanShip(p) || (p.HasAlly && CanShip(p.AlliedPlayer)) || p.TechTokens.Count >= 2);
     }
 

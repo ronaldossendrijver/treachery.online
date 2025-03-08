@@ -53,7 +53,7 @@ public class DiscardedTaken : GameEvent
 
     public static bool CanBePlayed(Game g, Player p)
     {
-        return !g.CurrentPhaseIsUnInterruptable && p.Has(TreacheryCardType.TakeDiscarded) && ValidCards(g, p).Any();
+        return !g.CurrentPhaseCannotBeInterrupted && p.Has(TreacheryCardType.TakeDiscarded) && ValidCards(g, p).Any();
     }
 
     #endregion Validation

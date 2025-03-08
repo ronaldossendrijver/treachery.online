@@ -48,11 +48,11 @@ public partial class Game
     private void DetermineIfKilledGholaReturnsToOriginalFaction(IHero l)
     {
         var purple = GetPlayer(Faction.Purple);
-        if (purple != null && l is Leader && purple.Leaders.Contains(l) && l.Faction != Faction.Purple)
+        if (purple != null && l is Leader leader && purple.Leaders.Contains(l) && l.Faction != Faction.Purple)
         {
-            purple.Leaders.Remove(l as Leader);
+            purple.Leaders.Remove(leader);
 
-            GetPlayer(l.Faction)?.Leaders.Add(l as Leader);
+            GetPlayer(l.Faction)?.Leaders.Add(leader);
         }
     }
 
@@ -111,12 +111,12 @@ public partial class Game
 
     public IEnumerable<Leader> GetSkilledLeaders(Player player)
     {
-        return player.Leaders.Where(l => IsSkilled(l));
+        return player.Leaders.Where(IsSkilled);
     }
 
     public LeaderSkill GetSkill(Player p)
     {
-        return Skill(GetSkilledLeaders(p).FirstOrDefault(l => IsInFrontOfShield(l)));
+        return Skill(GetSkilledLeaders(p).FirstOrDefault(IsInFrontOfShield));
     }
 
     public LeaderSkill Skill(IHero l)

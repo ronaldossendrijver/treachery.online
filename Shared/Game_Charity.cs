@@ -14,7 +14,7 @@ public partial class Game
     #region State
 
     internal bool ResourceTechTokenIncome { get; set; }
-    public bool CharityIsCancelled => EconomicsStatus == BrownEconomicsStatus.Cancel || EconomicsStatus == BrownEconomicsStatus.CancelFlipped;
+    private bool CharityIsCancelled => EconomicsStatus is BrownEconomicsStatus.Cancel or BrownEconomicsStatus.CancelFlipped;
 
     #endregion State
 

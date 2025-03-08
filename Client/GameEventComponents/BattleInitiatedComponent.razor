@@ -13,9 +13,9 @@
     <Header>Select whom and where to battle</Header>
     <Body>
         
-        <SelectFromImageComponent Game="Game" @bind-Value="@faction" Values="@battles.Select(b => b.Faction).Distinct()" Required="true"/>
+        <SelectFromImageComponent Game="Game" @bind-Value="@Opponent" Values="@Battles.Select(b => b.Faction).Distinct()" Required="true"/>
 
-        <SelectComponent @bind-Value="@territory" Values="@battles.Where(b => b.Faction == faction).Select(b => b.Territory)" />
+        <SelectComponent @bind-Value="@Territory" Values="@Battles.Where(b => b.Faction == Opponent).Select(b => b.Territory)" />
                     
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Initiate Battle" ConfirmError="@Validation" />
 
@@ -27,22 +27,21 @@
 
     protected override bool IsUrgent => true;
 
-    private IEnumerable<Fight> battles;
-
-    private Faction faction;
-    private Territory territory;
+    private List<Fight> Battles { get; set; }
+    private Faction Opponent { get; set; }
+    private Territory Territory { get; set; }
 
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
 
-        battles = Battle.BattlesToBeFought(Game, Player);
+        Battles = Battle.BattlesToBeFought(Game, Player);
 
-        if (battles.Count() == 1)
+        if (Battles.Count == 1)
         {
             _ = Task.Delay(500).ContinueWith(e => Confirm());
         }
     }
 
-    protected override BattleInitiated ConfirmedResult => new(Game, Faction) { Territory = territory, Target = faction };
+    protected override BattleInitiated ConfirmedResult => new(Game, Faction) { Territory = Territory, Target = Opponent };
 }

@@ -7,22 +7,20 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public partial class Game
 {
     public List<Type> GetApplicableEvents(Player player, bool isHost)
     {
-        List<Type> result = new();
+        List<Type> result = [];
 
         if (player != null && (CurrentPhase == Phase.SelectingFactions || player.Faction != Faction.None)) 
                 AddPlayerActions(player, isHost, result);
 
         if (isHost) AddHostActions(result);
 
-        return new List<Type>(result);
+        return [..result];
     }
 
     private void AddHostActions(List<Type> result)
@@ -266,8 +264,7 @@ public partial class Game
                     result.Add(typeof(Shipment));
                     if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan) && PlacementEvent.ValidMovementSources(this, player).Any()) result.Add(typeof(Caravan));
                 }
-                if (Version < 103 && Version <= 96 && player.Has(TreacheryCardType.Amal) && HasActedOrPassed.Count == 0) result.Add(typeof(AmalPlayed));
-                if (Version < 103 && Version >= 97 && player.Has(TreacheryCardType.Amal) && BeginningOfShipmentAndMovePhase) result.Add(typeof(AmalPlayed));
+                if (Version < 103 && player.Has(TreacheryCardType.Amal) && BeginningOfShipmentAndMovePhase) result.Add(typeof(AmalPlayed));
                 break;
             case Phase.BlueAccompaniesOrangeShip:
             case Phase.BlueAccompaniesNonOrangeShip:
@@ -279,8 +276,7 @@ public partial class Game
                     result.Add(typeof(Shipment));
                     if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan)) result.Add(typeof(Caravan));
                 }
-                if (Version < 103 && Version <= 96 && player.Has(TreacheryCardType.Amal) && HasActedOrPassed.Count == 0) result.Add(typeof(AmalPlayed));
-                if (Version < 103 && Version >= 97 && player.Has(TreacheryCardType.Amal) && BeginningOfShipmentAndMovePhase) result.Add(typeof(AmalPlayed));
+                if (Version < 103 && player.Has(TreacheryCardType.Amal) && BeginningOfShipmentAndMovePhase) result.Add(typeof(AmalPlayed));
                 break;
             case Phase.OrangeMove:
                 if (faction == Faction.Orange)
@@ -392,9 +388,9 @@ public partial class Game
                      (DefenderTraitorAction == null && faction == Faction.Black && GetPlayer(DefenderPlan.Initiator).Ally == Faction.Black && player.Traitors.Contains(AggressorPlan.Hero))))
                     result.Add(typeof(TreacheryCalled));
 
-                if (faction == AggressorPlan.Initiator && AggressorPlan.Weapon != null && AggressorPlan.Weapon.Type == TreacheryCardType.PoisonTooth && !PoisonToothCancelled) result.Add(typeof(PoisonToothCancelled));
+                if (AggressorPlan != null && faction == AggressorPlan.Initiator && AggressorPlan.Weapon is { Type: TreacheryCardType.PoisonTooth } && !PoisonToothCancelled) result.Add(typeof(PoisonToothCancelled));
 
-                if (faction == DefenderPlan.Initiator && DefenderPlan.Weapon != null && DefenderPlan.Weapon.Type == TreacheryCardType.PoisonTooth && !PoisonToothCancelled) result.Add(typeof(PoisonToothCancelled));
+                if (DefenderPlan != null && faction == DefenderPlan.Initiator && DefenderPlan.Weapon is { Type: TreacheryCardType.PoisonTooth } && !PoisonToothCancelled) result.Add(typeof(PoisonToothCancelled));
 
                 if (PortableAntidoteUsed.CanBePlayed(this, player)) result.Add(typeof(PortableAntidoteUsed));
 
@@ -486,9 +482,7 @@ public partial class Game
                 break;
         }
 
-        //Events that are (amost) always valid
-        if (CurrentMainPhase > MainPhase.Setup)
-            if (faction == Faction.Brown && player.HasLowThreshold() && !IsOccupied(World.Brown) && ResourcesAudited.ValidFactions(this, player).Any()) result.Add(typeof(ResourcesAudited));
+        if (CurrentMainPhase > MainPhase.Setup && faction == Faction.Brown && player.HasLowThreshold() && !IsOccupied(World.Brown) && ResourcesAudited.ValidFactions(this, player).Any()) result.Add(typeof(ResourcesAudited));
 
         if (CurrentMainPhase == MainPhase.ShipmentAndMove && SetShipmentPermission.IsApplicable(this, player)) result.Add(typeof(SetShipmentPermission));
 
@@ -517,10 +511,10 @@ public partial class Game
             Applicable(Rule.AdvancedKarama))
         {
             var planOfPink = CurrentBattle.PlanOf(Faction.Pink);
-            if (planOfPink != null && planOfPink.Defense == null && planOfPink.Weapon == null) result.Add(typeof(KarmaPinkDial));
+            if (planOfPink is { Defense: null, Weapon: null }) result.Add(typeof(KarmaPinkDial));
         }
 
-        if (isAfterSetup && (Version < 100 || !hasFinalizedBattlePlanWaitingToBeResolved) && !CurrentPhaseIsUnInterruptable)
+        if (isAfterSetup && (Version < 100 || !hasFinalizedBattlePlanWaitingToBeResolved) && !CurrentPhaseCannotBeInterrupted)
         {
             if (CurrentMainPhase < MainPhase.Battle && player.NoFieldIsActive) result.Add(typeof(WhiteRevealedNoField));
 
@@ -676,7 +670,7 @@ public partial class Game
 
     }
 
-    public bool CurrentPhaseIsUnInterruptable =>
+    internal bool CurrentPhaseCannotBeInterrupted =>
         CurrentMainPhase == MainPhase.Ended ||
         CurrentPhase == Phase.Discarding ||
         CurrentPhase == Phase.AssigningSkill ||
@@ -690,15 +684,9 @@ public partial class Game
         CurrentPhase == Phase.DividingCollectedResources ||
         CurrentPhase == Phase.AcceptingResourceDivision;
 
-    public static IEnumerable<Type> GetGameEventTypes()
-    {
-        return AppDomain.CurrentDomain.GetAssemblies().SelectMany(ass => ass.GetTypes().Where(t => t.IsSubclassOf(typeof(GameEvent))).Distinct());
-    }
-
     private bool ConsiderAsEndOfPhase =>
         CurrentMoment == MainPhaseMoment.End ||
-        (CurrentMoment == MainPhaseMoment.Start &&
-         CurrentMainPhase == MainPhase.Bidding && CurrentMainPhase == MainPhase.ShipmentAndMove);
+        CurrentMoment == MainPhaseMoment.Start && CurrentMainPhase is MainPhase.Bidding or MainPhase.ShipmentAndMove;
 
     private bool ConsiderAsStartOfPhase =>
         CurrentMoment == MainPhaseMoment.Start ||

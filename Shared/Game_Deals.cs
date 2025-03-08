@@ -22,7 +22,7 @@ public partial class Game
 
     public bool HasDeal(Faction f, DealType type)
     {
-        return Deals.Any(Deal => Deal.ConsumingFaction == f && Deal.Type == type);
+        return Deals.Any(deal => deal.ConsumingFaction == f && deal.Type == type);
     }
 
     private void RemoveEndedDeals(Phase phase)

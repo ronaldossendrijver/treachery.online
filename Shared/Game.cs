@@ -14,7 +14,7 @@ public partial class Game
     #region Settings
 
     private const int LowestSupportedVersion = 100;
-    public const int LatestVersion = 176;
+    public const int LatestVersion = 177;
     public const int ExpansionLevel = 3;
     
     #endregion Settings
@@ -117,11 +117,11 @@ public partial class Game
     {
         UpdateTimers(e);
 
-        if (!(e is AllyPermission || e is PlayerReplaced || e is NexusPlayed np && np.IsBetrayal && np.Faction is Faction.White))
+        if (!(e is AllyPermission or PlayerReplaced or NexusPlayed { IsBetrayal: true, Faction: Faction.White }))
         {
             ClearRecentPayments();
 
-            if (!(e is DealOffered || e is DealAccepted)) RecentlyDiscarded.Clear();
+            if (!(e is DealOffered or DealAccepted)) RecentlyDiscarded.Clear();
         }
     }
 
@@ -257,10 +257,7 @@ public partial class Game
 
     internal void Enter(bool condition, Phase phaseIfTrue, Phase phaseIfFalse)
     {
-        if (condition)
-            Enter(phaseIfTrue);
-        else
-            Enter(phaseIfFalse);
+        Enter(condition ? phaseIfTrue : phaseIfFalse);
     }
 
     internal void Enter(bool condition, Phase phaseIfTrue, Action methodOtherwise)
@@ -314,7 +311,7 @@ public partial class Game
             Enter(condition3, methodIf3True, methodOtherwise);
     }
 
-    internal void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Phase phaseIf3True, Action methodOtherwise)
+    private void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Phase phaseIf3True, Action methodOtherwise)
     {
         if (condition1)
             Enter(phaseIf1True);
@@ -359,12 +356,12 @@ public partial class Game
         if (p != null) RegisterKnown(p, c);
     }
 
-    internal void UnregisterKnown(TreacheryCard c)
+    private void UnregisterKnown(TreacheryCard c)
     {
         foreach (var p in Players) UnregisterKnown(p, c);
     }
 
-    internal static void UnregisterKnown(Player p, TreacheryCard c)
+    private static void UnregisterKnown(Player p, TreacheryCard c)
     {
         p.KnownCards.Remove(c);
     }
@@ -391,7 +388,7 @@ public partial class Game
 
             var forces = includeHomeworlds ? p.ForcesInLocations : p.ForcesOnPlanet;
 
-            foreach (var locationAndBattaltion in forces) result[locationAndBattaltion.Key].Add(locationAndBattaltion.Value);
+            foreach (var locationAndBattalion in forces) result[locationAndBattalion.Key].Add(locationAndBattalion.Value);
         }
 
         return result;
@@ -405,11 +402,11 @@ public partial class Game
         {
             var forces = includeHomeworlds ? p.ForcesInLocations : p.ForcesOnPlanet;
 
-            foreach (var locationAndBattaltion in forces)
+            foreach (var locationAndBattalion in forces)
             {
-                if (!result.ContainsKey(locationAndBattaltion.Key)) result.Add(locationAndBattaltion.Key, new List<Battalion>());
+                if (!result.ContainsKey(locationAndBattalion.Key)) result.Add(locationAndBattalion.Key, new List<Battalion>());
 
-                result[locationAndBattaltion.Key].Add(locationAndBattaltion.Value);
+                result[locationAndBattalion.Key].Add(locationAndBattalion.Value);
             }
         }
 
@@ -429,7 +426,7 @@ public partial class Game
     {
         var result = new List<Battalion>();
         foreach (var p in Players)
-            if (p.BattalionIn(l, out var batallion)) result.Add(batallion);
+            if (p.BattalionIn(l, out var battalion)) result.Add(battalion);
 
         return result;
     }
@@ -441,11 +438,11 @@ public partial class Game
             Dictionary<Location, List<Battalion>> result = new();
 
             foreach (var p in Players)
-            foreach (var locationAndBattaltion in p.ForcesInLocations.Where(kvp => p.Occupies(kvp.Key)))
+            foreach (var locationAndBattalion in p.ForcesInLocations.Where(kvp => p.Occupies(kvp.Key)))
             {
-                if (!result.ContainsKey(locationAndBattaltion.Key)) result.Add(locationAndBattaltion.Key, new List<Battalion>());
+                if (!result.ContainsKey(locationAndBattalion.Key)) result.Add(locationAndBattalion.Key, new List<Battalion>());
 
-                result[locationAndBattaltion.Key].Add(locationAndBattaltion.Value);
+                result[locationAndBattalion.Key].Add(locationAndBattalion.Value);
             }
 
             return result;
@@ -458,7 +455,7 @@ public partial class Game
 
     internal int ResourcesIn(Location l)
     {
-        return ResourcesOnPlanet.TryGetValue(l, out var value) ? value : 0;
+        return ResourcesOnPlanet.GetValueOrDefault(l, 0);
     }
 
     internal void ChangeResourcesOnPlanet(Location location, int amount)
@@ -550,7 +547,7 @@ public partial class Game
         LetFactionsDiscardSurplusCards();
     }
 
-    internal void CheckIfShipmentPermissionsShouldBeRevoked()
+    private void CheckIfShipmentPermissionsShouldBeRevoked()
     {
         if (!HasHighThreshold(Faction.Orange) && ShipmentPermissions.Any())
         {
@@ -569,7 +566,7 @@ public partial class Game
         }
     }
 
-    internal void CheckIfOccupierTakesVidal(Player previousOccupierOfPinkHomeworld)
+    private void CheckIfOccupierTakesVidal(Player previousOccupierOfPinkHomeworld)
     {
         var occupierOfPinkHomeworld = OccupierOf(World.Pink);
         if (occupierOfPinkHomeworld != null)
@@ -716,7 +713,7 @@ public partial class Game
         SetRecentPayment(amount, by, Faction.None, reason);
     }
 
-    public void ClearRecentPayments()
+    private void ClearRecentPayments()
     {
         StoredRecentlyPaid = RecentlyPaid;
         RecentlyPaid = new List<Payment>();
@@ -747,7 +744,7 @@ public partial class Game
 
     #region Information
 
-    public bool Occupies(Faction f, World w)
+    private bool Occupies(Faction f, World w)
     {
         if (f != Faction.None)
         {
@@ -773,7 +770,7 @@ public partial class Game
         if (player != null)
         {
             var occupier = OccupierOf(w.World);
-            return new HomeworldStatus(player.HasHighThreshold(w.World), occupier != null ? occupier.Faction : Faction.None);
+            return new HomeworldStatus(player.HasHighThreshold(w.World), occupier?.Faction ?? Faction.None);
         }
 
         return null;
@@ -786,7 +783,7 @@ public partial class Game
 
     public bool IsInStorm(Territory t)
     {
-        return t.Locations.Any(l => IsInStorm(l));
+        return t.Locations.Any(IsInStorm);
     }
 
     public bool IsOccupied(Location l)
@@ -827,7 +824,7 @@ public partial class Game
         return ally.AnyForcesIn(to.Territory) > 0;
     }
 
-    public Player OwnerOf(IHero hero)
+    private Player OwnerOf(IHero hero)
     {
         return Players.FirstOrDefault(p => p.Leaders.Contains(hero));
     }
@@ -884,7 +881,7 @@ public partial class Game
         return (Applicable(Rule.MovementBonusRequiresOccupationBeforeMovement)
                    ? FactionsWithOrnithoptersAtStartOfMovement.Contains(p.Faction)
                    : OccupiesArrakeenOrCarthag(p)) ||
-               (CurrentFlightUsed != null && CurrentFlightUsed.MoveThreeTerritories && CurrentFlightUsed.Player == p) ||
+               (CurrentFlightUsed is { MoveThreeTerritories: true } && CurrentFlightUsed.Player == p) ||
                (CurrentFlightDiscoveryUsed != null && CurrentFlightDiscoveryUsed.Player == p);
     }
 
@@ -892,7 +889,7 @@ public partial class Game
     {
         var brownExtraMoveBonus = p.Faction == Faction.Brown && BrownHasExtraMove ? 1 : 0;
 
-        var planetologyBonus = CurrentPlanetology != null && CurrentPlanetology.AddOneToMovement && CurrentPlanetology.Initiator == p.Faction ? 1 : 0;
+        var planetologyBonus = CurrentPlanetology is { AddOneToMovement: true } && CurrentPlanetology.Initiator == p.Faction ? 1 : 0;
 
         var result = 1 + planetologyBonus;
 

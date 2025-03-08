@@ -179,12 +179,13 @@ public class BattleInitiated : GameEvent
     {
         if (Territory == null) return Message.Express("Territory not selected");
 
-        var p = Player;
-        var target = Game.GetPlayer(Defender);
-        if (!p.Occupies(Territory)) return Message.Express("You have no forces in this territory");
-        if (!target.Occupies(Territory)) return Message.Express("Opponent has no forces in this territory");
-        if (target == null) return Message.Express("Opponent not selected");
-
+        if (!Player.Occupies(Territory)) return Message.Express("You have no forces in this territory");
+        if (!Battle.BattlesToBeFought(Game,Player).Any(f => f.Faction == Target && f.Territory.Id == _territoryId)) return Message.Express("Invalid battle selected");
+        
+        var opponent = Game.GetPlayer(Defender);
+        if (opponent == null) return Message.Express("Opponent not selected");
+        if (!opponent.Occupies(Territory)) return Message.Express("Opponent has no forces in this territory");
+        
         return null;
     }
 

@@ -32,7 +32,7 @@ public class DiscardedSearchedAnnounced : GameEvent
 
     public static bool CanBePlayed(Game g, Player p)
     {
-        return !g.CurrentPhaseIsUnInterruptable && p.Resources >= 2 && p.Has(TreacheryCardType.SearchDiscarded) && DiscardedSearched.ValidCards(g).Any();
+        return !g.CurrentPhaseCannotBeInterrupted && p.Resources >= 2 && p.Has(TreacheryCardType.SearchDiscarded) && DiscardedSearched.ValidCards(g).Any();
     }
 
     #endregion Validation

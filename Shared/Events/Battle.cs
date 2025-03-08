@@ -548,24 +548,27 @@ public class Battle : GameEvent
         return 0;
     }
 
-    public static IEnumerable<Fight> BattlesToBeFought(Game g, Player player, bool returnOnlyOneBattle = false)
+    public static List<Fight> BattlesToBeFought(Game g, Player player, bool returnOnlyOneBattle = false)
     {
         var result = new List<Fight>();
-
+        
         var mayBattleUnderStorm = g.Applicable(Rule.BattlesUnderStorm);
+        var pink = g.GetPlayer(Faction.Pink);
 
-        foreach (var occupiedLocation in player.OccupiedLocations.Where(l => (mayBattleUnderStorm || l.Sector != g.SectorInStorm) && l != g.Map.PolarSink))
+        foreach (var occupiedLocation in player.OccupiedLocations.Where(l => (mayBattleUnderStorm || l.Sector != g.SectorInStorm) && l.Id != g.Map.PolarSink.Id))
         {
             var locationsWithinRange = Map.FindNeighboursWithinTerritory(occupiedLocation, false, g.SectorInStorm);
 
             foreach (var battalions in g.OccupyingForcesOnPlanet.Where(l => (mayBattleUnderStorm || l.Key.Sector != g.SectorInStorm) && locationsWithinRange.Contains(l.Key)))
             {
-                var location = battalions.Key;
                 var defenders = battalions.Value.Where(b => b.Faction != player.Faction && b.Faction != player.Ally);
 
-                foreach (var f in defenders.Select(b => b.Faction))
+                foreach (var faction in defenders.Select(b => b.Faction))
                 {
-                    result.Add(new Fight(occupiedLocation.Territory, f));
+                    if (g.Version >= 177 && pink != null && (faction is Faction.Pink && result.Any(f => f.Faction == pink.Ally) || faction == pink.Ally && result.Any(f => f.Faction is Faction.Pink)))
+                        continue;
+                    
+                    result.Add(new Fight(occupiedLocation.Territory, faction));
 
                     if (returnOnlyOneBattle) break;
                 }

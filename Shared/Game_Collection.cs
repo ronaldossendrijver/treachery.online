@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public partial class Game
@@ -64,34 +62,27 @@ public partial class Game
             var homeworld = Version >= 166 ? from.PrimaryHomeworld : from.HomeWorlds.First();
             var occupier = OccupierOf(homeworld.World);
 
-            bool halfIsLost = false;
-            if (Version >= 169)
-            {
-                halfIsLost = (occupier != null || from.Is(Faction.Red) || from.Is(Faction.Orange)) &&
-                             from.HasLowThreshold(homeworld.World);
-            }
-            else
-            {
-                halfIsLost = (Version) switch
-                {
-                    >= 166 when (occupier != null || from.Is(Faction.Red) || from.Is(Faction.Orange)) &&
-                                from.HasLowThreshold(homeworld.World) => true,
-                    >= 164 when (occupier != null || from.Is(Faction.Red) || from.Is(Faction.Orange)) &&
-                                from.HasLowThreshold() => true,
-                    <  164 when (!from.Is(Faction.White) || occupier != null) && from.HasLowThreshold() => true,
-                    _ => false
-                };
-            }
-
+            var halfIsLost = Version >= 169
+                ? (occupier != null || from.Is(Faction.Red) || from.Is(Faction.Orange)) && from.HasLowThreshold(homeworld.World)
+                : Version switch
+                    {
+                        >= 166 when (occupier != null || from.Is(Faction.Red) || from.Is(Faction.Orange)) &&
+                                    from.HasLowThreshold(homeworld.World) => true,
+                        >= 164 when (occupier != null || from.Is(Faction.Red) || from.Is(Faction.Orange)) &&
+                                    from.HasLowThreshold() => true,
+                        <  164 when (!from.Is(Faction.White) || occupier != null) && from.HasLowThreshold() => true,
+                        _ => false
+                    };
+            
             var amountLost = halfIsLost ? (int)(0.5f * receivedAmount) : 0;
 
             receivedAmount -= amountLost;
 
-            if (occupier != null)
-            {
-                occupier.Resources += amountLost;
-                Log(Payment.Of(amountLost), " received by ", from.Faction, " goes to ", occupier.Faction, " due to occupation");
-            }
+            if (occupier == null) 
+                return;
+            
+            occupier.Resources += amountLost;
+            Log(Payment.Of(amountLost), " received by ", from.Faction, " goes to ", occupier.Faction, " due to occupation");
         }
     }
 

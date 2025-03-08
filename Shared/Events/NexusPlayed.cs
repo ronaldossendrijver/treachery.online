@@ -189,7 +189,7 @@ public class NexusPlayed : GameEvent, ILocationEvent
 
     public static bool IsApplicable(Game g, Player p)
     {
-        if (g.CurrentPhase == Phase.NexusCards || g.CurrentPhaseIsUnInterruptable) return false;
+        if (g.CurrentPhase == Phase.NexusCards || g.CurrentPhaseCannotBeInterrupted) return false;
 
         var cunning = CanUseCunning(p);
         var secretAlly = CanUseSecretAlly(g, p);

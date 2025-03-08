@@ -37,12 +37,9 @@ public partial class Game
     internal void EnterSpiceBlowPhase()
     {
         MainPhaseStart(MainPhase.Blow);
-        MonsterAppearedInTerritoryWithoutForces = false;
         IgnoredMonsters.Clear();
         IgnoredSandtrout = null;
         HasActedOrPassed.Clear();
-
-        var sequenceToDetermineFirstPlayer = new PlayerSequence(this);
 
         if (Version < 135)
             Enter(Applicable(Rule.ExpansionTreacheryCardsExceptPBandSSandAmal) && (Version <= 102 || CurrentTurn > 1), Phase.Thumper, EnterBlowA);
@@ -71,14 +68,11 @@ public partial class Game
                 Log(drawn.IsShaiHulud ? Concept.Monster : Concept.GreatMonster, " on turn 1 was ignored");
                 IgnoredMonsters.Add(CurrentDiscardPile.Draw());
             }
-            else if ((ThumperCallsMonster && Version > 150) || drawn.IsShaiHulud || drawn.IsGreatMaker)
+            else if ((ThumperCallsMonster && Version > 150) || drawn is { IsShaiHulud: true } || drawn is { IsGreatMaker: true })
             {
                 if (!ThumperCallsMonster)
                 {
-                    if (drawn.IsShaiHulud)
-                        Stone(Milestone.Monster);
-                    else
-                        Stone(Milestone.GreatMonster);
+                    Stone(drawn.IsShaiHulud ? Milestone.Monster : Milestone.GreatMonster);
                 }
 
                 if (!SandTroutOccured)
@@ -228,9 +222,9 @@ public partial class Game
         Enter(Applicable(Rule.ExpansionTreacheryCardsExceptPBandSSandAmal), CurrentPhase == Phase.BlowA ? Phase.HarvesterA : Phase.HarvesterB, MoveToNextPhaseAfterResourceBlow);
     }
 
-    private static MessagePart SandtroutMessage(bool SandTroutDoublesResources)
+    private static MessagePart SandtroutMessage(bool sandTroutDoublesResources)
     {
-        return MessagePart.ExpressIf(SandTroutDoublesResources, ", doubled by ", Concept.BabyMonster);
+        return MessagePart.ExpressIf(sandTroutDoublesResources, ", doubled by ", Concept.BabyMonster);
     }
 
     internal void MoveToNextPhaseAfterResourceBlow()
@@ -255,8 +249,6 @@ public partial class Game
         }
     }
 
-    public bool MonsterAppearedInTerritoryWithoutForces { get; private set; }
-
     internal void LetMonsterAppear(Territory t, bool isGreatMonster)
     {
         var m = new MonsterAppearence(t, isGreatMonster);
@@ -269,8 +261,6 @@ public partial class Game
                 Log(Concept.Monster, " appears a ", Natural(Monsters.Count + 1), " time during this ", MainPhase.Blow);
             else
                 Log(Concept.Monster, " appears in ", m.Territory);
-
-            if (!AnyForcesIn(m.Territory)) MonsterAppearedInTerritoryWithoutForces = true;
 
             if (Monsters.Count > 0)
             {

@@ -160,7 +160,7 @@ public class EndPhase : GameEvent
                 break;
 
             case Phase.Contemplate:
-                Game.ContinueMentatPhase();
+                Game.ContinueContemplatePhase();
                 break;
 
             case Phase.TurnConcluded:
