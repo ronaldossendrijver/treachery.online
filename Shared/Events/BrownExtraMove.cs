@@ -67,6 +67,6 @@ public class BrownExtraMove : GameEvent
 
     public static TreacheryCard CardToUse(Player p)
     {
-        return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CARD_KULON);
+        return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CardKulon);
     }
 }

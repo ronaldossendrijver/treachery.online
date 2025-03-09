@@ -43,7 +43,7 @@ public class BrownFreeRevivalPrevention : GameEvent
 
     public static TreacheryCard CardToUse(Player p)
     {
-        return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CARD_LALALA);
+        return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CardLalala);
     }
 
     #endregion Validation

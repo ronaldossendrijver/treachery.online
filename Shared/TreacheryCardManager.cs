@@ -7,28 +7,26 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public static class TreacheryCardManager
 {
     private static readonly List<TreacheryCard> Items = new();
-    public static IFetcher<TreacheryCard> Lookup = new TreacheryCardFetcher();
+    public static readonly IFetcher<TreacheryCard> Lookup = new TreacheryCardFetcher();
 
-    public const int CARD_BALISET = 28;
-    public const int CARD_JUBBACLOAK = 29;
-    public const int CARD_KULON = 30;
-    public const int CARD_LALALA = 31;
-    public const int CARD_TRIPTOGAMONT = 32;
-    public const int CARD_KULLWAHAD = 46;
+    public const int CardBaliset = 28;
+    public const int CardJubbaCloak = 29;
+    public const int CardKulon = 30;
+    public const int CardLalala = 31;
+    public const int CardTripToGamont = 32;
+    public const int CardKullWahad = 46;
 
     static TreacheryCardManager()
     {
         Initialize();
     }
 
-    public static void Initialize()
+    private static void Initialize()
     {
         //Basic cards
         Items.Add(new TreacheryCard(0, 0, TreacheryCardType.Laser, Rule.BasicTreacheryCards));
@@ -59,27 +57,29 @@ public static class TreacheryCardManager
         Items.Add(new TreacheryCard(25, 25, TreacheryCardType.Clairvoyance, Rule.BasicTreacheryCards));
         Items.Add(new TreacheryCard(26, 25, TreacheryCardType.Clairvoyance, Rule.BasicTreacheryCards));
         Items.Add(new TreacheryCard(27, 27, TreacheryCardType.StormSpell, Rule.BasicTreacheryCards));
-        Items.Add(new TreacheryCard(CARD_BALISET, CARD_BALISET, TreacheryCardType.Useless, Rule.BasicTreacheryCards));
-        Items.Add(new TreacheryCard(CARD_JUBBACLOAK, CARD_JUBBACLOAK, TreacheryCardType.Useless, Rule.BasicTreacheryCards));
-        Items.Add(new TreacheryCard(CARD_KULON, CARD_KULON, TreacheryCardType.Useless, Rule.BasicTreacheryCards));
-        Items.Add(new TreacheryCard(CARD_LALALA, CARD_LALALA, TreacheryCardType.Useless, Rule.BasicTreacheryCards));
-        Items.Add(new TreacheryCard(CARD_TRIPTOGAMONT, CARD_TRIPTOGAMONT, TreacheryCardType.Useless, Rule.BasicTreacheryCards));
+        Items.Add(new TreacheryCard(CardBaliset, CardBaliset, TreacheryCardType.Useless, Rule.BasicTreacheryCards));
+        Items.Add(new TreacheryCard(CardJubbaCloak, CardJubbaCloak, TreacheryCardType.Useless, Rule.BasicTreacheryCards));
+        Items.Add(new TreacheryCard(CardKulon, CardKulon, TreacheryCardType.Useless, Rule.BasicTreacheryCards));
+        Items.Add(new TreacheryCard(CardLalala, CardLalala, TreacheryCardType.Useless, Rule.BasicTreacheryCards));
+        Items.Add(new TreacheryCard(CardTripToGamont, CardTripToGamont, TreacheryCardType.Useless, Rule.BasicTreacheryCards));
 
         //Grey & Purple Expansion Treachery Cards
         Items.Add(new TreacheryCard(33, 33, TreacheryCardType.ProjectileAndPoison, Rule.ExpansionTreacheryCardsPBandSs));
         Items.Add(new TreacheryCard(34, 34, TreacheryCardType.Projectile, Rule.ExpansionTreacheryCardsExceptPBandSSandAmal));
         Items.Add(new TreacheryCard(35, 35, TreacheryCardType.Poison, Rule.ExpansionTreacheryCardsExceptPBandSSandAmal));
         Items.Add(new TreacheryCard(36, 36, TreacheryCardType.WeirdingWay, Rule.ExpansionTreacheryCardsExceptPBandSSandAmal));
-        Items.Add(new TreacheryCard(37, 37, TreacheryCardType.PoisonTooth, new[] { Rule.ExpansionTreacheryCardsExceptPBandSSandAmal, Rule.Expansion2TreacheryCards }));
+        Items.Add(new TreacheryCard(37, 37, TreacheryCardType.PoisonTooth, [Rule.ExpansionTreacheryCardsExceptPBandSSandAmal, Rule.Expansion2TreacheryCards
+        ]));
         Items.Add(new TreacheryCard(38, 38, TreacheryCardType.ShieldAndAntidote, Rule.ExpansionTreacheryCardsPBandSs));
         Items.Add(new TreacheryCard(39, 9, TreacheryCardType.Shield, Rule.ExpansionTreacheryCardsExceptPBandSSandAmal));
         Items.Add(new TreacheryCard(40, 13, TreacheryCardType.Antidote, Rule.ExpansionTreacheryCardsExceptPBandSSandAmal));
         Items.Add(new TreacheryCard(41, 39, TreacheryCardType.Chemistry, Rule.ExpansionTreacheryCardsExceptPBandSSandAmal));
-        Items.Add(new TreacheryCard(42, 40, TreacheryCardType.ArtilleryStrike, new[] { Rule.ExpansionTreacheryCardsExceptPBandSSandAmal, Rule.Expansion2TreacheryCards }));
+        Items.Add(new TreacheryCard(42, 40, TreacheryCardType.ArtilleryStrike, [Rule.ExpansionTreacheryCardsExceptPBandSSandAmal, Rule.Expansion2TreacheryCards
+        ]));
         Items.Add(new TreacheryCard(43, 41, TreacheryCardType.Harvester, Rule.ExpansionTreacheryCardsExceptPBandSSandAmal));
         Items.Add(new TreacheryCard(44, 42, TreacheryCardType.Thumper, Rule.ExpansionTreacheryCardsExceptPBandSSandAmal));
         Items.Add(new TreacheryCard(45, 43, TreacheryCardType.Amal, Rule.ExpansionTreacheryCardsAmal));
-        Items.Add(new TreacheryCard(CARD_KULLWAHAD, 44, TreacheryCardType.Useless, Rule.ExpansionTreacheryCardsExceptPBandSSandAmal));
+        Items.Add(new TreacheryCard(CardKullWahad, 44, TreacheryCardType.Useless, Rule.ExpansionTreacheryCardsExceptPBandSSandAmal));
 
         //White Treachery Cards
         Items.Add(new TreacheryCard(47, 45, TreacheryCardType.Distrans, Rule.WhiteTreacheryCards));
@@ -118,13 +118,13 @@ public static class TreacheryCardManager
     {
         return Items.Where(c =>
 
-            c.Rules.Any(rule => g.Applicable(rule)) ||
+            c.Rules.Any(g.Applicable) ||
 
             //Amal used to be included in the basic set of expansion cards
             (g.Version <= 104 && c.Type == TreacheryCardType.Amal && g.Applicable(Rule.ExpansionTreacheryCardsExceptPBandSSandAmal)));
     }
 
-    public static IEnumerable<TreacheryCard> GetCardsInPlay(Rule rule)
+    private static IEnumerable<TreacheryCard> GetCardsInPlay(Rule rule)
     {
         return Items.Where(c => c.Rules.Contains(rule));
     }
@@ -146,7 +146,7 @@ public static class TreacheryCardManager
         return -1;
     }
 
-    public class TreacheryCardFetcher : IFetcher<TreacheryCard>
+    private class TreacheryCardFetcher : IFetcher<TreacheryCard>
     {
         public TreacheryCard Find(int id)
         {
@@ -155,7 +155,7 @@ public static class TreacheryCardManager
             return Items.SingleOrDefault(t => t.Id == id);
         }
 
-        public int GetId(TreacheryCard obj)
+        int IFetcher<TreacheryCard>.GetId(TreacheryCard obj)
         {
             if (obj == null)
                 return -1;

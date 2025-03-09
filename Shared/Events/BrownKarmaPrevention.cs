@@ -43,7 +43,7 @@ public class BrownKarmaPrevention : GameEvent
 
     public static TreacheryCard CardToUse(Player p)
     {
-        return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CARD_KULLWAHAD);
+        return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CardKullWahad);
     }
 
     #endregion Validation

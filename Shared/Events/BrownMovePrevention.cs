@@ -57,7 +57,7 @@ public class BrownMovePrevention : GameEvent
 
     public static TreacheryCard CardToUse(Player p)
     {
-        return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CARD_BALISET);
+        return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CardBaliset);
     }
 
     #endregion Validation

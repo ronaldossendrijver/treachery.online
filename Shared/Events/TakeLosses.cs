@@ -74,7 +74,7 @@ public class TakeLosses : GameEvent
 
     public static TreacheryCard ValidUselessCardToPreventLosses(Game g, Player p)
     {
-        if (p.Faction == Faction.Brown && !g.Prevented(FactionAdvantage.BrownDiscarding)) return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CARD_JUBBACLOAK);
+        if (p.Faction == Faction.Brown && !g.Prevented(FactionAdvantage.BrownDiscarding)) return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CardJubbaCloak);
 
         return null;
     }

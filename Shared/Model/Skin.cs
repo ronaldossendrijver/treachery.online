@@ -1138,12 +1138,12 @@ public class Skin : IDescriber
             g.Map.HiddenMobileStronghold, // 34
             Faction.White, //35
             Faction.Brown, //36
-            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CARD_BALISET).SkinId], //37
-            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CARD_JUBBACLOAK).SkinId], //38
-            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CARD_KULLWAHAD).SkinId], //39
-            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CARD_KULON).SkinId], //40
-            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CARD_LALALA).SkinId], //41
-            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CARD_TRIPTOGAMONT).SkinId], //42
+            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardBaliset).SkinId], //37
+            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardJubbaCloak).SkinId], //38
+            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardKullWahad).SkinId], //39
+            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardKulon).SkinId], //40
+            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardLalala).SkinId], //41
+            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardTripToGamont).SkinId], //42
             MainPhase_STR[MainPhase.Contemplate], //43
             PersonName_STR[1036], //44
             MainPhase_STR[MainPhase.Bidding], //45

@@ -91,7 +91,7 @@ public class BrownRemoveForce : GameEvent
 
     public static TreacheryCard CardToUse(Player p)
     {
-        return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CARD_TRIPTOGAMONT);
+        return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CardTripToGamont);
     }
 
     #endregion Validation
