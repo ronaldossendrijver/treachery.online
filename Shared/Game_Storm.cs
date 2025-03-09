@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public partial class Game
@@ -16,11 +14,11 @@ public partial class Game
     #region State
 
     public int HmsMovesLeft { get; internal set; }
-    public List<Faction> HasBattleWheel { get; } = new();
-    internal List<int> Dials { get; set; } = new();
+    public List<Faction> HasBattleWheel { get; } = [];
+    internal List<int> Dials { get; } = [];
     public bool CurrentTestingStationUsed { get; internal set; }
-    internal Phase PhaseBeforeStormLoss { get; set; }
-    public List<LossToTake> StormLossesToTake { get; } = new();
+    internal Phase PhaseBeforeStormLoss { get; private set; }
+    public List<LossToTake> StormLossesToTake { get; } = [];
 
     #endregion State
 
@@ -45,13 +43,13 @@ public partial class Game
             if (JustRevealedDiscoveryStrongholds.Any())
                 Enter(Phase.BeginningOfStorm);
             else
-                MoveHMSBeforeDiallingStorm();
+                MoveHmsBeforeDiallingStorm();
         }
 
         DetermineOccupationAtStartOrEndOfTurn();
     }
 
-    internal void MoveHMSBeforeDiallingStorm()
+    internal void MoveHmsBeforeDiallingStorm()
     {
         if (IsPlaying(Faction.Grey) && GetPlayer(Faction.Grey).AnyForcesIn(Map.HiddenMobileStronghold) > 0)
         {
@@ -182,7 +180,6 @@ public partial class Game
             if (ambassador != Ambassador.None)
             {
                 var pink = GetPlayer(Faction.Pink);
-                var succ = AmbassadorsOnPlanet.Remove(t);
                 pink.Ambassadors.Add(ambassador);
                 Log("The ambassador in ", t, " returns to ", Faction.Pink);
             }
@@ -230,7 +227,7 @@ public partial class Game
     {
         if (!ShieldWallDestroyed)
             return l.Territory.IsProtectedFromStorm;
-        return l.Territory.IsProtectedFromStorm && !(l == Map.Arrakeen || l.Territory == Map.ImperialBasin || l == Map.Carthag);
+        return l.Territory.IsProtectedFromStorm && !(l.Id == Map.Arrakeen.Id || l.Territory == Map.ImperialBasin || l.Id == Map.Carthag.Id);
     }
 
     #endregion Information

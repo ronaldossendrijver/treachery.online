@@ -50,7 +50,7 @@ public class EndPhase : GameEvent
                 break;
 
             case Phase.BeginningOfStorm:
-                Game.MoveHMSBeforeDiallingStorm();
+                Game.MoveHmsBeforeDiallingStorm();
                 break;
 
             case Phase.MetheorAndStormSpell:

@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public partial class Game
@@ -16,16 +14,16 @@ public partial class Game
     #region BeginningOfRevival
 
     internal bool RevivalTechTokenIncome { get; set; }
-    public List<Faction> FactionsThatTookFreeRevival { get; } = new();
+    public List<Faction> FactionsThatTookFreeRevival { get; } = [];
     internal bool PurpleStartedRevivalWithLowThreshold { get; set; }
     public RecruitsPlayed CurrentRecruitsPlayed { get; set; }
-    public List<Faction> FactionsThatRevivedSpecialForcesThisTurn { get; } = new();
-    public Faction[] FactionsWithIncreasedRevivalLimits { get; internal set; } = Array.Empty<Faction>();
-    public List<RequestPurpleRevival> CurrentRevivalRequests { get; set; } = new();
+    public List<Faction> FactionsThatRevivedSpecialForcesThisTurn { get; } = [];
+    public Faction[] FactionsWithIncreasedRevivalLimits { get; internal set; } = [];
+    public List<RequestPurpleRevival> CurrentRevivalRequests { get; } = [];
     public Dictionary<IHero, int> EarlyRevivalsOffers { get; } = new();
     public BrownFreeRevivalPrevention CurrentFreeRevivalPrevention { get; internal set; }
     internal KarmaRevivalPrevention CurrentKarmaRevivalPrevention { get; set; }
-    public int AmbassadorsPlacedThisTurn { get; internal set; } = 0;
+    public int AmbassadorsPlacedThisTurn { get; internal set; }
 
     #endregion
 
@@ -113,14 +111,14 @@ public partial class Game
         return CurrentFreeRevivalPrevention?.Target == f;
     }
 
-    public bool PreventedFromReviving(Faction f)
+    private bool PreventedFromReviving(Faction f)
     {
         return CurrentKarmaRevivalPrevention != null && CurrentKarmaRevivalPrevention.Target == f;
     }
 
     public Ambassador AmbassadorIn(Territory t)
     {
-        return AmbassadorsOnPlanet.TryGetValue(t, out var value) ? value : Ambassador.None;
+        return AmbassadorsOnPlanet.GetValueOrDefault(t, Ambassador.None);
     }
 
     #endregion Information

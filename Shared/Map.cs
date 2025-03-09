@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class Map
@@ -35,7 +33,7 @@ public class Map
 
     public Territory FalseWallSouth { get; private set; }
 
-    public Territory Meridan { get; private set; }
+    private Territory Meridan { get; set; }
 
     public Territory FalseWallWest { get; private set; }
 
@@ -43,19 +41,19 @@ public class Map
 
     public Territory ShieldWall { get; private set; }
 
-    public Territory HoleInTheRock { get; private set; }
+    private Territory HoleInTheRock { get; set; }
 
     public Territory FalseWallEast { get; private set; }
 
-    public Territory TheMinorErg { get; private set; }
+    private Territory TheMinorErg { get; set; }
 
     public Territory PastyMesa { get; private set; }
 
-    public Territory GaraKulon { get; private set; }
+    private Territory GaraKulon { get; set; }
 
-    public Territory OldGap { get; private set; }
+    private Territory OldGap { get; set; }
 
-    public Territory SihayaRidge { get; private set; }
+    private Territory SihayaRidge { get; set; }
 
     public Location FuneralPlain { get; private set; }
 
@@ -75,7 +73,7 @@ public class Map
 
     public Territory WindPassNorth { get; private set; }
 
-    public Territory CielagoEast { get; private set; }
+    private Territory CielagoEast { get; set; }
 
     public Territory CielagoWest { get; private set; }
 
@@ -97,7 +95,7 @@ public class Map
     public DiscoveredLocation Jacurutu { get; private set; }
     public DiscoveredLocation ProcessingStation { get; private set; }
 
-    public HiddenMobileStronghold HiddenMobileStronghold { get; set; }
+    public HiddenMobileStronghold HiddenMobileStronghold { get; private set; }
 
     public Map()
     {
@@ -127,8 +125,8 @@ public class Map
     public IEnumerable<Location> Strongholds => _locations.Where(l => l.Territory.IsStronghold);
 
     public Homeworld GetHomeWorld(World w) => Homeworlds.FirstOrDefault(hw => hw.World == w);
-    
-    public static IEnumerable<ResourceCard> GetResourceCardsInAndOutsidePlay(Map m)
+
+    private static IEnumerable<ResourceCard> GetResourceCardsInAndOutsidePlay(Map m)
     {
         var result = new List<ResourceCard>();
         

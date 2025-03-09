@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public partial class Game
@@ -17,7 +15,7 @@ public partial class Game
 
     public GameSettings Settings { get; set; } = new();
     public List<FactionTradeOffered> CurrentTradeOffers { get; } = [];
-    internal Phase PhaseBeforeSkillAssignment { get; set; }
+    internal Phase PhaseBeforeSkillAssignment { get; private set; }
     public Faction NextFactionToPerformCustomSetup => Players.Select(p => p.Faction).FirstOrDefault(f => !HasActedOrPassed.Contains(f));
     public Deck<TreacheryCard> StartingTreacheryCards { get; private set; }
     private TreacheryCard ExtraStartingCardForBlack { get; set; }
