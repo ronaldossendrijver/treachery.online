@@ -7,7 +7,7 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-<button class="btn @Class @SizeClass @MarginClass" @onclick="@HandleClick" disabled="@Disabled" title="@Title">@ChildContent</button>
+<button class="btn @Class @SizeClass @MarginClass @PaddingClass" @onclick="@HandleClick" disabled="@Disabled" title="@Title">@ChildContent</button>
 
 @code 
 {
@@ -22,6 +22,8 @@
     [Parameter] public bool Enabled { get; set; } = true;
 
     [Parameter] public string MarginClass { get; set; } = "me-1";
+    
+    [Parameter] public string PaddingClass { get; set; } = "";
     
     [Parameter] public string Title { get; set; } = string.Empty;
     
