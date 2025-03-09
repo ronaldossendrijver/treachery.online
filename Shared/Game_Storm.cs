@@ -180,6 +180,7 @@ public partial class Game
             if (ambassador != Ambassador.None)
             {
                 var pink = GetPlayer(Faction.Pink);
+                AmbassadorsOnPlanet.Remove(t);
                 pink.Ambassadors.Add(ambassador);
                 Log("The ambassador in ", t, " returns to ", Faction.Pink);
             }

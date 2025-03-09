@@ -207,7 +207,7 @@ public class Tests
             var expectedAmount = EstablishPlayers.AvailableFactions().Count(f => f != Faction.Blue) - 1;
 
             if (actualAmount != expectedAmount)
-                return $"Invalid number of ambassadors: {actualAmount} != {EstablishPlayers.AvailableFactions().Count() - 1} - " + g.History.Count;
+                return $"Invalid number of ambassadors: {actualAmount} != {expectedAmount} - " + g.History.Count;
         }
 
         return "";
