@@ -88,7 +88,6 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
             return false;
         }
 
-        game.LastActivity = DateTimeOffset.Now;
         return true;
     }    
     private static bool AreValid(string userToken, string gameId, out LoggedInUser user, out ManagedGame game, out VoidResult result)
@@ -115,7 +114,6 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
             return false;
         }
         
-        game.LastActivity = DateTimeOffset.Now;
         return true;
     }
     

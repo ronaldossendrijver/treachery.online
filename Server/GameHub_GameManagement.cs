@@ -476,8 +476,8 @@ public partial class GameHub
         game.Game = game.Game.Undo(untilEventNr);
         await Clients.Group(gameId).HandleUndo(untilEventNr);
 
+        game.LastActivity = DateTimeOffset.Now;
         await PersistGameIfNeeded(game);
-        
         PerformBotEvent(game);
         return Success();
     }

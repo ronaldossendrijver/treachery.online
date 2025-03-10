@@ -32,7 +32,7 @@
                         Passwords.TryAdd(av.GameId, string.Empty);
                         JoinErrors.TryAdd(av.GameId, string.Empty);
 
-                        var fontColorStyle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20 ? "color:grey" : "color:white";
+                        var fontColorStyle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 15 ? "color:grey" : "color:white";
 
                         <tr class="small table-dark">
                             <td style="@fontColorStyle">

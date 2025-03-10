@@ -35,8 +35,8 @@ public partial class GameHub
             }
         }
         
+        game.LastActivity = DateTimeOffset.Now;
         await PersistGameIfNeeded(game);
-        
         return Success();
     }
     
@@ -217,14 +217,12 @@ public partial class GameHub
             game.StatisticsSent = true;
         }
 
+        game.LastActivity = DateTimeOffset.Now;
+        
         await Clients.Group(game.GameId).HandleGameEvent(e, game.Game.History.Count);
-        
         await SendAsyncPlayMessagesIfApplicable(game.GameId);
-        
         await PersistGameIfNeeded(game);
-        
         PerformBotEvent(game);
-        
         return Success();
     }
 
