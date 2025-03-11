@@ -109,7 +109,7 @@ public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlace
             }
             else
             {
-                if (AsAdvisors && !MayMoveAsAdvisors(Game, Player, To.Territory)) return Message.Express("You can't be advisors there");
+                if (AsAdvisors && !MayMoveAsAdvisors(Game, Player, To.Territory, specialForceAmount > 0)) return Message.Express("You can't be advisors there");
                 if (!AsAdvisors && !MayMoveAsBlueFighters(Player, To.Territory)) return Message.Express("You can't be fighters there");
             }
         }
@@ -126,10 +126,10 @@ public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlace
         return null;
     }
 
-    public static bool MayMoveAsAdvisors(Game g, Player p, Territory to)
+    public static bool MayMoveAsAdvisors(Game g, Player p, Territory to, bool areAdvisors)
     {
         return p.Is(Faction.Blue) && g.Applicable(Rule.BlueAdvisors) &&
-               (p.SpecialForcesIn(to) > 0 || (p.ForcesIn(to) == 0 && g.AnyForcesIn(to)));
+               (p.SpecialForcesIn(to) > 0 || ((g.Version < 177 || areAdvisors) && p.ForcesIn(to) == 0 && g.AnyForcesIn(to)));
     }
 
     public static bool MayMoveAsBlueFighters(Player p, Territory to)

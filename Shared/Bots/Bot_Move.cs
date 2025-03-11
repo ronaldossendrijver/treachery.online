@@ -7,13 +7,11 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared.Model;
 
 public partial class Player
 {
-    protected virtual Move DetermineMove()
+    private  Move DetermineMove()
     {
         LogInfo("DetermineMove()");
 
@@ -41,7 +39,7 @@ public partial class Player
         return result;
     }
 
-    protected virtual Caravan DetermineCaravan()
+    private  Caravan DetermineCaravan()
     {
         LogInfo("DetermineCaravan()");
 
@@ -217,7 +215,7 @@ public partial class Player
         return null;
     }
 
-    protected virtual MovedBatallion ConstructMove(Location to, Location from, Battalion battalion)
+    private  MovedBatallion ConstructMove(Location to, Location from, Battalion battalion)
     {
         if (Faction == Faction.White && Game.HasLowThreshold(Faction.White) && battalion.AmountOfSpecialForces != 0)
             return null;
@@ -232,7 +230,7 @@ public partial class Player
         internal Battalion Batallion;
     }
 
-    protected virtual Battalion DetermineBattalionThatWillDestroyShieldWall(ref Location from, ref Location to)
+    private  Battalion DetermineBattalionThatWillDestroyShieldWall(ref Location from, ref Location to)
     {
         from = Game.Map.PolarSink;
         to = Game.SectorInStorm != 8 ? Game.Map.FalseWallEast.Locations.First(l => l.Sector == 8) : Game.Map.FalseWallEast.Locations.First(l => l.Sector == 7);
@@ -262,7 +260,7 @@ public partial class Player
         return result;
     }
 
-    protected virtual FlightUsed DetermineFlightUsed()
+    private  FlightUsed DetermineFlightUsed()
     {
         LogInfo("DetermineFlightUsed()");
 
@@ -271,7 +269,7 @@ public partial class Player
         return null;
     }
 
-    protected virtual FlightDiscoveryUsed DetermineFlightDiscoveryUsed()
+    private  FlightDiscoveryUsed DetermineFlightDiscoveryUsed()
     {
         LogInfo("DetermineFlightDiscoveryUsed()");
 

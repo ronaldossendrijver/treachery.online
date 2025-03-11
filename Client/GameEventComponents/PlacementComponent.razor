@@ -45,7 +45,7 @@
 
             @if (Faction == Faction.Blue && toLocation != null)
             {
-                var mayMoveAsAdvisors = PlacementEvent.MayMoveAsAdvisors(Game, Player, toLocation.Territory);
+                var mayMoveAsAdvisors = PlacementEvent.MayMoveAsAdvisors(Game, Player, toLocation.Territory, Player.SpecialForcesIn(fromTerritory) > 0);
 
                 if (mayMoveAsAdvisors && PlacementEvent.MayMoveAsBlueFighters(Player, toLocation.Territory))
                 {
