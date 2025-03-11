@@ -80,7 +80,7 @@ public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlace
 
     #region Validation
 
-    protected Message ValidateMove(bool AsAdvisors)
+    protected Message ValidateMove(bool asAdvisors)
     {
         if (Passed) return null;
 
@@ -98,19 +98,19 @@ public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlace
 
         if (To == null) return Message.Express("To not selected");
         if (!ValidTargets(Game, p, ForceLocations).Contains(To)) return Message.Express("Invalid To location");
-        if (AsAdvisors && !(p.Is(Faction.Blue) && Game.Applicable(Rule.BlueAdvisors))) return Message.Express("You can't move as advisors");
+        if (asAdvisors && !(p.Is(Faction.Blue) && Game.Applicable(Rule.BlueAdvisors))) return Message.Express("You can't move as advisors");
 
         if (Initiator == Faction.Blue)
         {
             if (Game.Version < 153)
             {
-                if (AsAdvisors && p.ForcesIn(To.Territory) > 0) return Message.Express("You have fighters there, so you can't move as advisors");
-                if (!AsAdvisors && p.SpecialForcesIn(To.Territory) > 0) return Message.Express("You have advisors there, so you can't move as fighters");
+                if (asAdvisors && p.ForcesIn(To.Territory) > 0) return Message.Express("You have fighters there, so you can't move as advisors");
+                if (!asAdvisors && p.SpecialForcesIn(To.Territory) > 0) return Message.Express("You have advisors there, so you can't move as fighters");
             }
             else
             {
-                if (AsAdvisors && !MayMoveAsAdvisors(Game, Player, To.Territory, specialForceAmount > 0)) return Message.Express("You can't be advisors there");
-                if (!AsAdvisors && !MayMoveAsBlueFighters(Player, To.Territory)) return Message.Express("You can't be fighters there");
+                if (asAdvisors && !MayMoveAsAdvisors(Game, Player, To.Territory, specialForceAmount > 0)) return Message.Express("You can't be advisors there");
+                if (!asAdvisors && !MayMoveAsBlueFighters(Player, To.Territory)) return Message.Express("You can't be fighters there");
             }
         }
 
@@ -166,7 +166,7 @@ public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlace
         return Array.Empty<Location>();
     }
 
-    public static IEnumerable<Location> ValidMoveToTargets(Game g, Player p, Location from, IEnumerable<Battalion> moved)
+    private static IEnumerable<Location> ValidMoveToTargets(Game g, Player p, Location from, IEnumerable<Battalion> moved)
     {
         if (p.Is(Faction.Red) && from is Homeworld hw && g.Applicable(Rule.RedSpecialForces))
         {
