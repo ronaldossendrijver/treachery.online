@@ -26,5 +26,5 @@ public class ManagedGame
 
     public DateTimeOffset LastAsyncPlayMessageSent { get; set; }
     
-    public bool BotEventIsScheduled { get; set; }
+    public DateTimeOffset BotEventScheduled { get; set; }
 }

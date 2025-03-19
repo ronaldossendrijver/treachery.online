@@ -605,9 +605,11 @@ public partial class Game
     {
         if (p.Ally != Faction.None && p.Faction != Faction.Pink && p.Ally != Faction.Pink)
         {
+            var specialForcesAreAllowed = Version >= 177 && p.Is(Faction.Blue) && Applicable(Rule.AdvisorsDontConflictWithAlly);
+            
             //Forces that must be destroyed because moves ended where allies are
             foreach (var t in ChosenDestinationsWithAllies)
-                if (p.AnyForcesIn(t) > 0)
+                if (!(specialForcesAreAllowed && p.SpecialForcesIn(t) > 0) && p.AnyForcesIn(t) > 0)
                 {
                     Log("All ", p.Faction, " forces in ", t, " were killed due to ally presence");
                     RevealCurrentNoField(p, t);
@@ -616,18 +618,17 @@ public partial class Game
 
             if (HasActedOrPassed.Contains(p.Ally))
             {
-                //Forces that must me destroyed if both the player and his ally have moved
+                //Forces that must be destroyed if both the player and his ally have moved
 
                 var playerTerritories = Applicable(Rule.AdvisorsDontConflictWithAlly) ? p.OccupiedTerritories : p.TerritoriesWithForces;
                 var allyTerritories = Applicable(Rule.AdvisorsDontConflictWithAlly) ? GetPlayer(p.Ally).OccupiedTerritories : GetPlayer(p.Ally).TerritoriesWithForces;
 
-                foreach (var t in playerTerritories.Intersect(allyTerritories).ToList())
-                    if (t != Map.PolarSink.Territory)
-                    {
-                        Log("All ", p.Faction, " forces in ", t, " were killed due to ally presence");
-                        RevealCurrentNoField(p, t);
-                        p.KillAllForces(t, false);
-                    }
+                foreach (var t in playerTerritories.Intersect(allyTerritories).Where(x => x != Map.PolarSink.Territory).ToList())
+                {
+                    Log("All ", p.Faction, " forces in ", t, " were killed due to ally presence");
+                    RevealCurrentNoField(p, t);
+                    p.KillAllForces(t, false);
+                }
             }
         }
     }

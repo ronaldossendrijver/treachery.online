@@ -222,7 +222,7 @@ public partial class GameHub
         await Clients.Group(game.GameId).HandleGameEvent(e, game.Game.History.Count);
         await SendAsyncPlayMessagesIfApplicable(game.GameId);
         await PersistGameIfNeeded(game);
-        PerformBotEvent(game);
+        PerformBotEvent(game, game.Game.History.Count);
         return Success();
     }
 
@@ -310,20 +310,23 @@ public partial class GameHub
         }
     }
 
-    private void PerformBotEvent(ManagedGame managedGame)
+    private void PerformBotEvent(ManagedGame managedGame, int count = 0)
     {
-        if (managedGame.BotEventIsScheduled)
+        /*
+        if (managedGame.BotEventScheduled > DateTimeOffset.Now)
             return;
-
-        managedGame.BotEventIsScheduled = true;
+        */
         
-        _ = Task.Delay(DetermineBotDelay(managedGame.Game.CurrentMainPhase, managedGame.Game.LatestEvent()))
-            .ContinueWith(_ => PerformBotEventAfterDelay(managedGame));
+        var delay = DetermineBotDelay(managedGame.Game.CurrentMainPhase, managedGame.Game.LatestEvent());
+        
+        _ = Task.Delay(delay).ContinueWith(_ => PerformBotEventAfterDelay(managedGame));
+
+        managedGame.BotEventScheduled = DateTimeOffset.Now.AddMilliseconds(delay);
     }
 
     private async Task PerformBotEventAfterDelay(ManagedGame managedGame)
     {
-        managedGame.BotEventIsScheduled = false;
+        managedGame.BotEventScheduled = DateTimeOffset.MinValue;
         var game = managedGame.Game;
         var botsActAsHosts = game.Participation.Hosts.Count == 0 && game.NumberOfObservers > 0;
         
@@ -377,8 +380,8 @@ public partial class GameHub
     
     private static int DetermineBotDelay(MainPhase phase, GameEvent e)
     {
-        if (phase is MainPhase.Resurrection or MainPhase.Charity || e is AllyPermission || e is DealOffered || e is SetShipmentPermission)
-            return 600;
+        if (phase is MainPhase.Resurrection or MainPhase.Charity || e is AllyPermission or DealOffered or SetShipmentPermission)
+            return 800;
         
         if (e is Bid)
             return 1200;
