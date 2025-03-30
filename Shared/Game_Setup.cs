@@ -87,11 +87,7 @@ public partial class Game
             AssignInitialAmbassadors(pink);
             Log(Faction.Pink, " get ", Ambassador.Pink, " and draw 4 random ambassadors");
 
-            if (Applicable(Rule.PinkLoyalty))
-            {
-                PinkLoyalLeader = pink.Leaders.RandomOrDefault(Random);
-                Log(PinkLoyalLeader, " is forever loyal to ", Faction.Pink);
-            }
+            
         }
 
         Enter(IsPlaying(Faction.Blue), Phase.BluePredicting, TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, DealTraitors);
@@ -99,8 +95,20 @@ public partial class Game
 
     internal void DealTraitors()
     {
+        var pink = GetPlayer(Faction.Pink);
+        if (pink != null)
+        {
+            if (Applicable(Rule.PinkLoyalty))
+            {
+                PinkLoyalLeader = pink.Leaders.RandomOrDefault(Random);
+                Log(PinkLoyalLeader, " is forever loyal to ", Faction.Pink);
+            }
+        }
+
         Stone(Milestone.Shuffled);
         TraitorDeck = CreateAndShuffleTraitorDeck(Random);
+        
+        
 
         if (Applicable(Rule.BlackMulligan) && IsPlaying(Faction.Black))
         {
