@@ -186,10 +186,11 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return Task.CompletedTask;
     }
 
-    public async Task HandleSetOrUnsetHost(int userId)
+    public Task HandleSetOrUnsetHost(int userId)
     {
         Game.SetOrUnsetHost(userId);
-        await PerformPostEventTasks();
+        Refresh();
+        return Task.CompletedTask;
     }
 
     public Task HandleObserveGame(int userId, string userName)
@@ -215,7 +216,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         else
         {
             Game.RemoveUser(userId, kick);
-            await PerformPostEventTasks();
+            Refresh();
         }
     }
 
@@ -284,10 +285,11 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public async Task HandleLoadGame(GameInitInfo initInfo) => await LoadGame(initInfo);
 
-    public async Task HandleAssignSeats(Dictionary<int, int> assignment)
+    public Task HandleAssignSeats(Dictionary<int, int> assignment)
     {
         Game.Participation.SeatedPlayers = assignment;
-        await PerformPostEventTasks();
+        Refresh();
+        return Task.CompletedTask;
     }
 
     public LinkedList<ChatMessage> Messages { get; } = [];
@@ -701,8 +703,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     private async Task PerformPostEventTasks()
     {
         Status = GameStatus.DetermineStatus(Game, Player, !IsObserver);
-        Actions = Game.GetApplicableEvents(Player, IsHost);
-
+        Actions = Game.GetApplicableEvents(Player, IsHost);        
+        
         await TurnAlert();
         await PlaySoundsForMilestones();
         await Browser.RemoveFocusFromButtons();
