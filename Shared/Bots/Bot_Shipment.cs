@@ -48,7 +48,7 @@ public partial class Player
             if (decidedShipment == null && winning && hasCards) DetermineShipment_StrengthenWeakestStronghold(false, extraForces, Param.Shipment_DialShortageToAccept, !MayFlipToAdvisors);
             if (decidedShipment == null && !winning && !AlmostLastTurn && inGreatNeedOfSpice && !Is(Faction.Red)) DetermineShipment_ShipToStrongholdNearSpice();
             if (decidedShipment == null && !winning && hasCards) DetermineShipment_TakeVacantStronghold(OpponentsToShipAndMove.Count() + extraForces, minResourcesToKeep, Param.Battle_MaximumUnsupportedForces);
-            if (decidedShipment == null && !winning && hasCards) DetermineShipment_AttackHomeworld(OpponentsToShipAndMove.Count() + extraForces, minResourcesToKeep, Param.Battle_MaximumUnsupportedForces);
+            if (decidedShipment == null && !winning && hasCards) DetermineShipment_AttackEmptyHomeworld(minResourcesToKeep, Param.Battle_MaximumUnsupportedForces);
             if (decidedShipment == null && Faction == Faction.Grey && decidedShipment == null && AnyForcesIn(Game.Map.HiddenMobileStronghold) == 0) DetermineShipment_AttackWeakHMS(1, Param.Shipment_DialShortageToAccept, 0, LastTurn ? 99 : Param.Battle_MaximumUnsupportedForces);
             if (decidedShipment == null && !winning && ((feelingConfident && hasCards) || hasWeapons)) DetermineShipment_AttackWeakStronghold(extraForces, minResourcesToKeep, feelingConfident || LastTurn ? 20 : 0);
             if (decidedShipment == null && Faction != Faction.Yellow && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipToStrongholdNearSpice();
@@ -361,19 +361,19 @@ public partial class Player
         }
     }
 
-    protected virtual void DetermineShipment_AttackHomeworld(int forcestrength, int minResourcesToKeep, int maxUnsupportedForces)
+    protected virtual void DetermineShipment_AttackEmptyHomeworld(int minResourcesToKeep, int maxUnsupportedForces)
     {
         LogInfo("DetermineShipment_AttackHomeworld()");
 
         var validHomeworlds = ValidShipmentLocations(false).Where(l => l is Homeworld hw).Cast<Homeworld>();
 
-        var target = WinningOpponentsIWishToAttack(99, false).SelectMany(p => p.HomeWorlds).FirstOrDefault(w => validHomeworlds.Contains(w));
-        if (target == null) target = WinningOpponentsIWishToAttack(99, true).SelectMany(p => p.HomeWorlds).FirstOrDefault(w => validHomeworlds.Contains(w));
-        if (target == null && !WinningOpponentsIWishToAttack(99, true).Any()) target = validHomeworlds.Where(l => NotOccupied(l)).RandomOrDefault();
-
+        var target = Opponents.SelectMany(p => p.HomeWorlds)
+            .Where(w => validHomeworlds.Contains(w) && AnyForcesIn(w) == 0)
+            .RandomOrDefault();
+        
         if (target != null)
         {
-            if (DetermineShortageForShipment(forcestrength, false, target, Faction.None, ForcesInReserve, SpecialForcesInReserve, out var nrOfForces, out var nrOfSpecialForces, out var noFieldValue, out var cunningNoFieldValue, minResourcesToKeep, maxUnsupportedForces, true) <= 0)
+            if (DetermineShortageForShipment(1, false, target, Faction.None, ForcesInReserve, SpecialForcesInReserve, out var nrOfForces, out var nrOfSpecialForces, out var noFieldValue, out var cunningNoFieldValue, minResourcesToKeep, maxUnsupportedForces, true) <= 0)
             {
                 LogInfo($"Shipping to: {target.Id} {target.Territory.Id} {target} {target.Territory}");
                 DoShipment(ShipmentDecision.Homeworld, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, target, true, true);
