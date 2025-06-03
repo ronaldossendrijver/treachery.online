@@ -60,7 +60,7 @@
             <MapImage 
                X="@(pos.X - 0.7f * Client.CurrentSkin.HmsRadius)"
                Y="@(pos.Y - Client.CurrentSkin.HmsRadius)"
-               Width=@(Client.CurrentSkin.HmsRadius + Math.Abs(Client.CurrentSkin.HmsDX)) Height="@(2 * Client.CurrentSkin.HmsRadius)"
+               Width=@(Client.CurrentSkin.HmsRadius + Math.Abs(Client.CurrentSkin.HmsDx)) Height="@(2 * Client.CurrentSkin.HmsRadius)"
                Src="@Client.CurrentSkin.HMS_URL"
                ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="5" ShadowY="5" ShadowBlur="1"
                Opacity="@(showHMS ? 1f : 0.3f)"
@@ -73,7 +73,7 @@
                     FillColor="@Client.CurrentSkin.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
             }
 
-            <MapImage X="@(pos.X - 0.4f * Client.CurrentSkin.HmsRadius + Math.Abs(Client.CurrentSkin.HmsDX))"
+            <MapImage X="@(pos.X - 0.4f * Client.CurrentSkin.HmsRadius + Math.Abs(Client.CurrentSkin.HmsDx))"
                Y="@(pos.Y - 0.18f * Client.CurrentSkin.HmsRadius)"
                Diameter="@(Client.CurrentSkin.FORCETOKEN_RADIUS)"
                Src="@(showHMS ? Client.CurrentSkin.Eye_URL : Client.CurrentSkin.EyeSlash_URL)"

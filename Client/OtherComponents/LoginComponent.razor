@@ -73,10 +73,7 @@ else
         <div class="card-footer">
             <div class="row">
                 <span class="col">Version @Game.LatestVersion (June 2025)</span>
-                @if (HasNews)
-                {
-                    <span class="col" @onclick=@(_ => ShowWhatsNew = true) style="text-align: right; cursor: pointer; color: red; font-weight: bolder; text-shadow: 0 0 2px gold;">Click here to see what's new!</span>    
-                }
+                @*<span class="col" @onclick=@(_ => ShowWhatsNew = true) style="text-align: right; cursor: pointer; color: red; font-weight: bolder; text-shadow: 0 0 2px gold;">Click here to see what's new!</span>*@    
             </div>
         </div>
     </div>
@@ -88,8 +85,6 @@ else
 
 @code {
 
-    private const bool HasNews = false;
-    
     private LoginComponentState State { get; set; } = LoginComponentState.Login;
     
     private ElementReference _focusField;

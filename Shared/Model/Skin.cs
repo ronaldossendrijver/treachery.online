@@ -14,6 +14,8 @@ namespace Treachery.Shared;
 public class Skin : IDescriber
 {
     #region Attributes
+    
+    // ReSharper disable InconsistentNaming
 
     public const int LatestVersion = 151;
 
@@ -188,6 +190,8 @@ public class Skin : IDescriber
 
     //General
     public string FACTION_INFORMATIONCARDSTYLE;
+    
+    // ReSharper restore InconsistentNaming
 
     #endregion Attributes
 
@@ -198,18 +202,6 @@ public class Skin : IDescriber
         try
         {
             return list.Length == 0 ? m : string.Format(m, Describe(list));
-        }
-        catch (Exception)
-        {
-            return m;
-        }
-    }
-
-    public string FormatCapitalized(string m, params object[] list)
-    {
-        try
-        {
-            return FirstCharToUpper(string.Format(m, Describe(list)));
         }
         catch (Exception)
         {
@@ -228,14 +220,6 @@ public class Skin : IDescriber
         return result;
     }
 
-    public string Join(IEnumerable items)
-    {
-        var itemsAsObjects = new List<object>();
-        foreach (var item in items) itemsAsObjects.Add(item);
-
-        return Join(itemsAsObjects);
-    }
-
     public PointD GetCenter(Location location, Map map)
     {
         if (location is HiddenMobileStronghold hms)
@@ -245,10 +229,10 @@ public class Skin : IDescriber
                 var dX = hms.AttachedToLocation.Territory == map.RockOutcroppings ? 22 : 0;
                 var dY = hms.AttachedToLocation.Territory == map.RockOutcroppings ? -10 : 0;
                 var attachedToCenter = GetCenter(hms.AttachedToLocation, map);
-                return new PointD(attachedToCenter.X + (int)HmsDX + dX, attachedToCenter.Y + dY);
+                return new PointD(attachedToCenter.X + (int)HmsDx + dX, attachedToCenter.Y + dY);
             }
 
-            return new PointD((int)HmsDX, (int)HmsDX);
+            return new PointD((int)HmsDx, (int)HmsDx);
         }
 
         if (location is DiscoveredLocation ds)
@@ -265,7 +249,7 @@ public class Skin : IDescriber
         return LocationCenter_Point[location.Id];
     }
 
-    public float HmsDX => -3 * PlayerTokenRadius;
+    public float HmsDx => -3 * PlayerTokenRadius;
 
     public float HmsRadius => 1.5f * PlayerTokenRadius;
 
@@ -322,17 +306,9 @@ public class Skin : IDescriber
 
     private object[] Describe(object[] objects)
     {
-        var result = new string[objects.Length];
+        var result = new object[objects.Length];
         for (var i = 0; i < objects.Length; i++) result[i] = Describe(objects[i]);
         return result;
-    }
-
-    private static string FirstCharToUpper(string input)
-    {
-        if (string.IsNullOrEmpty(input))
-            return input;
-        
-        return input[0].ToString().ToUpper() + input[1..];
     }
 
     private static string Describe(ClairVoyanceAnswer answer)
