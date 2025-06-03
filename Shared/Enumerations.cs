@@ -936,6 +936,13 @@ public enum GameListScope
     All = 3
 }
 
+public enum AutomationRuleType
+{
+    AutoPassBidding = 1,
+    AutoFlipAdvisors = 2,
+    AutoKarma = 3,
+}
+
 public enum ShipmentType
 {
     Unknown = 0,

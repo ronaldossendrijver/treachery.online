@@ -51,7 +51,7 @@
                 if (Client.Game.LeaderState[leader].IsFaceDownDead)
                 {
                     <MapImage X="@(l.X + displaceX)" Y="@(l.Y)" Diameter="@(leaderDiameter)"
-                           Src="@Client.CurrentSkin.GetFactionFacedownImageURL(p.Faction)"
+                           Src="@Client.CurrentSkin.GetFactionFacedownImageUrl(p.Faction)"
                            Popover="@Popover(leader)" PopoverStyle=""
                            ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" />
                 }

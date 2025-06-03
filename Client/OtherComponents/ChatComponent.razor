@@ -17,7 +17,7 @@
 
         <div class="d-flex flex-row-reverse">
 
-            <input @bind-value="_message" class="form-control form-control-sm" type="text" maxlength="512" placeholder="@Placeholder" @onkeyup="@(KeyUp)"/>
+            <input name="message" @bind-value="_message" class="form-control form-control-sm" type="text" maxlength="512" placeholder="@Placeholder" @onkeyup="@(KeyUp)"/>
 
         </div>
 
@@ -27,7 +27,7 @@
 
             @if (ShowGameChat)
             {
-                <select class="form-select form-select-sm me-1" style="color:@SelectedFactionForegroundColor;background-color:@SelectedFactionColor" @bind="@_selectedPlayerName">
+                <select name="faction" class="form-select form-select-sm me-1" style="color:@SelectedFactionForegroundColor;background-color:@SelectedFactionColor" @bind="@_selectedPlayerName">
 
                     @if (!Client.MuteGlobalChat)
                     {

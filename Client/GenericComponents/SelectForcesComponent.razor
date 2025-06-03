@@ -101,7 +101,7 @@
     [Parameter]
     public string Class { get; set; } = "d-inline-flex align-items-center";
 
-    private string ForceSymbolSRC => Special ? Client.CurrentSkin.GetFactionSpecialForceImageURL(Faction) : Client.CurrentSkin.GetFactionForceImageURL(Faction);
+    private string ForceSymbolSRC => Special ? Client.CurrentSkin.GetFactionSpecialForceImageUrl(Faction) : Client.CurrentSkin.GetFactionForceImageUrl(Faction);
 
     private async Task Notify() {
 

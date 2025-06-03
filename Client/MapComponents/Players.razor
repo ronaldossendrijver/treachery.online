@@ -30,13 +30,13 @@
 
             <Circle X="@position.X" Y="@position.Y" Radius="@(1.35f * Client.CurrentSkin.PlayerTokenRadius)" FillColor="@Client.CurrentSkin.TABLEPOSITION_BACKGROUNDCOLOR" />
 
-            <MapImage X="@(x)" Y="@(y)" Diameter=@factionTokenDiameter Src="@Client.CurrentSkin.GetFactionTableImageURL(p.Faction)" 
+            <MapImage X="@(x)" Y="@(y)" Diameter=@factionTokenDiameter Src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" 
                    ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                    Popover="@Intel(p)"/>
 
             if (p.Ally != Faction.None)
             {
-                <MapImage X="@(position.X)" Y="@(position.Y + 0.25f * Client.CurrentSkin.PlayerTokenRadius)" Diameter=@(1.2f * Client.CurrentSkin.PlayerTokenRadius) Src="@Client.CurrentSkin.GetFactionTableImageURL(p.Ally)" 
+                <MapImage X="@(position.X)" Y="@(position.Y + 0.25f * Client.CurrentSkin.PlayerTokenRadius)" Diameter=@(1.2f * Client.CurrentSkin.PlayerTokenRadius) Src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Ally)" 
                        ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                        Popover="@Intel(p.AlliedPlayer)"/>
             }
@@ -64,7 +64,7 @@
 
                         <MapImage X=@(homeworldXY.X + 0.75f * Client.CurrentSkin.PlayerTokenRadius) Y=@(homeworldXY.Y + 1.5f * Client.CurrentSkin.PlayerTokenRadius)
                                   Diameter=@(0.5f * Client.CurrentSkin.PlayerTokenRadius)
-                                  Src="@Client.CurrentSkin.GetFactionFacedownImageURL(occupier)" ShadowColor="white" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
+                                  Src="@Client.CurrentSkin.GetFactionFacedownImageUrl(occupier)" ShadowColor="white" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
                                   Popover=@occupierMessage PopoverAsTooltip="true" />
                     }
                     else if (p.HasHighThreshold(homeworld.World))

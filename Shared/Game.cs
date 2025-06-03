@@ -14,7 +14,7 @@ public partial class Game
     #region Settings
 
     private const int LowestSupportedVersion = 100;
-    public const int LatestVersion = 177;
+    public const int LatestVersion = 178;
     
     #endregion Settings
 
@@ -80,6 +80,8 @@ public partial class Game
     public List<TerrorType> UnplacedTerrorTokens { get; internal set; } = [];
     internal Deck<IHero> TraitorDeck { get; private set; }
     public Leader PinkLoyalLeader { get; private set; }
+    
+    public List<IAutomationRule> AutomationRules { get; set; }
 
     #endregion GameState
 
@@ -996,7 +998,7 @@ public partial class Game
     public DateTime FirstAction => History.FirstOrDefault()?.Time.DateTime ?? DateTime.MinValue;
     
     public DateTime LastAction => History.LastOrDefault()?.Time.DateTime ?? DateTime.MinValue;
-
+    
     #endregion Information
 
 

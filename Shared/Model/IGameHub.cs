@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Treachery.Shared;
 
@@ -186,6 +185,7 @@ public interface IGameHub
 
     //Other
     Task<Result<ServerInfo>> Connect();
+    Task<VoidResult> RequestNudgeBots(string userToken, string gameId);
     
     //Admin
     Task<Result<string>> AdminUpdateMaintenance(string userToken, DateTimeOffset maintenanceDate);

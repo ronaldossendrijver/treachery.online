@@ -209,14 +209,14 @@
                     if (b.AmountOfForces > 0)
                     {
                         result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
-                            Client.CurrentSkin.GetFactionForceImageURL(p.Faction),
+                            Client.CurrentSkin.GetFactionForceImageUrl(p.Faction),
                             b.AmountOfForces);
                     }
 
                     if (b.AmountOfSpecialForces > 0)
                     {
                         result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
-                            Client.CurrentSkin.GetFactionSpecialForceImageURL(p.Faction),
+                            Client.CurrentSkin.GetFactionSpecialForceImageUrl(p.Faction),
                             b.Faction == Faction.White && Client.Faction != Faction.White ? "?" : "" + (b.Faction == Faction.White ? Game.CurrentNoFieldValue : b.AmountOfSpecialForces));
                     }
                 }

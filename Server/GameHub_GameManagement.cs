@@ -5,12 +5,14 @@ namespace Treachery.Server;
 
 public partial class GameHub
 {
+    public const int MaximumNumberOfGamesPerPlayer = 10;
+    
     public async Task<Result<GameInitInfo>> RequestCreateGame(string userToken, string hashedPassword, string stateData, string skin)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<GameInitInfo>(ErrorType.UserNotFound);
         
-        if (RunningGamesByGameId.Values.Count(g => g.CreatorUserId == user.Id) >= 3)
+        if (RunningGamesByGameId.Values.Count(g => g.CreatorUserId == user.Id) >= MaximumNumberOfGamesPerPlayer)
             return Error<GameInitInfo>(ErrorType.TooManyGames);
 
         Game game;
@@ -145,7 +147,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
 
-        PerformBotEvent(game);
+        ScheduleBotEvent(game);
         return Success();
     }
 
@@ -162,7 +164,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
 
-        PerformBotEvent(game);
+        ScheduleBotEvent(game);
         return Success();
     }
 
@@ -207,7 +209,7 @@ public partial class GameHub
         await PersistGameIfNeeded(game);
         
         if (game.Game.NumberOfPlayers == 1)
-            PerformBotEvent(game);
+            ScheduleBotEvent(game);
             
         return Success(new GameInitInfo
         {
@@ -251,7 +253,7 @@ public partial class GameHub
             return Error(ErrorType.NoHost);
 
         game.Game.OpenOrCloseSeat(seat);
-        await Clients.Group(gameId).HandleOpenOrCloseSeat(seat);
+        await Clients.Group(gameId).HandleOpenOrCloseSeats([seat]);
         
         await PersistGameIfNeeded(game);
         
@@ -296,7 +298,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
         
-        PerformBotEvent(game);
+        ScheduleBotEvent(game);
         UpdateServerStatusIfNeeded(true);
         
         return Success(FilteredServerStatus(GameListScope.Active, user.Id));
@@ -316,7 +318,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
         
-        PerformBotEvent(game);
+        ScheduleBotEvent(game);
         return Success();
     }
     
@@ -404,7 +406,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
         
-        PerformBotEvent(game);
+        ScheduleBotEvent(game);
 
         return Success(new GameInitInfo
         {
@@ -478,7 +480,7 @@ public partial class GameHub
 
         game.LastActivity = DateTimeOffset.Now;
         await PersistGameIfNeeded(game);
-        PerformBotEvent(game);
+        ScheduleBotEvent(game);
         return Success();
     }
 
@@ -495,7 +497,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
 
-        PerformBotEvent(game);
+        ScheduleBotEvent(game);
         return Success();
     }
 

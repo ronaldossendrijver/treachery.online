@@ -90,7 +90,7 @@ public class Voice : GameEvent
 
     public static bool MayUseVoice(Game g, Player p)
     {
-        var disableWhenPrescienceIsUsed = g.Version >= 108 && g.CurrentPrescience != null;
+        var disableWhenPrescienceIsUsed = g.Version >= 108 && g.Version < 178 && g.CurrentPrescience != null;
 
         if (!disableWhenPrescienceIsUsed && g.CurrentVoice == null && g.CurrentBattle != null && g.CurrentBattle.IsInvolved(p))
         {

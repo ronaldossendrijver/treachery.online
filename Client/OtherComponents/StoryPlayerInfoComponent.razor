@@ -79,7 +79,7 @@
             {
                 <tr class ="table-dark">
 
-                    <td><img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageURL(p.Faction)" /></td>
+                    <td><img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" /></td>
 
                     @if (ShowName)
                     {
@@ -91,11 +91,11 @@
                         <td>
                             @if (p.Ally != Faction.None)
                             {
-                                <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageURL(p.Ally)" />
+                                <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Ally)" />
                             }
                             else if (p.Nexus != Faction.None)
                             {
-                                <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageURL(p.Nexus)" />
+                                <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Nexus)" />
                                 <strong>*</strong>
                             }
                         </td>
@@ -187,14 +187,14 @@
 
                                     @if (p.ForcesIn(l) > 0)
                                     {
-                                        <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionForceImageURL(p.Faction)' title=@Client.CurrentSkin.Describe(p.Force) /><strong>&nbsp;@p.ForcesIn(l)</strong>
+                                        <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionForceImageUrl(p.Faction)' title=@Client.CurrentSkin.Describe(p.Force) /><strong>&nbsp;@p.ForcesIn(l)</strong>
                                     }
 
                                     <span>&nbsp;</span>
 
                                     @if (p.SpecialForcesIn(l) > 0)
                                     {
-                                        <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionSpecialForceImageURL(p.Faction)' title=@Client.CurrentSkin.Describe(p.SpecialForce) /><strong>&nbsp;@p.SpecialForcesIn(l)</strong>
+                                        <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionSpecialForceImageUrl(p.Faction)' title=@Client.CurrentSkin.Describe(p.SpecialForce) /><strong>&nbsp;@p.SpecialForcesIn(l)</strong>
                                     }
 
                                 </div>
@@ -224,12 +224,12 @@
                         <td>
                             @if (p.ForcesKilled > 0)
                             {
-                                <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionForceImageURL(p.Faction)' title=@Client.CurrentSkin.Describe(p.Force) /><strong>&nbsp;@p.ForcesKilled</strong>
+                                <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionForceImageUrl(p.Faction)' title=@Client.CurrentSkin.Describe(p.Force) /><strong>&nbsp;@p.ForcesKilled</strong>
                             }
 
                             @if (p.SpecialForcesKilled > 0)
                             {
-                                <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionSpecialForceImageURL(p.Faction)' title=@Client.CurrentSkin.Describe(p.SpecialForce) /><strong>&nbsp;@p.SpecialForcesKilled</strong>
+                                <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionSpecialForceImageUrl(p.Faction)' title=@Client.CurrentSkin.Describe(p.SpecialForce) /><strong>&nbsp;@p.SpecialForcesKilled</strong>
                             }
 
                             @foreach (var c in p.Leaders.Where(l => !Game.IsAlive(l)))

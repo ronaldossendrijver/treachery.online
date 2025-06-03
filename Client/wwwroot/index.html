@@ -124,16 +124,22 @@
 
         function EnablePopover(element) {
 
+            if (element == null) return;
+            
             new bootstrap.Popover(element, { sanitize: false });
         }
                 
         function EnablePopovers(element) {
 
+            if (element == null) return;
+            
             element.querySelectorAll('[data-bs-toggle="popover"]').forEach( function (trigger) { EnablePopover(trigger); } );
         }
 
         function RemovePopover(element) {
 
+            if (element == null) return;
+            
             var popover = bootstrap.Popover.getInstance(element);
 
             if (popover != null) {
@@ -143,12 +149,16 @@
         }
 
         function RemovePopovers(element) {
+
+            if (element == null) return;
             
             element.querySelectorAll('[data-bs-toggle="popover"]').forEach( function (trigger) { RemovePopover(trigger); } );
         }
 
         function RefreshPopover(element) {
 
+            if (element == null) return;
+            
             var popover = bootstrap.Popover.getInstance(element);
             if (popover != null) {
 
@@ -159,6 +169,8 @@
         }
 
         function RefreshPopovers(element) {
+            
+            if (element == null) return;
             
             element.querySelectorAll('[data-bs-toggle="popover"]').forEach( function (trigger) { RefreshPopover(trigger); } );
         }
@@ -393,10 +405,7 @@
     <script src="_framework/blazor.webassembly.js"></script>
 
     <script type="text/javascript">
-
-        window.onbeforeunload = function () { return "This will disconnect you from the game! Are you sure?"; }
         window.addEventListener("resize", SetPlanetMapScale);
-
     </script>
 
 </body>

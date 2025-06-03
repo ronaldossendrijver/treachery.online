@@ -16,6 +16,8 @@ namespace Treachery.Client;
 
 public class Client : IGameService, IGameClient, IAsyncDisposable
 {
+    private const int NudgeBotsDelay = 7000;
+    
     //General info
     public ServerInfo ServerInfo { get; private set; }
     public Skin CurrentSkin { get; set; } = DefaultSkin.Default;
@@ -138,7 +140,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         _connection.On<int,string,int>(nameof(HandleJoinGame), HandleJoinGame);
         _connection.On<int>(nameof(HandleSetOrUnsetHost), HandleSetOrUnsetHost);
         _connection.On<int,string>(nameof(HandleObserveGame), HandleObserveGame);
-        _connection.On<int>(nameof(HandleOpenOrCloseSeat), HandleOpenOrCloseSeat);
+        _connection.On<int[]>(nameof(HandleOpenOrCloseSeats), HandleOpenOrCloseSeats);
         _connection.On<int,bool>(nameof(HandleRemoveUser), HandleRemoveUser);
         _connection.On<bool>(nameof(HandleBotStatus), HandleBotStatus);
         _connection.On<GameInitInfo>(nameof(HandleLoadGame), HandleLoadGame);
@@ -200,10 +202,12 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return Task.CompletedTask;
     }
 
-    public Task HandleOpenOrCloseSeat(int seat)
+    public Task HandleOpenOrCloseSeats(int[] seats)
     {
-        Game.OpenOrCloseSeat(seat);
-        Refresh(nameof(HandleOpenOrCloseSeat));
+        foreach (var seat in seats)
+            Game.OpenOrCloseSeat(seat);
+        
+        Refresh(nameof(HandleOpenOrCloseSeats));
         return Task.CompletedTask;
     }
 
@@ -703,7 +707,11 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     private async Task PerformPostEventTasks()
     {
         Status = GameStatus.DetermineStatus(Game, Player, !IsObserver);
-        Actions = Game.GetApplicableEvents(Player, IsHost);        
+        Actions = Game.GetApplicableEvents(Player, IsHost);
+
+        var lastActionTime = Game.LastAction;
+        if (!Status.WaitingForHost && IsHost && Status.WaitingForPlayers.Count > 0 && Status.WaitingForPlayers.All(p => p.IsBot))
+            _ = Task.Delay(NudgeBotsDelay).ContinueWith(_ => RequestNudgeBots(lastActionTime));
         
         await TurnAlert();
         await PlaySoundsForMilestones();
@@ -713,6 +721,12 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             ResetAutoPassThreshold();
 
         Refresh(nameof(PerformPostEventTasks));
+    }
+
+    private async Task RequestNudgeBots(DateTime gameLastAction)
+    {
+        if (Game.LastAction == gameLastAction)
+            await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestNudgeBots));
     }
 
     private void ResetAutoPassThreshold()

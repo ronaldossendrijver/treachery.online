@@ -23,7 +23,7 @@
                 @foreach (var p in Players.Where(p => p != Client.Player))
                 {
                     <button class="btn @ButtonStyle(p) p-1" @onclick="e => Toggle(p)" data-bs-toggle="tooltip" title="@Client.CurrentSkin.Describe(p.Faction)">
-                        <img class="img-fluid" width="29" height="29" src="@Client.CurrentSkin.GetFactionTableImageURL(p.Faction)" />
+                        <img class="img-fluid" width="29" height="29" src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" />
                     </button>
                 }
 
@@ -42,14 +42,14 @@
 
                     <!-- Forces -->
                     <div class="col col-auto ps-0">
-                        <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionForceImageURL(p.Faction)" title="@Client.CurrentSkin.Describe(p.Force)" /><strong>&nbsp;@p.ForcesInReserve</strong>
+                        <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionForceImageUrl(p.Faction)" title="@Client.CurrentSkin.Describe(p.Force)" /><strong>&nbsp;@p.ForcesInReserve</strong>
                     </div>
 
                     <!-- Special Forces -->
                     @if (p.HasSpecialForces)
                     {
                         <div class="col col-auto ps-0">
-                            <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionSpecialForceImageURL(p.Faction)" title="@Client.CurrentSkin.Describe(p.SpecialForce)" /><strong>&nbsp;@p.SpecialForcesInReserve</strong>
+                            <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(p.Faction)" title="@Client.CurrentSkin.Describe(p.SpecialForce)" /><strong>&nbsp;@p.SpecialForcesInReserve</strong>
                         </div>
                     }
 

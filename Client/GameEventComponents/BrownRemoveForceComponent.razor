@@ -59,7 +59,7 @@
 
     private IEnumerable<bool> ForceChoices => BrownRemoveForce.ValidSpecialForceChoices(Game, location, target);
 
-    private IEnumerable<string> ImageURLs => BrownRemoveForce.ValidSpecialForceChoices(Game, location, target).Select(special => special ? Client.CurrentSkin.GetFactionSpecialForceImageURL(target) : Client.CurrentSkin.GetFactionForceImageURL(target));
+    private IEnumerable<string> ImageURLs => BrownRemoveForce.ValidSpecialForceChoices(Game, location, target).Select(special => special ? Client.CurrentSkin.GetFactionSpecialForceImageUrl(target) : Client.CurrentSkin.GetFactionForceImageUrl(target));
 
     private void HandleLocationSelected(object sender, Location l)
     {
