@@ -7,9 +7,7 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Collections;
-using System.IO;
 
 namespace Treachery.Shared;
 
@@ -331,12 +329,13 @@ public class Skin : IDescriber
 
     private static string FirstCharToUpper(string input)
     {
-        if (input == null || input == "")
+        if (string.IsNullOrEmpty(input))
             return input;
+        
         return input[0].ToString().ToUpper() + input[1..];
     }
 
-    public string Describe(ClairVoyanceAnswer answer)
+    private static string Describe(ClairVoyanceAnswer answer)
     {
         return answer switch
         {
@@ -445,8 +444,8 @@ public class Skin : IDescriber
     {
         return GetLabel(DiscoveryTokenDescription_STR, dt);
     }
-    
-    public string GetPopup(string c)
+
+    private static string GetPopup(string c)
         => $"<div style='background-color:white;border-color:black;border-width:1px;border-style:solid;color:black;padding:2px;'>{c}</div>";
 
     public string GetPopup(ResourceCard c)
@@ -465,7 +464,7 @@ public class Skin : IDescriber
         => GetImageHoverHtml(GetImageUrl(n));
 
     public string GetPopup(Homeworld w)
-        => $"<div style='position:relative'><img width=480 style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{GetHomeworldCardImageURL(w.World)}'/></div>";
+        => $"<div style='position:relative'><img width=480 style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{GetHomeworldCardImageUrl(w.World)}'/></div>";
 
     public string GetPopup(TreacheryCard c)
     {
@@ -488,8 +487,6 @@ public class Skin : IDescriber
 
         if (skill == LeaderSkill.None)
         {
-            if (h is Leader)
-                return GetImageHoverHtml(GetImageUrl(h));
             return GetImageHoverHtml(GetImageUrl(h));
         }
 
@@ -543,7 +540,7 @@ public class Skin : IDescriber
         return GetLabel(DiscoveryTokenTypeName_STR, dtt);
     }
 
-    public string Describe(TerrorType terr)
+    private string Describe(TerrorType terr)
     {
         return GetLabel(TerrorTokenName_STR, terr);
     }
@@ -573,7 +570,7 @@ public class Skin : IDescriber
         return GetLabel(MainPhase_STR, p);
     }
 
-    public string Describe(TechToken tt)
+    private string Describe(TechToken tt)
     {
         return GetLabel(TechTokenName_STR, tt);
     }
@@ -621,7 +618,7 @@ public class Skin : IDescriber
         return GetLabel(SpecialForceName_STR, GetFaction(f));
     }
 
-    public string Describe(FactionAdvantage advantage)
+    private string Describe(FactionAdvantage advantage)
     {
         return advantage switch
         {
@@ -685,8 +682,7 @@ public class Skin : IDescriber
         };
     }
 
-
-    public static string Describe(Ruleset s)
+    private static string Describe(Ruleset s)
     {
         return s switch
         {
@@ -707,7 +703,7 @@ public class Skin : IDescriber
         };
     }
 
-    public static string Describe(RuleGroup s)
+    private static string Describe(RuleGroup s)
     {
         return s switch
         {
@@ -744,7 +740,7 @@ public class Skin : IDescriber
         };
     }
 
-    public static string Describe(Phase p)
+    private static string Describe(Phase p)
     {
         return p switch
         {
@@ -758,7 +754,7 @@ public class Skin : IDescriber
         };
     }
 
-    public static string Describe(BrownEconomicsStatus p)
+    private static string Describe(BrownEconomicsStatus p)
     {
         return p switch
         {
@@ -771,7 +767,7 @@ public class Skin : IDescriber
         };
     }
 
-    public static string Describe(AuctionType t)
+    private static string Describe(AuctionType t)
     {
         return t switch
         {
@@ -799,7 +795,7 @@ public class Skin : IDescriber
         };
     }
 
-    public static string Describe(JuiceType jt)
+    private static string Describe(JuiceType jt)
     {
         return jt switch
         {
@@ -810,7 +806,7 @@ public class Skin : IDescriber
         };
     }
 
-    public static string Describe(CaptureDecision c)
+    private static string Describe(CaptureDecision c)
     {
         return c switch
         {
@@ -821,7 +817,7 @@ public class Skin : IDescriber
         };
     }
 
-    public string Describe(StrongholdAdvantage sa)
+    private string Describe(StrongholdAdvantage sa)
     {
         return sa switch
         {
@@ -954,7 +950,7 @@ public class Skin : IDescriber
             ErrorType.NoHost => "You are not a host",
             ErrorType.InvalidGameEvent => "Invalid game action",
             ErrorType.TooManyGames => "You cannot have more than 3 active games, delete a game first",
-            ErrorType.TooManyScheduledGames => "You cannot schedule more than 3 games, delete a game first",
+            ErrorType.TooManyScheduledGames => "You cannot schedule more than 10 games, delete a game first",
             ErrorType.IncorrectGamePassword => "Incorrect password",
             ErrorType.SeatNotAvailableNotOpen => "Seat is not available",
             ErrorType.SeatNotAvailableKicked => "You were removed from this game",
@@ -1002,14 +998,9 @@ public class Skin : IDescriber
         return GetLabel(LeaderSkillCardImage_URL, s);
     }
 
-    public string GetTreacheryCardDescription(TreacheryCard c)
+    private string GetTreacheryCardDescription(TreacheryCard c)
     {
         return c != null ? GetLabel(TreacheryCardDescription_STR, c.SkinId) : "";
-    }
-
-    public object GetTechTokenDescription(TechToken t)
-    {
-        return GetLabel(TechTokenDescription_STR, t);
     }
 
     public string GetImageUrl(IHero h)
@@ -1027,37 +1018,37 @@ public class Skin : IDescriber
         return GetLabel(FactionImage_URL, faction);
     }
 
-    public string GetFactionTableImageURL(Faction faction)
+    public string GetFactionTableImageUrl(Faction faction)
     {
         return GetLabel(FactionTableImage_URL, faction);
     }
 
-    public string GetFactionFacedownImageURL(Faction faction)
+    public string GetFactionFacedownImageUrl(Faction faction)
     {
         return GetLabel(FactionFacedownImage_URL, faction);
     }
 
-    public string GetFactionForceImageURL(Faction f)
+    public string GetFactionForceImageUrl(Faction f)
     {
         return GetLabel(FactionForceImage_URL, f);
     }
 
-    public string GetFactionSpecialForceImageURL(Faction f)
+    public string GetFactionSpecialForceImageUrl(Faction f)
     {
         return GetLabel(FactionSpecialForceImage_URL, f);
     }
 
-    public string GetImageUrl(FactionForce ff)
+    private string GetImageUrl(FactionForce ff)
     {
-        return GetFactionForceImageURL(GetFaction(ff));
+        return GetFactionForceImageUrl(GetFaction(ff));
     }
 
-    public string GetImageUrl(FactionSpecialForce fsf)
+    private string GetImageUrl(FactionSpecialForce fsf)
     {
-        return GetFactionSpecialForceImageURL(GetFaction(fsf));
+        return GetFactionSpecialForceImageUrl(GetFaction(fsf));
     }
 
-    public string GetHomeworldCardImageURL(World w)
+    public string GetHomeworldCardImageUrl(World w)
     {
         return GetLabel(HomeWorldCardImage_URL, w);
     }
@@ -1089,9 +1080,9 @@ public class Skin : IDescriber
         return GetLabel(FactionColor, faction);
     }
 
-    public string GetFactionColorTransparant(Faction faction, string transparancy)
+    public string GetFactionColorTransparent(Faction faction, string transparency)
     {
-        return GetLabel(FactionColor, faction) + transparancy;
+        return GetLabel(FactionColor, faction) + transparency;
     }
 
     #endregion NamesAndImages
@@ -1100,7 +1091,8 @@ public class Skin : IDescriber
 
     public string GetFactionInfo_HTML(Game g, Faction f)
     {
-        object[] parameters = {
+        object[] parameters =
+        [
             Faction.Green, //0
             Faction.Black, //1
             Faction.Red, //2
@@ -1153,7 +1145,7 @@ public class Skin : IDescriber
             Faction.Cyan, //49
             g.Map.ImperialBasin // 50
 
-        };
+        ];
 
         return f switch
         {
@@ -1201,7 +1193,7 @@ public class Skin : IDescriber
 
     private static string AdvancedHeader(Game g, params Rule[] rules)
     {
-        return rules.Any(r => g.Applicable(r)) ? "<h5>Advanced Game Advantages</h5>" : "";
+        return rules.Any(g.Applicable) ? "<h5>Advanced Game Advantages</h5>" : "";
     }
 
     private string GetGreenTemplate(Game g)
@@ -1541,7 +1533,7 @@ public class Skin : IDescriber
         return result;
     }
 
-    public static void Fix(Skin toFix, Skin donor)
+    private static void Fix(Skin toFix, Skin donor)
     {
         toFix.Concept_STR = FixDictionary(toFix.Concept_STR, donor.Concept_STR);
         toFix.MainPhase_STR = FixDictionary(toFix.MainPhase_STR, donor.MainPhase_STR);

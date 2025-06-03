@@ -36,14 +36,14 @@
 
                             <!-- Forces -->
                             <div class="col p-0">
-                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionForceImageURL(ShownPlayer.Faction)" title=@Name(ShownPlayer.Force) /><strong>&nbsp;@ShownPlayer.ForcesInReserve</strong>
+                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionForceImageUrl(ShownPlayer.Faction)" title=@Name(ShownPlayer.Force) /><strong>&nbsp;@ShownPlayer.ForcesInReserve</strong>
                             </div>
 
                             <!-- Special Forces -->
                             @if (ShownPlayer.HasSpecialForces)
                             {
                                 <div class="col p-0">
-                                    <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionSpecialForceImageURL(ShownPlayer.Faction)" title=@Name(ShownPlayer.SpecialForce) /><strong>&nbsp;@ShownPlayer.SpecialForcesInReserve</strong>
+                                    <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(ShownPlayer.Faction)" title=@Name(ShownPlayer.SpecialForce) /><strong>&nbsp;@ShownPlayer.SpecialForcesInReserve</strong>
                                 </div>
                             }
 
@@ -181,7 +181,7 @@
 
                         @if (ShownPlayer.Nexus != Faction.None)
                         {
-                            <div>Nexus: <Image Width=30 Src=@Client.CurrentSkin.GetFactionFacedownImageURL(ShownPlayer.Nexus) Popover=@Client.CurrentSkin.GetNexusCardPopup(ShownPlayer.Nexus.ToNexus())/></div>
+                            <div>Nexus: <Image Width=30 Src=@Client.CurrentSkin.GetFactionFacedownImageUrl(ShownPlayer.Nexus) Popover=@Client.CurrentSkin.GetNexusCardPopup(ShownPlayer.Nexus.ToNexus())/></div>
                         }
                     }
                     else
@@ -207,7 +207,7 @@
 
     private bool _collapsed = true;
 
-    private string PlayerColor => string.Format("background-color:{0}", Client.CurrentSkin.GetFactionColorTransparant(ShownPlayer.Faction, "bb"));
+    private string PlayerColor => string.Format("background-color:{0}", Client.CurrentSkin.GetFactionColorTransparent(ShownPlayer.Faction, "bb"));
 
     private string ResourcesText
     {

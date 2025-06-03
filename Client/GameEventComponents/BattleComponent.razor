@@ -21,17 +21,17 @@
             Opponent forces: 
             @if (Opponent.ForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageURL(Opponent.Faction)" width=30 height="30"/>
+                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageUrl(Opponent.Faction)" width=30 height="30"/>
                 <span>&nbsp;<strong>@Opponent.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
             }
             @if (Opponent.HasAlly && Opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageURL(Opponent.Ally)" width=30 height="30"/>
+                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageUrl(Opponent.Ally)" width=30 height="30"/>
                 <span>&nbsp;<strong>@Opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
             }
             @if (Opponent.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageURL(Opponent.Faction)" width=30 height="30"/>
+                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(Opponent.Faction)" width=30 height="30"/>
                 
                 @if (Opponent.Faction != Faction.White) {
 
@@ -40,7 +40,7 @@
             }
             @if (Opponent.HasAlly && Opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageURL(Opponent.Ally)" width=30 height="30"/>
+                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(Opponent.Ally)" width=30 height="30"/>
 
                 @if (Opponent.Ally != Faction.White)
                 {

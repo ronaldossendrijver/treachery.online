@@ -5,12 +5,14 @@ namespace Treachery.Server;
 
 public partial class GameHub
 {
+    public const int MaximumNumberOfGamesPerPlayer = 10;
+    
     public async Task<Result<GameInitInfo>> RequestCreateGame(string userToken, string hashedPassword, string stateData, string skin)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<GameInitInfo>(ErrorType.UserNotFound);
         
-        if (RunningGamesByGameId.Values.Count(g => g.CreatorUserId == user.Id) >= 3)
+        if (RunningGamesByGameId.Values.Count(g => g.CreatorUserId == user.Id) >= MaximumNumberOfGamesPerPlayer)
             return Error<GameInitInfo>(ErrorType.TooManyGames);
 
         Game game;

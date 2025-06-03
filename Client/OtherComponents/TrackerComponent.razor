@@ -26,7 +26,7 @@
                 @foreach (var p in Players)
                 {
                     <button class="btn @ButtonStyle(p) p-1" @onclick="e => Toggle(p)" data-bs-toggle="tooltip" title="@Client.CurrentSkin.Describe(p.Faction)">
-                        <img class="img-fluid" width="29" height="29" src="@Client.CurrentSkin.GetFactionTableImageURL(p.Faction)" />
+                        <img class="img-fluid" width="29" height="29" src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" />
                     </button>
                 }
 
