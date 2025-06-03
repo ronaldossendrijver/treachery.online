@@ -7,36 +7,32 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Treachery.Shared;
 
 public class GameStatus
 {
-    public Message DescriptionWhenAwaited { get; }
+    public List<Territory> HighlightedTerritories { get; private set; }
 
-    public Message DescriptionWhenWaiting { get; }
+    public List<SequenceElement> WaitingInSequence { get; } = [];
 
-    public IEnumerable<Territory> HighlightedTerritories { get; private set; }
+    public List<Player> WaitingForPlayers { get; } = [];
 
-    public IEnumerable<SequenceElement> WaitingInSequence { get; } = Array.Empty<SequenceElement>();
-
-    public IEnumerable<Player> WaitingForPlayers { get; } = Array.Empty<Player>();
-
-    public List<FlashInfo> FlashInfo { get; set; } = new();
+    public List<FlashInfo> FlashInfo { get; private set; } = [];
 
     public GameEvent TimedEvent { get; private set; }
 
     public bool WaitingForHost { get; }
+    
+    private Message DescriptionWhenAwaited { get; }
+
+    private Message DescriptionWhenWaiting { get; }
 
     private GameStatus(Message messageWhenAwaited, Message messageWhenWaiting, Player waitingForPlayer, GameEvent timedEvent = null) :
-        this(messageWhenAwaited, messageWhenWaiting, new[] { waitingForPlayer }, timedEvent)
+        this(messageWhenAwaited, messageWhenWaiting, [waitingForPlayer], timedEvent)
     {
     }
 
-    private GameStatus(Message messageWhenAwaited, Message messageWhenWaiting, IEnumerable<Player> waitingForPlayers, GameEvent timedEvent = null)
+    private GameStatus(Message messageWhenAwaited, Message messageWhenWaiting, List<Player> waitingForPlayers, GameEvent timedEvent = null)
     {
         DescriptionWhenAwaited = messageWhenAwaited;
         DescriptionWhenWaiting = messageWhenWaiting;
@@ -73,12 +69,8 @@ public class GameStatus
         return WaitingForPlayers.Contains(p);
     }
 
-    public Message GetMessage(Player player, bool isHost)
-    {
-        if (WaitingForMe(player, isHost))
-            return DescriptionWhenAwaited;
-        return DescriptionWhenWaiting;
-    }
+    public Message GetMessage(Player player, bool isHost) 
+        => WaitingForMe(player, isHost) ? DescriptionWhenAwaited : DescriptionWhenWaiting;
 
     public static GameStatus DetermineStatus(Game game, Player me, bool isPlayer)
     {
@@ -143,7 +135,7 @@ public class GameStatus
             Phase.AssigningInitialSkills or Phase.AssigningSkill => Status(
                 "You may now assign a skill to a leader.",
                 "Waiting for factions to assign leader skills...",
-                game.Players.Where(p => p.SkillsToChooseFrom.Any())),
+                game.Players.Where(p => p.SkillsToChooseFrom.Any()).ToList()),
 
             Phase.BluePredicting => Status(game,
                 Express("Please predict who will win the game and when."),
@@ -157,7 +149,7 @@ public class GameStatus
             Phase.SelectingTraitors => Status(
                 "Please select one leader to keep as a traitor.",
                 "Factions are selecting traitors...",
-                PlayersThatHaventActedOrPassed(game)),
+                PlayersThatHaveNotActedOrPassed(game)),
 
             Phase.CustomizingDecks => Status(
                 "Please select which cards will be in play.",
@@ -202,7 +194,7 @@ public class GameStatus
             Phase.DiallingStorm => Status(game,
                 "Please dial a number to determine storm movement.",
                 "Storm movement is being determined...",
-                game.FactionsInPlay.Where(f => game.HasBattleWheel.Contains(f) && !game.HasActedOrPassed.Contains(f))),
+                game.FactionsInPlay.Where(f => game.HasBattleWheel.Contains(f) && !game.HasActedOrPassed.Contains(f)).ToList()),
 
             Phase.MetheorAndStormSpell => Status(Express("Factions may now use ", TreacheryCardType.Metheor, " or ", TreacheryCardType.StormSpell, "...")),
 
@@ -234,14 +226,14 @@ public class GameStatus
             Phase.VoteAllianceA or Phase.VoteAllianceB => Status(
                 "Please vote Yes or No to a Nexus.",
                 "Factions are voting on about a Nexus...",
-                PlayersThatHaventActedOrPassed(game)),
+                PlayersThatHaveNotActedOrPassed(game)),
 
             Phase.AllianceA or Phase.AllianceB => Status("Factions may now make and break alliances."),
 
             Phase.NexusCards => Status(
                 "Do you wish to draw a Nexus card in case you have none or have your own faction?",
                 "Factions are thinking about drawing Nexus cards...",
-                game.Players.Where(p => NexusCardDrawn.Applicable(game, p))),
+                game.Players.Where(p => NexusCardDrawn.Applicable(game, p)).ToList()),
 
             /* Charity */
 
@@ -262,7 +254,7 @@ public class GameStatus
             Phase.BlackMarketBidding when game.CurrentAuctionType == AuctionType.BlackMarketSilent => Status(
                 "Please bid.",
                 "Factions are thinking about their bids...",
-                game.Players.Where(p => p.HasRoomForCards && !game.Bids.ContainsKey(p.Faction)), game.LatestEvent(typeof(WhiteAnnouncesBlackMarket))),
+                game.Players.Where(p => p.HasRoomForCards && !game.Bids.ContainsKey(p.Faction)).ToList(), game.LatestEvent(typeof(WhiteAnnouncesBlackMarket))),
 
             Phase.WhiteAnnouncingAuction => Status(game,
                 Express("Please decide if you will auction a card from your cache First or Last."),
@@ -297,7 +289,7 @@ public class GameStatus
             Phase.Bidding when game.CurrentAuctionType == AuctionType.WhiteSilent => Status(
                 "Please bid.",
                 "Factions are thinking about their bids...",
-                game.Players.Where(p => p.HasRoomForCards && !game.Bids.ContainsKey(p.Faction)), game.LatestEvent(typeof(WhiteSpecifiesAuction))),
+                game.Players.Where(p => p.HasRoomForCards && !game.Bids.ContainsKey(p.Faction)).ToList(), game.LatestEvent(typeof(WhiteSpecifiesAuction))),
 
             Phase.ReplacingCardJustWon => Status(
                 Express("You might discard the card you just won and draw a new card instead, in case you have the necessary Nexus or alliance advantage."),
@@ -378,7 +370,7 @@ public class GameStatus
                 Phase.AmbassadorTriggeredByNonOrangeMove or
                 Phase.AmbassadorTriggeredByOrangeMove or
                 Phase.AmbassadorTriggeredByCaravan or 
-                Phase.AmbassadorTriggeredByRevival => Status(game,
+                Phase.AmbassadorTriggeredByRevival => Status(
                     Express("Do you wish to activate your ambassador?"),
                     Express(Faction.Pink, Ally(game, Faction.Pink), " are thinking about activating their ambassador..."),
                     PlayerAndAlly(game, Faction.Pink)),
@@ -485,12 +477,12 @@ public class GameStatus
             Phase.DividingCollectedResources => Status(game,
                 Express("Please make a proposal about how to divide collected ", Concept.Resource, "."),
                 Express("Waiting for ", game.CollectedResourcesToBeDivided.FirstOrDefault()?.FirstFaction, " to propose how to divide collected ", Concept.Resource),
-                game.CollectedResourcesToBeDivided.FirstOrDefault().FirstFaction),
+                game.CollectedResourcesToBeDivided.FirstOrDefault()?.FirstFaction),
 
             Phase.AcceptingResourceDivision => Status(game,
                 Express("Please decide about the proposed division of ", Concept.Resource, "."),
                 Express(game.CollectedResourcesToBeDivided.FirstOrDefault()?.OtherFaction, " are thinking about the proposed division"),
-                game.CollectedResourcesToBeDivided.FirstOrDefault().OtherFaction),
+                game.CollectedResourcesToBeDivided.FirstOrDefault()?.OtherFaction),
 
             /* Mentat */
 
@@ -511,7 +503,7 @@ public class GameStatus
         };
 
         result.FlashInfo = DetermineFlash(game, me?.Faction ?? Faction.None, isPlayer);
-        result.HighlightedTerritories = DetermineHighlights(game);
+        result.HighlightedTerritories = DetermineHighlights(game).ToList();
 
         return result;
     }
@@ -524,7 +516,7 @@ public class GameStatus
         return f;
     }
 
-    private static IEnumerable<Player> PlayerAndAlly(Game g, Faction f)
+    private static List<Player> PlayerAndAlly(Game g, Faction f)
     {
         var player = g.GetPlayer(f);
         var result = new List<Player>
@@ -541,23 +533,21 @@ public class GameStatus
         return MessagePart.ExpressIf(player.HasAlly, player.Ally);
     }
 
-    private static IEnumerable<Territory> DetermineHighlights(Game game)
+    private static List<Territory> DetermineHighlights(Game game)
     {
         return game.CurrentPhase switch
         {
-            Phase.YellowSettingUp => new[] { game.Map.SietchTabr.Territory, game.Map.FalseWallSouth, game.Map.FalseWallWest },
+            Phase.YellowSettingUp => [game.Map.SietchTabr.Territory, game.Map.FalseWallSouth, game.Map.FalseWallWest],
 
-            Phase.StormLosses => new[] { TakeLosses.LossesToTake(game).Location.Territory },
+            Phase.StormLosses => [TakeLosses.LossesToTake(game).Location.Territory],
 
-            Phase.HarvesterA => new[] { game.LatestSpiceCardA.Location.Territory },
-            Phase.HarvesterB => new[] { game.LatestSpiceCardB.Location.Territory },
+            Phase.HarvesterA => [game.LatestSpiceCardA.Location.Territory],
+            Phase.HarvesterB => [game.LatestSpiceCardB.Location.Territory],
 
             Phase.TerrorTriggeredByBlueAccompaniesNonOrangeShip or
                 Phase.TerrorTriggeredByBlueAccompaniesOrangeShip or
                 Phase.TerrorTriggeredByOrangeShip or
                 Phase.TerrorTriggeredByNonOrangeShip or
-                Phase.TerrorTriggeredByNonOrangeShip or
-                Phase.TerrorTriggeredByOrangeShip or
                 Phase.TerrorTriggeredByNonOrangeMove or
                 Phase.TerrorTriggeredByOrangeMove or
                 Phase.TerrorTriggeredByCaravan or
@@ -566,8 +556,6 @@ public class GameStatus
                 Phase.AmbassadorTriggeredByBlueAccompaniesOrangeShip or
                 Phase.AmbassadorTriggeredByOrangeShip or
                 Phase.AmbassadorTriggeredByNonOrangeShip or
-                Phase.AmbassadorTriggeredByNonOrangeShip or
-                Phase.AmbassadorTriggeredByOrangeShip or
                 Phase.AmbassadorTriggeredByNonOrangeMove or
                 Phase.AmbassadorTriggeredByOrangeMove or
                 Phase.AmbassadorTriggeredByCaravan or
@@ -581,7 +569,7 @@ public class GameStatus
                 Phase.BlueIntrudedByYellowRidingMonsterA or
                 Phase.BlueIntrudedByYellowRidingMonsterB or
                 Phase.BlueAccompaniesOrangeShip or
-                Phase.BlueAccompaniesNonOrangeShip when game.LastShipmentOrMovement != null => new[] { game.LastShipmentOrMovement.To.Territory },
+                Phase.BlueAccompaniesNonOrangeShip when game.LastShipmentOrMovement != null => [game.LastShipmentOrMovement.To.Territory],
 
             Phase.BattlePhase or
                 Phase.MeltingRock or
@@ -590,9 +578,9 @@ public class GameStatus
                 Phase.BattleConclusion or
                 Phase.AvoidingAudit or
                 Phase.Auditing or
-                Phase.RevealingFacedancer when game.CurrentBattle != null => new[] { game.CurrentBattle.Territory },
+                Phase.RevealingFacedancer when game.CurrentBattle != null => [game.CurrentBattle.Territory],
 
-            _ => Array.Empty<Territory>()
+            _ => []
         };
     }
 
@@ -619,95 +607,60 @@ public class GameStatus
             Express(game.CurrentBattle.Defender, " are defending against ", game.CurrentBattle.Aggressor, " aggression in ", game.CurrentBattle.Territory, "..."), toMakePlan, latestBattleEvent);
     }
 
-    public static IEnumerable<Player> PlayersThatHaventActedOrPassed(Game Game)
-    {
-        return Game.Players.Where(p => !Game.HasActedOrPassed.Contains(p.Faction));
-    }
+    private static List<Player> PlayersThatHaveNotActedOrPassed(Game game) 
+        => game.Players.Where(p => !game.HasActedOrPassed.Contains(p.Faction)).ToList();
 
-    public static IEnumerable<Player> PlayersThatNeedToMakeABattlePlan(Game Game)
+    private static List<Player> PlayersThatNeedToMakeABattlePlan(Game game)
     {
         var result = new List<Player>();
-        if (Game.AggressorPlan == null) result.Add(Game.CurrentBattle.AggressivePlayer);
-        if (Game.DefenderPlan == null) result.Add(Game.CurrentBattle.DefendingPlayer);
+        if (game.AggressorPlan == null) result.Add(game.CurrentBattle.AggressivePlayer);
+        if (game.DefenderPlan == null) result.Add(game.CurrentBattle.DefendingPlayer);
         return result;
     }
 
-    public static IEnumerable<Player> PlayersThatNeedToCallTraitor(Game Game)
+    private static List<Player> PlayersThatNeedToCallTraitor(Game game)
     {
         var result = new List<Player>();
-        if (Game.AggressorTraitorAction == null) result.Add(Game.CurrentBattle.AggressivePlayer);
-        if (Game.DefenderTraitorAction == null) result.Add(Game.CurrentBattle.DefendingPlayer);
+        if (game.AggressorTraitorAction == null) result.Add(game.CurrentBattle.AggressivePlayer);
+        if (game.DefenderTraitorAction == null) result.Add(game.CurrentBattle.DefendingPlayer);
         return result;
     }
 
-    private static GameStatus Status(string message, GameEvent timedEvent = null)
-    {
-        return new GameStatus(Message.Express(message), timedEvent);
-    }
+    private static GameStatus Status(string message, GameEvent timedEvent = null) 
+        => new(Message.Express(message), timedEvent);
 
-    private static GameStatus Status(Message message, GameEvent timedEvent = null)
-    {
-        return new GameStatus(message, timedEvent);
-    }
+    private static GameStatus Status(Message message, GameEvent timedEvent = null) 
+        => new(message, timedEvent);
 
-    private static GameStatus Status(Message message, IEnumerable<Player> waitingForPlayers, GameEvent timedEvent = null)
-    {
-        return new GameStatus(message, message, waitingForPlayers, timedEvent);
-    }
+    private static GameStatus Status(Message message, List<Player> waitingForPlayers, GameEvent timedEvent = null) 
+        => new(message, message, waitingForPlayers, timedEvent);
 
-    private static GameStatus Status(string messageAwaited, string messageWhenWaiting, GameEvent timedEvent = null)
-    {
-        return new GameStatus(Message.Express(messageAwaited), Message.Express(messageWhenWaiting), timedEvent);
-    }
+    private static GameStatus Status(string messageAwaited, string messageWhenWaiting, GameEvent timedEvent = null) 
+        => new(Message.Express(messageAwaited), Message.Express(messageWhenWaiting), timedEvent);
 
-    private static GameStatus Status(Message messageAwaited, Message messageWhenWaiting, GameEvent timedEvent = null)
-    {
-        return new GameStatus(messageAwaited, messageWhenWaiting, timedEvent);
-    }
+    private static GameStatus Status(Message messageAwaited, Message messageWhenWaiting, GameEvent timedEvent = null) 
+        => new(messageAwaited, messageWhenWaiting, timedEvent);
 
-    private static GameStatus Status(string messageWhenAwaited, string messageWhenWaiting, IEnumerable<Player> waitingForPlayers, GameEvent timedEvent = null)
-    {
-        return new GameStatus(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), waitingForPlayers,
-            timedEvent);
-    }
+    private static GameStatus Status(string messageWhenAwaited, string messageWhenWaiting, List<Player> waitingForPlayers, GameEvent timedEvent = null) 
+        => new(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), waitingForPlayers, timedEvent);
 
-    private static GameStatus Status(Message messageWhenAwaited, Message messageWhenWaiting, IEnumerable<Player> waitingForPlayers, GameEvent timedEvent = null)
-    {
-        return new GameStatus(messageWhenAwaited, messageWhenWaiting, waitingForPlayers, timedEvent);
-    }
+    private static GameStatus Status(Message messageWhenAwaited, Message messageWhenWaiting, List<Player> waitingForPlayers, GameEvent timedEvent = null) 
+        => new(messageWhenAwaited, messageWhenWaiting, waitingForPlayers, timedEvent);
 
-    private static GameStatus Status(Game game, string messageWhenAwaited, string messageWhenWaiting, IEnumerable<Faction> waitingForFactions, GameEvent timedEvent = null)
-    {
-        return new GameStatus(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting),
-            waitingForFactions.Select(f => game.GetPlayer(f)), timedEvent);
-    }
+    private static GameStatus Status(Game game, string messageWhenAwaited, string messageWhenWaiting, List<Faction> waitingForFactions, GameEvent timedEvent = null) 
+        => new(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), waitingForFactions.Select(f => game.GetPlayer(f)).ToList(), timedEvent);
 
-    private static GameStatus Status(string messageWhenAwaited, string messageWhenWaiting, Player waitingForPlayer, GameEvent timedEvent = null)
-    {
-        return new GameStatus(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), waitingForPlayer,
-            timedEvent);
-    }
+    private static GameStatus Status(string messageWhenAwaited, string messageWhenWaiting, Player waitingForPlayer, GameEvent timedEvent = null) 
+        => new(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), waitingForPlayer, timedEvent);
 
-    private static GameStatus Status(Message messageWhenAwaited, Message messageWhenWaiting, Player waitingForPlayer, GameEvent timedEvent = null)
-    {
-        return new GameStatus(messageWhenAwaited, messageWhenWaiting, waitingForPlayer, timedEvent);
-    }
+    private static GameStatus Status(Message messageWhenAwaited, Message messageWhenWaiting, Player waitingForPlayer, GameEvent timedEvent = null) 
+        => new(messageWhenAwaited, messageWhenWaiting, waitingForPlayer, timedEvent);
 
-    private static GameStatus Status(Game game, string messageWhenAwaited, string messageWhenWaiting, Faction waitingForFaction, GameEvent timedEvent = null)
-    {
-        return new GameStatus(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting),
-            game.GetPlayer(waitingForFaction), timedEvent);
-    }
+    private static GameStatus Status(Game game, string messageWhenAwaited, string messageWhenWaiting, Faction waitingForFaction, GameEvent timedEvent = null) 
+        => new(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), game.GetPlayer(waitingForFaction), timedEvent);
 
-    private static GameStatus Status(Game game, Message messageWhenAwaited, Message messageWhenWaiting, Faction waitingForFaction, GameEvent timedEvent = null)
-    {
-        return new GameStatus(messageWhenAwaited, messageWhenWaiting, game.GetPlayer(waitingForFaction), timedEvent);
-    }
-
-    private static GameStatus Status(Game game, Message messageWhenAwaited, Message messageWhenWaiting, IEnumerable<Player> waitingForPlayers, GameEvent timedEvent = null)
-    {
-        return new GameStatus(messageWhenAwaited, messageWhenWaiting, waitingForPlayers, timedEvent);
-    }
+    private static GameStatus Status(Game game, Message messageWhenAwaited, Message messageWhenWaiting, Faction? waitingForFaction, GameEvent timedEvent = null) 
+        => new(messageWhenAwaited, messageWhenWaiting, game.GetPlayer(waitingForFaction), timedEvent);
 
     private static List<FlashInfo> DetermineFlash(Game g, Faction myFaction, bool isPlayer)
     {
@@ -716,7 +669,6 @@ public class GameStatus
         if (g.CurrentPhase == Phase.GameEnded)
         {
             foreach (var p in g.Winners) Flash(result, Message.Express(p.Faction, " win!"), p.Faction);
-
             return result;
         }
 
@@ -751,26 +703,26 @@ public class GameStatus
 
                 //Show Leader skill used
                 case Retreat or Diplomacy: Flash(result, latestEvent, LeaderSkill.Diplomat); break;
-                case Bureaucracy bc when !bc.Passed: Flash(result, latestEvent, LeaderSkill.Bureaucrat); break;
+                case Bureaucracy { Passed: false }: Flash(result, latestEvent, LeaderSkill.Bureaucrat); break;
                 case Planetology: Flash(result, latestEvent, LeaderSkill.Planetologist); break;
                 case BattleConcluded when g.TraitorsDeciphererCanLookAt.Count > 0: Flash(result, latestEvent, LeaderSkill.Decipherer); break;
                 case Thought: Flash(result, latestEvent, LeaderSkill.Thinker); break;
 
                 //Show Event description
-                case WhiteSpecifiesAuction or BlueBattleAnnouncement or Voice or Prescience or GreyRemovedCardFromAuction or BrownDiscarded or CardTraded or BrownEconomics or SwitchedSkilledLeader: Flash(result, latestEvent); break;
-                case WhiteAnnouncesBlackMarket wbm when !wbm.Passed: Flash(result, latestEvent); break;
-                case GreySwappedCardOnBid gsc when !gsc.Passed: Flash(result, latestEvent); break;
-                case ReplacedCardWon rcw when !rcw.Passed: Flash(result, latestEvent); break;
-                case FaceDancerReplaced fdr when !fdr.Passed: Flash(result, latestEvent); break;
+                case WhiteSpecifiesAuction or BlueBattleAnnouncement or Voice or Prescience or GreyRemovedCardFromAuction or BrownDiscarded or CardTraded or BrownEconomics or SwitchedSkilledLeader:
+                case WhiteAnnouncesBlackMarket { Passed: false }:
+                case GreySwappedCardOnBid { Passed: false }:
+                case ReplacedCardWon { Passed: false }:
+                case FaceDancerReplaced { Passed: false }: 
+                    Flash(result, latestEvent); break;
 
                 //Show Faction
                 case EstablishPlayers when g.CurrentPhase != Phase.SelectingFactions && isPlayer: Flash(result, myFaction); break;
-                case FactionTradeOffered fto when (fto.Initiator == myFaction || fto.Target == myFaction) && !g.CurrentTradeOffers.Any(t => t.Initiator == myFaction): Flash(result, myFaction); break;
+                case FactionTradeOffered fto when (fto.Initiator == myFaction || fto.Target == myFaction) && g.CurrentTradeOffers.All(t => t.Initiator != myFaction): Flash(result, myFaction); break;
 
                 //Show Nexus card played
                 case NexusPlayed np: Flash(result, Message.Express(np.Initiator, " play a Nexus card"), np.Faction.ToNexus()); break;
-                case Revival nexusrev when nexusrev.UsesRedSecretAlly: Flash(result, Message.Express(nexusrev.Initiator, " play a Nexus card"), Faction.Red.ToNexus()); break;
-                //case Bid nexusbid when nexusbid.UsesRedSecretAlly: Flash(result, Message.Express(nexusbid.Initiator, " play a Nexus card"), Client.CurrentSkin.GetNexusCardImageURL(Faction.Red)); break;
+                case Revival { UsesRedSecretAlly: true } nexusRevival: Flash(result, Message.Express(nexusRevival.Initiator, " play a Nexus card"), Faction.Red.ToNexus()); break;
             }
 
         var nrOfSpiceBlows = g.RecentMilestones.Count(m => m == Milestone.Resource);
@@ -809,7 +761,7 @@ public class GameStatus
                 }
                 case Milestone.Resource:
                 {
-                    ResourceCard cardToShow = null;
+                    ResourceCard cardToShow;
 
                     if (nrOfSpiceBlows == 2)
                     {
@@ -879,29 +831,19 @@ public class GameStatus
     private static void Flash(IList<FlashInfo> flashes, GameEvent e, TreacheryCardType t)
     {
         if (e.Game.TreacheryDiscardPile.Top?.Type == t || (t == TreacheryCardType.Karma && e.Game.TreacheryDiscardPile.Top?.Type == TreacheryCardType.Useless))
-            Flash(flashes, e?.GetMessage(), e.Game.TreacheryDiscardPile.Top);
+            Flash(flashes, e.GetMessage(), e.Game.TreacheryDiscardPile.Top);
         else
-            Flash(flashes, e?.GetMessage(), TreacheryCardManager.GetCardsInAndOutsidePlay().First(card => card.Type == t));
+            Flash(flashes, e.GetMessage(), TreacheryCardManager.GetCardsInAndOutsidePlay().First(card => card.Type == t));
     }
 
-    private static void Flash(IList<FlashInfo> flashes, GameEvent e, LeaderSkill s)
-    {
-        if (s == LeaderSkill.Decipherer)
-            Flash(flashes, Message.Express(e.Initiator, " use their ", s, " skill"), s);
-        else
-            Flash(flashes, e?.GetMessage(), s);
-    }
+    private static void Flash(IList<FlashInfo> flashes, GameEvent e, LeaderSkill s) 
+        => Flash(flashes, s == LeaderSkill.Decipherer ? Message.Express(e.Initiator, " use their ", s, " skill") : e?.GetMessage(), s);
 
-    private static void Flash(IList<FlashInfo> flashes, Faction f)
-    {
-        Flash(flashes, Message.Express("You play ", f), f);
-    }
+    private static void Flash(IList<FlashInfo> flashes, Faction f) 
+        => Flash(flashes, Message.Express("You play ", f), f);
 
-    private static Message Express(params object[] elements)
-    {
-        return Message.Express(elements);
-    }
-
+    private static Message Express(params object[] elements) 
+        => Message.Express(elements);
 }
 public struct FlashInfo
 {

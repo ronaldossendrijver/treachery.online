@@ -16,6 +16,8 @@ namespace Treachery.Client;
 
 public class Client : IGameService, IGameClient, IAsyncDisposable
 {
+    private const int NudgeBotsDelay = 7000;
+    
     //General info
     public ServerInfo ServerInfo { get; private set; }
     public Skin CurrentSkin { get; set; } = DefaultSkin.Default;
@@ -703,7 +705,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     private async Task PerformPostEventTasks()
     {
         Status = GameStatus.DetermineStatus(Game, Player, !IsObserver);
-        Actions = Game.GetApplicableEvents(Player, IsHost);        
+        Actions = Game.GetApplicableEvents(Player, IsHost);
+        
+        if (!Status.WaitingForHost && IsHost && Status.WaitingForPlayers.Count > 0 && Status.WaitingForPlayers.All(p => p.IsBot))
+            _ = Task.Delay(NudgeBotsDelay).ContinueWith(_ => RequestNudgeBots(Game.LastAction));
         
         await TurnAlert();
         await PlaySoundsForMilestones();
@@ -713,6 +718,12 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             ResetAutoPassThreshold();
 
         Refresh(nameof(PerformPostEventTasks));
+    }
+
+    private async Task RequestNudgeBots(DateTime gameLastAction)
+    {
+        if (Game.LastAction == gameLastAction)
+            await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestNudgeBots));
     }
 
     private void ResetAutoPassThreshold()

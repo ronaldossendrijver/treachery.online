@@ -462,4 +462,15 @@ public partial class GameHub
         await Task.CompletedTask;
         return Success(result);
     }
+    
+    public async Task<VoidResult> RequestNudgeBots(string userToken, string gameId)
+    {
+        if (!AreValid(userToken, gameId, out _, out var game, out var error))
+            return error;
+
+        ScheduleBotEvent(game, true);
+
+        await Task.CompletedTask;
+        return Success();
+    }
 }

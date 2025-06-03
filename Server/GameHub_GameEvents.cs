@@ -222,7 +222,7 @@ public partial class GameHub
         await Clients.Group(game.GameId).HandleGameEvent(e, game.Game.History.Count);
         await SendAsyncPlayMessagesIfApplicable(game.GameId);
         await PersistGameIfNeeded(game);
-        PerformBotEvent(game, game.Game.History.Count);
+        ScheduleBotEvent(game);
         return Success();
     }
 
@@ -310,23 +310,21 @@ public partial class GameHub
         }
     }
 
-    private void PerformBotEvent(ManagedGame managedGame, int count = 0)
+    private void ScheduleBotEvent(ManagedGame managedGame, bool immediate = false)
     {
-        /*
-        if (managedGame.BotEventScheduled > DateTimeOffset.Now)
-            return;
-        */
-        
-        var delay = DetermineBotDelay(managedGame.Game.CurrentMainPhase, managedGame.Game.LatestEvent());
-        
-        _ = Task.Delay(delay).ContinueWith(_ => PerformBotEventAfterDelay(managedGame));
-
-        managedGame.BotEventScheduled = DateTimeOffset.Now.AddMilliseconds(delay);
+        if (immediate)
+        {
+            _ = PerformBotEvent(managedGame);
+        }
+        else
+        {
+            var delay = DetermineBotDelay(managedGame.Game.CurrentMainPhase, managedGame.Game.LatestEvent());
+            _ = Task.Delay(delay).ContinueWith(_ => PerformBotEvent(managedGame));    
+        }
     }
 
-    private async Task PerformBotEventAfterDelay(ManagedGame managedGame)
+    private async Task PerformBotEvent(ManagedGame managedGame)
     {
-        managedGame.BotEventScheduled = DateTimeOffset.MinValue;
         var game = managedGame.Game;
         var botsActAsHosts = game.Participation.Hosts.Count == 0 && game.NumberOfObservers > 0;
         
