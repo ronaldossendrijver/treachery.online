@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Text.Json.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Treachery.Client;
 using Treachery.Shared;
 using Treachery.Shared.Model;
 
@@ -34,7 +33,7 @@ public class Tests
         }
     }
 
-    private readonly List<string> _writtenCases = new();
+    private readonly List<string> _writtenCases = [];
     private void WriteSaveGameIfApplicable(Game g, Player playerWithAction, string c)
     {
         lock (_writtenCases)

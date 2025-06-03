@@ -706,9 +706,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     {
         Status = GameStatus.DetermineStatus(Game, Player, !IsObserver);
         Actions = Game.GetApplicableEvents(Player, IsHost);
-        
+
+        var lastActionTime = Game.LastAction;
         if (!Status.WaitingForHost && IsHost && Status.WaitingForPlayers.Count > 0 && Status.WaitingForPlayers.All(p => p.IsBot))
-            _ = Task.Delay(NudgeBotsDelay).ContinueWith(_ => RequestNudgeBots(Game.LastAction));
+            _ = Task.Delay(NudgeBotsDelay).ContinueWith(_ => RequestNudgeBots(lastActionTime));
         
         await TurnAlert();
         await PlaySoundsForMilestones();
