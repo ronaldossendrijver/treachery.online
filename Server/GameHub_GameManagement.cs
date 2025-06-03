@@ -251,7 +251,7 @@ public partial class GameHub
             return Error(ErrorType.NoHost);
 
         game.Game.OpenOrCloseSeat(seat);
-        await Clients.Group(gameId).HandleOpenOrCloseSeat(seat);
+        await Clients.Group(gameId).HandleOpenOrCloseSeats([seat]);
         
         await PersistGameIfNeeded(game);
         

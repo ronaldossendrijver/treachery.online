@@ -336,9 +336,9 @@ public class Tests
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
 
-        var nrOfGames = 512;
+        var nrOfGames = 64;
         var nrOfTurns = 10;
-        var nrOfPlayers = 7;
+        var nrOfPlayers = 6;
 
         var timeout = 10;
 

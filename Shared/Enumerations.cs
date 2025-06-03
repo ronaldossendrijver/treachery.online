@@ -935,3 +935,10 @@ public enum GameListScope
     Active = 2,
     All = 3
 }
+
+public enum AutomationRuleType
+{
+    AutoPassBidding = 1,
+    AutoFlipAdvisors = 2,
+    AutoKarma = 3,
+}

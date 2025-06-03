@@ -27,19 +27,26 @@ public partial class GameHub
         await Clients.Group(gameId).HandleAssignSeats(game.Game.Participation.SeatedPlayers);
         
         if (e.Settings.AutoOpenEmptySeats)
-        {
-            foreach (var player in game.Game.Players.Where(p => !participation.SeatedPlayers.ContainsValue(p.Seat)))
-            {
-                participation.AvailableSeats.Add(player.Seat);
-                await Clients.Group(gameId).HandleOpenOrCloseSeat(player.Seat);    
-            }
-        }
+            _ = Task.Delay(2500).ContinueWith(_ => AutoOpenEmptySeats(gameId, game, participation));
         
         game.LastActivity = DateTimeOffset.Now;
         await PersistGameIfNeeded(game);
         return Success();
     }
-    
+
+    private async Task AutoOpenEmptySeats(string gameId, ManagedGame game, Participation participation)
+    {
+        var seatsToOpen = new List<int>();
+        foreach (var player in game.Game.Players.Where(p => !participation.SeatedPlayers.ContainsValue(p.Seat)))
+        {
+            participation.AvailableSeats.Add(player.Seat);
+            seatsToOpen.Add(player.Seat);
+        }
+            
+        if (seatsToOpen.Count > 0)
+            await Clients.Group(gameId).HandleOpenOrCloseSeats(seatsToOpen.ToArray());
+    }
+
     public async Task<VoidResult> RequestEndPhase(string userToken, string gameId, EndPhase e) => await ProcessGameEvent(userToken, gameId, e);
     public async Task<VoidResult> RequestDonated(string userToken, string gameId, Donated e) => await ProcessGameEvent(userToken, gameId, e);
     public async Task<VoidResult> RequestResourcesTransferred(string userToken, string gameId, ResourcesTransferred e) => await ProcessGameEvent(userToken, gameId, e);
