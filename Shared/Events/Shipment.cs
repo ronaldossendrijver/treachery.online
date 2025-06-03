@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class Shipment : PassableGameEvent, ILocationEvent
@@ -27,23 +25,32 @@ public class Shipment : PassableGameEvent, ILocationEvent
 
     #region Properties
 
+    public ShipmentType ShipmentType { get; set; }
+
     public int _toId;
 
+    // Normally, this is the destination of shipment. However, in case of shipment to reserves, this is the source location.
     [JsonIgnore]
     public Location To
     {
         get => Game.Map.LocationLookup.Find(_toId);
-        set => _toId = Game.Map.LocationLookup.GetId(value);
+        init => _toId = Game.Map.LocationLookup.GetId(value);
     }
+
+    [JsonIgnore] 
+    public Location SourceLocationForShipmentToReserves => To;
 
     public int _fromId;
 
+    // For site to site shipments, this is the source location. In case of shipment to reserves, this is the target homeworld (if more than 1 homeworld exists).
     [JsonIgnore]
     public Location From
     {
         get => Game.Map.LocationLookup.Find(_fromId);
-        set => _fromId = Game.Map.LocationLookup.GetId(value);
+        init => _fromId = Game.Map.LocationLookup.GetId(value);
     }
+    
+    [JsonIgnore] public Homeworld TargetWorldForShipmentToReserves => From as Homeworld;
 
     public int ForceAmount { get; set; }
 
@@ -88,17 +95,16 @@ public class Shipment : PassableGameEvent, ILocationEvent
     public bool IsUsingKarma => KarmaCard != null;
 
     [JsonIgnore]
-    public bool IsSiteToSite => From != null;
-
+    public bool IsBackToReserves => ShipmentType is ShipmentType.ShipmentBack || ForceAmount + SpecialForceAmount < 0;
+    
     [JsonIgnore]
-    public bool IsBackToReserves => ForceAmount + SpecialForceAmount < 0;
-
+    private bool IsSiteToSite => ShipmentType is ShipmentType.ShipmentSiteToSite || From != null;
+    
     [JsonIgnore]
     public bool IsNoField => NoFieldValue >= 0;
 
     [JsonIgnore]
     public int TotalAmountOfForcesAddedToLocation => ForcesAddedToLocation + SpecialForcesAddedToLocation;
-
 
     [JsonIgnore]
     public int ForcesAddedToLocation => UseWhiteSecretAlly ? 1 : ForceAmount + SmuggledAmount;
@@ -114,10 +120,10 @@ public class Shipment : PassableGameEvent, ILocationEvent
     public Dictionary<Location, Battalion> ForceLocations
     {
         get => ParseForceLocations(Game, Player.Faction, _forceLocations);
-        set => _forceLocations = ForceLocationsString(Game, value);
+        init => _forceLocations = ForceLocationsString(Game, value);
     }
 
-    public int DetermineOrangeProfits(Game game)
+    private int DetermineOrangeProfits(Game game)
     {
         var initiator = Player;
         return
@@ -140,7 +146,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
     private static Dictionary<Location, Battalion> ParseForceLocations(Game g, Faction f, string forceLocations)
     {
         var result = new Dictionary<Location, Battalion>();
-        if (forceLocations != null && forceLocations.Length > 0)
+        if (forceLocations is { Length: > 0 })
             foreach (var locationAmountPair in forceLocations.Split(','))
             {
                 var locationAndAmounts = locationAmountPair.Split(':');
@@ -157,7 +163,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
     #endregion Properties
 
     #region Validation
-
+    
     public override Message Validate()
     {
         if (Passed) return null;
@@ -167,7 +173,11 @@ public class Shipment : PassableGameEvent, ILocationEvent
         if (!IsSiteToSite && Game.PreventedFromShipping(Initiator)) return Message.Express(TreacheryCardType.Karma, " prevents you from shipping");
 
         if (IsBackToReserves && !MayShipToReserves(Game, p)) return Message.Express("You can't ship back to reserves");
+        if (IsBackToReserves && !ValidSourceLocations(Game, p).Contains(SourceLocationForShipmentToReserves)) return Message.Express("You can't ship back to reserves from there");
+        if (Game.Version >= 178 && IsBackToReserves && !p.HomeWorlds.Contains(TargetWorldForShipmentToReserves)) return Message.Express("You can't ship back to that home world");
+        
         if (IsSiteToSite && !MayShipCrossPlanet(Game, p)) return Message.Express("You can't ship site-to-site");
+        if (IsSiteToSite && !ValidSourceLocations(Game, p).Contains(From)) return Message.Express("You can't ship site-to-site from there");
 
         if (!IsBackToReserves && (ForceAmount < 0 || SpecialForceAmount < 0)) return Message.Express("Can't ship less than zero forces");
         if (ForceAmount == 0 && SpecialForceAmount == 0) return Message.Express("Select forces to ship");
@@ -176,7 +186,8 @@ public class Shipment : PassableGameEvent, ILocationEvent
         var cost = DetermineCost(Game, p, this);
         if (cost > p.Resources + AllyContributionAmount) return Message.Express("You can't pay that much");
         if (cost < AllyContributionAmount) return Message.Express("Your ally is paying more than needed");
-        if (!ValidShipmentLocations(Game, p, IsBackToReserves || (IsSiteToSite && From is not Homeworld), UseWhiteSecretAlly).Contains(To)) return Message.Express("Cannot ship there");
+        if (!ValidShipmentLocations(Game, p, IsBackToReserves || (IsSiteToSite && From is not Homeworld), UseWhiteSecretAlly).Contains(To)) 
+            return Message.Express("Cannot ship there");
 
         //no field checks, requires refactoring
         if (NoFieldValue >= 0 && !MayUseNoField(Game, Player)) return Message.Express("You can't use a No-Field");
@@ -211,7 +222,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
 
         if (KarmaCard != null && !ValidKarmaCards(Game, Player).Contains(KarmaCard)) return Message.Express("Invalid ", TreacheryCardType.Karma, " card: ", KarmaCard);
 
-        if (UseWhiteSecretAlly && !MayUseWhiteSecretAllly(Game, Player)) return Message.Express(Faction.White, " are not your secret ally");
+        if (UseWhiteSecretAlly && !MayUseWhiteSecretAlly(Game, Player)) return Message.Express(Faction.White, " are not your secret ally");
         if (UseWhiteSecretAlly && ForceAmount + SpecialForceAmount > 5) return Message.Express("You can't ship that much using ", Faction.White, " as your secret ally");
 
         if (Game.Version >= 164 && HomeworldsToShipFrom(Player, false).Count() > 1 && ForceLocations.Sum(fl => fl.Value.AmountOfForces) != ForcesAddedToLocation) 
@@ -228,21 +239,22 @@ public class Shipment : PassableGameEvent, ILocationEvent
         return special ? p.HomeWorlds.Where(hw => p.SpecialForcesIn(hw) > 0) : p.HomeWorlds.Where(hw => p.ForcesIn(hw) > 0);
     }
         
-
     private static List<Location> YellowSpawnLocations(Game g, Player p)
     {
-        return g.Map.Locations(g.Applicable(Rule.Homeworlds)).Where(l => g.IsNotFull(p, l) && (l == g.Map.TheGreatFlat || l == g.Map.TheGreaterFlat || l == g.Map.FuneralPlain || l.Territory == g.Map.BightOfTheCliff || l == g.Map.SietchTabr ||
+        return g.Map
+            .Locations(g.Applicable(Rule.Homeworlds))
+            .Where(l => g.IsNotFull(p, l) && (Equals(l, g.Map.TheGreatFlat) || l.Id == g.Map.TheGreaterFlat.Id || Equals(l, g.Map.FuneralPlain) || l.Territory == g.Map.BightOfTheCliff || Equals(l, g.Map.SietchTabr) ||
                 l.Territory == g.Map.PlasticBasin || l.Territory == g.Map.RockOutcroppings || l.Territory == g.Map.BrokenLand || l.Territory == g.Map.Tsimpo || l.Territory == g.Map.HaggaBasin ||
-                l == g.Map.PolarSink || l.Territory == g.Map.WindPass || l.Territory == g.Map.WindPassNorth || l.Territory == g.Map.CielagoWest || l.Territory == g.Map.FalseWallWest || l.Territory == g.Map.HabbanyaErg ||
-                (l is DiscoveredLocation dsPastyMesa && dsPastyMesa.Visible && dsPastyMesa.AttachedToLocation.Territory == g.Map.PastyMesa) || (l is DiscoveredLocation dsFalseWallWest && dsFalseWallWest.Visible && dsFalseWallWest.AttachedToLocation.Territory == g.Map.FalseWallWest)))
+                l.Id == g.Map.PolarSink.Id || l.Territory == g.Map.WindPass || l.Territory == g.Map.WindPassNorth || l.Territory == g.Map.CielagoWest || l.Territory == g.Map.FalseWallWest || l.Territory == g.Map.HabbanyaErg ||
+                (l is DiscoveredLocation { Visible: true } dsPastyMesa && dsPastyMesa.AttachedToLocation.Territory == g.Map.PastyMesa) || (l is DiscoveredLocation { Visible: true } dsFalseWallWest && dsFalseWallWest.AttachedToLocation.Territory == g.Map.FalseWallWest)))
             .ToList();
     }
 
     public static int DetermineCost(Game g, Player p, Shipment s)
     {
-        if (s.To == null) return 0;
-
-        return DetermineCost(g, p, Math.Abs(s.ForceAmount), Math.Abs(s.SpecialForceAmount), s.To, s.IsUsingKarma, s.IsBackToReserves, s.IsSiteToSite, s.IsWhiteNoField, s.IsNonWhiteNoField);
+        return s.To == null 
+            ? 0 
+            : DetermineCost(g, p, Math.Abs(s.ForceAmount), Math.Abs(s.SpecialForceAmount), s.To, s.IsUsingKarma, s.IsBackToReserves, s.IsSiteToSite, s.IsWhiteNoField, s.IsNonWhiteNoField);
     }
     
     private bool IsWhiteNoField => Initiator is Faction.White && IsNoField;
@@ -296,37 +308,35 @@ public class Shipment : PassableGameEvent, ILocationEvent
         return specialForces ? p.SpecialForcesIn(source) : p.ForcesIn(source);
     }
 
-    public static IEnumerable<Location> ValidShipmentLocations(Game g, Player p, bool fromPlanet, bool secretAlly)
+    public static IEnumerable<Location> ValidShipmentLocations(Game g, Player p, bool crossPlanet, bool whiteSecretAlly)
     {
-        if (p.Is(Faction.Yellow) && !secretAlly)
-        {
-            if (MayShipCrossPlanet(g, p))
-                return YellowSpawnLocations(g, p).Union(RegularShipmentLocations(g, p, fromPlanet)).Distinct();
-            
-            return YellowSpawnLocations(g, p);
-        }
-
-        return RegularShipmentLocations(g, p, fromPlanet);
+        if (!p.Is(Faction.Yellow) || whiteSecretAlly) return RegularShipmentLocations(g, p, crossPlanet);
+        
+        return MayShipCrossPlanet(g, p) 
+            ? YellowSpawnLocations(g, p).Union(RegularShipmentLocations(g, p, crossPlanet)).Distinct() 
+            : YellowSpawnLocations(g, p);
     }
 
-    private static IEnumerable<Location> RegularShipmentLocations(Game g, Player p, bool fromPlanet)
+    private static IEnumerable<Location> RegularShipmentLocations(Game g, Player p, bool crossPlanet)
     {
         return g.Map.Locations(g.Applicable(Rule.Homeworlds)).Where(l =>
             l.Territory != g.AtomicsAftermath &&
             l.Sector != g.SectorInStorm &&
-            (l != g.Map.HiddenMobileStronghold || p.Is(Faction.Grey)) &&
-            IsEitherValidHomeworldOrNoHomeworld(g, p, l, fromPlanet) &&
+            (l.Id != g.Map.HiddenMobileStronghold.Id || p.Is(Faction.Grey)) &&
+            IsEitherValidHomeworldOrNoHomeworld(g, p, l, crossPlanet) &&
             IsEitherValidDiscoveryOrNoDiscovery(l) &&
             g.IsNotFull(p, l));
     }
 
     public static bool IsEitherValidHomeworldOrNoHomeworld(Game g, Player p, Location l, bool fromPlanet)
     {
-        return l is not Homeworld hw ||
-               ((!fromPlanet || p.Is(Faction.Orange) || (p.IsNative(hw) && MayShipToReserves(g, p))) &&
-                g.Applicable(Rule.Homeworlds) &&
+        if (l is not Homeworld hw) return true;
+        
+        return g.Applicable(Rule.Homeworlds) &&
+                (!fromPlanet || p.Is(Faction.Orange) || !p.IsNative(hw) || p.IsNative(hw) && MayShipToReserves(g, p) || p.IsNative(hw) && g.HasShipmentPermission(p, ShipmentPermission.ToHomeworld)) && // from planet to OWN homeworld
+                (!fromPlanet || p.Is(Faction.Orange) || p.IsNative(hw) || !p.IsNative(hw) && g.HasShipmentPermission(p, ShipmentPermission.Cross)) && // from planet to OTHER homeworld
                 g.Players.Any(native => native.IsNative(hw)) &&
-                (!p.HasAlly || (!p.AlliedPlayer.IsNative(hw) && p.AlliedPlayer.AnyForcesIn(hw) == 0)));
+                (!p.HasAlly || (!p.AlliedPlayer.IsNative(hw) && p.AlliedPlayer.AnyForcesIn(hw) == 0));
     }
 
     public static bool IsEitherValidDiscoveryOrNoDiscovery(Location l)
@@ -336,27 +346,23 @@ public class Shipment : PassableGameEvent, ILocationEvent
 
     public static IEnumerable<int> ValidNoFieldValues(Game g, Player p)
     {
+        if ((p.Faction != Faction.White || g.Prevented(FactionAdvantage.WhiteNofield)) && (p.Ally != Faction.White || !g.WhiteAllowsUseOfNoField)) return [];
+        
         var result = new List<int>();
-        if ((p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield)) ||
-            (p.Ally == Faction.White && g.WhiteAllowsUseOfNoField))
-        {
-            if (p.Faction == Faction.White && g.LatestRevealedNoFieldValue != 0 && g.CurrentNoFieldValue != 0) result.Add(0);
-            if (g.LatestRevealedNoFieldValue != 3 && g.CurrentNoFieldValue != 3) result.Add(3);
-            if (g.LatestRevealedNoFieldValue != 5 && g.CurrentNoFieldValue != 5) result.Add(5);
-        }
+        if (p.Faction == Faction.White && g.LatestRevealedNoFieldValue != 0 && g.CurrentNoFieldValue != 0) result.Add(0);
+        if (g.LatestRevealedNoFieldValue != 3 && g.CurrentNoFieldValue != 3) result.Add(3);
+        if (g.LatestRevealedNoFieldValue != 5 && g.CurrentNoFieldValue != 5) result.Add(5);
         return result;
     }
 
     public static IEnumerable<int> ValidCunningNoFieldValues(Game g, Player p, int valueOfNormalNoField)
     {
+        if ((p.Faction != Faction.White || g.Prevented(FactionAdvantage.WhiteNofield)) && (p.Ally != Faction.White || !g.WhiteAllowsUseOfNoField)) return [];
+        
         var result = new List<int>();
-        if ((p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield)) ||
-            (p.Ally == Faction.White && g.WhiteAllowsUseOfNoField))
-        {
-            if (p.Faction == Faction.White && g.LatestRevealedNoFieldValue != 0 && g.CurrentNoFieldValue != 0 && valueOfNormalNoField != 0) result.Add(0);
-            if (g.LatestRevealedNoFieldValue != 3 && g.CurrentNoFieldValue != 3 && valueOfNormalNoField != 3) result.Add(3);
-            if (g.LatestRevealedNoFieldValue != 5 && g.CurrentNoFieldValue != 5 && valueOfNormalNoField != 5) result.Add(5);
-        }
+        if (p.Faction == Faction.White && g.LatestRevealedNoFieldValue != 0 && g.CurrentNoFieldValue != 0 && valueOfNormalNoField != 0) result.Add(0);
+        if (g.LatestRevealedNoFieldValue != 3 && g.CurrentNoFieldValue != 3 && valueOfNormalNoField != 3) result.Add(3);
+        if (g.LatestRevealedNoFieldValue != 5 && g.CurrentNoFieldValue != 5 && valueOfNormalNoField != 5) result.Add(5);
         return result;
     }
 
@@ -370,41 +376,27 @@ public class Shipment : PassableGameEvent, ILocationEvent
         return result;
     }
 
-    public static IEnumerable<TreacheryCard> ValidOwnKarmaCards(Game g, Player p)
-    {
-        return Karma.ValidKarmaCards(g, p);
-    }
+    private static IEnumerable<TreacheryCard> ValidOwnKarmaCards(Game g, Player p) 
+        => Karma.ValidKarmaCards(g, p);
 
-    public static TreacheryCard ValidAllyKarmaCard(Game g, Player p)
-    {
-        return g.GetPermittedUseOfAllyKarma(p.Faction);
-    }
+    private static TreacheryCard ValidAllyKarmaCard(Game g, Player p) 
+        => g.GetPermittedUseOfAllyKarma(p.Faction);
 
-    public static bool CanKarma(Game g, Player p)
-    {
-        return ValidKarmaCards(g, p).Any();
-    }
+    public static bool CanKarma(Game g, Player p) 
+        => ValidKarmaCards(g, p).Any();
 
-    public static bool MaySmuggle(Game g, Player p, Location l)
-    {
-        return l != null && !g.AnyForcesIn(l.Territory) && p.Faction != Faction.Yellow && g.SkilledAs(p, LeaderSkill.Smuggler);
-    }
+    public static bool MaySmuggle(Game g, Player p, Location l) 
+        => l != null && !g.AnyForcesIn(l.Territory) && p.Faction != Faction.Yellow && g.SkilledAs(p, LeaderSkill.Smuggler);
 
-    public static bool MayUseNoField(Game g, Player p)
-    {
-        return (p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield)) ||
-               (p.Ally == Faction.White && g.WhiteAllowsUseOfNoField);
-    }
+    public static bool MayUseNoField(Game g, Player p) =>
+        (p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield)) ||
+        (p.Ally == Faction.White && g.WhiteAllowsUseOfNoField);
 
-    public static bool MayUseCunningNoField(Player p)
-    {
-        return p.Faction == Faction.White && NexusPlayed.CanUseCunning(p);
-    }
+    public static bool MayUseCunningNoField(Player p) 
+        => p.Faction == Faction.White && NexusPlayed.CanUseCunning(p);
 
-    public static bool MayUseWhiteSecretAllly(Game g, Player p)
-    {
-        return p.Nexus == Faction.White && NexusPlayed.CanUseSecretAlly(g, p);
-    }
+    public static bool MayUseWhiteSecretAlly(Game g, Player p) 
+        => p.Nexus == Faction.White && NexusPlayed.CanUseSecretAlly(g, p);
 
     public static bool MayShipCrossPlanet(Game g, Player p)
     {
@@ -428,6 +420,11 @@ public class Shipment : PassableGameEvent, ILocationEvent
                p.Initiated(g.CurrentOrangeSecretAlly);
     }
 
+    public static IEnumerable<Location> ValidSourceLocations(Game g, Player p)
+    {
+        return g.LocationsWithAnyForcesNotInStorm(p).Where(x => !x.IsHomeworld || MayShipCrossPlanet(g, p) || g.HasShipmentPermission(p, ShipmentPermission.Cross));
+    }
+    
     #endregion Validation
 
     #region Execution
@@ -477,11 +474,11 @@ public class Shipment : PassableGameEvent, ILocationEvent
             if (IsSiteToSite)
                 PerformSiteToSiteShipment();
             else if (IsBackToReserves)
-                Player.ShipForces(To, ForceAmount);
+                Player.ShipForces(SourceLocationForShipmentToReserves, TargetWorldForShipmentToReserves ?? Player.HomeWorlds[0], ForceAmount);
             else if (IsNoField && Initiator == Faction.White)
-                PerformNormalShipment(Player, To, ForceAmount + SmuggledAmount, 1, false);
+                PerformNormalShipment(Player, To, ForceAmount + SmuggledAmount, 1);
             else
-                PerformNormalShipment(Player, To, ForceAmount + SmuggledAmount, SpecialForceAmount + SmuggledSpecialAmount, IsSiteToSite);
+                PerformNormalShipment(Player, To, ForceAmount + SmuggledAmount, SpecialForceAmount + SmuggledSpecialAmount);
 
             if (UseWhiteSecretAlly) Game.PlayNexusCard(Player, "ship from reserves as if shipping ", 1);
 
@@ -574,7 +571,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
         Player.MoveSpecialForces(From, To, SpecialForceAmount);
     }
 
-    private void PerformNormalShipment(Player initiator, Location to, int forceAmount, int specialForceAmount, bool isSiteToSite)
+    private void PerformNormalShipment(Player initiator, Location to, int forceAmount, int specialForceAmount)
     {
         Game.BlueMayAccompany = (forceAmount > 0 || specialForceAmount > 0) && initiator.Faction != Faction.Yellow && initiator.Faction != Faction.Blue;
 
@@ -622,19 +619,20 @@ public class Shipment : PassableGameEvent, ILocationEvent
             if (killCount > 0) Log(killCount, initiator.Faction, " forces are killed by the storm");
         }
 
-        if (initiator.Faction != Faction.Yellow && initiator.Faction != Faction.Orange && !isSiteToSite) Game.ShipsTechTokenIncome = true;
+        if (initiator.Faction != Faction.Yellow && initiator.Faction != Faction.Orange && !IsSiteToSite) Game.ShipsTechTokenIncome = true;
     }
 
     public override Message GetMessage()
     {
         if (Passed)
             return Message.Express(Initiator, " pass shipment");
-        if (IsBackToReserves)
-            return Message.Express(Initiator, " ship from ", To, " to reserves");
-        return Message.Express(Initiator, " ship to ", To);
+        
+        return IsBackToReserves ? 
+            Message.Express(Initiator, " ship from ", To, " to reserves") 
+            : Message.Express(Initiator, " ship to ", To);
     }
 
-    public Message GetVerboseMessage(int cost, MessagePart orangeIncome, Player ownerOfKarma)
+    private Message GetVerboseMessage(int cost, MessagePart orangeIncome, Player ownerOfKarma)
     {
         if (Passed) return Message.Express(Initiator, " pass shipment");
 
@@ -644,6 +642,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
 
         if (cost > 0)
             return Message.Express(Initiator, " ship ", ForceMessage, " to ", To, NoFieldMessage, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome);
+        
         return Message.Express(Initiator, " rally ", ForceMessage, " in ", To);
     }
 
@@ -671,4 +670,5 @@ public class Shipment : PassableGameEvent, ILocationEvent
     }
 
     #endregion Execution
+
 }

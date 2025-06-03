@@ -1193,7 +1193,7 @@ public partial class Player
 
     protected virtual WhiteSpecifiesAuction DetermineWhiteSpecifiesAuction()
     {
-        var toAuction = new Deck<TreacheryCard>(Game.WhiteCache, random);
+        var toAuction = new Deck<TreacheryCard>(Game.WhiteCache, _random);
         toAuction.Shuffle();
         return new WhiteSpecifiesAuction(Game, Faction) { Card = !toAuction.IsEmpty ? toAuction.Draw() : null, AuctionType = D(1, 2) > 1 ? AuctionType.WhiteSilent : AuctionType.WhiteOnceAround, Direction = D(1, 2) > 1 ? 1 : -1 };
     }

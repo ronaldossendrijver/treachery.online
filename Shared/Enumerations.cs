@@ -935,3 +935,12 @@ public enum GameListScope
     Active = 2,
     All = 3
 }
+
+public enum ShipmentType
+{
+    Unknown = 0,
+    ShipmentNormal = 1,
+    ShipmentSiteToSite = 2,
+    ShipmentBack = 3,
+    ShipmentWhiteSecretAlly = 4
+}

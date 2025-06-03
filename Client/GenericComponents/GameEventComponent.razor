@@ -57,28 +57,27 @@
         }
     }
 
-    protected void SetIfValid<DisplayType, OriginalType>(ref DisplayType field, IEnumerable<OriginalType> validValues, OriginalType newValue)
+    protected void SetIfValid<TDisplayType, TOriginalType>(ref TDisplayType field, IEnumerable<TOriginalType> validValues, TOriginalType newValue)
     {
-        if ((object)field != (object)newValue && validValues.Contains(newValue))
+        if ((object)field == (object)newValue || !validValues.Contains(newValue)) return;
+        
+        var sameType = typeof(TOriginalType) == typeof(TDisplayType);
+        var useId = typeof(TDisplayType) == typeof(int) && typeof(IIdentifiable).IsAssignableFrom(typeof(TOriginalType));
+
+        if (sameType)
         {
-            var sameType = typeof(OriginalType) == typeof(DisplayType);
-            var useId = typeof(DisplayType) == typeof(int) && typeof(IIdentifiable).IsAssignableFrom(typeof(OriginalType));
-
-            if (sameType)
-            {
-                field = (DisplayType)(object)newValue;
-            }
-            else if (useId)
-            {
-                field = (DisplayType)(object)((IIdentifiable)newValue).Id;
-            }
-            else
-            {
-                field = (DisplayType)(object)Name(newValue);
-            }
-
-            StateHasChanged();
+            field = (TDisplayType)(object)newValue;
         }
+        else if (useId)
+        {
+            field = (TDisplayType)(object)((IIdentifiable)newValue).Id;
+        }
+        else
+        {
+            field = (TDisplayType)(object)Name(newValue);
+        }
+
+        StateHasChanged();
     }
 
     protected string BackgroundStyle

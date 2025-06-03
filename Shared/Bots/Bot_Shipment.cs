@@ -690,6 +690,7 @@ public partial class Player
             NoFieldValue = noFieldValue,
             CunningNoFieldValue = cunningNoFieldValue,
             Passed = false,
+            ShipmentType = ShipmentType.ShipmentNormal,
             From = null,
             KarmaCard = null,
             //KarmaShipment = false,
@@ -852,6 +853,7 @@ public partial class Player
             Passed = false,
             From = null,
             KarmaCard = null,
+            ShipmentType = ShipmentType.ShipmentNormal,
             //KarmaShipment = false,
             NoFieldValue = 0,
             To = location

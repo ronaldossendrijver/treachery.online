@@ -95,11 +95,6 @@ public class FaceDanced : PlacementEvent
         return g.LocationsWithAnyForcesNotInStorm(p).Where(l => !l.IsHomeworld);
     }
 
-    public static IEnumerable<int> ValidForcesFromReserves(Player p)
-    {
-        return Enumerable.Range(0, 1 + p.ForcesInReserve);
-    }
-
     public static IEnumerable<Location> ValidTargetLocations(Game g)
     {
         return g.CurrentBattle.Territory.Locations.Where(l => g.Applicable(Rule.BattlesUnderStorm) || l.Sector != g.SectorInStorm);
@@ -165,8 +160,8 @@ public class FaceDanced : PlacementEvent
             foreach (var fl in TargetForceLocations)
             {
                 var location = fl.Key;
-                Player.AddForces(location, fl.Value.AmountOfForces, false);
-                Player.AddSpecialForces(location, fl.Value.AmountOfSpecialForces, false);
+                Player.AddForces(location, fl.Value.AmountOfForces, false, Player.GetHomeworld(false));
+                Player.AddSpecialForces(location, fl.Value.AmountOfSpecialForces, false, Player.GetHomeworld(true));
             }
 
             Log(nrOfRemovedForces, " ", winner.Faction,

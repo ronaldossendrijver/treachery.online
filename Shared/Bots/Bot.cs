@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared.Model;
 
 public partial class Player
@@ -36,9 +34,7 @@ public partial class Player
     {
         GameEvent action = null;
 
-        if (Do(DetermineVoice, ref action, events)
-
-           ) return action;
+        if (Do(DetermineVoice, ref action, events)) return action;
 
         return null;
     }
@@ -239,7 +235,7 @@ public partial class Player
 
     #region SupportMethods
 
-    protected void LogInfo(string msg, params object[] pars)
+    private void LogInfo(string msg, params object[] pars)
     {
         if (BotInfologging)
         {
@@ -250,24 +246,24 @@ public partial class Player
         }
     }
 
-    protected void LogInfo(Message message)
+    private void LogInfo(Message message)
     {
-        if (BotInfologging && message != null)
-        {
-            if (Message.DefaultDescriber != null)
-                Console.WriteLine(Faction + ": " + message.ToString(Message.DefaultDescriber));
-            else
-                Console.WriteLine(Faction + ": " + message);
-        }
+        if (!BotInfologging || message == null) return;
+        
+        if (Message.DefaultDescriber != null)
+            Console.WriteLine(Faction + ": " + message.ToString(Message.DefaultDescriber));
+        else
+            Console.WriteLine(Faction + ": " + message);
     }
 
-    private readonly LoggedRandom random = new();
-    protected int D(int amount, int sides)
+    private readonly LoggedRandom _random = new();
+
+    private int D(int amount, int sides)
     {
         if (amount == 0 || sides == 0) return 0;
 
         var result = 0;
-        for (var i = 0; i < amount; i++) result += random.Next(sides) + 1;
+        for (var i = 0; i < amount; i++) result += _random.Next(sides) + 1;
         return result;
     }
 
