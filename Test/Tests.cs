@@ -27,9 +27,13 @@ public class Tests
 {
     private void SaveSpecialCases(Game g, GameEvent e)
     {
-        if (e is NexusPlayed { IsBetrayal: true, Faction: Faction.White } && g.WinningBid?.Initiator == Faction.White)
+        if (g.CurrentPhase == Phase.GreySwappingCard)
         {
-            WriteSaveGameIfApplicable(g, e.Player, "White betrayal");
+            var ix = g.GetPlayer(Faction.Grey);
+            var emp = g.GetPlayer(Faction.Red);
+            
+            if (emp != null && ix != null && ix.Has(TreacheryCardType.Karma))
+                WriteSaveGameIfApplicable(g, e.Player, "Ix can use Karama on Emp while being able to swap card");
         }
     }
 
@@ -570,7 +574,7 @@ public class Tests
             var gamesTested = 0;
             ParallelOptions po = new()
             {
-                MaxDegreeOfParallelism = Environment.ProcessorCount//1
+                MaxDegreeOfParallelism = 1//Environment.ProcessorCount//1
             };
             Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, fileName =>
             {
