@@ -29,7 +29,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
 
     public int _toId;
 
-    // Normally, this is the destination of shipment. However, in case of shipment to reserves, this is the source location.
+    // Normally, this is the destination of shipment. However, in case of shipment back to reserves, this is the source location.
     [JsonIgnore]
     public Location To
     {

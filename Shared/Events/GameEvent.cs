@@ -7,10 +7,9 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
-
 namespace Treachery.Shared;
 
+[JsonDerivedType(typeof(AutomationConfigured),nameof(AutomationConfigured))]
 [JsonDerivedType(typeof(AcceptOrCancelPurpleRevival),nameof(AcceptOrCancelPurpleRevival))]
 [JsonDerivedType(typeof(AllianceBroken),nameof(AllianceBroken))]
 [JsonDerivedType(typeof(AllianceByAmbassador),nameof(AllianceByAmbassador))]

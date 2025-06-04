@@ -135,6 +135,9 @@ public partial class Player : ICloneable
     #endregion Properties
 
     #region Forces
+    
+    public Homeworld GetHomeworld(bool specialForces) => 
+        HomeWorlds.FirstOrDefault(hw => specialForces ? hw.IsHomeOfSpecialForces : hw.IsHomeOfNormalForces);
 
     private Battalion GetAndCreateIfNeeded(Location location)
     {
@@ -162,7 +165,7 @@ public partial class Player : ICloneable
         CheckIfRedStarThresholdWasPassed();
     }
 
-    public void AddForces(Location location, int nrOfForces, bool fromReserves)
+    public void AddForces(Location location, int nrOfForces, bool fromReserves, Homeworld source = null)
     {
         if (fromReserves)
         {
@@ -175,7 +178,7 @@ public partial class Player : ICloneable
         }
     }
     
-    public void AddSpecialForces(Location location, int nrOfForces, bool fromReserves)
+    public void AddSpecialForces(Location location, int nrOfForces, bool fromReserves, Homeworld source = null)
     {
         if (fromReserves)
         {
