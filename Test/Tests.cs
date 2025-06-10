@@ -594,7 +594,7 @@ public class Tests
         File.AppendAllText("CentralStyleStatistics.json", "]\r\n}");
     }
 
-    private void ReplayGame(string fileName, string testcaseFileName, Statistics statistics, ConcurrentBag<string> centralStyleStatistics)
+    private void ReplayGame(string fileName, string testcaseFileName, Statistics statistics, TrainingData trainingData, ConcurrentBag<string> centralStyleStatistics)
     {
         var fs = File.OpenText(fileName);
         var stateData = fs.ReadToEnd();
@@ -609,8 +609,8 @@ public class Tests
 
         var valueId = 0;
 
-        BattleOutcome previousBattleOutcome = null;
-        IBid previousWinningBid = null;
+        BattleOutcome previousBattleOutcome;
+        IBid previousWinningBid;
         
         foreach (var evt in state.Events)
         {
@@ -637,6 +637,9 @@ public class Tests
 
             if (GatherStatisticsDuringRegressionTest && statistics != null && evt is EstablishPlayers && game.Players.Count > 1 && game.Players.Count > 2 * game.Players.Count(p => p.IsBot)) 
                 GatherStatistics(statistics, game, ref previousBattleOutcome, ref previousWinningBid);
+            
+            if (GatherTrainingSamplesDuringRegressionTest && statistics != null && evt is EstablishPlayers && game.Players.Count > 1 && game.Players.Count > 2 * game.Players.Count(p => p.IsBot))
+                GatherTrainingSample(trainingData, game, evt);
         }
 
         if (GatherStatisticsDuringRegressionTest)
@@ -770,6 +773,96 @@ public class Tests
                     if (p.Occupies(game.Map.HiddenMobileStronghold)) statistics.FactionsOccupyingHms.Count(p.Faction);
                 }
         }
+    }
+    
+    private static void GatherTrainingData(TrainingData trainingData, Game game)
+    {
+        lock (trainingData)
+        {
+            var latest = game.LatestEvent();
+
+            if (game.CurrentPhase == Phase.GameEnded && latest is EndPhase)
+            {
+                trainingData.Winners[game.Seed] = game.Winners.Select(x => x.Faction).ToArray();
+            }
+            else if (latest is Shipment or Move or Battle or Bid)
+            {
+                var state = GetPlayerKnowledge(game, latest.Initiator);
+                trainingData.Decisions.Add(new Tuple(game.Seed, state, latest));
+            }
+        }
+    }
+
+    private static PlayerKnowledge GetPlayerKnowledge(Game game, Faction faction)
+    {
+        var player = game.GetPlayer(faction);
+        var result = new PlayerKnowledge
+        {
+            I =
+            {
+                Faction = faction,
+                Ally = player.Ally,
+                Spice = player.Resources,
+                CardIds = player.TreacheryCards.Select(x => x.Id).ToHashSet(),
+                TraitorIds = player.Traitors.Select(x => x.Id).ToHashSet(),
+                FaceDancerIds = player.FaceDancers.Select(x => x.Id).ToHashSet(),
+                LivingLeaderIds = player.Leaders.Where(game.IsAlive).Select(x => x.Id).ToHashSet(),
+                DeadLeaderIds = player.Leaders.Where(x => !game.IsAlive(x)).Select(x => x.Id).ToHashSet(),
+                MustSupportForcesInBattle = Battle.MustPayForAnyForcesInBattle(game, player),
+                MustSupportSpecialForcesInBattle = Battle.MustPayForSpecialForcesInBattle(game, player),
+                CanUseAdvancedKarama = !game.KarmaPrevented(faction) && !player.SpecialKarmaPowerUsed && game.Applicable(Rule.AdvancedKarama),
+                ForcesOnHomeworld1 = player.HomeWorlds[0].IsHomeOfNormalForces ? player.ForcesInReserve : 0,
+                ForcesOnHomeworld2 = player.HomeWorlds.Count > 1 && player.HomeWorlds[1].IsHomeOfNormalForces
+                    ? player.ForcesInReserve
+                    : 0,
+                SpecialForcesOnHomeworld1 = player.HomeWorlds[0].IsHomeOfSpecialForces ? player.SpecialForcesInReserve : 0,
+                SpecialForcesOnHomeworld2 = player.HomeWorlds.Count > 1 && player.HomeWorlds[1].IsHomeOfSpecialForces
+                    ? player.SpecialForcesInReserve
+                    : 0
+            }
+        };
+
+        foreach (var p in game.Players.Where(x => x.Faction != faction))
+        {
+            var opponentInfo = new PlayerInfo
+            {
+                Faction = p.Faction,
+                Ally = p.Ally,
+                Spice = p.Resources,
+                CardIds = p.TreacheryCards.Where(c => player.KnownCards.Contains(c.Id)).Select(x => x.Id).ToHashSet(),
+                TraitorIds = p.Traitors.Where(c => player.RevealedTraitors.Contains(c.Id)).Select(x => x.Id).ToHashSet(),
+                FaceDancerIds = p.FaceDancers.Where(c => player.RevealedDancers.Contains(c.Id)).Select(x => x.Id).ToHashSet(),
+                LivingLeaderIds = p.Leaders.Where(game.IsAlive).Select(x => x.Id).ToHashSet(),
+                DeadLeaderIds = p.Leaders.Where(x => !game.IsAlive(x)).Select(x => x.Id).ToHashSet(),
+                MustSupportForcesInBattle = Battle.MustPayForAnyForcesInBattle(game, p),
+                MustSupportSpecialForcesInBattle = Battle.MustPayForSpecialForcesInBattle(game, p),
+                CanUseAdvancedKarama = !game.KarmaPrevented(p.Faction) && !p.SpecialKarmaPowerUsed && game.Applicable(Rule.AdvancedKarama),
+                ForcesOnHomeworld1 = p.HomeWorlds[0].IsHomeOfNormalForces ? p.ForcesInReserve : 0,
+                ForcesOnHomeworld2 = p.HomeWorlds.Count > 1 && p.HomeWorlds[1].IsHomeOfNormalForces ? p.ForcesInReserve : 0,
+                SpecialForcesOnHomeworld1 = p.HomeWorlds[0].IsHomeOfSpecialForces ? p.SpecialForcesInReserve : 0,
+                SpecialForcesOnHomeworld2 = p.HomeWorlds.Count > 1 && p.HomeWorlds[1].IsHomeOfSpecialForces ? p.SpecialForcesInReserve : 0
+            };
+            
+            result.Opponents.Add(opponentInfo);
+        }
+
+
+        foreach (var l in game.Map.Locations(true))
+        {
+            result.Locations[l.Id] = new LocationInfo
+            {
+                Spice = game.ResourcesOnPlanet.GetValueOrDefault(l, 0),
+                Terror = game.TerrorIn(l.Territory).FirstOrDefault(),
+                Ambassador = game.AmbassadorIn(l.Territory),
+                MyForces = player.ForcesIn(l),
+                MySpecialForces = player.SpecialForcesIn(l),
+
+
+
+            };
+        }
+
+        return result;
     }
 
     private static string DetermineName(Player p)
