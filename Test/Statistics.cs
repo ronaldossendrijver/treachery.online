@@ -16,10 +16,10 @@ public class Statistics
     public ObjectCounter<Faction> GamePlayingFactions { get; } = new();
     public ObjectCounter<FactionAndTurn> GameWinningFactionsInTurns { get; } = new();
     public ObjectCounter<WinMethod> GameWinningMethods { get; } = new();
-    public List<TimeSpan> GameTimes { get; } = new();
+    public List<TimeSpan> GameTimes { get; } = [];
     public ObjectCounter<int> GameNumberOfTurns { get; } = new();
 
-    public ObjectCounter<string> GamesPerMonth = new();
+    public readonly ObjectCounter<string> GamesPerMonth = new();
 
     public int Battles { get; set; }
     public ObjectCounter<Faction> BattlingFactions { get; } = new();
@@ -44,12 +44,12 @@ public class Statistics
     public ObjectCounter<Faction> FactionsOccupyingSietchTabr { get; } = new();
     public ObjectCounter<Faction> FactionsOccupyingHabbanyaSietch { get; } = new();
     public ObjectCounter<Faction> FactionsOccupyingTueksSietch { get; } = new();
-    public ObjectCounter<Faction> FactionsOccupyingHMS { get; } = new();
+    public ObjectCounter<Faction> FactionsOccupyingHms { get; } = new();
     public ObjectCounter<string> Truthtrances { get; } = new();
     public ObjectCounter<FactionAdvantage> Karamas { get; } = new();
     public ObjectCounter<string> AcceptedDeals { get; } = new();
 
-    public ObjectCounter<Faction> GameWinningFactions
+    private ObjectCounter<Faction> GameWinningFactions
     {
         get
         {
@@ -87,20 +87,20 @@ public class Statistics
 
         OutputCounterGrouped("Players",
             GamePlayingPlayers.Counted,
-            new[] { GamePlayingPlayers, GameWinningPlayers },
-            new[] { "Played", "Won" },
+            [GamePlayingPlayers, GameWinningPlayers],
+            ["Played", "Won"],
             describer);
 
         OutputCounterGrouped("Factions",
             GamePlayingFactions.Counted,
-            new[] { GamePlayingFactions, GameWinningFactions, BattlingFactions, BattleWinningFactions, BattleLosingFactions, FactionsOccupyingArrakeen, FactionsOccupyingCarthag, FactionsOccupyingSietchTabr, FactionsOccupyingHabbanyaSietch, FactionsOccupyingTueksSietch, FactionsOccupyingHMS },
-            new[] { "Played", "Won", "Battles", "Won", "Lost", "Arrakeen", "Carthag", "Tabr", "Habbanya", "Tuek's", "HMS" },
+            [GamePlayingFactions, GameWinningFactions, BattlingFactions, BattleWinningFactions, BattleLosingFactions, FactionsOccupyingArrakeen, FactionsOccupyingCarthag, FactionsOccupyingSietchTabr, FactionsOccupyingHabbanyaSietch, FactionsOccupyingTueksSietch, FactionsOccupyingHms],
+            ["Played", "Won", "Battles", "Won", "Lost", "Arrakeen", "Carthag", "Tabr", "Habbanya", "Tuek's", "HMS"],
             describer);
 
         OutputCounterGrouped("Leaders",
             BattleWinningLeaders.Counted.Union(BattleLosingLeaders.Counted),
-            new[] { BattleWinningLeaders, BattleLosingLeaders, BattleKilledLeaders, TraitoredLeaders, FacedancedLeaders },
-            new[] { "Won", "Lost", "Killed", "Traitor", "Facedancer" },
+            [BattleWinningLeaders, BattleLosingLeaders, BattleKilledLeaders, TraitoredLeaders, FacedancedLeaders],
+            ["Won", "Lost", "Killed", "Traitor", "Facedancer"],
             describer);
 
         OutputCounter("UsedWeapons", UsedWeapons, describer);
@@ -144,9 +144,9 @@ public class Statistics
         foreach (var i in coll) Console.WriteLine(describer.Format("{0};{1}", i, c.CountOf(i)));
     }
 
-    private static void OutputCounterGrouped<T>(string title, IEnumerable<T> groupedBy, IEnumerable<ObjectCounter<T>> counters, IEnumerable<string> counterLabels, IDescriber describer)
+    private static void OutputCounterGrouped<T>(string title, IEnumerable<T> groupedBy, ObjectCounter<T>[] counters, string[] counterLabels, IDescriber describer)
     {
-        if (counters.Count() != counterLabels.Count()) throw new ArgumentException("Number of counters does not equal number of counter labels");
+        if (counters.Count() != counterLabels.Length) throw new ArgumentException("Number of counters does not equal number of counter labels");
 
         //Header
         Console.WriteLine("***" + title + "***");

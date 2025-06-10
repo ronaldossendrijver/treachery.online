@@ -25,16 +25,12 @@ namespace Treachery.Test;
 [TestClass]
 public class Tests
 {
+    private const bool GatherStatisticsDuringRegressionTest = false;
+    private const bool GatherTrainingSamplesDuringRegressionTest = false;
+    
     private void SaveSpecialCases(Game g, GameEvent e)
     {
-        if (g.CurrentPhase == Phase.GreySwappingCard)
-        {
-            var ix = g.GetPlayer(Faction.Grey);
-            var emp = g.GetPlayer(Faction.Red);
-            
-            if (emp != null && ix != null && ix.Has(TreacheryCardType.Karma))
-                WriteSaveGameIfApplicable(g, e.Player, "Ix can use Karama on Emp while being able to swap card");
-        }
+        
     }
 
     private readonly List<string> _writtenCases = [];
@@ -146,7 +142,6 @@ public class Tests
                     currentNumberOfLeaders);
         }
 
-
         if (g.TreacheryDeck != null)
         {
             var allCards = g.TreacheryDeck.Items.Concat(g.TreacheryDiscardPile.Items).Concat(g.Players.SelectMany(x => x.TreacheryCards)).ToArray();
@@ -170,7 +165,6 @@ public class Tests
             return "Lonely advisor - " + g.History.Count;
 
         if (g.Version >= 148 && blue != null && g.Map.Territories(true).Any(t => blue.ForcesIn(t) > 0 && blue.SpecialForcesIn(t) > 0)) return "Advisor and fighter together - " + g.History.Count;
-
 
         if (g.Players.Any(x => x.Leaders.Any(l => l.HeroType != HeroType.Vidal && l.Faction != x.Faction && x.Faction != Faction.Purple && !g.CapturedLeaders.ContainsKey(l)))) return "Lost Leader - " + g.History.Count;
 
@@ -215,8 +209,6 @@ public class Tests
 
         return "";
     }
-
-
 
     private static void ProfileGames()
     {
@@ -411,7 +403,7 @@ public class Tests
         {
             var start = new EstablishPlayers(game, Faction.None)
             {
-                Players = Array.Empty<string>(),
+                Players = [],
                 Seed = new Random().Next(),
                 Time = DateTime.Now,
                 Settings = new GameSettings
@@ -574,7 +566,7 @@ public class Tests
             var gamesTested = 0;
             ParallelOptions po = new()
             {
-                MaxDegreeOfParallelism = 1//Environment.ProcessorCount//1
+                MaxDegreeOfParallelism = Environment.ProcessorCount
             };
             Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, fileName =>
             {
@@ -619,8 +611,7 @@ public class Tests
 
         BattleOutcome previousBattleOutcome = null;
         IBid previousWinningBid = null;
-        var gatherStatistics = false;
-
+        
         foreach (var evt in state.Events)
         {
             evt.Initialize(game);
@@ -644,15 +635,16 @@ public class Tests
 
             valueId++;
 
-            if (!gatherStatistics && statistics != null && evt is EstablishPlayers && game.Players.Count > 1 && game.Players.Count > 2 * game.Players.Count(p => p.IsBot)) gatherStatistics = true;
-
-            if (gatherStatistics) GatherStatistics(statistics, game, ref previousBattleOutcome, ref previousWinningBid);
+            if (GatherStatisticsDuringRegressionTest && statistics != null && evt is EstablishPlayers && game.Players.Count > 1 && game.Players.Count > 2 * game.Players.Count(p => p.IsBot)) 
+                GatherStatistics(statistics, game, ref previousBattleOutcome, ref previousWinningBid);
         }
 
-        var centralStyleStats = GameStatistics.GetStatistics(game);
-        var data = Utilities.Serialize(centralStyleStats);
-        centralStyleStatistics.Add(data);
-        //var json = new StringContent(data, Encoding.UTF8, "application/json");
+        if (GatherStatisticsDuringRegressionTest)
+        {
+            var centralStyleStats = GameStatistics.GetStatistics(game);
+            var data = Utilities.Serialize(centralStyleStats);
+            centralStyleStatistics.Add(data);
+        }
     }
 
     private static void GatherStatistics(Statistics statistics, Game game, ref BattleOutcome previousBattleOutcome, ref IBid previousWinningBid)
@@ -775,7 +767,7 @@ public class Tests
                     if (p.Occupies(game.Map.SietchTabr)) statistics.FactionsOccupyingSietchTabr.Count(p.Faction);
                     if (p.Occupies(game.Map.HabbanyaSietch)) statistics.FactionsOccupyingHabbanyaSietch.Count(p.Faction);
                     if (p.Occupies(game.Map.TueksSietch)) statistics.FactionsOccupyingTueksSietch.Count(p.Faction);
-                    if (p.Occupies(game.Map.HiddenMobileStronghold)) statistics.FactionsOccupyingHMS.Count(p.Faction);
+                    if (p.Occupies(game.Map.HiddenMobileStronghold)) statistics.FactionsOccupyingHms.Count(p.Faction);
                 }
         }
     }
