@@ -27,7 +27,8 @@ public class Tests
 {
     private const bool GatherStatisticsDuringRegressionTest = false;
     private const bool GatherTrainingSamplesDuringRegressionTest = false;
-    
+    private const bool GatherCentralStyleStatistics = false;
+
     private void SaveSpecialCases(Game g, GameEvent e)
     {
         
@@ -548,6 +549,7 @@ public class Tests
     public void Regression()
     {
         var statistics = new Statistics();
+        var trainingData = new TrainingData();
         var centralStyleStatistics = new ConcurrentBag<string>();
 
         File.WriteAllText("CentralStyleStatistics.json", "{\r\n  \"entries\": [");
@@ -573,7 +575,7 @@ public class Tests
                 gamesTested++;
                 var testcaseFileName = fileName + ".testcase";
 
-                ReplayGame(fileName, testcaseFileName, statistics, centralStyleStatistics);
+                ReplayGame(fileName, testcaseFileName, statistics, trainingData, centralStyleStatistics);
             });
 
             Assert.AreNotEqual(0, gamesTested);
@@ -639,10 +641,10 @@ public class Tests
                 GatherStatistics(statistics, game, ref previousBattleOutcome, ref previousWinningBid);
             
             if (GatherTrainingSamplesDuringRegressionTest && statistics != null && evt is EstablishPlayers && game.Players.Count > 1 && game.Players.Count > 2 * game.Players.Count(p => p.IsBot))
-                GatherTrainingSample(trainingData, game, evt);
+                GatherTrainingData(trainingData, game);
         }
 
-        if (GatherStatisticsDuringRegressionTest)
+        if (GatherCentralStyleStatistics)
         {
             var centralStyleStats = GameStatistics.GetStatistics(game);
             var data = Utilities.Serialize(centralStyleStats);
@@ -788,7 +790,7 @@ public class Tests
             else if (latest is Shipment or Move or Battle or Bid)
             {
                 var state = GetPlayerKnowledge(game, latest.Initiator);
-                trainingData.Decisions.Add(new Tuple(game.Seed, state, latest));
+                trainingData.Decisions.Add(Tuple.Create(game.Seed, state, latest));
             }
         }
     }
@@ -819,33 +821,22 @@ public class Tests
                 SpecialForcesOnHomeworld2 = player.HomeWorlds.Count > 1 && player.HomeWorlds[1].IsHomeOfSpecialForces
                     ? player.SpecialForcesInReserve
                     : 0
-            }
-        };
-
-        foreach (var p in game.Players.Where(x => x.Faction != faction))
-        {
-            var opponentInfo = new PlayerInfo
-            {
-                Faction = p.Faction,
-                Ally = p.Ally,
-                Spice = p.Resources,
-                CardIds = p.TreacheryCards.Where(c => player.KnownCards.Contains(c.Id)).Select(x => x.Id).ToHashSet(),
-                TraitorIds = p.Traitors.Where(c => player.RevealedTraitors.Contains(c.Id)).Select(x => x.Id).ToHashSet(),
-                FaceDancerIds = p.FaceDancers.Where(c => player.RevealedDancers.Contains(c.Id)).Select(x => x.Id).ToHashSet(),
-                LivingLeaderIds = p.Leaders.Where(game.IsAlive).Select(x => x.Id).ToHashSet(),
-                DeadLeaderIds = p.Leaders.Where(x => !game.IsAlive(x)).Select(x => x.Id).ToHashSet(),
-                MustSupportForcesInBattle = Battle.MustPayForAnyForcesInBattle(game, p),
-                MustSupportSpecialForcesInBattle = Battle.MustPayForSpecialForcesInBattle(game, p),
-                CanUseAdvancedKarama = !game.KarmaPrevented(p.Faction) && !p.SpecialKarmaPowerUsed && game.Applicable(Rule.AdvancedKarama),
-                ForcesOnHomeworld1 = p.HomeWorlds[0].IsHomeOfNormalForces ? p.ForcesInReserve : 0,
-                ForcesOnHomeworld2 = p.HomeWorlds.Count > 1 && p.HomeWorlds[1].IsHomeOfNormalForces ? p.ForcesInReserve : 0,
-                SpecialForcesOnHomeworld1 = p.HomeWorlds[0].IsHomeOfSpecialForces ? p.SpecialForcesInReserve : 0,
-                SpecialForcesOnHomeworld2 = p.HomeWorlds.Count > 1 && p.HomeWorlds[1].IsHomeOfSpecialForces ? p.SpecialForcesInReserve : 0
-            };
+            },
             
-            result.Opponents.Add(opponentInfo);
-        }
-
+            Ally = DetermineKnownPlayerInfo(player.Ally, game, player, true),
+            YellowOpponent = DetermineKnownPlayerInfo(Faction.Yellow, game, player),
+            GreenOpponent = DetermineKnownPlayerInfo(Faction.Green, game, player),
+            BlackOpponent = DetermineKnownPlayerInfo(Faction.Black, game, player),
+            RedOpponent = DetermineKnownPlayerInfo(Faction.Red, game, player),
+            OrangeOpponent = DetermineKnownPlayerInfo(Faction.Orange, game, player),
+            BlueOpponent = DetermineKnownPlayerInfo(Faction.Blue, game, player),
+            GreyOpponent = DetermineKnownPlayerInfo(Faction.Grey, game, player),
+            PurpleOpponent = DetermineKnownPlayerInfo(Faction.Purple, game, player),
+            BrownOpponent = DetermineKnownPlayerInfo(Faction.Brown, game, player),
+            WhiteOpponent = DetermineKnownPlayerInfo(Faction.White, game, player),
+            PinkOpponent = DetermineKnownPlayerInfo(Faction.Pink, game, player),
+            CyanOpponent = DetermineKnownPlayerInfo(Faction.Cyan, game, player)
+        };
 
         foreach (var l in game.Map.Locations(true))
         {
@@ -856,13 +847,66 @@ public class Tests
                 Ambassador = game.AmbassadorIn(l.Territory),
                 MyForces = player.ForcesIn(l),
                 MySpecialForces = player.SpecialForcesIn(l),
-
-
-
+                AllyForces = player.AlliedPlayer?.ForcesIn(l) ?? 0,
+                AllySpecialForces = player.AlliedPlayer?.SpecialForcesIn(l) ?? 0,
+                YellowOpponentForces = game.GetPlayer(Faction.Yellow)?.ForcesIn(l) ?? 0,
+                GreenOpponentForces = game.GetPlayer(Faction.Green)?.ForcesIn(l) ?? 0,  
+                BlackOpponentForces = game.GetPlayer(Faction.Black)?.ForcesIn(l) ?? 0,  
+                RedOpponentForces = game.GetPlayer(Faction.Red)?.ForcesIn(l) ?? 0,      
+                OrangeOpponentForces = game.GetPlayer(Faction.Orange)?.ForcesIn(l) ?? 0,
+                BlueOpponentForces = game.GetPlayer(Faction.Blue)?.ForcesIn(l) ?? 0,    
+                GreyOpponentForces = game.GetPlayer(Faction.Grey)?.ForcesIn(l) ?? 0,    
+                PurpleOpponentForces = game.GetPlayer(Faction.Purple)?.ForcesIn(l) ?? 0,
+                BrownOpponentForces = game.GetPlayer(Faction.Brown)?.ForcesIn(l) ?? 0,  
+                WhiteOpponentForces = game.GetPlayer(Faction.White)?.ForcesIn(l) ?? 0,  
+                PinkOpponentForces = game.GetPlayer(Faction.Pink)?.ForcesIn(l) ?? 0,    
+                CyanOpponentForces = game.GetPlayer(Faction.Cyan)?.ForcesIn(l) ?? 0,    
+                YellowOpponentSpecialForces = game.GetPlayer(Faction.Yellow)?.SpecialForcesIn(l) ?? 0,
+                GreenOpponentSpecialForces = game.GetPlayer(Faction.Green)?.SpecialForcesIn(l) ?? 0,  
+                BlackOpponentSpecialForces = game.GetPlayer(Faction.Black)?.SpecialForcesIn(l) ?? 0,  
+                RedOpponentSpecialForces = game.GetPlayer(Faction.Red)?.SpecialForcesIn(l) ?? 0,      
+                OrangeOpponentSpecialForces = game.GetPlayer(Faction.Orange)?.SpecialForcesIn(l) ?? 0,
+                BlueOpponentSpecialForces = game.GetPlayer(Faction.Blue)?.SpecialForcesIn(l) ?? 0,    
+                GreyOpponentSpecialForces = game.GetPlayer(Faction.Grey)?.SpecialForcesIn(l) ?? 0,    
+                PurpleOpponentSpecialForces = game.GetPlayer(Faction.Purple)?.SpecialForcesIn(l) ?? 0,
+                BrownOpponentSpecialForces = game.GetPlayer(Faction.Brown)?.SpecialForcesIn(l) ?? 0,  
+                WhiteOpponentSpecialForces = game.GetPlayer(Faction.White)?.SpecialForcesIn(l) ?? 0,  
+                PinkOpponentSpecialForces = game.GetPlayer(Faction.Pink)?.SpecialForcesIn(l) ?? 0,    
+                CyanOpponentSpecialForces = game.GetPlayer(Faction.Cyan)?.SpecialForcesIn(l) ?? 0,    
             };
         }
 
         return result;
+    }
+
+    private static PlayerInfo DetermineKnownPlayerInfo(Faction faction, Game game, Player me, bool processAlly = false)
+    {
+        if (me.Ally != faction || !processAlly) 
+            return new PlayerInfo();
+            
+        var otherPlayer = game.GetPlayer(faction);
+        
+        if (otherPlayer == null) 
+            return new PlayerInfo();
+        
+        return new PlayerInfo
+        {
+            Faction = otherPlayer.Faction,
+            Ally = otherPlayer.Ally,
+            Spice = otherPlayer.Resources,
+            CardIds = otherPlayer.TreacheryCards.Where(c => me.KnownCards.Contains(c)).Select(x => x.Id).ToHashSet(),
+            TraitorIds = otherPlayer.Traitors.Where(c => me.RevealedTraitors.Contains(c)).Select(x => x.Id).ToHashSet(),
+            FaceDancerIds = otherPlayer.FaceDancers.Where(c => me.RevealedDancers.Contains(c)).Select(x => x.Id).ToHashSet(),
+            LivingLeaderIds = otherPlayer.Leaders.Where(game.IsAlive).Select(x => x.Id).ToHashSet(),
+            DeadLeaderIds = otherPlayer.Leaders.Where(x => !game.IsAlive(x)).Select(x => x.Id).ToHashSet(),
+            MustSupportForcesInBattle = Battle.MustPayForAnyForcesInBattle(game, otherPlayer),
+            MustSupportSpecialForcesInBattle = Battle.MustPayForSpecialForcesInBattle(game, otherPlayer),
+            CanUseAdvancedKarama = !game.KarmaPrevented(otherPlayer.Faction) && !otherPlayer.SpecialKarmaPowerUsed && game.Applicable(Rule.AdvancedKarama),
+            ForcesOnHomeworld1 = otherPlayer.HomeWorlds[0].IsHomeOfNormalForces ? otherPlayer.ForcesInReserve : 0,
+            ForcesOnHomeworld2 = otherPlayer.HomeWorlds.Count > 1 && otherPlayer.HomeWorlds[1].IsHomeOfNormalForces ? otherPlayer.ForcesInReserve : 0,
+            SpecialForcesOnHomeworld1 = otherPlayer.HomeWorlds[0].IsHomeOfSpecialForces ? otherPlayer.SpecialForcesInReserve : 0,
+            SpecialForcesOnHomeworld2 = otherPlayer.HomeWorlds.Count > 1 && otherPlayer.HomeWorlds[1].IsHomeOfSpecialForces ? otherPlayer.SpecialForcesInReserve : 0
+        };
     }
 
     private static string DetermineName(Player p)

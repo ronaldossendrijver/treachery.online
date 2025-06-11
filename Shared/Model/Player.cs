@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared.Model;
 
 public partial class Player : ICloneable
@@ -68,11 +66,11 @@ public partial class Player : ICloneable
 
     public List<TreacheryCard> TreacheryCards { get; set; } = [];
 
-    public HashSet<int> KnownCards { get; } = [];
+    public HashSet<TreacheryCard> KnownCards { get; } = [];
 
     public List<IHero> Traitors { get; set; } = [];
 
-    public HashSet<int> RevealedTraitors { get; } = [];
+    public HashSet<IHero> RevealedTraitors { get; } = [];
 
     public List<IHero> ToldTraitors { get; } = [];
 
@@ -84,7 +82,7 @@ public partial class Player : ICloneable
 
     public List<IHero> FaceDancers { get; private set; } = [];
 
-    public HashSet<int> RevealedDancers { get; private set; } = [];
+    public HashSet<IHero> RevealedDancers { get; private set; } = [];
 
     public List<IHero> ToldFaceDancers { get; } = [];
 

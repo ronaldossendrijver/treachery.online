@@ -16,10 +16,25 @@ public class TrainingData
 public class PlayerKnowledge
 {
     // Player
-    public PlayerInfo I { get; } = new PlayerInfo();
-        
-    // Known info about other players    
-    public List<PlayerInfo> Opponents { get; } = [];
+    public PlayerInfo I { get; set; } = new();
+
+    // Ally
+    public PlayerInfo Ally { get; set; } = new();
+    
+    // Opponents
+    
+    public PlayerInfo YellowOpponent { get; set; }
+    public PlayerInfo GreenOpponent { get; set; }
+    public PlayerInfo BlackOpponent { get; set; }
+    public PlayerInfo RedOpponent { get; set; }
+    public PlayerInfo OrangeOpponent { get; set; }
+    public PlayerInfo BlueOpponent { get; set; }
+    public PlayerInfo GreyOpponent { get; set; }
+    public PlayerInfo PurpleOpponent { get; set; }
+    public PlayerInfo BrownOpponent { get; set; }
+    public PlayerInfo WhiteOpponent { get; set; }
+    public PlayerInfo PinkOpponent { get; set; }
+    public PlayerInfo CyanOpponent { get; set; }
     
     // Public board state
     public Dictionary<int,LocationInfo> Locations { get; set; } 
@@ -54,6 +69,32 @@ public class LocationInfo
     public int SpecialForcesPlayer6 { get; set; }
     public Ambassador? Ambassador { get; set; }
     public TerrorType? Terror { get; set; }
+    public int AllyForces { get; set; }
+    public int AllySpecialForces { get; set; }
+    public int YellowOpponentForces { get; set; }
+    public int GreenOpponentForces { get; set; }
+    public int BlackOpponentForces { get; set; }
+    public int RedOpponentForces { get; set; }
+    public int OrangeOpponentForces { get; set; }
+    public int BlueOpponentForces { get; set; }
+    public int GreyOpponentForces { get; set; }
+    public int PurpleOpponentForces { get; set; }
+    public int BrownOpponentForces { get; set; }
+    public int WhiteOpponentForces { get; set; }
+    public int PinkOpponentForces { get; set; }
+    public int CyanOpponentForces { get; set; }
+    public int YellowOpponentSpecialForces { get; set; }
+    public int GreenOpponentSpecialForces { get; set; }
+    public int BlackOpponentSpecialForces { get; set; }
+    public int RedOpponentSpecialForces { get; set; }
+    public int OrangeOpponentSpecialForces { get; set; }
+    public int BlueOpponentSpecialForces { get; set; }
+    public int GreyOpponentSpecialForces { get; set; }
+    public int PurpleOpponentSpecialForces { get; set; }
+    public int BrownOpponentSpecialForces { get; set; }
+    public int WhiteOpponentSpecialForces { get; set; }
+    public int PinkOpponentSpecialForces { get; set; }
+    public int CyanOpponentSpecialForces { get; set; }
 }
 
 public class PlayerInfo
