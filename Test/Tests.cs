@@ -651,10 +651,10 @@ public class Tests
 
             valueId++;
 
-            if (GatherStatisticsDuringRegressionTest && statistics != null && evt is EstablishPlayers && game.Players.Count > 1 && game.Players.Count > 2 * game.Players.Count(p => p.IsBot)) 
+            if (GatherStatisticsDuringRegressionTest) 
                 GatherStatistics(statistics, game, ref previousBattleOutcome, ref previousWinningBid);
             
-            if (GatherTrainingDataDuringRegressionTest && statistics != null && evt is EstablishPlayers && game.Players.Count > 1 && game.Players.Count > 2 * game.Players.Count(p => p.IsBot))
+            if (GatherTrainingDataDuringRegressionTest)
                 GatherTrainingData(trainingData, game);
         }
 
@@ -799,7 +799,7 @@ public class Tests
 
             if (game.CurrentPhase == Phase.GameEnded && latest is EndPhase)
             {
-                trainingData.Winners[game.Seed] = game.Winners.Select(x => x.Faction).ToArray();
+                trainingData.DeleteDecisionsByLosers(game.Seed, game.Winners.Select(x => x.Faction).ToArray());
             }
             else if (latest is Shipment or Move or Voice or Prescience or Battle or Bid)
             {
@@ -826,18 +826,11 @@ public class Tests
                 TraitorIds = player.Traitors.Select(x => x.Id).ToHashSet(),
                 FaceDancerIds = player.FaceDancers.Select(x => x.Id).ToHashSet(),
                 LivingLeaderIds = player.Leaders.Where(game.IsAlive).Select(x => x.Id).ToHashSet(),
-                DeadLeaderIds = player.Leaders.Where(x => !game.IsAlive(x)).Select(x => x.Id).ToHashSet(),
                 MustSupportForcesInBattle = Battle.MustPayForAnyForcesInBattle(game, player),
                 MustSupportSpecialForcesInBattle = Battle.MustPayForSpecialForcesInBattle(game, player),
                 CanUseAdvancedKarama = !game.KarmaPrevented(faction) && !player.SpecialKarmaPowerUsed && game.Applicable(Rule.AdvancedKarama),
-                ForcesOnHomeworld1 = player.HomeWorlds[0].IsHomeOfNormalForces ? player.ForcesInReserve : 0,
-                ForcesOnHomeworld2 = player.HomeWorlds.Count > 1 && player.HomeWorlds[1].IsHomeOfNormalForces
-                    ? player.ForcesInReserve
-                    : 0,
-                SpecialForcesOnHomeworld1 = player.HomeWorlds[0].IsHomeOfSpecialForces ? player.SpecialForcesInReserve : 0,
-                SpecialForcesOnHomeworld2 = player.HomeWorlds.Count > 1 && player.HomeWorlds[1].IsHomeOfSpecialForces
-                    ? player.SpecialForcesInReserve
-                    : 0
+                ForcesInReserve = player.ForcesInReserve,
+                SpecialForcesInReserve = player.SpecialForcesInReserve,
             },
             
             Ally = DetermineKnownPlayerInfo(player.Ally, game, player, true),
@@ -864,13 +857,10 @@ public class Tests
         result.AllyBlocksAdvisors = !game.Applicable(Rule.AdvisorsDontConflictWithAlly);
         result.LatestAtreidesOrAllyBidAmount =
             game.Bids.Values.LastOrDefault(x=> !x.Passed && (x.Initiator == Faction.Green || x.Initiator == green?.Ally))?.TotalAmount ?? -1;
-        result.NextSpiceCardId = game.HasResourceDeckPrescience(player) && !game.ResourceCardDeck.IsEmpty
-            ? game.ResourceCardDeck.Top.Location.Id
-            : -1;
         result.TreacheryCardOnBidId = game.HasBiddingPrescience(player) && !game.CardsOnAuction.IsEmpty? game.CardsOnAuction.Top.Id  : -1;
         result.PredictedFaction = blue?.PredictedFaction ?? Faction.None;
         result.PredictedTurn = blue?.PredictedTurn ?? -1;
-        result.KwizatsAvailable = green.MessiahAvailable;
+        result.KwizatsAvailable = green?.MessiahAvailable == true;
         
         return result;
     }
@@ -940,14 +930,11 @@ public class Tests
             TraitorIds = otherPlayer.Traitors.Where(c => me.RevealedTraitors.Contains(c)).Select(x => x.Id).ToHashSet(),
             FaceDancerIds = otherPlayer.FaceDancers.Where(c => me.RevealedDancers.Contains(c)).Select(x => x.Id).ToHashSet(),
             LivingLeaderIds = otherPlayer.Leaders.Where(game.IsAlive).Select(x => x.Id).ToHashSet(),
-            DeadLeaderIds = otherPlayer.Leaders.Where(x => !game.IsAlive(x)).Select(x => x.Id).ToHashSet(),
             MustSupportForcesInBattle = Battle.MustPayForAnyForcesInBattle(game, otherPlayer),
             MustSupportSpecialForcesInBattle = Battle.MustPayForSpecialForcesInBattle(game, otherPlayer),
             CanUseAdvancedKarama = !game.KarmaPrevented(otherPlayer.Faction) && !otherPlayer.SpecialKarmaPowerUsed && game.Applicable(Rule.AdvancedKarama),
-            ForcesOnHomeworld1 = otherPlayer.HomeWorlds[0].IsHomeOfNormalForces ? otherPlayer.ForcesInReserve : 0,
-            ForcesOnHomeworld2 = otherPlayer.HomeWorlds.Count > 1 && otherPlayer.HomeWorlds[1].IsHomeOfNormalForces ? otherPlayer.ForcesInReserve : 0,
-            SpecialForcesOnHomeworld1 = otherPlayer.HomeWorlds[0].IsHomeOfSpecialForces ? otherPlayer.SpecialForcesInReserve : 0,
-            SpecialForcesOnHomeworld2 = otherPlayer.HomeWorlds.Count > 1 && otherPlayer.HomeWorlds[1].IsHomeOfSpecialForces ? otherPlayer.SpecialForcesInReserve : 0,
+            ForcesInReserve = otherPlayer.ForcesInReserve,
+            SpecialForcesInReserve = otherPlayer.SpecialForcesInReserve,
             CanShipAndMoveThisTurn = game.CurrentMainPhase is MainPhase.ShipmentAndMove && !game.HasActedOrPassed.Contains(faction),
         };
     }

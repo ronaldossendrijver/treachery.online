@@ -10,22 +10,17 @@ namespace Treachery.Test;
 
 public class TrainingData
 {
-    public Dictionary<int,Faction[]> Winners { get; set; }
-    
-    public List<DecisionInfo> Decisions { get; set; }
+    public List<DecisionInfo> Decisions { get; set; } = [];
     
     public void Output()
     {
-        var shipmentFile = new StreamWriter(File.Open("shipments.csv", FileMode.OpenOrCreate));
-        var moveFile = new StreamWriter(File.Open("move.csv", FileMode.OpenOrCreate));
-        var battleFile = new StreamWriter(File.Open("battle.csv", FileMode.OpenOrCreate));
-        var bidFile = new StreamWriter(File.Open("bid.csv", FileMode.OpenOrCreate));
+        var shipmentFile = new StreamWriter(File.Open("shipments.csv", FileMode.Create));
+        var moveFile = new StreamWriter(File.Open("move.csv", FileMode.Create));
+        var battleFile = new StreamWriter(File.Open("battle.csv", FileMode.Create));
+        var bidFile = new StreamWriter(File.Open("bid.csv", FileMode.Create));
 
         foreach (var decision in Decisions)
         {
-            var winners = Winners.GetValueOrDefault(decision.GameId, []);
-            if (!winners.Contains(decision.Decision.Initiator)) continue; // only train on decisions by winners
-
             var state = decision.State.GetCommaSeparatedStateData();
             
             switch (decision.Decision)
@@ -35,26 +30,24 @@ public class TrainingData
                     break;
                 
                 case Move move:
-                    moveFile.WriteLine($"{state};{move.To.Id};");
+                    //moveFile.WriteLine($"{state};{move.To.Id};");
                     break;
                 
                 case Battle battle:
-                    battleFile.WriteLine($"{state};{battle.Forces};");
+                    //battleFile.WriteLine($"{state};{battle.Forces};");
                     break;
                 
                 case Bid bid:
-                    bidFile.WriteLine($"{state};{bid.Amount};{bid.AllyContributionAmount};{bid.RedContributionAmount};");
-                    break;
-                
-                default: // left blank
-
+                    //bidFile.WriteLine($"{state};{bid.Amount};{bid.AllyContributionAmount};{bid.RedContributionAmount};");
                     break;
             }
         }
     }
 
-
-    
+    public void DeleteDecisionsByLosers(int gameId, Faction[] winners)
+    {
+        Decisions.RemoveAll(d => d.GameId == gameId && !winners.Contains(d.Decision.Initiator));
+    }
 }
 
 public class PlayerKnowledge
@@ -81,10 +74,9 @@ public class PlayerKnowledge
     public PlayerInfo CyanOpponent { get; set; }
     
     // Public board state
-    public List<LocationInfo> Locations { get; set; } 
+    public List<LocationInfo> Locations { get; set; } = []; 
     
     // Known info about game
-    public int NextSpiceCardId { get; set; }
     public int TreacheryCardOnBidId { get; set; }
     public Faction PredictedFaction { get; set; }
     public int PredictedTurn { get; set; }
@@ -111,16 +103,14 @@ public class PlayerKnowledge
             WhiteOpponent.GetCommaSeparatedStateData(),
             PinkOpponent.GetCommaSeparatedStateData(),
             CyanOpponent.GetCommaSeparatedStateData(),
-    NextSpiceCardId,
-    TreacheryCardOnBidId,
-    (int)PredictedFaction,
-    PredictedTurn,
-     B(KwizatsAvailable),
-     B(AllyBlocksAdvisors),
-     B(Homeworlds),
-    LatestAtreidesOrAllyBidAmount,
-            
-            Locations.Select(x => x.GetCommaSeparatedStateData()));
+            TreacheryCardOnBidId,
+            (int)PredictedFaction,
+            PredictedTurn,
+            B(KwizatsAvailable),
+            B(AllyBlocksAdvisors),
+            B(Homeworlds),
+            LatestAtreidesOrAllyBidAmount,
+            string.Join(";",Locations.Select(x => x.GetCommaSeparatedStateData())));
     
     private static string B(bool value) => value ? "1" : "0";
 }
@@ -210,18 +200,15 @@ public class PlayerInfo
     public Faction Faction { get; set; }
     public Faction Ally { get; set; }
     public int Spice { get; set; }
-    public HashSet<int> CardIds { get; set; } 
-    public HashSet<int> TraitorIds { get; set; }
-    public HashSet<int> FaceDancerIds { get; set; }
-    public HashSet<int> LivingLeaderIds { get; set; }
-    public HashSet<int> DeadLeaderIds { get; set; }
+    public HashSet<int> CardIds { get; set; } = [];
+    public HashSet<int> TraitorIds { get; set; } = [];
+    public HashSet<int> FaceDancerIds { get; set; } = [];
+    public HashSet<int> LivingLeaderIds { get; set; } = [];
     public bool MustSupportForcesInBattle { get; set; } 
     public bool MustSupportSpecialForcesInBattle { get; set; }
     public bool CanUseAdvancedKarama { get; set; }
-    public int ForcesOnHomeworld1 { get; set; }
-    public int SpecialForcesOnHomeworld1 { get; set; }
-    public int ForcesOnHomeworld2 { get; set; }
-    public int SpecialForcesOnHomeworld2 { get; set; }
+    public int ForcesInReserve { get; set; }
+    public int SpecialForcesInReserve { get; set; }
     public bool CanShipAndMoveThisTurn { get; set; }
 
     public string GetCommaSeparatedStateData() =>
@@ -231,17 +218,14 @@ public class PlayerInfo
             Spice,
             B(CanShipAndMoveThisTurn),
             B(CanUseAdvancedKarama),
-            ForcesOnHomeworld1,
-            ForcesOnHomeworld2,
-            SpecialForcesOnHomeworld1,
-            SpecialForcesOnHomeworld2,
+            ForcesInReserve,
+            SpecialForcesInReserve,
             B(MustSupportForcesInBattle),
             B(MustSupportSpecialForcesInBattle),
             Set(1, 59, CardIds),
             Set(1, 62, TraitorIds),
             Set(1, 62, FaceDancerIds),
-            Set(1, 62, LivingLeaderIds),
-            Set(1, 62, DeadLeaderIds));
+            Set(1, 62, LivingLeaderIds));
 
     private static string B(bool value) => value ? "1" : "0";
 
