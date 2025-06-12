@@ -25,9 +25,9 @@ namespace Treachery.Test;
 [TestClass]
 public class Tests
 {
-    private const bool GatherStatisticsDuringRegressionTest = false;
-    private const bool GatherTrainingDataDuringRegressionTest = false;
-    private const bool GatherCentralStyleStatistics = false;
+    private const bool GatherStatisticsDuringRegressionTest = true;
+    private const bool GatherTrainingDataDuringRegressionTest = true;
+    private const bool GatherCentralStyleStatistics = true;
 
     private void SaveSpecialCases(Game g, GameEvent e)
     {
@@ -625,8 +625,8 @@ public class Tests
 
         var valueId = 0;
 
-        BattleOutcome previousBattleOutcome;
-        IBid previousWinningBid;
+        BattleOutcome previousBattleOutcome = null;
+        IBid previousWinningBid = null;
         
         foreach (var evt in state.Events)
         {
@@ -804,7 +804,7 @@ public class Tests
             else if (latest is Shipment or Move or Voice or Prescience or Battle or Bid)
             {
                 var state = GetPlayerKnowledge(game, latest.Initiator);
-                trainingData.Decisions.Add(Tuple.Create(game.Seed, state, latest));
+                trainingData.Decisions.Add(new DecisionInfo(game.Seed, state, latest));
             }
         }
     }
@@ -857,15 +857,13 @@ public class Tests
 
         foreach (var l in game.Map.Locations(true))
         {
-            result.Locations[l.Id] = DetermineLocationInfo(game, l, player);
+            result.Locations.Add(DetermineLocationInfo(game, l, player));
         }
 
         result.Homeworlds = game.Applicable(Rule.Homeworlds);
         result.AllyBlocksAdvisors = !game.Applicable(Rule.AdvisorsDontConflictWithAlly);
         result.LatestAtreidesOrAllyBidAmount =
-            game.Bids.LastOrDefault(x => x.Key == Faction.Green || x.Key == green?.Ally).Value.TotalAmount;
-
-        result.NextStormMoves = game.HasStormPrescience(player) ? game.NextStormMoves : -1;
+            game.Bids.Values.LastOrDefault(x=> !x.Passed && (x.Initiator == Faction.Green || x.Initiator == green?.Ally))?.TotalAmount ?? -1;
         result.NextSpiceCardId = game.HasResourceDeckPrescience(player) && !game.ResourceCardDeck.IsEmpty
             ? game.ResourceCardDeck.Top.Location.Id
             : -1;
@@ -886,7 +884,7 @@ public class Tests
             Ambassador = game.AmbassadorIn(l.Territory),
             InStorm = game.IsInStorm(l),
             ProtectedFromStorm = l.IsProtectedFromStorm,
-            SuffersStormNextTurn = game.HasStormPrescience(player) && game.NextStormWillPassOver(l) ? 1 : 0,
+            SuffersStormNextTurn = game.HasStormPrescience(player) && game.NextStormWillPassOver(l),
             HasWormNextTurn = game.HasResourceDeckPrescience(player) && !game.ResourceCardDeck.IsEmpty && game.ResourceCardDeck.Top.Territory == l.Territory,
             
             MyForces = player.ForcesIn(l),

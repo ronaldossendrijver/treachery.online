@@ -12,23 +12,38 @@ public class TrainingData
 {
     public Dictionary<int,Faction[]> Winners { get; set; }
     
-    public List<Tuple<int,PlayerKnowledge,GameEvent>> Decisions { get; set; }
+    public List<DecisionInfo> Decisions { get; set; }
     
     public void Output()
     {
-        var shipmentFile = File.Open("shipments.csv", FileMode.OpenOrCreate);
-        
+        var shipmentFile = new StreamWriter(File.Open("shipments.csv", FileMode.OpenOrCreate));
+        var moveFile = new StreamWriter(File.Open("move.csv", FileMode.OpenOrCreate));
+        var battleFile = new StreamWriter(File.Open("battle.csv", FileMode.OpenOrCreate));
+        var bidFile = new StreamWriter(File.Open("bid.csv", FileMode.OpenOrCreate));
+
         foreach (var decision in Decisions)
         {
-            var winners = Winners.GetValueOrDefault(decision.Item1, []);
-            if (!winners.Contains(decision.Item3.Initiator)) continue; // only train on decisions by winners
+            var winners = Winners.GetValueOrDefault(decision.GameId, []);
+            if (!winners.Contains(decision.Decision.Initiator)) continue; // only train on decisions by winners
 
-            var state = WriteState();
+            var state = decision.State.GetCommaSeparatedStateData();
             
-            switch (decision.Item3)
+            switch (decision.Decision)
             {
                 case Shipment shipment:
+                    shipmentFile.WriteLine($"{state};{shipment.To.Id};{shipment.ForceAmount};{shipment.SpecialForceAmount}");
+                    break;
                 
+                case Move move:
+                    moveFile.WriteLine($"{state};{move.To.Id};");
+                    break;
+                
+                case Battle battle:
+                    battleFile.WriteLine($"{state};{battle.Forces};");
+                    break;
+                
+                case Bid bid:
+                    bidFile.WriteLine($"{state};{bid.Amount};{bid.AllyContributionAmount};{bid.RedContributionAmount};");
                     break;
                 
                 default: // left blank
@@ -38,10 +53,8 @@ public class TrainingData
         }
     }
 
-    private string WriteState()
-    {
-        return string.Empty;
-    }
+
+    
 }
 
 public class PlayerKnowledge
@@ -68,10 +81,9 @@ public class PlayerKnowledge
     public PlayerInfo CyanOpponent { get; set; }
     
     // Public board state
-    public Dictionary<int,LocationInfo> Locations { get; set; } 
+    public List<LocationInfo> Locations { get; set; } 
     
     // Known info about game
-    public int NextStormMoves { get; set; }
     public int NextSpiceCardId { get; set; }
     public int TreacheryCardOnBidId { get; set; }
     public Faction PredictedFaction { get; set; }
@@ -82,6 +94,35 @@ public class PlayerKnowledge
     public bool AllyBlocksAdvisors { get; set; }
     public bool Homeworlds { get; set; }
     public int LatestAtreidesOrAllyBidAmount { get; set; }
+
+    public string GetCommaSeparatedStateData() =>
+        string.Join(";",
+            I.GetCommaSeparatedStateData(),
+            Ally.GetCommaSeparatedStateData(),
+            YellowOpponent.GetCommaSeparatedStateData(),
+            GreenOpponent.GetCommaSeparatedStateData(),
+            BlackOpponent.GetCommaSeparatedStateData(),
+            RedOpponent.GetCommaSeparatedStateData(),
+            OrangeOpponent.GetCommaSeparatedStateData(),
+            BlueOpponent.GetCommaSeparatedStateData(),
+            GreyOpponent.GetCommaSeparatedStateData(),
+            PurpleOpponent.GetCommaSeparatedStateData(),
+            BrownOpponent.GetCommaSeparatedStateData(),
+            WhiteOpponent.GetCommaSeparatedStateData(),
+            PinkOpponent.GetCommaSeparatedStateData(),
+            CyanOpponent.GetCommaSeparatedStateData(),
+    NextSpiceCardId,
+    TreacheryCardOnBidId,
+    (int)PredictedFaction,
+    PredictedTurn,
+     B(KwizatsAvailable),
+     B(AllyBlocksAdvisors),
+     B(Homeworlds),
+    LatestAtreidesOrAllyBidAmount,
+            
+            Locations.Select(x => x.GetCommaSeparatedStateData()));
+    
+    private static string B(bool value) => value ? "1" : "0";
 }
 
 public class LocationInfo
@@ -117,11 +158,51 @@ public class LocationInfo
     public int CyanOpponentSpecialForces { get; set; }
     public bool InStorm { get; set; }
     public bool ProtectedFromStorm { get; set; }
-    public int SuffersStormNextTurn { get; set; }
+    public bool SuffersStormNextTurn { get; set; }
     public bool HasWormNextTurn { get; set; }
     public Ambassador? Ambassador { get; set; }
     public TerrorType? Terror { get; set; }
 
+    public string GetCommaSeparatedStateData() =>
+        string.Join(";",
+            Spice,
+            MyForces,
+            MySpecialForces,
+            AllyForces,
+            AllySpecialForces,
+            YellowOpponentForces,
+            GreenOpponentForces,
+            BlackOpponentForces,
+            RedOpponentForces,
+            OrangeOpponentForces,
+            BlueOpponentForces,
+            GreyOpponentForces,
+            PurpleOpponentForces,
+            BrownOpponentForces,
+            WhiteOpponentForces,
+            PinkOpponentForces,
+            CyanOpponentForces,
+            YellowOpponentSpecialForces,
+            GreenOpponentSpecialForces,
+            BlackOpponentSpecialForces,
+            RedOpponentSpecialForces,
+            OrangeOpponentSpecialForces,
+            BlueOpponentSpecialForces,
+            GreyOpponentSpecialForces,
+            PurpleOpponentSpecialForces,
+            BrownOpponentSpecialForces,
+            WhiteOpponentSpecialForces,
+            PinkOpponentSpecialForces,
+            CyanOpponentSpecialForces,
+            B(InStorm),
+            B(ProtectedFromStorm),
+            B(SuffersStormNextTurn),
+            B(HasWormNextTurn),
+            Ambassador == null ? "-1" : (int)Ambassador,
+            Terror == null ? "-1" : (int)Terror
+        );
+    
+    private static string B(bool value) => value ? "1" : "0";
 }
 
 public class PlayerInfo
@@ -142,4 +223,39 @@ public class PlayerInfo
     public int ForcesOnHomeworld2 { get; set; }
     public int SpecialForcesOnHomeworld2 { get; set; }
     public bool CanShipAndMoveThisTurn { get; set; }
+
+    public string GetCommaSeparatedStateData() =>
+        string.Join(";",
+            (int)Faction,
+            (int)Ally,
+            Spice,
+            B(CanShipAndMoveThisTurn),
+            B(CanUseAdvancedKarama),
+            ForcesOnHomeworld1,
+            ForcesOnHomeworld2,
+            SpecialForcesOnHomeworld1,
+            SpecialForcesOnHomeworld2,
+            B(MustSupportForcesInBattle),
+            B(MustSupportSpecialForcesInBattle),
+            Set(1, 59, CardIds),
+            Set(1, 62, TraitorIds),
+            Set(1, 62, FaceDancerIds),
+            Set(1, 62, LivingLeaderIds),
+            Set(1, 62, DeadLeaderIds));
+
+    private static string B(bool value) => value ? "1" : "0";
+
+    private static string Set(int min, int max, HashSet<int> values) => string.Join(';',
+        Enumerable.Range(min, max).Select(x => values.Contains(x) ? "1" : "0"));
+    
+    
 }
+
+public class DecisionInfo(int gameId, PlayerKnowledge state, GameEvent decision)
+{
+    public int GameId { get; set; } = gameId;
+    public PlayerKnowledge State { get; set; } = state;
+    public GameEvent Decision { get; set; } = decision;
+}
+
+
