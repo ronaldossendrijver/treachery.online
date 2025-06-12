@@ -88,9 +88,7 @@ public class Map
     }
 
     public DiscoveredLocation Shrine { get; private set; }
-
     public DiscoveredLocation Cistern { get; private set; }
-
     public DiscoveredLocation TestingStation { get; private set; }
     public DiscoveredLocation Jacurutu { get; private set; }
     public DiscoveredLocation ProcessingStation { get; private set; }

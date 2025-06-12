@@ -26,7 +26,7 @@ namespace Treachery.Test;
 public class Tests
 {
     private const bool GatherStatisticsDuringRegressionTest = false;
-    private const bool GatherTrainingSamplesDuringRegressionTest = false;
+    private const bool GatherTrainingDataDuringRegressionTest = false;
     private const bool GatherCentralStyleStatistics = false;
 
     private void SaveSpecialCases(Game g, GameEvent e)
@@ -552,7 +552,10 @@ public class Tests
         var trainingData = new TrainingData();
         var centralStyleStatistics = new ConcurrentBag<string>();
 
-        File.WriteAllText("CentralStyleStatistics.json", "{\r\n  \"entries\": [");
+        if (GatherCentralStyleStatistics)
+        {
+            File.WriteAllText("CentralStyleStatistics.json", "{\r\n  \"entries\": [");            
+        }
 
         Message.DefaultDescriber = DefaultSkin.Default;
 
@@ -585,15 +588,26 @@ public class Tests
             Console.WriteLine(e.Message);
             throw;
         }
-            
-        statistics.Output(DefaultSkin.Default);
-            
-        foreach (var item in centralStyleStatistics)
+
+        if (GatherStatisticsDuringRegressionTest)
         {
-            File.AppendAllText("CentralStyleStatistics.json", item);
+            statistics.Output(DefaultSkin.Default);    
+        }
+        
+        if (GatherTrainingDataDuringRegressionTest)
+        {
+            trainingData.Output();    
         }
 
-        File.AppendAllText("CentralStyleStatistics.json", "]\r\n}");
+        if (GatherCentralStyleStatistics)
+        {
+            foreach (var item in centralStyleStatistics)
+            {
+                File.AppendAllText("CentralStyleStatistics.json", item);
+            }
+
+            File.AppendAllText("CentralStyleStatistics.json", "]\r\n}");
+        }
     }
 
     private void ReplayGame(string fileName, string testcaseFileName, Statistics statistics, TrainingData trainingData, ConcurrentBag<string> centralStyleStatistics)
@@ -640,7 +654,7 @@ public class Tests
             if (GatherStatisticsDuringRegressionTest && statistics != null && evt is EstablishPlayers && game.Players.Count > 1 && game.Players.Count > 2 * game.Players.Count(p => p.IsBot)) 
                 GatherStatistics(statistics, game, ref previousBattleOutcome, ref previousWinningBid);
             
-            if (GatherTrainingSamplesDuringRegressionTest && statistics != null && evt is EstablishPlayers && game.Players.Count > 1 && game.Players.Count > 2 * game.Players.Count(p => p.IsBot))
+            if (GatherTrainingDataDuringRegressionTest && statistics != null && evt is EstablishPlayers && game.Players.Count > 1 && game.Players.Count > 2 * game.Players.Count(p => p.IsBot))
                 GatherTrainingData(trainingData, game);
         }
 
@@ -787,7 +801,7 @@ public class Tests
             {
                 trainingData.Winners[game.Seed] = game.Winners.Select(x => x.Faction).ToArray();
             }
-            else if (latest is Shipment or Move or Battle or Bid)
+            else if (latest is Shipment or Move or Voice or Prescience or Battle or Bid)
             {
                 var state = GetPlayerKnowledge(game, latest.Initiator);
                 trainingData.Decisions.Add(Tuple.Create(game.Seed, state, latest));

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 using Treachery.Shared;
 
 namespace Treachery.Test;
@@ -11,6 +13,35 @@ public class TrainingData
     public Dictionary<int,Faction[]> Winners { get; set; }
     
     public List<Tuple<int,PlayerKnowledge,GameEvent>> Decisions { get; set; }
+    
+    public void Output()
+    {
+        var shipmentFile = File.Open("shipments.csv", FileMode.OpenOrCreate);
+        
+        foreach (var decision in Decisions)
+        {
+            var winners = Winners.GetValueOrDefault(decision.Item1, []);
+            if (!winners.Contains(decision.Item3.Initiator)) continue; // only train on decisions by winners
+
+            var state = WriteState();
+            
+            switch (decision.Item3)
+            {
+                case Shipment shipment:
+                
+                    break;
+                
+                default: // left blank
+
+                    break;
+            }
+        }
+    }
+
+    private string WriteState()
+    {
+        return string.Empty;
+    }
 }
 
 public class PlayerKnowledge
