@@ -42,14 +42,15 @@ public class PlayerKnowledge
     // Known info about game
     public int NextStormMoves { get; set; }
     public int NextSpiceCardId { get; set; }
-    public int NextTreacheryCardId { get; set; }
+    public int TreacheryCardOnBidId { get; set; }
     public Faction PredictedFaction { get; set; }
     public int PredictedTurn { get; set; }
-    public int KwizatsCounter { get; set; }
+    public bool KwizatsAvailable { get; set; }
     
     // Rules
     public bool AllyBlocksAdvisors { get; set; }
     public bool Homeworlds { get; set; }
+    public int LatestAtreidesOrAllyBidAmount { get; set; }
 }
 
 public class LocationInfo
@@ -57,18 +58,6 @@ public class LocationInfo
     public int Spice { get; set; }
     public int MyForces { get; set; }
     public int MySpecialForces { get; set; }
-    public int ForcesPlayer2 { get; set; }
-    public int SpecialForcesPlayer2 { get; set; }
-    public int ForcesPlayer3 { get; set; }
-    public int SpecialForcesPlayer3 { get; set; }
-    public int ForcesPlayer4 { get; set; }
-    public int SpecialForcesPlayer4 { get; set; }
-    public int ForcesPlayer5 { get; set; }
-    public int SpecialForcesPlayer5 { get; set; }
-    public int ForcesPlayer6 { get; set; }
-    public int SpecialForcesPlayer6 { get; set; }
-    public Ambassador? Ambassador { get; set; }
-    public TerrorType? Terror { get; set; }
     public int AllyForces { get; set; }
     public int AllySpecialForces { get; set; }
     public int YellowOpponentForces { get; set; }
@@ -95,6 +84,13 @@ public class LocationInfo
     public int WhiteOpponentSpecialForces { get; set; }
     public int PinkOpponentSpecialForces { get; set; }
     public int CyanOpponentSpecialForces { get; set; }
+    public bool InStorm { get; set; }
+    public bool ProtectedFromStorm { get; set; }
+    public int SuffersStormNextTurn { get; set; }
+    public bool HasWormNextTurn { get; set; }
+    public Ambassador? Ambassador { get; set; }
+    public TerrorType? Terror { get; set; }
+
 }
 
 public class PlayerInfo
@@ -114,4 +110,5 @@ public class PlayerInfo
     public int SpecialForcesOnHomeworld1 { get; set; }
     public int ForcesOnHomeworld2 { get; set; }
     public int SpecialForcesOnHomeworld2 { get; set; }
+    public bool CanShipAndMoveThisTurn { get; set; }
 }

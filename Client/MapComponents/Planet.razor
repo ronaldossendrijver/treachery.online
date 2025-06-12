@@ -69,6 +69,9 @@
 
 @code {
 
+    [Parameter]
+    public EventCallback<LocationEventArgs> OnLocationClick { get; set; }
+    
     private Situation situation = new();
     protected override bool ShouldRender()
     {
@@ -99,7 +102,7 @@
             return Client.CurrentSkin.BLOWNSHIELDWALL_OVERLAY_COLOR;
         }
 
-        if (Game.HasStormPrescience(Player) && NextStormWillPassOver(l))
+        if (Game.HasStormPrescience(Player) && Game.NextStormWillPassOver(l))
         {
             return Client.CurrentSkin.STORM_PRESCIENCE_OVERLAY_COLOR;
         }
@@ -107,31 +110,6 @@
         return "transparent";
     }
 
-    private string LocationTexture(Location l) {
-
-        if (Game.SectorInStorm >= 0 && l.Sector == Game.SectorInStorm)
-        {
-            return "url(#clouds)";
-        }
-
-        return "";
-    }
-
-    private bool NextStormWillPassOver(Location l)
-    {
-        for (var i = 1; i <= Game.NextStormMoves; i++)
-        {
-            if ((Game.SectorInStorm + i) % Map.NumberOfSectors == l.Sector)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    [Parameter]
-    public EventCallback<LocationEventArgs> OnLocationClick { get; set; }
 
     private async Task OnClick(MouseEventArgs e, Location l)
     {

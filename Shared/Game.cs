@@ -934,6 +934,19 @@ public partial class Game
             !Prevented(FactionAdvantage.YellowStormPrescience) &&
             (p.Faction == Faction.Yellow || (p.Ally == Faction.Yellow && YellowSharesPrescience) || HasDeal(p.Faction, DealType.ShareStormPrescience));
     }
+    
+    public bool NextStormWillPassOver(Location l)
+    {
+        for (var i = 1; i <= NextStormMoves; i++)
+        {
+            if ((SectorInStorm + i) % Map.NumberOfSectors == l.Sector)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public bool HasHighThreshold(Faction f)
     {

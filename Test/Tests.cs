@@ -798,6 +798,9 @@ public class Tests
     private static PlayerKnowledge GetPlayerKnowledge(Game game, Faction faction)
     {
         var player = game.GetPlayer(faction);
+        var green = game.GetPlayer(Faction.Green);
+        var blue = game.GetPlayer(Faction.Blue);
+        
         var result = new PlayerKnowledge
         {
             I =
@@ -840,43 +843,70 @@ public class Tests
 
         foreach (var l in game.Map.Locations(true))
         {
-            result.Locations[l.Id] = new LocationInfo
-            {
-                Spice = game.ResourcesOnPlanet.GetValueOrDefault(l, 0),
-                Terror = game.TerrorIn(l.Territory).FirstOrDefault(),
-                Ambassador = game.AmbassadorIn(l.Territory),
-                MyForces = player.ForcesIn(l),
-                MySpecialForces = player.SpecialForcesIn(l),
-                AllyForces = player.AlliedPlayer?.ForcesIn(l) ?? 0,
-                AllySpecialForces = player.AlliedPlayer?.SpecialForcesIn(l) ?? 0,
-                YellowOpponentForces = game.GetPlayer(Faction.Yellow)?.ForcesIn(l) ?? 0,
-                GreenOpponentForces = game.GetPlayer(Faction.Green)?.ForcesIn(l) ?? 0,  
-                BlackOpponentForces = game.GetPlayer(Faction.Black)?.ForcesIn(l) ?? 0,  
-                RedOpponentForces = game.GetPlayer(Faction.Red)?.ForcesIn(l) ?? 0,      
-                OrangeOpponentForces = game.GetPlayer(Faction.Orange)?.ForcesIn(l) ?? 0,
-                BlueOpponentForces = game.GetPlayer(Faction.Blue)?.ForcesIn(l) ?? 0,    
-                GreyOpponentForces = game.GetPlayer(Faction.Grey)?.ForcesIn(l) ?? 0,    
-                PurpleOpponentForces = game.GetPlayer(Faction.Purple)?.ForcesIn(l) ?? 0,
-                BrownOpponentForces = game.GetPlayer(Faction.Brown)?.ForcesIn(l) ?? 0,  
-                WhiteOpponentForces = game.GetPlayer(Faction.White)?.ForcesIn(l) ?? 0,  
-                PinkOpponentForces = game.GetPlayer(Faction.Pink)?.ForcesIn(l) ?? 0,    
-                CyanOpponentForces = game.GetPlayer(Faction.Cyan)?.ForcesIn(l) ?? 0,    
-                YellowOpponentSpecialForces = game.GetPlayer(Faction.Yellow)?.SpecialForcesIn(l) ?? 0,
-                GreenOpponentSpecialForces = game.GetPlayer(Faction.Green)?.SpecialForcesIn(l) ?? 0,  
-                BlackOpponentSpecialForces = game.GetPlayer(Faction.Black)?.SpecialForcesIn(l) ?? 0,  
-                RedOpponentSpecialForces = game.GetPlayer(Faction.Red)?.SpecialForcesIn(l) ?? 0,      
-                OrangeOpponentSpecialForces = game.GetPlayer(Faction.Orange)?.SpecialForcesIn(l) ?? 0,
-                BlueOpponentSpecialForces = game.GetPlayer(Faction.Blue)?.SpecialForcesIn(l) ?? 0,    
-                GreyOpponentSpecialForces = game.GetPlayer(Faction.Grey)?.SpecialForcesIn(l) ?? 0,    
-                PurpleOpponentSpecialForces = game.GetPlayer(Faction.Purple)?.SpecialForcesIn(l) ?? 0,
-                BrownOpponentSpecialForces = game.GetPlayer(Faction.Brown)?.SpecialForcesIn(l) ?? 0,  
-                WhiteOpponentSpecialForces = game.GetPlayer(Faction.White)?.SpecialForcesIn(l) ?? 0,  
-                PinkOpponentSpecialForces = game.GetPlayer(Faction.Pink)?.SpecialForcesIn(l) ?? 0,    
-                CyanOpponentSpecialForces = game.GetPlayer(Faction.Cyan)?.SpecialForcesIn(l) ?? 0,    
-            };
+            result.Locations[l.Id] = DetermineLocationInfo(game, l, player);
         }
 
+        result.Homeworlds = game.Applicable(Rule.Homeworlds);
+        result.AllyBlocksAdvisors = !game.Applicable(Rule.AdvisorsDontConflictWithAlly);
+        result.LatestAtreidesOrAllyBidAmount =
+            game.Bids.LastOrDefault(x => x.Key == Faction.Green || x.Key == green?.Ally).Value.TotalAmount;
+
+        result.NextStormMoves = game.HasStormPrescience(player) ? game.NextStormMoves : -1;
+        result.NextSpiceCardId = game.HasResourceDeckPrescience(player) && !game.ResourceCardDeck.IsEmpty
+            ? game.ResourceCardDeck.Top.Location.Id
+            : -1;
+        result.TreacheryCardOnBidId = game.HasBiddingPrescience(player) && !game.CardsOnAuction.IsEmpty? game.CardsOnAuction.Top.Id  : -1;
+        result.PredictedFaction = blue?.PredictedFaction ?? Faction.None;
+        result.PredictedTurn = blue?.PredictedTurn ?? -1;
+        result.KwizatsAvailable = green.MessiahAvailable;
+        
         return result;
+    }
+
+    private static LocationInfo DetermineLocationInfo(Game game, Location l, Player player)
+    {
+        return new LocationInfo
+        {
+            Spice = game.ResourcesOnPlanet.GetValueOrDefault(l, 0),
+            Terror = game.TerrorIn(l.Territory).FirstOrDefault(),
+            Ambassador = game.AmbassadorIn(l.Territory),
+            InStorm = game.IsInStorm(l),
+            ProtectedFromStorm = l.IsProtectedFromStorm,
+            SuffersStormNextTurn = game.HasStormPrescience(player) && game.NextStormWillPassOver(l) ? 1 : 0,
+            HasWormNextTurn = game.HasResourceDeckPrescience(player) && !game.ResourceCardDeck.IsEmpty && game.ResourceCardDeck.Top.Territory == l.Territory,
+            
+            MyForces = player.ForcesIn(l),
+            MySpecialForces = player.SpecialForcesIn(l),
+            
+            AllyForces = player.AlliedPlayer?.ForcesIn(l) ?? 0,
+            AllySpecialForces = player.AlliedPlayer?.SpecialForcesIn(l) ?? 0,
+            
+            YellowOpponentForces = game.GetPlayer(Faction.Yellow)?.ForcesIn(l) ?? 0,
+            GreenOpponentForces = game.GetPlayer(Faction.Green)?.ForcesIn(l) ?? 0,  
+            BlackOpponentForces = game.GetPlayer(Faction.Black)?.ForcesIn(l) ?? 0,  
+            RedOpponentForces = game.GetPlayer(Faction.Red)?.ForcesIn(l) ?? 0,      
+            OrangeOpponentForces = game.GetPlayer(Faction.Orange)?.ForcesIn(l) ?? 0,
+            BlueOpponentForces = game.GetPlayer(Faction.Blue)?.ForcesIn(l) ?? 0,    
+            GreyOpponentForces = game.GetPlayer(Faction.Grey)?.ForcesIn(l) ?? 0,    
+            PurpleOpponentForces = game.GetPlayer(Faction.Purple)?.ForcesIn(l) ?? 0,
+            BrownOpponentForces = game.GetPlayer(Faction.Brown)?.ForcesIn(l) ?? 0,  
+            WhiteOpponentForces = game.GetPlayer(Faction.White)?.ForcesIn(l) ?? 0,  
+            PinkOpponentForces = game.GetPlayer(Faction.Pink)?.ForcesIn(l) ?? 0,    
+            CyanOpponentForces = game.GetPlayer(Faction.Cyan)?.ForcesIn(l) ?? 0,    
+            
+            YellowOpponentSpecialForces = game.GetPlayer(Faction.Yellow)?.SpecialForcesIn(l) ?? 0,
+            GreenOpponentSpecialForces = game.GetPlayer(Faction.Green)?.SpecialForcesIn(l) ?? 0,  
+            BlackOpponentSpecialForces = game.GetPlayer(Faction.Black)?.SpecialForcesIn(l) ?? 0,  
+            RedOpponentSpecialForces = game.GetPlayer(Faction.Red)?.SpecialForcesIn(l) ?? 0,      
+            OrangeOpponentSpecialForces = game.GetPlayer(Faction.Orange)?.SpecialForcesIn(l) ?? 0,
+            BlueOpponentSpecialForces = game.GetPlayer(Faction.Blue)?.SpecialForcesIn(l) ?? 0,    
+            GreyOpponentSpecialForces = game.GetPlayer(Faction.Grey)?.SpecialForcesIn(l) ?? 0,    
+            PurpleOpponentSpecialForces = game.GetPlayer(Faction.Purple)?.SpecialForcesIn(l) ?? 0,
+            BrownOpponentSpecialForces = game.GetPlayer(Faction.Brown)?.SpecialForcesIn(l) ?? 0,  
+            WhiteOpponentSpecialForces = game.GetPlayer(Faction.White)?.SpecialForcesIn(l) ?? 0,  
+            PinkOpponentSpecialForces = game.GetPlayer(Faction.Pink)?.SpecialForcesIn(l) ?? 0,    
+            CyanOpponentSpecialForces = game.GetPlayer(Faction.Cyan)?.SpecialForcesIn(l) ?? 0,    
+        };
     }
 
     private static PlayerInfo DetermineKnownPlayerInfo(Faction faction, Game game, Player me, bool processAlly = false)
@@ -905,7 +935,8 @@ public class Tests
             ForcesOnHomeworld1 = otherPlayer.HomeWorlds[0].IsHomeOfNormalForces ? otherPlayer.ForcesInReserve : 0,
             ForcesOnHomeworld2 = otherPlayer.HomeWorlds.Count > 1 && otherPlayer.HomeWorlds[1].IsHomeOfNormalForces ? otherPlayer.ForcesInReserve : 0,
             SpecialForcesOnHomeworld1 = otherPlayer.HomeWorlds[0].IsHomeOfSpecialForces ? otherPlayer.SpecialForcesInReserve : 0,
-            SpecialForcesOnHomeworld2 = otherPlayer.HomeWorlds.Count > 1 && otherPlayer.HomeWorlds[1].IsHomeOfSpecialForces ? otherPlayer.SpecialForcesInReserve : 0
+            SpecialForcesOnHomeworld2 = otherPlayer.HomeWorlds.Count > 1 && otherPlayer.HomeWorlds[1].IsHomeOfSpecialForces ? otherPlayer.SpecialForcesInReserve : 0,
+            CanShipAndMoveThisTurn = game.CurrentMainPhase is MainPhase.ShipmentAndMove && !game.HasActedOrPassed.Contains(faction),
         };
     }
 
