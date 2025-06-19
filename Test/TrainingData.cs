@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Newtonsoft.Json;
 using Treachery.Shared;
 
@@ -14,10 +15,17 @@ public class TrainingData
     
     public void Output()
     {
-        var shipmentFile = new StreamWriter(File.Open("shipments.csv", FileMode.Create));
+        var shipmentFile = new StreamWriter(File.Open("shipments.csv", FileMode.Create), Encoding.ASCII, 10000);
+        var shipmentFileHeaderWritten = false;
+        
         var moveFile = new StreamWriter(File.Open("move.csv", FileMode.Create));
+        var moveFileHeaderWritten = false;
+
         var battleFile = new StreamWriter(File.Open("battle.csv", FileMode.Create));
+        var battleFileHeaderWritten = false;
+
         var bidFile = new StreamWriter(File.Open("bid.csv", FileMode.Create));
+        var bidFileHeaderWritten = false;
 
         foreach (var decision in Decisions)
         {
@@ -26,7 +34,9 @@ public class TrainingData
             switch (decision.Decision)
             {
                 case Shipment shipment:
+                    if (!shipmentFileHeaderWritten) shipmentFile.WriteLine($"{decision.State.GetCommaSeparatedHeaders()};ShipmentToId;ShipmentForces;ShipmentSpecialForces");
                     shipmentFile.WriteLine($"{state};{shipment.To.Id};{shipment.ForceAmount};{shipment.SpecialForceAmount}");
+                    shipmentFileHeaderWritten = true;
                     break;
                 
                 case Move move:
@@ -89,6 +99,13 @@ public class PlayerKnowledge
 
     public string GetCommaSeparatedStateData() =>
         string.Join(";",
+            TreacheryCardOnBidId,
+            (int)PredictedFaction,
+            PredictedTurn,
+            B(KwizatsAvailable),
+            B(AllyBlocksAdvisors),
+            B(Homeworlds),
+            LatestAtreidesOrAllyBidAmount,
             I.GetCommaSeparatedStateData(),
             Ally.GetCommaSeparatedStateData(),
             YellowOpponent.GetCommaSeparatedStateData(),
@@ -103,20 +120,39 @@ public class PlayerKnowledge
             WhiteOpponent.GetCommaSeparatedStateData(),
             PinkOpponent.GetCommaSeparatedStateData(),
             CyanOpponent.GetCommaSeparatedStateData(),
-            TreacheryCardOnBidId,
-            (int)PredictedFaction,
-            PredictedTurn,
-            B(KwizatsAvailable),
-            B(AllyBlocksAdvisors),
-            B(Homeworlds),
-            LatestAtreidesOrAllyBidAmount,
             string.Join(";",Locations.Select(x => x.GetCommaSeparatedStateData())));
+    
+    public string GetCommaSeparatedHeaders() =>
+        string.Join(";",
+            nameof(TreacheryCardOnBidId),
+            nameof(PredictedFaction),
+            nameof(PredictedTurn),
+            nameof(KwizatsAvailable),
+            nameof(AllyBlocksAdvisors),
+            nameof(Homeworlds),
+            nameof(LatestAtreidesOrAllyBidAmount),
+            PlayerInfo.GetCommaSeparatedHeaders("My"),
+            PlayerInfo.GetCommaSeparatedHeaders("Ally"),
+            PlayerInfo.GetCommaSeparatedHeaders("Frm"),
+            PlayerInfo.GetCommaSeparatedHeaders("Atr"),
+            PlayerInfo.GetCommaSeparatedHeaders("Hark"),
+            PlayerInfo.GetCommaSeparatedHeaders("Emp"),
+            PlayerInfo.GetCommaSeparatedHeaders("Gld"),
+            PlayerInfo.GetCommaSeparatedHeaders("Bg"),
+            PlayerInfo.GetCommaSeparatedHeaders("Ix"),
+            PlayerInfo.GetCommaSeparatedHeaders("Bt"),
+            PlayerInfo.GetCommaSeparatedHeaders("Chm"),
+            PlayerInfo.GetCommaSeparatedHeaders("Rich"),
+            PlayerInfo.GetCommaSeparatedHeaders("Eca"),
+            PlayerInfo.GetCommaSeparatedHeaders("Mor"),
+            string.Join(";", Locations.Select(x => LocationInfo.GetCommaSeparatedHeaders(x.Id.ToString()))));
     
     private static string B(bool value) => value ? "1" : "0";
 }
 
 public class LocationInfo
 {
+    public int Id { get; set; }
     public int Spice { get; set; }
     public int MyForces { get; set; }
     public int MySpecialForces { get; set; }
@@ -192,6 +228,45 @@ public class LocationInfo
             Terror == null ? "-1" : (int)Terror
         );
     
+    public static string GetCommaSeparatedHeaders(string locId) =>
+        string.Join(";",
+            nameof(Spice) + locId,
+            nameof(MyForces) + locId,
+            nameof(MySpecialForces) + locId,
+            nameof(AllyForces) + locId,
+            nameof(AllySpecialForces) + locId,
+            nameof(YellowOpponentForces) + locId,
+            nameof(GreenOpponentForces) + locId,
+            nameof(BlackOpponentForces) + locId,
+            nameof(RedOpponentForces) + locId,
+            nameof(OrangeOpponentForces) + locId,
+            nameof(BlueOpponentForces) + locId,
+            nameof(GreyOpponentForces) + locId,
+            nameof(PurpleOpponentForces) + locId,
+            nameof(BrownOpponentForces) + locId,
+            nameof(WhiteOpponentForces) + locId,
+            nameof(PinkOpponentForces) + locId,
+            nameof(CyanOpponentForces) + locId,
+            nameof(YellowOpponentSpecialForces) + locId,
+            nameof(GreenOpponentSpecialForces) + locId,
+            nameof(BlackOpponentSpecialForces) + locId,
+            nameof(RedOpponentSpecialForces) + locId,
+            nameof(OrangeOpponentSpecialForces) + locId,
+            nameof(BlueOpponentSpecialForces) + locId,
+            nameof(GreyOpponentSpecialForces) + locId,
+            nameof(PurpleOpponentSpecialForces) + locId,
+            nameof(BrownOpponentSpecialForces) + locId,
+            nameof(WhiteOpponentSpecialForces) + locId,
+            nameof(PinkOpponentSpecialForces) + locId,
+            nameof(CyanOpponentSpecialForces) + locId,
+            nameof(InStorm) + locId,
+            nameof(ProtectedFromStorm) + locId,
+            nameof(SuffersStormNextTurn) + locId,
+            nameof(HasWormNextTurn) + locId,
+            nameof(Ambassador) + locId,
+            nameof(Terror) + locId
+        );
+    
     private static string B(bool value) => value ? "1" : "0";
 }
 
@@ -204,6 +279,10 @@ public class PlayerInfo
     public HashSet<int> TraitorIds { get; set; } = [];
     public HashSet<int> FaceDancerIds { get; set; } = [];
     public HashSet<int> LivingLeaderIds { get; set; } = [];
+    public bool HasTechTokenCharity { get; set; }
+    public bool HasTechTokenShip { get; set; }
+    public bool HasTechTokenRevival { get; set; }
+
     public bool MustSupportForcesInBattle { get; set; } 
     public bool MustSupportSpecialForcesInBattle { get; set; }
     public bool CanUseAdvancedKarama { get; set; }
@@ -222,17 +301,40 @@ public class PlayerInfo
             SpecialForcesInReserve,
             B(MustSupportForcesInBattle),
             B(MustSupportSpecialForcesInBattle),
+            B(HasTechTokenCharity),
+            B(HasTechTokenRevival),
+            B(HasTechTokenShip),
             Set(1, 59, CardIds),
             Set(1, 62, TraitorIds),
             Set(1, 62, FaceDancerIds),
             Set(1, 62, LivingLeaderIds));
+    
+    public static string GetCommaSeparatedHeaders(string who) =>
+        string.Join(";",
+            who + nameof(Faction),
+            who + nameof(Ally),
+            who + nameof(Spice),
+            who + nameof(CanShipAndMoveThisTurn),
+            who + nameof(CanUseAdvancedKarama),
+            who + nameof(ForcesInReserve),
+            who + nameof(SpecialForcesInReserve),
+            who + nameof(MustSupportForcesInBattle),
+            who + nameof(MustSupportSpecialForcesInBattle),
+            who + nameof(HasTechTokenCharity),
+            who + nameof(HasTechTokenRevival),
+            who + nameof(HasTechTokenShip),
+            who + HeaderSet("Card", 1, 59),
+            who + HeaderSet("Traitor", 1, 62),
+            who + HeaderSet("Fd", 1, 62),
+            who + HeaderSet("Leader", 1, 62));
 
     private static string B(bool value) => value ? "1" : "0";
 
     private static string Set(int min, int max, HashSet<int> values) => string.Join(';',
         Enumerable.Range(min, max).Select(x => values.Contains(x) ? "1" : "0"));
     
-    
+    private static string HeaderSet(string header, int min, int max) => string.Join(';',
+        Enumerable.Range(min, max).Select(x => $"{header}{x}"));
 }
 
 public class DecisionInfo(int gameId, PlayerKnowledge state, GameEvent decision)

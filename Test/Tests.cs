@@ -869,6 +869,7 @@ public class Tests
     {
         return new LocationInfo
         {
+            Id = l.Id,
             Spice = game.ResourcesOnPlanet.GetValueOrDefault(l, 0),
             Terror = game.TerrorIn(l.Territory).FirstOrDefault(),
             Ambassador = game.AmbassadorIn(l.Territory),
