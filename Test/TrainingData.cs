@@ -126,12 +126,12 @@ public class PlayerKnowledge
             nameof(AllyBlocksAdvisors),
             nameof(Homeworlds),
             nameof(LatestAtreidesOrAllyBidAmount),
-            PlayerInfo.GetCommaSeparatedHeaders("P1"),
-            PlayerInfo.GetCommaSeparatedHeaders("P2"),
-            PlayerInfo.GetCommaSeparatedHeaders("P3"),
-            PlayerInfo.GetCommaSeparatedHeaders("P4"),
-            PlayerInfo.GetCommaSeparatedHeaders("P5"),
-            PlayerInfo.GetCommaSeparatedHeaders("P6"),
+            PlayerInfo.GetCommaSeparatedHeaders("Player1"),
+            PlayerInfo.GetCommaSeparatedHeaders("Player2"),
+            PlayerInfo.GetCommaSeparatedHeaders("Player3"),
+            PlayerInfo.GetCommaSeparatedHeaders("Player4"),
+            PlayerInfo.GetCommaSeparatedHeaders("Player5"),
+            PlayerInfo.GetCommaSeparatedHeaders("Player6"),
             string.Join(";", Locations.Select(x => LocationInfo.GetCommaSeparatedHeaders(x.Id.ToString()))));
     
     private static string B(bool value) => value ? "1" : "0";
@@ -299,24 +299,24 @@ public record LocationInfo
     
     public static string GetCommaSeparatedHeaders(string locId) =>
         string.Join(";",
-            nameof(Spice) + locId,
-            nameof(Player1Forces) + locId,
-            nameof(Player1SpecialForces) + locId,
-            nameof(Player2Forces) + locId,
-            nameof(Player2SpecialForces) + locId,
-            nameof(Player3Forces) + locId,
-            nameof(Player3SpecialForces) + locId,
-            nameof(Player4Forces) + locId,
-            nameof(Player4SpecialForces) + locId,
-            nameof(Player5Forces) + locId,
-            nameof(Player5SpecialForces) + locId,
-            nameof(Player6Forces) + locId,
-            nameof(Player6SpecialForces) + locId,
-            nameof(InStorm) + locId,
-            nameof(WillSufferStormNextTurn) + locId,
-            nameof(HasWormNextTurn) + locId,
-            nameof(Ambassador) + locId,
-            nameof(Terror) + locId
+            "Loc" + locId + nameof(Spice),
+            "Loc" + locId + nameof(Player1Forces),
+            "Loc" + locId + nameof(Player1SpecialForces),
+            "Loc" + locId + nameof(Player2Forces),
+            "Loc" + locId + nameof(Player2SpecialForces),
+            "Loc" + locId + nameof(Player3Forces),
+            "Loc" + locId + nameof(Player3SpecialForces),
+            "Loc" + locId + nameof(Player4Forces),
+            "Loc" + locId + nameof(Player4SpecialForces),
+            "Loc" + locId + nameof(Player5Forces),
+            "Loc" + locId + nameof(Player5SpecialForces),
+            "Loc" + locId + nameof(Player6Forces),
+            "Loc" + locId + nameof(Player6SpecialForces),
+            "Loc" + locId + nameof(InStorm),
+            "Loc" + locId + nameof(WillSufferStormNextTurn),
+            "Loc" + locId + nameof(HasWormNextTurn),
+            "Loc" + locId + nameof(Ambassador),
+            "Loc" + locId + nameof(Terror)
         );
     
     private static string B(bool value) => value ? "1" : "0";
@@ -382,10 +382,10 @@ public record PlayerInfo
             who + nameof(HasTechTokenCharity),
             who + nameof(HasTechTokenRevival),
             who + nameof(HasTechTokenShip),
-            who + HeaderSet("Card", 1, 59),
-            who + HeaderSet("Traitor", 1, 62),
-            who + HeaderSet("Fd", 1, 62),
-            who + HeaderSet("Leader", 1, 62));
+            HeaderSet($"{who}Card", 1, 59),
+            HeaderSet($"{who}Traitor", 1, 62),
+            HeaderSet($"{who}Fd", 1, 62),
+            HeaderSet($"{who}Leader", 1, 62));
 
     private static string B(bool value) => value ? "1" : "0";
 
@@ -400,10 +400,10 @@ public record PlayerInfo
         Faction = Faction.None,
         Ally = Faction.None,
         Spice = 0,
-        CardIds = null,
-        TraitorIds = null,
-        FaceDancerIds = null,
-        LivingLeaderIds = null,
+        CardIds = [],
+        TraitorIds = [],
+        FaceDancerIds = [],
+        LivingLeaderIds = [],
         HasTechTokenCharity = false,
         HasTechTokenShip = false,
         HasTechTokenRevival = false,
