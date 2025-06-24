@@ -222,7 +222,7 @@ public partial class Game
 
     #region Information
 
-    internal bool UseStormDeck => Applicable(Rule.StormDeckWithoutYellow) || (IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm));
+    internal bool UseStormDeck => Applicable(Rule.StormDeckWithoutYellow) || (IsPlaying(Faction.Yellow) && Applicable(Rule.YellowDeterminesStorm));
 
     public bool IsProtectedFromStorm(Location l)
     {

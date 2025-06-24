@@ -84,7 +84,7 @@ public class Karma : GameEvent
         {
             if (In(g, MainPhase.Storm))
             {
-                if (g.Applicable(Rule.YellowSeesStorm)) result.Add(FactionAdvantage.YellowStormPrescience);
+                if (g.Applicable(Rule.YellowDeterminesStorm)) result.Add(FactionAdvantage.YellowStormPrescience);
                 if (g.Applicable(Rule.YellowStormLosses)) result.Add(FactionAdvantage.YellowProtectedFromStorm);
             }
 

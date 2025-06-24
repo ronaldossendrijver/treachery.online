@@ -13,11 +13,9 @@ public partial class Game
 {
     public List<Player> Players { get; private set; } = [];
     
-    public List<Player> Bots => Players.Where(p => p.IsBot).ToList();
-
     public Dictionary<Player, string> LegacyNames { get; } = [];
     
-    public Participation Participation { get; set;  } = new();
+    public Participation Participation { get; } = new();
     
     public bool IsPlaying(Faction faction) => Players.Any(p => p.Faction == faction);
 
@@ -72,7 +70,7 @@ public partial class Game
     
     public int NumberOfObservers => Participation.Observers.Count;
     
-    public int NumberOfPlayers => Participation.SeatedPlayers.Count;
+    public int NumberOfSeatedPlayers => Participation.SeatedPlayers.Count;
     
     public IEnumerable<string> PlayerNames =>
         Participation.PlayerNames

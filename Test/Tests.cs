@@ -633,6 +633,8 @@ public class Tests
             evt.Initialize(game);
             var previousPhase = game.CurrentPhase;
 
+            var trainingState = GatherTrainingDataDuringRegressionTest ? GatherPlayerKnowledgeForTrainingData(trainingData, game) : null;
+
             var result = evt.Execute(true, true);
             if (result != null) File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
             Assert.IsNull(result, fileName + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + result);
@@ -654,8 +656,8 @@ public class Tests
             if (GatherStatisticsDuringRegressionTest) 
                 GatherStatistics(statistics, game, ref previousBattleOutcome, ref previousWinningBid);
             
-            if (GatherTrainingDataDuringRegressionTest)
-                GatherTrainingData(trainingData, game);
+            if (trainingState != null)
+                RegisterDecisionForTrainingData(trainingData, game, trainingState);
         }
 
         if (GatherCentralStyleStatistics)
@@ -791,153 +793,30 @@ public class Tests
         }
     }
     
-    private static void GatherTrainingData(TrainingData trainingData, Game game)
+    private static PlayerKnowledge GatherPlayerKnowledgeForTrainingData(TrainingData trainingData, Game game)
     {
+        var latest = game.LatestEvent();
+
+        if (latest is Shipment or Move or Voice or Prescience or Battle or Bid)
+        {
+            return new PlayerKnowledge(game, latest.Initiator);
+        }
+        
+        if (game.CurrentPhase == Phase.GameEnded && latest is EndPhase)
+        {
+            trainingData.DeleteDecisionsByLosers(game.Seed, game.Winners.Select(x => x.Faction).ToArray());
+        }
+
+        return null;
+    }
+    
+    private static void RegisterDecisionForTrainingData(TrainingData trainingData, Game game, PlayerKnowledge knowledge)
+    {
+        var latest = game.LatestEvent();
         lock (trainingData)
         {
-            var latest = game.LatestEvent();
-
-            if (game.CurrentPhase == Phase.GameEnded && latest is EndPhase)
-            {
-                trainingData.DeleteDecisionsByLosers(game.Seed, game.Winners.Select(x => x.Faction).ToArray());
-            }
-            else if (latest is Shipment or Move or Voice or Prescience or Battle or Bid)
-            {
-                var state = GetPlayerKnowledge(game, latest.Initiator);
-                trainingData.Decisions.Add(new DecisionInfo(game.Seed, state, latest));
-            }
+            trainingData.Decisions.Add(new DecisionInfo(game.Seed, knowledge, latest));
         }
-    }
-
-    private static PlayerKnowledge GetPlayerKnowledge(Game game, Faction faction)
-    {
-        var player = game.GetPlayer(faction);
-        var green = game.GetPlayer(Faction.Green);
-        var blue = game.GetPlayer(Faction.Blue);
-        
-        var result = new PlayerKnowledge
-        {
-            I =
-            {
-                Faction = faction,
-                Ally = player.Ally,
-                Spice = player.Resources,
-                CardIds = player.TreacheryCards.Select(x => x.Id).ToHashSet(),
-                TraitorIds = player.Traitors.Select(x => x.Id).ToHashSet(),
-                FaceDancerIds = player.FaceDancers.Select(x => x.Id).ToHashSet(),
-                LivingLeaderIds = player.Leaders.Where(game.IsAlive).Select(x => x.Id).ToHashSet(),
-                MustSupportForcesInBattle = Battle.MustPayForAnyForcesInBattle(game, player),
-                MustSupportSpecialForcesInBattle = Battle.MustPayForSpecialForcesInBattle(game, player),
-                CanUseAdvancedKarama = !game.KarmaPrevented(faction) && !player.SpecialKarmaPowerUsed && game.Applicable(Rule.AdvancedKarama),
-                ForcesInReserve = player.ForcesInReserve,
-                SpecialForcesInReserve = player.SpecialForcesInReserve,
-            },
-            
-            Ally = DetermineKnownPlayerInfo(player.Ally, game, player, true),
-            YellowOpponent = DetermineKnownPlayerInfo(Faction.Yellow, game, player),
-            GreenOpponent = DetermineKnownPlayerInfo(Faction.Green, game, player),
-            BlackOpponent = DetermineKnownPlayerInfo(Faction.Black, game, player),
-            RedOpponent = DetermineKnownPlayerInfo(Faction.Red, game, player),
-            OrangeOpponent = DetermineKnownPlayerInfo(Faction.Orange, game, player),
-            BlueOpponent = DetermineKnownPlayerInfo(Faction.Blue, game, player),
-            GreyOpponent = DetermineKnownPlayerInfo(Faction.Grey, game, player),
-            PurpleOpponent = DetermineKnownPlayerInfo(Faction.Purple, game, player),
-            BrownOpponent = DetermineKnownPlayerInfo(Faction.Brown, game, player),
-            WhiteOpponent = DetermineKnownPlayerInfo(Faction.White, game, player),
-            PinkOpponent = DetermineKnownPlayerInfo(Faction.Pink, game, player),
-            CyanOpponent = DetermineKnownPlayerInfo(Faction.Cyan, game, player)
-        };
-
-        foreach (var l in game.Map.Locations(true))
-        {
-            result.Locations.Add(DetermineLocationInfo(game, l, player));
-        }
-
-        result.Homeworlds = game.Applicable(Rule.Homeworlds);
-        result.AllyBlocksAdvisors = !game.Applicable(Rule.AdvisorsDontConflictWithAlly);
-        result.LatestAtreidesOrAllyBidAmount =
-            game.Bids.Values.LastOrDefault(x=> !x.Passed && (x.Initiator == Faction.Green || x.Initiator == green?.Ally))?.TotalAmount ?? -1;
-        result.TreacheryCardOnBidId = game.HasBiddingPrescience(player) && !game.CardsOnAuction.IsEmpty? game.CardsOnAuction.Top.Id  : -1;
-        result.PredictedFaction = blue?.PredictedFaction ?? Faction.None;
-        result.PredictedTurn = blue?.PredictedTurn ?? -1;
-        result.KwizatsAvailable = green?.MessiahAvailable == true;
-        
-        return result;
-    }
-
-    private static LocationInfo DetermineLocationInfo(Game game, Location l, Player player)
-    {
-        return new LocationInfo
-        {
-            Id = l.Id,
-            Spice = game.ResourcesOnPlanet.GetValueOrDefault(l, 0),
-            Terror = game.TerrorIn(l.Territory).FirstOrDefault(),
-            Ambassador = game.AmbassadorIn(l.Territory),
-            InStorm = game.IsInStorm(l),
-            ProtectedFromStorm = l.IsProtectedFromStorm,
-            SuffersStormNextTurn = game.HasStormPrescience(player) && game.NextStormWillPassOver(l),
-            HasWormNextTurn = game.HasResourceDeckPrescience(player) && !game.ResourceCardDeck.IsEmpty && game.ResourceCardDeck.Top.Territory == l.Territory,
-            
-            MyForces = player.ForcesIn(l),
-            MySpecialForces = player.SpecialForcesIn(l),
-            
-            AllyForces = player.AlliedPlayer?.ForcesIn(l) ?? 0,
-            AllySpecialForces = player.AlliedPlayer?.SpecialForcesIn(l) ?? 0,
-            
-            YellowOpponentForces = game.GetPlayer(Faction.Yellow)?.ForcesIn(l) ?? 0,
-            GreenOpponentForces = game.GetPlayer(Faction.Green)?.ForcesIn(l) ?? 0,  
-            BlackOpponentForces = game.GetPlayer(Faction.Black)?.ForcesIn(l) ?? 0,  
-            RedOpponentForces = game.GetPlayer(Faction.Red)?.ForcesIn(l) ?? 0,      
-            OrangeOpponentForces = game.GetPlayer(Faction.Orange)?.ForcesIn(l) ?? 0,
-            BlueOpponentForces = game.GetPlayer(Faction.Blue)?.ForcesIn(l) ?? 0,    
-            GreyOpponentForces = game.GetPlayer(Faction.Grey)?.ForcesIn(l) ?? 0,    
-            PurpleOpponentForces = game.GetPlayer(Faction.Purple)?.ForcesIn(l) ?? 0,
-            BrownOpponentForces = game.GetPlayer(Faction.Brown)?.ForcesIn(l) ?? 0,  
-            WhiteOpponentForces = game.GetPlayer(Faction.White)?.ForcesIn(l) ?? 0,  
-            PinkOpponentForces = game.GetPlayer(Faction.Pink)?.ForcesIn(l) ?? 0,    
-            CyanOpponentForces = game.GetPlayer(Faction.Cyan)?.ForcesIn(l) ?? 0,    
-            
-            YellowOpponentSpecialForces = game.GetPlayer(Faction.Yellow)?.SpecialForcesIn(l) ?? 0,
-            GreenOpponentSpecialForces = game.GetPlayer(Faction.Green)?.SpecialForcesIn(l) ?? 0,  
-            BlackOpponentSpecialForces = game.GetPlayer(Faction.Black)?.SpecialForcesIn(l) ?? 0,  
-            RedOpponentSpecialForces = game.GetPlayer(Faction.Red)?.SpecialForcesIn(l) ?? 0,      
-            OrangeOpponentSpecialForces = game.GetPlayer(Faction.Orange)?.SpecialForcesIn(l) ?? 0,
-            BlueOpponentSpecialForces = game.GetPlayer(Faction.Blue)?.SpecialForcesIn(l) ?? 0,    
-            GreyOpponentSpecialForces = game.GetPlayer(Faction.Grey)?.SpecialForcesIn(l) ?? 0,    
-            PurpleOpponentSpecialForces = game.GetPlayer(Faction.Purple)?.SpecialForcesIn(l) ?? 0,
-            BrownOpponentSpecialForces = game.GetPlayer(Faction.Brown)?.SpecialForcesIn(l) ?? 0,  
-            WhiteOpponentSpecialForces = game.GetPlayer(Faction.White)?.SpecialForcesIn(l) ?? 0,  
-            PinkOpponentSpecialForces = game.GetPlayer(Faction.Pink)?.SpecialForcesIn(l) ?? 0,    
-            CyanOpponentSpecialForces = game.GetPlayer(Faction.Cyan)?.SpecialForcesIn(l) ?? 0,    
-        };
-    }
-
-    private static PlayerInfo DetermineKnownPlayerInfo(Faction faction, Game game, Player me, bool processAlly = false)
-    {
-        if (me.Ally != faction || !processAlly) 
-            return new PlayerInfo();
-            
-        var otherPlayer = game.GetPlayer(faction);
-        
-        if (otherPlayer == null) 
-            return new PlayerInfo();
-        
-        return new PlayerInfo
-        {
-            Faction = otherPlayer.Faction,
-            Ally = otherPlayer.Ally,
-            Spice = otherPlayer.Resources,
-            CardIds = otherPlayer.TreacheryCards.Where(c => me.KnownCards.Contains(c)).Select(x => x.Id).ToHashSet(),
-            TraitorIds = otherPlayer.Traitors.Where(c => me.RevealedTraitors.Contains(c)).Select(x => x.Id).ToHashSet(),
-            FaceDancerIds = otherPlayer.FaceDancers.Where(c => me.RevealedDancers.Contains(c)).Select(x => x.Id).ToHashSet(),
-            LivingLeaderIds = otherPlayer.Leaders.Where(game.IsAlive).Select(x => x.Id).ToHashSet(),
-            MustSupportForcesInBattle = Battle.MustPayForAnyForcesInBattle(game, otherPlayer),
-            MustSupportSpecialForcesInBattle = Battle.MustPayForSpecialForcesInBattle(game, otherPlayer),
-            CanUseAdvancedKarama = !game.KarmaPrevented(otherPlayer.Faction) && !otherPlayer.SpecialKarmaPowerUsed && game.Applicable(Rule.AdvancedKarama),
-            ForcesInReserve = otherPlayer.ForcesInReserve,
-            SpecialForcesInReserve = otherPlayer.SpecialForcesInReserve,
-            CanShipAndMoveThisTurn = game.CurrentMainPhase is MainPhase.ShipmentAndMove && !game.HasActedOrPassed.Contains(faction),
-        };
     }
 
     private static string DetermineName(Player p)

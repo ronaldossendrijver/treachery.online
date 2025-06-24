@@ -542,7 +542,7 @@ public enum Rule
     IncreasedResourceFlow = 15,
     AdvancedKarama = 20,
 
-    YellowSeesStorm = 25,
+    YellowDeterminesStorm = 25,
     YellowStormLosses = 30,
     YellowSendingMonster = 35,
     YellowSpecialForces = 40,

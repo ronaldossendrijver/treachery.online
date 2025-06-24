@@ -98,7 +98,7 @@ public partial class Game
             Rule.AdvancedCombat,
             Rule.IncreasedResourceFlow,
             Rule.AdvancedKarama,
-            Rule.YellowSeesStorm,
+            Rule.YellowDeterminesStorm,
             Rule.YellowStormLosses,
             Rule.YellowSendingMonster,
             Rule.YellowSpecialForces,
@@ -183,7 +183,7 @@ public partial class Game
             Rule.AdvancedCombat,
             Rule.IncreasedResourceFlow,
             Rule.AdvancedKarama,
-            Rule.YellowSeesStorm,
+            Rule.YellowDeterminesStorm,
             Rule.YellowStormLosses,
             Rule.YellowSendingMonster,
             Rule.YellowSpecialForces,
@@ -231,7 +231,7 @@ public partial class Game
             Rule.AdvancedCombat,
             Rule.IncreasedResourceFlow,
             Rule.AdvancedKarama,
-            Rule.YellowSeesStorm,
+            Rule.YellowDeterminesStorm,
             Rule.YellowStormLosses,
             Rule.YellowSendingMonster,
             Rule.YellowSpecialForces,
@@ -263,7 +263,7 @@ public partial class Game
             Rule.AdvancedCombat,
             Rule.IncreasedResourceFlow,
             Rule.AdvancedKarama,
-            Rule.YellowSeesStorm,
+            Rule.YellowDeterminesStorm,
             Rule.YellowStormLosses,
             Rule.YellowSendingMonster,
             Rule.YellowSpecialForces,
@@ -295,7 +295,7 @@ public partial class Game
             Rule.AdvancedCombat,
             Rule.IncreasedResourceFlow,
             Rule.AdvancedKarama,
-            Rule.YellowSeesStorm,
+            Rule.YellowDeterminesStorm,
             Rule.YellowStormLosses,
             Rule.YellowSendingMonster,
             Rule.YellowSpecialForces,
@@ -328,7 +328,7 @@ public partial class Game
             Rule.AdvancedCombat,
             Rule.IncreasedResourceFlow,
             Rule.AdvancedKarama,
-            Rule.YellowSeesStorm,
+            Rule.YellowDeterminesStorm,
             Rule.YellowStormLosses,
             Rule.YellowSendingMonster,
             Rule.YellowSpecialForces,
@@ -369,7 +369,7 @@ public partial class Game
     public static RuleGroup GetRuleGroup(Rule rule) => rule switch
     {
         Rule.HasCharityPhase or Rule.BasicTreacheryCards => RuleGroup.CoreBasic,
-        Rule.AdvancedCombat or Rule.IncreasedResourceFlow or Rule.AdvancedKarama or Rule.YellowSeesStorm
+        Rule.AdvancedCombat or Rule.IncreasedResourceFlow or Rule.AdvancedKarama or Rule.YellowDeterminesStorm
             or Rule.YellowStormLosses or Rule.YellowSendingMonster or Rule.YellowSpecialForces or Rule.GreenMessiah
             or Rule.BlackCapturesOrKillsLeaders or Rule.BlueAutoCharity or Rule.BlueWorthlessAsKarma
             or Rule.BlueAdvisors or Rule.OrangeDetermineShipment or Rule.RedSpecialForces => RuleGroup.CoreAdvanced,
@@ -413,7 +413,7 @@ public partial class Game
         => rule switch
         {
             Rule.HasCharityPhase or Rule.BasicTreacheryCards => 0,
-            Rule.AdvancedCombat or Rule.IncreasedResourceFlow or Rule.AdvancedKarama or Rule.YellowSeesStorm
+            Rule.AdvancedCombat or Rule.IncreasedResourceFlow or Rule.AdvancedKarama or Rule.YellowDeterminesStorm
                 or Rule.YellowStormLosses or Rule.YellowSendingMonster or Rule.YellowSpecialForces or Rule.GreenMessiah
                 or Rule.BlackCapturesOrKillsLeaders or Rule.BlueAutoCharity or Rule.BlueWorthlessAsKarma
                 or Rule.BlueAdvisors or Rule.OrangeDetermineShipment or Rule.RedSpecialForces => 0,

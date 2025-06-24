@@ -816,7 +816,7 @@ public class Skin : IDescriber
             Rule.AdvancedCombat => "Advanced Combat",
             Rule.IncreasedResourceFlow => "Increased Spice Flow",
             Rule.AdvancedKarama => "Advanced Karama Cards",
-            Rule.YellowSeesStorm => Format("{0} determine storm movement with the Storm Deck", Faction.Yellow),
+            Rule.YellowDeterminesStorm => Format("{0} determine storm movement with the Storm Deck", Faction.Yellow),
             Rule.YellowStormLosses => Format("{0} storm losses are halved", Faction.Yellow),
             Rule.YellowSendingMonster => Format("{0} place additional {1}s", Faction.Yellow, Concept.Monster),
             Rule.YellowSpecialForces => Format("{0} can use {1}", Faction.Yellow, FactionSpecialForce.Yellow),
@@ -1229,9 +1229,9 @@ public class Skin : IDescriber
                Advantage("Special victory condition",
                    "if no player has been able to win the game by the end of play, you prevented control over the planet and you and your ally automatically win the game.",
                    !g.IsPlaying(Faction.Orange) && !g.Applicable(Rule.DisableOrangeSpecialVictory)) +
-               AdvancedHeader(g, Rule.YellowSeesStorm, Rule.YellowSendingMonster, Rule.YellowStormLosses,
+               AdvancedHeader(g, Rule.YellowDeterminesStorm, Rule.YellowSendingMonster, Rule.YellowStormLosses,
                    Rule.YellowSpecialForces, Rule.AdvancedCombat, Rule.AdvancedKarama) +
-               Advantage(g, Rule.YellowSeesStorm, "Storm rule",
+               Advantage(g, Rule.YellowDeterminesStorm, "Storm rule",
                    "you can see the number of sectors the next storm will move.") +
                Advantage(g, Rule.YellowSendingMonster, "Sandworms",
                    "during a {16} blow, each time {15} appears after the first time, you choose in which unprotected territory it appears.") +

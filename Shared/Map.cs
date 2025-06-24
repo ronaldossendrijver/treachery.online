@@ -164,7 +164,6 @@ public class Map
 
     private void InitializeLocations()
     {
-        var id = 0;
         _locations = new List<Location>();
 
         {
@@ -176,7 +175,7 @@ public class Map
                 IsProtectedFromStorm = true,
                 IsProtectedFromWorm = true
             };
-            PolarSink = new Location(id++)
+            PolarSink = new Location(0)
             {
                 Territory = t,
                 Orientation = "",
@@ -195,14 +194,14 @@ public class Map
                 IsProtectedFromStorm = true,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(1)
             {//1
                 Territory = ImperialBasin,
                 Orientation = "East",
                 Sector = 8,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(2)
             {//2
                 Territory = ImperialBasin,
                 Orientation = "Center",
@@ -210,7 +209,7 @@ public class Map
                 SpiceBlowAmount = 0
 
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(3)
             {//3
                 Territory = ImperialBasin,
                 Orientation = "West",
@@ -230,7 +229,7 @@ public class Map
                 IsProtectedFromWorm = true,
                 Advantage = StrongholdAdvantage.CountDefensesAsAntidote
             };
-            Carthag = new Location(id++)
+            Carthag = new Location(4)
             {//4
                 Territory = t,
                 Orientation = "",
@@ -251,7 +250,7 @@ public class Map
                 IsProtectedFromWorm = true,
                 Advantage = StrongholdAdvantage.FreeResourcesForBattles
             };
-            Arrakeen = new Location(id++)
+            Arrakeen = new Location(5)
             {//5
                 Territory = t,
                 Orientation = "",
@@ -273,7 +272,7 @@ public class Map
                 IsProtectedFromWorm = true,
                 Advantage = StrongholdAdvantage.CollectResourcesForUseless
             };
-            TueksSietch = new Location(id++)
+            TueksSietch = new Location(6)
             {//6
                 Territory = t,
                 Orientation = "",
@@ -294,7 +293,7 @@ public class Map
                 IsProtectedFromWorm = true,
                 Advantage = StrongholdAdvantage.CollectResourcesForDial
             };
-            SietchTabr = new Location(id++)
+            SietchTabr = new Location(7)
             {//7
                 Territory = t,
                 Orientation = "",
@@ -315,7 +314,7 @@ public class Map
                 IsProtectedFromWorm = true,
                 Advantage = StrongholdAdvantage.WinTies
             };
-            HabbanyaSietch = new Location(id++)
+            HabbanyaSietch = new Location(8)
             {//8
                 Territory = t,
                 Orientation = "",
@@ -334,21 +333,21 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(9)
             {
                 Territory = t,
                 Orientation = "West",
                 Sector = 0,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(10)
             {
                 Territory = t,
                 Orientation = "Center",
                 Sector = 1,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(11)
             {
                 Territory = t,
                 Orientation = "East",
@@ -366,21 +365,21 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(12)
             {
                 Territory = t,
                 Orientation = "West",
                 Sector = 0,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(13)
             {
                 Territory = t,
                 Orientation = "Center",
                 Sector = 1,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(14)
             {
                 Territory = t,
                 Orientation = "East",
@@ -398,7 +397,7 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(15)
             {
                 Territory = Meridan,
                 Orientation = "West",
@@ -406,7 +405,7 @@ public class Map
                 SpiceBlowAmount = 0,
                 DiscoveryTokenType = DiscoveryTokenType.Yellow
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(16)
             {
                 Territory = Meridan,
                 Orientation = "East",
@@ -424,14 +423,14 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(17)
             {
                 Territory = t,
                 Orientation = "West",
                 Sector = 1,
                 SpiceBlowAmount = 12
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(18)
             {
                 Territory = t,
                 Orientation = "East",
@@ -449,7 +448,7 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(19)
             {
                 Territory = CielagoEast,
                 Orientation = "West",
@@ -457,7 +456,7 @@ public class Map
                 SpiceBlowAmount = 0,
                 DiscoveryTokenType = DiscoveryTokenType.Yellow
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(20)
             {
                 Territory = CielagoEast,
                 Orientation = "East",
@@ -475,14 +474,14 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(21)
             {
                 Territory = t,
                 Orientation = "West",
                 Sector = 3,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(22)
             {
                 Territory = t,
                 Orientation = "East",
@@ -500,14 +499,14 @@ public class Map
                 IsProtectedFromStorm = true,
                 IsProtectedFromWorm = true
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(23)
             {
                 Territory = FalseWallSouth,
                 Orientation = "West",
                 Sector = 3,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(24)
             {
                 Territory = FalseWallSouth,
                 Orientation = "East",
@@ -525,35 +524,35 @@ public class Map
                 IsProtectedFromStorm = true,
                 IsProtectedFromWorm = true
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(25)
             {
                 Territory = FalseWallEast,
                 Orientation = "Far South",
                 Sector = 4,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(26)
             {
                 Territory = FalseWallEast,
                 Orientation = "South",
                 Sector = 5,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(27)
             {
                 Territory = FalseWallEast,
                 Orientation = "Middle",
                 Sector = 6,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(28)
             {
                 Territory = FalseWallEast,
                 Orientation = "North",
                 Sector = 7,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(29)
             {
                 Territory = FalseWallEast,
                 Orientation = "Far North",
@@ -571,28 +570,28 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(30)
             {
                 Territory = TheMinorErg,
                 Orientation = "Far South",
                 Sector = 4,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(31)
             {
                 Territory = TheMinorErg,
                 Orientation = "South",
                 Sector = 5,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(32)
             {
                 Territory = TheMinorErg,
                 Orientation = "North",
                 Sector = 6,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(33)
             {
                 Territory = TheMinorErg,
                 Orientation = "Far North",
@@ -610,21 +609,21 @@ public class Map
                 IsProtectedFromStorm = true,
                 IsProtectedFromWorm = true
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(34)
             {
                 Territory = PastyMesa,
                 Orientation = "Far South",
                 Sector = 4,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(35)
             {
                 Territory = PastyMesa,
                 Orientation = "South",
                 Sector = 5,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(36)
             {
                 Territory = PastyMesa,
                 Orientation = "North",
@@ -632,7 +631,7 @@ public class Map
                 SpiceBlowAmount = 0,
                 DiscoveryTokenType = DiscoveryTokenType.Orange
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(37)
             {
                 Territory = PastyMesa,
                 Orientation = "Far North",
@@ -650,7 +649,7 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(38)
             {
                 Territory = t,
                 Orientation = "",
@@ -668,21 +667,21 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(39)
             {
                 Territory = t,
                 Orientation = "South",
                 Sector = 3,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(40)
             {
                 Territory = t,
                 Orientation = "Middle",
                 Sector = 4,
                 SpiceBlowAmount = 10
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(41)
             {
                 Territory = t,
                 Orientation = "North",
@@ -700,7 +699,7 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(42)
             {
                 Territory = t,
                 Orientation = "",
@@ -718,7 +717,7 @@ public class Map
                 IsProtectedFromStorm = true,
                 IsProtectedFromWorm = true
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(43)
             {
                 Territory = t,
                 Orientation = "",
@@ -736,7 +735,7 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(44)
             {
                 Territory = HoleInTheRock,
                 Orientation = "",
@@ -754,7 +753,7 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(45)
             {
                 Territory = SihayaRidge,
                 Orientation = "",
@@ -772,14 +771,14 @@ public class Map
                 IsProtectedFromStorm = true,
                 IsProtectedFromWorm = true
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(46)
             {
                 Territory = ShieldWall,
                 Orientation = "South",
                 Sector = 7,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(47)
             {
                 Territory = ShieldWall,
                 Orientation = "North",
@@ -797,7 +796,7 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(48)
             {
                 Territory = GaraKulon,
                 Orientation = "",
@@ -816,21 +815,21 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(49)
             {
                 Territory = OldGap,
                 Orientation = "East",
                 Sector = 8,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(50)
             {
                 Territory = OldGap,
                 Orientation = "Middle",
                 Sector = 9,
                 SpiceBlowAmount = 6
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(51)
             {
                 Territory = OldGap,
                 Orientation = "West",
@@ -848,14 +847,14 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(52)
             {
                 Territory = BrokenLand,
                 Orientation = "East",
                 Sector = 10,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(53)
             {
                 Territory = BrokenLand,
                 Orientation = "West",
@@ -873,21 +872,21 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(54)
             {
                 Territory = Tsimpo,
                 Orientation = "East",
                 Sector = 10,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(55)
             {
                 Territory = Tsimpo,
                 Orientation = "Middle",
                 Sector = 11,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(56)
             {
                 Territory = Tsimpo,
                 Orientation = "West",
@@ -905,14 +904,14 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(57)
             {
                 Territory = t,
                 Orientation = "East",
                 Sector = 10,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(58)
             {
                 Territory = t,
                 Orientation = "West",
@@ -930,14 +929,14 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(59)
             {
                 Territory = RockOutcroppings,
                 Orientation = "North",
                 Sector = 12,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(60)
             {
                 Territory = RockOutcroppings,
                 Orientation = "South",
@@ -955,14 +954,14 @@ public class Map
                 IsProtectedFromStorm = true,
                 IsProtectedFromWorm = true
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(61)
             {
                 Territory = PlasticBasin,
                 Orientation = "North",
                 Sector = 11,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(62)
             {
                 Territory = PlasticBasin,
                 Orientation = "Middle",
@@ -970,7 +969,7 @@ public class Map
                 SpiceBlowAmount = 0,
                 DiscoveryTokenType = DiscoveryTokenType.Orange
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(63)
             {
                 Territory = PlasticBasin,
                 Orientation = "South",
@@ -988,14 +987,14 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(64)
             {
                 Territory = HaggaBasin,
                 Orientation = "East",
                 Sector = 11,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(65)
             {
                 Territory = HaggaBasin,
                 Orientation = "West",
@@ -1013,14 +1012,14 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(66)
             {
                 Territory = BightOfTheCliff,
                 Orientation = "North",
                 Sector = 13,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(67)
             {
                 Territory = BightOfTheCliff,
                 Orientation = "South",
@@ -1038,7 +1037,7 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            FuneralPlain = new Location(id++)
+            FuneralPlain = new Location(68)
             {
                 Territory = t,
                 Orientation = "",
@@ -1057,7 +1056,7 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            TheGreatFlat = new Location(id++)
+            TheGreatFlat = new Location(69)
             {
                 Territory = t,
                 Orientation = "",
@@ -1076,28 +1075,28 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(70)
             {
                 Territory = WindPass,
                 Orientation = "Far North",
                 Sector = 13,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(71)
             {
                 Territory = WindPass,
                 Orientation = "North",
                 Sector = 14,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(72)
             {
                 Territory = WindPass,
                 Orientation = "South",
                 Sector = 15,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(73)
             {
                 Territory = WindPass,
                 Orientation = "Far South",
@@ -1115,7 +1114,7 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            TheGreaterFlat = new Location(id++)
+            TheGreaterFlat = new Location(74)
             {
                 Territory = t,
                 Orientation = "",
@@ -1135,14 +1134,14 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(75)
             {
                 Territory = HabbanyaErg,
                 Orientation = "West",
                 Sector = 15,
                 SpiceBlowAmount = 8
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(76)
             {
                 Territory = HabbanyaErg,
                 Orientation = "East",
@@ -1160,14 +1159,14 @@ public class Map
                 IsProtectedFromStorm = true,
                 IsProtectedFromWorm = true
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(77)
             {
                 Territory = FalseWallWest,
                 Orientation = "North",
                 Sector = 15,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(78)
             {
                 Territory = FalseWallWest,
                 Orientation = "Middle",
@@ -1175,7 +1174,7 @@ public class Map
                 SpiceBlowAmount = 0,
                 DiscoveryTokenType = DiscoveryTokenType.Orange
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(79)
             {
                 Territory = FalseWallWest,
                 Orientation = "South",
@@ -1193,14 +1192,14 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(80)
             {
                 Territory = WindPassNorth,
                 Orientation = "North",
                 Sector = 16,
                 SpiceBlowAmount = 6
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(81)
             {
                 Territory = WindPassNorth,
                 Orientation = "South",
@@ -1218,14 +1217,14 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(82)
             {
                 Territory = t,
                 Orientation = "West",
                 Sector = 16,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(83)
             {
                 Territory = t,
                 Orientation = "East",
@@ -1243,14 +1242,14 @@ public class Map
                 IsProtectedFromStorm = false,
                 IsProtectedFromWorm = false
             };
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(84)
             {
                 Territory = CielagoWest,
                 Orientation = "North",
                 Sector = 17,
                 SpiceBlowAmount = 0
             });
-            _locations.Add(new Location(id++)
+            _locations.Add(new Location(85)
             {
                 Territory = CielagoWest,
                 Orientation = "South",
@@ -1271,29 +1270,29 @@ public class Map
                 Advantage = StrongholdAdvantage.AnyOtherAdvantage
             };
 
-            HiddenMobileStronghold = new HiddenMobileStronghold(t, id++) { SpiceBlowAmount = 0 };
+            HiddenMobileStronghold = new HiddenMobileStronghold(t, 86) { SpiceBlowAmount = 0 };
             _locations.Add(HiddenMobileStronghold);
         }
 
-        AddHomeworld(43, id++, World.Green, Faction.Green, true, false, 6, 2, 2, 2);
-        AddHomeworld(44, id++, World.Black, Faction.Black, true, false, 7, 2, 2, 2);
-        AddHomeworld(45, id++, World.Yellow, Faction.Yellow, true, true, 3, 2, 2, 0);
-        AddHomeworld(46, id++, World.Red, Faction.Red, true, false, 5, 2, 3, 2);
-        AddHomeworld(47, id++, World.RedStar, Faction.Red, false, true, 2, 3, 2, 0);
-        AddHomeworld(48, id++, World.Orange, Faction.Orange, true, false, 5, 2, 2, 2);
-        AddHomeworld(49, id++, World.Blue, Faction.Blue, true, false, 11, 3, 2, 1);
-        AddHomeworld(50, id++, World.Grey, Faction.Grey, true, true, 5, 2, 2, 2);
-        AddHomeworld(51, id++, World.Purple, Faction.Purple, true, false, 9, 2, 2, 2);
-        AddHomeworld(52, id++, World.Brown, Faction.Brown, true, false, 11, 2, 2, 2);
-        AddHomeworld(53, id++, World.White, Faction.White, true, false, 10, 2, 2, 1);
-        AddHomeworld(54, id++, World.Pink, Faction.Pink, true, false, 7, 2, 2, 2);
-        AddHomeworld(55, id++, World.Cyan, Faction.Cyan, true, false, 8, 2, 2, 2);
+        AddHomeworld(43, 87, World.Green, Faction.Green, true, false, 6, 2, 2, 2);
+        AddHomeworld(44, 88, World.Black, Faction.Black, true, false, 7, 2, 2, 2);
+        AddHomeworld(45, 89, World.Yellow, Faction.Yellow, true, true, 3, 2, 2, 0);
+        AddHomeworld(46, 90, World.Red, Faction.Red, true, false, 5, 2, 3, 2);
+        AddHomeworld(47, 91, World.RedStar, Faction.Red, false, true, 2, 3, 2, 0);
+        AddHomeworld(48, 92, World.Orange, Faction.Orange, true, false, 5, 2, 2, 2);
+        AddHomeworld(49, 93, World.Blue, Faction.Blue, true, false, 11, 3, 2, 1);
+        AddHomeworld(50, 94, World.Grey, Faction.Grey, true, true, 5, 2, 2, 2);
+        AddHomeworld(51, 95, World.Purple, Faction.Purple, true, false, 9, 2, 2, 2);
+        AddHomeworld(52, 96, World.Brown, Faction.Brown, true, false, 11, 2, 2, 2);
+        AddHomeworld(53, 97, World.White, Faction.White, true, false, 10, 2, 2, 1);
+        AddHomeworld(54, 98, World.Pink, Faction.Pink, true, false, 7, 2, 2, 2);
+        AddHomeworld(55, 99, World.Cyan, Faction.Cyan, true, false, 8, 2, 2, 2);
 
-        Jacurutu = AddDiscoveredLocation(56, id++, DiscoveryToken.Jacurutu, true);
-        Cistern = AddDiscoveredLocation(57, id++, DiscoveryToken.Cistern, false);
-        TestingStation = AddDiscoveredLocation(58, id++, DiscoveryToken.TestingStation, false);
-        Shrine = AddDiscoveredLocation(59, id++, DiscoveryToken.Shrine, false);
-        ProcessingStation = AddDiscoveredLocation(60, id, DiscoveryToken.ProcessingStation, false);
+        Jacurutu = AddDiscoveredLocation(56, 100, DiscoveryToken.Jacurutu, true);
+        Cistern = AddDiscoveredLocation(57, 101, DiscoveryToken.Cistern, false);
+        TestingStation = AddDiscoveredLocation(58, 102, DiscoveryToken.TestingStation, false);
+        Shrine = AddDiscoveredLocation(59, 103, DiscoveryToken.Shrine, false);
+        ProcessingStation = AddDiscoveredLocation(60, 104, DiscoveryToken.ProcessingStation, false);
     }
 
     private void AddHomeworld(int territoryId, int locationId, World world, Faction faction, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int threshold, int battleBonusAtHighThreshold, int battleBonusAtLowThreshold, int resourceAmount)

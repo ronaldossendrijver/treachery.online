@@ -102,7 +102,7 @@
             return Client.CurrentSkin.BLOWNSHIELDWALL_OVERLAY_COLOR;
         }
 
-        if (Game.HasStormPrescience(Player) && Game.NextStormWillPassOver(l))
+        if (Game.HasStormPrescience(Player) && Game.NextStormWillPassOver(l, Game.NextStormMoves))
         {
             return Client.CurrentSkin.STORM_PRESCIENCE_OVERLAY_COLOR;
         }

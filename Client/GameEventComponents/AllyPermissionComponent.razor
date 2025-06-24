@@ -111,7 +111,7 @@
                     Protect them from @Client.CurrentSkin.Describe(Concept.Monster) (currently: <strong>@(Game.YellowWillProtectFromMonster ? "yes" : "no")</strong>)
                 </CheckboxComponent>
 
-                @if (Game.Applicable(Rule.YellowSeesStorm))
+                @if (Game.Applicable(Rule.YellowDeterminesStorm))
                 {
                     <CheckboxComponent @bind-Value="fremenShareStormPrescience" OnChanged=SetEdited>
                         Share storm knowledge (currently: <strong>@(Game.YellowSharesPrescience ? "yes" : "no")</strong>)

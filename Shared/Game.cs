@@ -930,14 +930,14 @@ public partial class Game
     {
         return
             p != null &&
-            Applicable(Rule.YellowSeesStorm) &&
+            Applicable(Rule.YellowDeterminesStorm) &&
             !Prevented(FactionAdvantage.YellowStormPrescience) &&
             (p.Faction == Faction.Yellow || (p.Ally == Faction.Yellow && YellowSharesPrescience) || HasDeal(p.Faction, DealType.ShareStormPrescience));
     }
     
-    public bool NextStormWillPassOver(Location l)
+    public bool NextStormWillPassOver(Location l, int stormMoves)
     {
-        for (var i = 1; i <= NextStormMoves; i++)
+        for (var i = 1; i <= stormMoves; i++)
         {
             if ((SectorInStorm + i) % Map.NumberOfSectors == l.Sector)
             {
@@ -946,6 +946,19 @@ public partial class Game
         }
 
         return false;
+    }
+    
+    public int DistanceFromStorm(Location l)
+    {
+        for (var i = 1; i <= Map.NumberOfSectors; i++)
+        {
+            if ((SectorInStorm + i) % Map.NumberOfSectors == l.Sector)
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     public bool HasHighThreshold(Faction f)
