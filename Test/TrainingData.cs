@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -200,7 +201,7 @@ public class PlayerKnowledge
                     ? 0 
                     : Game.HasStormPrescience(P1) 
                         ? Game.NextStormWillPassOver(l, Game.NextStormMoves) ? 1 : 0
-                        : 1f / Game.DistanceFromStorm(l),
+                        : 1f - (float)Math.Min(0.167 * Game.DistanceFromStorm(l), 1),
                 HasWormNextTurn = Game.HasResourceDeckPrescience(P1) && !Game.ResourceCardDeck.IsEmpty && Game.ResourceCardDeck.Top.Territory == l.Territory,
             
                 Player1Forces = P1.ForcesIn(l),
