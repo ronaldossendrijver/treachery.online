@@ -64,29 +64,29 @@ public partial class Player : ICloneable
 
     public int TransferableResources { get; set; }
 
-    public List<TreacheryCard> TreacheryCards { get; set; } = [];
+    public HashSet<TreacheryCard> TreacheryCards { get; set; } = [];
 
     public HashSet<TreacheryCard> KnownCards { get; } = [];
 
-    public List<IHero> Traitors { get; set; } = [];
+    public HashSet<IHero> Traitors { get; set; } = [];
 
     public HashSet<IHero> RevealedTraitors { get; } = [];
 
-    public List<IHero> ToldTraitors { get; } = [];
+    public HashSet<IHero> ToldTraitors { get; } = [];
 
-    public List<IHero> ToldNonTraitors { get; } = [];
+    public HashSet<IHero> ToldNonTraitors { get; } = [];
 
-    public List<IHero> KnownNonTraitors { get; } = [];
+    public HashSet<IHero> KnownNonTraitors { get; } = [];
 
-    public List<IHero> DiscardedTraitors { get; } = [];
+    public HashSet<IHero> DiscardedTraitors { get; } = [];
 
-    public List<IHero> FaceDancers { get; private set; } = [];
+    public HashSet<IHero> FaceDancers { get; private set; } = [];
 
-    public HashSet<IHero> RevealedDancers { get; private set; } = [];
+    public HashSet<IHero> RevealedFaceDancers { get; private set; } = [];
 
-    public List<IHero> ToldFaceDancers { get; } = [];
+    public HashSet<IHero> ToldFaceDancers { get; } = [];
 
-    public List<IHero> ToldNonFaceDancers { get; } = [];
+    public HashSet<IHero> ToldNonFaceDancers { get; } = [];
 
     public List<Leader> Leaders { get; private set; } = [];
 
@@ -644,7 +644,7 @@ public partial class Player : ICloneable
 
     private IEnumerable<IHero> UnrevealedTraitors => Traitors.Where(f => !RevealedTraitors.Contains(f));
 
-    public IEnumerable<IHero> UnrevealedFaceDancers => FaceDancers.Where(f => !RevealedDancers.Contains(f));
+    public IEnumerable<IHero> UnrevealedFaceDancers => FaceDancers.Where(f => !RevealedFaceDancers.Contains(f));
 
     public bool MessiahAvailable => Game.Applicable(Rule.GreenMessiah) && Is(Faction.Green) && TotalForcesKilledInBattle >= 7 && Game.IsAlive(LeaderManager.Messiah);
     public bool IsBot => Game.IsBot(this);
@@ -734,7 +734,7 @@ public partial class Player : ICloneable
         result.TreacheryCards = [..TreacheryCards];
         result.Traitors = [..Traitors];
         result.FaceDancers = [..FaceDancers];
-        result.RevealedDancers = [..RevealedDancers];
+        result.RevealedFaceDancers = [..RevealedFaceDancers];
         result.Leaders = [..Leaders];
         result.ForcesInLocations = Utilities.CloneObjectDictionary(ForcesInLocations);
         result.TechTokens = [..TechTokens];

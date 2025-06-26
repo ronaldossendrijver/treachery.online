@@ -787,7 +787,7 @@ public partial class Player
 
     protected virtual FaceDancerReplaced DetermineFaceDancerReplaced()
     {
-        var replacable = FaceDancers.Where(f => !RevealedDancers.Contains(f)).OrderBy(f => f.Value);
+        var replacable = FaceDancers.Where(f => !RevealedFaceDancers.Contains(f)).OrderBy(f => f.Value);
         var toReplace = replacable.FirstOrDefault(f => Leaders.Contains(f) || (Ally != Faction.None && AlliedPlayer.Leaders.Contains(f)));
         toReplace ??= replacable.FirstOrDefault(f => f is Leader && !Game.IsAlive(f));
 
@@ -842,7 +842,7 @@ public partial class Player
             }
             else
             {
-                if ((FaceDancers.Contains(hero) && !RevealedDancers.Contains(hero)) || (Ally != Faction.None && AlliedPlayer.Traitors.Contains(hero) && !AlliedPlayer.RevealedTraitors.Contains(hero)))
+                if ((FaceDancers.Contains(hero) && !RevealedFaceDancers.Contains(hero)) || (Ally != Faction.None && AlliedPlayer.Traitors.Contains(hero) && !AlliedPlayer.RevealedTraitors.Contains(hero)))
                     price = 1 + D(1, hero.Value);
                 else
                     price = 2 + D(2, hero.Value);

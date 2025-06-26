@@ -14,7 +14,7 @@
 
         @if (ShowHeader)
         {
-            <div class="card-header" @onclick=@(e => _collapsed = !_collapsed) style="cursor:pointer">
+            <div class="card-header" @onclick=@(_ => _collapsed = !_collapsed) style="cursor:pointer">
                 @Name(ShownPlayer.Faction)
                 <CollapseButton Collapsed=@_collapsed />
             </div>
@@ -31,19 +31,28 @@
 
                             <!-- Resources -->
                             <div class="col p-0">
-                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.Harvester_URL" title="@Name(Concept.Resource)" /><strong>&nbsp;@ResourcesText</strong>
+                                <img class="img-fluid m-0 p-0" width="24" height="24" 
+                                     src="@Client.CurrentSkin.Harvester_URL" 
+                                     title="@Name(Concept.Resource)" 
+                                     alt="@Name(Concept.Resource)"/><strong>&nbsp;@ResourcesText</strong>
                             </div>
 
                             <!-- Forces -->
                             <div class="col p-0">
-                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionForceImageUrl(ShownPlayer.Faction)" title=@Name(ShownPlayer.Force) /><strong>&nbsp;@ShownPlayer.ForcesInReserve</strong>
+                                <img class="img-fluid m-0 p-0" width="24" height="24" 
+                                     src="@Client.CurrentSkin.GetFactionForceImageUrl(ShownPlayer.Faction)" 
+                                     title="@Name(ShownPlayer.Force)" 
+                                     alt="@Name(ShownPlayer.Force)" /><strong>&nbsp;@ShownPlayer.ForcesInReserve</strong>
                             </div>
 
                             <!-- Special Forces -->
                             @if (ShownPlayer.HasSpecialForces)
                             {
                                 <div class="col p-0">
-                                    <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(ShownPlayer.Faction)" title=@Name(ShownPlayer.SpecialForce) /><strong>&nbsp;@ShownPlayer.SpecialForcesInReserve</strong>
+                                    <img class="img-fluid m-0 p-0" width="24" height="24" 
+                                         src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(ShownPlayer.Faction)" 
+                                         title="@Name(ShownPlayer.SpecialForce)" 
+                                         alt="@Name(ShownPlayer.SpecialForce)"/><strong>&nbsp;@ShownPlayer.SpecialForcesInReserve</strong>
                                 </div>
                             }
 
@@ -67,13 +76,18 @@
                             <h5 class="mt-1 mb-0">Face Dancers</h5>
                             @foreach (var v in ShownPlayer.FaceDancers)
                             {
-                                var style = ShownPlayer.RevealedDancers.Contains(v) ? "filter:brightness(150%) contrast(100%) blur(1px)" : "";
+                                var style = ShownPlayer.RevealedFaceDancers.Contains(v) ? "filter:brightness(150%) contrast(100%) blur(1px)" : "";
                                 <Image Src=@Client.CurrentSkin.GetImageUrl(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
                             }
                         }
                         else if (!Client.Game.AssistedNotekeepingEnabled(Player) && ShownPlayer.Traitors.Count == 1)
                         {
-                            <div><Image Src=@Client.CurrentSkin.GetImageUrl(ShownPlayer.Traitors[0]) Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(ShownPlayer.Traitors[0], Client.Game)/> is your traitor.</div>
+                            <div>
+                                <Image Src="@Client.CurrentSkin.GetImageUrl(ShownPlayer.Traitors.First())" 
+                                       Class="img-fluid p-1" 
+                                       Width=60 
+                                       Popover=@Client.CurrentSkin.GetPopup(ShownPlayer.Traitors.First(), Client.Game)/> is your traitor.
+                            </div>
                         }
                         else if (ShownPlayer.Traitors.Count > 0)
                         {
@@ -112,21 +126,27 @@
                         {
                             if (Client.Game.Applicable(Rule.GreenMessiah))
                             {
-                                if (ShownPlayer.TotalForcesKilledInBattle >= 7)
-                                {
-                                    if (ShownPlayer.MessiahAvailable)
+                                <div>
+                                    <img class="img-fluid m-0 p-0" width="32" height="32"
+                                         src="@Client.CurrentSkin.Messiah_URL"
+                                         title="@Client.CurrentSkin.Describe(Concept.Messiah)"
+                                         alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
+                                    @if (ShownPlayer.TotalForcesKilledInBattle >= 7)
                                     {
-                                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" /> is available.</div>
+                                        if (ShownPlayer.MessiahAvailable)
+                                        {
+                                            <span> is available.</span>
+                                        }
+                                        else
+                                        {
+                                            <span>has been killed.</span>
+                                        }
                                     }
                                     else
                                     {
-                                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" /> has been killed.</div>
+                                        <span> will be available after <SimpleNumberComponent>@(7 - ShownPlayer.TotalForcesKilledInBattle)</SimpleNumberComponent> more forces are killed in battle.</span>
                                     }
-                                }
-                                else
-                                {
-                                    <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" /> will be available after <SimpleNumberComponent>@(7 - ShownPlayer.TotalForcesKilledInBattle)</SimpleNumberComponent> more forces are killed in battle.</div>
-                                }
+                                </div>
                             }
                         }
 
@@ -203,11 +223,9 @@
     public Player ShownPlayer { get; set; }
 
     [Parameter]
-    public bool ShowHeader { get; set; } = false;
+    public bool ShowHeader { get; set; }
 
     private bool _collapsed = true;
-
-    private string PlayerColor => string.Format("background-color:{0}", Client.CurrentSkin.GetFactionColorTransparent(ShownPlayer.Faction, "bb"));
 
     private string ResourcesText
     {

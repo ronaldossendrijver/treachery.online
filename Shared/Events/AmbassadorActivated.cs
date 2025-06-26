@@ -391,7 +391,7 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
                 else
                     Log(Initiator, " see the ", victim, " traitor");
 
-                var toSelectFrom = victim == Faction.Purple ? victimPlayer.FaceDancers.Where(t => !victimPlayer.RevealedDancers.Contains(t)) : victimPlayer.Traitors;
+                var toSelectFrom = victim == Faction.Purple ? victimPlayer.FaceDancers.Where(t => !victimPlayer.RevealedFaceDancers.Contains(t)) : victimPlayer.Traitors;
                 var revealed = toSelectFrom.RandomOrDefault(Game.Random);
                 LogTo(Initiator, victim, " reveal ", revealed);
                 LogTo(victim, Initiator, " get to see ", revealed);

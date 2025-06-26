@@ -289,7 +289,7 @@ public partial class Player
                 break;
 
             case Faction.Purple:
-                if (Game.CurrentMainPhase == MainPhase.Battle && RevealedDancers.Any()) return result;
+                if (Game.CurrentMainPhase == MainPhase.Battle && RevealedFaceDancers.Any()) return result;
                 break;
 
             case Faction.Pink:

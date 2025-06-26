@@ -313,7 +313,7 @@ public class BattleConcluded : GameEvent
     public static IEnumerable<IHero> ValidTraitorsToReplace(Player p)
     {
         if (p.Faction == Faction.Purple)
-            return p.FaceDancers.Where(h => !p.RevealedDancers.Contains(h));
+            return p.FaceDancers.Where(h => !p.RevealedFaceDancers.Contains(h));
         return p.Traitors.Where(h => !p.RevealedTraitors.Contains(h));
     }
 

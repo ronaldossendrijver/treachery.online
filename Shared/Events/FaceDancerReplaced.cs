@@ -32,7 +32,7 @@ public class FaceDancerReplaced : PassableGameEvent
         if (!Passed)
         {
             var p = Player;
-            if (p.RevealedDancers.Contains(SelectedDancer)) return Message.Express("You can't replace a revealed Face Dancer");
+            if (p.RevealedFaceDancers.Contains(SelectedDancer)) return Message.Express("You can't replace a revealed Face Dancer");
             if (!p.FaceDancers.Contains(SelectedDancer)) return Message.Express("Invalid Face Dancer");
         }
 

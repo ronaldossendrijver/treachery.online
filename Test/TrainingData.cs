@@ -63,29 +63,21 @@ public record TrainingData
 public class PlayerKnowledge
 {
     private Game Game { get; init; }
+
+    // Player[0]: this player, Player[1..5]: other players
     
-    private Player P1 { get; set; }
-    private Player P2 { get; set; }
-    private Player P3 { get; set; }
-    private Player P4 { get; set; }
-    private Player P5 { get; set; }
-    private Player P6 { get; set; }
+    private Player[] Player { get; set; } = new Player[6];
+    private PlayerInfo[] PlayerInfo { get; set; } = new PlayerInfo[6];
+
+    private Player Me => Player[0];
+
+    private int NrOfPlayers => Game.Players.Count;
     
     public PlayerKnowledge(Game theGame, Faction faction)
     {
         Game = theGame;
         Init(faction);
     }
-    
-    // This player
-    private PlayerInfo Player1 { get; set; }
-    
-    // Other players
-    private PlayerInfo Player2 { get; set; }
-    private PlayerInfo Player3 { get; set; }
-    private PlayerInfo Player4 { get; set; }
-    private PlayerInfo Player5 { get; set; }
-    private PlayerInfo Player6 { get; set; }
     
     // Public board state
     public List<LocationInfo> Locations { get; } = []; 
@@ -96,7 +88,10 @@ public class PlayerKnowledge
     public int PredictedTurn { get; set; }
     public bool KwizatsAvailable { get; set; }
     public int LatestAtreidesOrAllyBidAmount { get; set; }
-    
+    private int[] CardIds { get; set; } = new int[59];
+    private int[] TraitorIds { get; set; } = new int[1061];
+    private int[] LivingLeaderIds { get; set; } = new int[1061];
+
     // Rules
     public bool AllyBlocksAdvisors { get; set; }
     public bool Homeworlds { get; set; }
@@ -110,12 +105,15 @@ public class PlayerKnowledge
             B(AllyBlocksAdvisors),
             B(Homeworlds),
             LatestAtreidesOrAllyBidAmount,
-            Player1.GetCommaSeparatedStateData(),
-            Player2.GetCommaSeparatedStateData(),
-            Player3.GetCommaSeparatedStateData(),
-            Player4.GetCommaSeparatedStateData(),
-            Player5.GetCommaSeparatedStateData(),
-            Player6.GetCommaSeparatedStateData(),
+            Set(1, 59, CardIds),
+            Set(1, 62, TraitorIds),
+            Set(1, 62, LivingLeaderIds),
+            PlayerInfo[0].GetCommaSeparatedStateData(),
+            PlayerInfo[1].GetCommaSeparatedStateData(),
+            PlayerInfo[2].GetCommaSeparatedStateData(),
+            PlayerInfo[3].GetCommaSeparatedStateData(),
+            PlayerInfo[4].GetCommaSeparatedStateData(),
+            PlayerInfo[5].GetCommaSeparatedStateData(),
             string.Join(";",Locations.Select(x => x.GetCommaSeparatedStateData())));
     
     public string GetCommaSeparatedHeaders() =>
@@ -127,65 +125,93 @@ public class PlayerKnowledge
             nameof(AllyBlocksAdvisors),
             nameof(Homeworlds),
             nameof(LatestAtreidesOrAllyBidAmount),
-            PlayerInfo.GetCommaSeparatedHeaders("Player1"),
-            PlayerInfo.GetCommaSeparatedHeaders("Player2"),
-            PlayerInfo.GetCommaSeparatedHeaders("Player3"),
-            PlayerInfo.GetCommaSeparatedHeaders("Player4"),
-            PlayerInfo.GetCommaSeparatedHeaders("Player5"),
-            PlayerInfo.GetCommaSeparatedHeaders("Player6"),
+            HeaderSet("TreacheryCard", 1, 59),
+            HeaderSet("TraitorCard", 1, 62),
+            HeaderSet("Leader", 1, 62),
+            Test.PlayerInfo.GetCommaSeparatedHeaders("Player1"),
+            Test.PlayerInfo.GetCommaSeparatedHeaders("Player2"),
+            Test.PlayerInfo.GetCommaSeparatedHeaders("Player3"),
+            Test.PlayerInfo.GetCommaSeparatedHeaders("Player4"),
+            Test.PlayerInfo.GetCommaSeparatedHeaders("Player5"),
+            Test.PlayerInfo.GetCommaSeparatedHeaders("Player6"),
             string.Join(";", Locations.Select(x => LocationInfo.GetCommaSeparatedHeaders(x.Id.ToString()))));
     
     private static string B(bool value) => value ? "1" : "0";
     
+    private static string Set(int min, int max, int[] values) => string.Join(';',
+        Enumerable.Range(min, max).Select(x => values.Contains(x) ? "1" : "0"));
+    
+    private static string HeaderSet(string header, int min, int max) => string.Join(';',
+        Enumerable.Range(min, max).Select(x => $"{header}{x}"));
+    
     private void Init(Faction faction)
     {
-        P1 = Game.GetPlayer(faction);
-        P2 = Game.GetPlayerBySeat((P1.Seat + 1) % Game.Players.Count);
-        P3 = Game.GetPlayerBySeat((P1.Seat + 2) % Game.Players.Count);
-        P4 = Game.GetPlayerBySeat((P1.Seat + 3) % Game.Players.Count);
-        P5 = Game.GetPlayerBySeat((P1.Seat + 4) % Game.Players.Count);
-        P6 = Game.GetPlayerBySeat((P1.Seat + 5) % Game.Players.Count);
+        Player[0] = Game.GetPlayer(faction);
         
+        var addedPlayers = 1;
+        var distance = 1;
+        while (addedPlayers < NrOfPlayers)
+        {
+            var playerInSeat = Game.GetPlayerBySeat((Me.Seat + distance++) % NrOfPlayers);
+            if (playerInSeat != null)
+                Player[addedPlayers++] = playerInSeat; 
+        }
+            
         var atr = Game.GetPlayer(Faction.Green);
 
-        Player1 = new PlayerInfo
+        PlayerInfo[0] = new PlayerInfo
         {
             Faction = faction,
-            Ally = P1.Ally,
-            Spice = P1.Resources,
-            CardIds = P1.TreacheryCards.Select(x => x.Id).ToHashSet(),
-            TraitorIds = P1.Traitors.Select(x => x.Id).ToHashSet(),
-            FaceDancerIds = P1.FaceDancers.Select(x => x.Id).ToHashSet(),
-            LivingLeaderIds = P1.Leaders.Where(Game.IsAlive).Select(x => x.Id).ToHashSet(),
-            MustSupportForcesInBattle = Battle.MustPayForAnyForcesInBattle(Game, P1),
-            CanUseAdvancedKarama = !Game.KarmaPrevented(faction) && !P1.SpecialKarmaPowerUsed &&
+            Ally = Me.Ally,
+            Spice = Me.Resources,
+            MustSupportForcesInBattle = Battle.MustPayForAnyForcesInBattle(Game, Me),
+            CanUseAdvancedKarama = !Game.KarmaPrevented(faction) && !Me.SpecialKarmaPowerUsed &&
                                    Game.Applicable(Rule.AdvancedKarama),
-            ForcesInReserve = P1.ForcesInReserve,
-            SpecialForcesInReserve = P1.SpecialForcesInReserve,
+            ForcesInReserve = Me.ForcesInReserve,
+            SpecialForcesInReserve = Me.SpecialForcesInReserve,
             CanShipAndMoveThisTurn = Game.CurrentMainPhase is MainPhase.ShipmentAndMove &&
                                      !Game.HasActedOrPassed.Contains(faction),
-            HasTechTokenCharity = P1.TechTokens.Contains(TechToken.Resources),
-            HasTechTokenRevival = P1.TechTokens.Contains(TechToken.Graveyard),
-            HasTechTokenShip = P1.TechTokens.Contains(TechToken.Ships),
+            HasTechTokenCharity = Me.TechTokens.Contains(TechToken.Resources),
+            HasTechTokenRevival = Me.TechTokens.Contains(TechToken.Graveyard),
+            HasTechTokenShip = Me.TechTokens.Contains(TechToken.Ships),
         };
 
-        Player2 = DetermineKnownPlayerInfo(P2);
-        Player3 = DetermineKnownPlayerInfo(P3);
-        Player4 = DetermineKnownPlayerInfo(P4);
-        Player5 = DetermineKnownPlayerInfo(P5);
-        Player6 = DetermineKnownPlayerInfo(P6);
+        for (var i = 1; i < NrOfPlayers; i++)
+            PlayerInfo[i] = DetermineKnownPlayerInfo(Player[i]);
 
+        InitCardAndLeaderTokenInfo();
         InitLocationInfo();
 
         Homeworlds = Game.Applicable(Rule.Homeworlds);
         AllyBlocksAdvisors = !Game.Applicable(Rule.AdvisorsDontConflictWithAlly);
         LatestAtreidesOrAllyBidAmount = Game.Bids.Values.LastOrDefault(x=> !x.Passed && (x.Initiator == Faction.Green || x.Initiator == atr?.Ally))?.TotalAmount ?? -1;
-        TreacheryCardOnBidId = Game.HasBiddingPrescience(P1) && !Game.CardsOnAuction.IsEmpty? Game.CardsOnAuction.Top.Id  : -1;
-        PredictedFaction = faction is Faction.Blue ? P1.PredictedFaction : Faction.None;
-        PredictedTurn = faction is Faction.Blue ? P1.PredictedTurn : -1;
+        TreacheryCardOnBidId = Game.HasBiddingPrescience(Me) && !Game.CardsOnAuction.IsEmpty? Game.CardsOnAuction.Top.Id  : -1;
+        PredictedFaction = Me.PredictedFaction;
+        PredictedTurn = Me.PredictedTurn;
         KwizatsAvailable = atr?.MessiahAvailable == true;
     }
-    
+
+    private void InitCardAndLeaderTokenInfo()
+    {
+        for (var i = 0; i < NrOfPlayers; i++)
+            foreach (var c in Player[i].TreacheryCards.Where(x => i == 0 || Me.KnownCards.Contains(x)))
+                if (c.Id < CardIds.Length)
+                    CardIds[c.Id] = i;
+
+        for (var i = 0; i < NrOfPlayers; i++)
+        {
+            foreach (var c in Player[i].Traitors.Where(x => i == 0 || Me.RevealedTraitors.Contains(x) || Me.ToldTraitors.Contains(x)))
+                TraitorIds[c is TreacheryCard ? 0 : c.Id - LeaderManager.FirstId] = i;
+            
+            foreach (var c in Player[i].FaceDancers.Where(x => i == 0 || Me.RevealedFaceDancers.Contains(x) || Me.ToldFaceDancers.Contains(x)))
+                TraitorIds[c is TreacheryCard ? 0 : c.Id - LeaderManager.FirstId] = i;
+        }
+        
+        for (var i = 0; i < NrOfPlayers; i++)
+            foreach (var c in Player[i].Leaders)
+                LivingLeaderIds[c.Id - LeaderManager.FirstId] = (Game.IsAlive(c) ? 1 : -1) * i;
+    }
+
     private void InitLocationInfo()
     {
         foreach (var l in Game.Map.Locations(true))
@@ -199,23 +225,23 @@ public class PlayerKnowledge
                 InStorm = Game.IsInStorm(l),
                 WillSufferStormNextTurn = l.IsProtectedFromStorm 
                     ? 0 
-                    : Game.HasStormPrescience(P1) 
+                    : Game.HasStormPrescience(Me) 
                         ? Game.NextStormWillPassOver(l, Game.NextStormMoves) ? 1 : 0
                         : 1f - (float)Math.Min(0.167 * Game.DistanceFromStorm(l), 1),
-                HasWormNextTurn = Game.HasResourceDeckPrescience(P1) && !Game.ResourceCardDeck.IsEmpty && Game.ResourceCardDeck.Top.Territory == l.Territory,
+                HasWormNextTurn = Game.HasResourceDeckPrescience(Me) && !Game.ResourceCardDeck.IsEmpty && Game.ResourceCardDeck.Top.Territory == l.Territory,
             
-                Player1Forces = P1.ForcesIn(l),
-                Player1SpecialForces = P1.SpecialForcesIn(l),
-                Player2Forces = P2?.ForcesIn(l) ?? 0,
-                Player2SpecialForces = P2?.SpecialForcesIn(l) ?? 0,
-                Player3Forces = P2?.ForcesIn(l) ?? 0,
-                Player3SpecialForces = P3?.SpecialForcesIn(l) ?? 0,
-                Player4Forces = P4?.ForcesIn(l) ?? 0,
-                Player4SpecialForces = P4?.SpecialForcesIn(l) ?? 0,
-                Player5Forces = P5?.ForcesIn(l) ?? 0,
-                Player5SpecialForces = P2?.SpecialForcesIn(l) ?? 0,
-                Player6Forces = P6?.ForcesIn(l) ?? 0,
-                Player6SpecialForces = P6?.SpecialForcesIn(l) ?? 0,
+                Player1Forces = Player[0].ForcesIn(l),
+                Player1SpecialForces = Player[0].SpecialForcesIn(l),
+                Player2Forces = Player[1]?.ForcesIn(l) ?? 0,
+                Player2SpecialForces = Player[1]?.SpecialForcesIn(l) ?? 0,
+                Player3Forces = Player[2]?.ForcesIn(l) ?? 0,
+                Player3SpecialForces = Player[2]?.SpecialForcesIn(l) ?? 0,
+                Player4Forces = Player[3]?.ForcesIn(l) ?? 0,
+                Player4SpecialForces = Player[3]?.SpecialForcesIn(l) ?? 0,
+                Player5Forces = Player[4]?.ForcesIn(l) ?? 0,
+                Player5SpecialForces = Player[4]?.SpecialForcesIn(l) ?? 0,
+                Player6Forces = Player[5]?.ForcesIn(l) ?? 0,
+                Player6SpecialForces = Player[5]?.SpecialForcesIn(l) ?? 0,
             });
         }
     }
@@ -223,19 +249,14 @@ public class PlayerKnowledge
     private PlayerInfo DetermineKnownPlayerInfo(Player player)
     {
         if (player == null) 
-            return PlayerInfo.Empty;
+            return Test.PlayerInfo.Empty;
         
         return new PlayerInfo
         {
             Faction = player.Faction,
             Ally = player.Ally,
             Spice = player.Resources,
-            
-            CardIds = player.TreacheryCards.Where(c => P1.KnownCards.Contains(c)).Select(x => x.Id).ToHashSet(),
-            TraitorIds = player.Traitors.Where(c => P1.RevealedTraitors.Contains(c)).Select(x => x.Id).ToHashSet(),
-            FaceDancerIds = player.FaceDancers.Where(c => P1.RevealedDancers.Contains(c)).Select(x => x.Id).ToHashSet(),
-            
-            LivingLeaderIds = player.Leaders.Where(Game.IsAlive).Select(x => x.Id).ToHashSet(),
+
             MustSupportForcesInBattle = Battle.MustPayForAnyForcesInBattle(Game, player),
             CanUseAdvancedKarama = !Game.KarmaPrevented(player.Faction) && !player.SpecialKarmaPowerUsed && Game.Applicable(Rule.AdvancedKarama),
             ForcesInReserve = player.ForcesInReserve,
@@ -325,32 +346,19 @@ public record LocationInfo
 
 public record PlayerInfo
 {
-    public required Faction Faction { get; set; }
-    public required Faction Ally { get; set; }
-    public required int Spice { get; set; }
+    public required Faction Faction { get; init; }
+    public required Faction Ally { get; init; }
+    public required int Spice { get; init; }
     
-    /*
-    public required bool HasProjectile;
-    public required bool HasShield;
-    public required bool HasPoison;
-    public required bool HasSnooper;
-    public required bool HasWorthless;
-    public required
-    */
-    
-    public required HashSet<int> CardIds { get; set; } = [];
-    public required HashSet<int> TraitorIds { get; set; } = [];
-    public required HashSet<int> FaceDancerIds { get; set; } = [];
-    public required HashSet<int> LivingLeaderIds { get; set; } = [];
-    public required bool HasTechTokenCharity { get; set; }
-    public required bool HasTechTokenShip { get; set; }
-    public required bool HasTechTokenRevival { get; set; }
+    public required bool HasTechTokenCharity { get; init; }
+    public required bool HasTechTokenShip { get; init; }
+    public required bool HasTechTokenRevival { get; init; }
 
-    public required bool MustSupportForcesInBattle { get; set; } 
-    public required bool CanUseAdvancedKarama { get; set; }
-    public required int ForcesInReserve { get; set; }
-    public required int SpecialForcesInReserve { get; set; }
-    public required bool CanShipAndMoveThisTurn { get; set; }
+    public required bool MustSupportForcesInBattle { get; init; } 
+    public required bool CanUseAdvancedKarama { get; init; }
+    public required int ForcesInReserve { get; init; }
+    public required int SpecialForcesInReserve { get; init; }
+    public required bool CanShipAndMoveThisTurn { get; init; }
 
     public string GetCommaSeparatedStateData() =>
         string.Join(";",
@@ -364,11 +372,7 @@ public record PlayerInfo
             B(MustSupportForcesInBattle),
             B(HasTechTokenCharity),
             B(HasTechTokenRevival),
-            B(HasTechTokenShip),
-            Set(1, 59, CardIds),
-            Set(1, 62, TraitorIds),
-            Set(1, 62, FaceDancerIds),
-            Set(1, 62, LivingLeaderIds));
+            B(HasTechTokenShip));
     
     public static string GetCommaSeparatedHeaders(string who) =>
         string.Join(";",
@@ -382,29 +386,15 @@ public record PlayerInfo
             who + nameof(MustSupportForcesInBattle),
             who + nameof(HasTechTokenCharity),
             who + nameof(HasTechTokenRevival),
-            who + nameof(HasTechTokenShip),
-            HeaderSet($"{who}Card", 1, 59),
-            HeaderSet($"{who}Traitor", 1, 62),
-            HeaderSet($"{who}Fd", 1, 62),
-            HeaderSet($"{who}Leader", 1, 62));
+            who + nameof(HasTechTokenShip));
 
     private static string B(bool value) => value ? "1" : "0";
-
-    private static string Set(int min, int max, HashSet<int> values) => string.Join(';',
-        Enumerable.Range(min, max).Select(x => values.Contains(x) ? "1" : "0"));
-    
-    private static string HeaderSet(string header, int min, int max) => string.Join(';',
-        Enumerable.Range(min, max).Select(x => $"{header}{x}"));
     
     public static readonly PlayerInfo Empty = new()
     {
         Faction = Faction.None,
         Ally = Faction.None,
         Spice = 0,
-        CardIds = [],
-        TraitorIds = [],
-        FaceDancerIds = [],
-        LivingLeaderIds = [],
         HasTechTokenCharity = false,
         HasTechTokenShip = false,
         HasTechTokenRevival = false,

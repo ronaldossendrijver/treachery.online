@@ -502,16 +502,16 @@ public class NexusPlayed : GameEvent, ILocationEvent
 
             case Faction.Purple:
                 var purple = GetPlayer(Faction.Purple);
-                Game.PlayNexusCard(Player, "replace their ", purple.RevealedDancers.Count, " revealed face dancers");
-                if (purple.RevealedDancers.Count > 0)
+                Game.PlayNexusCard(Player, "replace their ", purple.RevealedFaceDancers.Count, " revealed face dancers");
+                if (purple.RevealedFaceDancers.Count > 0)
                 {
-                    for (var i = 0; i < purple.RevealedDancers.Count; i++) purple.FaceDancers.Add(Game.TraitorDeck.Draw());
+                    for (var i = 0; i < purple.RevealedFaceDancers.Count; i++) purple.FaceDancers.Add(Game.TraitorDeck.Draw());
 
-                    Game.TraitorDeck.Items.AddRange(purple.RevealedDancers);
+                    Game.TraitorDeck.Items.AddRange(purple.RevealedFaceDancers);
                     Game.TraitorDeck.Shuffle();
 
-                    foreach (var dancer in purple.RevealedDancers) purple.FaceDancers.Remove(dancer);
-                    purple.RevealedDancers.Clear();
+                    foreach (var dancer in purple.RevealedFaceDancers) purple.FaceDancers.Remove(dancer);
+                    purple.RevealedFaceDancers.Clear();
 
                     Game.Stone(Milestone.Shuffled);
                 }

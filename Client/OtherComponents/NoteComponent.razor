@@ -99,11 +99,11 @@
                     </div>
                 }
 
-                if (p.RevealedDancers.Count > 0)
+                if (p.RevealedFaceDancers.Count > 0)
                 {
                     <div class="mt-1">Revealed Face Dancers</div>
                     <div class="row row-cols-4 m-0">
-                        @foreach (var c in p.RevealedDancers)
+                        @foreach (var c in p.RevealedFaceDancers)
                         {
                             <Image Class="img-fluid pe-1" Shown=@c Width=60/>
                         }

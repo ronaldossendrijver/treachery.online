@@ -84,7 +84,7 @@ public class FaceDanced : PlacementEvent
             if (!g.CurrentBattle.Territory.IsHomeworld || p.IsNative(g.CurrentBattle.Territory))
             {
                 var winnerHero = g.WinnerHero;
-                if (winnerHero != null && !g.IsOccupiedByFactionOrTheirAlly(World.Purple, g.BattleWinner)) return p.FaceDancers.Any(t => t.IsFaceDancer(winnerHero) && !p.RevealedDancers.Contains(t));
+                if (winnerHero != null && !g.IsOccupiedByFactionOrTheirAlly(World.Purple, g.BattleWinner)) return p.FaceDancers.Any(t => t.IsFaceDancer(winnerHero) && !p.RevealedFaceDancers.Contains(t));
             }
 
         return false;
@@ -121,7 +121,7 @@ public class FaceDanced : PlacementEvent
             foreach (var p in Game.Players)
                 if (!p.KnownNonTraitors.Contains(facedancer)) p.KnownNonTraitors.Add(facedancer);
 
-            if (!Player.RevealedDancers.Contains(facedancer)) Player.RevealedDancers.Add(facedancer);
+            if (!Player.RevealedFaceDancers.Contains(facedancer)) Player.RevealedFaceDancers.Add(facedancer);
 
             if (!Player.UnrevealedFaceDancers.Any()) ReplaceFacedancers();
 
@@ -177,7 +177,7 @@ public class FaceDanced : PlacementEvent
     {
         Game.TraitorDeck.Items.AddRange(Player.FaceDancers);
         Player.FaceDancers.Clear();
-        Player.RevealedDancers.Clear();
+        Player.RevealedFaceDancers.Clear();
         Game.TraitorDeck.Shuffle();
         Game.Stone(Milestone.Shuffled);
         for (var i = 0; i < 3; i++) Player.FaceDancers.Add(Game.TraitorDeck.Draw());
