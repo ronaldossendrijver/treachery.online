@@ -26,7 +26,7 @@ namespace Treachery.Test;
 public class Tests
 {
     private const bool GatherStatisticsDuringRegressionTest = true;
-    private const bool GatherTrainingDataDuringRegressionTest = true;
+    private const bool GatherTrainingDataDuringRegressionTest = false;
     private const bool GatherCentralStyleStatistics = true;
 
     private void SaveSpecialCases(Game g, GameEvent e)

@@ -64,11 +64,11 @@ public partial class Player : ICloneable
 
     public int TransferableResources { get; set; }
 
-    public HashSet<TreacheryCard> TreacheryCards { get; set; } = [];
+    public List<TreacheryCard> TreacheryCards { get; set; } = [];
 
     public HashSet<TreacheryCard> KnownCards { get; } = [];
 
-    public HashSet<IHero> Traitors { get; set; } = [];
+    public List<IHero> Traitors { get; set; } = [];
 
     public HashSet<IHero> RevealedTraitors { get; } = [];
 
@@ -80,7 +80,7 @@ public partial class Player : ICloneable
 
     public HashSet<IHero> DiscardedTraitors { get; } = [];
 
-    public HashSet<IHero> FaceDancers { get; private set; } = [];
+    public List<IHero> FaceDancers { get; private set; } = [];
 
     public HashSet<IHero> RevealedFaceDancers { get; private set; } = [];
 
