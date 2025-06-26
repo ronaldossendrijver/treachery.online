@@ -26,7 +26,7 @@ namespace Treachery.Test;
 public class Tests
 {
     private const bool GatherStatisticsDuringRegressionTest = true;
-    private const bool GatherTrainingDataDuringRegressionTest = false;
+    private const bool GatherTrainingDataDuringRegressionTest = true;
     private const bool GatherCentralStyleStatistics = true;
 
     private void SaveSpecialCases(Game g, GameEvent e)
@@ -593,11 +593,6 @@ public class Tests
         {
             statistics.Output(DefaultSkin.Default);    
         }
-        
-        if (GatherTrainingDataDuringRegressionTest)
-        {
-            trainingData.Output();    
-        }
 
         if (GatherCentralStyleStatistics)
         {
@@ -633,7 +628,8 @@ public class Tests
             evt.Initialize(game);
             var previousPhase = game.CurrentPhase;
 
-            var trainingState = GatherTrainingDataDuringRegressionTest ? GatherPlayerKnowledgeForTrainingData(trainingData, game) : null;
+            if (GatherTrainingDataDuringRegressionTest)
+                trainingData.RegisterDecision(game);
 
             var result = evt.Execute(true, true);
             if (result != null) File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
@@ -653,11 +649,11 @@ public class Tests
 
             valueId++;
 
+            if (GatherTrainingDataDuringRegressionTest)
+                trainingData.WriteTrainingDataIfGameEnded(game);
+            
             if (GatherStatisticsDuringRegressionTest) 
                 GatherStatistics(statistics, game, ref previousBattleOutcome, ref previousWinningBid);
-            
-            if (trainingState != null)
-                RegisterDecisionForTrainingData(trainingData, game, trainingState);
         }
 
         if (GatherCentralStyleStatistics)
@@ -793,32 +789,6 @@ public class Tests
         }
     }
     
-    private static PlayerKnowledge GatherPlayerKnowledgeForTrainingData(TrainingData trainingData, Game game)
-    {
-        var latest = game.LatestEvent();
-
-        if (latest is Shipment or Move or Voice or Prescience or Battle or Bid)
-        {
-            return new PlayerKnowledge(game, latest.Initiator);
-        }
-        
-        if (game.CurrentPhase == Phase.GameEnded && latest is EndPhase)
-        {
-            trainingData.DeleteDecisionsByLosers(game.Seed, game.Winners.Select(x => x.Faction).ToArray());
-        }
-
-        return null;
-    }
-    
-    private static void RegisterDecisionForTrainingData(TrainingData trainingData, Game game, PlayerKnowledge knowledge)
-    {
-        var latest = game.LatestEvent();
-        lock (trainingData)
-        {
-            trainingData.Decisions.Add(new DecisionInfo(game.Seed, knowledge, latest));
-        }
-    }
-
     private static string DetermineName(Player p)
     {
         return p.IsBot ? DefaultSkin.Default.Format("{0}Bot", p.Faction) : p.Name.Replace(';', ':');

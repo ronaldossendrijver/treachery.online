@@ -1,42 +1,69 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Treachery.Shared;
 using Treachery.Shared.Model;
 
 namespace Treachery.Test;
 
-public record TrainingData
+public class TrainingData : IDisposable, IAsyncDisposable
 {
-    public List<DecisionInfo> Decisions { get; set; } = [];
-    
-    public void Output()
+    private ConcurrentDictionary<int,List<DecisionInfo>> Decisions { get; } = [];
+
+    private StreamWriter ShipmentFile { get; } = new(File.Open("shipments.csv", FileMode.Create), Encoding.ASCII, 100000);
+    private StreamWriter MoveFile { get; } = new(File.Open("move.csv", FileMode.Create), Encoding.ASCII, 100000);
+    private StreamWriter BattleFile { get; } = new(File.Open("battle.csv", FileMode.Create), Encoding.ASCII, 100000);
+    private StreamWriter BidFile { get; } = new(File.Open("bid.csv", FileMode.Create), Encoding.ASCII, 100000);
+
+    public TrainingData()
     {
-        var shipmentFile = new StreamWriter(File.Open("shipments.csv", FileMode.Create), Encoding.ASCII, 10000);
-        var shipmentFileHeaderWritten = false;
-        
-        var moveFile = new StreamWriter(File.Open("move.csv", FileMode.Create));
-        var moveFileHeaderWritten = false;
-
-        var battleFile = new StreamWriter(File.Open("battle.csv", FileMode.Create));
-        var battleFileHeaderWritten = false;
-
-        var bidFile = new StreamWriter(File.Open("bid.csv", FileMode.Create));
-        var bidFileHeaderWritten = false;
-
-        foreach (var decision in Decisions)
+        ShipmentFile.WriteLine($"{PlayerKnowledge.GetCommaSeparatedHeaders()};ShipmentToId;ShipmentForces;ShipmentSpecialForces");
+    }
+    
+    public void RegisterDecision(Game game)
+    {
+        var latest = game.LatestEvent();
+       
+        if (latest is Shipment or Move or Voice or Prescience or Battle or Bid)
         {
-            var state = decision.State.GetCommaSeparatedStateData();
+            if (!Decisions.TryGetValue(game.Seed, out var decisions))
+            {
+                decisions = [];
+                Decisions.TryAdd(game.Seed, decisions);
+            } 
+                
+            decisions.Add(new DecisionInfo(new PlayerKnowledge(game, latest.Initiator), latest));
+        }
+    }
+
+    public void WriteTrainingDataIfGameEnded(Game game)
+    {
+        if (game.CurrentPhase != Phase.GameEnded) return;
+        
+        if (!Decisions.TryGetValue(game.Seed, out var decisionsForGame) || game.Players.Count is < 4 or > 6) return;
+        
+        Output(decisionsForGame.Where(d => game.Winners.Any(x => x.Faction == d.Decision.Initiator)).ToArray());
+        Decisions.TryRemove(game.Seed, out _);
+    }
+
+    private void Output(DecisionInfo[] decisions)
+    {
+        foreach (var decision in decisions)
+        {
+            var stateAsString = decision.State.GetCommaSeparatedStateData();
             
             switch (decision.Decision)
             {
                 case Shipment shipment:
-                    if (!shipmentFileHeaderWritten) shipmentFile.WriteLine($"{decision.State.GetCommaSeparatedHeaders()};ShipmentToId;ShipmentForces;ShipmentSpecialForces");
-                    shipmentFile.WriteLine($"{state};{shipment.To.Id};{shipment.ForceAmount};{shipment.SpecialForceAmount}");
-                    shipmentFileHeaderWritten = true;
+                    lock (ShipmentFile)
+                    {
+                        ShipmentFile.WriteLine($"{stateAsString};{shipment.To.Id};{shipment.ForceAmount};{shipment.SpecialForceAmount}");    
+                    }
                     break;
                 
                 case Move move:
@@ -54,9 +81,20 @@ public record TrainingData
         }
     }
 
-    public void DeleteDecisionsByLosers(int gameId, Faction[] winners)
+    public void Dispose()
     {
-        Decisions.RemoveAll(d => d.GameId == gameId && !winners.Contains(d.Decision.Initiator));
+        ShipmentFile?.Dispose();
+        MoveFile?.Dispose();
+        BattleFile?.Dispose();
+        BidFile?.Dispose();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (ShipmentFile != null) await ShipmentFile.DisposeAsync();
+        if (MoveFile != null) await MoveFile.DisposeAsync();
+        if (BattleFile != null) await BattleFile.DisposeAsync();
+        if (BidFile != null) await BidFile.DisposeAsync();
     }
 }
 
@@ -66,8 +104,8 @@ public class PlayerKnowledge
 
     // Player[0]: this player, Player[1..5]: other players
     
-    private Player[] Player { get; set; } = new Player[6];
-    private PlayerInfo[] PlayerInfo { get; set; } = new PlayerInfo[6];
+    private Player[] Player { get; } = new Player[6];
+    private PlayerInfo[] PlayerInfo { get; } = new PlayerInfo[6];
 
     private Player Me => Player[0];
 
@@ -76,11 +114,13 @@ public class PlayerKnowledge
     public PlayerKnowledge(Game theGame, Faction faction)
     {
         Game = theGame;
-        Init(faction);
+        
+        if (NrOfPlayers <= 6)
+            Init(faction);
     }
     
     // Public board state
-    public List<LocationInfo> Locations { get; } = []; 
+    private List<LocationInfo> Locations { get; } = []; 
     
     // Known info about game
     public int TreacheryCardOnBidId { get; set; }
@@ -116,7 +156,7 @@ public class PlayerKnowledge
             PlayerInfo[5].GetCommaSeparatedStateData(),
             string.Join(";",Locations.Select(x => x.GetCommaSeparatedStateData())));
     
-    public string GetCommaSeparatedHeaders() =>
+    public static string GetCommaSeparatedHeaders() =>
         string.Join(";",
             nameof(TreacheryCardOnBidId),
             nameof(PredictedFaction),
@@ -134,7 +174,7 @@ public class PlayerKnowledge
             Test.PlayerInfo.GetCommaSeparatedHeaders("Player4"),
             Test.PlayerInfo.GetCommaSeparatedHeaders("Player5"),
             Test.PlayerInfo.GetCommaSeparatedHeaders("Player6"),
-            string.Join(";", Locations.Select(x => LocationInfo.GetCommaSeparatedHeaders(x.Id.ToString()))));
+            string.Join(";", Enumerable.Range(0,104).Select(x => LocationInfo.GetCommaSeparatedHeaders(x.ToString()))));
     
     private static string B(bool value) => value ? "1" : "0";
     
@@ -176,8 +216,8 @@ public class PlayerKnowledge
             HasTechTokenShip = Me.TechTokens.Contains(TechToken.Ships),
         };
 
-        for (var i = 1; i < NrOfPlayers; i++)
-            PlayerInfo[i] = DetermineKnownPlayerInfo(Player[i]);
+        for (var i = 1; i < 6; i++)
+            PlayerInfo[i] = i < NrOfPlayers ? DetermineKnownPlayerInfo(Player[i]) : Test.PlayerInfo.Empty;
 
         InitCardAndLeaderTokenInfo();
         InitLocationInfo();
@@ -218,7 +258,6 @@ public class PlayerKnowledge
         {
             Locations.Add(new LocationInfo
             {
-                Id = l.Id,
                 Spice = Game.ResourcesOnPlanet.GetValueOrDefault(l, 0),
                 Terror = Game.TerrorIn(l.Territory).FirstOrDefault(),
                 Ambassador = Game.AmbassadorIn(l.Territory),
@@ -272,7 +311,6 @@ public class PlayerKnowledge
 
 public record LocationInfo
 {
-    public required int Id { get; init; }
     public required int Spice { get; init; }
     public required int Player1Forces { get; init; }
     public required int Player1SpecialForces { get; init; }
@@ -406,9 +444,8 @@ public record PlayerInfo
     };
 }
 
-public class DecisionInfo(int gameId, PlayerKnowledge state, GameEvent decision)
+public class DecisionInfo(PlayerKnowledge state, GameEvent decision)
 {
-    public int GameId { get; } = gameId;
     public PlayerKnowledge State { get; } = state;
     public GameEvent Decision { get; } = decision;
 }
