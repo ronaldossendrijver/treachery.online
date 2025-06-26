@@ -164,20 +164,19 @@ public class Map
 
     private void InitializeLocations()
     {
-        _locations = new List<Location>();
+        _locations = [];
 
         {
-            var t = new Territory(0)
-            {
-                IsHomeworld = false,
-                IsDiscovery = false,
-                IsStronghold = false,
-                IsProtectedFromStorm = true,
-                IsProtectedFromWorm = true
-            };
             PolarSink = new Location(0)
             {
-                Territory = t,
+                Territory = new Territory(0)
+                {
+                    IsHomeworld = false,
+                    IsDiscovery = false,
+                    IsStronghold = false,
+                    IsProtectedFromStorm = true,
+                    IsProtectedFromWorm = true
+                },
                 Orientation = "",
                 Sector = -1,
                 SpiceBlowAmount = 0
@@ -219,19 +218,18 @@ public class Map
         }
 
         {
-            var t = new Territory(2)
-            {
-                IsHomeworld = false,
-                IsDiscovery = false,
-                IsStronghold = true,
-                HasReducedShippingCost = true,
-                IsProtectedFromStorm = true,
-                IsProtectedFromWorm = true,
-                Advantage = StrongholdAdvantage.CountDefensesAsAntidote
-            };
             Carthag = new Location(4)
             {//4
-                Territory = t,
+                Territory = new Territory(2)
+                {
+                    IsHomeworld = false,
+                    IsDiscovery = false,
+                    IsStronghold = true,
+                    HasReducedShippingCost = true,
+                    IsProtectedFromStorm = true,
+                    IsProtectedFromWorm = true,
+                    Advantage = StrongholdAdvantage.CountDefensesAsAntidote
+                },
                 Orientation = "",
                 Sector = 10,
                 SpiceBlowAmount = 0
@@ -240,19 +238,18 @@ public class Map
         }
 
         {
-            var t = new Territory(3)
-            {
-                IsHomeworld = false,
-                IsDiscovery = false,
-                IsStronghold = true,
-                HasReducedShippingCost = true,
-                IsProtectedFromStorm = true,
-                IsProtectedFromWorm = true,
-                Advantage = StrongholdAdvantage.FreeResourcesForBattles
-            };
             Arrakeen = new Location(5)
             {//5
-                Territory = t,
+                Territory = new Territory(3)
+                {
+                    IsHomeworld = false,
+                    IsDiscovery = false,
+                    IsStronghold = true,
+                    HasReducedShippingCost = true,
+                    IsProtectedFromStorm = true,
+                    IsProtectedFromWorm = true,
+                    Advantage = StrongholdAdvantage.FreeResourcesForBattles
+                },
                 Orientation = "",
                 Sector = 9,
                 SpiceBlowAmount = 0
