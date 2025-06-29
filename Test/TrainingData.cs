@@ -188,7 +188,7 @@ public class PlayerKnowledge
             HeaderSet("TreacheryCard", 1, 59),
             HeaderSet("TraitorCard", 0, 63),
             HeaderSet("Leader", 1, 62),
-            string.Join(";", Enumerable.Range(1, MaxPlayers * 11).Select(x => Test.PlayerInfo.GetCommaSeparatedHeaders($"Player{x}"))),
+            string.Join(";", Enumerable.Range(1, MaxPlayers).Select(x => Test.PlayerInfo.GetCommaSeparatedHeaders($"Player{x}"))),
             string.Join(";", Enumerable.Range(0, 105).Select(x => LocationInfo.GetCommaSeparatedHeaders(x.ToString()))));
     
     private static string B(bool value) => value ? "1" : "0";
@@ -246,10 +246,16 @@ public class PlayerKnowledge
         
         for (var i = 1; i < MaxPlayers; i++)
             PlayerInfo[i] = i < NrOfPlayers ? DetermineKnownPlayerInfo(Player[i]) : Test.PlayerInfo.Empty;
+        
+        //if (PlayerInfo.Count(x => x.Faction == Faction.Green) > 1)
+            //Console.WriteLine("Hee!");
     }
 
     private void InitPlayers()
     {
+        //if (Game.Seed == 19736931)
+        //    Console.WriteLine("Hee!");
+        
         // Me
         Player[0] = Game.GetPlayer(MyFaction);
         
@@ -259,7 +265,7 @@ public class PlayerKnowledge
         var distance = 1;
         while (addedPlayers < NrOfPlayers)
         {
-            var playerInSeat = Game.GetPlayerBySeat((Me.Seat + distance++) % NrOfPlayers);
+            var playerInSeat = Game.GetPlayerBySeat((Me.Seat + distance++) % Game.MaximumPlayers);
             if (playerInSeat != null)
                 Player[addedPlayers++] = playerInSeat; 
         }
