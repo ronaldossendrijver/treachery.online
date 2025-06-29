@@ -7,11 +7,9 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
+namespace Treachery.Bot;
 
-namespace Treachery.Shared.Model;
-
-public partial class Player
+public partial class ClassicBot
 {
     #region Orange
 

@@ -7,9 +7,9 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Treachery.Shared.Model;
+namespace Treachery.Bot;
 
-public partial class Player
+public partial class ClassicBot(Player player)
 {
     private const bool BotInfologging = false;
 

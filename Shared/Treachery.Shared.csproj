@@ -9,4 +9,8 @@
     <None Remove="Bots\Bot_Battle.cs~RF38c33cb4.TMP" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Bots\" />
+  </ItemGroup>
+
 </Project>
