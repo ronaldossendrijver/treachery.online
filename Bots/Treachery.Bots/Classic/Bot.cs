@@ -7,15 +7,23 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Treachery.Bot;
+namespace Treachery.Bots;
 
-public partial class ClassicBot(Player player)
+public partial class ClassicBot(Game game, Player player, BotParameters param)
 {
     private const bool BotInfologging = false;
 
+    private Game Game { get; } = game;
+
+    private Player Player { get; } = player;
+
+    private Faction Faction => Player.Faction;
+
+    private Faction Ally => Player.Ally;
+    
     #region PublicInterface
 
-    public BotParameters Param { get; set; }
+    public BotParameters Param { get; set; } = param;
 
     public GameEvent DetermineHighestPrioInPhaseAction(List<Type> events)
     {
@@ -218,11 +226,11 @@ public partial class ClassicBot(Player player)
                 var error = action.Validate();
                 if (error != null)
                 {
-                    LogInfo("--invalid decision ({0})--> {1}: {2}", Resources, action.GetMessage(), error);
+                    LogInfo("--invalid decision ({0})--> {1}: {2}", Player.Resources, action.GetMessage(), error);
                 }
                 else
                 {
-                    LogInfo("--valid decision ({0})--> {1}", Resources, action.GetMessage());
+                    LogInfo("--valid decision ({0})--> {1}", Player.Resources, action.GetMessage());
                     return true;
                 }
             }

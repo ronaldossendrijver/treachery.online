@@ -7,7 +7,7 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Treachery.Bot;
+namespace Treachery.Bots;
 
 public partial class ClassicBot
 {
@@ -89,7 +89,7 @@ public partial class ClassicBot
             TotalMaxDialOfOpponents(kvp.Key.Territory) <= Param.Shipment_MaxEnemyForceStrengthFightingForSpice &&
             AllyDoesntBlock(kvp.Key.Territory) &&
             !StormWillProbablyHit(kvp.Key) &&
-            ProbablySafeFromShaiHulud(kvp.Key.Territory) &&
+            ProbablySafeFromMonster(kvp.Key.Territory) &&
             !NearbyBattalionsOutsideStrongholds(kvp.Key).Any()
         ).HighestOrDefault(kvp => kvp.Value).Key;
 
@@ -110,7 +110,7 @@ public partial class ClassicBot
             TotalMaxDialOfOpponents(kvp.Key.Territory) <= Param.Shipment_MaxEnemyForceStrengthFightingForSpice &&
             AllyDoesntBlock(kvp.Key.Territory) &&
             !StormWillProbablyHit(kvp.Key) &&
-            ProbablySafeFromShaiHulud(kvp.Key.Territory) &&
+            ProbablySafeFromMonster(kvp.Key.Territory) &&
             !NearbyBattalionsOutsideStrongholds(kvp.Key).Any()
         ).Select(kvp => kvp.Key).FirstOrDefault();
 
@@ -724,7 +724,7 @@ public partial class ClassicBot
             AllyDoesntBlock(kvp.Key.Territory) &&
             TotalMaxDialOfOpponents(kvp.Key.Territory) <= Param.Shipment_MaxEnemyForceStrengthFightingForSpice &&
             !StormWillProbablyHit(kvp.Key) &&
-            ProbablySafeFromShaiHulud(kvp.Key.Territory))
+            ProbablySafeFromMonster(kvp.Key.Territory))
         .HighestOrDefault(kvp => kvp.Value).Key;
 
     protected int DetermineForcesNeededForCollection(Location location)

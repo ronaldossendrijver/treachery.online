@@ -7,7 +7,7 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Treachery.Bot;
+namespace Treachery.Bots;
 
 public partial class ClassicBot
 {
@@ -38,29 +38,12 @@ public partial class ClassicBot
         if (leader == null) return false;
 
         return
-            (Game.IsInFrontOfShield(leader) && leader == DetermineBattlePlan(true, true)?.Hero) ||
-            (Game.IsInFrontOfShield(leader) && Game.CurrentPhase == Phase.BattlePhase && Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(this) && Battle.ValidBattleHeroes(Game, this).Count() < 2) ||
-            (!Game.IsInFrontOfShield(leader) && Game.CurrentPhase != Phase.BattlePhase);
+            (game.IsInFrontOfShield(leader) && leader == DetermineBattlePlan(true, true)?.Hero) ||
+            (game.IsInFrontOfShield(leader) && game.CurrentPhase == Phase.BattlePhase && game.CurrentBattle != null && game.CurrentBattle.IsInvolved(this) && Battle.ValidBattleHeroes(game, this).Count() < 2) ||
+            (!game.IsInFrontOfShield(leader) && game.CurrentPhase != Phase.BattlePhase);
     }
 
-    public Dictionary<Location, Battalion> BattalionsIn(Territory territory)
-    {
-        var result = new Dictionary<Location, Battalion>();
-        foreach (var kvp in ForcesInLocations.Where(kvp => kvp.Key.Territory == territory)) result.Add(kvp.Key, kvp.Value);
-        return result;
-    }
-
-    public bool BattalionIn(Location location, out Battalion battalion)
-    {
-        return ForcesInLocations.TryGetValue(location, out battalion);
-    }
-
-    public Battalion BattalionIn(Location location)
-    {
-        if (BattalionIn(location, out var result))
-            return result;
-        return new Battalion(Faction, 0, 0, location);
-    }
+    
 
     protected virtual BattleInitiated DetermineBattleInitiated()
     {
@@ -100,18 +83,18 @@ public partial class ClassicBot
         if (BattleConcluded.MayChooseToDiscardCards(Game))
         {
             if (myBattleplan.Weapon != null &&
-                Has(myBattleplan.Weapon) &&
+                Player.Has(myBattleplan.Weapon) &&
                 myBattleplan.Weapon.Type == TreacheryCardType.Useless &&
                 Faction != Faction.Brown &&
-                !Game.SkilledAs(this, LeaderSkill.Warmaster) &&
+                !Game.SkilledAs(Player, LeaderSkill.Warmaster) &&
                 !Game.OwnsStronghold(Faction, Game.Map.TueksSietch))
                 discarded.Add(myBattleplan.Weapon);
 
             if (myBattleplan.Defense != null &&
-                Has(myBattleplan.Defense) &&
+                Player.Has(myBattleplan.Defense) &&
                 myBattleplan.Defense.Type == TreacheryCardType.Useless &&
                 Faction != Faction.Brown &&
-                !Game.SkilledAs(this, LeaderSkill.Warmaster) &&
+                !Game.SkilledAs(Player, LeaderSkill.Warmaster) &&
                 !Game.OwnsStronghold(Faction, Game.Map.TueksSietch))
                 discarded.Add(myBattleplan.Defense);
         }
@@ -225,12 +208,12 @@ public partial class ClassicBot
 
         var predicted = WinWasPredictedByMeThisTurn(opponent.Faction);
         var totalForces = forcesAtFullStrength + forcesAtHalfStrength + specialForcesAtFullStrength + specialForcesAtHalfStrength;
-        var minimizeSpendingsInThisLostFight = predicted || (isTraitor && !messiah) || (Resources + ResourcesFromAlly < 10 && totalForces <= 8 && dialShortage > Param.Battle_DialShortageThresholdForThrowing);
+        var minimizeSpendingsInThisLostFight = predicted || (isTraitor && !messiah) || (Player.Resources + Player.ResourcesFromAlly < 10 && totalForces <= 8 && dialShortage > Param.Battle_DialShortageThresholdForThrowing);
 
         if (!minimizeSpendingsInThisLostFight)
         {
-            if (weapon == null && !MayUseUselessAsKarma && Faction != Faction.Brown) weapon = UselessAsWeapon(defense);
-            if (defense == null && !MayUseUselessAsKarma && Faction != Faction.Brown) defense = UselessAsDefense(weapon);
+            if (weapon == null && !Player.MayUseUselessAsKarma && Faction != Faction.Brown) weapon = UselessAsWeapon(defense);
+            if (defense == null && !Player.MayUseUselessAsKarma && Faction != Faction.Brown) defense = UselessAsDefense(weapon);
 
             RemoveIllegalChoices(ref hero, ref weapon, ref defense, Game.CurrentBattle.Territory);
 
@@ -255,7 +238,7 @@ public partial class ClassicBot
         }
 
         LogInfo("I'm spending as little as possible on this fight: predicted:{0}, isTraitor:{1} && !messiah:{2}, Resources:{3} < 10 && totalForces:{4} < 10 && dialShortage:{5} >= dialShortageToAccept:{6}",
-            predicted, isTraitor, messiah, Resources, totalForces, dialShortage, Param.Battle_DialShortageThresholdForThrowing);
+            predicted, isTraitor, messiah, Player.Resources, totalForces, dialShortage, Param.Battle_DialShortageThresholdForThrowing);
 
         return ConstructLostBattleMinimizingLosses(opponent, Game.CurrentBattle.Territory);
     }
@@ -601,7 +584,7 @@ public partial class ClassicBot
             return mostEffectiveDefense != null ? 1 : 0;
         }
 
-        var myClairvoyance = MyClairVoyanceAboutEnemyWeaponInCurrentBattle;
+        var myClairvoyance = MyClairvoyanceAboutEnemyWeaponInCurrentBattle;
         if (myClairvoyance != null)
         {
             LogInfo("Clairvoyance detected!");
@@ -730,9 +713,7 @@ public partial class ClassicBot
     private ClairVoyanceQandA RulingDefenseClairvoyanceForThisBattle => Game.LatestClairvoyance != null && Game.LatestClairvoyanceQandA != null && Game.LatestClairvoyanceQandA.Answer.Initiator == Faction && Game.LatestClairvoyanceBattle != null && Game.LatestClairvoyanceBattle == Game.CurrentBattle &&
                                                                         (Game.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeAsDefenseInBattle || Game.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeInBattle) ? Game.LatestClairvoyanceQandA : null;
 
-    public Homeworld PrimaryHomeworld => HomeWorlds.First();
 
-    public bool HasTooManyCards => TreacheryCards.Count > MaximumNumberOfCards;
 
     protected float ChanceOfEnemyLeaderDying(Player opponent, VoicePlan voicePlan, PrescienceAspect prescience, out TreacheryCard mostEffectiveWeapon, out bool enemyCanDefendPoisonTooth)
     {
@@ -777,7 +758,7 @@ public partial class ClassicBot
         var knownEnemyDefenses = KnownOpponentDefenses(opponent);
 
         //Clairvoyance available?
-        var myClairvoyance = MyClairVoyanceAboutEnemyDefenseInCurrentBattle;
+        var myClairvoyance = MyClairvoyanceAboutEnemyDefenseInCurrentBattle;
         if (myClairvoyance != null)
         {
             if (myClairvoyance.Question.IsAbout(TreacheryCardType.ProjectileDefense))
@@ -924,10 +905,11 @@ public partial class ClassicBot
         return GetDialNeededForBattle(inBattle, inBattle.IWillBeAggressorAgainst(opponent), opponent, territory, voicePlan, prescience, takeReinforcementsIntoAccount, true, out _, out _, out _, out _, out _, out _, out _, out _, out _, out _);
     }
 
-    protected float GetDialNeeded(Territory territory, Player opponent, bool takeReinforcementsIntoAccount)
+    protected float GetDialNeeded(Territory territory, Player? opponent, bool takeReinforcementsIntoAccount)
     {
+        if (opponent == null) return 0;
         //More could be done with the information obtained in the below call
-        return GetDialNeeded(this, territory, opponent, takeReinforcementsIntoAccount);
+        return GetDialNeeded(Player, territory, opponent, takeReinforcementsIntoAccount);
     }
 
     protected float GetDialNeededForBattle(

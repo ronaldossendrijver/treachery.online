@@ -9,7 +9,7 @@
 
 namespace Treachery.Shared.Model;
 
-public partial class Player : ICloneable
+public class Player : ICloneable
 {
     #region Construction
 
@@ -36,17 +36,8 @@ public partial class Player : ICloneable
     #region Properties
     
     private Game Game { get; set; }
-
-    private Faction _faction = Faction.None;
-    public Faction Faction
-    {
-        get => _faction;
-        set
-        {
-            _faction = value;
-            Param = BotParameters.GetDefaultParameters(value);
-        }
-    }
+    
+    public Faction Faction { get; set; }
 
     public string Name => Game.GetPlayerName(this);
 
@@ -618,6 +609,9 @@ public partial class Player : ICloneable
             return amount + occupationBonus - atomicsPenalty;
         }
     }
+    
+    public bool HasNoFieldIn(Territory territory) 
+        => Faction == Faction.White && SpecialForcesIn(territory) > 0;
 
     public bool HasRoomForCards => TreacheryCards.Count < MaximumNumberOfCards;
 
@@ -626,6 +620,25 @@ public partial class Player : ICloneable
     public int NumberOfTraitors => Faction == Faction.Black ? 4 : 1;
 
     public int NumberOfFaceDancers => Faction == Faction.Purple ? 3 : 0;
+    
+    public Dictionary<Location, Battalion> BattalionsIn(Territory territory)
+    {
+        var result = new Dictionary<Location, Battalion>();
+        foreach (var kvp in ForcesInLocations.Where(kvp => kvp.Key.Territory == territory)) result.Add(kvp.Key, kvp.Value);
+        return result;
+    }
+
+    public bool BattalionIn(Location location, out Battalion battalion)
+    {
+        return ForcesInLocations.TryGetValue(location, out battalion);
+    }
+
+    public Battalion BattalionIn(Location location)
+    {
+        if (BattalionIn(location, out var result))
+            return result;
+        return new Battalion(Faction, 0, 0, location);
+    }
 
     public void AssignLeaders(Game g)
     {
@@ -649,6 +662,7 @@ public partial class Player : ICloneable
     public bool MessiahAvailable => Game.Applicable(Rule.GreenMessiah) && Is(Faction.Green) && TotalForcesKilledInBattle >= 7 && Game.IsAlive(LeaderManager.Messiah);
     public bool IsBot => Game.IsBot(this);
     public bool AllyIsBot => HasAlly && Game.IsBot(AlliedPlayer);
+    public Homeworld PrimaryHomeworld => HomeWorlds.FirstOrDefault();
 
     public bool HasKarma(Game g) => Karma.ValidKarmaCards(g, this).Any();
 

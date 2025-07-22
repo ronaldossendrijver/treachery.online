@@ -21,7 +21,7 @@ public partial class Game
 
     #region Nexus
 
-    internal List<AllianceOffered> CurrentAllianceOffers { get; } = new();
+    public List<AllianceOffered> CurrentAllianceOffers { get; } = new();
     internal bool NexusHasOccured { get; set; }
 
     internal Dictionary<Faction, int> PermittedUseOfAllySpice { get; } = new();
@@ -58,9 +58,9 @@ public partial class Game
             SetPermissions(b, true);
         }
             
-        while (playerA.HasTooManyCards) Discard(playerA, playerA.TreacheryCards.RandomOrDefault(Random));
+        while (playerA.HandSizeExceeded) Discard(playerA, playerA.TreacheryCards.RandomOrDefault(Random));
 
-        while (playerB.HasTooManyCards) Discard(playerB, playerB.TreacheryCards.RandomOrDefault(Random));
+        while (playerB.HandSizeExceeded) Discard(playerB, playerB.TreacheryCards.RandomOrDefault(Random));
     }
 
     internal void BreakAlliance(Faction f)
