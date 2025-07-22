@@ -686,15 +686,25 @@ public partial class ClassicBot
     {
         return opponent.TreacheryCards.Where(c => c.IsDefense && Game.KnownCards(Player).Contains(c)).ToList();
     }
-
-    protected virtual List<TreacheryCard> Weapons(TreacheryCard usingThisDefense, IHero? usingThisHero, Territory? territory)
+    
+    private List<TreacheryCard> Weapons(TreacheryCard usingThisDefense, IHero? usingThisHero, Territory? territory)
     {
         return Battle.ValidWeapons(Game, Player, usingThisDefense, usingThisHero, territory).ToList();
     }
 
-    protected virtual List<TreacheryCard> Defenses(TreacheryCard usingThisWeapon, Territory? territory)
+    private List<TreacheryCard> Defenses(TreacheryCard usingThisWeapon, Territory? territory)
     {
         return Battle.ValidDefenses(Game, Player, usingThisWeapon, territory).ToList();
+    }
+
+    private static List<TreacheryCard> Weapons(Game game, Player player, TreacheryCard? usingThisDefense, IHero? usingThisHero, Territory? territory)
+    {
+        return Battle.ValidWeapons(game, player, usingThisDefense, usingThisHero, territory).ToList();
+    }
+
+    private static List<TreacheryCard> Defenses(Game game, Player player, TreacheryCard? usingThisWeapon, Territory? territory)
+    {
+        return Battle.ValidDefenses(game, player, usingThisWeapon, territory).ToList();
     }
 
     protected virtual TreacheryCard? UselessAsWeapon(TreacheryCard usingThisDefense)

@@ -23,11 +23,11 @@ public partial class ClassicBot(Game game, Player player, BotParameters param)
     
     #region PublicInterface
 
-    public BotParameters Param { get; set; } = param;
+    private BotParameters Param { get; } = param;
 
-    public GameEvent DetermineHighestPrioInPhaseAction(List<Type> events)
+    public GameEvent? DetermineHighestPrioInPhaseAction(List<Type> events)
     {
-        GameEvent action = null;
+        GameEvent? action = null;
 
         if (Do(DetermineNexusPlayed, ref action, events) ||
             Do(DetermineDealCancelled, ref action, events) ||
@@ -38,18 +38,18 @@ public partial class ClassicBot(Game game, Player player, BotParameters param)
         return null;
     }
 
-    public GameEvent DetermineHighPrioInPhaseAction(List<Type> events)
+    public GameEvent? DetermineHighPrioInPhaseAction(List<Type> events)
     {
-        GameEvent action = null;
+        GameEvent? action = null;
 
         if (Do(DetermineVoice, ref action, events)) return action;
 
         return null;
     }
 
-    public GameEvent DetermineMiddlePrioInPhaseAction(List<Type> events)
+    public GameEvent? DetermineMiddlePrioInPhaseAction(List<Type> events)
     {
-        GameEvent action = null;
+        GameEvent? action = null;
 
         if (Do(DetermineMetheorPlayed, ref action, events) ||
             Do(DetermineAmalPlayed, ref action, events) ||
@@ -73,9 +73,9 @@ public partial class ClassicBot(Game game, Player player, BotParameters param)
         return null;
     }
 
-    public GameEvent DetermineLowPrioInPhaseAction(List<Type> events)
+    public GameEvent? DetermineLowPrioInPhaseAction(List<Type> events)
     {
-        GameEvent action = null;
+        GameEvent? action = null;
 
         if (Do(DetermineDealOffered, ref action, events) ||
             Do(DetermineFactionTradeOffered, ref action, events) ||
@@ -191,9 +191,9 @@ public partial class ClassicBot(Game game, Player player, BotParameters param)
     }
 
 
-    public GameEvent DetermineEndPhaseAction(List<Type> events)
+    public GameEvent? DetermineEndPhaseAction(List<Type> events)
     {
-        GameEvent action = null;
+        GameEvent? action = null;
 
         if (Do(DetermineEndPhase, ref action, events)) return action;
 
@@ -206,7 +206,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param)
         return new EndPhase(Game, Faction);
     }
 
-    private bool Do<T>(Func<T> method, ref GameEvent action, IEnumerable<Type> allowedActions) where T : GameEvent
+    private bool Do<T>(Func<T> method, ref GameEvent? action, IEnumerable<Type> allowedActions) where T : GameEvent
     {
         if (typeof(T) == typeof(GameEvent)) throw new ArgumentException("Illegally typed method: " + method);
 

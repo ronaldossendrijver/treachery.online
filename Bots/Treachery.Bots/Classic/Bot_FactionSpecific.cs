@@ -1215,10 +1215,10 @@ public partial class ClassicBot
 
 public class VoicePlan
 {
-    public BattleInitiated Battle;
-    public Voice Voice;
-    public TreacheryCard WeaponToUse;
-    public TreacheryCard DefenseToUse;
+    public required BattleInitiated Battle;
+    public required Voice Voice;
+    public TreacheryCard? WeaponToUse;
+    public TreacheryCard? DefenseToUse;
     public bool PlayerHeroWillCertainlySurvive;
     public bool OpponentHeroWillCertainlyBeZero;
 }
