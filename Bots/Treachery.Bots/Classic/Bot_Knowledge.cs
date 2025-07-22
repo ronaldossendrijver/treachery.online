@@ -90,21 +90,21 @@ public partial class ClassicBot
         return Game.KnownCards(p).Contains(card);
     }
 
-    private List<TreacheryCard> CardsPlayerHasOrMightHave(Player player)
+    private List<TreacheryCard> CardsPlayerHasOrMightHave(Player p)
     {
         var known = Game.KnownCards(Player).ToList();
-        var result = new List<TreacheryCard>(player.TreacheryCards.Where(c => known.Contains(c)));
+        var result = new List<TreacheryCard>(p.TreacheryCards.Where(c => known.Contains(c)));
 
-        var playerHasUnknownCards = player.TreacheryCards.Any(c => !known.Contains(c));
+        var playerHasUnknownCards = p.TreacheryCards.Any(c => !known.Contains(c));
         if (playerHasUnknownCards) result.AddRange(CardsUnknownToMe);
 
         return result;
     }
 
-    private List<TreacheryCard> CardsPlayerHas(Player player)
+    private List<TreacheryCard> CardsPlayerHas(Player p)
     {
         var known = Game.KnownCards(Player).ToList();
-        return player.TreacheryCards.Where(c => known.Contains(c)).ToList();
+        return p.TreacheryCards.Where(c => known.Contains(c)).ToList();
     }
 
     private int CardQuality(TreacheryCard cardToRate, Player forWhom)
@@ -329,11 +329,11 @@ public partial class ClassicBot
     protected virtual bool InStorm(Location l) 
         => l.Sector == Game.SectorInStorm;
 
-    protected virtual KeyValuePair<Location, Battalion> BattalionThatShouldBeMovedDueToAllyPresence
+    protected virtual BattalionInLocation? BattalionThatShouldBeMovedDueToAllyPresence
     {
         get
         {
-            if (Ally == Faction.None) return default;
+            if (Ally == Faction.None) return null;
 
             if (Game.HasActedOrPassed.Contains(Ally))
                 //Ally has already acted => move biggest battalion
@@ -341,13 +341,16 @@ public partial class ClassicBot
                         !Equals(locationWithBattalion.Key, Game.Map.PolarSink) &&
                         !InStorm(locationWithBattalion.Key) &&
                         !AllyDoesntBlock(locationWithBattalion.Key))
-                    .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
+                    .Select(x => new BattalionInLocation(x.Key,x.Value))
+                    .HighestOrDefault(locationWithBattalion => locationWithBattalion.Battalion.TotalAmountOfForces);
+            
             //Ally has not acted yet => move smallest battalion
             return ForcesOnPlanet.Where(locationWithBattalion =>
                     !Equals(locationWithBattalion.Key, Game.Map.PolarSink) &&
                     !InStorm(locationWithBattalion.Key) &&
                     !AllyDoesntBlock(locationWithBattalion.Key.Territory))
-                .LowestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
+                .Select(x => new BattalionInLocation(x.Key,x.Value))
+                .LowestOrDefault(locationWithBattalion => locationWithBattalion.Battalion.TotalAmountOfForces);
         }
     }
 
@@ -356,61 +359,73 @@ public partial class ClassicBot
         return !IsStronghold(l) || !(IAmWinning || OpponentsAreWinning);
     }
 
-    protected virtual KeyValuePair<Location, Battalion> BiggestBattalionThreatenedByStormWithoutSpice => ForcesOnPlanet.Where(locationWithBattalion =>
-        StormWillProbablyHit(locationWithBattalion.Key) &&
-        !InStorm(locationWithBattalion.Key) &&
-        MayFleeOutOf(locationWithBattalion.Key) &&
-        !HasResources(locationWithBattalion.Key)
-    ).HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
+    protected virtual BattalionInLocation? BiggestBattalionThreatenedByStormWithoutSpice => ForcesOnPlanet
+        .Where(locationWithBattalion =>
+            StormWillProbablyHit(locationWithBattalion.Key) &&
+            !InStorm(locationWithBattalion.Key) &&
+            MayFleeOutOf(locationWithBattalion.Key) &&
+            !HasResources(locationWithBattalion.Key))
+        .Select(x => new BattalionInLocation(x.Key, x.Value))
+        .HighestOrDefault(locationWithBattalion => locationWithBattalion.Battalion.TotalAmountOfForces);
 
-    protected virtual KeyValuePair<Location, Battalion> BiggestBattalionInSpicelessNonStrongholdLocationOnRock => ForcesOnPlanet.Where(locationWithBattalion =>
+    protected virtual BattalionInLocation? BiggestBattalionInSpicelessNonStrongholdLocationOnRock => ForcesOnPlanet
+        .Where(locationWithBattalion =>
             !IsStronghold(locationWithBattalion.Key) &&
             locationWithBattalion.Key.Sector != Game.SectorInStorm &&
             Game.IsProtectedFromStorm(locationWithBattalion.Key) &&
             ResourcesIn(locationWithBattalion.Key) == 0 &&
             (!Player.Has(TreacheryCardType.Metheor) || locationWithBattalion.Key.Territory != Game.Map.PastyMesa))
-        .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
+        .Select(x => new BattalionInLocation(x.Key, x.Value))
+        .HighestOrDefault(locationWithBattalion => locationWithBattalion.Battalion.TotalAmountOfForces);
 
-    protected virtual KeyValuePair<Location, Battalion> BiggestBattalionInSpicelessNonStrongholdLocationInSandOrNotNearStronghold => ForcesOnPlanet.Where(locationWithBattalion =>
-            !IsStronghold(locationWithBattalion.Key) &&
-            locationWithBattalion.Key.Sector != Game.SectorInStorm &&
-            (!Game.IsProtectedFromStorm(locationWithBattalion.Key) || !Game.Map.Strongholds.Any(s => WithinRange(locationWithBattalion.Key, s, locationWithBattalion.Value))) &&
-            ResourcesIn(locationWithBattalion.Key) == 0 &&
-            (!Player.Has(TreacheryCardType.Metheor) || locationWithBattalion.Key.Territory != Game.Map.PastyMesa))
-        .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
+    protected virtual BattalionInLocation? BiggestBattalionInSpicelessNonStrongholdLocationInSandOrNotNearStronghold =>
+        ForcesOnPlanet.Where(locationWithBattalion =>
+                !IsStronghold(locationWithBattalion.Key) &&
+                locationWithBattalion.Key.Sector != Game.SectorInStorm &&
+                (!Game.IsProtectedFromStorm(locationWithBattalion.Key) || !Game.Map.Strongholds.Any(s =>
+                    WithinRange(locationWithBattalion.Key, s, locationWithBattalion.Value))) &&
+                ResourcesIn(locationWithBattalion.Key) == 0 &&
+                (!Player.Has(TreacheryCardType.Metheor) || locationWithBattalion.Key.Territory != Game.Map.PastyMesa))
+            .Select(x => new BattalionInLocation(x.Key, x.Value))
+            .HighestOrDefault(locationWithBattalion => locationWithBattalion.Battalion.TotalAmountOfForces);
 
-    protected virtual KeyValuePair<Location, Battalion> BiggestBattalionInSpicelessNonStrongholdLocationNotNearStrongholdAndSpice => ForcesOnPlanet.Where(locationWithBattalion =>
+    protected virtual BattalionInLocation? BiggestBattalionInSpicelessNonStrongholdLocationNotNearStrongholdAndSpice 
+        => ForcesOnPlanet.Where(locationWithBattalion =>
             !IsStronghold(locationWithBattalion.Key) &&
             locationWithBattalion.Key.Sector != Game.SectorInStorm &&
             ResourcesIn(locationWithBattalion.Key) == 0 &&
             (!Player.Has(TreacheryCardType.Metheor) || locationWithBattalion.Key.Territory != Game.Map.PastyMesa) &&
-            VacantAndSafeNearbyStronghold(locationWithBattalion) == null &&
+            VacantAndSafeNearbyStronghold(locationWithBattalion.Key, locationWithBattalion.Value) == null &&
             BestSafeAndNearbyResources(locationWithBattalion.Key, locationWithBattalion.Value) == null)
-        .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
+        .Select(x => new BattalionInLocation(x.Key, x.Value))
+        .HighestOrDefault(locationWithBattalion => locationWithBattalion.Battalion.TotalAmountOfForces);
 
-    protected virtual KeyValuePair<Location, Battalion> BiggestLargeUnthreatenedMovableBattalionInStrongholdNearVacantStronghold => ForcesOnPlanet.Where(locationWithBattalion =>
+    protected virtual BattalionInLocation BiggestLargeUnthreatenedMovableBattalionInStrongholdNearVacantStronghold => ForcesOnPlanet.Where(locationWithBattalion =>
             IsStronghold(locationWithBattalion.Key) &&
             NotOccupiedByOthers(locationWithBattalion.Key) &&
             locationWithBattalion.Key.Sector != Game.SectorInStorm &&
             locationWithBattalion.Value.TotalAmountOfForces >= 8 &&
-            VacantAndSafeNearbyStronghold(locationWithBattalion) != null)
-        .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
+            VacantAndSafeNearbyStronghold(locationWithBattalion.Key, locationWithBattalion.Value) != null)
+        .Select(x => new BattalionInLocation(x.Key, x.Value))
+        .HighestOrDefault(locationWithBattalion => locationWithBattalion.Battalion.TotalAmountOfForces);
 
-    protected virtual KeyValuePair<Location, Battalion> BiggestMovableStackOfAdvisorsInStrongholdNearVacantStronghold => ForcesOnPlanet.Where(locationWithBattalion =>
+    protected virtual BattalionInLocation BiggestMovableStackOfAdvisorsInStrongholdNearVacantStronghold => ForcesOnPlanet.Where(locationWithBattalion =>
             locationWithBattalion.Value is { Faction: Faction.Blue, AmountOfSpecialForces: > 0 } &&
             IsStronghold(locationWithBattalion.Key) &&
             NotOccupiedByOthers(locationWithBattalion.Key) &&
             !InStorm(locationWithBattalion.Key) &&
-            VacantAndSafeNearbyStronghold(locationWithBattalion) != null)
-        .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
+            VacantAndSafeNearbyStronghold(locationWithBattalion.Key, locationWithBattalion.Value) != null)
+        .Select(x => new BattalionInLocation(x.Key, x.Value))
+        .HighestOrDefault(locationWithBattalion => locationWithBattalion.Battalion.TotalAmountOfForces);
 
-    protected virtual KeyValuePair<Location, Battalion> BiggestLargeUnthreatenedMovableBattalionInStrongholdNearSpice => ForcesOnPlanet.Where(locationWithBattalion =>
+    protected virtual BattalionInLocation? BiggestLargeUnthreatenedMovableBattalionInStrongholdNearSpice => ForcesOnPlanet.Where(locationWithBattalion =>
             IsStronghold(locationWithBattalion.Key) &&
             NotOccupiedByOthers(locationWithBattalion.Key.Territory) &&
             !InStorm(locationWithBattalion.Key) &&
             locationWithBattalion.Value.TotalAmountOfForces >= (IAmDesparateForResources ? 5 : 7) &&
             BestSafeAndNearbyResources(locationWithBattalion.Key, locationWithBattalion.Value) != null)
-        .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
+        .Select(x => new BattalionInLocation(x.Key, x.Value))
+        .HighestOrDefault(locationWithBattalion => locationWithBattalion.Battalion.TotalAmountOfForces);
 
     private Location? BestSafeAndNearbyResources(Location location, Battalion b, bool mayFight = false)
     {
@@ -454,9 +469,6 @@ public partial class ClassicBot
         return ValidMovementLocations(from, battalion)
             .FirstOrDefault(to => IsStronghold(to) && !StormWillProbablyHit(to) && Vacant(to));
     }
-
-    protected virtual Location? VacantAndSafeNearbyStronghold(KeyValuePair<Location, Battalion> battalionAtLocation) 
-        => VacantAndSafeNearbyStronghold(battalionAtLocation.Key, battalionAtLocation.Value);
 
     protected virtual Location? UnthreatenedAndSafeNearbyStronghold(Location from, Battalion battalion)
     {
@@ -687,12 +699,12 @@ public partial class ClassicBot
         return opponent.TreacheryCards.Where(c => c.IsDefense && Game.KnownCards(Player).Contains(c)).ToList();
     }
     
-    private List<TreacheryCard> Weapons(TreacheryCard usingThisDefense, IHero? usingThisHero, Territory? territory)
+    private List<TreacheryCard> Weapons(TreacheryCard? usingThisDefense, IHero? usingThisHero, Territory? territory)
     {
         return Battle.ValidWeapons(Game, Player, usingThisDefense, usingThisHero, territory).ToList();
     }
 
-    private List<TreacheryCard> Defenses(TreacheryCard usingThisWeapon, Territory? territory)
+    private List<TreacheryCard> Defenses(TreacheryCard? usingThisWeapon, Territory? territory)
     {
         return Battle.ValidDefenses(Game, Player, usingThisWeapon, territory).ToList();
     }
@@ -707,24 +719,24 @@ public partial class ClassicBot
         return Battle.ValidDefenses(game, player, usingThisWeapon, territory).ToList();
     }
 
-    protected virtual TreacheryCard? UselessAsWeapon(TreacheryCard usingThisDefense)
+    protected virtual TreacheryCard? UselessAsWeapon(TreacheryCard? usingThisDefense)
     {
         return Weapons(usingThisDefense, null, null).FirstOrDefault(c => c.Type == TreacheryCardType.Useless);
     }
 
-    protected virtual TreacheryCard? UselessAsDefense(TreacheryCard usingThisWeapon)
+    protected virtual TreacheryCard? UselessAsDefense(TreacheryCard? usingThisWeapon)
     {
         return Defenses(usingThisWeapon, null).LastOrDefault(c => c.Type == TreacheryCardType.Useless);
     }
 
-    private bool MayPlayNoWeapon(TreacheryCard usingThisDefense)
+    private bool MayPlayNoWeapon(Player p, TreacheryCard? usingThisDefense)
     {
-        return Battle.ValidWeapons(Game, Player, usingThisDefense, null, null, true).Contains(null);
+        return Battle.ValidWeapons(Game, p, usingThisDefense, null, null, true).Contains(null);
     }
 
-    private bool MayPlayNoDefense(TreacheryCard usingThisWeapon)
+    private bool MayPlayNoDefense(Player p, TreacheryCard? usingThisWeapon)
     {
-        return Battle.ValidDefenses(Game, Player, usingThisWeapon, null, true).Contains(null);
+        return Battle.ValidDefenses(Game, p, usingThisWeapon, null, true).Contains(null);
     }
 
     private int CountDifferentWeaponTypes(List<TreacheryCard> cards)
@@ -749,4 +761,11 @@ public partial class ClassicBot
     }
 
     #endregion
+}
+
+public class BattalionInLocation(Location location, Battalion battalion)
+{
+    public Location Location { get; } = location;
+    
+    public Battalion Battalion { get; } = battalion;
 }

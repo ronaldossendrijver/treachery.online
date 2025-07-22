@@ -64,7 +64,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param)
             Do(DetermineDiplomacy, ref action, events) ||
             Do(DetermineSwitchedSkilledLeader, ref action, events) ||
             Do(DetermineRetreat, ref action, events) ||
-            Do(DetermineHMSAdvantageChosen, ref action, events) ||
+            Do(DetermineHmsAdvantageChosen, ref action, events) ||
             Do(DeterminePlanetology, ref action, events) ||
             Do(DeterminePrescience, ref action, events) ||
             Do(DetermineCardGiven, ref action, events) ||
@@ -243,7 +243,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param)
 
     #region SupportMethods
 
-    private void LogInfo(string msg, params object[] pars)
+    private void LogInfo(string msg, params object?[] pars)
     {
         if (BotInfologging)
         {

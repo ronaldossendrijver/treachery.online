@@ -380,24 +380,25 @@ public partial class ClassicBot
         return new BluePrediction(Game, Faction) { ToWin = predicted.Faction, Turn = turn };
     }
 
-    private VoicePlan voicePlan;
-    protected virtual Voice DetermineVoice()
+    private VoicePlan? VoicePlan { get; set; }
+
+    protected virtual Voice? DetermineVoice()
     {
         LogInfo("DetermineVoice()");
 
-        voicePlan = null;
+        VoicePlan = null;
 
-        if (Game.CurrentBattle.IsAggressorOrDefender(this))
+        if (Game.CurrentBattle.IsAggressorOrDefender(Player))
         {
-            voicePlan = BestVoice(Game.CurrentBattle, this, Game.CurrentBattle.OpponentOf(Faction));
-            LogInfo(voicePlan.Voice.GetMessage());
-            return voicePlan.Voice;
+            VoicePlan = BestVoice(Game.CurrentBattle, Player, Game.CurrentBattle.OpponentOf(Faction));
+            LogInfo(VoicePlan.Voice.GetMessage());
+            return VoicePlan.Voice;
         }
 
         return null;
     }
 
-    private VoicePlan BestVoice(BattleInitiated battle, Player player, Player opponent)
+    private VoicePlan BestVoice(BattleInitiated? battle, Player player, Player opponent)
     {
         var result = new VoicePlan
         {
@@ -419,7 +420,8 @@ public partial class ClassicBot
         var knownOpponentWeapons = KnownOpponentWeapons(opponent);
         var nrOfUnknownOpponentCards = NrOfUnknownOpponentCards(opponent);
 
-        var weapons = Weapons(null, null, null).Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth);
+        var weapons = Weapons(null, null, null)
+            .Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth);
         result.WeaponToUse = weapons.FirstOrDefault(w => w.Type == TreacheryCardType.ProjectileAndPoison); //use poisonblade if available
         result.WeaponToUse ??= weapons.FirstOrDefault(w => w.Type == TreacheryCardType.Laser); //use lasgun if available
         result.WeaponToUse ??= weapons.FirstOrDefault(w => Game.KnownCards(this).Contains(w)); //use a known weapon if available
@@ -687,13 +689,13 @@ public partial class ClassicBot
     }
 
 
-    protected PrescienceAspect BestPrescience(Player opponent, float maxForceStrengthInBattle, PrescienceAspect earlierPrescience, Territory territory)
+    private PrescienceAspect BestPrescience(Player player, Player opponent, float maxForceStrengthInBattle, PrescienceAspect earlierPrescience, Territory territory)
     {
-        var myDefenses = Battle.ValidDefenses(Game, this, null, territory).Where(c => Game.KnownCards(this).Contains(c));
-        var myWeapons = Battle.ValidWeapons(Game, this, null, null, territory).Where(c => Game.KnownCards(this).Contains(c));
+        var myDefenses = Battle.ValidDefenses(Game, player, null, territory).Where(c => Game.KnownCards(player).Contains(c)).ToArray();
+        var myWeapons = Battle.ValidWeapons(Game, player, null, null, territory).Where(c => Game.KnownCards(player).Contains(c)).ToArray();
 
-        var knownOpponentDefenses = Battle.ValidDefenses(Game, opponent, null, territory).Where(c => Game.KnownCards(this).Contains(c));
-        var knownOpponentWeapons = Battle.ValidWeapons(Game, opponent, null, null, territory).Where(c => Game.KnownCards(this).Contains(c));
+        var knownOpponentDefenses = Battle.ValidDefenses(Game, opponent, null, territory).Where(c => Game.KnownCards(player).Contains(c));
+        var knownOpponentWeapons = Battle.ValidWeapons(Game, opponent, null, null, territory).Where(c => Game.KnownCards(player).Contains(c));
         //int nrOfUnknownOpponentCards = opponent.TreacheryCards.Count(c => !Game.KnownCards(this).Contains(c));
 
         var cardsOpponentHasOrMightHave = CardsPlayerHasOrMightHave(opponent);
@@ -714,7 +716,7 @@ public partial class ClassicBot
             aspect = PrescienceAspect.Weapon;
         else if (earlierPrescience != PrescienceAspect.Defense && !defenseIsCertain && myWeapons.Any() && !iHavePoisonBlade)
             aspect = PrescienceAspect.Defense;
-        else if (earlierPrescience != PrescienceAspect.Dial && maxForceStrengthInBattle > 2 && Prescience.ValidAspects(Game, this).Contains(PrescienceAspect.Dial))
+        else if (earlierPrescience != PrescienceAspect.Dial && maxForceStrengthInBattle > 2 && Prescience.ValidAspects(Game, player).Contains(PrescienceAspect.Dial))
             aspect = PrescienceAspect.Dial;
         else if (earlierPrescience != PrescienceAspect.Leader)
             aspect = PrescienceAspect.Leader;
@@ -728,22 +730,23 @@ public partial class ClassicBot
 
     #region Purple
 
-    protected SetIncreasedRevivalLimits DetermineSetIncreasedRevivalLimits()
+    private SetIncreasedRevivalLimits? DetermineSetIncreasedRevivalLimits()
     {
-        var targets = SetIncreasedRevivalLimits.ValidTargets(Game, this).ToArray();
+        var targets = SetIncreasedRevivalLimits.ValidTargets(Game, player).ToArray();
         if (Game.FactionsWithIncreasedRevivalLimits.Length != targets.Length)
             return new SetIncreasedRevivalLimits(Game, Faction) { Factions = targets };
+        
         return null;
     }
 
-    protected virtual FaceDancerRevealed DetermineFaceDancerRevealed()
+    private FaceDancerRevealed DetermineFaceDancerRevealed()
     {
-        if (FaceDanced.MayCallFaceDancer(Game, this))
+        if (FaceDanced.MayCallFaceDancer(Game, Player))
         {
-            var facedancer = FaceDancers.FirstOrDefault(f => Game.WinnerHero.IsFaceDancer(f));
+            var facedancer = Player.FaceDancers.FirstOrDefault(f => Game.WinnerHero.IsFaceDancer(f));
             var facedancedHeroIsLivingLeader = facedancer is Leader && Game.IsAlive(facedancer);
 
-            if ((FaceDanced.MaximumNumberOfForces(Game, this) > 0 || facedancedHeroIsLivingLeader) && Game.BattleWinner != Ally)
+            if ((FaceDanced.MaximumNumberOfForces(Game, player) > 0 || facedancedHeroIsLivingLeader) && Game.BattleWinner != Ally)
             {
                 var result = new FaceDancerRevealed(Game, Faction) { Passed = false };
                 LogInfo(result.GetMessage());
@@ -758,7 +761,7 @@ public partial class ClassicBot
     {
         var forcesFromPlanet = new Dictionary<Location, Battalion>();
 
-        var toPlace = FaceDanced.MaximumNumberOfForces(Game, this);
+        var toPlace = FaceDanced.MaximumNumberOfForces(Game, Player);
 
         var biggest = BiggestBattalionThreatenedByStormWithoutSpice;
         if (biggest.Key != null)
@@ -1215,8 +1218,8 @@ public partial class ClassicBot
 
 public class VoicePlan
 {
-    public required BattleInitiated Battle;
-    public required Voice Voice;
+    public BattleInitiated? Battle;
+    public Voice Voice = new();
     public TreacheryCard? WeaponToUse;
     public TreacheryCard? DefenseToUse;
     public bool PlayerHeroWillCertainlySurvive;

@@ -19,34 +19,32 @@ public partial class ClassicBot
         var pinkAlly = pink.AlliedPlayer;
         var pinkIsStrongest = GetDialNeeded(pinkAlly, territory, opponent, false) > GetDialNeeded(pink, territory, opponent, false);
 
-        if (Faction == Faction.Pink)
-            return new BattleClaimed(Game, Faction) { Passed = !pinkIsStrongest };
-        return new BattleClaimed(Game, Faction) { Passed = pinkIsStrongest };
+        return Faction == Faction.Pink 
+            ? new BattleClaimed(Game, Faction) { Passed = !pinkIsStrongest } 
+            : new BattleClaimed(Game, Faction) { Passed = pinkIsStrongest };
     }
 
     protected virtual SwitchedSkilledLeader? DetermineSwitchedSkilledLeader()
     {
-        var leaderToSwitch = Player.Leaders.FirstOrDefault(l => INeedToSwitchPlayerLeader(l));
+        var leaderToSwitch = Player.Leaders.FirstOrDefault(INeedToSwitchPlayerLeader);
 
-        if (leaderToSwitch != null) return new SwitchedSkilledLeader(Game, Faction);
-
-        return null;
+        return leaderToSwitch != null 
+            ? new SwitchedSkilledLeader(Game, Faction) 
+            : null;
     }
 
     private bool INeedToSwitchPlayerLeader(Leader leader)
     {
         return
-            (game.IsInFrontOfShield(leader) && leader == DetermineBattlePlan(true, true)?.Hero) ||
+            (game.IsInFrontOfShield(leader) && leader == DetermineBattlePlan(true, true).Hero) ||
             (game.IsInFrontOfShield(leader) && game is { CurrentPhase: Phase.BattlePhase, CurrentBattle: not null } && game.CurrentBattle.IsInvolved(Player) && Battle.ValidBattleHeroes(game, Player).Count() < 2) ||
             (!game.IsInFrontOfShield(leader) && game.CurrentPhase != Phase.BattlePhase);
     }
-
     
-
     protected virtual BattleInitiated DetermineBattleInitiated()
     {
         var battle = Battle.BattlesToBeFought(Game, Player)
-            .OrderBy(b => MaxDial(Game.GetPlayer(b.Faction), b.Territory, Player) - MaxDial(Player, b.Territory, Game.GetPlayer(b.Faction))).FirstOrDefault();
+            .OrderBy(b => MaxDial(Game.GetPlayer(b.Faction), b.Territory, Player) - MaxDial(Player, b.Territory, Game.GetPlayer(b.Faction))).First();
 
         return new BattleInitiated(Game, Faction)
         {
@@ -55,10 +53,11 @@ public partial class ClassicBot
         };
     }
 
-    protected virtual TreacheryCalled DetermineTreacheryCalled()
+    protected virtual TreacheryCalled? DetermineTreacheryCalled()
     {
         if (!Game.CurrentBattle.IsAggressorOrDefender(Player) && !TreacheryCalled.MayCallTreachery(Game, Player))
             return null;
+        
         return new TreacheryCalled(Game, Faction) { TraitorCalled = TreacheryCalled.MayCallTreachery(Game, Player) };
     }
 
@@ -102,18 +101,20 @@ public partial class ClassicBot
 
         var replacedSpecialForces = BattleConcluded.ValidReplacementForceAmounts(Game, Player).Max();
 
-        IHero newTraitor = null;
-        IHero toReplace = null;
+        IHero? newTraitor = null;
+        IHero? toReplace = null;
         if (Game.TraitorsDeciphererCanLookAt.Any() && Game.DeciphererMayReplaceTraitor)
         {
             newTraitor = Game.TraitorsDeciphererCanLookAt.OrderByDescending(t => t.Value).FirstOrDefault(t => t is TreacheryCard || (t.Faction != Faction && Game.IsAlive(t)));
 
             if (newTraitor != null)
             {
-                var replacable = BattleConcluded.ValidTraitorsToReplace(Player);
-                toReplace = replacable.FirstOrDefault(t => t.Faction == Faction);
-                if (toReplace == null) toReplace = replacable.OrderBy(t => t.Value).FirstOrDefault(t => !(t is TreacheryCard) && !Game.IsAlive(t));
-                if (toReplace == null) toReplace = replacable.OrderBy(t => t.Value).FirstOrDefault(t => !(t is TreacheryCard) && t.Value < newTraitor.Value);
+                var replaceable = BattleConcluded.ValidTraitorsToReplace(Player).ToArray();
+                toReplace = replaceable.FirstOrDefault(t => t.Faction == Faction) 
+                            ?? replaceable.OrderBy(t => t.Value).FirstOrDefault(t => !(t is TreacheryCard) && !Game.IsAlive(t));
+                
+                toReplace ??= replaceable.OrderBy(t => t.Value)
+                    .FirstOrDefault(t => !(t is TreacheryCard) && t.Value < newTraitor.Value);
             }
         }
 
@@ -152,7 +153,7 @@ public partial class ClassicBot
 
         var forcesAvailable = Battle.MaxForces(Game, Player, false);
         var specialForcesAvailable = Battle.MaxForces(Game, Player, true);
-        var voice = voicePlan != null && voicePlan.Battle == Game.CurrentBattle ? voicePlan : null;
+        var voice = VoicePlan != null && VoicePlan.Battle == Game.CurrentBattle ? VoicePlan : null;
 
         var dialNeeded = GetDialNeededForBattle(
             Player,
@@ -205,14 +206,14 @@ public partial class ClassicBot
             }
         }
 
-        var predicted = WinWasPredictedByMePlayerTurn(opponent.Faction);
+        var predicted = WinWasPredictedByMeThisTurn(opponent.Faction);
         var totalForces = forcesAtFullStrength + forcesAtHalfStrength + specialForcesAtFullStrength + specialForcesAtHalfStrength;
-        var minimizeSpendingsInPlayerLostFight = predicted || (isTraitor && !messiah) || (Player.Resources + Player.ResourcesFromAlly < 10 && totalForces <= 8 && dialShortage > Param.Battle_DialShortageThresholdForThrowing);
+        var minimizeSpendingsInPlayerLostFight = predicted || (isTraitor && !messiah) || (Player.Resources + ResourcesFromAlly < 10 && totalForces <= 8 && dialShortage > Param.Battle_DialShortageThresholdForThrowing);
 
         if (!minimizeSpendingsInPlayerLostFight)
         {
-            if (weapon == null && !Player.MayUseUselessAsKarma && Faction != Faction.Brown) weapon = UselessAsWeapon(defense);
-            if (defense == null && !Player.MayUseUselessAsKarma && Faction != Faction.Brown) defense = UselessAsDefense(weapon);
+            if (weapon == null && !MayUseUselessAsKarma && Faction != Faction.Brown) weapon = UselessAsWeapon(defense);
+            if (defense == null && !MayUseUselessAsKarma && Faction != Faction.Brown) defense = UselessAsDefense(weapon);
 
             RemoveIllegalChoices(ref hero, ref weapon, ref defense, Game.CurrentBattle.Territory);
 
@@ -242,51 +243,47 @@ public partial class ClassicBot
         return ConstructLostBattleMinimizingLosses(opponent, Game.CurrentBattle.Territory);
     }
 
-    private void UseDestructiveWeaponIfApplicable(bool enemyCanDefendPoisonTooth, ref float myHeroSurviving, ref float enemyHeroSurviving, ref TreacheryCard defense, ref TreacheryCard weapon)
+    private void UseDestructiveWeaponIfApplicable(bool enemyCanDefendPoisonTooth, ref float myHeroSurviving, ref float enemyHeroSurviving, ref TreacheryCard? defense, ref TreacheryCard? weapon)
     {
-        if (weapon == null && myHeroSurviving < Param.Battle_MimimumChanceToAssumeMyLeaderSurvives && enemyHeroSurviving >= Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives)
+        if (weapon != null || !(myHeroSurviving < Param.Battle_MimimumChanceToAssumeMyLeaderSurvives) ||
+            !(enemyHeroSurviving >= Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives)) return;
+        
+        weapon = Weapons(defense, null, null).FirstOrDefault(c => c.Type == TreacheryCardType.Rockmelter) ?? Weapons(defense, null, null).FirstOrDefault(c => c.Type == TreacheryCardType.ArtilleryStrike);
+
+        if (weapon == null && !enemyCanDefendPoisonTooth) 
+            weapon = Weapons(defense, null, null).FirstOrDefault(c => c.Type == TreacheryCardType.PoisonTooth);
+
+        if (weapon != null)
         {
-            weapon = Weapons(defense, null, null).FirstOrDefault(c => c.Type == TreacheryCardType.Rockmelter);
-
-            if (weapon == null) weapon = Weapons(defense, null, null).FirstOrDefault(c => c.Type == TreacheryCardType.ArtilleryStrike);
-
-            if (weapon == null && !enemyCanDefendPoisonTooth) weapon = Weapons(defense, null, null).FirstOrDefault(c => c.Type == TreacheryCardType.PoisonTooth);
-
-            if (weapon != null)
-            {
-                enemyHeroSurviving = 0;
-                myHeroSurviving = 0;
-            }
-
-            if (weapon != null && defense != null && MayPlayNoDefense(weapon) &&
-                ((weapon.Type == TreacheryCardType.PoisonTooth && defense.Type != TreacheryCardType.Chemistry) || (weapon.Type == TreacheryCardType.ArtilleryStrike && !defense.IsShield))) defense = null;
+            enemyHeroSurviving = 0;
+            myHeroSurviving = 0;
         }
+
+        if (weapon != null && defense != null && MayPlayNoDefense(Player, weapon) &&
+            ((weapon.Type == TreacheryCardType.PoisonTooth && defense.Type != TreacheryCardType.Chemistry) || (weapon.Type == TreacheryCardType.ArtilleryStrike && !defense.IsShield))) defense = null;
     }
 
-    private Battle ConstructLostBattleMinimizingLosses(Player opponent, Territory territory)
+    private Battle ConstructLostBattleMinimizingLosses(Player opponent, Territory? territory)
     {
         var lowestAvailableHero = Battle.ValidBattleHeroes(Game, Player).FirstOrDefault(h => h is TreacheryCard);
-        if (lowestAvailableHero == null) SelectHeroForBattle(opponent, false, true, false, null, null, out lowestAvailableHero, out _);
+        if (lowestAvailableHero == null) SelectHeroForBattle(Player, opponent, false, true, false, null, null, out lowestAvailableHero, out _);
 
         var weapon = lowestAvailableHero == null || MayUseUselessAsKarma || Faction == Faction.Brown ? null : UselessAsWeapon(null);
         var defense = lowestAvailableHero == null || MayUseUselessAsKarma || Faction == Faction.Brown ? null : UselessAsDefense(weapon);
 
         RemoveIllegalChoices(ref lowestAvailableHero, ref weapon, ref defense, territory);
 
-        TreacheryCard harassAndWithdraw = null;
         var harass = false;
-        if (territory != null && AnyForcesIn(territory) >= 4)
+        if (Player.AnyForcesIn(territory) >= 4)
         {
             if (weapon == null && Battle.ValidWeapons(Game, Player, defense, lowestAvailableHero, territory).Any(c => c.Type == TreacheryCardType.HarassAndWithdraw))
             {
-                harassAndWithdraw = TreacheryCards.First(tc => tc.Type == TreacheryCardType.HarassAndWithdraw);
-                weapon = harassAndWithdraw;
+                weapon = Player.TreacheryCards.First(tc => tc.Type == TreacheryCardType.HarassAndWithdraw);
                 harass = true;
             }
             else if (defense == null && Battle.ValidDefenses(Game, Player, weapon, territory).Any(c => c.Type == TreacheryCardType.HarassAndWithdraw))
             {
-                harassAndWithdraw = TreacheryCards.First(tc => tc.Type == TreacheryCardType.HarassAndWithdraw);
-                defense = harassAndWithdraw;
+                defense = Player.TreacheryCards.First(tc => tc.Type == TreacheryCardType.HarassAndWithdraw);
                 harass = true;
             }
         }
@@ -327,7 +324,7 @@ public partial class ClassicBot
         };
     }
 
-    private void RemoveIllegalChoices(ref IHero hero, ref TreacheryCard weapon, ref TreacheryCard defense, Territory territory)
+    private void RemoveIllegalChoices(ref IHero? hero, ref TreacheryCard? weapon, ref TreacheryCard? defense, Territory? territory)
     {
         LogInfo($"Removing Illegal Choices: hero: {hero}, weapon: {weapon}, defense: {defense}...");
 
@@ -398,23 +395,21 @@ public partial class ClassicBot
         }
     }
 
-    private void AvoidLasgunShieldExplosion(ref TreacheryCard weapon, ref TreacheryCard defense)
+    private void AvoidLasgunShieldExplosion(ref TreacheryCard? weapon, ref TreacheryCard? defense)
     {
-        if (weapon != null && weapon.Type == TreacheryCardType.Laser && defense != null && defense.IsShield)
+        if (weapon is { Type: TreacheryCardType.Laser } && defense is { IsShield: true })
         {
-            if (MayPlayNoWeapon(defense))
+            if (MayPlayNoWeapon(Player, defense))
                 weapon = null;
             else
                 defense = null;
         }
     }
 
-    protected float DetermineDialShortageForBattle(float dialNeeded, Faction opponent, Territory territory, int forcesAvailable, int specialForcesAvailable, int resourcesAvailable)
-    {
-        return DetermineDialShortageForBattle(dialNeeded, opponent, forcesAvailable, specialForcesAvailable, resourcesAvailable, territory, out _, out _, out _, out _);
-    }
+    private float DetermineDialShortageForBattle(float dialNeeded, Faction opponent, Territory territory, int forcesAvailable, int specialForcesAvailable, int resourcesAvailable) 
+        => DetermineDialShortageForBattle(dialNeeded, opponent, forcesAvailable, specialForcesAvailable, resourcesAvailable, territory, out _, out _, out _, out _);
 
-    protected float DetermineDialShortageForBattle(float dialNeeded, Faction opponent, int forcesAvailable, int specialForcesAvailable, int resourcesAvailable, Territory territory,
+    private float DetermineDialShortageForBattle(float dialNeeded, Faction opponent, int forcesAvailable, int specialForcesAvailable, int resourcesAvailable, Territory territory,
         out int forcesAtFullStrength, out int forcesAtHalfStrength, out int specialForcesAtFullStrength, out int specialForcesAtHalfStrength)
     {
         var normalStrength = Battle.DetermineNormalForceStrength(Game, Faction);
@@ -526,7 +521,7 @@ public partial class ClassicBot
     }
 
 
-    protected float ChanceOfMyLeaderSurviving(Player opponent, VoicePlan voicePlan, PrescienceAspect prescience, out TreacheryCard mostEffectiveDefense, TreacheryCard chosenWeapon)
+    private float ChanceOfMyLeaderSurviving(Player opponent, VoicePlan? voicePlan, PrescienceAspect? prescience, out TreacheryCard? mostEffectiveDefense, TreacheryCard? chosenWeapon)
     {
         if (!HeroesForBattle(opponent, true).Any())
         {
@@ -548,19 +543,19 @@ public partial class ClassicBot
             def.Type != TreacheryCardType.Useless
         ).ToArray();
 
-        if (chosenWeapon != null && chosenWeapon.IsArtillery)
+        if (chosenWeapon is { IsArtillery: true })
         {
             mostEffectiveDefense = availableDefenses.FirstOrDefault(def => def.IsShield);
             return 0;
         }
 
-        if (chosenWeapon != null && chosenWeapon.IsRockMelter)
+        if (chosenWeapon is { IsRockMelter: true })
         {
             mostEffectiveDefense = null;
             return 0;
         }
 
-        if (chosenWeapon != null && chosenWeapon.IsPoisonTooth)
+        if (chosenWeapon is { IsPoisonTooth: true })
         {
             mostEffectiveDefense = availableDefenses.FirstOrDefault(def => def.Type == TreacheryCardType.Chemistry);
             return 0;
@@ -571,11 +566,7 @@ public partial class ClassicBot
         {
             if (opponentPlan.Weapon == null || opponentPlan.Weapon.Type == TreacheryCardType.Useless)
             {
-                if (MayPlayNoDefense(chosenWeapon))
-                    mostEffectiveDefense = null;
-                else
-                    mostEffectiveDefense = Defenses(chosenWeapon, null).FirstOrDefault();
-
+                mostEffectiveDefense = MayPlayNoDefense(Player, chosenWeapon) ? null : Defenses(chosenWeapon, null).FirstOrDefault();
                 return 1;
             }
 
@@ -627,7 +618,7 @@ public partial class ClassicBot
         return opponent.TreacheryCards.Count(c => !Game.KnownCards(Player).Contains(c));
     }
 
-    private float DetermineBestDefense(Player opponent, TreacheryCard chosenWeapon, out TreacheryCard mostEffectiveDefense)
+    private float DetermineBestDefense(Player opponent, TreacheryCard? chosenWeapon, out TreacheryCard mostEffectiveDefense)
     {
         var knownEnemyWeapons = KnownOpponentWeapons(opponent).ToArray();
         var availableDefenses = Defenses(chosenWeapon, null).Where(def =>
@@ -678,7 +669,7 @@ public partial class ClassicBot
         return result;
     }
 
-    private float ChanceOfAnUnknownOpponentCardSavingHisLeader(List<TreacheryCard> unknownCards, TreacheryCard usedWeapon, Player opponent)
+    private float ChanceOfAnUnknownOpponentCardSavingHisLeader(List<TreacheryCard> unknownCards, TreacheryCard? usedWeapon, Player opponent)
     {
         if (unknownCards.Count == 0) return 0;
         var numberOfUnknownDefensesThatCouldCounterPlayerWeapon = NumberOfUnknownDefensesThatCouldCounterPlayerWeapon(unknownCards, usedWeapon);
@@ -798,7 +789,8 @@ public partial class ClassicBot
         {
             if (mostEffectiveWeapon.IsMirrorWeapon)
             {
-                if (prescience == PrescienceAspect.Weapon && opponentPlan != null) return 1f - ChanceOfAnUnknownOpponentCardSavingHisLeader(unknownOpponentCards, opponentPlan.Weapon, opponent);
+                if (prescience == PrescienceAspect.Weapon && opponentPlan != null) 
+                    return 1f - ChanceOfAnUnknownOpponentCardSavingHisLeader(unknownOpponentCards, opponentPlan.Weapon, opponent);
             }
             else if (!unknownOpponentCards.Any())
             {
@@ -819,66 +811,62 @@ public partial class ClassicBot
         return 0f;
     }
 
-    private bool IsAllowedWithClairvoyance(ClairVoyanceQandA clairvoyance, TreacheryCard toUse, bool asWeapon)
+    private bool IsAllowedWithClairvoyance(ClairVoyanceQandA? clairvoyance, TreacheryCard? toUse, bool asWeapon)
     {
-        var inScope = toUse != null && ClairVoyancePlayed.IsInScopeOf(asWeapon, toUse.Type, (TreacheryCardType)clairvoyance.Question.Parameter1);
+        var inScope = toUse != null && clairvoyance != null && ClairVoyancePlayed.IsInScopeOf(asWeapon, toUse.Type, (TreacheryCardType)clairvoyance.Question.Parameter1);
 
         var answer = clairvoyance == null ||
                      clairvoyance.Answer.Answer == ClairVoyanceAnswer.Unknown ||
                      (clairvoyance.Answer.Answer == ClairVoyanceAnswer.Yes && toUse != null && inScope) ||
                      (clairvoyance.Answer.Answer == ClairVoyanceAnswer.No && (toUse == null || !inScope));
 
-        //LogInfo("IsAllowedWithClairvoyance(): in scope: {0}, answer: {1}.", inScope, answer);
-
         return answer;
     }
 
-    protected IEnumerable<IHero> HeroesForBattle(Player player, bool includeInFrontOfShield)
-    {
-        return Battle.ValidBattleHeroes(Game, player).Where(l => includeInFrontOfShield || !Game.IsInFrontOfShield(l));
-    }
+    private IEnumerable<IHero> HeroesForBattle(Player p, bool includeInFrontOfShield) 
+        => Battle.ValidBattleHeroes(Game, p).Where(l => includeInFrontOfShield || !Game.IsInFrontOfShield(l));
 
-    protected int SelectHeroForBattle(Player opponent, bool highest, bool forfeit, bool messiahUsed, TreacheryCard weapon, TreacheryCard defense, out IHero hero, out bool isTraitor, bool includeInFrontOfShield = false)
+    private int SelectHeroForBattle(Player p, Player opponent, bool highest, bool forfeit, bool messiahUsed, TreacheryCard? weapon, TreacheryCard? defense, out IHero? hero, out bool isTraitor, bool includeInFrontOfShield = false)
     {
         isTraitor = false;
 
-        var ally = Ally != Faction.None ? AlliedPlayer : null;
+        var ally = p.Ally != Faction.None ? p.AlliedPlayer : null;
         var purple = Game.GetPlayer(Faction.Purple);
 
-        var knownNonTraitorsByAlly = ally != null ? ally.Traitors.Union(ally.KnownNonTraitors) : Array.Empty<IHero>();
+        var knownNonTraitorsByAlly = ally != null ? ally.Traitors.Union(ally.KnownNonTraitors) : [];
         var revealedOrToldTraitorsByNonOpponents = Game.Players.Where(p => p != opponent && (p.Ally != Faction.Black || p.Faction != opponent.Ally)).SelectMany(p => p.RevealedTraitors.Union(p.ToldTraitors));
-        var toldNonTraitorsByOpponent = opponent.Ally != Faction.Black ? opponent.ToldNonTraitors.AsEnumerable() : Array.Empty<IHero>();
-        var knownNonTraitors = Traitors.Union(KnownNonTraitors).Union(knownNonTraitorsByAlly).Union(revealedOrToldTraitorsByNonOpponents).Union(toldNonTraitorsByOpponent);
+        var toldNonTraitorsByOpponent = opponent.Ally != Faction.Black ? opponent.ToldNonTraitors.AsEnumerable() : [];
+        var knownNonTraitors = p.Traitors.Union(p.KnownNonTraitors).Union(knownNonTraitorsByAlly).Union(revealedOrToldTraitorsByNonOpponents).Union(toldNonTraitorsByOpponent);
 
         var knownTraitorsForOpponentsInBattle = Game.Players.
-            Where(p => p == opponent || (p.Faction == Faction.Black && p.Faction == opponent.Ally)).SelectMany(p => p.RevealedTraitors.Union(p.ToldTraitors))
-            .Union(Leaders.Where(l => Game.Applicable(Rule.CapturedLeadersAreTraitorsToOwnFaction) && l.Faction == opponent.Faction));
+            Where(x => x == opponent || (x.Faction == Faction.Black && x.Faction == opponent.Ally)).SelectMany(x => x.RevealedTraitors.Union(p.ToldTraitors))
+            .Union(p.Leaders.Where(l => Game.Applicable(Rule.CapturedLeadersAreTraitorsToOwnFaction) && l.Faction == opponent.Faction)).ToArray();
 
         var hasUnknownTraitorsThatMightBeMine = Game.Players.
             Where(p => p != opponent && (p.Ally != Faction.Black || p.Faction != opponent.Ally)).
             SelectMany(p => p.Traitors.Where(l => !knownNonTraitors.Contains(l))).Any();
 
         var highestOpponentLeader = HeroesForBattle(opponent, true).OrderByDescending(l => l.Value).FirstOrDefault();
-        var safeLeaders = HeroesForBattle(Player, includeInFrontOfShield).Where(l => messiahUsed || !hasUnknownTraitorsThatMightBeMine || knownNonTraitors.Contains(l));
+        var safeLeaders = HeroesForBattle(p, includeInFrontOfShield).Where(l => messiahUsed || !hasUnknownTraitorsThatMightBeMine || knownNonTraitors.Contains(l));
 
-        IHero safeHero = null;
-        IHero unsafeHero = null;
+        IHero? safeHero = null;
+        IHero? unsafeHero = null;
 
         if (forfeit)
         {
             safeHero = null;
-            unsafeHero = HeroesForBattle(Player, includeInFrontOfShield).Where(l => !safeLeaders.Contains(l)).LowestOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader));
-            if (unsafeHero == null) unsafeHero = HeroesForBattle(Player, includeInFrontOfShield).LowestOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader));
+            unsafeHero = HeroesForBattle(player, includeInFrontOfShield).Where(l => !safeLeaders.Contains(l)).LowestOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader)) ??
+                         HeroesForBattle(player, includeInFrontOfShield).LowestOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader));
         }
         else if (highest)
         {
             safeHero = safeLeaders.HighestOrDefault(l => l.ValueInCombatAgainst(highestOpponentLeader));
-            unsafeHero = HeroesForBattle(Player, includeInFrontOfShield).HighestOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader));
+            unsafeHero = HeroesForBattle(player, includeInFrontOfShield).HighestOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader));
         }
         else
         {
             safeHero = safeLeaders.LowestOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader));
-            unsafeHero = HeroesForBattle(Player, includeInFrontOfShield).OneOfLowestNOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader), 2);
+            unsafeHero = HeroesForBattle(player, includeInFrontOfShield).OneOfLowestNOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader), 2);
         }
 
         if (safeHero == null ||
@@ -890,30 +878,30 @@ public partial class ClassicBot
         isTraitor = !messiahUsed && knownTraitorsForOpponentsInBattle.Contains(hero);
 
         var usedSkill = LeaderSkill.None;
-        return hero != null ? hero.ValueInCombatAgainst(highestOpponentLeader) + Battle.DetermineSkillBonus(Game, Player, hero, weapon, defense, Resources > 3 ? 3 : 0, ref usedSkill) : 0;
+        return hero != null ? hero.ValueInCombatAgainst(highestOpponentLeader) + Battle.DetermineSkillBonus(Game, player, hero, weapon, defense, player.Resources > 3 ? 3 : 0, ref usedSkill) : 0;
     }
 
-    protected float GetDialNeeded(Player inBattle, Territory territory, Player opponent, bool takeReinforcementsIntoAccount)
+    private float GetDialNeeded(Player p, Territory territory, Player opponent, bool takeReinforcementsIntoAccount)
     {
         //var opponent = GetOpponentThatOccupies(territory);
-        var voicePlan = Voice.MayUseVoice(Game, inBattle) ? inBattle.BestVoice(null, inBattle, opponent) : null;
-        var strength = inBattle.MaxDial(opponent, territory, inBattle);
-        var prescience = Prescience.MayUsePrescience(Game, inBattle) ? inBattle.BestPrescience(opponent, strength, PrescienceAspect.None, territory) : PrescienceAspect.None;
+        var voicePlan = Voice.MayUseVoice(Game, p) ? BestVoice(null, p, opponent) : null;
+        var strength = MaxDial(opponent, territory, p);
+        var prescience = Prescience.MayUsePrescience(Game, p) ? BestPrescience(p, opponent, strength, PrescienceAspect.None, territory) : PrescienceAspect.None;
 
         //More could be done with the information obtained in the below call
-        return GetDialNeededForBattle(inBattle, inBattle.IWillBeAggressorAgainst(opponent), opponent, territory, voicePlan, prescience, takeReinforcementsIntoAccount, true, out _, out _, out _, out _, out _, out _, out _, out _, out _, out _);
+        return GetDialNeededForBattle(p, IWillBeAggressorAgainst(opponent), opponent, territory, voicePlan, prescience, takeReinforcementsIntoAccount, true, out _, out _, out _, out _, out _, out _, out _, out _, out _, out _);
     }
 
-    protected float GetDialNeeded(Territory territory, Player? opponent, bool takeReinforcementsIntoAccount)
+    private float GetDialNeeded(Territory territory, Player? opponent, bool takeReinforcementsIntoAccount)
     {
         if (opponent == null) return 0;
         //More could be done with the information obtained in the below call
         return GetDialNeeded(Player, territory, opponent, takeReinforcementsIntoAccount);
     }
 
-    protected float GetDialNeededForBattle(
-        Player inBattle, bool iAmAggressor, Player opponent, Territory territory, VoicePlan voice, PrescienceAspect prescience, bool takeReinforcementsIntoAccount, bool includeInFrontOfShield,
-        out TreacheryCard bestDefense, out TreacheryCard bestWeapon, out IHero hero, out bool messiah, out bool isTraitor, out bool lasgunShieldDetected, out bool stoneBurnerDetected, out int bankerBoost,
+    private float GetDialNeededForBattle(
+        Player inBattle, bool iAmAggressor, Player opponent, Territory territory, VoicePlan? voice, PrescienceAspect prescience, bool takeReinforcementsIntoAccount, bool includeInFrontOfShield,
+        out TreacheryCard? bestDefense, out TreacheryCard? bestWeapon, out IHero hero, out bool messiah, out bool isTraitor, out bool lasgunShieldDetected, out bool stoneBurnerDetected, out int bankerBoost,
         out float chanceOfMyHeroSurviving, out float chanceOfEnemyHeroSurviving)
     {
 
@@ -925,8 +913,8 @@ public partial class ClassicBot
 
         UseDestructiveWeaponIfApplicable(enemyCanDefendPoisonTooth, ref chanceOfMyHeroSurviving, ref chanceOfEnemyHeroSurviving, ref bestDefense, ref bestWeapon);
 
-        var iAssumeMyLeaderWillDie = chanceOfMyHeroSurviving < inBattle.Param.Battle_MimimumChanceToAssumeMyLeaderSurvives;
-        var iAssumeEnemyLeaderWillDie = chanceOfEnemyHeroSurviving < inBattle.Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives;
+        var iAssumeMyLeaderWillDie = chanceOfMyHeroSurviving < Param.Battle_MimimumChanceToAssumeMyLeaderSurvives;
+        var iAssumeEnemyLeaderWillDie = chanceOfEnemyHeroSurviving < Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives;
 
         var opponentPlan = Game.CurrentBattle?.PlanOf(opponent);
         lasgunShieldDetected = HasLasgunShield(
@@ -949,7 +937,7 @@ public partial class ClassicBot
         }
 
         isTraitor = false;
-        var myHeroValue = inBattle.SelectHeroForBattle(opponent, !lasgunShieldDetected && !iAssumeMyLeaderWillDie, false, messiah, bestWeapon, bestDefense, out hero, out isTraitor, includeInFrontOfShield);
+        var myHeroValue = SelectHeroForBattle(inBattle, opponent, !lasgunShieldDetected && !iAssumeMyLeaderWillDie, false, messiah, bestWeapon, bestDefense, out hero, out isTraitor, includeInFrontOfShield);
 
         var usedSkill = LeaderSkill.None;
         var opponentPenalty = Battle.DetermineSkillPenalty(Game, hero, opponent, ref usedSkill);
@@ -961,7 +949,7 @@ public partial class ClassicBot
             myMessiahBonus = 0;
         }
 
-        if (inBattle.CanOnlyUseTraitorsOrFacedancers(opponent))
+        if (CanOnlyUseTraitorsOrFacedancers(opponent))
         {
             LogInfo("Opponent leader only has traitors or facedancers to use!");
             bestWeapon = null;
@@ -989,7 +977,7 @@ public partial class ClassicBot
         {
             LogInfo("Lasgun/Shield detected!");
 
-            if (bestWeapon != null && !bestWeapon.IsLaser && inBattle.MayPlayNoWeapon(bestDefense)) bestWeapon = null;
+            if (bestWeapon != null && !bestWeapon.IsLaser && MayPlayNoWeapon(Player, bestDefense)) bestWeapon = null;
 
             chanceOfMyHeroSurviving = 0;
             iAssumeMyLeaderWillDie = true;
@@ -1000,17 +988,17 @@ public partial class ClassicBot
 
         if (Game.SkilledAs(hero, LeaderSkill.Banker) && !iAssumeMyLeaderWillDie) bankerBoost = Math.Min(inBattle.Resources, 3);
 
-        if (hero is TreacheryCard && bestDefense != null && !bestDefense.IsUseless && inBattle.MayPlayNoDefense(bestWeapon)) bestDefense = null;
+        if (hero is TreacheryCard && bestDefense != null && !bestDefense.IsUseless && MayPlayNoDefense(inBattle, bestWeapon)) bestDefense = null;
 
         LogInfo("Chance of my hero surviving: {0} with {1} (my weapon: {2})", chanceOfMyHeroSurviving, bestDefense, bestWeapon);
 
         var myHeroToFightAgainst = hero;
-        var opponentLeader = prescience == PrescienceAspect.Leader && opponentPlan != null ? opponentPlan.Hero : inBattle.HeroesForBattle(opponent, true).OrderByDescending(l => l.ValueInCombatAgainst(myHeroToFightAgainst)).FirstOrDefault(l => !inBattle.Traitors.Contains(l));
-        var opponentLeaderValue = opponentLeader == null ? 0 : opponentLeader.ValueInCombatAgainst(hero);
+        var opponentLeader = prescience == PrescienceAspect.Leader && opponentPlan != null ? opponentPlan.Hero : HeroesForBattle(opponent, true).OrderByDescending(l => l.ValueInCombatAgainst(myHeroToFightAgainst)).FirstOrDefault(l => !inBattle.Traitors.Contains(l));
+        var opponentLeaderValue = opponentLeader?.ValueInCombatAgainst(hero) ?? 0;
         var opponentMessiahBonus = Battle.MessiahAvailableForBattle(Game, opponent) ? 2 : 0;
-        var maxReinforcements = takeReinforcementsIntoAccount ? (int)Math.Ceiling(inBattle.MaxReinforcedDialTo(opponent, territory)) : 0;
-        var opponentDial = prescience == PrescienceAspect.Dial && opponentPlan != null ? opponentPlan.Dial(Game, inBattle.Faction) : inBattle.MaxDial(opponent, territory, inBattle);
-        var myHomeworldBonus = GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
+        var maxReinforcements = takeReinforcementsIntoAccount ? (int)Math.Ceiling(MaxReinforcedDialTo(opponent, territory)) : 0;
+        var opponentDial = prescience == PrescienceAspect.Dial && opponentPlan != null ? opponentPlan.Dial(Game, inBattle.Faction) : MaxDial(opponent, territory, inBattle);
+        var myHomeworldBonus = Player.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
         var opponentHomeworldBonus = opponent.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
 
         var result =
@@ -1023,7 +1011,7 @@ public partial class ClassicBot
             myHomeworldBonus;
 
 
-        if (inBattle.MaxDial(inBattle, territory, opponent) - result >= 5)
+        if (MaxDial(inBattle, territory, opponent) - result >= 5)
         {
             //I think I only need a small fraction of available forces. Am I really sure amout Player?
 
@@ -1050,8 +1038,8 @@ public partial class ClassicBot
             chanceOfEnemyHeroSurviving,
             maxReinforcements,
             myMessiahBonus,
-            inBattle.Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives,
-            inBattle.Param.Battle_MimimumChanceToAssumeMyLeaderSurvives,
+            Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives,
+            Param.Battle_MimimumChanceToAssumeMyLeaderSurvives,
             bankerBoost,
             territory,
             opponent.Faction);
@@ -1059,71 +1047,63 @@ public partial class ClassicBot
         return result;
     }
 
-    private bool CanOnlyUseTraitorsOrFacedancers(Player player)
+    private bool CanOnlyUseTraitorsOrFacedancers(Player p)
     {
-        return player.Leaders.All(l =>
-            (!player.MessiahAvailable && Traitors.Contains(l)) ||
-            FaceDancers.Contains(l) ||
-            (!player.MessiahAvailable && Ally == Faction.Black && AlliedPlayer.Traitors.Contains(l)) ||
-            (Ally == Faction.Purple && AlliedPlayer.FaceDancers.Contains(l)));
+        return p.Leaders.All(l =>
+            (!p.MessiahAvailable && p.Traitors.Contains(l)) ||
+            p.FaceDancers.Contains(l) ||
+            (!p.MessiahAvailable && Ally == Faction.Black && p.AlliedPlayer.Traitors.Contains(l)) ||
+            (Ally == Faction.Purple && p.AlliedPlayer.FaceDancers.Contains(l)));
     }
 
 
-    private bool HasLasgunShield(TreacheryCard myWeapon, TreacheryCard myDefense, TreacheryCard enemyWeapon, TreacheryCard enemyDefense)
-    {
-        return
-            (myWeapon != null && myWeapon.IsLaser && enemyDefense != null && enemyDefense.IsShield) ||
-            (enemyWeapon != null && enemyWeapon.IsLaser && myDefense != null && myDefense.IsShield);
-    }
+    private bool HasLasgunShield(TreacheryCard? myWeapon, TreacheryCard? myDefense, TreacheryCard? enemyWeapon, TreacheryCard? enemyDefense) =>
+        (myWeapon is { IsLaser: true } && enemyDefense is { IsShield: true }) ||
+        (enemyWeapon is { IsLaser: true } && myDefense is { IsShield: true });
 
-    protected RockWasMelted DetermineRockWasMelted()
+    private RockWasMelted DetermineRockWasMelted()
     {
         var outcome = Battle.DetermineBattleOutcome(Game.AggressorPlan, Game.DefenderPlan, Game.CurrentBattle.Territory, Game);
         LogInfo(outcome.GetMessage());
         return new RockWasMelted(Game, Faction) { Kill = outcome.Winner == Player };
     }
 
-    protected ResidualPlayed DetermineResidualPlayed()
-    {
-        return new ResidualPlayed(Game, Faction);
-    }
+    private ResidualPlayed DetermineResidualPlayed() => new(Game, Faction);
 
-    protected PortableAntidoteUsed DeterminePortableAntidoteUsed()
+    private PortableAntidoteUsed? DeterminePortableAntidoteUsed()
     {
         var opponent = Game.CurrentBattle.OpponentOf(Player);
         var opponentPlan = Game.CurrentBattle.PlanOf(opponent);
         var myPlan = Game.CurrentBattle.PlanOf(Player);
-        var defense = TreacheryCards.FirstOrDefault(c => c.IsPortableAntidote);
+        var defense = Player.TreacheryCards.FirstOrDefault(c => c.IsPortableAntidote);
 
         if (opponentPlan.Weapon != null && opponentPlan.Weapon.CounteredBy(defense, myPlan.Weapon)) return new PortableAntidoteUsed(Game, Faction);
 
         return null;
     }
 
-    protected Thought DetermineThought()
+    private Thought? DetermineThought()
     {
         var opponent = Game.CurrentBattle.OpponentOf(Player);
         if (OpponentCardsUnknownToMe(opponent).Any())
         {
-            var unknownWeapons = CardsUnknownToMe.Where(c => c.IsWeapon).OrderByDescending(c => CardQuality(c, opponent));
+            var unknownWeapons = CardsUnknownToMe.Where(c => c.IsWeapon).OrderByDescending(c => CardQuality(c, opponent)).ToArray();
             if (unknownWeapons.Any()) return new Thought(Game, Faction) { Card = unknownWeapons.First() };
         }
 
         return null;
     }
 
-    protected ThoughtAnswered DetermineThoughtAnswered()
-    {
-        return new ThoughtAnswered(Game, Faction) { Card = ThoughtAnswered.ValidCards(Game, Player).LowestOrDefault(c => CardQuality(c, Player)) };
-    }
+    private ThoughtAnswered DetermineThoughtAnswered() 
+        => new(Game, Faction) { Card = ThoughtAnswered.ValidCards(Game, Player).LowestOrDefault(c => CardQuality(c, Player)) };
 
-    protected HMSAdvantageChosen DetermineHMSAdvantageChosen()
+    private HMSAdvantageChosen DetermineHmsAdvantageChosen()
     {
         var adv = StrongholdAdvantage.None;
 
         var plan = DetermineBattlePlan(false, false);
-        if (adv == StrongholdAdvantage.None && !plan.HasPoison && !plan.HasAntidote) adv = HMSAdvantageChosen.ValidAdvantages(Game, Player).FirstOrDefault(a => a == StrongholdAdvantage.CountDefensesAsAntidote);
-        if (adv == StrongholdAdvantage.None && Resources < 5) adv = HMSAdvantageChosen.ValidAdvantages(Game, Player).FirstOrDefault(a => a == StrongholdAdvantage.FreeResourcesForBattles);
+        if (!plan.HasPoison && !plan.HasAntidote) adv = HMSAdvantageChosen.ValidAdvantages(Game, Player).FirstOrDefault(a => a == StrongholdAdvantage.CountDefensesAsAntidote);
+        if (adv == StrongholdAdvantage.None && Player.Resources < 5) adv = HMSAdvantageChosen.ValidAdvantages(Game, Player).FirstOrDefault(a => a == StrongholdAdvantage.FreeResourcesForBattles);
         if (adv == StrongholdAdvantage.None) adv = HMSAdvantageChosen.ValidAdvantages(Game, Player).FirstOrDefault(a => a == StrongholdAdvantage.CollectResourcesForDial);
         if (adv == StrongholdAdvantage.None && !plan.HasUseless) adv = HMSAdvantageChosen.ValidAdvantages(Game, Player).FirstOrDefault(a => a == StrongholdAdvantage.CollectResourcesForUseless);
         if (adv == StrongholdAdvantage.None) adv = HMSAdvantageChosen.ValidAdvantages(Game, Player).FirstOrDefault(a => a == StrongholdAdvantage.FreeResourcesForBattles);
