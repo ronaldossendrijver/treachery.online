@@ -15,33 +15,33 @@ public partial class ClassicBot
     {
         LogInfo("DetermineBid()");
 
-        var otherPlayers = Game.Players.Where(p => p != this && p.HasRoomForCards);
-        var biddingPlayers = otherPlayers.Where(p => p.TreacheryCards.Count() < p.MaximumNumberOfCards);
+        var otherPlayers = Game.Players.Where(p => p != Player && p.HasRoomForCards);
+        var biddingPlayers = otherPlayers.Where(p => p.TreacheryCards.Count() < p.MaximumNumberOfCards).ToArray();
         var maxBidOfOtherPlayer = !biddingPlayers.Any() ? 0 : biddingPlayers.Max(p => p.Resources);
 
-        var currentBid = Game.CurrentBid == null ? 0 : Game.CurrentBid.TotalAmount;
+        var currentBid = Game.CurrentBid?.TotalAmount ?? 0;
         var currentBidIsFromAlly = Game.CurrentBid != null && Game.CurrentBid.Initiator == Ally;
-        var isKnownCard = Game.HasBiddingPrescience(this) || (HasAlly && Game.HasBiddingPrescience(AlliedPlayer)) || Game.KnownCards(this).Contains(Game.CardsOnAuction.Top);
+        var isKnownCard = Game.HasBiddingPrescience(Player) || (Player.HasAlly && Game.HasBiddingPrescience(Player.AlliedPlayer)) || Game.KnownCards(Player).Contains(Game.CardsOnAuction.Top);
 
         var thisCardIsUseless = isKnownCard && !MayUseUselessAsKarma && Game.CardsOnAuction.Top.Type == TreacheryCardType.Useless;
         var thisCardIsCrappy = isKnownCard && !WannaHave(Game.CardsOnAuction.Top);
-        var thisCardIsPerfect = isKnownCard && CardQuality(Game.CardsOnAuction.Top, this) == 5;
+        var thisCardIsPerfect = isKnownCard && CardQuality(Game.CardsOnAuction.Top, Player) == 5;
 
         var resourcesToKeep = thisCardIsPerfect ? Param.Bidding_ResourcesToKeepWhenCardIsPerfect : Param.Bidding_ResourcesToKeepWhenCardIsntPerfect;
-        var resourcesAvailable = Math.Max(0, Resources - resourcesToKeep) + ResourcesFromAlly + ResourcesFromRed;
-        var couldUseKarmaForBid = Game.CurrentAuctionType == AuctionType.Normal && !Game.KarmaPrevented(Faction) && Ally != Faction.Red && (SpecialKarmaPowerUsed || !Param.Karma_SaveCardToUseSpecialKarmaAbility || Game.CurrentTurn >= 5 || MaximumNumberOfCards - TreacheryCards.Count <= 1);
-        var karmaCardToUseForBidding = couldUseKarmaForBid && ((MayUseUselessAsKarma && currentBid > 2) || currentBid > 4 || resourcesAvailable <= currentBid) ? TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma || (MayUseUselessAsKarma && c.Type == TreacheryCardType.Useless)) : null;
+        var resourcesAvailable = Math.Max(0, Player.Resources - resourcesToKeep) + ResourcesFromAlly + ResourcesFromRed;
+        var couldUseKarmaForBid = Game.CurrentAuctionType == AuctionType.Normal && !Game.KarmaPrevented(Faction) && Ally != Faction.Red && (Player.SpecialKarmaPowerUsed || !Param.Karma_SaveCardToUseSpecialKarmaAbility || Game.CurrentTurn >= 5 || Player.MaximumNumberOfCards - Player.TreacheryCards.Count <= 1);
+        var karmaCardToUseForBidding = couldUseKarmaForBid && ((MayUseUselessAsKarma && currentBid > 2) || currentBid > 4 || resourcesAvailable <= currentBid) ? Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma || (MayUseUselessAsKarma && c.Type == TreacheryCardType.Useless)) : null;
         var karmaWorth = karmaCardToUseForBidding == null ? 0 : 8;
         var maximumIWillSpend = D(1, Math.Min(resourcesAvailable, 12) + karmaWorth);
         var amountToBidInSilentOrOnceAround = D(1, Math.Min(resourcesAvailable, 8));
 
-        LogInfo("currentBidIsFromAlly: {0}, thisCardIsUseless: {1}, thisCardIsCrappy: {2}, resourcesAvailable:, {3}, karmaWorth: {4}, maximumIWillSpend: {5}, karmaCardToUseForBidding: {6}.",
+        LogInfo("currentBidIsFromAlly: {0}, PlayerCardIsUseless: {1}, PlayerCardIsCrappy: {2}, resourcesAvailable:, {3}, karmaWorth: {4}, maximumIWillSpend: {5}, karmaCardToUseForBidding: {6}.",
             currentBidIsFromAlly, thisCardIsUseless, thisCardIsCrappy, resourcesAvailable, karmaWorth, maximumIWillSpend, karmaCardToUseForBidding);
 
         if ((Faction == Faction.White || Ally == Faction.White) &&
             (Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.BlackMarketNormal || Game.CurrentAuctionType == AuctionType.BlackMarketOnceAround))
         {
-            LogInfo("this is my own card");
+            LogInfo("Player is my own card");
             if (Game.CurrentAuctionType == AuctionType.BlackMarketSilent)
                 return CreateBidUsingAllyAndRedSpice(0, 0, null);
             return PassedBid();
@@ -51,24 +51,24 @@ public partial class ClassicBot
         {
             if (thisCardIsUseless || thisCardIsCrappy)
             {
-                var toBid = thisCardIsUseless || Math.Max(0, Resources - resourcesToKeep) < 2 ? 0 : D(1, 2);
+                var toBid = thisCardIsUseless || Math.Max(0, Player.Resources - resourcesToKeep) < 2 ? 0 : D(1, 2);
                 return CreateBidUsingAllyAndRedSpice(toBid, 0, null);
             }
 
-            return CreateBidUsingAllyAndRedSpice(Math.Min(Math.Max(0, Resources - resourcesToKeep), amountToBidInSilentOrOnceAround), 0, null);
+            return CreateBidUsingAllyAndRedSpice(Math.Min(Math.Max(0, Player.Resources - resourcesToKeep), amountToBidInSilentOrOnceAround), 0, null);
         }
 
         if (currentBidIsFromAlly || (thisCardIsUseless && currentBid > 0) || (thisCardIsCrappy && D(1, 1 + 2 * currentBid) > 1))
         {
-            LogInfo("currentBidIsFromAlly or thisCardIsUseless or thisCardIsCrappy");
+            LogInfo("currentBidIsFromAlly or PlayerCardIsUseless or PlayerCardIsCrappy");
             return PassedBid();
         }
 
         if (Game.CurrentAuctionType == AuctionType.BlackMarketOnceAround || Game.CurrentAuctionType == AuctionType.WhiteOnceAround)
         {
-            if (amountToBidInSilentOrOnceAround > currentBid)
-                return CreateBidUsingAllyAndRedSpice(amountToBidInSilentOrOnceAround, 0, null);
-            return PassedBid();
+            return amountToBidInSilentOrOnceAround > currentBid 
+                ? CreateBidUsingAllyAndRedSpice(amountToBidInSilentOrOnceAround, 0, null) 
+                : PassedBid();
         }
 
         if (currentBid == 0 && ResourcesIncludingAllyAndRedContribution > 0)
@@ -79,7 +79,7 @@ public partial class ClassicBot
 
         if (Ally != Faction.Red && currentBid > Param.Bidding_PassingTreshold + maximumIWillSpend)
         {
-            LogInfo("Ally != Faction.Red && currentBid ({0}) > Param.Bidding_PassingTreshold ({1}) + maximumIWillSpend (D(1,{2}+{3}) => {4})",
+            LogInfo("Ally != Faction.Red && currentBid ({0}) > Param.Bidding_PassingThreshold ({1}) + maximumIWillSpend (D(1,{2}+{3}) => {4})",
                 currentBid,
                 Param.Bidding_PassingTreshold,
                 resourcesAvailable,
@@ -120,26 +120,25 @@ public partial class ClassicBot
         return new Bid(Game, Faction) { Passed = true };
     }
 
-    protected virtual Bid CreateBidUsingAllyAndRedSpice(int amount, int spiceToKeep, TreacheryCard karmaCard)
+    protected virtual Bid CreateBidUsingAllyAndRedSpice(int amount, int spiceToKeep, TreacheryCard? karmaCard)
     {
-        if (karmaCard == null)
-        {
-            var useRedSecretAlly = amount > 6 && ForcesKilled < 12 && Bid.MayUseRedSecretAlly(Game, this);
+        if (karmaCard != null)
+            return new Bid(Game, Faction) { Amount = amount, KarmaBid = false, KarmaCard = karmaCard, Passed = false };
+        
+        var useRedSecretAlly = amount > 6 && Player.ForcesKilled < 12 && Bid.MayUseRedSecretAlly(Game, Player);
 
-            var spiceLeftToPay = amount;
-            var redContribution = Math.Min(spiceLeftToPay, Game.SpiceForBidsRedCanPay(Faction));
-            spiceLeftToPay -= redContribution;
+        var spiceLeftToPay = amount;
+        var redContribution = Math.Min(spiceLeftToPay, Game.SpiceForBidsRedCanPay(Faction));
+        spiceLeftToPay -= redContribution;
 
-            var allyContribution = Math.Min(spiceLeftToPay, Game.ResourcesYourAllyCanPay(this));
-            spiceLeftToPay -= allyContribution;
+        var allyContribution = Math.Min(spiceLeftToPay, Game.ResourcesYourAllyCanPay(Player));
+        spiceLeftToPay -= allyContribution;
 
-            return new Bid(Game, Faction) { Amount = spiceLeftToPay, AllyContributionAmount = allyContribution, RedContributionAmount = redContribution, KarmaBid = false, KarmaCard = null, Passed = false, UsesRedSecretAlly = useRedSecretAlly };
-        }
+        return new Bid(Game, Faction) { Amount = spiceLeftToPay, AllyContributionAmount = allyContribution, RedContributionAmount = redContribution, KarmaBid = false, KarmaCard = null, Passed = false, UsesRedSecretAlly = useRedSecretAlly };
 
-        return new Bid(Game, Faction) { Amount = amount, KarmaBid = false, KarmaCard = karmaCard, Passed = false };
     }
 
-    protected bool WannaHave(TreacheryCard c)
+    private bool WannaHave(TreacheryCard c)
     {
         return
             c.IsLaser ||
@@ -150,13 +149,13 @@ public partial class ClassicBot
             c.Type == TreacheryCardType.ArtilleryStrike ||
             c.Type == TreacheryCardType.PoisonTooth ||
             c.Type == TreacheryCardType.Amal ||
-            (c.IsProjectileWeapon && !TreacheryCards.Any(c => c.IsProjectileWeapon)) ||
-            (c.IsPoisonWeapon && !TreacheryCards.Any(c => c.IsPoisonWeapon && c.Type != TreacheryCardType.Chemistry)) ||
-            (c.IsProjectileDefense && !TreacheryCards.Any(c => c.IsProjectileDefense && c.Type != TreacheryCardType.WeirdingWay)) ||
-            (c.IsPoisonDefense && !TreacheryCards.Any(c => c.IsPoisonDefense)) ||
+            (c.IsProjectileWeapon && !Player.TreacheryCards.Any(x => x.IsProjectileWeapon)) ||
+            (c.IsPoisonWeapon && !Player.TreacheryCards.Any(x => x.IsPoisonWeapon && x.Type != TreacheryCardType.Chemistry)) ||
+            (c.IsProjectileDefense && !Player.TreacheryCards.Any(x => x.IsProjectileDefense && x.Type != TreacheryCardType.WeirdingWay)) ||
+            (c.IsPoisonDefense && !Player.TreacheryCards.Any(x => x.IsPoisonDefense)) ||
             c.Type == TreacheryCardType.Karma ||
-            (c.Type == TreacheryCardType.Mercenary && Leaders.Count(l => Game.IsAlive(l)) <= 1) ||
-            (c.Type == TreacheryCardType.RaiseDead && ForcesKilled > 7) ||
+            (c.Type == TreacheryCardType.Mercenary && Player.Leaders.Count(l => Game.IsAlive(l)) <= 1) ||
+            (c.Type == TreacheryCardType.RaiseDead && Player.ForcesKilled > 7) ||
             c.Type == TreacheryCardType.SearchDiscarded ||
             c.Type == TreacheryCardType.TakeDiscarded ||
             c.Type == TreacheryCardType.PortableAntidote ||

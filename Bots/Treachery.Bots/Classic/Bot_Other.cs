@@ -264,7 +264,7 @@ public partial class ClassicBot
                 break;
 
             case Faction.Yellow:
-                if (Game.Monsters.Any() && DetermineMovedBatallion(true) != null) return result;
+                if (Game.Monsters.Any() && DetermineMovedBattalion(true) != null) return result;
                 break;
 
             case Faction.Red:

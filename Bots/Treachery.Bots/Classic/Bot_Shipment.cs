@@ -621,15 +621,15 @@ public partial class ClassicBot
     }
 
 
-    protected Battalion FindOneTroopThatCanSafelyMove(Location from, Location to)
+    protected Battalion? FindOneTroopThatCanSafelyMove(Location from, Location to)
     {
-        if (ForcesInLocations.ContainsKey(from) && from.Sector != Game.SectorInStorm && NotOccupiedByOthers(from.Territory))
+        if (Player.ForcesInLocations.ContainsKey(from) && from.Sector != Game.SectorInStorm && NotOccupiedByOthers(from.Territory))
         {
-            var bat = ForcesInLocations[from];
+            var bat = Player.ForcesInLocations[from];
             if (NotOccupiedByOthers(from.Territory) && bat.TotalAmountOfForces > 1)
             {
                 var oneOfThem = bat.Take(1, true);
-                if (PlacementEvent.ValidTargets(Game, this, from, oneOfThem).Contains(to)) return oneOfThem;
+                if (PlacementEvent.ValidTargets(Game, Player, from, oneOfThem).Contains(to)) return oneOfThem;
             }
         }
 

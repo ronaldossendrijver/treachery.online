@@ -107,10 +107,10 @@ public partial class ClassicBot
         return p.TreacheryCards.Where(c => known.Contains(c)).ToList();
     }
 
-    private int CardQuality(TreacheryCard cardToRate, Player forWhom)
+    private int CardQuality(TreacheryCard cardToRate, Player? forWhom)
     {
         var cardsToTakeIntoAccount = new List<TreacheryCard>(Player.TreacheryCards);
-        if (forWhom != Player)
+        if (forWhom != null && forWhom != Player)
         {
             var myKnownCards = Game.KnownCards(Player).ToList();
             cardsToTakeIntoAccount = forWhom.TreacheryCards.Where(c => myKnownCards.Contains(c)).ToList();
@@ -164,7 +164,7 @@ public partial class ClassicBot
 
     #region ResourceKnowledge
 
-    protected virtual bool IAmDesparateForResources => ResourcesIncludingAllyContribution < 5;
+    protected virtual bool IAmDesperateForResources => ResourcesIncludingAllyContribution < 5;
 
     protected virtual int ResourcesIncludingAllyContribution => Player.Resources + ResourcesFromAlly;
 
@@ -336,7 +336,7 @@ public partial class ClassicBot
             if (Ally == Faction.None) return null;
 
             if (Game.HasActedOrPassed.Contains(Ally))
-                //Ally has already acted => move biggest battalion
+                //Ally has already acted => move the biggest battalion
                 return ForcesOnPlanet.Where(locationWithBattalion =>
                         !Equals(locationWithBattalion.Key, Game.Map.PolarSink) &&
                         !InStorm(locationWithBattalion.Key) &&
@@ -344,7 +344,7 @@ public partial class ClassicBot
                     .Select(x => new BattalionInLocation(x.Key,x.Value))
                     .HighestOrDefault(locationWithBattalion => locationWithBattalion.Battalion.TotalAmountOfForces);
             
-            //Ally has not acted yet => move smallest battalion
+            //Ally has not acted yet => move the smallest battalion
             return ForcesOnPlanet.Where(locationWithBattalion =>
                     !Equals(locationWithBattalion.Key, Game.Map.PolarSink) &&
                     !InStorm(locationWithBattalion.Key) &&
@@ -400,7 +400,7 @@ public partial class ClassicBot
         .Select(x => new BattalionInLocation(x.Key, x.Value))
         .HighestOrDefault(locationWithBattalion => locationWithBattalion.Battalion.TotalAmountOfForces);
 
-    protected virtual BattalionInLocation BiggestLargeUnthreatenedMovableBattalionInStrongholdNearVacantStronghold => ForcesOnPlanet.Where(locationWithBattalion =>
+    protected virtual BattalionInLocation? BiggestLargeUnthreatenedMovableBattalionInStrongholdNearVacantStronghold => ForcesOnPlanet.Where(locationWithBattalion =>
             IsStronghold(locationWithBattalion.Key) &&
             NotOccupiedByOthers(locationWithBattalion.Key) &&
             locationWithBattalion.Key.Sector != Game.SectorInStorm &&
@@ -409,7 +409,7 @@ public partial class ClassicBot
         .Select(x => new BattalionInLocation(x.Key, x.Value))
         .HighestOrDefault(locationWithBattalion => locationWithBattalion.Battalion.TotalAmountOfForces);
 
-    protected virtual BattalionInLocation BiggestMovableStackOfAdvisorsInStrongholdNearVacantStronghold => ForcesOnPlanet.Where(locationWithBattalion =>
+    protected virtual BattalionInLocation? BiggestMovableStackOfAdvisorsInStrongholdNearVacantStronghold => ForcesOnPlanet.Where(locationWithBattalion =>
             locationWithBattalion.Value is { Faction: Faction.Blue, AmountOfSpecialForces: > 0 } &&
             IsStronghold(locationWithBattalion.Key) &&
             NotOccupiedByOthers(locationWithBattalion.Key) &&
@@ -422,7 +422,7 @@ public partial class ClassicBot
             IsStronghold(locationWithBattalion.Key) &&
             NotOccupiedByOthers(locationWithBattalion.Key.Territory) &&
             !InStorm(locationWithBattalion.Key) &&
-            locationWithBattalion.Value.TotalAmountOfForces >= (IAmDesparateForResources ? 5 : 7) &&
+            locationWithBattalion.Value.TotalAmountOfForces >= (IAmDesperateForResources ? 5 : 7) &&
             BestSafeAndNearbyResources(locationWithBattalion.Key, locationWithBattalion.Value) != null)
         .Select(x => new BattalionInLocation(x.Key, x.Value))
         .HighestOrDefault(locationWithBattalion => locationWithBattalion.Battalion.TotalAmountOfForces);
@@ -487,7 +487,7 @@ public partial class ClassicBot
             !StormWillProbablyHit(to));
     }
 
-    protected virtual Location NearbyStrongholdOfWinningOpponent(Location from, Battalion battalion, bool includeBots)
+    protected virtual Location? NearbyStrongholdOfWinningOpponent(Location from, Battalion battalion, bool includeBots)
     {
         return ValidMovementLocations(from, battalion).Where(to =>
             IsStronghold(to) &&
@@ -496,7 +496,7 @@ public partial class ClassicBot
         ).LowestOrDefault(l => TotalMaxDialOfOpponents(l.Territory));
     }
 
-    protected virtual Location NearbyStrongholdOfAlmostWinningOpponent(Location from, Battalion battalion, bool includeBots)
+    protected virtual Location? NearbyStrongholdOfAlmostWinningOpponent(Location from, Battalion battalion, bool includeBots)
     {
         return ValidMovementLocations(from, battalion).Where(to =>
             IsStronghold(to) &&
@@ -586,9 +586,9 @@ public partial class ClassicBot
         return MaxDial(resources, battalion.AmountOfForces, battalion.AmountOfSpecialForces, Game.GetPlayer(battalion.Faction), opponent);
     }
 
-    protected virtual float MaxDial(int resources, int forces, int specialForces, Player player, Faction opponentFaction)
+    protected virtual float MaxDial(int resources, int forces, int specialForces, Player p, Faction opponentFaction)
     {
-        var spice = Battle.MustPayForAnyForcesInBattle(Game, player) ? resources : 99;
+        var spice = Battle.MustPayForAnyForcesInBattle(Game, p) ? resources : 99;
 
         var specialForcesAtFullStrength = Math.Min(specialForces, spice);
         spice -= specialForcesAtFullStrength;
@@ -598,8 +598,8 @@ public partial class ClassicBot
         var forcesAtHalfStrength = forces - forcesAtFullStrength;
 
         var result =
-            Battle.DetermineSpecialForceStrength(Game, player.Faction, opponentFaction) * (specialForcesAtFullStrength + 0.5f * specialForcesAtHalfStrength) +
-            Battle.DetermineNormalForceStrength(Game, player.Faction) * (forcesAtFullStrength + 0.5f * forcesAtHalfStrength);
+            Battle.DetermineSpecialForceStrength(Game, p.Faction, opponentFaction) * (specialForcesAtFullStrength + 0.5f * specialForcesAtHalfStrength) +
+            Battle.DetermineNormalForceStrength(Game, p.Faction) * (forcesAtFullStrength + 0.5f * forcesAtHalfStrength);
 
         return result;
     }
@@ -631,25 +631,25 @@ public partial class ClassicBot
 
     protected virtual int NrOfBattlesToFight => Battle.BattlesToBeFought(Game, Player).Count;
 
-    protected virtual float MaxReinforcedDialTo(Player player, Territory to)
+    protected virtual float MaxReinforcedDialTo(Player p, Territory to)
     {
         //if (player == null || to == null) return 0;
 
-        if (CanShip(player))
+        if (CanShip(p))
         {
             var specialForces = 0;
             var normalForces = 0;
 
-            var opponentResources = player.Resources + (player.Ally == Faction.None ? 0 : player.AlliedPlayer.Resources);
+            var opponentResources = p.Resources + (p.Ally == Faction.None ? 0 : p.AlliedPlayer.Resources);
 
-            var opponentMayUseWorthlessAsKarma = player.Faction == Faction.Blue && Game.Applicable(Rule.BlueWorthlessAsKarma);
-            var hasKarma = CardsPlayerHas(player).Any(c => c.Type == TreacheryCardType.Karma || (opponentMayUseWorthlessAsKarma && c.Type == TreacheryCardType.Karma));
+            var opponentMayUseWorthlessAsKarma = p.Faction == Faction.Blue && Game.Applicable(Rule.BlueWorthlessAsKarma);
+            var hasKarma = CardsPlayerHas(p).Any(c => c.Type == TreacheryCardType.Karma || (opponentMayUseWorthlessAsKarma && c.Type == TreacheryCardType.Karma));
 
-            while (specialForces + 1 <= player.SpecialForcesInReserve && Shipment.DetermineCost(Game, player, normalForces, specialForces + 1, to.MiddleLocation, hasKarma, false, false, false, false) <= opponentResources) specialForces++;
+            while (specialForces + 1 <= p.SpecialForcesInReserve && Shipment.DetermineCost(Game, p, normalForces, specialForces + 1, to.MiddleLocation, hasKarma, false, false, false, false) <= opponentResources) specialForces++;
 
-            while (normalForces + 1 <= player.ForcesInReserve && Shipment.DetermineCost(Game, player, normalForces + 1, specialForces, to.MiddleLocation, hasKarma, false, false, false, false) <= opponentResources) normalForces++;
+            while (normalForces + 1 <= p.ForcesInReserve && Shipment.DetermineCost(Game, p, normalForces + 1, specialForces, to.MiddleLocation, hasKarma, false, false, false, false) <= opponentResources) normalForces++;
 
-            return specialForces * Battle.DetermineSpecialForceStrength(Game, player.Faction, Faction) + normalForces * Battle.DetermineNormalForceStrength(Game, player.Faction);
+            return specialForces * Battle.DetermineSpecialForceStrength(Game, p.Faction, Faction) + normalForces * Battle.DetermineNormalForceStrength(Game, p.Faction);
         }
 
         return 0;

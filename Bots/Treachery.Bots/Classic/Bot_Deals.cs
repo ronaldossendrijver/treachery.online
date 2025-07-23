@@ -11,35 +11,35 @@ namespace Treachery.Bots;
 
 public partial class ClassicBot
 {
-    protected virtual DealAccepted DetermineDealAccepted()
+    protected virtual DealAccepted? DetermineDealAccepted()
     {
-        if (!DealAccepted.MayDeal(Game, this, 1) || Game.Applicable(Rule.DisableResourceTransfers)) return null;
+        if (!DealAccepted.MayDeal(Game, Player, 1) || Game.Applicable(Rule.DisableResourceTransfers)) return null;
 
-        DealAccepted result = null;
+        DealAccepted? result = null;
 
-        if (Game.CurrentPhase == Phase.ClaimingCharity && TechTokens.Any(tt => tt == TechToken.Resources) && Resources <= 3 && !Game.HasBiddingPrescience(this) && !(Ally != Faction.None && Game.HasBiddingPrescience(AlliedPlayer)))
+        if (Game.CurrentPhase == Phase.ClaimingCharity && Player.TechTokens.Any(tt => tt == TechToken.Resources) && Player.Resources <= 3 && !Game.HasBiddingPrescience(Player) && !(Ally != Faction.None && Game.HasBiddingPrescience(Player.AlliedPlayer)))
         {
-            var greenPrescienceDeal = DealAccepted.AcceptableDeals(Game, this).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.BiddingReport && d.Price <= Resources);
+            var greenPrescienceDeal = DealAccepted.AcceptableDeals(Game, Player).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.BiddingReport && d.Price <= Player.Resources);
             if (greenPrescienceDeal != null) return greenPrescienceDeal.Acceptance(Faction);
         }
 
         if (Game.CurrentPhase == Phase.Bidding)
-            if (!Game.HasBiddingPrescience(this) && !(Ally != Faction.None && Game.HasBiddingPrescience(AlliedPlayer)))
+            if (!Game.HasBiddingPrescience(Player) && !(Ally != Faction.None && Game.HasBiddingPrescience(Player.AlliedPlayer)))
             {
-                var biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, this).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.BiddingReport && d.Price <= Resources);
+                var biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, Player).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.BiddingReport && d.Price <= Player.Resources);
                 LogInfo("biddingPrescienceOfferEntirePhaseYellow: {0}", biddingPrescienceDeal);
                 if (biddingPrescienceDeal != null && Faction == Faction.Yellow && Game.CurrentTurn == 1 && Game.Applicable(Rule.TechTokens) && Game.CurrentPhase <= Phase.ClaimingCharity) return biddingPrescienceDeal.Acceptance(Faction);
 
-                biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, this).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.BiddingReport && d.Price <= Resources);
+                biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, Player).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.BiddingReport && d.Price <= Player.Resources);
                 LogInfo("biddingPrescienceOfferEntirePhase: {0}", biddingPrescienceDeal);
-                if (biddingPrescienceDeal != null && Game.CurrentMainPhase == MainPhase.Bidding && Game.CardNumber == 1 && biddingPrescienceDeal.Price < 1.4f * Game.CardsOnAuction.Items.Count() && ResourcesIncludingAllyContribution - biddingPrescienceDeal.Price > 16) return biddingPrescienceDeal.Acceptance(Faction);
+                if (biddingPrescienceDeal != null && Game is { CurrentMainPhase: MainPhase.Bidding, CardNumber: 1 } && biddingPrescienceDeal.Price < 1.4f * Game.CardsOnAuction.Items.Count() && ResourcesIncludingAllyContribution - biddingPrescienceDeal.Price > 16) return biddingPrescienceDeal.Acceptance(Faction);
 
-                biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, this).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.Bidding && d.Price <= Resources);
+                biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, Player).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.Bidding && d.Price <= Player.Resources);
                 LogInfo("biddingPrescienceOfferOneCard: {0}", biddingPrescienceDeal);
                 var maxPriceToPay = 0;
-                if (Faction == Faction.Red && HasRoomForCards && ResourcesIncludingAllyContribution > 24)
+                if (Faction == Faction.Red && Player.HasRoomForCards && ResourcesIncludingAllyContribution > 24)
                     maxPriceToPay = 1;
-                else if (((Faction == Faction.Red && ResourcesIncludingAllyContribution > 6) || ResourcesIncludingAllyContribution > 16) && HasRoomForCards) maxPriceToPay = 1;
+                else if (((Faction == Faction.Red && ResourcesIncludingAllyContribution > 6) || ResourcesIncludingAllyContribution > 16) && Player.HasRoomForCards) maxPriceToPay = 1;
 
                 if (biddingPrescienceDeal != null && Game.CurrentMainPhase == MainPhase.Bidding && biddingPrescienceDeal.Price <= maxPriceToPay) return biddingPrescienceDeal.Acceptance(Faction);
             }
@@ -47,41 +47,38 @@ public partial class ClassicBot
         return result;
     }
 
-    protected virtual DealOffered DetermineDealCancelled()
+    protected virtual DealOffered? DetermineDealCancelled()
     {
         return DetermineOutdatedDealOffers();
     }
 
-    protected virtual DealOffered DetermineDealOffered()
+    protected virtual DealOffered? DetermineDealOffered()
     {
-        DealOffered result = null;
+        if (LastTurn || Game.CurrentMainPhase <= MainPhase.Setup ||
+            Game.Applicable(Rule.DisableResourceTransfers)) return null;
 
-        if (!LastTurn && Game.CurrentMainPhase > MainPhase.Setup && !Game.Applicable(Rule.DisableResourceTransfers))
-        {
-            if (result == null) result = DetermineDealOffered_BiddingPrescienceEntirePhaseYellowTurn1();
-            if (result == null) result = DetermineDealOffered_BiddingPrescienceEntirePhase();
-            if (result == null) result = DetermineDealOffered_BiddingPrescienceOneCard();
-            if (result == null) result = DetermineDealOffered_StormPrescience();
-            if (result == null) result = DetermineDealOffered_ResourceDeckPrescience();
-            if (result == null) result = DetermineDealOffered_TellDiscardedTraitors();
-        }
-
-        return result;
+        return DetermineDealOffered_BiddingPrescienceEntirePhaseYellowTurn1()
+               ?? DetermineDealOffered_BiddingPrescienceEntirePhase()
+               ?? DetermineDealOffered_BiddingPrescienceOneCard()
+               ?? DetermineDealOffered_StormPrescience()
+               ?? DetermineDealOffered_ResourceDeckPrescience()
+               ?? DetermineDealOffered_TellDiscardedTraitors();
     }
 
-    protected virtual DealOffered DetermineOutdatedDealOffers()
+    protected virtual DealOffered? DetermineOutdatedDealOffers()
     {
-        var outdated = FindInvalidDealOffers();
-        if (outdated == null) outdated = FindOutdatedDealOffer(MainPhase.Bidding, DealType.ShareBiddingPrescience);
-        if (outdated == null) outdated = FindOutdatedDealOffer(MainPhase.Battle, DealType.ShareResourceDeckPrescience);
-        if (outdated == null) outdated = FindOutdatedDealOffer(MainPhase.Battle, DealType.ShareStormPrescience);
-        if (outdated == null && LastTurn) outdated = Game.DealOffers.FirstOrDefault();
+        var outdated = FindInvalidDealOffers()
+                       ?? FindOutdatedDealOffer(MainPhase.Bidding, DealType.ShareBiddingPrescience)
+                       ?? FindOutdatedDealOffer(MainPhase.Battle, DealType.ShareResourceDeckPrescience)
+                       ?? FindOutdatedDealOffer(MainPhase.Battle, DealType.ShareStormPrescience);
+        
+        if (outdated == null && LastTurn) 
+            outdated = Game.DealOffers.FirstOrDefault();
 
-        if (outdated != null) return outdated.Cancellation();
-
-        return null;
+        return outdated?.Cancellation();
     }
-    protected DealOffered FindInvalidDealOffers()
+
+    private DealOffered? FindInvalidDealOffers()
     {
         var green = Game.GetPlayer(Faction.Green);
         if (green != null && Game.CurrentMainPhase == MainPhase.Bidding && !Game.HasBiddingPrescience(green)) return Game.DealOffers.FirstOrDefault(offer => offer.Initiator == Faction.Green && offer.Type == DealType.ShareBiddingPrescience);
@@ -94,14 +91,14 @@ public partial class ClassicBot
         return null;
     }
 
-    protected DealOffered FindOutdatedDealOffer(MainPhase after, DealType type)
+    private DealOffered? FindOutdatedDealOffer(MainPhase after, DealType type)
     {
         if (Game.CurrentMainPhase > after) return Game.DealOffers.FirstOrDefault(offer => offer.Initiator == Faction && offer.Type == type);
 
         return null;
     }
 
-    protected virtual DealOffered DetermineDealOffered_TellDiscardedTraitors()
+    protected virtual DealOffered? DetermineDealOffered_TellDiscardedTraitors()
     {
         if (Faction != Faction.Black && Faction != Faction.Purple &&
             !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.TellDiscardedTraitors))
@@ -117,51 +114,48 @@ public partial class ClassicBot
         return null;
     }
 
-    protected virtual DealOffered DetermineDealOffered_ResourceDeckPrescience()
+    protected virtual DealOffered? DetermineDealOffered_ResourceDeckPrescience()
     {
         if (Faction == Faction.Green &&
-            Game.CurrentMainPhase >= MainPhase.ShipmentAndMove &&
-            Game.CurrentMainPhase <= MainPhase.Battle &&
-            Game.HasResourceDeckPrescience(this) &&
-            !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.ShareResourceDeckPrescience && deal.EndPhase == Phase.TurnConcluded))
+            Game.CurrentMainPhase is >= MainPhase.ShipmentAndMove and <= MainPhase.Battle &&
+            Game.HasResourceDeckPrescience(Player) &&
+            !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal is { Type: DealType.ShareResourceDeckPrescience, EndPhase: Phase.TurnConcluded }))
             return new DealOffered(Game, Faction)
             {
                 Cancel = false,
                 Type = DealType.ShareResourceDeckPrescience,
                 EndPhase = Phase.TurnConcluded,
                 Price = D(1, 2),
-                Text = "share spice card prescience this turn"
+                Text = "share spice card prescience Player turn"
             };
 
         return null;
     }
 
-    protected virtual DealOffered DetermineDealOffered_StormPrescience()
+    protected virtual DealOffered? DetermineDealOffered_StormPrescience()
     {
         if (Faction == Faction.Yellow &&
-            Game.CurrentMainPhase > MainPhase.Storm &&
-            Game.CurrentMainPhase <= MainPhase.Battle &&
-            Game.HasStormPrescience(this) &&
-            !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.ShareStormPrescience && deal.EndPhase == Phase.TurnConcluded))
+            Game.CurrentMainPhase is > MainPhase.Storm and <= MainPhase.Battle &&
+            Game.HasStormPrescience(Player) &&
+            !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal is { Type: DealType.ShareStormPrescience, EndPhase: Phase.TurnConcluded }))
             return new DealOffered(Game, Faction)
             {
                 Cancel = false,
                 Type = DealType.ShareStormPrescience,
                 EndPhase = Phase.TurnConcluded,
                 Price = D(1, 2),
-                Text = "share storm prescience this turn"
+                Text = "share storm prescience Player turn"
             };
 
         return null;
     }
 
-    protected virtual DealOffered DetermineDealOffered_BiddingPrescienceEntirePhaseYellowTurn1()
+    protected virtual DealOffered? DetermineDealOffered_BiddingPrescienceEntirePhaseYellowTurn1()
     {
         if (Faction == Faction.Green &&
             Game.IsPlaying(Faction.Yellow) &&
-            Game.CurrentTurn == 1 &&
-            Game.CurrentMainPhase == MainPhase.Charity &&
-            !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.ShareBiddingPrescience && deal.EndPhase == Phase.BiddingReport && deal.To.Length == 1 && deal.To[0] == Faction.Yellow))
+            Game is { CurrentTurn: 1, CurrentMainPhase: MainPhase.Charity } &&
+            !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal is { Type: DealType.ShareBiddingPrescience, EndPhase: Phase.BiddingReport } && deal.To.Length == 1 && deal.To[0] == Faction.Yellow))
             return new DealOffered(Game, Faction)
             {
                 Cancel = false,
@@ -169,18 +163,18 @@ public partial class ClassicBot
                 EndPhase = Phase.BiddingReport,
                 Price = 3,
                 Text = "share prescience (phase)",
-                To = new[] { Faction.Yellow }
+                To = [Faction.Yellow]
             };
 
         return null;
     }
 
-    protected virtual DealOffered DetermineDealOffered_BiddingPrescienceEntirePhase()
+    protected virtual DealOffered? DetermineDealOffered_BiddingPrescienceEntirePhase()
     {
         if (Faction == Faction.Green &&
             Game.CurrentMainPhase <= MainPhase.Bidding &&
-            Game.HasBiddingPrescience(this) &&
-            !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.ShareBiddingPrescience && deal.EndPhase == Phase.BiddingReport && !(deal.To.Length == 1 && deal.To[0] == Faction.Yellow)))
+            Game.HasBiddingPrescience(Player) &&
+            !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal is { Type: DealType.ShareBiddingPrescience, EndPhase: Phase.BiddingReport } && !(deal.To.Length == 1 && deal.To[0] == Faction.Yellow)))
         {
             var nrOfCards = Game.Players.Count(p => p.TreacheryCards.Count() < p.MaximumNumberOfCards);
             return new DealOffered(Game, Faction)
@@ -196,13 +190,12 @@ public partial class ClassicBot
         return null;
     }
 
-    protected virtual DealOffered DetermineDealOffered_BiddingPrescienceOneCard()
+    protected virtual DealOffered? DetermineDealOffered_BiddingPrescienceOneCard()
     {
         if (Faction == Faction.Green &&
-            Game.CurrentMainPhase == MainPhase.Bidding &&
-            Game.CurrentAuctionType == AuctionType.Normal &&
-            Game.HasBiddingPrescience(this) &&
-            !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.ShareBiddingPrescience && deal.EndPhase == Phase.Bidding))
+            Game is { CurrentMainPhase: MainPhase.Bidding, CurrentAuctionType: AuctionType.Normal } &&
+            Game.HasBiddingPrescience(Player) &&
+            !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal is { Type: DealType.ShareBiddingPrescience, EndPhase: Phase.Bidding }))
             return new DealOffered(Game, Faction)
             {
                 Cancel = false,
