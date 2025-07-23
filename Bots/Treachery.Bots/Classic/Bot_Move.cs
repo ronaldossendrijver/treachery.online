@@ -57,7 +57,7 @@ public partial class ClassicBot
         var asAdvisors = Faction == Faction.Blue && Player.SpecialForcesIn(moved.To.Territory) > 0;
         var result = new Caravan(Game, Faction) { Passed = false, To = moved.To, ForceLocations = forces, AsAdvisors = asAdvisors };
 
-        decidedShipmentAction = ShipmentDecision.None;
+        DecidedShipmentAction = ShipmentDecision.None;
 
         if (!result.IsValid)
         {
@@ -73,14 +73,14 @@ public partial class ClassicBot
         var winning = IAmWinning;
         LogInfo("DetermineMove(). AllIn: {0}, Winning: {1}.", LastTurn, winning);
 
-        if (decidedShipmentAction == ShipmentDecision.StrongholdNearResources && Player.ForcesInLocations.ContainsKey(decidedShipment.To))
+        if (DecidedShipmentAction == ShipmentDecision.StrongholdNearResources && Player.ForcesInLocations.ContainsKey(DecidedShipment.To))
         {
             LogInfo("Move to spice");
-            var toMove = Player.ForcesInLocations[decidedShipment.To].Take(decidedShipment.ForceAmount + decidedShipment.SpecialForceAmount, Faction == Faction.Grey);
+            var toMove = Player.ForcesInLocations[DecidedShipment.To].Take(DecidedShipment.ForceAmount + DecidedShipment.SpecialForceAmount, Faction == Faction.Grey);
 
-            if (WithinRange(decidedShipment.To, finalDestination, toMove))
+            if (WithinRange(DecidedShipment.To, FinalDestination, toMove))
             {
-                var move = ConstructMove(finalDestination, decidedShipment.To, toMove);
+                var move = ConstructMove(FinalDestination, DecidedShipment.To, toMove);
                 if (move != null) return move;
             }
         }
@@ -210,7 +210,7 @@ public partial class ClassicBot
             }
 
         LogInfo("I'm deciding not to move");
-        decidedShipmentAction = ShipmentDecision.None;
+        DecidedShipmentAction = ShipmentDecision.None;
         return null;
     }
 

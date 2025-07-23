@@ -274,7 +274,7 @@ public partial class ClassicBot
             case Faction.Orange:
                 var shipment = DetermineShipment();
                 if (shipment != null && !shipment.Passed &&
-                    (decidedShipmentAction == ShipmentDecision.PreventNormalWin || decidedShipmentAction == ShipmentDecision.PreventFremenWin || decidedShipmentAction == ShipmentDecision.AttackWeakStronghold)) return result;
+                    (DecidedShipmentAction == ShipmentDecision.PreventNormalWin || DecidedShipmentAction == ShipmentDecision.PreventFremenWin || DecidedShipmentAction == ShipmentDecision.AttackWeakStronghold)) return result;
                 break;
 
             case Faction.Blue:

@@ -145,7 +145,7 @@ public partial class ClassicBot
 
         if ((waitForPrescience && Prescience.MayUsePrescience(Game, Player)) || (waitForPrescience && prescience != null && Game.CurrentBattle.PlanOf(opponent) == null)) return null; //enemy is not ready yet
 
-        if (decidedShipmentAction == ShipmentDecision.DummyShipment)
+        if (DecidedShipmentAction == ShipmentDecision.DummyShipment)
         {
             LogInfo("I'm spending as little as possible on Player fight because Player is a dummy shipment");
             return ConstructLostBattleMinimizingLosses(opponent, null);
