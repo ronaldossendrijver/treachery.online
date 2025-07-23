@@ -16,14 +16,14 @@ public partial class ClassicBot
     protected virtual AllianceByTerror DetermineAllianceByTerror()
     {
         var cyan = Game.GetPlayer(Faction.Cyan);
-        var accept = !Player.HasAlly || PlayerStanding(cyan) > 0.75f * PlayerStanding(Player.AlliedPlayer);
+        var accept = !Player.HasAlly || PlayerStanding(cyan) > 0.75f * PlayerStanding(AlliedPlayer);
         return new AllianceByTerror(Game, Faction) { Passed = !accept };
     }
 
     protected virtual AllianceByAmbassador DetermineAllianceByAmbassador()
     {
         var pink = Game.GetPlayer(Faction.Pink);
-        var accept = !Player.HasAlly || PlayerStanding(pink) > 0.75f * PlayerStanding(Player.AlliedPlayer);
+        var accept = !Player.HasAlly || PlayerStanding(pink) > 0.75f * PlayerStanding(AlliedPlayer);
         return new AllianceByAmbassador(Game, Faction) { Passed = !accept };
     }
 
@@ -81,7 +81,7 @@ public partial class ClassicBot
             .Where(offer => offer.Target == Faction && !Game.IsBot(offer.Player))
             .HighestOrDefault(offer => PlayerStanding(offer.Player));
 
-        if (offer != null && PlayerStanding(offer.Player) > PlayerStanding(Player.AlliedPlayer)) return new AllianceBroken(Game, Faction);
+        if (offer != null && PlayerStanding(offer.Player) > PlayerStanding(AlliedPlayer)) return new AllianceBroken(Game, Faction);
 
         return null;
     }
@@ -149,39 +149,39 @@ public partial class ClassicBot
             case Faction.Grey:
 
                 if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasActedOrPassed.Contains(Faction))
-                    return Math.Max(Player.Resources - 5, 0);
-                return Math.Max(Player.Resources - 10, 0);
+                    return Math.Max(Resources - 5, 0);
+                return Math.Max(Resources - 10, 0);
 
             case Faction.Brown:
                 if (Game.CurrentMainPhase == MainPhase.Battle)
-                    return Player.Resources;
+                    return Resources;
                 if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasActedOrPassed.Contains(Faction))
-                    return Math.Max(Player.Resources - 5, 0);
-                return Math.Max(Player.Resources - 10, 0);
+                    return Math.Max(Resources - 5, 0);
+                return Math.Max(Resources - 10, 0);
 
             case Faction.Orange:
                 if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
-                    return Player.Resources;
-                return Math.Max(Player.Resources - 10, 0);
+                    return Resources;
+                return Math.Max(Resources - 10, 0);
 
             case Faction.Yellow:
                 if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove || Player.TreacheryCards.Count() == 4)
-                    return Player.Resources;
-                return Math.Max(Player.Resources - 10, 0);
+                    return Resources;
+                return Math.Max(Resources - 10, 0);
 
             case Faction.Red:
                 if (Game.CurrentMainPhase == MainPhase.Bidding)
-                    return Player.Resources;
+                    return Resources;
                 if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasActedOrPassed.Contains(Faction))
-                    return Math.Max(Player.Resources - 5, 0);
-                return Math.Max(Player.Resources - 10, 0);
+                    return Math.Max(Resources - 5, 0);
+                return Math.Max(Resources - 10, 0);
 
             case Faction.Purple:
                 if (Game.CurrentMainPhase == MainPhase.Resurrection)
-                    return Player.Resources;
+                    return Resources;
                 if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasActedOrPassed.Contains(Faction))
-                    return Math.Max(Player.Resources - 5, 0);
-                return Math.Max(Player.Resources - 10, 0);
+                    return Math.Max(Resources - 5, 0);
+                return Math.Max(Resources - 10, 0);
         }
 
         return 0;

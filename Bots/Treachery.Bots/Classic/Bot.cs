@@ -9,21 +9,25 @@
 
 namespace Treachery.Bots;
 
-public partial class ClassicBot(Game game, Player player, BotParameters param)
+public partial class ClassicBot(Game _game, Player _player, BotParameters _param)
 {
-    private const bool BotInfologging = false;
+    private const bool BotLogging = false;
 
-    private Game Game { get; } = game;
+    private Game Game { get; } = _game;
 
-    private Player Player { get; } = player;
+    private Player Player { get; } = _player;
 
     private Faction Faction => Player.Faction;
 
     private Faction Ally => Player.Ally;
+
+    private Player? AlliedPlayer => Player.AlliedPlayer;
+
+    private int Resources => Player.Resources;
     
     #region PublicInterface
 
-    private BotParameters Param { get; } = param;
+    private BotParameters Param { get; } = _param;
 
     public GameEvent? DetermineHighestPrioInPhaseAction(List<Type> events)
     {
@@ -226,11 +230,11 @@ public partial class ClassicBot(Game game, Player player, BotParameters param)
                 var error = action.Validate();
                 if (error != null)
                 {
-                    LogInfo("--invalid decision ({0})--> {1}: {2}", Player.Resources, action.GetMessage(), error);
+                    LogInfo("--invalid decision ({0})--> {1}: {2}", Resources, action.GetMessage(), error);
                 }
                 else
                 {
-                    LogInfo("--valid decision ({0})--> {1}", Player.Resources, action.GetMessage());
+                    LogInfo("--valid decision ({0})--> {1}", Resources, action.GetMessage());
                     return true;
                 }
             }
@@ -245,7 +249,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param)
 
     private void LogInfo(string msg, params object?[] pars)
     {
-        if (BotInfologging)
+        if (BotLogging)
         {
             if (Message.DefaultDescriber != null)
                 Console.WriteLine(Faction + ": " + Message.DefaultDescriber.Format(msg, pars));
@@ -256,7 +260,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param)
 
     private void LogInfo(Message message)
     {
-        if (!BotInfologging || message == null) return;
+        if (!BotLogging || message == null) return;
         
         if (Message.DefaultDescriber != null)
             Console.WriteLine(Faction + ": " + message.ToString(Message.DefaultDescriber));

@@ -21,14 +21,14 @@ public partial class ClassicBot
 
         var currentBid = Game.CurrentBid?.TotalAmount ?? 0;
         var currentBidIsFromAlly = Game.CurrentBid != null && Game.CurrentBid.Initiator == Ally;
-        var isKnownCard = Game.HasBiddingPrescience(Player) || (Player.HasAlly && Game.HasBiddingPrescience(Player.AlliedPlayer)) || Game.KnownCards(Player).Contains(Game.CardsOnAuction.Top);
+        var isKnownCard = Game.HasBiddingPrescience(Player) || (Player.HasAlly && Game.HasBiddingPrescience(AlliedPlayer)) || Game.KnownCards(Player).Contains(Game.CardsOnAuction.Top);
 
         var thisCardIsUseless = isKnownCard && !MayUseUselessAsKarma && Game.CardsOnAuction.Top.Type == TreacheryCardType.Useless;
         var thisCardIsCrappy = isKnownCard && !WannaHave(Game.CardsOnAuction.Top);
         var thisCardIsPerfect = isKnownCard && CardQuality(Game.CardsOnAuction.Top, Player) == 5;
 
         var resourcesToKeep = thisCardIsPerfect ? Param.Bidding_ResourcesToKeepWhenCardIsPerfect : Param.Bidding_ResourcesToKeepWhenCardIsntPerfect;
-        var resourcesAvailable = Math.Max(0, Player.Resources - resourcesToKeep) + ResourcesFromAlly + ResourcesFromRed;
+        var resourcesAvailable = Math.Max(0, Resources - resourcesToKeep) + ResourcesFromAlly + ResourcesFromRed;
         var couldUseKarmaForBid = Game.CurrentAuctionType == AuctionType.Normal && !Game.KarmaPrevented(Faction) && Ally != Faction.Red && (Player.SpecialKarmaPowerUsed || !Param.Karma_SaveCardToUseSpecialKarmaAbility || Game.CurrentTurn >= 5 || Player.MaximumNumberOfCards - Player.TreacheryCards.Count <= 1);
         var karmaCardToUseForBidding = couldUseKarmaForBid && ((MayUseUselessAsKarma && currentBid > 2) || currentBid > 4 || resourcesAvailable <= currentBid) ? Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma || (MayUseUselessAsKarma && c.Type == TreacheryCardType.Useless)) : null;
         var karmaWorth = karmaCardToUseForBidding == null ? 0 : 8;
@@ -51,11 +51,11 @@ public partial class ClassicBot
         {
             if (thisCardIsUseless || thisCardIsCrappy)
             {
-                var toBid = thisCardIsUseless || Math.Max(0, Player.Resources - resourcesToKeep) < 2 ? 0 : D(1, 2);
+                var toBid = thisCardIsUseless || Math.Max(0, Resources - resourcesToKeep) < 2 ? 0 : D(1, 2);
                 return CreateBidUsingAllyAndRedSpice(toBid, 0, null);
             }
 
-            return CreateBidUsingAllyAndRedSpice(Math.Min(Math.Max(0, Player.Resources - resourcesToKeep), amountToBidInSilentOrOnceAround), 0, null);
+            return CreateBidUsingAllyAndRedSpice(Math.Min(Math.Max(0, Resources - resourcesToKeep), amountToBidInSilentOrOnceAround), 0, null);
         }
 
         if (currentBidIsFromAlly || (thisCardIsUseless && currentBid > 0) || (thisCardIsCrappy && D(1, 1 + 2 * currentBid) > 1))

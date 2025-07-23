@@ -166,15 +166,15 @@ public partial class ClassicBot
 
     protected virtual bool IAmDesperateForResources => ResourcesIncludingAllyContribution < 5;
 
-    protected virtual int ResourcesIncludingAllyContribution => Player.Resources + ResourcesFromAlly;
+    protected virtual int ResourcesIncludingAllyContribution => Resources + ResourcesFromAlly;
 
-    protected virtual int ResourcesIncludingAllyAndRedContribution => Player.Resources + ResourcesFromAlly + ResourcesFromRed;
+    protected virtual int ResourcesIncludingAllyAndRedContribution => Resources + ResourcesFromAlly + ResourcesFromRed;
 
     protected virtual int ResourcesFromAlly => Ally != Faction.None ? Game.GetPermittedUseOfAllyResources(Faction) : 0;
 
     protected virtual int ResourcesFromRed => Game.SpiceForBidsRedCanPay(Faction);
 
-    protected virtual int AllyResources => Ally != Faction.None ? Player.AlliedPlayer.Resources : 0;
+    protected virtual int AllyResources => AlliedPlayer?.Resources ?? 0;
 
     protected virtual int ResourcesIn(Location l) 
         => Game.ResourcesOnPlanet.GetValueOrDefault(l, 0);
@@ -274,11 +274,11 @@ public partial class ClassicBot
     {
         return Ally is Faction.None or Faction.Pink ||
                Faction is Faction.Pink ||
-               Player.AlliedPlayer.AnyForcesIn(t) == 0 ||
+               AlliedPlayer.AnyForcesIn(t) == 0 ||
                (Faction is Faction.Blue && Game.Applicable(Rule.AdvisorsDontConflictWithAlly) &&
                 Player.SpecialForcesIn(t) > 0) ||
                (Ally is Faction.Blue && Game.Applicable(Rule.AdvisorsDontConflictWithAlly) &&
-                Player.AlliedPlayer.SpecialForcesIn(t) > 0);
+                AlliedPlayer.SpecialForcesIn(t) > 0);
     }
 
     private bool AllyDoesntBlock(Location l)
@@ -450,7 +450,7 @@ public partial class ClassicBot
         return WithinRange(source, destination, b) &&
                AllyDoesntBlock(destination.Territory) &&
                ProbablySafeFromMonster(destination.Territory) &&
-               (opponent == null || (mayFight && GetDialNeeded(destination.Territory, opponent, false) < MaxDial(Player.Resources, b, opponent.Faction))) &&
+               (opponent == null || (mayFight && GetDialNeeded(destination.Territory, opponent, false) < MaxDial(Resources, b, opponent.Faction))) &&
                !StormWillProbablyHit(destination);
     }
 
@@ -513,7 +513,7 @@ public partial class ClassicBot
 
     private bool IsAlmostWinningOpponent(Player p)
     {
-        return p != Player && p != Player.AlliedPlayer &&
+        return p != Player && p != AlliedPlayer &&
                Game.NumberOfVictoryPoints(p, true) + 1 >= Game.ThresholdForWin(p) &&
                (CanShip(p) || (p.HasAlly && CanShip(p.AlliedPlayer)) || p.TechTokens.Count >= 2);
     }
@@ -550,7 +550,7 @@ public partial class ClassicBot
                 DialNeeded = GetDialNeeded(s.Stronghold.Territory, GetOpponentThatOccupies(s.Stronghold.Territory), true)
             });
 
-        var resourcesForBattle = Ally == Faction.Brown ? ResourcesIncludingAllyContribution : Player.Resources;
+        var resourcesForBattle = Ally == Faction.Brown ? ResourcesIncludingAllyContribution : Resources;
 
         var winnableNearbyStronghold = enemyWeakStrongholds.Where(s =>
             WinWasPredictedByMeThisTurn(s.Opponent) ||
@@ -640,7 +640,7 @@ public partial class ClassicBot
             var specialForces = 0;
             var normalForces = 0;
 
-            var opponentResources = p.Resources + (p.Ally == Faction.None ? 0 : p.AlliedPlayer.Resources);
+            var opponentResources = p.Resources + (p.Ally == Faction.None ? 0 : AlliedResources);
 
             var opponentMayUseWorthlessAsKarma = p.Faction == Faction.Blue && Game.Applicable(Rule.BlueWorthlessAsKarma);
             var hasKarma = CardsPlayerHas(p).Any(c => c.Type == TreacheryCardType.Karma || (opponentMayUseWorthlessAsKarma && c.Type == TreacheryCardType.Karma));
@@ -663,12 +663,12 @@ public partial class ClassicBot
     {
         get
         {
-            var ally = Ally != Faction.None ? Player.AlliedPlayer : null;
+            var ally = Ally != Faction.None ? AlliedPlayer : null;
             var knownNonTraitorsByAlly = ally != null ? ally.Traitors.Union(ally.KnownNonTraitors) : [];
             var knownNonTraitors = Player.Traitors.Union(Player.KnownNonTraitors).Union(knownNonTraitorsByAlly);
 
             var myKnownTraitorsAndNonTraitors = Player.Traitors.Union(knownNonTraitors);
-            var allyKnownTraitorsAndNonTraitors = Player.HasAlly ? Player.AlliedPlayer.Traitors.Union(Player.AlliedPlayer.KnownNonTraitors) : [];
+            var allyKnownTraitorsAndNonTraitors = Player.HasAlly ? AlliedPlayer.Traitors.Union(AlliedPlayer.KnownNonTraitors) : [];
             var revealedOrToldTraitors = Game.Players.SelectMany(p => p.RevealedTraitors.Union(p.ToldTraitors));
 
             return myKnownTraitorsAndNonTraitors.Union(allyKnownTraitorsAndNonTraitors).Union(revealedOrToldTraitors).ToList();

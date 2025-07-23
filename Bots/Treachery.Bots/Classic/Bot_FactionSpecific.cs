@@ -21,7 +21,7 @@ public partial class ClassicBot
         var toDeny = Game.ShipmentPermissions.Keys.Where(IsWinningOpponent).ToArray();
         if (toDeny.Length != 0) return new SetShipmentPermission(Game, Faction) { Factions = toDeny.ToArray(), Permission = ShipmentPermission.None };
 
-        var discountPermission = Player.Resources > 10 || WinningOpponentsIWishToAttack(99, true).Any() ? ShipmentPermission.OrangeRate : ShipmentPermission.None;
+        var discountPermission = Resources > 10 || WinningOpponentsIWishToAttack(99, true).Any() ? ShipmentPermission.OrangeRate : ShipmentPermission.None;
         var permission = ShipmentPermission.Cross | ShipmentPermission.ToHomeworld | discountPermission;
         var toAllow = SetShipmentPermission.ValidTargets(Game, Player)
             .Where(f => !IsWinningOpponent(f) && (!Game.ShipmentPermissions.TryGetValue(f, out var currentPermission) || currentPermission != permission))
@@ -268,7 +268,7 @@ public partial class ClassicBot
         if (opponent != null)
         {
             var potentialWinningOpponents = Game.Players.Where(p => p != Player 
-                                                                    && p != Player.AlliedPlayer && Game.MeetsNormalVictoryCondition(p, true) 
+                                                                    && p != AlliedPlayer && Game.MeetsNormalVictoryCondition(p, true) 
                                                                     && Game.CountChallengedVictoryPoints(p) < 2);
             var amountICanReinforce = MaxReinforcedDialTo(Player, territory);
             var maxDial = MaxDial(Player, territory, opponent);
@@ -322,7 +322,7 @@ public partial class ClassicBot
         if (target != null)
         {
             var opponent = GetOpponentThatOccupies(target);
-            var potentialWinningOpponents = Game.Players.Where(p => p != Player && p != Player.AlliedPlayer && Game.MeetsNormalVictoryCondition(p, true) && Game.CountChallengedVictoryPoints(p) < 2);
+            var potentialWinningOpponents = Game.Players.Where(p => p != Player && p != AlliedPlayer && Game.MeetsNormalVictoryCondition(p, true) && Game.CountChallengedVictoryPoints(p) < 2);
             shippingOpponentCanWin = potentialWinningOpponents.Contains(opponent);
         }
 
@@ -773,7 +773,7 @@ public partial class ClassicBot
     protected virtual FaceDancerReplaced DetermineFaceDancerReplaced()
     {
         var replaceable = Player.FaceDancers.Where(f => !Player.RevealedFaceDancers.Contains(f)).OrderBy(f => f.Value).ToArray();
-        var toReplace = replaceable.FirstOrDefault(f => Player.Leaders.Contains(f) || (Ally != Faction.None && Player.AlliedPlayer.Leaders.Contains(f)));
+        var toReplace = replaceable.FirstOrDefault(f => Player.Leaders.Contains(f) || (Ally != Faction.None && AlliedPlayer.Leaders.Contains(f)));
         toReplace ??= replaceable.FirstOrDefault(f => f is Leader && !Game.IsAlive(f));
 
         if (toReplace != null)
@@ -828,7 +828,7 @@ public partial class ClassicBot
             }
             else
             {
-                if ((Player.FaceDancers.Contains(hero) && !Player.RevealedFaceDancers.Contains(hero)) || (Ally != Faction.None && Player.AlliedPlayer.Traitors.Contains(hero) && !Player.AlliedPlayer.RevealedTraitors.Contains(hero)))
+                if ((Player.FaceDancers.Contains(hero) && !Player.RevealedFaceDancers.Contains(hero)) || (Ally != Faction.None && AlliedPlayer.Traitors.Contains(hero) && !AlliedPlayer.RevealedTraitors.Contains(hero)))
                     price = 1 + D(1, hero.Value);
                 else
                     price = 2 + D(2, hero.Value);
@@ -919,7 +919,7 @@ public partial class ClassicBot
 
     protected virtual ExtortionPrevented? DetermineExtortionPrevented()
     {
-        if (Player.Ally != Faction.Cyan && Player.Resources > 12 && D(1,6) >= 3) 
+        if (Player.Ally != Faction.Cyan && Resources > 12 && D(1,6) >= 3) 
             return new ExtortionPrevented(Game, Faction);
         
         return null;
@@ -965,14 +965,14 @@ public partial class ClassicBot
                 && TerrorPlanted.ValidStrongholds(Game, Player).Any(t => Opponents.Sum(o => o.AnyForcesIn(t)) > 12 && MeAndMyAlly.Sum(o => o.AnyForcesIn(t)) < 2)) type = TerrorType.Atomics;
             if (type == TerrorType.None 
                 && availableToPlace.Contains(TerrorType.Extortion) 
-                && Player.Resources < 5) type = TerrorType.Extortion;
+                && Resources < 5) type = TerrorType.Extortion;
             if (type == TerrorType.None) type = availableToPlace.RandomOrDefault();
 
             var stronghold = type == TerrorType.Atomics 
                 ? TerrorPlanted.ValidStrongholds(Game, Player).HighestOrDefault(t => Opponents.Sum(o => o.AnyForcesIn(t))) 
                 : TerrorPlanted.ValidStrongholds(Game, Player).HighestOrDefault(t => Player.AnyForcesIn(t));
             
-            if (stronghold == null && Player.HasAlly) stronghold = TerrorPlanted.ValidStrongholds(Game, Player).HighestOrDefault(t => Player.AlliedPlayer.AnyForcesIn(t) > 0);
+            if (stronghold == null && Player.HasAlly) stronghold = TerrorPlanted.ValidStrongholds(Game, Player).HighestOrDefault(t => AlliedPlayer.AnyForcesIn(t) > 0);
             
             stronghold ??= TerrorPlanted.ValidStrongholds(Game, Player).RandomOrDefault();
 
@@ -987,7 +987,7 @@ public partial class ClassicBot
         //This is for now just quite random
         var territory = TerrorRevealed.GetTerritory(Game);
         var mayUseAtomics = Opponents.Sum(o => o.AnyForcesIn(TerrorRevealed.GetTerritory(Game))) > 5 &&
-                            Player.AlliedPlayer?.AnyForcesIn(territory) == 0; 
+                            AlliedPlayer?.AnyForcesIn(territory) == 0; 
             
         var validTokens = TerrorRevealed.GetTypes(Game).Where(t => 
             (t != TerrorType.SneakAttack || TerrorRevealed.ValidSneakAttackTargets(Game, Player).Any()) &&
@@ -1015,11 +1015,11 @@ public partial class ClassicBot
 
     protected virtual AmbassadorPlaced? DetermineAmbassadorPlaced()
     {
-        if ((Player.Resources <= 1 || Game.AmbassadorsPlacedThisTurn != 0) &&
-            Player.Resources <= 3 + Game.AmbassadorsPlacedThisTurn) return null;
+        if ((Resources <= 1 || Game.AmbassadorsPlacedThisTurn != 0) &&
+            Resources <= 3 + Game.AmbassadorsPlacedThisTurn) return null;
         
         var stronghold = AmbassadorPlaced.ValidStrongholds(Game, Player).Where(s => Player.AnyForcesIn(s) > 0).RandomOrDefault();
-        if (stronghold == null && Player.HasAlly) stronghold = AmbassadorPlaced.ValidStrongholds(Game, Player).Where(s => Player.AlliedPlayer.AnyForcesIn(s) > 0).RandomOrDefault();
+        if (stronghold == null && Player.HasAlly) stronghold = AmbassadorPlaced.ValidStrongholds(Game, Player).Where(s => AlliedPlayer.AnyForcesIn(s) > 0).RandomOrDefault();
         var avoidEntering = stronghold != null;
 
         stronghold ??= AmbassadorPlaced.ValidStrongholds(Game, Player).Where(Vacant).RandomOrDefault();
@@ -1046,7 +1046,7 @@ public partial class ClassicBot
         if (ambassador == Ambassador.None && availableAmbassadors.Contains(Ambassador.White) 
                                           && Player is { HasRoomForCards: true, Resources: > 6 }) ambassador = Ambassador.White;
         if (ambassador == Ambassador.None && availableAmbassadors.Contains(Ambassador.Red) 
-                                          && Player.Resources <= 4) ambassador = Ambassador.Red;
+                                          && Resources <= 4) ambassador = Ambassador.Red;
         if (ambassador == Ambassador.None && availableAmbassadors.Contains(Ambassador.Yellow) 
                                           && DetermineMovedBattalion(false) != null) ambassador = Ambassador.Yellow;
         if (ambassador == Ambassador.None && availableAmbassadors.Contains(Ambassador.Pink) 
@@ -1124,7 +1124,7 @@ public partial class ClassicBot
                 return PassAmbassadorActivated();
 
             case Ambassador.White:
-                if (Player.Resources > 3 && Player.HasRoomForCards)
+                if (Resources > 3 && Player.HasRoomForCards)
                     return new AmbassadorActivated(Game, Faction) { BlueSelectedAmbassador = blueSelectedAmbassador };
                 return PassAmbassadorActivated();
 

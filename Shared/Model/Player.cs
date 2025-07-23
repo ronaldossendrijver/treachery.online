@@ -563,7 +563,8 @@ public class Player : ICloneable
     #region Information
 
     public Player AlliedPlayer => Game.GetPlayer(Ally);
-
+    public int AlliedResources => AlliedPlayer?.Resources ?? 0;
+    
     public bool HasAlly => Ally != Faction.None;
 
     public bool Has(TreacheryCard card)
@@ -655,7 +656,7 @@ public class Player : ICloneable
         return TreacheryCards.FirstOrDefault(c => c.Type == type);
     }
 
-    private IEnumerable<IHero> UnrevealedTraitors => Traitors.Where(f => !RevealedTraitors.Contains(f));
+    public IEnumerable<IHero> UnrevealedTraitors => Traitors.Where(f => !RevealedTraitors.Contains(f));
 
     public IEnumerable<IHero> UnrevealedFaceDancers => FaceDancers.Where(f => !RevealedFaceDancers.Contains(f));
 

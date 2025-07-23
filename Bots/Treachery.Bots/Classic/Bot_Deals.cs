@@ -17,24 +17,24 @@ public partial class ClassicBot
 
         DealAccepted? result = null;
 
-        if (Game.CurrentPhase == Phase.ClaimingCharity && Player.TechTokens.Any(tt => tt == TechToken.Resources) && Player.Resources <= 3 && !Game.HasBiddingPrescience(Player) && !(Ally != Faction.None && Game.HasBiddingPrescience(Player.AlliedPlayer)))
+        if (Game.CurrentPhase == Phase.ClaimingCharity && Player.TechTokens.Any(tt => tt == TechToken.Resources) && Resources <= 3 && !Game.HasBiddingPrescience(Player) && !(Ally != Faction.None && Game.HasBiddingPrescience(AlliedPlayer)))
         {
-            var greenPrescienceDeal = DealAccepted.AcceptableDeals(Game, Player).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.BiddingReport && d.Price <= Player.Resources);
+            var greenPrescienceDeal = DealAccepted.AcceptableDeals(Game, Player).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.BiddingReport && d.Price <= Resources);
             if (greenPrescienceDeal != null) return greenPrescienceDeal.Acceptance(Faction);
         }
 
         if (Game.CurrentPhase == Phase.Bidding)
-            if (!Game.HasBiddingPrescience(Player) && !(Ally != Faction.None && Game.HasBiddingPrescience(Player.AlliedPlayer)))
+            if (!Game.HasBiddingPrescience(Player) && !(Ally != Faction.None && Game.HasBiddingPrescience(AlliedPlayer)))
             {
-                var biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, Player).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.BiddingReport && d.Price <= Player.Resources);
+                var biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, Player).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.BiddingReport && d.Price <= Resources);
                 LogInfo("biddingPrescienceOfferEntirePhaseYellow: {0}", biddingPrescienceDeal);
                 if (biddingPrescienceDeal != null && Faction == Faction.Yellow && Game.CurrentTurn == 1 && Game.Applicable(Rule.TechTokens) && Game.CurrentPhase <= Phase.ClaimingCharity) return biddingPrescienceDeal.Acceptance(Faction);
 
-                biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, Player).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.BiddingReport && d.Price <= Player.Resources);
+                biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, Player).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.BiddingReport && d.Price <= Resources);
                 LogInfo("biddingPrescienceOfferEntirePhase: {0}", biddingPrescienceDeal);
                 if (biddingPrescienceDeal != null && Game is { CurrentMainPhase: MainPhase.Bidding, CardNumber: 1 } && biddingPrescienceDeal.Price < 1.4f * Game.CardsOnAuction.Items.Count() && ResourcesIncludingAllyContribution - biddingPrescienceDeal.Price > 16) return biddingPrescienceDeal.Acceptance(Faction);
 
-                biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, Player).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.Bidding && d.Price <= Player.Resources);
+                biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, Player).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.Bidding && d.Price <= Resources);
                 LogInfo("biddingPrescienceOfferOneCard: {0}", biddingPrescienceDeal);
                 var maxPriceToPay = 0;
                 if (Faction == Faction.Red && Player.HasRoomForCards && ResourcesIncludingAllyContribution > 24)

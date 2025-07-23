@@ -180,7 +180,7 @@ public partial class ClassicBot
         LogInfo("AGAINST {0} in {1}, WITH {2} + {3} as WEAP + {4} as DEF, I need a force dial of {5}", opponent, Game.CurrentBattle.Territory, hero, weapon, defense, dialNeeded);
 
         var resourcesFromAlly = Ally == Faction.Brown ? Game.ResourcesYourAllyCanPay(Player) : 0;
-        var resourcesForBattle = Player.Resources + resourcesFromAlly;
+        var resourcesForBattle = Resources + resourcesFromAlly;
 
         var dialShortage = DetermineDialShortageForBattle(
             lasgunShield ? 0.5f : dialNeeded,
@@ -208,7 +208,7 @@ public partial class ClassicBot
 
         var predicted = WinWasPredictedByMeThisTurn(opponent.Faction);
         var totalForces = forcesAtFullStrength + forcesAtHalfStrength + specialForcesAtFullStrength + specialForcesAtHalfStrength;
-        var minimizeSpendingsInPlayerLostFight = predicted || (isTraitor && !messiah) || (Player.Resources + ResourcesFromAlly < 10 && totalForces <= 8 && dialShortage > Param.Battle_DialShortageThresholdForThrowing);
+        var minimizeSpendingsInPlayerLostFight = predicted || (isTraitor && !messiah) || (Resources + ResourcesFromAlly < 10 && totalForces <= 8 && dialShortage > Param.Battle_DialShortageThresholdForThrowing);
 
         if (!minimizeSpendingsInPlayerLostFight)
         {
@@ -238,7 +238,7 @@ public partial class ClassicBot
         }
 
         LogInfo("I'm spending as little as possible on Player fight: predicted:{0}, isTraitor:{1} && !messiah:{2}, Resources:{3} < 10 && totalForces:{4} < 10 && dialShortage:{5} >= dialShortageToAccept:{6}",
-            predicted, isTraitor, messiah, Player.Resources, totalForces, dialShortage, Param.Battle_DialShortageThresholdForThrowing);
+            predicted, isTraitor, messiah, Resources, totalForces, dialShortage, Param.Battle_DialShortageThresholdForThrowing);
 
         return ConstructLostBattleMinimizingLosses(opponent, Game.CurrentBattle.Territory);
     }
@@ -878,7 +878,7 @@ public partial class ClassicBot
         isTraitor = !messiahUsed && knownTraitorsForOpponentsInBattle.Contains(hero);
 
         var usedSkill = LeaderSkill.None;
-        return hero != null ? hero.ValueInCombatAgainst(highestOpponentLeader) + Battle.DetermineSkillBonus(Game, player, hero, weapon, defense, player.Resources > 3 ? 3 : 0, ref usedSkill) : 0;
+        return hero != null ? hero.ValueInCombatAgainst(highestOpponentLeader) + Battle.DetermineSkillBonus(Game, player, hero, weapon, defense, Resources > 3 ? 3 : 0, ref usedSkill) : 0;
     }
 
     private float GetDialNeeded(Player p, Territory territory, Player opponent, bool takeReinforcementsIntoAccount)
@@ -1103,7 +1103,7 @@ public partial class ClassicBot
 
         var plan = DetermineBattlePlan(false, false);
         if (!plan.HasPoison && !plan.HasAntidote) adv = HMSAdvantageChosen.ValidAdvantages(Game, Player).FirstOrDefault(a => a == StrongholdAdvantage.CountDefensesAsAntidote);
-        if (adv == StrongholdAdvantage.None && Player.Resources < 5) adv = HMSAdvantageChosen.ValidAdvantages(Game, Player).FirstOrDefault(a => a == StrongholdAdvantage.FreeResourcesForBattles);
+        if (adv == StrongholdAdvantage.None && Resources < 5) adv = HMSAdvantageChosen.ValidAdvantages(Game, Player).FirstOrDefault(a => a == StrongholdAdvantage.FreeResourcesForBattles);
         if (adv == StrongholdAdvantage.None) adv = HMSAdvantageChosen.ValidAdvantages(Game, Player).FirstOrDefault(a => a == StrongholdAdvantage.CollectResourcesForDial);
         if (adv == StrongholdAdvantage.None && !plan.HasUseless) adv = HMSAdvantageChosen.ValidAdvantages(Game, Player).FirstOrDefault(a => a == StrongholdAdvantage.CollectResourcesForUseless);
         if (adv == StrongholdAdvantage.None) adv = HMSAdvantageChosen.ValidAdvantages(Game, Player).FirstOrDefault(a => a == StrongholdAdvantage.FreeResourcesForBattles);
