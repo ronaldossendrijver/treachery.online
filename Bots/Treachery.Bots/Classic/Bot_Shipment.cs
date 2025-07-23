@@ -799,7 +799,6 @@ public partial class ClassicBot
         internal int NoFieldValue { get; init; }
         internal int CunningNoFieldValue { get; init; }
         internal float ShortageForShipment { get; init; }
-        internal bool HasOpponent => Opponent != null;
         internal bool HasForces => ForcesToShip > 0 || SpecialForcesToShip > 0;
     }
 

@@ -274,7 +274,7 @@ public partial class ClassicBot
     {
         return Ally is Faction.None or Faction.Pink ||
                Faction is Faction.Pink ||
-               AlliedPlayer.AnyForcesIn(t) == 0 ||
+               AlliedPlayer!.AnyForcesIn(t) == 0 ||
                (Faction is Faction.Blue && Game.Applicable(Rule.AdvisorsDontConflictWithAlly) &&
                 Player.SpecialForcesIn(t) > 0) ||
                (Ally is Faction.Blue && Game.Applicable(Rule.AdvisorsDontConflictWithAlly) &&
@@ -640,7 +640,7 @@ public partial class ClassicBot
             var specialForces = 0;
             var normalForces = 0;
 
-            var opponentResources = p.Resources + (p.Ally == Faction.None ? 0 : AlliedResources);
+            var opponentResources = p.Resources + p.AlliedResources;
 
             var opponentMayUseWorthlessAsKarma = p.Faction == Faction.Blue && Game.Applicable(Rule.BlueWorthlessAsKarma);
             var hasKarma = CardsPlayerHas(p).Any(c => c.Type == TreacheryCardType.Karma || (opponentMayUseWorthlessAsKarma && c.Type == TreacheryCardType.Karma));
@@ -668,7 +668,7 @@ public partial class ClassicBot
             var knownNonTraitors = Player.Traitors.Union(Player.KnownNonTraitors).Union(knownNonTraitorsByAlly);
 
             var myKnownTraitorsAndNonTraitors = Player.Traitors.Union(knownNonTraitors);
-            var allyKnownTraitorsAndNonTraitors = Player.HasAlly ? AlliedPlayer.Traitors.Union(AlliedPlayer.KnownNonTraitors) : [];
+            var allyKnownTraitorsAndNonTraitors = Player.HasAlly ? AlliedPlayer!.Traitors.Union(AlliedPlayer.KnownNonTraitors) : [];
             var revealedOrToldTraitors = Game.Players.SelectMany(p => p.RevealedTraitors.Union(p.ToldTraitors));
 
             return myKnownTraitorsAndNonTraitors.Union(allyKnownTraitorsAndNonTraitors).Union(revealedOrToldTraitors).ToList();
@@ -712,11 +712,6 @@ public partial class ClassicBot
     private static List<TreacheryCard> Weapons(Game game, Player player, TreacheryCard? usingThisDefense, IHero? usingThisHero, Territory? territory)
     {
         return Battle.ValidWeapons(game, player, usingThisDefense, usingThisHero, territory).ToList();
-    }
-
-    private static List<TreacheryCard> Defenses(Game game, Player player, TreacheryCard? usingThisWeapon, Territory? territory)
-    {
-        return Battle.ValidDefenses(game, player, usingThisWeapon, territory).ToList();
     }
 
     protected virtual TreacheryCard? UselessAsWeapon(TreacheryCard? usingThisDefense)

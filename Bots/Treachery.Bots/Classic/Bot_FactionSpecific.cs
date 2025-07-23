@@ -689,10 +689,10 @@ public partial class ClassicBot
 
         PrescienceAspect aspect;
         if (earlierPrescience != PrescienceAspect.Weapon && !weaponIsCertain && myDefenses.Any(d => d.IsProjectileDefense) && myDefenses.Any(d => d.IsPoisonDefense) && !iHaveShieldSnooper)
-            //I dont have shield snooper and I have choice between shield and snooper, therefore ask for the weapon used
+            //I don't have shield snooper and I have choice between shield and snooper, therefore ask for the weapon used
             aspect = PrescienceAspect.Weapon;
         else if (earlierPrescience != PrescienceAspect.Defense && !defenseIsCertain && myWeapons.Any(d => d.IsProjectileWeapon) && myWeapons.Any(d => d.IsPoisonWeapon) && !iHavePoisonBlade)
-            //I dont have poison blade and I have choice between poison weapon and projectile weapon, therefore ask for the defense used
+            //I don't have poison blade and I have choice between poison weapon and projectile weapon, therefore ask for the defense used
             aspect = PrescienceAspect.Defense;
         else if (earlierPrescience != PrescienceAspect.Weapon && !weaponIsCertain && myDefenses.Any() && !iHaveShieldSnooper)
             aspect = PrescienceAspect.Weapon;
@@ -714,7 +714,7 @@ public partial class ClassicBot
 
     private SetIncreasedRevivalLimits? DetermineSetIncreasedRevivalLimits()
     {
-        var targets = SetIncreasedRevivalLimits.ValidTargets(Game, player).ToArray();
+        var targets = SetIncreasedRevivalLimits.ValidTargets(Game, Player).ToArray();
         if (Game.FactionsWithIncreasedRevivalLimits.Length != targets.Length)
             return new SetIncreasedRevivalLimits(Game, Faction) { Factions = targets };
         
@@ -725,10 +725,10 @@ public partial class ClassicBot
     {
         if (FaceDanced.MayCallFaceDancer(Game, Player))
         {
-            var facedancer = Player.FaceDancers.FirstOrDefault(f => Game.WinnerHero.IsFaceDancer(f));
-            var facedancedHeroIsLivingLeader = facedancer is Leader && Game.IsAlive(facedancer);
+            var faceDancer = Player.FaceDancers.FirstOrDefault(f => Game.WinnerHero.IsFaceDancer(f));
+            var faceDancedHeroIsLivingLeader = faceDancer is Leader && Game.IsAlive(faceDancer);
 
-            if ((FaceDanced.MaximumNumberOfForces(Game, player) > 0 || facedancedHeroIsLivingLeader) && Game.BattleWinner != Ally)
+            if ((FaceDanced.MaximumNumberOfForces(Game, Player) > 0 || faceDancedHeroIsLivingLeader) && Game.BattleWinner != Ally)
             {
                 var result = new FaceDancerRevealed(Game, Faction) { Passed = false };
                 LogInfo(result.GetMessage());
@@ -773,7 +773,7 @@ public partial class ClassicBot
     protected virtual FaceDancerReplaced DetermineFaceDancerReplaced()
     {
         var replaceable = Player.FaceDancers.Where(f => !Player.RevealedFaceDancers.Contains(f)).OrderBy(f => f.Value).ToArray();
-        var toReplace = replaceable.FirstOrDefault(f => Player.Leaders.Contains(f) || (Ally != Faction.None && AlliedPlayer.Leaders.Contains(f)));
+        var toReplace = replaceable.FirstOrDefault(f => Player.Leaders.Contains(f) || (Ally != Faction.None && AlliedPlayer!.Leaders.Contains(f)));
         toReplace ??= replaceable.FirstOrDefault(f => f is Leader && !Game.IsAlive(f));
 
         if (toReplace != null)
@@ -828,7 +828,7 @@ public partial class ClassicBot
             }
             else
             {
-                if ((Player.FaceDancers.Contains(hero) && !Player.RevealedFaceDancers.Contains(hero)) || (Ally != Faction.None && AlliedPlayer.Traitors.Contains(hero) && !AlliedPlayer.RevealedTraitors.Contains(hero)))
+                if ((Player.FaceDancers.Contains(hero) && !Player.RevealedFaceDancers.Contains(hero)) || Player.HasAlly && AlliedPlayer!.Traitors.Contains(hero) && !AlliedPlayer.RevealedTraitors.Contains(hero))
                     price = 1 + D(1, hero.Value);
                 else
                     price = 2 + D(2, hero.Value);
@@ -972,7 +972,7 @@ public partial class ClassicBot
                 ? TerrorPlanted.ValidStrongholds(Game, Player).HighestOrDefault(t => Opponents.Sum(o => o.AnyForcesIn(t))) 
                 : TerrorPlanted.ValidStrongholds(Game, Player).HighestOrDefault(t => Player.AnyForcesIn(t));
             
-            if (stronghold == null && Player.HasAlly) stronghold = TerrorPlanted.ValidStrongholds(Game, Player).HighestOrDefault(t => AlliedPlayer.AnyForcesIn(t) > 0);
+            if (stronghold == null && Player.HasAlly) stronghold = TerrorPlanted.ValidStrongholds(Game, Player).HighestOrDefault(t => AlliedPlayer!.AnyForcesIn(t) > 0);
             
             stronghold ??= TerrorPlanted.ValidStrongholds(Game, Player).RandomOrDefault();
 
@@ -1019,7 +1019,9 @@ public partial class ClassicBot
             Resources <= 3 + Game.AmbassadorsPlacedThisTurn) return null;
         
         var stronghold = AmbassadorPlaced.ValidStrongholds(Game, Player).Where(s => Player.AnyForcesIn(s) > 0).RandomOrDefault();
-        if (stronghold == null && Player.HasAlly) stronghold = AmbassadorPlaced.ValidStrongholds(Game, Player).Where(s => AlliedPlayer.AnyForcesIn(s) > 0).RandomOrDefault();
+        if (stronghold == null && Player.HasAlly) 
+            stronghold = AmbassadorPlaced.ValidStrongholds(Game, Player).Where(s => AlliedPlayer!.AnyForcesIn(s) > 0).RandomOrDefault();
+        
         var avoidEntering = stronghold != null;
 
         stronghold ??= AmbassadorPlaced.ValidStrongholds(Game, Player).Where(Vacant).RandomOrDefault();
@@ -1138,9 +1140,9 @@ public partial class ClassicBot
                     .Where(l => dangerousOpponents.Length == 0 || dangerousOpponents.Any(p => p.Occupies(l)))
                     .Where(l => l.Territory.IsStronghold && Player.AnyForcesIn(l) == 0 && AllyDoesntBlock(l.Territory) && !StormWillProbablyHit(l) && !InStorm(l) && IDontHaveAdvisorsIn(l))
                     .Select(l => ConstructAttack(l, 0, 0, 4))
-                    .Where(s => s.ForcesToShip <= 4 && s.HasOpponent && !WinWasPredictedByMeThisTurn(s.Opponent.Faction));
+                    .Where(s => s is { ForcesToShip: <= 4, Opponent: not null } && !WinWasPredictedByMeThisTurn(s.Opponent.Faction));
 
-                var attack = possibleAttacks.Where(s => s.HasForces && s.ShortageForShipment == 0).LowestOrDefault(s => s.DialNeeded + DeterminePenalty(s.Opponent));
+                var attack = possibleAttacks.Where(s => s is { HasForces: true, ShortageForShipment: 0 }).LowestOrDefault(s => s.DialNeeded + DeterminePenalty(s.Opponent));
 
                 if (attack != null)
                     return new AmbassadorActivated(Game, Faction) { BlueSelectedAmbassador = blueSelectedAmbassador, YellowOrOrangeTo = attack.Location, OrangeForceAmount = AmbassadorActivated.ValidOrangeMaxForces(Player) };
@@ -1181,7 +1183,7 @@ public partial class ClassicBot
         return new WhiteAnnouncesBlackMarket(Game, Faction) { Passed = true };
     }
 
-    protected virtual WhiteRevealedNoField DetermineWhiteRevealedNoField()
+    protected virtual WhiteRevealedNoField? DetermineWhiteRevealedNoField()
     {
         if (Game.CurrentPhase == Phase.ShipmentAndMoveConcluded)
         {
