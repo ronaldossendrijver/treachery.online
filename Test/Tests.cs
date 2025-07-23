@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Text.Json.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Treachery.Bots;
 using Treachery.Shared;
 using Treachery.Shared.Model;
 
@@ -29,12 +30,18 @@ public class Tests
     private const bool GatherTrainingDataDuringRegressionTest = false;
     private const bool GatherCentralStyleStatistics = false;
 
+    // ReSharper disable UnusedParameter.Local
+    
     private void SaveSpecialCases(Game g, GameEvent e)
     {
         
     }
-
+    // ReSharper restore UnusedParameter.Local
+    
     private readonly List<string> _writtenCases = [];
+    
+    // ReSharper disable UnusedMember.Local
+    
     private void WriteSaveGameIfApplicable(Game g, Player playerWithAction, string c)
     {
         lock (_writtenCases)
@@ -45,6 +52,8 @@ public class Tests
             _writtenCases.Add(c);
         }
     }
+    
+    // ReSharper restore UnusedMember.Local
 
     private ObjectCounter<int> _cardCount;
     private ObjectCounter<int> _leaderCount;
@@ -402,7 +411,7 @@ public class Tests
 
         try
         {
-            var start = new EstablishPlayers(game, Faction.None)
+            var establishPlayers = new EstablishPlayers(game, Faction.None)
             {
                 Players = [],
                 Seed = new Random().Next(),
@@ -415,16 +424,23 @@ public class Tests
                     NumberOfPlayers = nrOfPlayers,
                 }
             };
-            start.Execute(false, true);
+            establishPlayers.Execute(false, true);
 
+            var bots = new Dictionary<Faction, IBot>();
             if (parameters != null)
-                foreach (var kvp in parameters) game.Players.Single(p => p.Faction == kvp.Key).Param = kvp.Value;
+            {
+                foreach (var p in game.Players)
+                {
+                    var prs = parameters.GetValueOrDefault(p.Faction, BotParameters.GetDefaultParameters(p.Faction));
+                    bots.Add(p.Faction, new ClassicBot(game, p, prs));
+                }
+            }
 
             var maxNumberOfEvents = game.CurrentTurn * game.Players.Count * 60;
 
             while (game.CurrentPhase != Phase.GameEnded)
             {
-                var evt = PerformBotEvent(game, performTests);
+                var evt = PerformBotEvent(game, bots, performTests);
 
                 if (evt == null) File.WriteAllText("novalidbotevent" + game.Seed + ".json", GameState.GetStateAsString(game));
                 Assert.IsNotNull(evt, "bots couldn't come up with a valid event");
@@ -465,17 +481,16 @@ public class Tests
         _failedGames.Add(game);
     }
 
-    private static GameEvent PerformBotEvent(Game game, bool performTests)
+    private static GameEvent PerformBotEvent(Game game, Dictionary<Faction, IBot> botForPlayers, bool performTests)
     {
-        var bots = Deck<Player>.Randomize(game.Players.Where(p => p.IsBot));
-
         var botEvents = new Dictionary<Player, List<Type>>();
-        foreach (var bot in bots) 
+        foreach (var bot in game.Players) 
             botEvents.Add(bot, game.GetApplicableEvents(bot, true));
 
-        foreach (var bot in bots)
+        foreach (var player in game.Players)
         {
-            var evt = bot.DetermineHighestPrioInPhaseAction(botEvents[bot]);
+            var bot = botForPlayers[player.Faction];
+            var evt = bot.DetermineHighestPriorityInPhaseAction(botEvents[player]);
 
             if (evt != null)
             {
@@ -484,9 +499,10 @@ public class Tests
             }
         }
 
-        foreach (var bot in bots)
+        foreach (var player in game.Players)
         {
-            var evt = bot.DetermineHighPrioInPhaseAction(botEvents[bot]);
+            var bot = botForPlayers[player.Faction];
+            var evt = bot.DetermineHighPriorityInPhaseAction(botEvents[player]);
 
             if (evt != null)
             {
@@ -495,9 +511,10 @@ public class Tests
             }
         }
 
-        foreach (var bot in bots)
+        foreach (var player in game.Players)
         {
-            var evt = bot.DetermineMiddlePrioInPhaseAction(botEvents[bot]);
+            var bot = botForPlayers[player.Faction];
+            var evt = bot.DetermineMiddlePriorityInPhaseAction(botEvents[player]);
 
             if (evt != null)
             {
@@ -506,9 +523,10 @@ public class Tests
             }
         }
 
-        foreach (var bot in bots)
+        foreach (var player in game.Players)
         {
-            var evt = bot.DetermineLowPrioInPhaseAction(botEvents[bot]);
+            var bot = botForPlayers[player.Faction];
+            var evt = bot.DetermineLowPriorityInPhaseAction(botEvents[player]);
 
             if (evt != null)
             {
@@ -517,9 +535,10 @@ public class Tests
             }
         }
 
-        foreach (var bot in bots)
+        foreach (var player in game.Players)
         {
-            var evt = bot.DetermineEndPhaseAction(botEvents[bot]);
+            var bot = botForPlayers[player.Faction];
+            var evt = bot.DetermineEndPhaseAction(botEvents[player]);
 
             if (evt != null)
             {
@@ -544,6 +563,9 @@ public class Tests
 
         if (performTests) Assert.IsNull(executeResult, msg);
     }
+
+#pragma warning disable CS0162 // Unreachable code detected
+    // ReSharper disable HeuristicUnreachableCode
 
     [TestMethod]
     public void Regression()
@@ -604,7 +626,7 @@ public class Tests
             File.AppendAllText("CentralStyleStatistics.json", "]\r\n}");
         }
     }
-
+    
     private void ReplayGame(string fileName, string testcaseFileName, Statistics statistics, TrainingData trainingData, ConcurrentBag<string> centralStyleStatistics)
     {
         var fs = File.OpenText(fileName);
@@ -620,9 +642,6 @@ public class Tests
 
         var valueId = 0;
 
-        BattleOutcome previousBattleOutcome = null;
-        IBid previousWinningBid = null;
-        
         foreach (var evt in state.Events)
         {
             evt.Initialize(game);
@@ -652,8 +671,12 @@ public class Tests
             if (GatherTrainingDataDuringRegressionTest)
                 trainingData.WriteTrainingDataIfGameEnded(game);
             
-            if (GatherStatisticsDuringRegressionTest) 
+            if (GatherStatisticsDuringRegressionTest)
+            {
+                BattleOutcome previousBattleOutcome = null;
+                IBid previousWinningBid = null;
                 GatherStatistics(statistics, game, ref previousBattleOutcome, ref previousWinningBid);
+            }
         }
 
         if (GatherCentralStyleStatistics)
@@ -663,6 +686,9 @@ public class Tests
             centralStyleStatistics.Add(data);
         }
     }
+    
+    // ReSharper restore HeuristicUnreachableCode
+#pragma warning restore CS0162 // Unreachable code detected
 
     private static void GatherStatistics(Statistics statistics, Game game, ref BattleOutcome previousBattleOutcome, ref IBid previousWinningBid)
     {

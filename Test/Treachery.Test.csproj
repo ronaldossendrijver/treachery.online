@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Bots\Treachery.Bots\Treachery.Bots.csproj" />
     <ProjectReference Include="..\Shared\Treachery.Shared.csproj" />
   </ItemGroup>
 

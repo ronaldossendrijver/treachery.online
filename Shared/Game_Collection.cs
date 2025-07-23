@@ -59,7 +59,7 @@ public partial class Game
     {
         if (receivedAmount > 1 && Applicable(Rule.Homeworlds))
         {
-            var homeworld = Version >= 166 ? from.PrimaryHomeworld;
+            var homeworld = Version >= 166 ? from.PrimaryHomeworld : from.HomeWorlds.First();
             var occupier = OccupierOf(homeworld.World);
 
             var halfIsLost = Version >= 169

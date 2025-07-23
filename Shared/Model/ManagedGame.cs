@@ -16,7 +16,7 @@ public class ManagedGame
     
     public Game Game { get; set; }
     
-    public string Name { get; set; }
+    public string Name { get; init; }
     
     public string HashedPassword { get; init; }
 
@@ -25,4 +25,6 @@ public class ManagedGame
     public bool StatisticsSent { get; set; }
 
     public DateTimeOffset LastAsyncPlayMessageSent { get; set; }
+
+    public Dictionary<Faction, IBot> Bots { get; } = [];
 }

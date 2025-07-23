@@ -9,13 +9,11 @@
 
 namespace Treachery.Bots;
 
-public partial class ClassicBot(Game _game, Player _player, BotParameters _param)
+public partial class ClassicBot(Game game, Player player, BotParameters param) : IBot
 {
-    private const bool BotLogging = false;
+    private Game Game { get; } = game;
 
-    private Game Game { get; } = _game;
-
-    private Player Player { get; } = _player;
+    private Player Player { get; } = player;
 
     private Faction Faction => Player.Faction;
 
@@ -27,9 +25,9 @@ public partial class ClassicBot(Game _game, Player _player, BotParameters _param
     
     #region PublicInterface
 
-    private BotParameters Param { get; } = _param;
+    private BotParameters Param { get; } = param;
 
-    public GameEvent? DetermineHighestPrioInPhaseAction(List<Type> events)
+    public GameEvent? DetermineHighestPriorityInPhaseAction(List<Type> events)
     {
         GameEvent? action = null;
 
@@ -42,7 +40,7 @@ public partial class ClassicBot(Game _game, Player _player, BotParameters _param
         return null;
     }
 
-    public GameEvent? DetermineHighPrioInPhaseAction(List<Type> events)
+    public GameEvent? DetermineHighPriorityInPhaseAction(List<Type> events)
     {
         GameEvent? action = null;
 
@@ -51,7 +49,7 @@ public partial class ClassicBot(Game _game, Player _player, BotParameters _param
         return null;
     }
 
-    public GameEvent? DetermineMiddlePrioInPhaseAction(List<Type> events)
+    public GameEvent? DetermineMiddlePriorityInPhaseAction(List<Type> events)
     {
         GameEvent? action = null;
 
@@ -77,7 +75,7 @@ public partial class ClassicBot(Game _game, Player _player, BotParameters _param
         return null;
     }
 
-    public GameEvent? DetermineLowPrioInPhaseAction(List<Type> events)
+    public GameEvent? DetermineLowPriorityInPhaseAction(List<Type> events)
     {
         GameEvent? action = null;
 
@@ -210,7 +208,7 @@ public partial class ClassicBot(Game _game, Player _player, BotParameters _param
         return new EndPhase(Game, Faction);
     }
 
-    private bool Do<T>(Func<T> method, ref GameEvent? action, IEnumerable<Type> allowedActions) where T : GameEvent
+    private bool Do<T>(Func<T> method, ref GameEvent? action, IEnumerable<Type> allowedActions) where T : GameEvent?
     {
         if (typeof(T) == typeof(GameEvent)) throw new ArgumentException("Illegally typed method: " + method);
 
@@ -249,23 +247,28 @@ public partial class ClassicBot(Game _game, Player _player, BotParameters _param
 
     private void LogInfo(string msg, params object?[] pars)
     {
-        if (BotLogging)
+        #if (DEBUG)
         {
             if (Message.DefaultDescriber != null)
                 Console.WriteLine(Faction + ": " + Message.DefaultDescriber.Format(msg, pars));
             else
                 Console.WriteLine(Faction + ": " + string.Format(msg, pars));
         }
+        #endif
     }
 
-    private void LogInfo(Message message)
+    private void LogInfo(Message? message)
     {
-        if (!BotLogging || message == null) return;
+        #if (DEBUG) 
+        {
+            if (message == null) return;
         
-        if (Message.DefaultDescriber != null)
-            Console.WriteLine(Faction + ": " + message.ToString(Message.DefaultDescriber));
-        else
-            Console.WriteLine(Faction + ": " + message);
+            if (Message.DefaultDescriber != null)
+                Console.WriteLine(Faction + ": " + message.ToString(Message.DefaultDescriber));
+            else
+                Console.WriteLine(Faction + ": " + message);
+        }
+        #endif
     }
 
     private readonly LoggedRandom _random = new();
