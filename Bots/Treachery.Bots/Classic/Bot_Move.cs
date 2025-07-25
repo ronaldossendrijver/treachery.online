@@ -73,12 +73,12 @@ public partial class ClassicBot
         var winning = IAmWinning;
         LogInfo("DetermineMove(). AllIn: {0}, Winning: {1}.", LastTurn, winning);
 
-        if (DecidedShipmentAction == ShipmentDecision.StrongholdNearResources && Player.ForcesInLocations.ContainsKey(DecidedShipment.To))
+        if (DecidedShipmentAction == ShipmentDecision.StrongholdNearResources && Player.ForcesInLocations.ContainsKey(DecidedShipment!.To))
         {
             LogInfo("Move to spice");
             var toMove = Player.ForcesInLocations[DecidedShipment.To].Take(DecidedShipment.ForceAmount + DecidedShipment.SpecialForceAmount, Faction == Faction.Grey);
 
-            if (WithinRange(DecidedShipment.To, FinalDestination, toMove))
+            if (FinalDestination != null && WithinRange(DecidedShipment.To, FinalDestination, toMove))
             {
                 var move = ConstructMove(FinalDestination, DecidedShipment.To, toMove);
                 if (move != null) return move;

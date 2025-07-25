@@ -43,7 +43,7 @@ public partial class ClassicBot
         {
             LogInfo("Player is my own card");
             if (Game.CurrentAuctionType == AuctionType.BlackMarketSilent)
-                return CreateBidUsingAllyAndRedSpice(0, 0, null);
+                return CreateBidUsingAllyAndRedSpice(0, null);
             return PassedBid();
         }
 
@@ -52,10 +52,10 @@ public partial class ClassicBot
             if (thisCardIsUseless || thisCardIsCrappy)
             {
                 var toBid = thisCardIsUseless || Math.Max(0, Resources - resourcesToKeep) < 2 ? 0 : D(1, 2);
-                return CreateBidUsingAllyAndRedSpice(toBid, 0, null);
+                return CreateBidUsingAllyAndRedSpice(toBid,  null);
             }
 
-            return CreateBidUsingAllyAndRedSpice(Math.Min(Math.Max(0, Resources - resourcesToKeep), amountToBidInSilentOrOnceAround), 0, null);
+            return CreateBidUsingAllyAndRedSpice(Math.Min(Math.Max(0, Resources - resourcesToKeep), amountToBidInSilentOrOnceAround), null);
         }
 
         if (currentBidIsFromAlly || (thisCardIsUseless && currentBid > 0) || (thisCardIsCrappy && D(1, 1 + 2 * currentBid) > 1))
@@ -67,14 +67,14 @@ public partial class ClassicBot
         if (Game.CurrentAuctionType == AuctionType.BlackMarketOnceAround || Game.CurrentAuctionType == AuctionType.WhiteOnceAround)
         {
             return amountToBidInSilentOrOnceAround > currentBid 
-                ? CreateBidUsingAllyAndRedSpice(amountToBidInSilentOrOnceAround, 0, null) 
+                ? CreateBidUsingAllyAndRedSpice(amountToBidInSilentOrOnceAround, null) 
                 : PassedBid();
         }
 
         if (currentBid == 0 && ResourcesIncludingAllyAndRedContribution > 0)
         {
             LogInfo("always bid at least 1 if possible");
-            return CreateBidUsingAllyAndRedSpice(1, 0, null);
+            return CreateBidUsingAllyAndRedSpice(1, null);
         }
 
         if (Ally != Faction.Red && currentBid > Param.Bidding_PassingTreshold + maximumIWillSpend)
@@ -98,7 +98,7 @@ public partial class ClassicBot
                 resourcesAvailable
             );
 
-            return CreateBidUsingAllyAndRedSpice(maxBidOfOtherPlayer, resourcesToKeep, karmaCardToUseForBidding);
+            return CreateBidUsingAllyAndRedSpice(maxBidOfOtherPlayer, karmaCardToUseForBidding);
         }
 
         if (currentBid + 1 <= resourcesAvailable || karmaCardToUseForBidding != null)
@@ -108,7 +108,7 @@ public partial class ClassicBot
                 resourcesAvailable,
                 karmaCardToUseForBidding);
 
-            return CreateBidUsingAllyAndRedSpice(currentBid + 1, resourcesToKeep, karmaCardToUseForBidding);
+            return CreateBidUsingAllyAndRedSpice(currentBid + 1, karmaCardToUseForBidding);
         }
 
         LogInfo("Not enough spice available for bid");
@@ -120,7 +120,7 @@ public partial class ClassicBot
         return new Bid(Game, Faction) { Passed = true };
     }
 
-    protected virtual Bid CreateBidUsingAllyAndRedSpice(int amount, int spiceToKeep, TreacheryCard? karmaCard)
+    protected virtual Bid CreateBidUsingAllyAndRedSpice(int amount, TreacheryCard? karmaCard)
     {
         if (karmaCard != null)
             return new Bid(Game, Faction) { Amount = amount, KarmaBid = false, KarmaCard = karmaCard, Passed = false };

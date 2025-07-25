@@ -402,7 +402,7 @@ public partial class ClassicBot
         {
             result.WeaponToUse = null;
             result.DefenseToUse = null;
-            result.Voice = new Voice(Game, Faction) { Must = true, Type = TreacheryCardType.Laser };
+            result.Voice = new Voice(Game, p.Faction) { Must = true, Type = TreacheryCardType.Laser };
             result.OpponentHeroWillCertainlyBeZero = true;
             result.PlayerHeroWillCertainlySurvive = true;
         }
@@ -747,7 +747,7 @@ public partial class ClassicBot
 
         var biggest = BiggestBattalionThreatenedByStormWithoutSpice;
 
-        if (biggest == null) return new FaceDanced { Passed = true };
+        if (biggest == null) return new FaceDanced(Game, Faction) { Passed = true };
         
         var toTake = biggest.Battalion.Take(toPlace, false);
         forcesFromPlanet.Add(biggest.Location, toTake);
@@ -758,7 +758,7 @@ public partial class ClassicBot
         var targetLocation = FaceDanced.ValidTargetLocations(Game).FirstOrDefault(l => Game.ResourcesOnPlanet.ContainsKey(l));
         targetLocation ??= FaceDanced.ValidTargetLocations(Game).FirstOrDefault();
 
-        if (targetLocation == null) return new FaceDanced { Passed = true };
+        if (targetLocation == null) return new FaceDanced(Game, Faction) { Passed = true };
         
         var targetLocations = new Dictionary<Location, Battalion>
         {

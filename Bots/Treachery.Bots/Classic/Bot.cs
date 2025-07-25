@@ -245,28 +245,28 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
 
     #region SupportMethods
 
-    private void LogInfo(string msg, params object?[] pars)
+    private static void LogInfo(string msg, params object?[] pars)
     {
         #if (DEBUG)
         {
             if (Message.DefaultDescriber != null)
-                Console.WriteLine(Faction + ": " + Message.DefaultDescriber.Format(msg, pars));
+                Console.WriteLine(Message.DefaultDescriber.Format(msg, pars));
             else
-                Console.WriteLine(Faction + ": " + string.Format(msg, pars));
+                Console.WriteLine(msg, pars);
         }
         #endif
     }
 
-    private void LogInfo(Message? message)
+    private static void LogInfo(Message? message)
     {
         #if (DEBUG) 
         {
             if (message == null) return;
         
             if (Message.DefaultDescriber != null)
-                Console.WriteLine(Faction + ": " + message.ToString(Message.DefaultDescriber));
+                Console.WriteLine(message.ToString(Message.DefaultDescriber));
             else
-                Console.WriteLine(Faction + ": " + message);
+                Console.WriteLine(message);
         }
         #endif
     }

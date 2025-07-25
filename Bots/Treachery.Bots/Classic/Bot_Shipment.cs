@@ -131,7 +131,7 @@ public partial class ClassicBot
             -battalionToEvacuate.Battalion.AmountOfSpecialForces, -1, -1, battalionToEvacuate.Location, false, true);
     }
 
-    protected virtual void DetermineShipment_AttackWeakHMS(int extraForces, float riskAppitite, int minResourcesToKeep, int maxUnsupportedForces)
+    protected virtual void DetermineShipment_AttackWeakHMS(int extraForces, float riskAppetite, int minResourcesToKeep, int maxUnsupportedForces)
     {
         LogInfo("DetermineShipment_AttackWeakHMS()");
 

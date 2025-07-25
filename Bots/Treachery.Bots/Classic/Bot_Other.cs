@@ -469,22 +469,22 @@ public partial class ClassicBot
         
         if (Player.TreacheryCards.Count(c => CardQuality(c, Player) <= 2) >= 2)
         {
-            var bestOpponentToSwapWith = Opponents.HighestOrDefault(o => CardsPlayerHas(o).Count(c => CardQuality(c, Player) >= 3));
+            var bestOpponentToSwapWith = Opponents.HighestOrDefault(o => KnownCardsHeldByPlayer(o).Count(c => CardQuality(c, Player) >= 3));
             LogInfo("opponent with most known good cards: " + bestOpponentToSwapWith);
 
-            if (bestOpponentToSwapWith != null && CardsPlayerHas(bestOpponentToSwapWith).Count(c => CardQuality(c, Player) >= 3) >= 2)
+            if (bestOpponentToSwapWith != null && KnownCardsHeldByPlayer(bestOpponentToSwapWith).Count(c => CardQuality(c, Player) >= 3) >= 2)
             {
                 //Swap with an opponent that 2 or more good cards that I know of
-                LogInfo("swapping, because number of good cards = " + CardsPlayerHas(bestOpponentToSwapWith).Count(c => CardQuality(c, Player) >= 3));
+                LogInfo("swapping, because number of good cards = " + KnownCardsHeldByPlayer(bestOpponentToSwapWith).Count(c => CardQuality(c, Player) >= 3));
                 return new KarmaHandSwapInitiated(Game, Faction) { Target = bestOpponentToSwapWith.Faction };
             }
 
             bestOpponentToSwapWith = Opponents.FirstOrDefault(o => o.TreacheryCards.Count == 4);
             LogInfo("opponent with 4 cards: " + bestOpponentToSwapWith);
 
-            if (bestOpponentToSwapWith != null && CardsPlayerHas(bestOpponentToSwapWith).Count(c => CardQuality(c, Player) < 3) <= 2)
+            if (bestOpponentToSwapWith != null && KnownCardsHeldByPlayer(bestOpponentToSwapWith).Count(c => CardQuality(c, Player) < 3) <= 2)
             {
-                LogInfo("swapping, because number of known bad cards = " + CardsPlayerHas(bestOpponentToSwapWith).Count(c => CardQuality(c, Player) < 3));
+                LogInfo("swapping, because number of known bad cards = " + KnownCardsHeldByPlayer(bestOpponentToSwapWith).Count(c => CardQuality(c, Player) < 3));
                 //Swap with an opponent that has 4 cards and 2 or less useless cards that I know of
                 return new KarmaHandSwapInitiated(Game, Faction) { Target = bestOpponentToSwapWith.Faction };
             }
@@ -858,7 +858,7 @@ public partial class ClassicBot
 
     private int HeroRevivalPenalty(IHero h)
     {
-        if (h.HeroType == HeroType.Messiah || h.HeroType == HeroType.Auditor)
+        if (h.HeroType is HeroType.Messiah or HeroType.Auditor)
             return 20;
         if (Player.KnownNonTraitors.Contains(h))
             return 10;

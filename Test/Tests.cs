@@ -427,13 +427,13 @@ public class Tests
             establishPlayers.Execute(false, true);
 
             var bots = new Dictionary<Faction, IBot>();
-            if (parameters != null)
+            foreach (var p in game.Players)
             {
-                foreach (var p in game.Players)
-                {
-                    var prs = parameters.GetValueOrDefault(p.Faction, BotParameters.GetDefaultParameters(p.Faction));
-                    bots.Add(p.Faction, new ClassicBot(game, p, prs));
-                }
+                var prs = parameters != null
+                    ? parameters.GetValueOrDefault(p.Faction, BotParameters.GetDefaultParameters(p.Faction))
+                    : BotParameters.GetDefaultParameters(p.Faction);
+
+                bots.Add(p.Faction, new ClassicBot(game, p, prs));
             }
 
             var maxNumberOfEvents = game.CurrentTurn * game.Players.Count * 60;
@@ -442,9 +442,12 @@ public class Tests
             {
                 var evt = PerformBotEvent(game, bots, performTests);
 
-                if (evt == null) File.WriteAllText("novalidbotevent" + game.Seed + ".json", GameState.GetStateAsString(game));
-                Assert.IsNotNull(evt, "bots couldn't come up with a valid event");
-
+                if (evt == null)
+                {
+                    File.WriteAllText("novalidbotevent" + game.Seed + ".json", GameState.GetStateAsString(game));
+                    Assert.IsNotNull(evt, "bots couldn't come up with a valid event");
+                }
+                
                 evt.Time = DateTime.Now;
 
                 if (game.History.Count == maxNumberOfEvents) File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
