@@ -265,24 +265,19 @@ public partial class ClassicBot
 
         var opponent = GetOpponentThatOccupies(territory);
 
-        if (opponent != null)
-        {
-            var potentialWinningOpponents = Game.Players.Where(p => p != Player 
-                                                                    && p != AlliedPlayer && Game.MeetsNormalVictoryCondition(p, true) 
-                                                                    && Game.CountChallengedVictoryPoints(p) < 2);
-            var amountICanReinforce = MaxReinforcedDialTo(Player, territory);
-            var maxDial = MaxDial(Player, territory, opponent);
+        if (opponent == null) return false;
+        
+        var potentialWinningOpponents = Game.Players.Where(p => p != Player 
+                                                                && p != AlliedPlayer && Game.MeetsNormalVictoryCondition(p, true) 
+                                                                && Game.CountChallengedVictoryPoints(p) < 2);
+        var amountICanReinforce = MaxReinforcedDialTo(Game, Player, opponent, territory);
+        var maxDial = MaxDial(Game, Player, territory, opponent);
+        var dialNeeded = GetDialNeeded(territory, opponent, false);
 
-            var dialNeeded = GetDialNeeded(territory, opponent, false);
-
-            if ((!opponent.Is(Faction.Black) && WinWasPredictedByMeThisTurn(opponent.Faction)) ||
-                dialNeeded <= maxDial ||
-                (LastTurn && dialNeeded - 1 <= amountICanReinforce + maxDial) ||
-                (potentialWinningOpponents.Contains(opponent) && dialNeeded <= amountICanReinforce + maxDial))
-                return true;
-        }
-
-        return false;
+        return (!opponent.Is(Faction.Black) && WinWasPredictedByMeThisTurn(opponent.Faction)) ||
+               dialNeeded <= maxDial ||
+               (LastTurn && dialNeeded - 1 <= amountICanReinforce + maxDial) ||
+               (potentialWinningOpponents.Contains(opponent) && dialNeeded <= amountICanReinforce + maxDial);
     }
 
     private BlueBattleAnnouncement? DetermineBlueBattleAnnouncement()
@@ -308,7 +303,7 @@ public partial class ClassicBot
         var lastTurnConfidenceBonus = LastTurn ? 3 : 0;
 
         return (territory.IsStronghold && WinWasPredictedByMeThisTurn(opponent.Faction)) ||
-               dialNeeded + lastTurnConfidenceBonus <= MaxDial(Player, territory, opponent) + MaxReinforcedDialTo(Player, territory);
+               dialNeeded + lastTurnConfidenceBonus <= MaxDial(Game, Player, territory, opponent) + MaxReinforcedDialTo(Game, Player, opponent, territory);
     }
 
     private BlueAccompanies DetermineBlueAccompanies()
@@ -407,11 +402,11 @@ public partial class ClassicBot
             result.PlayerHeroWillCertainlySurvive = true;
         }
 
-        var knownOpponentDefenses = KnownOpponentDefenses(opponent);
-        var knownOpponentWeapons = KnownOpponentWeapons(opponent);
-        var nrOfUnknownOpponentCards = NrOfUnknownOpponentCards(opponent);
+        var knownOpponentDefenses = KnownOpponentDefenses(Game, Player, opponent);
+        var knownOpponentWeapons = KnownOpponentWeapons(Game, Player, opponent);
+        var nrOfUnknownOpponentCards = NrOfUnknownOpponentCards(Game, Player, opponent);
 
-        var weapons = Weapons(null, null, null)
+        var weapons = Weapons(Game, Player, null, null, null)
             .Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth).ToArray();
         result.WeaponToUse = weapons.FirstOrDefault(w => w.Type == TreacheryCardType.ProjectileAndPoison); //use poison blade if available
         result.WeaponToUse ??= weapons.FirstOrDefault(w => w.Type == TreacheryCardType.Laser); //use lasgun if available
@@ -421,9 +416,9 @@ public partial class ClassicBot
         var type = TreacheryCardType.None;
         var must = false;
 
-        var opponentMightHaveDefenses = !(knownOpponentDefenses.Any() && nrOfUnknownOpponentCards == 0);
+        var opponentMightHaveDefenses = !(knownOpponentDefenses.Count != 0 && nrOfUnknownOpponentCards == 0);
 
-        var cardsPlayerHasOrMightHave = CardsPlayerHasOrMightHave(opponent);
+        var cardsPlayerHasOrMightHave = CardsPlayerHasOrMightHave(Game, opponent);
 
         if (opponentMightHaveDefenses && result.WeaponToUse != null)
         {
@@ -520,7 +515,7 @@ public partial class ClassicBot
             var opponentMightHaveWeapons = !(knownOpponentWeapons.Any() && nrOfUnknownOpponentCards == 0);
 
             //I have no weapon or the opponent has no defense. Focus on disabling their weapon.
-            DetermineBestDefense(opponent, null, out result.DefenseToUse);
+            DetermineBestDefense(Game, Player, opponent, null, out result.DefenseToUse);
 
             if (opponentMightHaveWeapons && result.DefenseToUse != null)
             {
@@ -671,7 +666,7 @@ public partial class ClassicBot
         if (!Game.CurrentBattle.IsAggressorOrDefender(Player)) return null;
         
         var existingAspect = Game.CurrentPrescience?.Aspect ?? PrescienceAspect.None;
-        return new Prescience(Game, Faction) { Aspect = BestPrescience(Player, opponent, MaxDial(Player, Game.CurrentBattle.Territory, opponent), existingAspect, Game.CurrentBattle.Territory) };
+        return new Prescience(Game, Faction) { Aspect = BestPrescience(Player, opponent, MaxDial(Game, Player, Game.CurrentBattle.Territory, opponent), existingAspect, Game.CurrentBattle.Territory) };
     }
 
 
@@ -680,7 +675,7 @@ public partial class ClassicBot
         var myDefenses = Battle.ValidDefenses(Game, p, null, territory).Where(c => Game.KnownCards(p).Contains(c)).ToArray();
         var myWeapons = Battle.ValidWeapons(Game, p, null, null, territory).Where(c => Game.KnownCards(p).Contains(c)).ToArray();
 
-        var cardsOpponentHasOrMightHave = CardsPlayerHasOrMightHave(opponent);
+        var cardsOpponentHasOrMightHave = CardsPlayerHasOrMightHave(Game, opponent);
         var weaponIsCertain = CountDifferentWeaponTypes(cardsOpponentHasOrMightHave) <= 1;
         var defenseIsCertain = CountDifferentDefenseTypes(cardsOpponentHasOrMightHave) <= 1;
 
@@ -953,33 +948,39 @@ public partial class ClassicBot
             return null;
         
         var availableToPlace = TerrorPlanted.ValidTerrorTypes(Game, false).Where(t => !Game.TerrorOnPlanet.ContainsKey(t)).ToArray();
+        var validStrongholds = TerrorPlanted.ValidStrongholds(Game, Player).ToArray();
 
-        if (availableToPlace.Any())
-        {
-            var type = TerrorType.None;
+        if (availableToPlace.Length == 0 || validStrongholds.Length == 0)
+            return new TerrorPlanted(Game, Faction) { Passed = true };
+        
+        var type = TerrorType.None;
 
-            if (availableToPlace.Contains(TerrorType.Extortion) 
-                && Opponents.Sum(p => p.Resources) > Opponents.Count * 10) type = TerrorType.Robbery;
-            if (type == TerrorType.None 
-                && availableToPlace.Contains(TerrorType.Atomics) 
-                && TerrorPlanted.ValidStrongholds(Game, Player).Any(t => Opponents.Sum(o => o.AnyForcesIn(t)) > 12 && MeAndMyAlly.Sum(o => o.AnyForcesIn(t)) < 2)) type = TerrorType.Atomics;
-            if (type == TerrorType.None 
-                && availableToPlace.Contains(TerrorType.Extortion) 
-                && Resources < 5) type = TerrorType.Extortion;
-            if (type == TerrorType.None) type = availableToPlace.RandomOrDefault();
+        if (availableToPlace.Contains(TerrorType.Extortion) 
+            && Opponents.Sum(p => p.Resources) > Opponents.Count * 10) type = TerrorType.Robbery;
+        
+        
+        
+        if (type == TerrorType.None 
+            && availableToPlace.Contains(TerrorType.Atomics) 
+            && validStrongholds.Any(t => Opponents.Sum(o => o.AnyForcesIn(t)) > 12 && MeAndMyAlly.Sum(o => o.AnyForcesIn(t)) < 2)) type = TerrorType.Atomics;
+        
+        if (type == TerrorType.None 
+            && availableToPlace.Contains(TerrorType.Extortion) 
+            && Resources < 5) type = TerrorType.Extortion;
+        
+        if (type == TerrorType.None) type = availableToPlace.RandomOrDefault();
 
-            var stronghold = type == TerrorType.Atomics 
-                ? TerrorPlanted.ValidStrongholds(Game, Player).HighestOrDefault(t => Opponents.Sum(o => o.AnyForcesIn(t))) 
-                : TerrorPlanted.ValidStrongholds(Game, Player).HighestOrDefault(t => Player.AnyForcesIn(t));
-            
-            if (stronghold == null && Player.HasAlly) stronghold = TerrorPlanted.ValidStrongholds(Game, Player).HighestOrDefault(t => AlliedPlayer!.AnyForcesIn(t) > 0);
-            
-            stronghold ??= TerrorPlanted.ValidStrongholds(Game, Player).RandomOrDefault();
+        var stronghold = type == TerrorType.Atomics 
+            ? validStrongholds.HighestOrDefault(t => Opponents.Sum(o => o.AnyForcesIn(t))) 
+            : validStrongholds.HighestOrDefault(t => Player.AnyForcesIn(t));
+        
+        if (stronghold == null && Player.HasAlly) stronghold = validStrongholds.HighestOrDefault(t => AlliedPlayer!.AnyForcesIn(t) > 0);
+        
+        stronghold ??= validStrongholds.RandomOrDefault();
 
-            if (stronghold != null) return new TerrorPlanted(Game, Faction) { Type = type, Stronghold = stronghold };
-        }
-
-        return new TerrorPlanted(Game, Faction) { Passed = true }; 
+        return stronghold != null 
+            ? new TerrorPlanted(Game, Faction) { Type = type, Stronghold = stronghold } 
+            : new TerrorPlanted(Game, Faction) { Passed = true };
     }
 
     protected virtual TerrorRevealed DetermineTerrorRevealed()
@@ -1085,8 +1086,8 @@ public partial class ClassicBot
                 var offerAlliance = AmbassadorActivated.AllianceCanBeOffered(Game, Player) && PlayerStanding(victimPlayer) > 0.33 * PlayerStanding(Player);
                 var takeVidal = !offerAlliance && AmbassadorActivated.VidalCanBeTaken(Game, Player);
                 var offerVidal = offerAlliance && AmbassadorActivated.VidalCanBeOfferedToNewAlly(Game, Player) &&
-                                 HeroesForBattle(Player, true).Count() >= 3 &&
-                                 HeroesForBattle(victimPlayer, true).Count() < 3;
+                                 HeroesForBattle(Game, Player, true).Count() >= 3 &&
+                                 HeroesForBattle(Game, victimPlayer, true).Count() < 3;
 
                 if (offerAlliance || takeVidal)
                     return new AmbassadorActivated(Game, Faction) { BlueSelectedAmbassador = blueSelectedAmbassador, PinkOfferAlliance = offerAlliance, PinkTakeVidal = takeVidal, PinkGiveVidalToAlly = offerVidal };

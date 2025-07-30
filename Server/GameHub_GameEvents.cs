@@ -230,7 +230,7 @@ public partial class GameHub
         await Clients.Group(game.GameId).HandleGameEvent(e, game.Game.History.Count);
         await SendAsyncPlayMessagesIfApplicable(game.GameId);
         await PersistGameIfNeeded(game);
-        ScheduleBotEvent(game);
+        await ScheduleBotEvent(game);
         return Success();
     }
 
@@ -318,11 +318,11 @@ public partial class GameHub
         }
     }
 
-    private void ScheduleBotEvent(ManagedGame managedGame, bool immediate = false)
+    private async Task ScheduleBotEvent(ManagedGame managedGame, bool immediate = false)
     {
         if (immediate)
         {
-            _ = PerformBotEvent(managedGame);
+            await PerformBotEvent(managedGame);
         }
         else
         {

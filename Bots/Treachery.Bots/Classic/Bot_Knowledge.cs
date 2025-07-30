@@ -98,10 +98,10 @@ public partial class ClassicBot
         return result;
     }
 
-    private static List<TreacheryCard> KnownCardsHeldByPlayer(Game game, Player player)
+    private static List<TreacheryCard> KnownCardsHeldByOtherPlayer(Game game, Player player, Player otherPlayer)
     {
         var known = game.KnownCards(player).ToList();
-        return player.TreacheryCards.Where(c => known.Contains(c)).ToList();
+        return otherPlayer.TreacheryCards.Where(c => known.Contains(c)).ToList();
     }
 
     private int CardQuality(TreacheryCard cardToRate, Player? forWhom)
@@ -312,16 +312,16 @@ public partial class ClassicBot
     #endregion
 
     #region PlanetaryForceInformation
-    
-    protected static Player? OccupyingOpponentIn(Territory t) =>
-        Game.Players.Where(p => p.Faction != Faction && p.Faction != Ally && p.Occupies(t))
-            .HighestOrDefault(p => MaxDial(p, t, Player));
 
-    protected static List<Player> OccupyingOpponentsIn(Territory t) 
-        => Game.Players.Where(p => p.Faction != Faction && p.Faction != Ally && p.Occupies(t)).ToList();
+    private static Player? OccupyingOpponentIn(Game game, Player player, Territory t) =>
+        game.Players.Where(p => p.Faction != player.Faction && p.Faction != player.Ally && p.Occupies(t))
+            .HighestOrDefault(p => MaxDial(game, p, t, player));
 
-    protected static List<Player> OccupyingOpponentsIn(Location l) 
-        => OccupyingOpponentsIn(l.Territory);
+    private static List<Player> OccupyingOpponentsIn(Game game, Player player, Territory t) 
+        => game.Players.Where(p => p.Faction != player.Faction && p.Faction != player.Ally && p.Occupies(t)).ToList();
+
+    private static List<Player> OccupyingOpponentsIn(Game game, Player player, Location l) 
+        => OccupyingOpponentsIn(game, player, l.Territory);
 
     protected virtual bool InStorm(Location l) 
         => l.Sector == Game.SectorInStorm;
@@ -447,7 +447,7 @@ public partial class ClassicBot
         return WithinRange(source, destination, b) &&
                AllyDoesntBlock(destination.Territory) &&
                ProbablySafeFromMonster(destination.Territory) &&
-               (opponent == null || (mayFight && GetDialNeeded(destination.Territory, opponent, false) < MaxDial(Resources, b, opponent.Faction))) &&
+               (opponent == null || (mayFight && GetDialNeeded(destination.Territory, opponent, false) < MaxDial(Game, Resources, b, opponent.Faction))) &&
                !StormWillProbablyHit(destination);
     }
 
@@ -530,14 +530,14 @@ public partial class ClassicBot
     }
 
 
-    protected virtual Location? WinnableNearbyStronghold(Location from, Battalion battalion)
+    private Location? WinnableNearbyStronghold(Location from, Battalion battalion)
     {
         var enemyWeakStrongholds = ValidMovementLocations(from, battalion).Where(to =>
                 IsStronghold(to) &&
                 OccupiedByOpponent(to) &&
                 AllyDoesntBlock(to) &&
                 !StormWillProbablyHit(to))
-            .Select(l => new { Stronghold = l, Opponent = OccupyingOpponentIn(l.Territory) })
+            .Select(l => new { Stronghold = l, Opponent = OccupyingOpponentIn(Game, Player, l.Territory) })
             .Where(s => s.Opponent != null).Select(s => new
             {
                 s.Stronghold,
@@ -563,10 +563,13 @@ public partial class ClassicBot
 
     protected virtual bool IMustPayForForcesInBattle => Battle.MustPayForAnyForcesInBattle(Game, Player);
 
-    protected static float MaxDial(Game game, Player player, Territory t, Player? opponent, bool ignoreSpiceDialing = false)
+    private static float MaxDial(Game game, Player player, Territory t, Player? opponent, bool ignoreSpiceDialing = false)
     {
         var countForcesForWhite = 0;
-        if (player.Faction == Faction.White && player.SpecialForcesIn(t) > 0) countForcesForWhite = Faction == Faction.White || Ally == Faction.White ? Game.CurrentNoFieldValue : Game.LatestRevealedNoFieldValue == 5 ? 3 : 5;
+        if (player.Faction == Faction.White && player.SpecialForcesIn(t) > 0) 
+            countForcesForWhite = player.Faction == Faction.White || player.Ally == Faction.White 
+                ? game.CurrentNoFieldValue 
+                : game.LatestRevealedNoFieldValue == 5 ? 3 : 5;
 
         return MaxDial(
             game,
@@ -577,12 +580,10 @@ public partial class ClassicBot
             opponent?.Faction ?? Faction.Black);
     }
 
-    protected static float MaxDial(Game game, int resources, Battalion battalion, Faction opponent)
-    {
-        return MaxDial(game, resources, battalion.AmountOfForces, battalion.AmountOfSpecialForces, Game.GetPlayer(battalion.Faction), opponent);
-    }
+    private static float MaxDial(Game game, int resources, Battalion battalion, Faction opponent) 
+        => MaxDial(game, resources, battalion.AmountOfForces, battalion.AmountOfSpecialForces, game.GetPlayer(battalion.Faction), opponent);
 
-    protected static float MaxDial(Game game, int resources, int forces, int specialForces, Player p, Faction opponentFaction)
+    private static float MaxDial(Game game, int resources, int forces, int specialForces, Player p, Faction opponentFaction)
     {
         var spice = Battle.MustPayForAnyForcesInBattle(game, p) ? resources : 99;
 
@@ -594,16 +595,14 @@ public partial class ClassicBot
         var forcesAtHalfStrength = forces - forcesAtFullStrength;
 
         var result =
-            Battle.DetermineSpecialForceStrength(Game, p.Faction, opponentFaction) * (specialForcesAtFullStrength + 0.5f * specialForcesAtHalfStrength) +
-            Battle.DetermineNormalForceStrength(Game, p.Faction) * (forcesAtFullStrength + 0.5f * forcesAtHalfStrength);
+            Battle.DetermineSpecialForceStrength(game, p.Faction, opponentFaction) * (specialForcesAtFullStrength + 0.5f * specialForcesAtHalfStrength) +
+            Battle.DetermineNormalForceStrength(game, p.Faction) * (forcesAtFullStrength + 0.5f * forcesAtHalfStrength);
 
         return result;
     }
 
-    protected virtual float TotalMaxDialOfOpponents(Territory t)
-    {
-        return Opponents.Sum(o => MaxDial(o, t, Player));
-    }
+    protected virtual float TotalMaxDialOfOpponents(Territory t) 
+        => Opponents.Sum(o => MaxDial(Game, o, t, Player));
 
     private bool IWillBeAggressorAgainst(Player? opponent)
     {
@@ -639,7 +638,7 @@ public partial class ClassicBot
             var opponentResources = opponent.Resources + opponent.AlliedResources;
 
             var opponentMayUseWorthlessAsKarma = opponent.Faction == Faction.Blue && game.Applicable(Rule.BlueWorthlessAsKarma);
-            var hasKarma = KnownCardsHeldByPlayer(game, opponent).Any(c => c.Type == TreacheryCardType.Karma || (opponentMayUseWorthlessAsKarma && c.Type == TreacheryCardType.Karma));
+            var hasKarma = KnownCardsHeldByOtherPlayer(game, player, opponent).Any(c => c.Type == TreacheryCardType.Karma || (opponentMayUseWorthlessAsKarma && c.Type == TreacheryCardType.Karma));
 
             while (specialForces + 1 <= opponent.SpecialForcesInReserve && Shipment.DetermineCost(game, opponent, normalForces, specialForces + 1, to.MiddleLocation, hasKarma, false, false, false, false) <= opponentResources) specialForces++;
 

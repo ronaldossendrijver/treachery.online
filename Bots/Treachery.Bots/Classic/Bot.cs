@@ -220,7 +220,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
             }
             catch (Exception e)
             {
-                LogInfo("--error occured -->" + e);
+                LogError("--error occured -->" + e);
             }
 
             if (action != null)
@@ -228,7 +228,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
                 var error = action.Validate();
                 if (error != null)
                 {
-                    LogInfo("--invalid decision ({0})--> {1}: {2}", Resources, action.GetMessage(), error);
+                    LogError("--invalid decision ({0})--> {1}: {2}", Resources, action.GetMessage(), error);
                 }
                 else
                 {
@@ -257,9 +257,29 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
         #endif
     }
 
+    private static void LogError(Message? message)
+    {
+        if (message == null) return;
+    
+        if (Message.DefaultDescriber != null)
+            Console.WriteLine(message.ToString(Message.DefaultDescriber));
+        else
+            Console.WriteLine(message);
+    }
+    
+    private static void LogError(string msg, params object?[] pars)
+    {
+        {
+            if (Message.DefaultDescriber != null)
+                Console.WriteLine(Message.DefaultDescriber.Format(msg, pars));
+            else
+                Console.WriteLine(msg, pars);
+        }
+    }
+
     private static void LogInfo(Message? message)
     {
-        #if (DEBUG) 
+#if (DEBUG) 
         {
             if (message == null) return;
         
@@ -268,7 +288,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
             else
                 Console.WriteLine(message);
         }
-        #endif
+#endif
     }
 
     private readonly LoggedRandom _random = new();

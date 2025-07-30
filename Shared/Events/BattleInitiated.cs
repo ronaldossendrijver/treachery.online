@@ -110,6 +110,7 @@ public class BattleInitiated : GameEvent
     {
         if (p.Faction == Initiator || p.Ally == Initiator)
             return Game.GetPlayer(ActualTarget);
+        
         if (p.Faction == Target || p.Ally == Target) return Game.GetPlayer(ActualInitiator);
 
         return null;

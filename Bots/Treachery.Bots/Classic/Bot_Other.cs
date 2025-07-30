@@ -138,84 +138,87 @@ public partial class ClassicBot
 
     private NexusPlayed? DetermineNexusPlayed_Betrayal(NexusPlayed result)
     {
-        if (Ally != result.Faction)
-            switch (Player.Nexus)
-            {
-                case Faction.Green:
-                    if (IsWinningOrIsOpponentInBattle(Faction.Green) && !Game.Prevented(FactionAdvantage.GreenBattlePlanPrescience)) return result;
-                    break;
+        if (Ally == result.Faction) return null;
+        
+        switch (Player.Nexus)
+        {
+            case Faction.Green:
+                if (IsWinningOrIsOpponentInBattle(Faction.Green) && !Game.Prevented(FactionAdvantage.GreenBattlePlanPrescience)) return result;
+                break;
 
-                case Faction.Black:
-                    if (Game.CurrentBattle.IsInvolved(Player)) return result;
-                    break;
+            case Faction.Black:
+                if (Game.CurrentBattle.IsInvolved(Player)) return result;
+                break;
 
-                case Faction.Yellow:
-                    if ((Game.CurrentMainPhase == MainPhase.Blow && YellowRidesMonster.IsApplicable(Game)) ||
-                        (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && IWishToAttack(0, Faction.Yellow))) return result;
-                    break;
+            case Faction.Yellow:
+                if ((Game.CurrentMainPhase == MainPhase.Blow && YellowRidesMonster.IsApplicable(Game)) ||
+                    (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && IWishToAttack(0, Faction.Yellow))) return result;
+                break;
 
-                case Faction.Red:
-                    if ((Game is { CurrentMainPhase: MainPhase.Bidding, CurrentBid: not null } && Game.CurrentBid.Player.Ally == Faction.Red && Game.CurrentBid.TotalAmount > 5 && !Game.Prevented(FactionAdvantage.RedReceiveBid)) ||
-                        (Game.CurrentMainPhase == MainPhase.Battle && IsWinningOrIsOpponentInBattle(Faction.Red) && Game.GetPlayer(Faction.Red).SpecialForcesIn(Game.CurrentBattle.Territory) >= 3)) return result;
-                    break;
+            case Faction.Red:
+                if ((Game is { CurrentMainPhase: MainPhase.Bidding, CurrentBid: not null } && Game.CurrentBid.Player.Ally == Faction.Red && Game.CurrentBid.TotalAmount > 5 && !Game.Prevented(FactionAdvantage.RedReceiveBid)) ||
+                    (Game.CurrentMainPhase == MainPhase.Battle && IsWinningOrIsOpponentInBattle(Faction.Red) && Game.GetPlayer(Faction.Red).SpecialForcesIn(Game.CurrentBattle.Territory) >= 3)) return result;
+                break;
 
-                case Faction.Orange:
-                    if (Game.RecentlyPaidTotalAmount > 5) return result;
-                    break;
+            case Faction.Orange:
+                if (Game.RecentlyPaidTotalAmount > 5) return result;
+                break;
 
-                case Faction.Blue:
-                    if (IsWinningOrIsOpponentInBattle(Faction.Blue) && !Game.Prevented(FactionAdvantage.BlueUsingVoice)) return result;
-                    break;
+            case Faction.Blue:
+                if (IsWinningOrIsOpponentInBattle(Faction.Blue) && !Game.Prevented(FactionAdvantage.BlueUsingVoice)) return result;
+                break;
 
-                case Faction.Grey: return result;
+            case Faction.Grey: return result;
 
-                case Faction.Purple:
-                    if (Game.CurrentBattle.IsInvolved(Player)) return result;
-                    break;
+            case Faction.Purple:
+                if (Game.CurrentBattle.IsInvolved(Player)) return result;
+                break;
 
-                case Faction.Brown:
-                    if (IsWinningOrIsOpponentInBattle(Faction.Brown) && KnownOpponentCards(Faction.Brown).Any(c => c.IsWeapon || c.IsDefense)) return result;
-                    break;
+            case Faction.Brown:
+                if (IsWinningOrIsOpponentInBattle(Faction.Brown) 
+                    && KnownOpponentCards(Game, Player, Game.GetPlayer(Faction.Brown)).Any(c => c.IsWeapon || c.IsDefense)) 
+                    return result;
+                break;
 
-                case Faction.White:
-                    var white = Game.GetPlayer(Faction.White);
-                    if (white.Has(Game.CardJustWon))
+            case Faction.White:
+                var white = Game.GetPlayer(Faction.White);
+                if (white.Has(Game.CardJustWon))
+                {
+                    if (CardQuality(Game.CardJustWon, white) > 2) return result;
+                }
+                else if (Game.RecentlyPaidTotalAmount > 4)
+                {
+                    return result;
+                }
+
+                break;
+
+            case Faction.Pink:
+                if (Game.CurrentPhase == Phase.ResurrectionReport)
+                {
+                    var territoryToRemovePinkFrom = DetermineTerritoryToRemovePinkFrom();
+                    if (territoryToRemovePinkFrom != null)
                     {
-                        if (CardQuality(Game.CardJustWon, white) > 2) return result;
-                    }
-                    else if (Game.RecentlyPaidTotalAmount > 4)
-                    {
+                        result.PinkTerritory = territoryToRemovePinkFrom;
                         return result;
                     }
+                }
+                break;
 
-                    break;
-
-                case Faction.Pink:
-                    if (Game.CurrentPhase == Phase.ResurrectionReport)
+            case Faction.Cyan:
+                if ((Faction == Faction.Orange && Game is { CurrentPhase: Phase.OrangeShip, OrangeMayDelay: false }) ||
+                    (Faction != Faction.Orange && Game.CurrentPhase == Phase.NonOrangeShip && Game.ShipmentAndMoveSequence.CurrentPlayer == Player))
+                {
+                    var shipment = DetermineShipment();
+                    if (Game.TerrorIn(shipment.To.Territory).Any())
                     {
-                        var territoryToRemovePinkFrom = DetermineTerritoryToRemovePinkFrom();
-                        if (territoryToRemovePinkFrom != null)
-                        {
-                            result.PinkTerritory = territoryToRemovePinkFrom;
-                            return result;
-                        }
+                        result.CyanTerritory = shipment.To.Territory;
+                        return result;
                     }
-                    break;
+                }
 
-                case Faction.Cyan:
-                    if ((Faction == Faction.Orange && Game is { CurrentPhase: Phase.OrangeShip, OrangeMayDelay: false }) ||
-                        (Faction != Faction.Orange && Game.CurrentPhase == Phase.NonOrangeShip && Game.ShipmentAndMoveSequence.CurrentPlayer == Player))
-                    {
-                        var shipment = DetermineShipment();
-                        if (Game.TerrorIn(shipment.To.Territory).Any())
-                        {
-                            result.CyanTerritory = shipment.To.Territory;
-                            return result;
-                        }
-                    }
-
-                    break;
-            }
+                break;
+        }
 
         return null;
     }
@@ -224,15 +227,16 @@ public partial class ClassicBot
     {
         Territory? result = null;
         var territoriesWithPinkAndPinkAlly = NexusPlayed.ValidPinkTerritories(Game).Where(t => t.IsStronghold || Game.IsSpecialStronghold(t)).ToList();
-        if (territoriesWithPinkAndPinkAlly.Count != 0)
-        {
-            var pink = Game.GetPlayer(Faction.Pink);
 
-            if (territoriesWithPinkAndPinkAlly.Count >= 2) result = territoriesWithPinkAndPinkAlly.HighestOrDefault(t => pink.AnyForcesIn(t));
+        if (territoriesWithPinkAndPinkAlly.Count == 0) return result;
+        
+        var pink = Game.GetPlayer(Faction.Pink);
 
-            result ??= territoriesWithPinkAndPinkAlly.Where(t => pink.AnyForcesIn(t) > 7)
-                .HighestOrDefault(t => pink.AnyForcesIn(t));
-        }
+        if (territoriesWithPinkAndPinkAlly.Count >= 2) result = territoriesWithPinkAndPinkAlly.HighestOrDefault(t => pink.AnyForcesIn(t));
+
+        result ??= territoriesWithPinkAndPinkAlly.Where(t => pink.AnyForcesIn(t) > 7)
+            .HighestOrDefault(t => pink.AnyForcesIn(t));
+    
         return result;
     }
 
@@ -256,7 +260,7 @@ public partial class ClassicBot
                     if (!(Voice.MayUseVoice(Game, opponent) && Game.CurrentVoice == null && Game.CurrentBattle.PlanOf(opponent) == null))
                         if (Game.CurrentBattle.IsAggressorOrDefender(Player))
                         {
-                            result.GreenPrescienceAspect = BestPrescience(Player, opponent, MaxDial(Player, Game.CurrentBattle.Territory, opponent), 
+                            result.GreenPrescienceAspect = BestPrescience(Player, opponent, MaxDial(Game, Player, Game.CurrentBattle.Territory, opponent), 
                                 Game.CurrentPrescience.Aspect, Game.CurrentBattle.Territory);
 
                             if (result.GreenPrescienceAspect != PrescienceAspect.None) return result;
@@ -313,7 +317,8 @@ public partial class ClassicBot
                 if (!(Voice.MayUseVoice(Game, opponent) && Game.CurrentVoice == null && Game.CurrentBattle.PlanOf(opponent) == null))
                     if (Game.CurrentBattle.IsAggressorOrDefender(Player))
                     {
-                        result.GreenPrescienceAspect = BestPrescience(Player, opponent, MaxDial(Player, Game.CurrentBattle.Territory, opponent), 
+                        var maxDial = MaxDial(Game, Player, Game.CurrentBattle.Territory, opponent);
+                        result.GreenPrescienceAspect = BestPrescience(Player, opponent, maxDial, 
                             PrescienceAspect.None, Game.CurrentBattle.Territory);
                         if (result.GreenPrescienceAspect != PrescienceAspect.None) return result;
                     }
@@ -466,28 +471,27 @@ public partial class ClassicBot
     private KarmaHandSwapInitiated? DetermineKarmaHandSwapInitiated()
     {
         if (Game.CurrentPhase != Phase.BiddingReport) return null;
+
+        if (Player.TreacheryCards.Count(c => CardQuality(c, Player) <= 2) < 2) return null;
         
-        if (Player.TreacheryCards.Count(c => CardQuality(c, Player) <= 2) >= 2)
+        var bestOpponentToSwapWith = Opponents.HighestOrDefault(o => KnownCardsHeldByOtherPlayer(Game, Player, o).Count(c => CardQuality(c, Player) >= 3));
+        LogInfo("opponent with most known good cards: " + bestOpponentToSwapWith);
+
+        if (bestOpponentToSwapWith != null && KnownCardsHeldByOtherPlayer(Game, Player, bestOpponentToSwapWith).Count(c => CardQuality(c, Player) >= 3) >= 2)
         {
-            var bestOpponentToSwapWith = Opponents.HighestOrDefault(o => KnownCardsHeldByPlayer(o).Count(c => CardQuality(c, Player) >= 3));
-            LogInfo("opponent with most known good cards: " + bestOpponentToSwapWith);
+            //Swap with an opponent that 2 or more good cards that I know of
+            LogInfo("swapping, because number of good cards = " + KnownCardsHeldByOtherPlayer(Game, Player, bestOpponentToSwapWith).Count(c => CardQuality(c, Player) >= 3));
+            return new KarmaHandSwapInitiated(Game, Faction) { Target = bestOpponentToSwapWith.Faction };
+        }
 
-            if (bestOpponentToSwapWith != null && KnownCardsHeldByPlayer(bestOpponentToSwapWith).Count(c => CardQuality(c, Player) >= 3) >= 2)
-            {
-                //Swap with an opponent that 2 or more good cards that I know of
-                LogInfo("swapping, because number of good cards = " + KnownCardsHeldByPlayer(bestOpponentToSwapWith).Count(c => CardQuality(c, Player) >= 3));
-                return new KarmaHandSwapInitiated(Game, Faction) { Target = bestOpponentToSwapWith.Faction };
-            }
+        bestOpponentToSwapWith = Opponents.FirstOrDefault(o => o.TreacheryCards.Count == 4);
+        LogInfo("opponent with 4 cards: " + bestOpponentToSwapWith);
 
-            bestOpponentToSwapWith = Opponents.FirstOrDefault(o => o.TreacheryCards.Count == 4);
-            LogInfo("opponent with 4 cards: " + bestOpponentToSwapWith);
-
-            if (bestOpponentToSwapWith != null && KnownCardsHeldByPlayer(bestOpponentToSwapWith).Count(c => CardQuality(c, Player) < 3) <= 2)
-            {
-                LogInfo("swapping, because number of known bad cards = " + KnownCardsHeldByPlayer(bestOpponentToSwapWith).Count(c => CardQuality(c, Player) < 3));
-                //Swap with an opponent that has 4 cards and 2 or less useless cards that I know of
-                return new KarmaHandSwapInitiated(Game, Faction) { Target = bestOpponentToSwapWith.Faction };
-            }
+        if (bestOpponentToSwapWith != null && KnownCardsHeldByOtherPlayer(Game, Player, bestOpponentToSwapWith).Count(c => CardQuality(c, Player) < 3) <= 2)
+        {
+            LogInfo("swapping, because number of known bad cards = " + KnownCardsHeldByOtherPlayer(Game, Player, bestOpponentToSwapWith).Count(c => CardQuality(c, Player) < 3));
+            //Swap with an opponent that has 4 cards and 2 or less useless cards that I know of
+            return new KarmaHandSwapInitiated(Game, Faction) { Target = bestOpponentToSwapWith.Faction };
         }
 
         return null;
@@ -534,7 +538,7 @@ public partial class ClassicBot
         {
             var opponent = Game.CurrentBattle!.OpponentOf(Player);
 
-            if (NrOfUnknownOpponentCards(opponent) > 0)
+            if (NrOfUnknownOpponentCards(Game, Player, opponent) > 0)
             {
                 LogInfo("Start using Clairvoyance against " + opponent);
 
