@@ -170,7 +170,7 @@ public partial class GameHub
             return Error<LoginInfo>(ErrorType.ResetTokenExpired);
 
         user.HashedPassword = newHashedPassword;
-        user.PasswordResetToken = null;
+        user.PasswordResetToken = string.Empty;
         user.PasswordResetTokenCreated = default;
 
         await db.SaveChangesAsync();

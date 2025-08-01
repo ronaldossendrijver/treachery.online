@@ -8,7 +8,7 @@ public partial class GameHub
     public async Task<VoidResult> SendChatMessage(string userToken, string gameId, GameChatMessage e)
     {
         if (!AreValid(userToken, gameId, out _, out _, out var error))
-            return error;
+            return error!;
         
         await Clients.Group(gameId).HandleChatMessage(e);
         return Success();

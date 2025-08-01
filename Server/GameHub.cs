@@ -64,57 +64,64 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     
     private static Result<TResult> Success<TResult>(TResult contents) => new() { Success = true, Contents = contents };
 
-    private static bool AreValid<TResult>(string userToken, string gameId, out LoggedInUser user, out ManagedGame game, out Result<TResult> result)
+    private static bool AreValid<TResult>(string? userToken, string? gameId, out LoggedInUser? user, out ManagedGame? game, out Result<TResult>? error)
     {
         user = null;
         game = null;
-        result = null;
+        error = null;
 
         if (userToken == null)
+        {
+            error = Error<TResult>(ErrorType.UserTokenNotFound);
             return false;
-        
+        }
+
         if (!UsersByUserToken.TryGetValue(userToken, out user))
         {
-            result = Error<TResult>(ErrorType.UserNotFound);
+            error = Error<TResult>(ErrorType.UserNotFound);
+            return false;
+        }
+
+        if (gameId == null)
+        {
+            error = Error<TResult>(ErrorType.GameIdNotFound);
+            return false;
+        }
+            
+        if (RunningGamesByGameId.TryGetValue(gameId, out game)) return true;
+        
+        error = Error<TResult>(ErrorType.GameNotFound);
+        return false;
+    }
+    
+    private static bool AreValid(string? userToken, string? gameId, out LoggedInUser? user, out ManagedGame? game, out VoidResult? error)
+    {
+        user = null;
+        game = null;
+        error = Success();
+        
+        if (userToken == null)
+        {
+            error = Error(ErrorType.UserTokenNotFound);
+            return false;
+        }
+
+        if (!UsersByUserToken.TryGetValue(userToken, out user))
+        {
+            error = Error(ErrorType.UserNotFound);
             return false;
         }
         
         if (gameId == null)
-            return false;
-
-        if (!RunningGamesByGameId.TryGetValue(gameId, out game))
         {
-            result = Error<TResult>(ErrorType.GameNotFound);
+            error = Error(ErrorType.GameIdNotFound);
             return false;
         }
 
-        return true;
-    }    
-    private static bool AreValid(string userToken, string gameId, out LoggedInUser user, out ManagedGame game, out VoidResult result)
-    {
-        user = null;
-        game = null;
-        result = null;
+        if (RunningGamesByGameId.TryGetValue(gameId, out game)) return true;
         
-        if (userToken == null)
-            return false;
-        
-        if (!UsersByUserToken.TryGetValue(userToken, out user))
-        {
-            result = Error(ErrorType.UserNotFound);
-            return false;
-        }
-        
-        if (gameId == null)
-            return false;
-
-        if (!RunningGamesByGameId.TryGetValue(gameId, out game))
-        {
-            result = Error(ErrorType.GameNotFound);
-            return false;
-        }
-        
-        return true;
+        error = Error(ErrorType.GameNotFound);
+        return false;
     }
     
     private async Task SendMail(MailMessage mail)

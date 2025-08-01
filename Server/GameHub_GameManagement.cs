@@ -119,9 +119,9 @@ public partial class GameHub
     public async Task<VoidResult> RequestLoadGame(string userToken, string gameId, string stateData, string skin)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
-            return error;
+            return error!;
         
-        if (!game.Game.IsHost(user.Id))
+        if (!game!.Game.IsHost(user!.Id))
             return Error(ErrorType.NoHost);
         
         var state = GameState.Load(stateData);
@@ -154,9 +154,9 @@ public partial class GameHub
     public async Task<VoidResult> RequestAssignSeats(string userToken, string gameId, Dictionary<int, int> assignment)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
-            return error;
+            return error!;
 
-        if (!game.Game.IsHost(user.Id))
+        if (!game!.Game.IsHost(user!.Id))
             return Error(ErrorType.NoHost);
 
         game.Game.Participation.SeatedPlayers = assignment;
@@ -171,9 +171,9 @@ public partial class GameHub
     public async Task<Result<GameInitInfo>> RequestJoinGame(string userToken, string gameId, string hashedPassword, int seat)
     {
         if (!AreValid<GameInitInfo>(userToken, gameId, out var user, out var game, out var error))
-            return error;
+            return error!;
         
-        if (!game.Game.IsPlayer(user.Id))
+        if (!game!.Game.IsPlayer(user!.Id))
         {
             if (!string.IsNullOrEmpty(game.HashedPassword) && !game.HashedPassword.Equals(hashedPassword))
                 return Error<GameInitInfo>(ErrorType.IncorrectGamePassword);
@@ -220,7 +220,7 @@ public partial class GameHub
         });
     }
     
-    public async Task<Result<ServerStatus>> RequestSubscribeGame(string userToken, string gameId, SubscriptionType subscription)
+    public async Task<Result<ServerStatus>> RequestSubscribeGame(string userToken, string? gameId, SubscriptionType subscription)
     {
         if (gameId == null)
             return Error<ServerStatus>(ErrorType.GameNotFound);
@@ -247,9 +247,9 @@ public partial class GameHub
     public async Task<VoidResult> RequestOpenOrCloseSeat(string userToken, string gameId, int seat)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
-            return error;
+            return error!;
         
-        if (!game.Game.IsHost(user.Id))
+        if (!game!.Game.IsHost(user!.Id))
             return Error(ErrorType.NoHost);
 
         game.Game.OpenOrCloseSeat(seat);
@@ -263,9 +263,9 @@ public partial class GameHub
     public async Task<VoidResult> RequestSetOrUnsetHost(string userToken, string gameId, int userId)
     {
         if (!AreValid(userToken, gameId, out var host, out var game, out var error))
-            return error;
+            return error!;
 
-        if (!game.Game.IsHost(host.Id))
+        if (!game!.Game.IsHost(host!.Id))
             return Error(ErrorType.NoHost);
 
         if (userId == host.Id && game.Game.NumberOfHosts <= 1) 
@@ -282,9 +282,9 @@ public partial class GameHub
     public async Task<Result<ServerStatus>> RequestLeaveGame(string userToken, string gameId)
     {
         if (!AreValid<ServerStatus>(userToken, gameId, out var user, out var game, out var error))
-            return error;
+            return error!;
         
-        if (game.Game.IsHost(user.Id) && game.Game.NumberOfHosts == 1)
+        if (game!.Game.IsHost(user!.Id) && game.Game.NumberOfHosts == 1)
             foreach (var id in game.Game.Participation.SeatedPlayers.Keys.Where(playerUserId =>
                          playerUserId != user.Id))
             {
@@ -307,9 +307,9 @@ public partial class GameHub
     public async Task<VoidResult> RequestKick(string userToken, string gameId, int userId)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
-            return error;
+            return error!;
 
-        if (!game.Game.IsHost(user.Id))
+        if (!game!.Game.IsHost(user!.Id))
             return Error(ErrorType.NoHost);
         
         game.Game.RemoveUser(userId, true);
@@ -325,9 +325,9 @@ public partial class GameHub
     public async Task<VoidResult> RequestUpdateSettings(string userToken, string gameId, GameSettings settings)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
-            return error;
+            return error!;
         
-        if (game.CreatorUserId != user.Id)
+        if (game!.CreatorUserId != user!.Id)
             return Error(ErrorType.NoCreator);
 
         game.Game.Settings = settings;
@@ -342,9 +342,9 @@ public partial class GameHub
     public async Task<Result<ServerStatus>> RequestCloseGame(string userToken, string gameId)
     {
         if (!AreValid<ServerStatus>(userToken, gameId, out var user, out var game, out var error))
-            return error;
+            return error!;
         
-        if (game.CreatorUserId != user.Id)
+        if (game!.CreatorUserId != user!.Id)
             return Error<ServerStatus>(ErrorType.NoCreator);
 
         foreach (var userId in game.Game.Participation.PlayerNames.Keys)
@@ -387,9 +387,9 @@ public partial class GameHub
     public async Task<Result<GameInitInfo>> RequestObserveGame(string userToken, string gameId, string hashedPassword)
     {
         if (!AreValid<GameInitInfo>(userToken, gameId, out var user, out var game, out var error))
-            return error;
+            return error!;
 
-        if (!game.Game.IsObserver(user.Id))
+        if (!game!.Game.IsObserver(user!.Id))
         {
             if (game.ObserversRequirePassword && !string.IsNullOrEmpty(game.HashedPassword) &&
                 !game.HashedPassword.Equals(hashedPassword))
@@ -420,9 +420,9 @@ public partial class GameHub
     public async Task<Result<GameInitInfo>> RequestReconnectGame(string userToken, string gameId)
     {
         if (!AreValid<GameInitInfo>(userToken, gameId, out var user, out var game, out var error))
-            return error;
+            return error!;
         
-        if (!game.Game.IsParticipant(user.Id))
+        if (!game!.Game.IsParticipant(user!.Id))
             return Error<GameInitInfo>(ErrorType.UserNotInGame);
        
         await AddToGroup(gameId, user.Id, Context.ConnectionId);
@@ -440,9 +440,9 @@ public partial class GameHub
     public async Task<Result<GameInitInfo>> RequestGameState(string userToken, string gameId)
     {
         if (!AreValid<GameInitInfo>(userToken, gameId, out var user, out var game, out var error))
-            return error;
+            return error!;
 
-        if (!game.Game.IsParticipant(user.Id))
+        if (!game!.Game.IsParticipant(user!.Id))
             return Error<GameInitInfo>(ErrorType.UserNotInGame);
 
         return await Task.FromResult(Success(new GameInitInfo
@@ -457,9 +457,9 @@ public partial class GameHub
     public async Task<VoidResult> RequestSetSkin(string userToken, string gameId, string skin)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
-            return error;
+            return error!;
 
-        if (!game.Game.IsHost(user.Id))
+        if (!game!.Game.IsHost(user!.Id))
             return Error(ErrorType.NoHost);
 
         await Clients.Group(gameId).HandleSetSkin(skin);
@@ -470,9 +470,9 @@ public partial class GameHub
     public async Task<VoidResult> RequestUndo(string userToken, string gameId, int untilEventNr)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
-            return error;
+            return error!;
 
-        if (!game.Game.IsHost(user.Id))
+        if (!game!.Game.IsHost(user!.Id))
             return Error(ErrorType.NoHost);
 
         game.Game = game.Game.Undo(untilEventNr);
@@ -487,9 +487,9 @@ public partial class GameHub
     public async Task<VoidResult> RequestPauseBots(string userToken, string gameId)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
-            return error;
+            return error!;
 
-        if (!game.Game.IsHost(user.Id))
+        if (!game!.Game.IsHost(user!.Id))
             return Error(ErrorType.NoHost);
 
         game.Game.Participation.BotsArePaused = !game.Game.Participation.BotsArePaused;

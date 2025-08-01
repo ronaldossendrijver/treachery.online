@@ -36,7 +36,7 @@ public partial class ClassicBot
     private bool INeedToSwitchThisLeader(Leader leader)
     {
         return
-            (Game.IsInFrontOfShield(leader) && leader == DetermineBattlePlan(true, true)?.Hero) 
+            (Game.IsInFrontOfShield(leader) && leader == DetermineBattlePlanIfNotWaitingForPrescience(true)?.Hero) 
             || (Game.IsInFrontOfShield(leader) && Game is { CurrentPhase: Phase.BattlePhase, CurrentBattle: not null } 
                                                && Game.CurrentBattle.IsInvolved(Player) 
                                                && Battle.ValidBattleHeroes(Game, Player).Count() < 2) 
@@ -135,17 +135,23 @@ public partial class ClassicBot
     }
     protected virtual Battle? DetermineBattle()
     {
-        return DetermineBattlePlan(true, false);
+        return DetermineBattlePlanIfNotWaitingForPrescience(false);
     }
 
-    protected virtual Battle? DetermineBattlePlan(bool waitForPrescience, bool includeLeaderInFrontOfShield)
+    protected virtual Battle? DetermineBattlePlanIfNotWaitingForPrescience(bool includeLeaderInFrontOfShield)
+    {
+        var opponent = Game.CurrentBattle.OpponentOf(Player);
+        
+        if (Prescience.MayUsePrescience(Game, Player) || MyPrescience != null && Game.CurrentBattle.PlanOf(opponent) == null) return null;
+        
+        return DetermineBattlePlan(includeLeaderInFrontOfShield);
+    }
+
+    protected virtual Battle DetermineBattlePlan(bool includeLeaderInFrontOfShield)
     {
         LogInfo("DetermineBattle()");
 
         var opponent = Game.CurrentBattle.OpponentOf(Player);
-        var prescience = MyPrescience;
-
-        if ((waitForPrescience && Prescience.MayUsePrescience(Game, Player)) || (waitForPrescience && prescience != null && Game.CurrentBattle.PlanOf(opponent) == null)) return null; //enemy is not ready yet
 
         if (DecidedShipmentAction == ShipmentDecision.DummyShipment)
         {
@@ -165,7 +171,7 @@ public partial class ClassicBot
             opponent,
             Game.CurrentBattle.Territory,
             voice,
-            prescience?.Aspect ?? PrescienceAspect.None,
+            MyPrescience?.Aspect ?? PrescienceAspect.None,
             false,
             includeLeaderInFrontOfShield,
             out var defense,
@@ -894,7 +900,7 @@ public partial class ClassicBot
         var prescience = Prescience.MayUsePrescience(Game, p) ? BestPrescience(p, opponent, strengthOfOpponent, PrescienceAspect.None, territory) : PrescienceAspect.None;
 
         //More could be done with the information obtained in the below call
-        return GetDialNeededForBattle(game, player, param, IWillBeAggressorAgainst(opponent), opponent, territory, 
+        return GetDialNeededForBattle(Game, Player, Param, IWillBeAggressorAgainst(opponent), opponent, territory, 
             voicePlan, prescience, takeReinforcementsIntoAccount, true, 
             out _, out _, out _, out _, out _, out _, out _, out _);
     }
@@ -1098,7 +1104,7 @@ public partial class ClassicBot
     {
         var adv = StrongholdAdvantage.None;
 
-        var plan = DetermineBattlePlan(false, false);
+        var plan = DetermineBattlePlan(false);
         if (plan is { HasPoison: false, HasAntidote: false }) adv = HMSAdvantageChosen.ValidAdvantages(Game, Player).FirstOrDefault(a => a == StrongholdAdvantage.CountDefensesAsAntidote);
         if (adv == StrongholdAdvantage.None && Resources < 5) adv = HMSAdvantageChosen.ValidAdvantages(Game, Player).FirstOrDefault(a => a == StrongholdAdvantage.FreeResourcesForBattles);
         if (adv == StrongholdAdvantage.None) adv = HMSAdvantageChosen.ValidAdvantages(Game, Player).FirstOrDefault(a => a == StrongholdAdvantage.CollectResourcesForDial);

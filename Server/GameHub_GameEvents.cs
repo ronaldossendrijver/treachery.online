@@ -8,11 +8,11 @@ public partial class GameHub
     public async Task<VoidResult> RequestEstablishPlayers(string userToken, string gameId, EstablishPlayers e)
     {
         if (!AreValid(userToken, gameId, out _, out var game, out var error))
-            return error;
+            return error!;
         
         await ProcessGameEvent(userToken, gameId, e);
 
-        var participation = game.Game.Participation;
+        var participation = game!.Game.Participation;
 
         var userIds = participation.SeatedPlayers.Keys.ToList();
         var participantIndex = 0;
@@ -27,25 +27,14 @@ public partial class GameHub
         
         await Clients.Group(gameId).HandleAssignSeats(participation.SeatedPlayers);
         
+        /*
         if (e.Settings.AutoOpenEmptySeats)
             _ = Task.Delay(3000).ContinueWith(_ => AutoOpenEmptySeats(gameId, game, participation));
+        */
         
         game.LastActivity = DateTimeOffset.Now;
         await PersistGameIfNeeded(game);
         return Success();
-    }
-
-    private async Task AutoOpenEmptySeats(string gameId, ManagedGame game, Participation participation)
-    {
-        var seatsToOpen = new List<int>();
-        foreach (var player in game.Game.Players.Where(p => !participation.SeatedPlayers.ContainsValue(p.Seat)))
-        {
-            participation.AvailableSeats.Add(player.Seat);
-            seatsToOpen.Add(player.Seat);
-        }
-            
-        if (seatsToOpen.Count > 0)
-            await Clients.Group(gameId).HandleOpenOrCloseSeats(seatsToOpen.ToArray());
     }
 
     public async Task<VoidResult> RequestEndPhase(string userToken, string gameId, EndPhase e) => await ProcessGameEvent(userToken, gameId, e);
@@ -188,9 +177,9 @@ public partial class GameHub
     public async Task<VoidResult> SetTimer(string userToken, string gameId, int value)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
-            return error;
+            return error!;
 
-        if (!game.Game.IsHost(user.Id))
+        if (!game!.Game.IsHost(user!.Id))
             return Error(ErrorType.NoHost);
         
         await Clients.Group(gameId).HandleSetTimer(value);
@@ -200,12 +189,12 @@ public partial class GameHub
     private async Task<VoidResult> ProcessGameEvent<TEvent>(string userToken, string gameId, TEvent e) where TEvent : GameEvent
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
-            return error;
+            return error!;
         
-        e.Initialize(game.Game);
+        e.Initialize(game!.Game);
         e.Time = DateTimeOffset.Now;
         
-        return await ValidateAndExecute(e, game, game.Game.IsHost(user.Id));
+        return await ValidateAndExecute(e, game, game.Game.IsHost(user!.Id));
     }
 
     private async Task<VoidResult> ValidateAndExecute<TEvent>(TEvent e, ManagedGame game, bool isHost)

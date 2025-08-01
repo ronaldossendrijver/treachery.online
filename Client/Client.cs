@@ -554,28 +554,33 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public async Task<string> SetTimer(int value) =>
         CurrentSkin.Describe((await Invoke(nameof(IGameHub.SetTimer), value)).Error);
 
-    /*
-    public async Task<string> RequestEstablishPlayers(EstablishPlayers e)
-    {
-        var result = await Invoke<Participation>(nameof(IGameHub.RequestEstablishPlayers), UserToken, GameId, e);
-        if (!result.Success)
-        {
-            return result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : CurrentSkin.Describe(result.Error);
-        }
-
-        Game.Participation = result.Contents;
-        return null;
-    }
-    */
-    
     //TODO: make strongly typed methods
     public async Task<string> RequestGameEvent<T>(T gameEvent) where T : GameEvent
     {
         var result = await Invoke($"Request{typeof(T).Name}", UserToken, GameId, gameEvent);
+
+        await OpenEmptySeats(gameEvent);
+
         return result.Success ? null :
             result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : CurrentSkin.Describe(result.Error);
     }
-        
+
+    private async Task OpenEmptySeats<T>(T gameEvent) where T : GameEvent
+    {
+        if (gameEvent is EstablishPlayers establishPlayers && establishPlayers.Settings.AutoOpenEmptySeats)
+        {
+            var botInClosedSeat = DetermineBotInClosedSeat();
+            while (botInClosedSeat != null)
+            {
+                await RequestOpenOrCloseSeat(botInClosedSeat.Seat);
+                botInClosedSeat = DetermineBotInClosedSeat();
+            }
+        }
+    }
+
+    private Player DetermineBotInClosedSeat() 
+        => Game.Players.FirstOrDefault(p => !Game.Participation.SeatedPlayers.ContainsValue(p.Seat));
+
     public async Task<string> RequestPauseBots() =>
         CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestPauseBots), UserToken, GameId)).Error);
 

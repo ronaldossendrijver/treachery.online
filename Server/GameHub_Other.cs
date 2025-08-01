@@ -466,9 +466,9 @@ public partial class GameHub
     public async Task<VoidResult> RequestNudgeBots(string userToken, string gameId)
     {
         if (!AreValid(userToken, gameId, out _, out var game, out var error))
-            return error;
+            return error!;
 
-        await ScheduleBotEvent(game, true);
+        await ScheduleBotEvent(game!, true);
 
         await Task.CompletedTask;
         return Success();

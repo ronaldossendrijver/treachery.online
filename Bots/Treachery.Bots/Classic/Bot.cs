@@ -14,6 +14,8 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
     private Game Game { get; } = game;
 
     private Player Player { get; } = player;
+    
+    private BotParameters Param { get; } = param;
 
     private Faction Faction => Player.Faction;
 
@@ -24,8 +26,6 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
     private int Resources => Player.Resources;
     
     #region PublicInterface
-
-    private BotParameters Param { get; } = param;
 
     public GameEvent? DetermineHighestPriorityInPhaseAction(List<Type> events)
     {

@@ -16,14 +16,14 @@ public partial class ClassicBot
     protected virtual AllianceByTerror DetermineAllianceByTerror()
     {
         var cyan = Game.GetPlayer(Faction.Cyan);
-        var accept = !Player.HasAlly || PlayerStanding(cyan) > 0.75f * PlayerStanding(AlliedPlayer);
+        var accept = !Player.HasAlly || PlayerStanding(cyan) > 0.75f * PlayerStanding(AlliedPlayer!);
         return new AllianceByTerror(Game, Faction) { Passed = !accept };
     }
 
     protected virtual AllianceByAmbassador DetermineAllianceByAmbassador()
     {
         var pink = Game.GetPlayer(Faction.Pink);
-        var accept = !Player.HasAlly || PlayerStanding(pink) > 0.75f * PlayerStanding(AlliedPlayer);
+        var accept = !Player.HasAlly || PlayerStanding(pink) > 0.75f * PlayerStanding(AlliedPlayer!);
         return new AllianceByAmbassador(Game, Faction) { Passed = !accept };
     }
 
@@ -32,26 +32,26 @@ public partial class ClassicBot
         return new NexusVoted(Game, Faction) { Passed = false };
     }
 
-    protected virtual AllianceOffered DetermineAllianceOffered()
+    protected virtual AllianceOffered? DetermineAllianceOffered()
     {
         var nrOfPlayers = Game.Players.Count;
         var nrOfUnAlliedBots = Game.Players.Count(p => Game.IsBot(p) && !p.HasAlly);
         var nrOfUnalliedHumans = Game.Players.Count(p => !Game.IsBot(p) && !p.HasAlly);
         var offer = Game.CurrentAllianceOffers
-            .Where(offer => offer.Target == Faction && !Game.IsBot(offer.Player))
-            .HighestOrDefault(offer => PlayerStanding(offer.Player));
-        if (offer == null) offer = Game.CurrentAllianceOffers
-            .Where(allianceOffered => allianceOffered.Target == Faction)
-            .HighestOrDefault(allianceOffered => PlayerStanding(allianceOffered.Player));
+                        .Where(offer => offer.Target == Faction && !Game.IsBot(offer.Player))
+                        .HighestOrDefault(offer => PlayerStanding(offer.Player))
+                    ?? Game.CurrentAllianceOffers
+                        .Where(allianceOffered => allianceOffered.Target == Faction)
+                        .HighestOrDefault(allianceOffered => PlayerStanding(allianceOffered.Player));
 
         if (offer != null) 
             return new AllianceOffered(Game, Faction) { Target = offer.Initiator };
 
-        if (
-            nrOfPlayers > 2 &&
-            !Game.Applicable(Rule.BotsCannotAlly) &&
-            (nrOfUnalliedHumans == 0 || nrOfUnalliedHumans < nrOfUnAlliedBots - 1) &&
-            !Game.CurrentAllianceOffers.Any(o => o.Initiator == Faction && Game.GetPlayer(o.Target).Ally == Faction.None))
+        if (nrOfPlayers <= 2 ||
+            Game.Applicable(Rule.BotsCannotAlly) ||
+            (nrOfUnalliedHumans != 0 && nrOfUnalliedHumans >= nrOfUnAlliedBots - 1) ||
+            Game.CurrentAllianceOffers.Any(o =>
+                o.Initiator == Faction && Game.GetPlayer(o.Target).Ally == Faction.None)) return null;
         {
             var mostInterestingOpponentBotWithoutAlly = Game.Players
                 .Where(p => p != Player && Game.IsBot(p) && !p.HasAlly)
@@ -75,13 +75,14 @@ public partial class ClassicBot
                2 * p.Leaders.Count(l => Game.IsAlive(l));
     }
 
-    protected virtual AllianceBroken DetermineAllianceBroken()
+    protected virtual AllianceBroken? DetermineAllianceBroken()
     {
         var offer = Game.CurrentAllianceOffers
             .Where(offer => offer.Target == Faction && !Game.IsBot(offer.Player))
             .HighestOrDefault(offer => PlayerStanding(offer.Player));
 
-        if (offer != null && PlayerStanding(offer.Player) > PlayerStanding(AlliedPlayer)) return new AllianceBroken(Game, Faction);
+        if (offer != null && Player.HasAlly && PlayerStanding(offer.Player) > PlayerStanding(AlliedPlayer!)) 
+            return new AllianceBroken(Game, Faction);
 
         return null;
     }
@@ -98,27 +99,26 @@ public partial class ClassicBot
         return new NexusCardDrawn(Game, Faction) { Passed = true };
     }
 
-    protected virtual AllyPermission DetermineAlliancePermissions()
+    protected virtual AllyPermission? DetermineAlliancePermissions()
     {
         if (Ally == Faction.None) return null;
 
-        if (Game.CurrentMainPhase == MainPhase.Blow || Game.CurrentMainPhase == MainPhase.Bidding || Game.CurrentMainPhase == MainPhase.ShipmentAndMove || Game.CurrentMainPhase == MainPhase.Battle)
-        {
+        if (Game.CurrentMainPhase != MainPhase.Blow && Game.CurrentMainPhase != MainPhase.Bidding &&
+            Game.CurrentMainPhase != MainPhase.ShipmentAndMove &&
+            Game.CurrentMainPhase != MainPhase.Battle) return null;
+        
+        var allowedResources = DetermineAllowedResources();
+        var allowedKarmaCard = Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
+        var permission = new AllyPermission(Game, Faction) { PermittedResources = allowedResources, PermittedKarmaCard = allowedKarmaCard };
+        var boolPermissionsNeedUpdate = BoolPermissionsNeedUpdate(permission);
+        var specialPermissionsNeedUpdate = SpecialPermissionsNeedUpdate(permission);
 
-            var allowedResources = DetermineAllowedResources();
-            var allowedKarmaCard = Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
-            var permission = new AllyPermission(Game, Faction) { PermittedResources = allowedResources, PermittedKarmaCard = allowedKarmaCard };
-            var boolPermissionsNeedUpdate = BoolPermissionsNeedUpdate(permission);
-            var specialPermissionsNeedUpdate = SpecialPermissionsNeedUpdate(permission);
-
-            if (boolPermissionsNeedUpdate || specialPermissionsNeedUpdate || Game.GetPermittedUseOfAllyResources(Ally) != allowedResources || Game.GetPermittedUseOfAllyKarma(Ally) != allowedKarmaCard)
-            {
-                LogInfo("Updating permissions, allowing use of {0} spice and Karama: {1}", allowedResources, allowedKarmaCard);
-                return permission;
-            }
-        }
-
-        return null;
+        if (!boolPermissionsNeedUpdate && !specialPermissionsNeedUpdate &&
+            Game.GetPermittedUseOfAllyResources(Ally) == allowedResources &&
+            Game.GetPermittedUseOfAllyKarma(Ally) == allowedKarmaCard) return null;
+        
+        LogInfo("Updating permissions, allowing use of {0} spice and Karama: {1}", allowedResources, allowedKarmaCard);
+        return permission;
     }
 
     private bool SpecialPermissionsNeedUpdate(AllyPermission permission)
@@ -193,47 +193,40 @@ public partial class ClassicBot
 
         foreach (var p in GetPermissionProperties())
         {
-            typeof(AllyPermission).GetProperty(p).SetValue(permission, true);
-
-            if (!result && !typeof(Game).GetProperty(p).GetValue(Game).Equals(true)) result = true;
+            var prop = typeof(AllyPermission).GetProperty(p);
+            if (prop == null) continue;
+            prop.SetValue(permission, true);
+            
+            if (result) continue;
+            
+            var gameProp = typeof(Game).GetProperty(p);
+            if (Equals(gameProp?.GetValue(Game), true))
+                result = true;
         }
 
         return result;
     }
 
-    private IEnumerable<string> GetPermissionProperties()
+    private IEnumerable<string> GetPermissionProperties() => Faction switch
     {
-        switch (Faction)
-        {
-            case Faction.Green: return new[] { "GreenSharesPrescience" };
-            case Faction.Yellow: return new[] { "YellowSharesPrescience", "YellowWillProtectFromMonster", "YellowAllowsThreeFreeRevivals", "YellowRefundsBattleDial" };
-            case Faction.Orange: return new[] { "OrangeAllowsShippingDiscount" };
-            case Faction.Blue: return new[] { "BlueAllowsUseOfVoice" };
-            case Faction.Grey: return new[] { "GreyAllowsReplacingCards" };
-            case Faction.Purple: return new[] { "PurpleAllowsRevivalDiscount" };
-            case Faction.White: return new[] { "WhiteAllowsUseOfNoField" };
-            case Faction.Cyan: return new[] { "CyanAllowsKeepingCards" };
-            case Faction.Pink: return new[] { "PinkSharesAmbassadors" };
-        }
+        Faction.Green => ["GreenSharesPrescience"],
+        Faction.Yellow => ["YellowSharesPrescience", "YellowWillProtectFromMonster", "YellowAllowsThreeFreeRevivals", "YellowRefundsBattleDial"],
+        Faction.Orange => ["OrangeAllowsShippingDiscount"],
+        Faction.Blue => ["BlueAllowsUseOfVoice"],
+        Faction.Grey => ["GreyAllowsReplacingCards"],
+        Faction.Purple => ["PurpleAllowsRevivalDiscount"],
+        Faction.White => ["WhiteAllowsUseOfNoField"],
+        Faction.Cyan => ["CyanAllowsKeepingCards"],
+        Faction.Pink => ["PinkSharesAmbassadors"],
+        _ => []
+    };
 
-        return Array.Empty<string>();
-    }
-
-    protected virtual CardTraded DetermineCardTraded()
+    protected virtual CardTraded? DetermineCardTraded()
     {
-        if (Game.CurrentCardTradeOffer != null)
-        {
-            CardTraded result;
+        if (Game.CurrentCardTradeOffer == null) return null;
 
-            if (Game.CurrentCardTradeOffer.RequestedCard != null)
-                result = new CardTraded(Game, Faction) { Target = Game.CurrentCardTradeOffer.Initiator, Card = Game.CurrentCardTradeOffer.RequestedCard, RequestedCard = null };
-            else
-                result = new CardTraded(Game, Faction) { Target = Game.CurrentCardTradeOffer.Initiator, Card = Player.TreacheryCards.OrderBy(c => CardQuality(c, Player)).FirstOrDefault(), RequestedCard = null };
-
-            return result;
-        }
-
-        return null;
+        return Game.CurrentCardTradeOffer.RequestedCard != null 
+            ? new CardTraded(Game, Faction) { Target = Game.CurrentCardTradeOffer.Initiator, Card = Game.CurrentCardTradeOffer.RequestedCard, RequestedCard = null } 
+            : new CardTraded(Game, Faction) { Target = Game.CurrentCardTradeOffer.Initiator, Card = Player.TreacheryCards.OrderBy(c => CardQuality(c, Player)).FirstOrDefault(), RequestedCard = null };
     }
-
 }

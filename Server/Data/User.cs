@@ -18,21 +18,20 @@ public class User
     public int Id { get; init; }
     
     [MaxLength(4000)]
-    public string Name { get; set; }
+    public required string Name { get; init; }
     
     [MaxLength(4000)]
-    public string Email { get; set; }
+    public required string Email { get; set; }
     
     [MaxLength(4000)]
-    public string HashedPassword { get; set; }
+    public required string HashedPassword { get; set; }
 
-    [MaxLength(4000)]
-    public string PasswordResetToken { get; set; }
+    [MaxLength(4000)] public string PasswordResetToken { get; set; } = string.Empty;
     
     public DateTimeOffset PasswordResetTokenCreated { get; set; }
     
     [MaxLength(4000)]
-    public string PlayerName { get; set; }
+    public string PlayerName { get; set; } = string.Empty;
 
     public DateTimeOffset LastLogin { get; set; }
 }

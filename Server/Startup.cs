@@ -61,7 +61,9 @@ public class Startup
         
         using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
         var context = serviceScope.ServiceProvider.GetService<TreacheryContext>();
-        
+
+        if (context == null) return;
+            
         var pending = context.Database.GetPendingMigrations();
         if (pending.Any())
         {

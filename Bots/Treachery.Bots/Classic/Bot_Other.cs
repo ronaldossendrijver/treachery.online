@@ -603,7 +603,7 @@ public partial class ClassicBot
                 case ClairvoyanceQuestion.CardTypeAsDefenseInBattle:
                     if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(Player))
                     {
-                        var plan = Game.CurrentBattle.PlanOf(Player) ?? DetermineBattlePlan(false, true);
+                        var plan = Game.CurrentBattle.PlanOf(Player) ?? DetermineBattlePlan(true);
                         LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                         answer = Answer(plan.Defense != null && ClairVoyanceAnswered.IsQuestionedBy(false, plan.Defense.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
                     }
@@ -612,7 +612,7 @@ public partial class ClassicBot
                 case ClairvoyanceQuestion.CardTypeAsWeaponInBattle:
                     if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(Player))
                     {
-                        var plan = Game.CurrentBattle.PlanOf(Player) ?? DetermineBattlePlan(false, true);
+                        var plan = Game.CurrentBattle.PlanOf(Player) ?? DetermineBattlePlan(true);
                         LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                         answer = Answer(plan.Weapon != null && ClairVoyanceAnswered.IsQuestionedBy(true, plan.Weapon.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
                     }
@@ -622,7 +622,7 @@ public partial class ClassicBot
                     if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(Player))
                     {
                         var plan = Game.CurrentBattle.PlanOf(Player);
-                        plan ??= DetermineBattlePlan(false, true);
+                        plan ??= DetermineBattlePlan(true);
                         LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                         answer = Answer(
                             (plan.Defense != null && ClairVoyanceAnswered.IsQuestionedBy(false, plan.Defense.Type,
@@ -637,7 +637,7 @@ public partial class ClassicBot
                 case ClairvoyanceQuestion.DialOfMoreThanXInBattle:
                     if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(Player))
                     {
-                        var plan = Game.CurrentBattle.PlanOf(Player) ?? DetermineBattlePlan(false, true);
+                        var plan = Game.CurrentBattle.PlanOf(Player) ?? DetermineBattlePlan(true);
                         LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                         answer = Answer(plan.Dial(Game, Game.CurrentBattle.OpponentOf(Player).Faction) > (float)Game.LatestClairvoyance.Parameter1);
                     }
@@ -646,7 +646,7 @@ public partial class ClassicBot
                 case ClairvoyanceQuestion.LeaderInBattle:
                     if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(Player))
                     {
-                        var plan = Game.CurrentBattle.PlanOf(Player) ?? DetermineBattlePlan(false, true);
+                        var plan = Game.CurrentBattle.PlanOf(Player) ?? DetermineBattlePlan(true);
                         LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                         answer = Answer(plan.Hero == (IHero)Game.LatestClairvoyance.Parameter1);
                     }
