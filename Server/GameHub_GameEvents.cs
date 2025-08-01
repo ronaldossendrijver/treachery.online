@@ -25,10 +25,10 @@ public partial class GameHub
             participation.SeatedPlayers[userId] = player.Seat;
         }
         
-        await Clients.Group(gameId).HandleAssignSeats(game.Game.Participation.SeatedPlayers);
+        await Clients.Group(gameId).HandleAssignSeats(participation.SeatedPlayers);
         
         if (e.Settings.AutoOpenEmptySeats)
-            _ = Task.Delay(2500).ContinueWith(_ => AutoOpenEmptySeats(gameId, game, participation));
+            _ = Task.Delay(3000).ContinueWith(_ => AutoOpenEmptySeats(gameId, game, participation));
         
         game.LastActivity = DateTimeOffset.Now;
         await PersistGameIfNeeded(game);

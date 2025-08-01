@@ -5,7 +5,7 @@ namespace Treachery.Server;
 
 public partial class GameHub
 {
-    public const int MaximumNumberOfGamesPerPlayer = 10;
+    private const int MaximumNumberOfGamesPerPlayer = 10;
     
     public async Task<Result<GameInitInfo>> RequestCreateGame(string userToken, string hashedPassword, string stateData, string skin)
     {
