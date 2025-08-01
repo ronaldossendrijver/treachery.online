@@ -14,15 +14,15 @@ namespace Treachery.Server;
 public class ArchivedGame
 {
     public int Id { get; init; }
-
-    [MaxLength(128)] 
-    public required string GameName { get; init; }
+    
+    [MaxLength(128)]
+    public string? GameName { get; set; }
     
     public int CreatorUserId { get; init; }
     
     // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
-    public required string GameState { get; init; }
+    public string? GameState { get; init; }
     
     // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
-    public required string GameParticipation { get; init; }
+    public string? GameParticipation { get; init; }
 }

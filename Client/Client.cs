@@ -289,11 +289,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public async Task HandleLoadGame(GameInitInfo initInfo) => await LoadGame(initInfo);
 
-    public Task HandleAssignSeats(Dictionary<int, int> assignment)
+    public async Task HandleAssignSeats(Dictionary<int, int> assignment)
     {
         Game.Participation.SeatedPlayers = assignment;
-        Refresh();
-        return Task.CompletedTask;
+        await PerformPostEventTasks();
     }
 
     public LinkedList<ChatMessage> Messages { get; } = [];
@@ -547,7 +546,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return result.Success ? null : CurrentSkin.Describe(result.Error);
     }
         
-
     public async Task<string> RequestUndo(int untilEventNr) =>
         CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestUndo), UserToken, GameId, untilEventNr)).Error);
 
@@ -569,17 +567,12 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     {
         if (gameEvent is EstablishPlayers establishPlayers && establishPlayers.Settings.AutoOpenEmptySeats)
         {
-            var botInClosedSeat = DetermineBotInClosedSeat();
-            while (botInClosedSeat != null)
+            foreach (var p in Game.Players.Where(p => !Game.Participation.SeatedPlayers.ContainsValue(p.Seat)).ToArray())
             {
-                await RequestOpenOrCloseSeat(botInClosedSeat.Seat);
-                botInClosedSeat = DetermineBotInClosedSeat();
+                await RequestOpenOrCloseSeat(p.Seat);
             }
         }
     }
-
-    private Player DetermineBotInClosedSeat() 
-        => Game.Players.FirstOrDefault(p => !Game.Participation.SeatedPlayers.ContainsValue(p.Seat));
 
     public async Task<string> RequestPauseBots() =>
         CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestPauseBots), UserToken, GameId)).Error);

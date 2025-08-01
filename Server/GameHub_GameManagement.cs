@@ -5,8 +5,6 @@ namespace Treachery.Server;
 
 public partial class GameHub
 {
-    private const int MaximumNumberOfGamesPerPlayer = 10;
-    
     public async Task<Result<GameInitInfo>> RequestCreateGame(string userToken, string hashedPassword, string stateData, string skin)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))

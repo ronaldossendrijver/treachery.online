@@ -34,7 +34,7 @@ public partial class GameHub
         
         await using var db = GetDbContext();
         
-        if (db.Users.Any(x => x.Name.Equals(cleanedUsername)))
+        if (db.Users.Any(x => Equals(x.Name, cleanedUsername)))
         {
             return Error<LoginInfo>(ErrorType.UserNameExists);
         }
@@ -45,7 +45,7 @@ public partial class GameHub
         await db.SaveChangesAsync();
         
         var user = await db.Users.FirstOrDefaultAsync(x =>
-            x.Name.Equals(cleanedUsername) && x.HashedPassword == hashedPassword);
+            Equals(x.Name, cleanedUsername) && x.HashedPassword == hashedPassword);
 
         if (user == null)
             return Error<LoginInfo>(ErrorType.UserCreationFailed);
@@ -93,7 +93,7 @@ public partial class GameHub
         await using var db = GetDbContext();
       
         var user = await db.Users.FirstOrDefaultAsync(x =>
-            x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()) && x.HashedPassword == hashedPassword);
+            x.Name != null && x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()) && x.HashedPassword == hashedPassword);
         
         if (user == null)
             return Error<LoginInfo>(ErrorType.InvalidUserNameOrPassword);
@@ -109,13 +109,18 @@ public partial class GameHub
     public async Task<VoidResult> RequestPasswordReset(string usernameOrEmail)
     {
         await using var db = GetDbContext();
-        
-        var users = db.Users.Where(x => 
-            x.Email.Trim().ToLower().Equals(usernameOrEmail.Trim().ToLower()) ||
-            x.Name.Trim().ToLower().Equals(usernameOrEmail.Trim().ToLower()))
+
+        var users = db.Users.Where(x =>
+                x.Email != null && x.Email.Trim().ToLower().Equals(usernameOrEmail.Trim().ToLower()) ||
+                x.Name != null && x.Name.Trim().ToLower().Equals(usernameOrEmail.Trim().ToLower()))
             .ToList();
         
         if (users.Count == 0)
+            return Error(ErrorType.UnknownUsernameOrEmailAddress);
+
+        var mail = users[0].Email;
+        
+        if (mail == null)
             return Error(ErrorType.UnknownUsernameOrEmailAddress);
 
         if (users.Any(u => (DateTimeOffset.Now - u.PasswordResetTokenCreated).TotalMinutes < 5))
@@ -147,7 +152,7 @@ public partial class GameHub
                     """
         };
 
-        mailMessage.To.Add(new MailAddress(users[0].Email));
+        mailMessage.To.Add(new MailAddress(mail));
         await SendMail(mailMessage);
         
         return Success();
@@ -158,7 +163,7 @@ public partial class GameHub
         await using var db = GetDbContext();
 
         var user = await db.Users.FirstOrDefaultAsync(x =>
-            x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()));
+            x.Name != null && x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()));
         
         if (user == null)
             return Error<LoginInfo>(ErrorType.UnknownUserName);

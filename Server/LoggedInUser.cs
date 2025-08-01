@@ -15,11 +15,11 @@ public class LoggedInUser(User user)
 
     public int Id => User.Id;
     
-    public string Username => User.Name;
+    public string? Username => User.Name;
     
-    public string PlayerName => User.PlayerName;
+    public string? PlayerName => User.PlayerName;
     
-    public string Email => User.Email;
+    public string? Email => User.Email;
     
     public DateTimeOffset LoggedInDateTime { get; } = DateTimeOffset.Now;
 

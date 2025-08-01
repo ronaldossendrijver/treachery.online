@@ -7,8 +7,9 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     private const int ServerStatusFrequencyMs = 6000;
     private const int PersistFrequencyMinutes = 30;
     private const int MaximumLoginTimeDays = 90; 
-    private const int ActiveGameThresholdMinutes = 30;
+    private const int ActiveGameThresholdMinutes = 120;
     private const int GamePersistFrequencyMinutes = 5;
+    private const int MaximumNumberOfGamesPerPlayer = 10;
     
     //Users
     private static ConcurrentDictionary<string,LoggedInUser> UsersByUserToken { get; } = [];

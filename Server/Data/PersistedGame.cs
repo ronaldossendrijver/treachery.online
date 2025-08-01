@@ -20,21 +20,21 @@ public class PersistedGame
     public int Id { get; init; }
     
     [MaxLength(128)]
-    public string GameName { get; init; } = string.Empty;
+    public string? GameName { get; init; }
     
     [MaxLength(36)]
-    public string GameId { get; init; } = string.Empty;
+    public string? GameId { get; init; }
     
     public DateTimeOffset CreationDate { get; init; }
     
     public int CreatorUserId { get; init; }
     
-    public string GameState { get; set; } = string.Empty;
+    public string? GameState { get; set; }
 
-    public string GameParticipation { get; set; } = string.Empty;
+    public string? GameParticipation { get; set; }
     
     [MaxLength(4000)]
-    public string HashedPassword { get; init; } = string.Empty;
+    public string? HashedPassword { get; init; }
     
     public bool ObserversRequirePassword { get; init; }
     
