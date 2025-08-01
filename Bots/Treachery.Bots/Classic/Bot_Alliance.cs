@@ -103,22 +103,23 @@ public partial class ClassicBot
     {
         if (Ally == Faction.None) return null;
 
-        if (Game.CurrentMainPhase != MainPhase.Blow && Game.CurrentMainPhase != MainPhase.Bidding &&
-            Game.CurrentMainPhase != MainPhase.ShipmentAndMove &&
-            Game.CurrentMainPhase != MainPhase.Battle) return null;
-        
-        var allowedResources = DetermineAllowedResources();
-        var allowedKarmaCard = Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
-        var permission = new AllyPermission(Game, Faction) { PermittedResources = allowedResources, PermittedKarmaCard = allowedKarmaCard };
-        var boolPermissionsNeedUpdate = BoolPermissionsNeedUpdate(permission);
-        var specialPermissionsNeedUpdate = SpecialPermissionsNeedUpdate(permission);
+        if (Game.CurrentMainPhase is MainPhase.Blow or MainPhase.Bidding or MainPhase.ShipmentAndMove or MainPhase.Battle)
+        {
 
-        if (!boolPermissionsNeedUpdate && !specialPermissionsNeedUpdate &&
-            Game.GetPermittedUseOfAllyResources(Ally) == allowedResources &&
-            Game.GetPermittedUseOfAllyKarma(Ally) == allowedKarmaCard) return null;
-        
-        LogInfo("Updating permissions, allowing use of {0} spice and Karama: {1}", allowedResources, allowedKarmaCard);
-        return permission;
+            var allowedResources = DetermineAllowedResources();
+            var allowedKarmaCard = Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
+            var permission = new AllyPermission(Game, Faction) { PermittedResources = allowedResources, PermittedKarmaCard = allowedKarmaCard };
+            var boolPermissionsNeedUpdate = BoolPermissionsNeedUpdate(permission);
+            var specialPermissionsNeedUpdate = SpecialPermissionsNeedUpdate(permission);
+
+            if (boolPermissionsNeedUpdate || specialPermissionsNeedUpdate || Game.GetPermittedUseOfAllyResources(Ally) != allowedResources || Game.GetPermittedUseOfAllyKarma(Ally) != allowedKarmaCard)
+            {
+                LogInfo("Updating permissions, allowing use of {0} spice and Karama: {1}", allowedResources, allowedKarmaCard);
+                return permission;
+            }
+        }
+
+        return null;
     }
 
     private bool SpecialPermissionsNeedUpdate(AllyPermission permission)
@@ -193,15 +194,14 @@ public partial class ClassicBot
 
         foreach (var p in GetPermissionProperties())
         {
-            var prop = typeof(AllyPermission).GetProperty(p);
-            if (prop == null) continue;
-            prop.SetValue(permission, true);
-            
-            if (result) continue;
-            
-            var gameProp = typeof(Game).GetProperty(p);
-            if (Equals(gameProp?.GetValue(Game), true))
-                result = true;
+            typeof(AllyPermission).GetProperty(p)?.SetValue(permission, true);
+
+            if (!result)
+            {
+                var curValue = typeof(Game).GetProperty(p)?.GetValue(Game);
+                if (!Equals(curValue, true)) 
+                    result = true;
+            }
         }
 
         return result;

@@ -11,6 +11,8 @@ namespace Treachery.Bots;
 
 public partial class ClassicBot(Game game, Player player, BotParameters param) : IBot
 {
+    private const bool LogBotInfo = true;
+    
     private Game Game { get; } = game;
 
     private Player Player { get; } = player;
@@ -247,24 +249,36 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
 
     private static void LogInfo(string msg, params object?[] pars)
     {
-        #if (DEBUG)
-        {
-            if (Message.DefaultDescriber != null)
-                Console.WriteLine(Message.DefaultDescriber.Format(msg, pars));
-            else
-                Console.WriteLine(msg, pars);
-        }
-        #endif
+        if (!LogBotInfo) return;
+        
+        #pragma warning disable CS0162 // Unreachable code detected
+        // ReSharper disable HeuristicUnreachableCode
+        
+        if (Message.DefaultDescriber != null)
+            Console.WriteLine(Message.DefaultDescriber.Format(msg, pars));
+        else
+            Console.WriteLine(msg, pars);
+        
+        // ReSharper restore HeuristicUnreachableCode
+        #pragma warning restore CS0162 // Unreachable code detected
     }
 
-    private static void LogError(Message? message)
+    private static void LogInfo(Message? message)
     {
+        if (!LogBotInfo) return;
+        
+        #pragma warning disable CS0162 // Unreachable code detected
+        // ReSharper disable HeuristicUnreachableCode
+        
         if (message == null) return;
-    
+        
         if (Message.DefaultDescriber != null)
             Console.WriteLine(message.ToString(Message.DefaultDescriber));
         else
             Console.WriteLine(message);
+        
+        // ReSharper restore HeuristicUnreachableCode
+        #pragma warning restore CS0162 // Unreachable code detected
     }
     
     private static void LogError(string msg, params object?[] pars)
@@ -275,20 +289,6 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
             else
                 Console.WriteLine(msg, pars);
         }
-    }
-
-    private static void LogInfo(Message? message)
-    {
-#if (DEBUG) 
-        {
-            if (message == null) return;
-        
-            if (Message.DefaultDescriber != null)
-                Console.WriteLine(message.ToString(Message.DefaultDescriber));
-            else
-                Console.WriteLine(message);
-        }
-#endif
     }
 
     private readonly LoggedRandom _random = new();

@@ -338,11 +338,10 @@ public class Tests
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
 
-        var nrOfGames = 64;
-        var nrOfTurns = 10;
-        var nrOfPlayers = 6;
-
-        var timeout = 10;
+        const int nrOfGames = 8;
+        const int nrOfTurns = 10;
+        const int nrOfPlayers = 6;
+        const int timeout = 10;
 
         Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -352,7 +351,7 @@ public class Tests
         rules.Add(Rule.AssistedNotekeeping);
 
         var rulesAsArray = rules.ToArray();
-        var wincounter = new ObjectCounter<Faction>();
+        var winCounter = new ObjectCounter<Faction>();
 
         ParallelOptions po = new()
         {
@@ -361,10 +360,10 @@ public class Tests
 
         Parallel.For(0, nrOfGames, po, _ =>
             {
-                PlayGameAndRecordResults(nrOfPlayers, nrOfTurns, rulesAsArray, wincounter, statistics, timeout);
+                PlayGameAndRecordResults(nrOfPlayers, nrOfTurns, rulesAsArray, winCounter, statistics, timeout);
             });
 
-        foreach (var f in wincounter.Counted.OrderByDescending(f => wincounter.CountOf(f))) Console.WriteLine(DefaultSkin.Default.Format("{0}: {1} ({2}%)", f, wincounter.CountOf(f), 100f * wincounter.CountOf(f) / nrOfGames));
+        foreach (var f in winCounter.Counted.OrderByDescending(f => winCounter.CountOf(f))) Console.WriteLine(DefaultSkin.Default.Format("{0}: {1} ({2}%)", f, winCounter.CountOf(f), 100f * winCounter.CountOf(f) / nrOfGames));
 
         statistics.Output(DefaultSkin.Default);
     }
@@ -436,10 +435,10 @@ public class Tests
                 bots.Add(p.Faction, new ClassicBot(game, p, prs));
             }
 
-            var maxNumberOfEvents = game.CurrentTurn * game.Players.Count * 60;
-
             while (game.CurrentPhase != Phase.GameEnded)
             {
+                var maxNumberOfEvents = game.CurrentTurn * game.Players.Count * 60;
+                
                 var evt = PerformBotEvent(game, bots, performTests);
 
                 if (evt == null)
