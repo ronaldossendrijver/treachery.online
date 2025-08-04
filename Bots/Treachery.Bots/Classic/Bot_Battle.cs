@@ -26,11 +26,15 @@ public partial class ClassicBot
 
     private SwitchedSkilledLeader? DetermineSwitchedSkilledLeader()
     {
-        var leaderToSwitch = Player.Leaders.FirstOrDefault(l => Game.IsSkilled(l) && INeedToSwitchThisLeader(l));
+        var switchableLeader = SwitchedSkilledLeader.SwitchableLeader(game, player);
+        
+        if (switchableLeader == null || 
+            !game.CurrentBattle.IsAggressorOrDefender(player) 
+            || game.CurrentBattle.PlanOf(player) != null 
+            || !INeedToSwitchThisLeader(switchableLeader))
+            return null;
 
-        return leaderToSwitch != null 
-            ? new SwitchedSkilledLeader(Game, Faction) 
-            : null;
+        return new SwitchedSkilledLeader(Game, Faction);
     }
 
     private bool INeedToSwitchThisLeader(Leader leader)
