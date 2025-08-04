@@ -249,10 +249,10 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
 
     private static void LogInfo(string msg, params object?[] pars)
     {
-        if (!LogBotInfo) return;
-        
         #pragma warning disable CS0162 // Unreachable code detected
         // ReSharper disable HeuristicUnreachableCode
+        
+        if (!LogBotInfo) return;
         
         if (Message.DefaultDescriber != null)
             Console.WriteLine(Message.DefaultDescriber.Format(msg, pars));
@@ -265,10 +265,10 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
 
     private static void LogInfo(Message? message)
     {
-        if (!LogBotInfo) return;
-        
         #pragma warning disable CS0162 // Unreachable code detected
         // ReSharper disable HeuristicUnreachableCode
+        
+        if (!LogBotInfo) return;
         
         if (message == null) return;
         

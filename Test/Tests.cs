@@ -31,7 +31,6 @@ public class Tests
     private const bool GatherCentralStyleStatistics = false;
 
     // ReSharper disable UnusedParameter.Local
-    
     private void SaveSpecialCases(Game g, GameEvent e)
     {
         
@@ -41,7 +40,6 @@ public class Tests
     private readonly List<string> _writtenCases = [];
     
     // ReSharper disable UnusedMember.Local
-    
     private void WriteSaveGameIfApplicable(Game g, Player playerWithAction, string c)
     {
         lock (_writtenCases)
@@ -52,11 +50,11 @@ public class Tests
             _writtenCases.Add(c);
         }
     }
-    
     // ReSharper restore UnusedMember.Local
 
     private ObjectCounter<int> _cardCount;
     private ObjectCounter<int> _leaderCount;
+    
     private string TestIllegalCases(Game g, GameEvent e)
     {
         if (!g.Applicable(Rule.AdvisorsDontConflictWithAlly) && e is BattleConcluded)
@@ -338,7 +336,7 @@ public class Tests
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
 
-        const int nrOfGames = 8;
+        const int nrOfGames = 64;
         const int nrOfTurns = 10;
         const int nrOfPlayers = 6;
         const int timeout = 10;

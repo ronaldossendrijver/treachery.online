@@ -958,8 +958,6 @@ public partial class ClassicBot
         if (availableToPlace.Contains(TerrorType.Extortion) 
             && Opponents.Sum(p => p.Resources) > Opponents.Count * 10) type = TerrorType.Robbery;
         
-        
-        
         if (type == TerrorType.None 
             && availableToPlace.Contains(TerrorType.Atomics) 
             && validStrongholds.Any(t => Opponents.Sum(o => o.AnyForcesIn(t)) > 12 && MeAndMyAlly.Sum(o => o.AnyForcesIn(t)) < 2)) type = TerrorType.Atomics;

@@ -11,7 +11,7 @@ namespace Treachery.Bots;
 
 public partial class ClassicBot
 {
-    protected virtual BattleClaimed DetermineBattleClaimed()
+    private BattleClaimed DetermineBattleClaimed()
     {
         var territory = Game.BattleAboutToStart.Territory;
         var opponent = Game.GetPlayer(Game.BattleAboutToStart.Target);
@@ -24,7 +24,7 @@ public partial class ClassicBot
             : new BattleClaimed(Game, Faction) { Passed = pinkIsStrongest };
     }
 
-    protected virtual SwitchedSkilledLeader? DetermineSwitchedSkilledLeader()
+    private SwitchedSkilledLeader? DetermineSwitchedSkilledLeader()
     {
         var leaderToSwitch = Player.Leaders.FirstOrDefault(l => Game.IsSkilled(l) && INeedToSwitchThisLeader(l));
 
@@ -43,7 +43,7 @@ public partial class ClassicBot
             || (!Game.IsInFrontOfShield(leader) && Game.CurrentPhase != Phase.BattlePhase);
     }
     
-    protected virtual BattleInitiated DetermineBattleInitiated()
+    private BattleInitiated DetermineBattleInitiated()
     {
         var battle = Battle.BattlesToBeFought(Game, Player)
             .OrderBy(b => MaxDial(Game, Game.GetPlayer(b.Faction), b.Territory, Player) - MaxDial(Game, Player, b.Territory, Game.GetPlayer(b.Faction))).First();
@@ -55,7 +55,7 @@ public partial class ClassicBot
         };
     }
 
-    protected virtual TreacheryCalled? DetermineTreacheryCalled()
+    private TreacheryCalled? DetermineTreacheryCalled()
     {
         if (!Game.CurrentBattle.IsAggressorOrDefender(Player) && !TreacheryCalled.MayCallTreachery(Game, Player))
             return null;
@@ -63,17 +63,17 @@ public partial class ClassicBot
         return new TreacheryCalled(Game, Faction) { TraitorCalled = TreacheryCalled.MayCallTreachery(Game, Player) };
     }
 
-    protected virtual AuditCancelled DetermineAuditCancelled()
+    private AuditCancelled DetermineAuditCancelled()
     {
         return new AuditCancelled(Game, Faction) { Cancelled = false };
     }
 
-    protected virtual Audited DetermineAudited()
+    private Audited DetermineAudited()
     {
         return new Audited(Game, Faction);
     }
 
-    protected virtual BattleConcluded DetermineBattleConcluded()
+    private BattleConcluded DetermineBattleConcluded()
     {
         var myBattleplan = Game.CurrentBattle.PlanOf(Player);
         var opponent = Game.CurrentBattle.OpponentOf(Player);
@@ -133,12 +133,12 @@ public partial class ClassicBot
             AddExtraForce = BattleConcluded.MayAddExtraForce(Game, Player)
         };
     }
-    protected virtual Battle? DetermineBattle()
+    private Battle? DetermineBattle()
     {
         return DetermineBattlePlanIfNotWaitingForPrescience(false);
     }
 
-    protected virtual Battle? DetermineBattlePlanIfNotWaitingForPrescience(bool includeLeaderInFrontOfShield)
+    private Battle? DetermineBattlePlanIfNotWaitingForPrescience(bool includeLeaderInFrontOfShield)
     {
         var opponent = Game.CurrentBattle.OpponentOf(Player);
         
@@ -147,7 +147,7 @@ public partial class ClassicBot
         return DetermineBattlePlan(includeLeaderInFrontOfShield);
     }
 
-    protected virtual Battle DetermineBattlePlan(bool includeLeaderInFrontOfShield)
+    private Battle DetermineBattlePlan(bool includeLeaderInFrontOfShield)
     {
         LogInfo("DetermineBattle()");
 
@@ -156,7 +156,7 @@ public partial class ClassicBot
         if (DecidedShipmentAction == ShipmentDecision.DummyShipment)
         {
             LogInfo("I'm spending as little as possible on Player fight because Player is a dummy shipment");
-            return ConstructLostBattleMinimizingLosses(opponent, null);
+            return ConstructLostBattleMinimizingLosses(opponent, Game.CurrentBattle.Territory);
         }
 
         var forcesAvailable = Battle.MaxForces(Game, Player, false);
@@ -185,7 +185,7 @@ public partial class ClassicBot
 
         if (stoneBurner) dialNeeded = 0;
 
-        LogInfo("AGAINST {0} in {1}, WITH {2} + {3} as WEAPON + {4} as DEF, I need a force dial of {5}", opponent, Game.CurrentBattle.Territory, hero, weapon, defense, dialNeeded);
+        LogInfo("AGAINST {0} in {1}, WITH {2} + {3} as WEAPON + {4} as DEF, I need a force dial of {5}", opponent.Faction, Game.CurrentBattle.Territory, hero, weapon, defense, dialNeeded);
 
         var resourcesFromAlly = Ally == Faction.Brown ? Game.ResourcesYourAllyCanPay(Player) : 0;
         var resourcesForBattle = Resources + resourcesFromAlly;
@@ -272,7 +272,7 @@ public partial class ClassicBot
             ((weapon.Type == TreacheryCardType.PoisonTooth && defense.Type != TreacheryCardType.Chemistry) || (weapon.Type == TreacheryCardType.ArtilleryStrike && !defense.IsShield))) defense = null;
     }
 
-    private Battle ConstructLostBattleMinimizingLosses(Player opponent, Territory? territory)
+    private Battle ConstructLostBattleMinimizingLosses(Player opponent, Territory territory)
     {
         var lowestAvailableHero = Battle.ValidBattleHeroes(Game, Player).FirstOrDefault(h => h is TreacheryCard);
         if (lowestAvailableHero == null) SelectHeroForBattle(Game, Player, opponent, false, true, false, null, null, out lowestAvailableHero, out _, true);

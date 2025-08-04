@@ -11,7 +11,7 @@ namespace Treachery.Bots;
 
 public partial class ClassicBot
 {
-    protected virtual DealAccepted? DetermineDealAccepted()
+    private DealAccepted? DetermineDealAccepted()
     {
         if (!DealAccepted.MayDeal(Game, Player, 1) || Game.Applicable(Rule.DisableResourceTransfers)) return null;
 
@@ -47,12 +47,12 @@ public partial class ClassicBot
         return result;
     }
 
-    protected virtual DealOffered? DetermineDealCancelled()
+    private DealOffered? DetermineDealCancelled()
     {
         return DetermineOutdatedDealOffers();
     }
 
-    protected virtual DealOffered? DetermineDealOffered()
+    private DealOffered? DetermineDealOffered()
     {
         if (LastTurn || Game.CurrentMainPhase <= MainPhase.Setup ||
             Game.Applicable(Rule.DisableResourceTransfers)) return null;
@@ -65,7 +65,7 @@ public partial class ClassicBot
                ?? DetermineDealOffered_TellDiscardedTraitors();
     }
 
-    protected virtual DealOffered? DetermineOutdatedDealOffers()
+    private DealOffered? DetermineOutdatedDealOffers()
     {
         var outdated = FindInvalidDealOffers()
                        ?? FindOutdatedDealOffer(MainPhase.Bidding, DealType.ShareBiddingPrescience)
@@ -98,7 +98,7 @@ public partial class ClassicBot
         return null;
     }
 
-    protected virtual DealOffered? DetermineDealOffered_TellDiscardedTraitors()
+    private DealOffered? DetermineDealOffered_TellDiscardedTraitors()
     {
         if (Faction != Faction.Black && Faction != Faction.Purple &&
             !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.TellDiscardedTraitors))
@@ -114,7 +114,7 @@ public partial class ClassicBot
         return null;
     }
 
-    protected virtual DealOffered? DetermineDealOffered_ResourceDeckPrescience()
+    private DealOffered? DetermineDealOffered_ResourceDeckPrescience()
     {
         if (Faction == Faction.Green &&
             Game.CurrentMainPhase is >= MainPhase.ShipmentAndMove and <= MainPhase.Battle &&
@@ -132,7 +132,7 @@ public partial class ClassicBot
         return null;
     }
 
-    protected virtual DealOffered? DetermineDealOffered_StormPrescience()
+    private DealOffered? DetermineDealOffered_StormPrescience()
     {
         if (Faction == Faction.Yellow &&
             Game.CurrentMainPhase is > MainPhase.Storm and <= MainPhase.Battle &&
@@ -150,7 +150,7 @@ public partial class ClassicBot
         return null;
     }
 
-    protected virtual DealOffered? DetermineDealOffered_BiddingPrescienceEntirePhaseYellowTurn1()
+    private DealOffered? DetermineDealOffered_BiddingPrescienceEntirePhaseYellowTurn1()
     {
         if (Faction == Faction.Green &&
             Game.IsPlaying(Faction.Yellow) &&
@@ -169,7 +169,7 @@ public partial class ClassicBot
         return null;
     }
 
-    protected virtual DealOffered? DetermineDealOffered_BiddingPrescienceEntirePhase()
+    private DealOffered? DetermineDealOffered_BiddingPrescienceEntirePhase()
     {
         if (Faction == Faction.Green &&
             Game.CurrentMainPhase <= MainPhase.Bidding &&
@@ -190,7 +190,7 @@ public partial class ClassicBot
         return null;
     }
 
-    protected virtual DealOffered? DetermineDealOffered_BiddingPrescienceOneCard()
+    private DealOffered? DetermineDealOffered_BiddingPrescienceOneCard()
     {
         if (Faction == Faction.Green &&
             Game is { CurrentMainPhase: MainPhase.Bidding, CurrentAuctionType: AuctionType.Normal } &&

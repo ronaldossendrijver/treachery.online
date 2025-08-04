@@ -724,7 +724,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     private async Task RequestNudgeBots(DateTime gameLastAction)
     {
         if (Game.LastAction == gameLastAction)
-            await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestNudgeBots));
+            await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestNudgeBots), UserToken, GameId);
     }
 
     private void ResetAutoPassThreshold()
