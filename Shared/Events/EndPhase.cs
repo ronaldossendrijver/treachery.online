@@ -237,16 +237,19 @@ public class EndPhase : GameEvent
         var blue = GetPlayer(Faction.Blue);
         if (blue != null && Game.Applicable(Rule.BlueAutoCharity))
         {
-            if (!Game.Prevented(FactionAdvantage.BlueCharity))
+            if (Game.Version < 179 || !Game.CharityIsCancelled)
             {
-                Game.HasActedOrPassed.Add(Faction.Blue);
-                Game.GiveCharity(blue, 2 * Game.CurrentCharityMultiplier);
-                Game.Stone(Milestone.CharityClaimed);
-            }
-            else
-            {
-                Game.LogPreventionByKarma(FactionAdvantage.BlueCharity);
-                if (!Game.Applicable(Rule.FullPhaseKarma)) Game.Allow(FactionAdvantage.BlueCharity);
+                if (!Game.Prevented(FactionAdvantage.BlueCharity))
+                {
+                    Game.HasActedOrPassed.Add(Faction.Blue);
+                    Game.GiveCharity(blue, 2 * Game.CurrentCharityMultiplier);
+                    Game.Stone(Milestone.CharityClaimed);
+                }
+                else
+                {
+                    Game.LogPreventionByKarma(FactionAdvantage.BlueCharity);
+                    if (!Game.Applicable(Rule.FullPhaseKarma)) Game.Allow(FactionAdvantage.BlueCharity);
+                }
             }
         }
 

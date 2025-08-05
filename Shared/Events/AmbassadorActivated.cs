@@ -226,7 +226,7 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
     public static IEnumerable<Location> ValidYellowTargets(Game g, Player p)
     {
         return g.Map.Locations(false).Where(l =>
-            l.Sector != g.SectorInStorm && l != g.Map.HiddenMobileStronghold && g.IsNotFull(p, l));
+            l.Sector != g.SectorInStorm && g.IsNotFull(p, l));
     }
 
     public static IEnumerable<Location> ValidOrangeTargets(Game g, Player p)

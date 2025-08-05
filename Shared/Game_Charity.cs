@@ -14,7 +14,7 @@ public partial class Game
     #region State
 
     internal bool ResourceTechTokenIncome { get; set; }
-    private bool CharityIsCancelled => EconomicsStatus is BrownEconomicsStatus.Cancel or BrownEconomicsStatus.CancelFlipped;
+    internal bool CharityIsCancelled => EconomicsStatus is BrownEconomicsStatus.Cancel or BrownEconomicsStatus.CancelFlipped;
 
     #endregion State
 
@@ -35,9 +35,9 @@ public partial class Game
     {
         get
         {
-            if (EconomicsStatus == BrownEconomicsStatus.Double || EconomicsStatus == BrownEconomicsStatus.DoubleFlipped)
+            if (EconomicsStatus is BrownEconomicsStatus.Double or BrownEconomicsStatus.DoubleFlipped)
                 return 2;
-            if (EconomicsStatus == BrownEconomicsStatus.Cancel || EconomicsStatus == BrownEconomicsStatus.CancelFlipped)
+            if (EconomicsStatus is BrownEconomicsStatus.Cancel or BrownEconomicsStatus.CancelFlipped)
                 return 0;
             return 1;
         }
