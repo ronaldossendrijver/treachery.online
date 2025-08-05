@@ -39,7 +39,11 @@ public class SwitchedSkilledLeader : GameEvent
 
     public static bool CanBePlayed(Game game, Player player)
     {
-        return game.CurrentBattle.IsAggressorOrDefender(player) && game.CurrentBattle.PlanOf(player) == null && SwitchableLeader(game, player) != null;
+        return game.CurrentPhase == Phase.BattlePhase 
+               && game.CurrentBattle != null 
+               && game.CurrentBattle.IsAggressorOrDefender(player) 
+               && game.CurrentBattle.PlanOf(player) == null 
+               && SwitchableLeader(game, player) != null;
     }
 
     #endregion Validation

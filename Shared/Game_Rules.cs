@@ -11,7 +11,7 @@ namespace Treachery.Shared;
 
 public partial class Game
 {
-    public static readonly int ExpansionLevel = 3;
+    public const int ExpansionLevel = 3;
 
     public IEnumerable<Rule> GetCustomRules()
     {
@@ -111,49 +111,24 @@ public partial class Game
             Rule.RedSpecialForces
         }.Concat(ExpansionLevel < 1
             ? []
-            :
-            [
-                Rule.GreySwappingCardOnBid,
-                Rule.PurpleGholas
-            ]).Concat(ExpansionLevel < 2
+            : [ Rule.GreySwappingCardOnBid, Rule.PurpleGholas]
+        ).Concat(ExpansionLevel < 2
             ? []
-            :
-            [
-                Rule.BrownAuditor,
-                Rule.WhiteBlackMarket
-            ]).Concat(ExpansionLevel < 3
+            : [ Rule.BrownAuditor, Rule.WhiteBlackMarket ]
+        ).Concat(ExpansionLevel < 3
             ? []
-            :
-            [
-                Rule.CyanAssassinate,
-                Rule.PinkLoyalty
-            ]).ToArray(),
+            : [ Rule.CyanAssassinate, Rule.PinkLoyalty]).ToArray(),
 
         [Ruleset.AllExpansionsBasicGame] = Array.Empty<Rule>()
             .Concat(ExpansionLevel < 1
                 ? []
-                :
-                [
-                    Rule.TechTokens,
-                    Rule.CheapHeroTraitor,
-                    Rule.ExpansionTreacheryCards,
-                    Rule.SandTrout
-                ]).Concat(ExpansionLevel < 2
+                : [ Rule.TechTokens, Rule.CheapHeroTraitor, Rule.ExpansionTreacheryCards, Rule.SandTrout]
+            ).Concat(ExpansionLevel < 2
                 ? []
-                :
-                [
-                    Rule.LeaderSkills,
-                    Rule.Expansion2TreacheryCards
-                ]).Concat(ExpansionLevel < 3
+                : [ Rule.LeaderSkills, Rule.Expansion2TreacheryCards])
+            .Concat(ExpansionLevel < 3
                 ? []
-                :
-                [
-                    Rule.Expansion3TreacheryCards,
-                    Rule.DiscoveryTokens,
-                    Rule.Homeworlds,
-                    Rule.NexusCards,
-                    Rule.GreatMaker
-                ]).ToArray(),
+                : [ Rule.Expansion3TreacheryCards, Rule.DiscoveryTokens, Rule.Homeworlds, Rule.NexusCards, Rule.GreatMaker]).ToArray(),
 
         [Ruleset.ExpansionBasicGame] =
         [
@@ -196,35 +171,13 @@ public partial class Game
             Rule.RedSpecialForces
         }.Concat(ExpansionLevel < 1
             ? []
-            : new[]
-            {
-                Rule.TechTokens,
-                Rule.CheapHeroTraitor,
-                Rule.ExpansionTreacheryCards,
-                Rule.SandTrout,
-                Rule.GreySwappingCardOnBid,
-                Rule.PurpleGholas
-            }).Concat(ExpansionLevel < 2
+            : [ Rule.TechTokens, Rule.CheapHeroTraitor, Rule.ExpansionTreacheryCards, Rule.SandTrout, Rule.GreySwappingCardOnBid, Rule.PurpleGholas ]
+        ).Concat(ExpansionLevel < 2
             ? []
-            : new[]
-            {
-                Rule.LeaderSkills,
-                Rule.Expansion2TreacheryCards,
-                Rule.StrongholdBonus,
-                Rule.BrownAuditor,
-                Rule.WhiteBlackMarket
-            }).Concat(ExpansionLevel < 3
+            : [Rule.LeaderSkills, Rule.Expansion2TreacheryCards, Rule.StrongholdBonus, Rule.BrownAuditor, Rule.WhiteBlackMarket ]
+        ).Concat(ExpansionLevel < 3
             ? []
-            : new[]
-            {
-                Rule.Expansion3TreacheryCards,
-                Rule.DiscoveryTokens,
-                Rule.Homeworlds,
-                Rule.NexusCards,
-                Rule.GreatMaker,
-                Rule.CyanAssassinate,
-                Rule.PinkLoyalty
-            }).ToArray(),
+            : [ Rule.Expansion3TreacheryCards, Rule.DiscoveryTokens, Rule.Homeworlds, Rule.NexusCards, Rule.GreatMaker, Rule.CyanAssassinate, Rule.PinkLoyalty]).ToArray(),
 
         [Ruleset.ExpansionAdvancedGame] = new[]
         {
@@ -244,8 +197,8 @@ public partial class Game
             Rule.RedSpecialForces
         }.Concat(ExpansionLevel < 1
             ? []
-            : new[]
-            {
+            : [
+            
                 Rule.TechTokens,
                 Rule.CheapHeroTraitor,
                 Rule.ExpansionTreacheryCards,
@@ -256,7 +209,7 @@ public partial class Game
                 Rule.WhiteBlackMarket,
                 Rule.CyanAssassinate,
                 Rule.PinkLoyalty
-            }).ToArray(),
+            ]).ToArray(),
 
         [Ruleset.Expansion2AdvancedGame] = new[]
         {
@@ -308,8 +261,7 @@ public partial class Game
             Rule.RedSpecialForces
         }.Concat(ExpansionLevel < 3
             ? []
-            : new[]
-            {
+            : [
                 Rule.DiscoveryTokens,
                 Rule.GreatMaker,
                 Rule.NexusCards,
@@ -321,7 +273,7 @@ public partial class Game
                 Rule.WhiteBlackMarket,
                 Rule.CyanAssassinate,
                 Rule.PinkLoyalty
-            }).ToArray(),
+            ]).ToArray(),
 
         [Ruleset.ServerClassic] =
         [

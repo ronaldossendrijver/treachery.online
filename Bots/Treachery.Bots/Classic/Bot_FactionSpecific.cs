@@ -955,7 +955,7 @@ public partial class ClassicBot
         
         var type = TerrorType.None;
 
-        if (availableToPlace.Contains(TerrorType.Extortion) 
+        if (availableToPlace.Contains(TerrorType.Robbery) 
             && Opponents.Sum(p => p.Resources) > Opponents.Count * 10) type = TerrorType.Robbery;
         
         if (type == TerrorType.None 

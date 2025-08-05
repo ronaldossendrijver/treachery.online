@@ -972,7 +972,7 @@ public partial class ClassicBot
 
         var red = g.GetPlayer(Faction.Red);
 
-        var potentialMaximumByRed = p.Ally == Faction.Red && (g.Version < 113 || !g.Prevented(FactionAdvantage.RedLetAllyReviveExtraForces)) ? g.RedWillPayForExtraRevival : 0;
+        var potentialMaximumByRed = p.Ally == Faction.Red && (g.Version < 113 || !g.Prevented(FactionAdvantage.RedLetAllyReviveExtraForces)) ? Revival.ValidMaxRevivalsByRed(g, p) : 0;
 
         var maxSpecialForces = Revival.ValidMaxRevivals(g, p, true, useCunning);
 

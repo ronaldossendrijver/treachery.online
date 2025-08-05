@@ -84,8 +84,8 @@ public partial class ClassicBot
     private static List<TreacheryCard> OpponentCardsUnknownToPlayer(Game game, Player player, Player opponent) 
         => opponent.TreacheryCards.Where(c => !game.KnownCards(player).Contains(c)).ToList();
 
-    private static bool IsKnownToOpponent(Game game, Player opponent, TreacheryCard card) 
-        => game.KnownCards(opponent).Contains(card);
+    private static bool IsKnownTo(Game game, Player player, TreacheryCard card) 
+        => game.KnownCards(player).Contains(card);
 
     private static List<TreacheryCard> CardsPlayerHasOrMightHave(Game game, Player player)
     {

@@ -43,6 +43,8 @@ public class TerrorPlanted : PassableGameEvent
 
     public override Message Validate()
     {
+        if (Passed) return null;
+        
         if (Stronghold == null)
         {
             if (!Game.TerrorOnPlanet.ContainsKey(Type)) return Message.Express("You can't remove a token that is not on the board");
@@ -50,7 +52,7 @@ public class TerrorPlanted : PassableGameEvent
         else
         {
             if (!ValidStrongholds(Game, Player).Contains(Stronghold)) return Message.Express("Invalid Stronghold");
-            if (!ValidTerrorTypes(Game, false).Contains(Type)) return Message.Express("Token not available");
+            if (!ValidTerrorTypes(Game, false).Contains(Type)) return Message.Express(Type, " not available");
         }
 
         return null;
@@ -93,7 +95,7 @@ public class TerrorPlanted : PassableGameEvent
                g.CurrentPhase is Phase.Contemplate &&
                ValidTerrorTypes(g, false).Any() &&
                ValidStrongholds(g, p).Any() &&
-               !g.CyanHasPlantedTerror &&
+               !g.CyanHasPerformedTerror &&
                !g.Prevented(FactionAdvantage.CyanPlantingTerror);
     }
 
@@ -105,6 +107,8 @@ public class TerrorPlanted : PassableGameEvent
     {
         Log(GetVerboseMessage());
 
+        Game.CyanHasPerformedTerror = true;
+        
         if (!Passed)
         {
             Game.Stone(Milestone.TerrorPlanted);
@@ -117,8 +121,6 @@ public class TerrorPlanted : PassableGameEvent
             }
             else
             {
-                Game.CyanHasPlantedTerror = true;
-                
                 if (Game.TerrorIn(Stronghold).Any() && !Player.HasHighThreshold(World.Cyan)) Game.PlayNexusCard(Player, "Cunning", "to plant additional Terror in ", Stronghold);
 
                 if (Game.UnplacedTerrorTokens.Contains(Type))

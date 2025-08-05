@@ -54,7 +54,7 @@ public partial class ClassicBot
                 o.Initiator == Faction && Game.GetPlayer(o.Target).Ally == Faction.None)) return null;
         {
             var mostInterestingOpponentBotWithoutAlly = Game.Players
-                .Where(p => p != Player && Game.IsBot(p) && !p.HasAlly)
+                .Where(p => p != Player && Game.IsBot(p) && !p.HasAlly && AllianceOffered.ValidTargets(Game, Player).Contains(p.Faction))
                 .HighestOrDefault(p => PlayerStanding(p));
 
             if (mostInterestingOpponentBotWithoutAlly != null) 

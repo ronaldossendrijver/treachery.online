@@ -77,6 +77,7 @@ public class Voice : GameEvent
         {
             result.Add(TreacheryCardType.Rockmelter);
             result.Add(TreacheryCardType.MirrorWeapon);
+            result.Add(TreacheryCardType.PortableAntidote);
         }
 
         if (!g.Applicable(Rule.BlueVoiceMustNameSpecialCards))

@@ -336,7 +336,7 @@ public class Tests
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
 
-        const int nrOfGames = 64;
+        const int nrOfGames = 64*64;
         const int nrOfTurns = 10;
         const int nrOfPlayers = 6;
         const int timeout = 10;
@@ -360,6 +360,41 @@ public class Tests
             {
                 PlayGameAndRecordResults(nrOfPlayers, nrOfTurns, rulesAsArray, winCounter, statistics, timeout);
             });
+
+        foreach (var f in winCounter.Counted.OrderByDescending(f => winCounter.CountOf(f))) Console.WriteLine(DefaultSkin.Default.Format("{0}: {1} ({2}%)", f, winCounter.CountOf(f), 100f * winCounter.CountOf(f) / nrOfGames));
+
+        statistics.Output(DefaultSkin.Default);
+    }
+    
+    [TestMethod]
+    public void TestBotsSingleThread()
+    {
+        var statistics = new Statistics();
+
+        Message.DefaultDescriber = DefaultSkin.Default;
+
+        _cardCount = new ObjectCounter<int>();
+        _leaderCount = new ObjectCounter<int>();
+
+        const int nrOfGames = 64;
+        const int nrOfTurns = 10;
+        const int nrOfPlayers = 6;
+        const int timeout = 10;
+
+        Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
+
+        //Expansion, advanced game, all expansions, all factions:
+        var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
+        rules.Add(Rule.FillWithBots);
+        rules.Add(Rule.AssistedNotekeeping);
+
+        var rulesAsArray = rules.ToArray();
+        var winCounter = new ObjectCounter<Faction>();
+
+        for (var i = 0; i < nrOfGames; i++)
+        {
+            PlayGameAndRecordResults(nrOfPlayers, nrOfTurns, rulesAsArray, winCounter, statistics, timeout);
+        }
 
         foreach (var f in winCounter.Counted.OrderByDescending(f => winCounter.CountOf(f))) Console.WriteLine(DefaultSkin.Default.Format("{0}: {1} ({2}%)", f, winCounter.CountOf(f), 100f * winCounter.CountOf(f) / nrOfGames));
 

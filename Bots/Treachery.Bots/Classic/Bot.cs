@@ -11,7 +11,7 @@ namespace Treachery.Bots;
 
 public partial class ClassicBot(Game game, Player player, BotParameters param) : IBot
 {
-    private const bool LogBotInfo = true;
+    private const bool LogBotInfo = false;
     
     private Game Game { get; } = game;
 
@@ -230,11 +230,11 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
                 var error = action.Validate();
                 if (error != null)
                 {
-                    LogError("--invalid decision ({0})--> {1}: {2}", Resources, action.GetMessage(), error);
+                    LogError($"--invalid decision ({action.GetType()})--> {action.GetMessage()}: {error}");
                 }
                 else
                 {
-                    LogInfo("--valid decision ({0})--> {1}", Resources, action.GetMessage());
+                    LogInfo($"--valid decision ({action.GetType()})--> {action.GetMessage()}");
                     return true;
                 }
             }

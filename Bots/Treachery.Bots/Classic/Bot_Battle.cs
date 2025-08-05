@@ -26,25 +26,22 @@ public partial class ClassicBot
 
     private SwitchedSkilledLeader? DetermineSwitchedSkilledLeader()
     {
-        var switchableLeader = SwitchedSkilledLeader.SwitchableLeader(game, player);
+        if (!SwitchedSkilledLeader.CanBePlayed(Game, Player)) return null;
         
-        if (switchableLeader == null || 
-            !game.CurrentBattle.IsAggressorOrDefender(player) 
-            || game.CurrentBattle.PlanOf(player) != null 
-            || !INeedToSwitchThisLeader(switchableLeader))
-            return null;
+        var switchableLeader = SwitchedSkilledLeader.SwitchableLeader(Game, Player);
 
-        return new SwitchedSkilledLeader(Game, Faction);
-    }
+        var switchableLeaderIsBehindShield = !Game.IsInFrontOfShield(switchableLeader);
+        var switchableLeaderMustBeUsed = Battle.ValidBattleHeroes(Game, Player).Count() <= 1 
+            || DetermineBattlePlanIfNotWaitingForPrescience(true)?.Hero == switchableLeader;
 
-    private bool INeedToSwitchThisLeader(Leader leader)
-    {
-        return
-            (Game.IsInFrontOfShield(leader) && leader == DetermineBattlePlanIfNotWaitingForPrescience(true)?.Hero) 
-            || (Game.IsInFrontOfShield(leader) && Game is { CurrentPhase: Phase.BattlePhase, CurrentBattle: not null } 
-                                               && Game.CurrentBattle.IsInvolved(Player) 
-                                               && Battle.ValidBattleHeroes(Game, Player).Count() < 2) 
-            || (!Game.IsInFrontOfShield(leader) && Game.CurrentPhase != Phase.BattlePhase);
+        LogInfo($"Checking if {switchableLeader} should be switched. IsBehindShield: {switchableLeaderIsBehindShield}, MustBeUsed: {switchableLeaderMustBeUsed}...");
+        
+        if (switchableLeaderIsBehindShield ^ switchableLeaderMustBeUsed) 
+            return new SwitchedSkilledLeader(Game, Faction);
+        
+        LogInfo($"Switch not necessary.");
+        
+        return null;
     }
     
     private BattleInitiated DetermineBattleInitiated()
@@ -159,7 +156,7 @@ public partial class ClassicBot
 
         if (DecidedShipmentAction == ShipmentDecision.DummyShipment)
         {
-            LogInfo("I'm spending as little as possible on Player fight because Player is a dummy shipment");
+            LogInfo("I'm spending as little as possible on this fight because this is a dummy shipment");
             return ConstructLostBattleMinimizingLosses(opponent, Game.CurrentBattle.Territory);
         }
 
@@ -249,7 +246,7 @@ public partial class ClassicBot
             };
         }
 
-        LogInfo("I'm spending as little as possible on Player fight: predicted:{0}, isTraitor:{1} && !messiah:{2}, Resources:{3} < 10 && totalForces:{4} < 10 && dialShortage:{5} >= dialShortageToAccept:{6}",
+        LogInfo("I'm spending as little as possible on this fight: predicted:{0}, isTraitor:{1} && !messiah:{2}, Resources:{3} < 10 && totalForces:{4} < 10 && dialShortage:{5} >= dialShortageToAccept:{6}",
             predicted, isTraitor, messiah, Resources, totalForces, dialShortage, Param.Battle_DialShortageThresholdForThrowing);
 
         return ConstructLostBattleMinimizingLosses(opponent, Game.CurrentBattle.Territory);
@@ -279,7 +276,7 @@ public partial class ClassicBot
     private Battle ConstructLostBattleMinimizingLosses(Player opponent, Territory territory)
     {
         var lowestAvailableHero = Battle.ValidBattleHeroes(Game, Player).FirstOrDefault(h => h is TreacheryCard);
-        if (lowestAvailableHero == null) SelectHeroForBattle(Game, Player, opponent, false, true, false, null, null, out lowestAvailableHero, out _, true);
+        if (lowestAvailableHero == null) SelectHeroForBattle(Game, Player, opponent, false, true, false, null, null, out lowestAvailableHero, out _, false);
 
         var weapon = lowestAvailableHero == null || MayUseUselessAsKarma || Faction == Faction.Brown ? null : UselessAsWeapon(Game, Player, null);
         var defense = lowestAvailableHero == null || MayUseUselessAsKarma || Faction == Faction.Brown ? null : UselessAsDefense(Game, Player, weapon);
@@ -388,7 +385,7 @@ public partial class ClassicBot
                 weapon = null;
             }
 
-            if (defense == weapon)
+            if (defense != null && defense == weapon)
             {
                 LogInfo($"Removing illegal defense: {defense}");
                 defense = null;
@@ -814,7 +811,7 @@ public partial class ClassicBot
             }
         }
 
-        mostEffectiveWeapon = usefulWeapons.Where(w => !IsKnownToOpponent(game, opponent, w)).RandomOrDefault();
+        mostEffectiveWeapon = usefulWeapons.Where(w => !IsKnownTo(game, opponent, w)).RandomOrDefault();
 
         if (mostEffectiveWeapon != null) return 0.5f;
 
@@ -1089,16 +1086,14 @@ public partial class ClassicBot
     private Thought? DetermineThought()
     {
         var opponent = Game.CurrentBattle.OpponentOf(Player);
-        if (!OpponentCardsUnknownToPlayer(Game, Player, opponent).Any()) return null;
+        var validCards = Thought.ValidCards(Game).OrderByDescending(c => CardQuality(c, opponent)).ToArray();
         
-        var unknownWeapons = CardsUnknownToPlayer(Game, Player)
-            .Where(c => c.IsWeapon)
-            .OrderByDescending(c => CardQuality(c, opponent))
-            .ToArray();
-            
-        return unknownWeapons.Length != 0 
-            ? new Thought(Game, Faction) { Card = unknownWeapons.First() } 
-            : null;
+        if (validCards.Length == 0) return null;
+
+        var card = validCards.FirstOrDefault(x => !IsKnownTo(Game, Player, x))
+                   ?? validCards.FirstOrDefault();
+
+        return new Thought(Game, Faction) { Card = card };
     }
 
     private ThoughtAnswered DetermineThoughtAnswered() 

@@ -15,7 +15,7 @@ public partial class Game
 
     internal bool ExtortionToBeReturned { get; set; }
     public Dictionary<Location, Faction> StrongholdOwnership { get; private set; } = new();
-    public bool CyanHasPlantedTerror { get; internal set; }
+    public bool CyanHasPerformedTerror { get; internal set; }
     public List<Player> Winners { get; } = [];
     public WinMethod WinMethod { get; private set; }
 
@@ -31,7 +31,7 @@ public partial class Game
         AllowAllPreventedFactionAdvantages(null);
         HandleEconomics();
         if (Version >= 108) AddBribesToPlayerResources();
-        CyanHasPlantedTerror = false;
+        CyanHasPerformedTerror = false;
 
         foreach (var p in Players)
             if (p.BankedResources > 0)
