@@ -385,7 +385,9 @@ public class Tests
     }
 
     private readonly List<Game> _failedGames = [];
-    private Game LetBotsPlay(Rule[] rules, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> parameters, bool performTests, Statistics statistics, int timeout, Faction mustPlay = Faction.None)
+    private Game LetBotsPlay(Rule[] rules, int nrOfPlayers, int nrOfTurns, 
+        Dictionary<Faction, BotParameters> parameters, bool performTests, 
+        Statistics statistics, int timeout, Faction mustPlay = Faction.None)
     {
         BattleOutcome previousBattleOutcome = null;
         IBid previousWinningBid = null;
@@ -408,20 +410,7 @@ public class Tests
 
         try
         {
-            var establishPlayers = new EstablishPlayers(game, Faction.None)
-            {
-                Players = [],
-                Seed = new Random().Next(),
-                Time = DateTime.Now,
-                Settings = new GameSettings
-                {
-                    InitialRules = rules.ToList(),
-                    AllowedFactionsInPlay = factions,
-                    MaximumTurns = nrOfTurns,
-                    NumberOfPlayers = nrOfPlayers,
-                }
-            };
-            establishPlayers.Execute(false, true);
+            PerformEstablishPlayers(rules, nrOfPlayers, nrOfTurns, game, factions);
 
             var bots = new Dictionary<Faction, IBot>();
             foreach (var p in game.Players)
@@ -472,6 +461,24 @@ public class Tests
 
         timer.Stop();
         return game;
+    }
+
+    private static void PerformEstablishPlayers(Rule[] rules, int nrOfPlayers, int nrOfTurns, Game game, List<Faction> factions)
+    {
+        var establishPlayers = new EstablishPlayers(game, Faction.None)
+        {
+            Players = [],
+            Seed = new Random().Next(),
+            Time = DateTime.Now,
+            Settings = new GameSettings
+            {
+                InitialRules = rules.ToList(),
+                AllowedFactionsInPlay = factions,
+                MaximumTurns = nrOfTurns,
+                NumberOfPlayers = nrOfPlayers,
+            }
+        };
+        establishPlayers.Execute(false, true);
     }
 
     private void HandleElapsedTestTime(object sender, ElapsedEventArgs e)
@@ -546,7 +553,7 @@ public class Tests
                 return evt;
             }
         }
-
+        
         return null;
     }
 
