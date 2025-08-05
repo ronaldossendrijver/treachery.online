@@ -151,6 +151,15 @@ public class BattleInitiated : GameEvent
         return null;
     }
 
+    public Battle PreviousPlanOf(Faction f)
+    {
+        if (f == Aggressor)
+            return Game.PreviousAggressorPlan;
+        if (f == Defender)
+            return Game.PreviousDefenderPlan;
+        return null;
+    }
+    
     public TreacheryCalled TreacheryOfOpponent(Player p)
     {
         return TreacheryOf(OpponentOf(p));

@@ -162,9 +162,9 @@
                     var maxAllyResources = Battle.MaxAllyResources(Game, Player, Forces, SpecialForces);
                     var maxTotalResources = Math.Min(Forces + SpecialForces, maxResources + maxAllyResources);
 
-                    <SelectResourcesComponent @bind-Value=@Resources1 Min=0 Max=@maxTotalResources Title=@Client.CurrentSkin.Format("{0} used to support forces", Concept.Resource)/> <span>&nbsp;</span>
+                    <SelectResourcesComponent @bind-Value=@Resources Min=0 Max=@maxTotalResources Title=@Client.CurrentSkin.Format("{0} used to support forces", Concept.Resource)/> <span>&nbsp;</span>
 
-                    var maxPaidByAlly = Math.Min(maxAllyResources, Resources1);
+                    var maxPaidByAlly = Math.Min(maxAllyResources, Resources);
 
                     @if (Player.Ally == Faction.Brown && maxPaidByAlly > 0)
                     {
@@ -177,12 +177,12 @@
                 }
                 else
                 {
-                    Resources1 = 0;
+                    Resources = 0;
                     ResourcesFromAlly = 0;
                 }
             }
 
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="bi bi-arrow-right" viewBox="0 0 16 16" style="vertical-align: super">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="bi bi-arrow-right" stroke="white" viewBox="0 0 16 16" style="vertical-align: super">
                 <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
             </svg>
 
@@ -236,11 +236,11 @@
         
         @if (Battle.MaxBankerBoost(Game, Player, Hero) > 0)
         {
-            <SelectResourcesComponent @bind-Value="BankerBoost" Min="0" Max="Battle.MaxBankerBoost(Game, Player, Hero)" Label="@Client.CurrentSkin.Format("Boost {0} {1} with {2}?", Client.CurrentSkin.Describe(LeaderSkill.Banker), Hero, Concept.Resource)"/>
+            <SelectResourcesComponent @bind-Value="BankerBonus" Min="0" Max="Battle.MaxBankerBoost(Game, Player, Hero)" Label="@Client.CurrentSkin.Format("Boost {0} {1} with {2}?", Client.CurrentSkin.Describe(LeaderSkill.Banker), Hero, Concept.Resource)"/>
         }
         else
         {
-            BankerBoost = 0;
+            BankerBonus = 0;
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Battle!" ConfirmError="@Validation" />
@@ -255,19 +255,41 @@
 
     private int Forces { get; set; }
     private int SpecialForces { get; set; }
-    private int Resources1 { get; set; }
+    private int Resources { get; set; }
     private int ResourcesFromAlly { get; set; }
     private IHero Hero { get; set; }
     private bool Messiah { get; set; }
     private TreacheryCard Defense { get; set; }
     private TreacheryCard Weapon { get; set; }
-    private int BankerBoost { get; set; }
+    private int BankerBonus { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        
+        if (Game.CurrentBattle.PlanOf(Faction) == null)
+        {
+            var previousPlan = Game.CurrentBattle.PreviousPlanOf(Faction);
+            if (previousPlan != null && previousPlan.Validate() == null)
+            {
+                Forces = previousPlan.Forces + previousPlan.ForcesAtHalfStrength;
+                SpecialForces = previousPlan.SpecialForces + previousPlan.SpecialForcesAtHalfStrength;
+                Resources = previousPlan.Cost(Game);
+                ResourcesFromAlly = previousPlan.AllyContributionAmount;
+                Hero = previousPlan.Hero;
+                Messiah = previousPlan.Messiah;
+                Defense = previousPlan.Defense;
+                Weapon = previousPlan.Weapon;
+                BankerBonus = previousPlan.BankerBonus;
+            }
+        }
+    }
 
     protected override Battle ConfirmedResult
     {
         get
         {
-            Battle.DetermineForces(Game, Player, Forces, SpecialForces, Resources1, out var forcesFull, out var forcesHalf, out var specialForcesFull, out var specialForcesHalf);
+            Battle.DetermineForces(Game, Player, Forces, SpecialForces, Resources, out var forcesFull, out var forcesHalf, out var specialForcesFull, out var specialForcesHalf);
 
             var result = new Battle(Game, Faction)
             {
@@ -280,7 +302,7 @@
                 SpecialForces = specialForcesFull,
                 SpecialForcesAtHalfStrength = specialForcesHalf,
                 Weapon = Weapon,
-                BankerBonus = BankerBoost
+                BankerBonus = BankerBonus
             };
 
             return result;

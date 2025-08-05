@@ -17,8 +17,10 @@ public partial class Game
     public BattleInitiated BattleAboutToStart { get; internal set; }
     public BattleInitiated CurrentBattle { get; internal set; }
     public Battle AggressorPlan { get; internal set; }
+    public Battle PreviousAggressorPlan { get; internal set; }
     public TreacheryCalled AggressorTraitorAction { get; internal set; }
     public Battle DefenderPlan { get; internal set; }
+    public Battle PreviousDefenderPlan { get; internal set; }
     public TreacheryCalled DefenderTraitorAction { get; internal set; }
     public BattleOutcome BattleOutcome { get; private set; }
     public Faction BattleWinner { get; internal set; }

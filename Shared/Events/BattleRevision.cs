@@ -37,9 +37,15 @@ public class BattleRevision : GameEvent
     protected override void ExecuteConcreteEvent()
     {
         if (By(Game.CurrentBattle.Aggressor))
+        {
+            Game.PreviousAggressorPlan = Game.AggressorPlan;
             Game.AggressorPlan = null;
-        else if (By(Game.CurrentBattle.Defender)) 
+        }
+        else if (By(Game.CurrentBattle.Defender))
+        {
+            Game.PreviousDefenderPlan = Game.DefenderPlan;
             Game.DefenderPlan = null;
+        }
     }
 
     public override Message GetMessage()

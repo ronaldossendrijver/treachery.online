@@ -360,6 +360,8 @@ public class EndPhase : GameEvent
         Game.BlackVictim = null;
         Game.AggressorPlan = null;
         Game.DefenderPlan = null;
+        Game.PreviousAggressorPlan = null;
+        Game.PreviousDefenderPlan = null;
         Game.AggressorTraitorAction = null;
         Game.DefenderTraitorAction = null;
         Game.PoisonToothCancelled = false;

@@ -676,7 +676,7 @@ public class Battle : GameEvent
             return result;
         }
 
-        var playableDefenses = CardsPlayableAsDefense(g, p, selectedWeapon, territoryOfBattle);
+        var playableDefenses = CardsPlayableAsDefense(g, p, selectedWeapon, territoryOfBattle).ToArray();
 
         if (AffectedByVoice(g, p, g.CurrentVoice))
         {
@@ -761,7 +761,6 @@ public class Battle : GameEvent
             {
                 specialForcesFull = Math.Min(specialForces, effectiveResources);
                 specialForcesHalf = specialForces - specialForcesFull;
-
                 forcesFull = Math.Min(forces, effectiveResources - specialForcesFull);
                 forcesHalf = forces - forcesFull;
             }
@@ -769,7 +768,6 @@ public class Battle : GameEvent
             {
                 specialForcesFull = specialForces;
                 specialForcesHalf = 0;
-
                 forcesFull = Math.Min(forces, effectiveResources);
                 forcesHalf = forces - forcesFull;
             }
@@ -778,7 +776,6 @@ public class Battle : GameEvent
         {
             specialForcesFull = specialForces;
             specialForcesHalf = 0;
-
             forcesFull = forces;
             forcesHalf = 0;
         }
