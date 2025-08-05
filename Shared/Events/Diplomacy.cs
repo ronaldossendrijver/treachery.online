@@ -48,7 +48,7 @@ public class Diplomacy : GameEvent
     {
         var result = new List<TreacheryCard>();
         var plan = g.CurrentBattle.PlanOf(p);
-        if (plan.Weapon != null && plan.Weapon.IsUseless) result.Add(plan.Weapon);
+        if (plan.Weapon != null && plan.Weapon.IsUseless && (g.Version < 179 || plan.Defense == null)) result.Add(plan.Weapon);
         if (plan.Defense != null && plan.Defense.IsUseless) result.Add(plan.Defense);
         return result;
     }

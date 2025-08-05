@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class Battle : GameEvent
@@ -72,40 +70,38 @@ public class Battle : GameEvent
     public int TotalForces => Forces + ForcesAtHalfStrength + SpecialForces + SpecialForcesAtHalfStrength;
 
     [JsonIgnore]
-    public bool HasPoison => Weapon != null && Weapon.IsPoisonWeapon;
+    public bool HasPoison => Weapon is { IsPoisonWeapon: true };
+
+    [JsonIgnore] 
+    private bool HasProjectile => Weapon is { IsProjectileWeapon: true };
+
+    [JsonIgnore] 
+    private bool HasProjectileDefense => Defense is { IsProjectileDefense: true };
 
     [JsonIgnore]
-    public bool HasProjectile => Weapon != null && Weapon.IsProjectileWeapon;
+    public bool HasShield => Defense is { IsShield: true };
+
+    [JsonIgnore] private bool HasNonAntidotePoisonDefense => Defense is { IsNonAntidotePoisonDefense: true };
 
     [JsonIgnore]
-    public bool HasProjectileDefense => Defense != null && Defense.IsProjectileDefense;
+    public bool HasAntidote => Defense is { IsPoisonDefense: true };
 
     [JsonIgnore]
-    public bool HasShield => Defense != null && Defense.IsShield;
-
-    [JsonIgnore]
-    public bool HasNonAntidotePoisonDefense => Defense != null && Defense.IsNonAntidotePoisonDefense;
-
-    [JsonIgnore]
-    public bool HasAntidote => Defense != null && Defense.IsPoisonDefense;
-
-    [JsonIgnore]
-    public bool HasLaser => Weapon != null && Weapon.IsLaser;
+    public bool HasLaser => Weapon is { IsLaser: true };
 
     [JsonIgnore]
     public bool HasPoisonTooth => Weapon != null && Weapon.IsPoisonTooth;
 
-    [JsonIgnore]
-    public bool HasArtillery => Weapon != null && Weapon.IsArtillery;
+    [JsonIgnore] private bool HasArtillery => Weapon != null && Weapon.IsArtillery;
 
     [JsonIgnore]
     public bool HasReinforcements => (Weapon != null && Weapon.Type == TreacheryCardType.Reinforcements) || (Defense != null && Defense.Type == TreacheryCardType.Reinforcements);
 
-    [JsonIgnore]
-    public TreacheryCard OriginalWeapon { get; set; }
+    [JsonIgnore] 
+    private TreacheryCard OriginalWeapon { get; set; }
 
-    [JsonIgnore]
-    public TreacheryCard OriginalDefense { get; set; }
+    [JsonIgnore] 
+    private TreacheryCard OriginalDefense { get; set; }
 
     [JsonIgnore]
     public bool HasRockMelter => Weapon != null && Weapon.IsRockMelter;
@@ -174,25 +170,38 @@ public class Battle : GameEvent
             Defense);
     }
 
-    public void ActivateDynamicWeapons(TreacheryCard opponentWeapon, IHero hero, TreacheryCard opponentDefense)
+    private void ActivateDynamicWeapons(TreacheryCard opponentWeapon, TreacheryCard opponentDefense)
     {
-        if (Weapon != null && Weapon.Type == TreacheryCardType.MirrorWeapon)
+        if (Weapon is { Type: TreacheryCardType.MirrorWeapon })
         {
             OriginalWeapon = Weapon;
             Weapon = opponentWeapon;
             Log(OriginalWeapon, " becomes a ", Weapon);
         }
 
-        if (Defense != null && Defense.IsUseless &&
-            Game.SkilledAs(hero, LeaderSkill.Diplomat) &&
-            opponentDefense != null && opponentWeapon != null &&
-            (opponentWeapon.CounteredBy(opponentDefense, Weapon) || (opponentWeapon.IsArtillery && opponentDefense.IsShield)))
+        /*if (Game.Version < 179)
         {
-            OriginalDefense = Defense;
-            Defense = opponentDefense;
-            Log(hero, " turns ", OriginalDefense, " into a ", Defense);
-            Game.CardUsedByDiplomat = OriginalDefense;
+            if (Defense != null && Defense.IsUseless &&
+                Game.SkilledAs(hero, LeaderSkill.Diplomat) &&
+                opponentDefense != null && opponentWeapon != null &&
+                (opponentWeapon.CounteredBy(opponentDefense, Weapon) ||
+                 (opponentWeapon.IsArtillery && opponentDefense.IsShield)))
+            {
+                OriginalDefense = Defense;
+                Defense = opponentDefense;
+                Log(hero, " turns ", OriginalDefense, " into a ", Defense);
+                Game.CardUsedByDiplomat = OriginalDefense;
+            }
         }
+        else
+        {*/
+            if (Game.CurrentDiplomacy != null && Game.CurrentDiplomacy.By(Initiator))
+            {
+                OriginalDefense = Defense;
+                Defense = opponentDefense;
+                Game.CardUsedByDiplomat = OriginalDefense;
+            }
+        //}
 
         if (IsUsingPortableAntidote(Game, Initiator))
         {
@@ -201,7 +210,7 @@ public class Battle : GameEvent
         }
     }
 
-    public void DeactivateDynamicWeapons()
+    private void DeactivateDynamicWeapons()
     {
         if (OriginalWeapon != null)
         {
@@ -219,8 +228,10 @@ public class Battle : GameEvent
     public float Dial(Game g, Faction opponent)
     {
         var pinkBattleContribution = !g.Prevented(FactionAdvantage.PinkOccupation) && (Initiator == Faction.Pink || Player.Ally == Faction.Pink) ? g.CurrentPinkBattleContribution : 0;
+        
         if (Game.CurrentPinkOrAllyFighter == Faction.None || Initiator != Faction.Pink)
             return ForceValue(g, Initiator, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + pinkBattleContribution;
+        
         return ForceValue(g, Player.Ally, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + pinkBattleContribution;
     }
 
@@ -244,8 +255,8 @@ public class Battle : GameEvent
 
         //Determine result
 
-        agg.ActivateDynamicWeapons(def.Weapon, agg.Hero, def.Defense);
-        def.ActivateDynamicWeapons(agg.Weapon, def.Hero, agg.Defense);
+        agg.ActivateDynamicWeapons(def.Weapon, def.Defense);
+        def.ActivateDynamicWeapons(agg.Weapon, agg.Defense);
 
         var poisonToothUsed = !game.PoisonToothCancelled && (agg.HasPoisonTooth || def.HasPoisonTooth);
         var artilleryUsed = agg.HasArtillery || def.HasArtillery;

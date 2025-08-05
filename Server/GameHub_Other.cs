@@ -157,7 +157,7 @@ public partial class GameHub
             }
 
             foreach (var persistedGame in (await context.PersistedGames.ToListAsync())
-                     .Where(persistedGame => !RunningGamesByGameId.ContainsKey(persistedGame.GameId)))
+                     .Where(persistedGame => persistedGame.GameId != null && !RunningGamesByGameId.ContainsKey(persistedGame.GameId)))
             {
                 context.Remove(persistedGame);
                 amountOfDeletedGames++;

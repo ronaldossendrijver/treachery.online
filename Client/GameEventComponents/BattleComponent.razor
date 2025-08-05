@@ -21,17 +21,17 @@
             Opponent forces: 
             @if (Opponent.ForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageUrl(Opponent.Faction)" width=30 height="30"/>
+                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageUrl(Opponent.Faction)" width=30 height="30" alt="@Client.CurrentSkin.Describe(Opponent.Force)"/>
                 <span>&nbsp;<strong>@Opponent.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
             }
             @if (Opponent.HasAlly && Opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageUrl(Opponent.Ally)" width=30 height="30"/>
+                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageUrl(Opponent.Ally)" width=30 height="30" alt="@Client.CurrentSkin.Describe(Opponent.Force)"/>
                 <span>&nbsp;<strong>@Opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
             }
             @if (Opponent.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(Opponent.Faction)" width=30 height="30"/>
+                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(Opponent.Faction)" alt="@Client.CurrentSkin.Describe(Opponent.SpecialForce)" width=30 height="30"/>
                 
                 @if (Opponent.Faction != Faction.White) {
 
@@ -40,7 +40,7 @@
             }
             @if (Opponent.HasAlly && Opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(Opponent.Ally)" width=30 height="30"/>
+                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(Opponent.Ally)" alt="@Client.CurrentSkin.Describe(Opponent.SpecialForce)" width=30 height="30"/>
 
                 @if (Opponent.Ally != Faction.White)
                 {
@@ -140,49 +140,49 @@
 
                 if (Battle.MaxForces(Game, forceSupplier, false) > 0)
                 {
-                    <SelectForcesComponent @bind-Value="forces" Min="0" Max="Battle.MaxForces(Game, forceSupplier, false)" Faction=@forceSupplier.Faction Special="false" /> <span>&nbsp;</span>
+                    <SelectForcesComponent @bind-Value="Forces" Min="0" Max="Battle.MaxForces(Game, forceSupplier, false)" Faction=@forceSupplier.Faction Special="false" /> <span>&nbsp;</span>
                 }
                 else {
                 
-                    forces = 0;
+                    Forces = 0;
                 }
 
                 if (Battle.MaxForces(Game, forceSupplier, true) > 0)
                 {
-                    <SelectForcesComponent @bind-Value="specialForces" Min="0" Max="Battle.MaxForces(Game, forceSupplier, true)" Faction=@forceSupplier.Faction Special="true" /> <span>&nbsp;</span>
+                    <SelectForcesComponent @bind-Value="SpecialForces" Min="0" Max="Battle.MaxForces(Game, forceSupplier, true)" Faction=@forceSupplier.Faction Special="true" /> <span>&nbsp;</span>
                 }
                 else
                 {
-                    specialForces = 0;
+                    SpecialForces = 0;
                 }
 
-                if (forces + specialForces > 0 && Battle.MustPayForAnyForcesInBattle(Game, Player))
+                if (Forces + SpecialForces > 0 && Battle.MustPayForAnyForcesInBattle(Game, Player))
                 {
-                    var maxResources = Battle.MaxResources(Game, Player, forces, specialForces);
-                    var maxAllyResources = Battle.MaxAllyResources(Game, Player, forces, specialForces);
-                    var maxTotalResources = Math.Min(forces + specialForces, maxResources + maxAllyResources);
+                    var maxResources = Battle.MaxResources(Game, Player, Forces, SpecialForces);
+                    var maxAllyResources = Battle.MaxAllyResources(Game, Player, Forces, SpecialForces);
+                    var maxTotalResources = Math.Min(Forces + SpecialForces, maxResources + maxAllyResources);
 
-                    <SelectResourcesComponent @bind-Value=@resources Min=0 Max=@maxTotalResources Title=@Client.CurrentSkin.Format("{0} used to support forces", Concept.Resource)/> <span>&nbsp;</span>
+                    <SelectResourcesComponent @bind-Value=@Resources1 Min=0 Max=@maxTotalResources Title=@Client.CurrentSkin.Format("{0} used to support forces", Concept.Resource)/> <span>&nbsp;</span>
 
-                    var maxPaidByAlly = Math.Min(maxAllyResources, resources);
+                    var maxPaidByAlly = Math.Min(maxAllyResources, Resources1);
 
                     @if (Player.Ally == Faction.Brown && maxPaidByAlly > 0)
                     {
-                        <SelectResourcesFromFactionComponent @bind-Value=@resourcesFromAlly Min=0 Max=@maxPaidByAlly Faction="Player.Ally" Title=@Client.CurrentSkin.Format("{0} paid by your ally", Concept.Resource) />
+                        <SelectResourcesFromFactionComponent @bind-Value=@ResourcesFromAlly Min=0 Max=@maxPaidByAlly Faction="Player.Ally" Title=@Client.CurrentSkin.Format("{0} paid by your ally", Concept.Resource) />
                     }
                     else
                     {
-                        resourcesFromAlly = 0;
+                        ResourcesFromAlly = 0;
                     }
                 }
                 else
                 {
-                    resources = 0;
-                    resourcesFromAlly = 0;
+                    Resources1 = 0;
+                    ResourcesFromAlly = 0;
                 }
             }
 
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" class="bi bi-arrow-right" viewBox="0 0 16 16" style="vertical-align: super">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="bi bi-arrow-right" viewBox="0 0 16 16" style="vertical-align: super">
                 <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
             </svg>
 
@@ -192,55 +192,55 @@
 
         @if (Battle.ValidBattleHeroes(Game, Player).Any())
         {
-            <SelectFromImageComponent Game="Game" @bind-Value="hero" Values="Battle.ValidBattleHeroes(Game, Player)" Required="!Game.Applicable(Rule.BattleWithoutLeader)" ImageWidth="80"/>
+            <SelectFromImageComponent Game="Game" @bind-Value="Hero" Values="Battle.ValidBattleHeroes(Game, Player)" Required="!Game.Applicable(Rule.BattleWithoutLeader)" ImageWidth="80"/>
         }
         else
         {
-            hero = null;
+            Hero = null;
         }
 
         @if (Weapons.Any())
         {
-            <SelectFromImageComponent @bind-Value="weapon" Values="Weapons" Required="false" ImageWidth="80">
+            <SelectFromImageComponent @bind-Value="Weapon" Values="Weapons" Required="false" ImageWidth="80">
                 <Label>Weapon</Label>
             </SelectFromImageComponent>
         }
         else
         {
-            weapon = null;
+            Weapon = null;
         }
 
         @if (Defenses.Any())
         {
-            <SelectFromImageComponent @bind-Value="defense" Values="Defenses" Required="false" ImageWidth="80">
+            <SelectFromImageComponent @bind-Value="Defense" Values="Defenses" Required="false" ImageWidth="80">
                 <Label>Defense</Label>
             </SelectFromImageComponent>
         }
         else
         {
-            defense = null;
+            Defense = null;
         }
                 
         @if (Player.MessiahAvailable && !Game.Prevented(FactionAdvantage.GreenUseMessiah))
         {
             <div class="mt-2">
-                <RadioComponent @bind-Value="messiah" Values="@(new[] {false,true})" ValueLabels="@(new[] {"No","Yes"})">
-                    <Label>Should <img class="img-fluid" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" /> join the fight?</Label>
+                <RadioComponent @bind-Value="Messiah" Values="@(new[] {false,true})" ValueLabels="@(new[] {"No","Yes"})">
+                    <Label>Should <img class="img-fluid" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/> join the fight?</Label>
                 </RadioComponent>
             </div>
         }
         else
         {
-            messiah = false;
+            Messiah = false;
         }
         
-        @if (Battle.MaxBankerBoost(Game, Player, hero) > 0)
+        @if (Battle.MaxBankerBoost(Game, Player, Hero) > 0)
         {
-            <SelectResourcesComponent @bind-Value="bankerBoost" Min="0" Max="Battle.MaxBankerBoost(Game, Player, hero)" Label="@Client.CurrentSkin.Format("Boost {0} {1} with {2}?", Client.CurrentSkin.Describe(LeaderSkill.Banker), hero, Concept.Resource)"/>
+            <SelectResourcesComponent @bind-Value="BankerBoost" Min="0" Max="Battle.MaxBankerBoost(Game, Player, Hero)" Label="@Client.CurrentSkin.Format("Boost {0} {1} with {2}?", Client.CurrentSkin.Describe(LeaderSkill.Banker), Hero, Concept.Resource)"/>
         }
         else
         {
-            bankerBoost = 0;
+            BankerBoost = 0;
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Battle!" ConfirmError="@Validation" />
@@ -253,101 +253,35 @@
 
     protected override bool IsUrgent => true;
 
-    private const string NONE = "None";
-
-    private int forces;
-    private int specialForces;
-    private int resources;
-    private int resourcesFromAlly;
-    private IHero hero;
-    private bool messiah = false;
-    private TreacheryCard defense;
-    private TreacheryCard weapon;
-    private int bankerBoost;
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        
-        var plan = GetRevisablePlan();
-        if (plan != null)
-        {
-            forces = plan.Forces + plan.ForcesAtHalfStrength;
-            specialForces = plan.SpecialForces + plan.SpecialForcesAtHalfStrength;
-            resources = plan.Cost(Game);
-            resourcesFromAlly = plan.AllyContributionAmount;
-            hero = plan.Hero;
-            messiah = plan.Messiah;
-            defense = plan.Defense;
-            weapon = plan.Weapon;
-            bankerBoost = plan.BankerBonus;
-        }
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        RedrawIfNeeded(firstRender);
-    }
-
-    private int lastforces;
-    private int lastspecialForces;
-    private int lastResources;
-    private int lastResourcesFromAlly;
-    private IHero lasthero;
-    private bool lastmessiah = false;
-    private TreacheryCard lastdefense;
-    private TreacheryCard lastweapon;
-    private int lastbankerBoost;
-
-    private void RedrawIfNeeded(bool firstRender)
-    {
-        if (
-            firstRender ||
-            forces != lastforces ||
-            specialForces != lastspecialForces ||
-            resources != lastResources ||
-            resourcesFromAlly != lastResourcesFromAlly ||
-            hero != lasthero ||
-            messiah != lastmessiah ||
-            defense != lastdefense ||
-            weapon != lastweapon ||
-            bankerBoost != lastbankerBoost)
-        {
-            lastforces = forces;
-            lastspecialForces = specialForces;
-            lastResources = resources;
-            lastResourcesFromAlly = resourcesFromAlly;
-            lasthero = hero;
-            lastmessiah = messiah;
-            lastdefense = defense;
-            lastweapon = weapon;
-            lastbankerBoost = bankerBoost;
-            Client.BattleUnderConstruction = ConfirmedResult;
-            Client.Refresh(nameof(RedrawIfNeeded));
-        }
-    }
+    private int Forces { get; set; }
+    private int SpecialForces { get; set; }
+    private int Resources1 { get; set; }
+    private int ResourcesFromAlly { get; set; }
+    private IHero Hero { get; set; }
+    private bool Messiah { get; set; }
+    private TreacheryCard Defense { get; set; }
+    private TreacheryCard Weapon { get; set; }
+    private int BankerBoost { get; set; }
 
     protected override Battle ConfirmedResult
     {
         get
         {
-            Battle.DetermineForces(Game, Player, forces, specialForces, resources, out var forcesFull, out var forcesHalf, out var specialForcesFull, out var specialForcesHalf);
+            Battle.DetermineForces(Game, Player, Forces, SpecialForces, Resources1, out var forcesFull, out var forcesHalf, out var specialForcesFull, out var specialForcesHalf);
 
             var result = new Battle(Game, Faction)
             {
-                Defense = defense,
+                Defense = Defense,
                 Forces = forcesFull,
                 ForcesAtHalfStrength = forcesHalf,
-                AllyContributionAmount = resourcesFromAlly,
-                Hero = hero,
-                Messiah = messiah,
+                AllyContributionAmount = ResourcesFromAlly,
+                Hero = Hero,
+                Messiah = Messiah,
                 SpecialForces = specialForcesFull,
                 SpecialForcesAtHalfStrength = specialForcesHalf,
-                Weapon = weapon,
-                BankerBonus = bankerBoost
+                Weapon = Weapon,
+                BankerBonus = BankerBoost
             };
-
-            SetRevisablePlan(result);
 
             return result;
         }
@@ -381,26 +315,9 @@
         return "?";
     }
 
-    private Battle _revisablePlan = null;
-    private BattleInitiated _revisablePlanBattle = null;
-    
-    private void SetRevisablePlan(Battle plan)
-    {
-        _revisablePlan = plan;
-        _revisablePlanBattle = Game.CurrentBattle;
-    }
+    private IEnumerable<TreacheryCard> Weapons 
+        => Battle.ValidWeapons(Game, Player, Defense, Hero, Game.CurrentBattle.Territory).OrderBy(Name);
 
-    private Battle GetRevisablePlan()
-    {
-        if (_revisablePlan != null && _revisablePlanBattle == Game.CurrentBattle)
-        {
-            return _revisablePlan;
-        }
-
-        return null;
-    }
-
-    private IEnumerable<TreacheryCard> Weapons => Battle.ValidWeapons(Game, Player, defense, hero, Game.CurrentBattle.Territory).OrderBy(c => Name(c));
-
-    private IEnumerable<TreacheryCard> Defenses => Battle.ValidDefenses(Game, Player, weapon, Game.CurrentBattle.Territory).OrderBy(c => Name(c));
+    private IEnumerable<TreacheryCard> Defenses 
+        => Battle.ValidDefenses(Game, Player, Weapon, Game.CurrentBattle.Territory).OrderBy(Name);
 }

@@ -390,7 +390,7 @@ public partial class ClassicBot
         LogInfo("DetermineShipment_AttackHomeworld()");
 
         var validEmptyHomeworlds = ValidShipmentLocations(false)
-            .Where(l => l is Homeworld && !game.AnyForcesIn(l.Territory))
+            .Where(l => l is Homeworld && !Game.AnyForcesIn(l.Territory))
             .Cast<Homeworld>();
 
         var target = validEmptyHomeworlds.RandomOrDefault();
