@@ -145,7 +145,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
 
-        await ScheduleBotEvent(game);
+        ScheduleBotEvent(game);
         return Success();
     }
 
@@ -162,7 +162,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
 
-        await ScheduleBotEvent(game);
+        ScheduleBotEvent(game);
         return Success();
     }
 
@@ -207,7 +207,7 @@ public partial class GameHub
         await PersistGameIfNeeded(game);
         
         if (game.Game.NumberOfSeatedPlayers == 1)
-            await ScheduleBotEvent(game);
+            ScheduleBotEvent(game);
             
         return Success(new GameInitInfo
         {
@@ -296,7 +296,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
         
-        await ScheduleBotEvent(game);
+        ScheduleBotEvent(game);
         UpdateServerStatusIfNeeded(true);
         
         return Success(FilteredServerStatus(GameListScope.Active, user.Id));
@@ -316,7 +316,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
         
-        await ScheduleBotEvent(game);
+        ScheduleBotEvent(game);
         return Success();
     }
     
@@ -404,7 +404,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
         
-        await ScheduleBotEvent(game);
+        ScheduleBotEvent(game);
 
         return Success(new GameInitInfo
         {
@@ -478,7 +478,7 @@ public partial class GameHub
 
         game.LastActivity = DateTimeOffset.Now;
         await PersistGameIfNeeded(game);
-        await ScheduleBotEvent(game);
+        ScheduleBotEvent(game);
         return Success();
     }
 
@@ -495,7 +495,7 @@ public partial class GameHub
         
         await PersistGameIfNeeded(game);
 
-        await ScheduleBotEvent(game);
+        ScheduleBotEvent(game);
         return Success();
     }
 

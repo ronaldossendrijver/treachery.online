@@ -200,6 +200,7 @@ public partial class GameHub
         
         if (validationResult != null)
         {
+            Log("Invalid bot decision: " + validationResult);
             return Error(ErrorType.InvalidGameEvent, validationResult.ToString());
         }
 
@@ -214,7 +215,7 @@ public partial class GameHub
         await Clients.Group(game.GameId).HandleGameEvent(e, game.Game.History.Count);
         await SendAsyncPlayMessagesIfApplicable(game.GameId);
         await PersistGameIfNeeded(game);
-        await ScheduleBotEvent(game);
+        ScheduleBotEvent(game);
         return Success();
     }
 
@@ -302,11 +303,11 @@ public partial class GameHub
         }
     }
 
-    private async Task ScheduleBotEvent(ManagedGame managedGame, bool immediate = false)
+    private void ScheduleBotEvent(ManagedGame managedGame, bool immediate = false)
     {
         if (immediate)
         {
-            await PerformBotEvent(managedGame);
+            _ = PerformBotEvent(managedGame);
         }
         else
         {
@@ -377,7 +378,11 @@ public partial class GameHub
 
     private static IBot GetOrInitializeBot(ManagedGame game, Player player)
     {
-        if (game.Bots.TryGetValue(player.Faction, out var bot)) return bot;
+        if (game.Bots.TryGetValue(player.Faction, out var bot))
+        {
+            bot.SetGameAndPlayer(game.Game, player);
+            return bot;
+        }
         
         bot = new ClassicBot(game.Game, player, BotParameters.GetDefaultParameters(player.Faction));
         game.Bots.Add(player.Faction, bot);

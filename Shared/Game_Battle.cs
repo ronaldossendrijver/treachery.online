@@ -237,7 +237,8 @@ public partial class Game
 
         if (CurrentPortableAntidoteUsed != null && CurrentPortableAntidoteUsed.Player == plan.Player) Discard(CurrentPortableAntidoteUsed.Player.Card(TreacheryCardType.PortableAntidote));
 
-        if (Version >= 146 && CurrentRockWasMelted != null && CurrentRockWasMelted.Player == plan.Player) Discard(CurrentRockWasMelted.Player.Card(TreacheryCardType.PortableAntidote));
+        if (Version >= 146 && CurrentRockWasMelted != null && CurrentRockWasMelted.Player == plan.Player) 
+            Discard(CurrentRockWasMelted.Player.Card(Version >= 179 ? TreacheryCardType.Rockmelter : TreacheryCardType.PortableAntidote));
     }
 
     private void ActivateSandmasterIfApplicable(Battle plan)

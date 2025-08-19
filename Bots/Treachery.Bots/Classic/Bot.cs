@@ -13,9 +13,9 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
 {
     private const bool LogBotInfo = true;
     
-    private Game Game { get; } = game;
+    private Game Game { get; set; } = game;
 
-    private Player Player { get; } = player;
+    private Player Player { get; set; } = player;
     
     private BotParameters Param { get; } = param;
 
@@ -28,6 +28,12 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
     private int Resources => Player.Resources;
     
     #region PublicInterface
+    
+    public void SetGameAndPlayer(Game game, Player player)
+    {
+        Game = game;
+        Player = player;
+    }
 
     public GameEvent? DetermineHighestPriorityInPhaseAction(List<Type> events)
     {

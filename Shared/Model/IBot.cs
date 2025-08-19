@@ -16,4 +16,5 @@ public interface IBot
     public GameEvent DetermineMiddlePriorityInPhaseAction(List<Type> events);
     public GameEvent DetermineLowPriorityInPhaseAction(List<Type> events);
     public GameEvent DetermineEndPhaseAction(List<Type> events);
+    public void SetGameAndPlayer(Game gameGame, Player player);
 }

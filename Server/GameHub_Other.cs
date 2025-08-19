@@ -468,7 +468,7 @@ public partial class GameHub
         if (!AreValid(userToken, gameId, out _, out var game, out var error))
             return error!;
 
-        await ScheduleBotEvent(game!, true);
+        ScheduleBotEvent(game!, true);
 
         await Task.CompletedTask;
         return Success();
