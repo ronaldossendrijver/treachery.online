@@ -28,10 +28,14 @@ public class CharityClaimed : GameEvent
     public override Message Validate()
     {
         var p = Player;
-        if (p.Resources > 1) return Message.Express("You are not eligable for charity");
+        if (p.Resources > 1) return Message.Express("You cannot claim charity");
 
         return null;
     }
+    
+    public static bool CanBePlayed(Game game, Player player)
+        => player.Resources <= 1 && !game.HasActedOrPassed.Contains(player.Faction) &&
+           (game.Version <= 139 || !game.CharityIsCancelled);
 
     #endregion Validation
 
@@ -39,13 +43,7 @@ public class CharityClaimed : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        Game.HasActedOrPassed.Add(Initiator);
-
-        Game.GiveCharity(Player, (2 - Player.Resources) * Game.CurrentCharityMultiplier);
-
-        if (!By(Faction.Blue)) Game.ResourceTechTokenIncome = true;
-
-        Game.Stone(Milestone.CharityClaimed);
+        Game.ClaimCharity(Player);
     }
 
     public override Message GetMessage()

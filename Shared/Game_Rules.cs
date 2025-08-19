@@ -389,4 +389,8 @@ public partial class Game
                 or Rule.Expansion3TreacheryCards or Rule.CyanAssassinate or Rule.PinkLoyalty => 3,
             _ => int.MaxValue
         };
+
+    public bool IsAutomated(AutomationRuleType rule, Player p)
+        => AutomationRules.Any(x => x.Initiator == p.Faction && x.RuleType == rule);
+    
 }

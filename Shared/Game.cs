@@ -81,7 +81,7 @@ public partial class Game
     internal Deck<IHero> TraitorDeck { get; private set; }
     public Leader PinkLoyalLeader { get; private set; }
     
-    public List<IAutomationRule> AutomationRules { get; set; }
+    public List<AutomationConfigured> AutomationRules { get; set; }
 
     #endregion GameState
 
@@ -1026,6 +1026,4 @@ public partial class Game
     public DateTime LastAction => History.LastOrDefault()?.Time.DateTime ?? DateTime.MinValue;
     
     #endregion Information
-
-
 }

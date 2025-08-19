@@ -212,9 +212,18 @@ public class EndPhase : GameEvent
         Game.Allow(FactionAdvantage.YellowProtectedFromMonster);
 
         if (Game.Version < 122)
+        {
             StartClaimingCharity();
+        }
         else
+        {
+            foreach (var p in Game.Players.Where(p => CharityClaimed.CanBePlayed(Game, p) && Game.IsAutomated(AutomationRuleType.CharityAutoClaim, p)))
+            {
+                Game.ClaimCharity(p);
+            } 
+            
             Game.Enter(Phase.BeginningOfCharity);
+        }
     }
 
     private void StartClaimingCharity()

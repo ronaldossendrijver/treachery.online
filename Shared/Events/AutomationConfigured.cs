@@ -31,6 +31,28 @@ public class AutomationConfigured : GameEvent
     
     public AutomationRuleType RuleType { get; set; }
     
+    // CharityAutoClaim = 201, *
+    
+    // BiddingPassWhenGreenOrGreenAllyPassed = 301,
+    
+    // BiddingPassAboveAmount = 302,
+    
+    // BiddingPassWhenHighestBidByFaction = 303,
+    
+    // RevivalAutoClaimFreeRevival = 401,
+    
+    // ShipmentAutoPass = 501,
+    
+    // ShipmentOrangeAutoDelay = 502,
+    
+    // MovementAutoPass = 503,
+    
+    // MovementAutoPassIfNoForcesOnPlanet = 504,
+    
+    // BattleAutoSkipTraitorCallIfNotPossible = 601,
+    
+    // FlipToAdvisorsWhenFactionEntersTerritory = 901,
+    
 
     #endregion Properties
 
@@ -49,17 +71,11 @@ public class AutomationConfigured : GameEvent
     {
         if (AutomationRuleId == -1)
         {
-            // New rule
-            IAutomationRule newRule = RuleType switch
-            {
-                AutomationRuleType.AutoPassBidding => new AutomationPassBidding(),
-                AutomationRuleType.AutoFlipAdvisors => new AutomationFlipAdvisors(),
-                AutomationRuleType.AutoKarma => new AutomationKarma(),
-                _ => null
-            };
+            AutomationRuleId = Game.AutomationRules.Count == 0 
+                ? 0 
+                : Game.AutomationRules.Max(x => x.AutomationRuleId) + 1;
             
-            if (newRule != null)
-                Game.AutomationRules.Add(newRule);
+            Game.AutomationRules.Add(this);
             
             return;
         }
@@ -87,24 +103,4 @@ public class AutomationConfigured : GameEvent
     }
 
     #endregion Execution
-}
-
-public interface IAutomationRule
-{
-    
-}
-
-public class AutomationPassBidding : IAutomationRule
-{
-    
-}
-
-public class AutomationFlipAdvisors : IAutomationRule
-{
-    
-}
-
-public class AutomationKarma : IAutomationRule
-{
-    
 }

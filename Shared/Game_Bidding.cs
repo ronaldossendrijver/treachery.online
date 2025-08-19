@@ -128,6 +128,41 @@ public partial class Game
         Bids.Clear();
         CardNumber = 1;
     }
+    
+    internal void ExecuteBid(Bid bid)
+    {
+        if (!bid.Passed)
+        {
+            ReturnKarmaCardUsedForBid();
+            if (bid.UsingKarmaToRemoveBidLimit) bid.Player.TreacheryCards.Remove(bid.KarmaCard);
+            CurrentBid = bid;
+            Stone(Milestone.Bid);
+        }
+
+        BidSequence.NextPlayer();
+        SkipPlayersThatCantBid(BidSequence);
+        Bids.Remove(bid.Initiator);
+        Bids.Add(bid.Initiator, bid);
+
+        switch (CurrentAuctionType)
+        {
+            case AuctionType.Normal:
+
+                bid.HandleNormalBid();
+                break;
+
+            case AuctionType.WhiteOnceAround:
+            case AuctionType.WhiteSilent:
+
+                bid.HandleWhiteBid();
+                break;
+        }
+    }
+    
+    internal void ReturnKarmaCardUsedForBid()
+    {
+        if (CurrentBid != null && CurrentBid.UsingKarmaToRemoveBidLimit) CurrentBid.Player.TreacheryCards.Add(CurrentBid.KarmaCard);
+    }
 
     internal void LogBid(Player initiator, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, MessagePart receiverIncome)
     {

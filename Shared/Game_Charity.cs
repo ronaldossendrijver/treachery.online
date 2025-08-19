@@ -42,6 +42,17 @@ public partial class Game
             return 1;
         }
     }
+    
+    internal void ClaimCharity(Player player)
+    {
+        HasActedOrPassed.Add(player.Faction);
+
+        GiveCharity(player, (2 - player.Resources) * CurrentCharityMultiplier);
+
+        if (!player.Is(Faction.Blue)) ResourceTechTokenIncome = true;
+
+        Stone(Milestone.CharityClaimed);
+    }
 
     internal void GiveCharity(Player to, int basicAmount)
     {

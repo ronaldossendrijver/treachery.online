@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class Bid : PassableGameEvent, IBid
@@ -146,35 +144,17 @@ public class Bid : PassableGameEvent, IBid
 
     protected override void ExecuteConcreteEvent()
     {
-        if (!Passed)
+        Game.ExecuteBid(this);
+
+        var playerToBidWithPassNormalBid = Game.Players.FirstOrDefault(p => MayBePlayed(Game, p) && Game.IsAutoPassed(p));
+        while (playerToBidWithPassNormalBid != null)
         {
-            ReturnKarmaCardUsedForBid();
-            SetAsideKarmaCardUsedForBid();
-            Game.CurrentBid = this;
-            Game.Stone(Milestone.Bid);
-        }
-
-        Game.BidSequence.NextPlayer();
-        Game.SkipPlayersThatCantBid(Game.BidSequence);
-        Game.Bids.Remove(Initiator);
-        Game.Bids.Add(Initiator, this);
-
-        switch (Game.CurrentAuctionType)
-        {
-            case AuctionType.Normal:
-
-                HandleNormalBid();
-                break;
-
-            case AuctionType.WhiteOnceAround:
-            case AuctionType.WhiteSilent:
-
-                HandleWhiteBid();
-                break;
+            Game.ExecuteBid(new Bid(Game, playerToBidWithPassNormalBid.Faction) { Passed = true });
+            playerToBidWithPassNormalBid = Game.Players.FirstOrDefault(p => MayBePlayed(Game, p));
         }
     }
 
-    private void HandleNormalBid()
+    public void HandleNormalBid()
     {
         if (Passed || KarmaBid)
         {
@@ -191,7 +171,7 @@ public class Bid : PassableGameEvent, IBid
                 if (winningBid.UsingKarmaToRemoveBidLimit)
                 {
                     //Karma was used to bid any amount
-                    ReturnKarmaCardUsedForBid();
+                    Game.ReturnKarmaCardUsedForBid();
                     var card = WinWithKarma(winningBid);
                     Game.FinishBid(winningBid.Player, winningBid, card, true);
                 }
@@ -246,16 +226,6 @@ public class Bid : PassableGameEvent, IBid
         return card;
     }
 
-    private void ReturnKarmaCardUsedForBid()
-    {
-        if (Game.CurrentBid != null && Game.CurrentBid.UsingKarmaToRemoveBidLimit) Game.CurrentBid.Player.TreacheryCards.Add(Game.CurrentBid.KarmaCard);
-    }
-
-    private void SetAsideKarmaCardUsedForBid()
-    {
-        if (UsingKarmaToRemoveBidLimit) Player.TreacheryCards.Remove(KarmaCard);
-    }
-
     private void EveryonePassedBid()
     {
         Log("Bid is passed by everyone; bidding ends and remaining cards are returned to the Treachery Deck");
@@ -297,7 +267,7 @@ public class Bid : PassableGameEvent, IBid
         return card;
     }
 
-    private void HandleWhiteBid()
+    public void HandleWhiteBid()
     {
         var isLastBid = Game.Version < 140 ? Game.Players.Count(p => p.HasRoomForCards) == Game.Bids.Count :
             (Game.CurrentAuctionType == AuctionType.WhiteSilent && Game.Players.Count(p => p.HasRoomForCards) == Game.Bids.Count) ||

@@ -936,13 +936,6 @@ public enum GameListScope
     All = 3
 }
 
-public enum AutomationRuleType
-{
-    AutoPassBidding = 1,
-    AutoFlipAdvisors = 2,
-    AutoKarma = 3,
-}
-
 public enum ShipmentType
 {
     Unknown = 0,
@@ -950,4 +943,24 @@ public enum ShipmentType
     ShipmentSiteToSite = 2,
     ShipmentBack = 3,
     ShipmentWhiteSecretAlly = 4
+}
+
+public enum AutomationRuleType
+{
+    CharityAutoClaim = 201,
+    
+    BiddingPassWhenGreenOrGreenAllyPassed = 301,
+    BiddingPassAboveAmount = 302,
+    BiddingPassWhenHighestBidByFaction = 303,
+
+    RevivalAutoClaimFreeRevival = 401,
+    
+    ShipmentAutoPass = 501,
+    ShipmentOrangeAutoDelay = 502,
+    MovementAutoPass = 503,
+    MovementAutoPassIfNoForcesOnPlanet = 504,
+    
+    BattleAutoSkipTraitorCallIfNotPossible = 601,
+    
+    FlipToAdvisorsWhenFactionEntersTerritory = 901,
 }

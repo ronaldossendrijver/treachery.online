@@ -334,12 +334,11 @@ public partial class Game
 
     private void ResolveEffectOfOccupiedJacurutu(Battle winnerPlan, int opponentUndialedForces)
     {
-        if (CurrentBattle.Territory == Map.Jacurutu.Territory)
-            if (opponentUndialedForces > 0)
-            {
-                Log(winnerPlan.Initiator, " get ", Payment.Of(opponentUndialedForces), " from winning a fight in ", Map.Jacurutu);
-                winnerPlan.Player.Resources += opponentUndialedForces;
-            }
+        if (CurrentBattle.Territory != Map.Jacurutu.Territory || opponentUndialedForces <= 0)
+            return;
+
+        Log(winnerPlan.Initiator, " get ", Payment.Of(opponentUndialedForces), " from winning a fight in ", Map.Jacurutu);
+        winnerPlan.Player.Resources += opponentUndialedForces;
     }
 
     internal void DetermineHowToProceedAfterRevealingBattlePlans()
