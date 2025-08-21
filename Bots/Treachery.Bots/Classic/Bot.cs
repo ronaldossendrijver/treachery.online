@@ -11,7 +11,7 @@ namespace Treachery.Bots;
 
 public partial class ClassicBot(Game game, Player player, BotParameters param) : IBot
 {
-    private const bool LogBotInfo = true;
+    private const bool LogBotInfo = false;
     
     private Game Game { get; set; } = game;
 
