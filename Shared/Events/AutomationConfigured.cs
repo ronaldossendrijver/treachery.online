@@ -30,7 +30,9 @@ public class AutomationConfigured : GameEvent
     public bool Delete { get; set; }
     
     public AutomationRuleType RuleType { get; set; }
-    
+    public int BiddingAboveAmount { get; set; }
+    public Faction BiddingWinningFaction { get; set; }
+
     // CharityAutoClaim = 201, *
     
     // BiddingPassWhenGreenOrGreenAllyPassed = 301,

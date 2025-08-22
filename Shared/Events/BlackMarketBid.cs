@@ -56,7 +56,8 @@ public class BlackMarketBid : PassableGameEvent, IBid
         Game.Stone(Milestone.Bid);
         Game.Bids.Remove(Initiator);
         Game.Bids.Add(Initiator, this);
-
+        Game.CheckIfGreenOrGreenAllyPassedBid(this);
+        
         if (!Passed) Game.CurrentBid = this;
 
         switch (Game.CurrentAuctionType)
@@ -142,6 +143,8 @@ public class BlackMarketBid : PassableGameEvent, IBid
         Game.FactionThatMayReplaceBoughtCard = Faction.None;
         
         Game.Bids.Clear();
+        Game.LatestBidByGreenWasPassed = false;
+        Game.LatestBidByGreenAllyWasPassed = false;
 
         var enterReplacingCardJustWon = winner != null && Game.Version > 150 && 
             ((Game.Version < 164 && Game.Players.Any(p => p.Nexus != Faction.None)) || (Game.Version >= 164 && winner?.Nexus != Faction.None));

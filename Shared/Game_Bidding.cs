@@ -143,6 +143,7 @@ public partial class Game
         SkipPlayersThatCantBid(BidSequence);
         Bids.Remove(bid.Initiator);
         Bids.Add(bid.Initiator, bid);
+        CheckIfGreenOrGreenAllyPassedBid(bid);
 
         switch (CurrentAuctionType)
         {
@@ -158,7 +159,19 @@ public partial class Game
                 break;
         }
     }
-    
+
+    internal void CheckIfGreenOrGreenAllyPassedBid(IBid bid)
+    {
+        if (bid.Initiator is Faction.Green) LatestBidByGreenWasPassed = bid.Passed;
+        
+        var greenAlly = GetAlly(Faction.Green);
+        if (bid.Initiator == greenAlly) LatestBidByGreenAllyWasPassed = bid.Passed;
+    }
+
+    public bool LatestBidByGreenAllyWasPassed { get; set; }
+
+    public bool LatestBidByGreenWasPassed { get; set; }
+
     internal void ReturnKarmaCardUsedForBid()
     {
         if (CurrentBid != null && CurrentBid.UsingKarmaToRemoveBidLimit) CurrentBid.Player.TreacheryCards.Add(CurrentBid.KarmaCard);
@@ -366,6 +379,8 @@ public partial class Game
         CardSoldOnBlackMarket = null;
         CurrentBid = null;
         FactionThatMayReplaceBoughtCard = Faction.None;
+        LatestBidByGreenWasPassed = false;
+        LatestBidByGreenAllyWasPassed = false;
         
         Bids.Clear();
 
