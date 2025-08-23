@@ -49,7 +49,9 @@ public partial class Game
     {
         if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeMayShipOutOfTurnOrder) ShipmentAndMoveSequence.NextPlayer();
 
-        Enter(JuiceForcesFirstPlayer && CurrentJuice.Initiator != Faction.Orange, Phase.NonOrangeShip, IsPlaying(Faction.Orange) && OrangeMayShipOutOfTurnOrder, Phase.OrangeShip, Phase.NonOrangeShip);
+        Enter(JuiceForcesFirstPlayer && CurrentJuice.Initiator != Faction.Orange, 
+            Phase.NonOrangeShip, 
+            IsPlaying(Faction.Orange) && OrangeMayShipOutOfTurnOrder, Phase.OrangeShip, Phase.NonOrangeShip);
     }
 
     internal void PerformMoveFromLocations(Player initiator, Dictionary<Location, Battalion> forceLocations, ILocationEvent evt, bool asAdvisors, bool byCaravan)
@@ -212,21 +214,7 @@ public partial class Game
 
     internal void DetermineNextShipmentAndMoveSubPhase()
     {
-        //Console.WriteLine("** DetermineNextShipmentAndMoveSubPhase **");
-
-        /*Console.WriteLine("* Before cleanup: *");
-        foreach (var i in Intrusions)
-        {
-            Console.WriteLine($"- {i.GetType()} {i.Type} {i.TriggeringEvent.To} {i.TriggeringEvent.Initiator} {i.Territory}");
-        }*/
-
         CleanupObsoleteIntrusions();
-
-        /*Console.WriteLine("* After cleanup: *");
-        foreach (var i in Intrusions)
-        {
-            Console.WriteLine($"- {i.GetType()} {i.Type} {i.TriggeringEvent.To} {i.TriggeringEvent.Initiator} {i.Territory}");
-        }*/
 
         if (BlueMayAccompany)
         {
@@ -271,6 +259,51 @@ public partial class Game
         {
             DetermineNextShipmentAndMoveSubPhaseOnNoIntrusion();
         }
+        
+        SkipMoveIfNothingToMove();
+    }
+
+    private void SkipMoveIfNothingToMove()
+    {
+        if (Version < 179 || CurrentPhase is not Phase.OrangeMove and not Phase.NonOrangeMove)
+            return;
+        
+        var player = ShipmentAndMoveSequence.CurrentPlayer;
+
+        if (player == null)
+            return;
+
+        if (PlacementEvent.ValidMovementSources(this, player).Any())
+            return;
+
+        StormLossesToTake.Clear();
+        HasActedOrPassed.Add(player.Faction);
+
+        if (CurrentPhase is Phase.NonOrangeMove)
+        {
+            ShipmentAndMoveSequence.NextPlayer();
+            if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeMayShipOutOfTurnOrder)
+                ShipmentAndMoveSequence.NextPlayer();
+        }
+
+        if (InOrangeCunningShipment)
+        {
+            CurrentOrangeCunning = null;
+            InOrangeCunningShipment = false;
+        }
+
+        Log(player.Faction, " pass movement");
+
+        DetermineNextShipmentAndMoveSubPhase();
+        CheckIfForcesShouldBeDestroyedByAllyPresence(player);
+        FlipBlueAdvisorsWhenAlone();
+
+        if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowExtraMove);
+        if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyCyborgExtraMove);
+
+        CurrentFlightUsed = null;
+        CurrentFlightDiscoveryUsed = null;
+        CurrentPlanetology = null;
     }
 
     private void CleanupObsoleteIntrusions()
@@ -378,7 +411,6 @@ public partial class Game
                 Enter(nextPhase);
                 break;
             }
-
         }
     }
 
