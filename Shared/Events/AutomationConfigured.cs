@@ -43,19 +43,8 @@ public class AutomationConfigured : GameEvent
     
     // RevivalAutoClaimFreeRevival = 401,
     
-    // ShipmentAutoPass = 501,
-    
     // ShipmentOrangeAutoDelay = 502,
     
-    // MovementAutoPass = 503,
-    
-    // MovementAutoPassIfNoForcesOnPlanet = 504,
-    
-    // BattleAutoSkipTraitorCallIfNotPossible = 601,
-    
-    // FlipToAdvisorsWhenFactionEntersTerritory = 901,
-    
-
     #endregion Properties
 
     #region Validation

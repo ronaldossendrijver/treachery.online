@@ -956,10 +956,4 @@ public enum AutomationRuleType
     RevivalAutoClaimFreeRevival = 401,
     
     ShipmentOrangeAutoDelay = 502,
-    MovementAutoPass = 503,
-    MovementAutoPassIfNoForcesOnPlanet = 504,
-    
-    BattleAutoSkipTraitorCallIfNotPossible = 601,
-    
-    FlipToAdvisorsWhenFactionEntersTerritory = 901,
 }
