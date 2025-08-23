@@ -678,9 +678,9 @@ public partial class Game
         {
             if (p.Is(Faction.Blue) && !p.Occupies(t))
                 return false;
+            
             if (p.Ally == Faction.Blue && !ally.Occupies(t))
                 return false;
-            return ally.AnyForcesIn(t) > 0;
         }
 
         return ally.AnyForcesIn(t) > 0;

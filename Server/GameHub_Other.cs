@@ -315,6 +315,9 @@ public partial class GameHub
             foreach (var persistedGame in context.PersistedGames.AsNoTracking())
             {
                 var id = persistedGame.GameId;
+
+                if (id == null) continue;
+                
                 var gameState = GameState.Load(persistedGame.GameState);
                 var gameName = persistedGame.GameName;
                 var participation = Utilities.Deserialize<Participation>(persistedGame.GameParticipation);
@@ -345,6 +348,9 @@ public partial class GameHub
             foreach (var scheduledGame in context.ScheduledGames.AsNoTracking())
             {
                 var id = scheduledGame.GameId;
+                
+                if (id == null) continue;
+                
                 var subscriptions = Utilities.Deserialize<Dictionary<int,SubscriptionType>>(scheduledGame.SubscribedUsers);
                 var game = new ScheduledGame
                 {
