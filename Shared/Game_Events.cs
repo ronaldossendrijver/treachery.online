@@ -248,7 +248,7 @@ public partial class Game
                     !Revival.NormallyRevivableHeroes(this, player).Any()) result.Add(typeof(RequestPurpleRevival));
 
                 if (faction == Faction.Purple && (CurrentRevivalRequests.Any() || EarlyRevivalsOffers.Any())) result.Add(typeof(AcceptOrCancelPurpleRevival));
-                if (!HasActedOrPassed.Contains(faction) && HasSomethingToRevive(player) && !PreventedFromReviving(faction)) result.Add(typeof(Revival));
+                if (/*!HasActedOrPassed.Contains(faction) &&*/ HasSomethingToRevive(player) && !PreventedFromReviving(faction)) result.Add(typeof(Revival));
                 if (faction == Faction.Purple && Players.Count > 1 && (Version < 113 || !Prevented(FactionAdvantage.PurpleIncreasingRevivalLimits))) result.Add(typeof(SetIncreasedRevivalLimits));
                 if (Version < 103 && player.Has(TreacheryCardType.Amal) && (Version <= 82 || HasActedOrPassed.Count == 0)) result.Add(typeof(AmalPlayed));
                 break;

@@ -298,6 +298,11 @@ public class EndPhase : GameEvent
             Game.Enter(Phase.Resurrection);
         else
             Game.Enter(Phase.BeginningOfResurrection);
+        
+        foreach (var p in Game.Players.Where(p => CharityClaimed.CanBePlayed(Game, p) && Game.IsAutomated(AutomationRuleType.RevivalAutoClaimFreeRevival, p)))
+        {
+            Game.ClaimFreeRevival(p);
+        } 
     }
 
     private void EndResurrectionPhase()

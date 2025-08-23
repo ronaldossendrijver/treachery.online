@@ -556,7 +556,7 @@ public class Revival : GameEvent, ILocationEvent
             }
         }
 
-        if (Initiator != Faction.Purple) Game.HasActedOrPassed.Add(Initiator);
+        if (Game.Version < 179 && Initiator != Faction.Purple) Game.HasActedOrPassed.Add(Initiator);
     }
 
     private void LogRevival(RevivalCost cost, int purpleReceivedResources, bool asGhola, int highThresholdBonus)

@@ -122,4 +122,56 @@ public partial class Game
     }
 
     #endregion Information
+
+    public void ClaimFreeRevival(Player player)
+    {
+        var maxFreeRevivals = FreeRevivals(player, false);
+        
+        if (maxFreeRevivals <= 0) return;
+        
+        FactionsThatTookFreeRevival.Add(player.Faction);
+
+        var freeRevivedSpecialForces = 0;
+        var freeRevivedNormalForces = 0;
+        
+        var maxRevivableSpecialForces = Revival.ValidMaxRevivals(this, player, true, false);
+        var maxRevivableNormalForces = Revival.ValidMaxRevivals(this, player, false, false);
+        
+        while (freeRevivedSpecialForces + freeRevivedNormalForces <= maxFreeRevivals)
+        {
+            if (freeRevivedSpecialForces < maxRevivableSpecialForces)
+            {
+                freeRevivedSpecialForces++;
+            }
+            else if (freeRevivedNormalForces < maxRevivableNormalForces)
+            {
+                freeRevivedNormalForces++;
+            }
+        }
+        
+        if (freeRevivedSpecialForces > 0)
+            player.ReviveSpecialForces(freeRevivedSpecialForces);
+        
+        if (freeRevivedNormalForces > 0)
+            player.ReviveForces(freeRevivedNormalForces);
+        
+        if (player.Faction != Faction.Purple) RevivalTechTokenIncome = true;
+
+        var purple = GetPlayer(Faction.Purple);
+        
+        var purpleReceivesIncome = purple != null && !PurpleStartedRevivalWithLowThreshold && !Prevented(FactionAdvantage.PurpleReceiveRevive);
+
+        if (purpleReceivesIncome)
+        {
+            purple.Resources += 1;
+        }
+        
+        Log(player.Faction, " revive ",
+            MessagePart.ExpressIf(freeRevivedSpecialForces > 0, freeRevivedSpecialForces, player.SpecialForce),
+            MessagePart.ExpressIf(freeRevivedNormalForces > 0, freeRevivedNormalForces, player.Force),
+            " for free",
+            MessagePart.ExpressIf(purpleReceivesIncome, Faction.Purple, " receive ", Payment.Of(1)));
+        
+        Stone(Milestone.Revival);
+    }
 }

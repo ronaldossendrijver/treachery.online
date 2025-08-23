@@ -11,12 +11,12 @@ namespace Treachery.Shared;
 
 public partial class Game
 {
-    #region Settings
+    #region Version
 
     private const int LowestSupportedVersion = 100;
     public const int LatestVersion = 179;
     
-    #endregion Settings
+    #endregion Version
 
     #region GameState
 
