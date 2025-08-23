@@ -695,9 +695,23 @@ public partial class Game
         }
         else
         {
+            var orange = GetPlayer(Faction.Orange);
+            
+            var orangeHasToAct = IsPlaying(Faction.Orange) && HasActedOrPassed.All(p => p != Faction.Orange) &&
+                                 OrangeMayShipOutOfTurnOrder;
+
+            var orangeMayDelay = Players.Any(p => p.Faction is not Faction.Orange && !HasActedOrPassed.Contains(p.Faction));
+
+            var orangeIsOnAutoDelay = orange != null && IsAutomated(AutomationRuleType.ShipmentOrangeAutoDelay, orange);
+
+            if (orangeHasToAct && orangeIsOnAutoDelay && orangeMayDelay)
+            {
+                Log(Faction.Orange, " delay their shipment");
+            }
+            
             Enter(
                 EveryoneActedOrPassed, ConcludeShipmentAndMove,
-                IsPlaying(Faction.Orange) && HasActedOrPassed.All(p => p != Faction.Orange) && OrangeMayShipOutOfTurnOrder, Phase.OrangeShip,
+                orangeHasToAct && !(orangeIsOnAutoDelay && orangeMayDelay), Phase.OrangeShip,
                 Phase.NonOrangeShip);
         }
     }

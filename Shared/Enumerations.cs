@@ -955,7 +955,6 @@ public enum AutomationRuleType
 
     RevivalAutoClaimFreeRevival = 401,
     
-    ShipmentAutoPass = 501,
     ShipmentOrangeAutoDelay = 502,
     MovementAutoPass = 503,
     MovementAutoPassIfNoForcesOnPlanet = 504,
