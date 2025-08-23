@@ -9,16 +9,11 @@
 
 namespace Treachery.Shared;
 
-public class Report
+public class Report(MainPhase about)
 {
-    public MainPhase About { private set; get; }
+    public MainPhase About { private set; get; } = about;
 
-    public Report(MainPhase about)
-    {
-        About = about;
-    }
-
-    public LinkedList<Message> Messages = new();
+    public readonly LinkedList<Message> Messages = [];
 
     public void Express(params object[] list)
     {

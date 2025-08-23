@@ -947,6 +947,8 @@ public enum ShipmentType
 
 public enum AutomationRuleType
 {
+    Unknown = 0,
+    
     CharityAutoClaim = 201,
     
     BiddingPassWhenGreenOrGreenAllyPassed = 301,

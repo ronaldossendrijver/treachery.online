@@ -57,11 +57,6 @@ public class Message
 
 public class MessagePart
 {
-    private MessagePart()
-    {
-        Expression = new Expression();
-    }
-
     private MessagePart(Expression e)
     {
         Expression = e;
@@ -83,7 +78,7 @@ public class MessagePart
 
     public string ToString(IDescriber describer)
     {
-        return string.Join("", Expression.Elements.Select(e => describer.Describe(e)));
+        return string.Join("", Expression.Elements.Select(describer.Describe));
     }
 
     public override string ToString()

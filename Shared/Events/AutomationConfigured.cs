@@ -94,4 +94,46 @@ public class AutomationConfigured : GameEvent
     }
 
     #endregion Execution
+
+    public static List<AutomationRuleType> GetAvailableRuleTypes(Game g, Player p)
+    {
+        var greenIsPlaying = g.IsPlaying(Faction.Green);
+        return Enumerations.GetValuesExceptDefault(AutomationRuleType.Unknown).Where(x =>
+            (x != AutomationRuleType.BiddingPassWhenGreenOrGreenAllyPassed || greenIsPlaying)
+            && (x != AutomationRuleType.CharityAutoClaim || p.Is(Faction.Blue))
+            && (x != AutomationRuleType.ShipmentOrangeAutoDelay || p.Is(Faction.Orange) && g.Applicable(Rule.OrangeDetermineShipment))
+            ).ToList();
+    }
+
+    public Message GetDescription()
+    {
+        switch (RuleType)
+        {
+            case AutomationRuleType.CharityAutoClaim:
+                return Message.Express("Auto claim charity when possible");
+
+            case AutomationRuleType.BiddingPassAboveAmount:
+                return Message.Express("Auto pass when current bid is equal to or higher than ",
+                    Payment.Of(BiddingAboveAmount));
+
+            case AutomationRuleType.BiddingPassWhenHighestBidByFaction:
+                return Message.Express("Auto pass when current highest bid by", BiddingWinningFaction);
+
+            case AutomationRuleType.BiddingPassWhenGreenOrGreenAllyPassed:
+                var green = Game.GetPlayer(Faction.Green);
+                return Message.Express("Auto pass when most recent bid by ", Faction.Green,
+                    MessagePart.ExpressIf(green is { HasAlly: true }, green.Ally));
+
+            case AutomationRuleType.RevivalAutoClaimFreeRevival:
+                if (Player.HasSpecialForces)
+                    return Message.Express("Auto claim free revival, prioritizing ", Player.SpecialForce);
+
+                return Message.Express("Auto claim free revival");
+
+            case AutomationRuleType.ShipmentOrangeAutoDelay:
+                return Message.Express("Auto delay shipment until last");
+        }
+
+        return null;
+    }
 }

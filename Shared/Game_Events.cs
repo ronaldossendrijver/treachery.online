@@ -481,6 +481,8 @@ public partial class Game
                 if (DiscardedSearched.CanBePlayed(player)) result.Add(typeof(DiscardedSearched));
                 break;
         }
+        
+        if (CurrentPhase > Phase.SelectingFactions) result.Add(typeof(AutomationConfigured));
 
         if (CurrentMainPhase > MainPhase.Setup && faction == Faction.Brown && player.HasLowThreshold() && !IsOccupied(World.Brown) && ResourcesAudited.ValidFactions(this, player).Any()) result.Add(typeof(ResourcesAudited));
 
