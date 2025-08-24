@@ -36,7 +36,7 @@
 
                         <tr class="small table-dark">
                             <td style="@fontColorStyle">
-                                <span style="font: normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif;">@av.Name</span>
+                                <span style="font: normal normal normal 14px Advokat, Calibri, Tahoma, sans-serif;">@av.Name</span>
                             </td>
                             <td style="@fontColorStyle">
                                 @if (av.Phase == Phase.AwaitingPlayers)
@@ -101,11 +101,11 @@
                                             </CommandButton>
                                         }
                                     }
-                                    <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, Passwords[av.GameId]))" MarginClass="m-1">Observe</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, Passwords[av.GameId]))" MarginClass="m-1">👁</CommandButton>
                                 }
                                 else
                                 {
-                                    <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" MarginClass="m-1">Resume</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" MarginClass="m-1">▶</CommandButton>
                                 }
                                 <div class="text-danger">@JoinErrors[av.GameId]</div>
                             </td>
@@ -186,7 +186,7 @@
 
                         <tr class="small table-dark">
                             <td style="@fontColorStyle">
-                                <span style="font: normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif;">@av.Name</span>
+                                <span style="font: normal normal normal 14px Advokat, Calibri, Tahoma, sans-serif;">@av.Name</span>
                             </td>
                             <td style="@fontColorStyle">
                                 <div style="display: inline-block;">
@@ -222,11 +222,11 @@
                             <td>
                                 @if (!av.YouAreIn(Client.UserId))
                                 {
-                                    <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, Passwords[av.GameId]))" MarginClass="m-1">Observe</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, Passwords[av.GameId]))" MarginClass="m-1">👁</CommandButton>
                                 }
                                 else
                                 {
-                                    <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" MarginClass="m-1">Resume</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" MarginClass="m-1">▶</CommandButton>
                                 }
                                 <div class="text-danger">@JoinErrors[av.GameId]</div>
                             </td>

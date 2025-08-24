@@ -168,6 +168,7 @@ public partial class GameHub
     public async Task<VoidResult> RequestNexusPlayed(string userToken, string gameId, NexusPlayed e) => await ProcessGameEvent(userToken, gameId, e);
     public async Task<VoidResult> RequestResourcesAudited(string userToken, string gameId, ResourcesAudited e) => await ProcessGameEvent(userToken, gameId, e);
     public async Task<VoidResult> RequestRecruitsPlayed(string userToken, string gameId, RecruitsPlayed e) => await ProcessGameEvent(userToken, gameId, e);
+    public async Task<VoidResult> RequestAutomationConfigured(string userToken, string gameId, AutomationConfigured e) => await ProcessGameEvent(userToken, gameId, e);
     
     public async Task<VoidResult> SetTimer(string userToken, string gameId, int value)
     {

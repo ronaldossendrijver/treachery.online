@@ -13,85 +13,42 @@
     <Header>Manage Automation</Header>
 
     <Body>
-
-    <div>Configure automation</div>
-    <RadioComponent @bind-Value="@NewRuleType" Values="@AutomationConfigured.GetAvailableRuleTypes(Game, Player)" Required/>
-    @switch (NewRuleType)
-    {
-        case AutomationRuleType.CharityAutoClaim:
-            <div>Auto claim charity when possible.</div>
-            break;
-            
-        case AutomationRuleType.BiddingPassAboveAmount:
-            <div>Auto pass when current bid is equal to or higher than...</div>
-            <SelectResourcesComponent @bind-Value="@NewRuleBidAmount" Min="0" Max="99"/>
-            break;
-            
-        case AutomationRuleType.BiddingPassWhenHighestBidByFaction:
-            <div>Auto pass when current highest bid by...</div>
-            <SelectFromImageComponent @bind-Value="@NewRuleBidFaction" Values="FactionSelected.ValidFactions(Game)" Required="true" ImageWidth="40" />
-            break;
-            
-        case AutomationRuleType.BiddingPassWhenGreenOrGreenAllyPassed:
-            var green = Game.GetPlayer(Faction.Green);
-            @if (green != null)
-            {
-                if (green.HasAlly)
-                {
-                    <div>Auto pass when most recent bid by <FactionComponent Faction="@Faction.Green"/><FactionComponent Faction="@green.Ally"/>  was passed.</div>
-                }
-                else
-                {
-                    <div>Auto pass when most recent bid by <FactionComponent Faction="@Faction.Green"/> was passed.</div>
-                }
-            }
-            else
-            {
-                <div><FactionComponent Faction="@Faction.Green"/> are not in play.</div>
-            }
-            break;
-            
-        case AutomationRuleType.RevivalAutoClaimFreeRevival:
-            @if (Player.HasSpecialForces)
-            {
-                <div>Auto claim free revival, prioritizing </div><Image Shown="@Player.SpecialForce" Width="30"/>
-            }
-            else
-            {
-                <div>Auto claim free revival</div>
-            }
-            break;
-            
-        case AutomationRuleType.ShipmentOrangeAutoDelay:
-            <div>Auto delay shipment until last...</div>
-            break;
-    }
     
-    <CommandButton OnClick="@Confirm"/>
-    
-    @if (CurrentAutomation.Any())
-    {
-        <div>Automation rules:</div>
-        <table class="table table-sm">
-            <tbody>
-                @foreach (var rule in Game.AutomationRules)
-                {
-                    <tr class="table-dark">
-                        <td>
-                            @rule.GetDescription()
-                        </td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" @onclick="e => Cancel(rule)">Cancel</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <div>No automation configured.</div>
-    }
+        <SelectComponent @bind-Value="@NewRuleType" Values="@AutomationConfigured.GetAvailableRuleTypes(Game, Player)" Required/>
+        <div class="mt-1">
+            @switch (NewRuleType)
+            {
+                case AutomationRuleType.BiddingPassAboveAmount:
+                    <SelectResourcesComponent @bind-Value="@NewRuleBidAmount" Min="0" Max="40"/>
+                    break;
+                    
+                case AutomationRuleType.BiddingPassWhenHighestBidByFaction:
+                    <SelectFromImageComponent @bind-Value="@NewRuleBidFaction" Values="@AutomationConfigured.GetValidBiddingFactions(Game, Player)" Required ImageWidth="40" />
+                    break;
+            }
+        </div>
+        <CommandButton MarginClass="mt-1" OnClick="@Confirm">Create rule</CommandButton>
+        
+        @if (CurrentAutomation.Any())
+        {
+            <hr style="border-color:white" />
+            <div class="mt-2">Current automation:</div>
+            <table class="table table-sm">
+                <tbody>
+                    @foreach (var rule in CurrentAutomation)
+                    {
+                        <tr class="table-dark">
+                            <td>
+                                <CommandButton OnClick="@(_ => Cancel(rule))" Small>🗙</CommandButton>
+                            </td>
+                            <td>
+                                <ExpressionComponent Expression="@rule.GetDescription().Expression" Size="18"/>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
 
     </Body>
 
@@ -101,19 +58,17 @@
 
     protected override bool IsUrgent => false;
 
-    protected override Faction IsFactionSpecific => Faction.Purple;
+    protected override Faction IsFactionSpecific => Faction.None;
 
     private IEnumerable<AutomationConfigured> CurrentAutomation => Game.AutomationRules.Where(x => x.Initiator == Faction);
 
     private AutomationRuleType NewRuleType { get; set; }
     private int NewRuleBidAmount { get; set; }
     private Faction NewRuleBidFaction { get; set; }
-
-    protected override AutomationConfigured ConfirmedResult =>
-        new(Game, Faction) { RuleType = NewRuleType, BiddingAboveAmount = NewRuleBidAmount, BiddingWinningFaction = NewRuleBidFaction };
     
-    private async Task Cancel(AutomationConfigured rule)
-    {
-        await Request(new AutomationConfigured(Game, Faction) { AutomationRuleId = rule.AutomationRuleId, Delete = true});
-    }
+    protected override AutomationConfigured ConfirmedResult 
+        => new(Game, Faction) { RuleType = NewRuleType, BiddingAboveAmount = NewRuleBidAmount, BiddingWinningFaction = NewRuleBidFaction, Action = ItemAction.Create };
+    
+    private async Task Cancel(AutomationConfigured rule) 
+        => await Request(new AutomationConfigured(Game, Faction) { AutomationRuleId = rule.AutomationRuleId, Action = ItemAction.Delete});
 }

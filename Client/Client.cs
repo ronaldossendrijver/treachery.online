@@ -358,7 +358,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             StoredPassword = hashedPassword;
             LoginInfo = result.Contents;
             Refresh(nameof(RequestCreateUser));
-            return result;
         }
 
         return result;
@@ -395,7 +394,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             StoredPassword = newHashedPassword;
             LoginInfo = result.Contents;
             Refresh(nameof(RequestSetPassword));
-            return result;
         }
 
         return result;
@@ -423,9 +421,9 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     //Game Management
 
-    public async Task<string> RequestCreateGame(string password, string stateData = null, string skinData = null)
+    public async Task<string> RequestCreateGame(string name, string password, string stateData = null, string skinData = null)
     {
-        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestCreateGame), UserToken, password, stateData, skinData);
+        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestCreateGame), name, UserToken, password, stateData, skinData);
         if (result.Success)
         {
             var loadMessage = await LoadGame(result.Contents);

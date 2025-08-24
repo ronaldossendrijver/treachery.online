@@ -8,6 +8,7 @@
  */
 
 using System;
+using System.Runtime.Intrinsics.X86;
 
 namespace Treachery.Shared;
 
@@ -958,4 +959,11 @@ public enum AutomationRuleType
     RevivalAutoClaimFreeRevival = 401,
     
     ShipmentOrangeAutoDelay = 502,
+}
+
+public enum ItemAction
+{
+    Create = 0,
+    Update = 1,
+    Delete = 2
 }

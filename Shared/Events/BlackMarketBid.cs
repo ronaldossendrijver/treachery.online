@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class BlackMarketBid : PassableGameEvent, IBid
@@ -112,7 +110,7 @@ public class BlackMarketBid : PassableGameEvent, IBid
             if (Game.CurrentAuctionType == AuctionType.BlackMarketSilent) Log(Game.Bids.Select(b => MessagePart.Express(b.Key, Payment.Of(b.Value.TotalAmount), " ")).ToList());
 
             var highestBid = Game.DetermineHighestBid(Game.Bids);
-            if (highestBid != null && highestBid.TotalAmount > 0)
+            if (highestBid is { TotalAmount: > 0 })
             {
                 var card = Game.WinByHighestBid(
                     highestBid.Player,
@@ -143,11 +141,10 @@ public class BlackMarketBid : PassableGameEvent, IBid
         Game.FactionThatMayReplaceBoughtCard = Faction.None;
         
         Game.Bids.Clear();
-        Game.LatestBidByGreenWasPassed = false;
-        Game.LatestBidByGreenAllyWasPassed = false;
+        Game.LatestBidByGreenOrGreenAllyWasPassed = false;
 
         var enterReplacingCardJustWon = winner != null && Game.Version > 150 && 
-            ((Game.Version < 164 && Game.Players.Any(p => p.Nexus != Faction.None)) || (Game.Version >= 164 && winner?.Nexus != Faction.None));
+            ((Game.Version < 164 && Game.Players.Any(p => p.Nexus != Faction.None)) || (Game.Version >= 164 && winner.Nexus != Faction.None));
 
         if (winner != null)
         {
@@ -191,6 +188,7 @@ public class BlackMarketBid : PassableGameEvent, IBid
     {
         if (!Passed)
             return Message.Express(Initiator, " bid");
+        
         return Message.Express(Initiator, " pass");
     }
 

@@ -40,9 +40,10 @@
                     <table class="table table-sm">
                         <thead>
                         <tr class="small table-dark">
-                            <th scope="col">Game info</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Info</th>
                             <th scope="col">Last action</th>
-                            <th scope="col">Actions</th>
+                            <th scope="col" style="text-align: right;">Actions</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -52,7 +53,10 @@
                             var factions = av.FactionsInPlay ?? [];
 
                             <tr class="small table-dark">
-                                <td class="w-50" style="@fontColorStyle">
+                                <td class="w-25">
+                                    @av.Name
+                                </td>
+                                <td class="w-25" style="@fontColorStyle">
                                     <div>@Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)
                                         <br>
                                         @foreach (var f in factions.Where(f => f != Faction.None))
@@ -67,9 +71,9 @@
                                 <td class="w-25" style="text-align: right;">
                                     @if (av.YouAreIn(Client.UserId))
                                     {
-                                        <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" MarginClass="m-1">Resume</CommandButton>
+                                        <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" MarginClass="m-1">▶</CommandButton>
                                     }
-                                    <CommandButton Small OnClick="@(_ => Delete(av))" MarginClass="m-1">Delete</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => Delete(av))" MarginClass="m-1">🗙</CommandButton>
                                 </td>
                             </tr>
                         }
@@ -120,7 +124,7 @@
                                     }                                    
                                 </td>
                                 <td class="w-20">
-                                    <CommandButton Small OnClick="@(_ => Cancel(game))">Delete</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => Cancel(game))">🗙</CommandButton>
                                 </td>
                             </tr>
                         }
@@ -130,6 +134,7 @@
                 break;
                 
             case OwnGamesComponentState.Create:
+                <input type="text" class="form-control" @bind="@CreateGameName" maxlength="64" placeholder="Game name"/>    
                 <CheckboxComponent @bind-Value="@CreateGameHasPassword">Require a password to join?</CheckboxComponent>
                 @if (CreateGameHasPassword)
                 {
@@ -264,10 +269,11 @@
     private const int MaxSaveGameSize = 4194304;
 
     private bool CreateGameHasPassword { get; set; }
+    private string CreateGameName { get; set; }
     private string CreateGamePassword { get; set; }
     private object FileInput { get; set; }
     private string CreateError { get; set; } = string.Empty;
-    private bool Loading { get; set; } = false;
+    private bool Loading { get; set; }
     private string LoadedGameData { get; set; }
     
     private DateTimeOffset ScheduleGameDateTime { get; set; } = DateTimeOffset.Now;
@@ -275,7 +281,7 @@
     private int ScheduleGameNumberOfPlayers { get; set; } = 6;
     private int ScheduleGameMaximumTurns { get; set; } = 10;
     private List<Faction> ScheduleGameAllowedFactionsInPlay { get; set; } = [];
-    private bool ScheduleGameAsyncPlay { get; set; } = false;
+    private bool ScheduleGameAsyncPlay { get; set; }
     
     private string ScheduleError { get; set; } = string.Empty;
     private bool EditUser { get; set; }
@@ -294,6 +300,7 @@
     protected override void OnParametersSet()
     {
         GetUserInfoFromClient();
+        CreateGameName = $"{PlayerName}'s Game";
     }
     
     protected override void OnAfterRender(bool firstRender)
@@ -311,14 +318,14 @@
         ScheduleGameRuleset = Ruleset.AllExpansionsAdvancedGame;
         ScheduleGameNumberOfPlayers = 6;
         ScheduleGameMaximumTurns = 10;
-        ScheduleGameAllowedFactionsInPlay = Enumerations.GetValuesExceptDefault(Faction.None).ToList();;
+        ScheduleGameAllowedFactionsInPlay = Enumerations.GetValuesExceptDefault(Faction.None).ToList();
         ScheduleGameAsyncPlay = false;
         State = OwnGamesComponentState.List;
     }
 
     private async Task CreateNewGame()
     {
-        CreateError = await Client.RequestCreateGame(CreateGameHasPassword ? CreateGamePassword : null);
+        CreateError = await Client.RequestCreateGame(CreateGameName, CreateGameHasPassword ? CreateGamePassword : null);
     }
     
     private async Task LoadAndCreateGame()
@@ -344,7 +351,7 @@
                 else
                 {
                     var skinData = Client.CurrentSkin == DefaultSkin.Default ? null : Client.CurrentSkin.SkinToString();
-                    CreateError = await Client.RequestCreateGame(CreateGamePassword, LoadedGameData, skinData);    
+                    CreateError = await Client.RequestCreateGame(CreateGameName, CreateGamePassword, LoadedGameData, skinData);    
                 }
             }
         }

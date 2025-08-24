@@ -80,8 +80,8 @@ public partial class Game
     public List<TerrorType> UnplacedTerrorTokens { get; internal set; } = [];
     internal Deck<IHero> TraitorDeck { get; private set; }
     public Leader PinkLoyalLeader { get; private set; }
-    
-    public List<AutomationConfigured> AutomationRules { get; set; }
+
+    public List<AutomationConfigured> AutomationRules { get; set; } = [];
 
     #endregion GameState
 

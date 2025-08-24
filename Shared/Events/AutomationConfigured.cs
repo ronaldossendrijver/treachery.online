@@ -27,7 +27,7 @@ public class AutomationConfigured : GameEvent
 
     public int AutomationRuleId { get; set; } = -1;
     
-    public bool Delete { get; set; }
+    public ItemAction Action { get; set; }
     
     public AutomationRuleType RuleType { get; set; }
 
@@ -60,32 +60,32 @@ public class AutomationConfigured : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        if (AutomationRuleId == -1)
+        switch (Action)
         {
-            AutomationRuleId = Game.AutomationRules.Count == 0 
-                ? 0 
-                : Game.AutomationRules.Max(x => x.AutomationRuleId) + 1;
+            case ItemAction.Create:
+                AutomationRuleId = Game.AutomationRules.Count == 0 
+                    ? 0 
+                    : Game.AutomationRules.Max(x => x.AutomationRuleId) + 1;
             
-            Game.AutomationRules.Add(this);
+                Game.AutomationRules.Add(this);
+                return;
+
+            case ItemAction.Delete:
+            {
+                // Delete rule
+                var rule = Game.AutomationRules.FirstOrDefault(x => x.AutomationRuleId == AutomationRuleId);
+                Game.AutomationRules.Remove(rule);
+                return;
+            }
             
-            return;
+            case ItemAction.Update:
+            {
+                var rule = Game.AutomationRules.FirstOrDefault(x => x.AutomationRuleId == AutomationRuleId);
+                // Update rule
+                //existingRule
+                break;
+            }
         }
-
-        if (Game.AutomationRules.Count <= AutomationRuleId)
-            return;
-
-        if (Delete)
-        {
-            // Delete rule
-            Game.AutomationRules.RemoveAt(AutomationRuleId);
-        }
-        else
-        {
-            var existingRule = Game.AutomationRules[AutomationRuleId];
-            // Update rule
-            //existingRule
-        }
-        
     }
 
     public override Message GetMessage()
@@ -100,10 +100,13 @@ public class AutomationConfigured : GameEvent
         var greenIsPlaying = g.IsPlaying(Faction.Green);
         return Enumerations.GetValuesExceptDefault(AutomationRuleType.Unknown).Where(x =>
             (x != AutomationRuleType.BiddingPassWhenGreenOrGreenAllyPassed || greenIsPlaying)
-            && (x != AutomationRuleType.CharityAutoClaim || p.Is(Faction.Blue))
+            && (x != AutomationRuleType.CharityAutoClaim || !p.Is(Faction.Blue))
             && (x != AutomationRuleType.ShipmentOrangeAutoDelay || p.Is(Faction.Orange) && g.Applicable(Rule.OrangeDetermineShipment))
-            ).ToList();
+            && (x != AutomationRuleType.BiddingPassWhenHighestBidByFaction || GetValidBiddingFactions(g, p).Count > 0)).ToList();
     }
+    
+    public static List<Faction> GetValidBiddingFactions(Game g, Player p) 
+        => g.Players.Where(x => x.Faction != p.Faction).Select(x => x.Faction).ToList();
 
     public Message GetDescription()
     {
@@ -113,16 +116,17 @@ public class AutomationConfigured : GameEvent
                 return Message.Express("Auto claim charity when possible");
 
             case AutomationRuleType.BiddingPassAboveAmount:
-                return Message.Express("Auto pass when current bid is equal to or higher than ",
+                return Message.Express("Auto pass if bid is equal to or higher than ",
                     Payment.Of(BiddingAboveAmount));
 
             case AutomationRuleType.BiddingPassWhenHighestBidByFaction:
-                return Message.Express("Auto pass when current highest bid by", BiddingWinningFaction);
+                return Message.Express("Auto pass if highest bid by ", BiddingWinningFaction);
 
             case AutomationRuleType.BiddingPassWhenGreenOrGreenAllyPassed:
                 var green = Game.GetPlayer(Faction.Green);
-                return Message.Express("Auto pass when most recent bid by ", Faction.Green,
-                    MessagePart.ExpressIf(green is { HasAlly: true }, green.Ally));
+                return Message.Express("Auto pass if most recent bid by ", Faction.Green,
+                    MessagePart.ExpressIf(green is { HasAlly: true }, green.Ally),
+                    " was passed");
 
             case AutomationRuleType.RevivalAutoClaimFreeRevival:
                 if (Player.HasSpecialForces)

@@ -392,7 +392,7 @@ public partial class Game
 
     public bool IsAutomated(AutomationRuleType rule, Player p)
         => AutomationRules.Any(x => x.Initiator == p.Faction && x.RuleType == rule);
-
+    
     public bool IsAutoPassedBid(Faction f)
     {
         foreach (var rule in AutomationRules.Where(x => x.Initiator == f))
@@ -404,7 +404,7 @@ public partial class Game
                     break;
                 
                 case AutomationRuleType.BiddingPassWhenGreenOrGreenAllyPassed:
-                    if (LatestBidByGreenWasPassed && (!GetPlayer(Faction.Green).HasAlly || LatestBidByGreenAllyWasPassed)) return true;
+                    if (LatestBidByGreenOrGreenAllyWasPassed && f is not Faction.Green) return true;
                     break;
                 
                 case AutomationRuleType.BiddingPassWhenHighestBidByFaction:

@@ -284,6 +284,7 @@ public class Skin : IDescriber
             DiscoveryToken dt => Describe(dt),
             DiscoveryTokenType dtd => Describe(dtd),
             Ruleset r => Describe(r),
+            AutomationRuleType r => Describe(r),
             RuleGroup rg => Describe(rg),
             Rule rule => Describe(rule),
             MainPhase m => Describe(m),
@@ -676,6 +677,20 @@ public class Skin : IDescriber
             Ruleset.Custom => "Custom",
 
             _ => "unknown rule set"
+        };
+    }
+    
+    private string Describe(AutomationRuleType s)
+    {
+        return s switch
+        {
+            AutomationRuleType.CharityAutoClaim => "Claim charity if possible",
+            AutomationRuleType.BiddingPassWhenGreenOrGreenAllyPassed => $"Pass if most recent bid by {Describe(Faction.Green)} or their ally passed",
+            AutomationRuleType.BiddingPassAboveAmount => "Pass if current bid is equal to or higher than...",
+            AutomationRuleType.BiddingPassWhenHighestBidByFaction => "Pass if current highest bid by...",
+            AutomationRuleType.RevivalAutoClaimFreeRevival => "Auto claim free revival",
+            AutomationRuleType.ShipmentOrangeAutoDelay => "Auto delay shipment until last",
+            _ => "unknown automation rule"
         };
     }
 

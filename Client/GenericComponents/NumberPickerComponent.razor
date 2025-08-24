@@ -11,22 +11,23 @@
 
     @if (DrawSymbolBackground)
     {
-        <svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0px; top: 0px; width: @SymbolSize; height: @SymbolSize;" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="15.5" stroke="@SymbolBackgroundBorderColor" stroke-width="2%" fill="@SymbolBackgroundFillColor" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0; top: 0; width: @SymbolSize; height: @SymbolSize;" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="15.5" stroke="@SymbolBackgroundBorderColor" stroke-width="2%" fill="@SymbolBackgroundFillColor" /></svg>
     }
 
-    @if (SymbolSRC != null)
+    
+    @if (SymbolSrc != null)
     {
-        <img src="@SymbolSRC" style="position: absolute; left: 0px; top: 0px; width: @SymbolSize;" />
+        <img src="@SymbolSrc" style="position: absolute; left: 0; top: 0; width: @SymbolSize;"/>
     }
 
     @if (DrawNumberBackground)
     {
-        <svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0px; top: 0px; width: @SymbolSize; height: @SymbolSize;" width="16" height="16" viewBox="0 0 16 16"><circle cx="@NumberBackgroundOffsetX" cy="@NumberBackgroundOffsetY" r="@NumberBackgroundRadius" stroke="@NumberBackgroundBorderColor" stroke-width="2%" fill="@NumberBackgroundFillColor" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0; top: 0; width: @SymbolSize; height: @SymbolSize;" width="16" height="16" viewBox="0 0 16 16"><circle cx="@NumberBackgroundOffsetX" cy="@NumberBackgroundOffsetY" r="@NumberBackgroundRadius" stroke="@NumberBackgroundBorderColor" stroke-width="2%" fill="@NumberBackgroundFillColor" /></svg>
     }
 
-    @if (BehindNumberSRC != null)
+    @if (BehindNumberSrc != null)
     {
-        <img src="@BehindNumberSRC" style="position: absolute; left: @BehindNumberImageOffsetX; top:@BehindNumberImageOffsetY; width: @BehindNumberImageSize;" />
+        <img src="@BehindNumberSrc" style="position: absolute; left: @BehindNumberImageOffsetX; top:@BehindNumberImageOffsetY; width: @BehindNumberImageSize;" />
     }
 
     <span @onclick="@(async e => await Click(e))" style="cursor: pointer; position: absolute; left: @NumberBoxOffsetX; top:@NumberBoxOffsetY; width: @NumberBoxSize; font-size: @NumberFontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap;">@Value</span>
@@ -67,7 +68,7 @@
     public EventCallback OnDown { get; set; }
 
     [Parameter]
-    public int Min { get; set; } = 0;
+    public int Min { get; set; }
 
     [Parameter]
     public int Max { get; set; } = 10;
@@ -79,13 +80,13 @@
     public int StepDown { get; set; } = 1;
 
     [Parameter]
-    public string SymbolSRC { get; set; } = null;
+    public string SymbolSrc { get; set; }
 
     [Parameter]
-    public string SymbolBackgroundFillColor { get; set; } = null;
+    public string SymbolBackgroundFillColor { get; set; }
 
     [Parameter]
-    public string SymbolBackgroundBorderColor { get; set; } = null;
+    public string SymbolBackgroundBorderColor { get; set; }
 
     [Parameter]
     public string NumberColor { get; set; } = "black";
@@ -94,13 +95,13 @@
     public NumberAlignment NumberAlignment { get; set; } = NumberAlignment.Center;
 
     [Parameter]
-    public string NumberBackgroundFillColor { get; set; } = null;
+    public string NumberBackgroundFillColor { get; set; }
 
     [Parameter]
-    public string NumberBackgroundBorderColor { get; set; } = null;
+    public string NumberBackgroundBorderColor { get; set; }
 
     [Parameter]
-    public string BehindNumberSRC { get; set; } = null;
+    public string BehindNumberSrc { get; set; }
 
     [Parameter]
     public string ArrowColor { get; set; } = "#FF5400";
@@ -109,7 +110,7 @@
     public string DisabledColor { get; set; } = "#FF540080";
 
     [Parameter]
-    public bool Disabled { get; set; } = false;
+    public bool Disabled { get; set; }
 
     [Parameter]
     public int Size { get; set; } = 36;
@@ -165,8 +166,8 @@
 
     private bool MayDecrease => !Disabled && Value - StepDown >= Min;
 
-    private bool _upHovered = false;
-    private bool _downHovered = false;
+    private bool _upHovered;
+    private bool _downHovered;
 
     private void MouseOver(bool up)
     {
@@ -212,7 +213,7 @@
             {
                 NumberAlignment.Center => "" + Size + "px",
                 NumberAlignment.BottomRight => "" + (int)(0.6f * Size) + "px",
-                _ => "0px"
+                _ => "0"
             };
         }
     }
@@ -223,9 +224,9 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => "0px",
+                NumberAlignment.Center => "0",
                 NumberAlignment.BottomRight => "" + (int)(0.4f * Size) + "px",
-                _ => "0px"
+                _ => "0"
             };
         }
     }
@@ -238,7 +239,7 @@
             {
                 NumberAlignment.Center => "" + (int)(0.2f * Size) + "px",
                 NumberAlignment.BottomRight => "" + (int)(0.42f * Size) + "px",
-                _ => "0px"
+                _ => "0"
             };
         }
     }
@@ -251,7 +252,7 @@
             {
                 NumberAlignment.Center => "" + (int)(1.2 * Size) + "px",
                 NumberAlignment.BottomRight => "" + (int)(0.7 * Size) + "px",
-                _ => "0px"
+                _ => "0"
             };
         }
     }
@@ -264,7 +265,7 @@
             {
                 NumberAlignment.Center => "" + (int)(-0.1 * Size) + "px",
                 NumberAlignment.BottomRight => "" + (int)(0.35f * Size) + "px",
-                _ => "0px"
+                _ => "0"
             };
         }
     }
@@ -277,7 +278,7 @@
             {
                 NumberAlignment.Center => "" + (int)(-0.1 * Size) + "px",
                 NumberAlignment.BottomRight => "" + (int)(0.35f * Size) + "px",
-                _ => "0px"
+                _ => "0"
             };
         }
     }
@@ -290,7 +291,7 @@
             {
                 NumberAlignment.Center => "" + (int)(0.5f * Size) + "px",
                 NumberAlignment.BottomRight => "" + (int)(0.45f * Size) + "px",
-                _ => "0px"
+                _ => "0"
             };
         }
     }
@@ -303,7 +304,7 @@
             {
                 NumberAlignment.Center => "7.5px",
                 NumberAlignment.BottomRight => "4.75px",
-                _ => "0px"
+                _ => "0"
             };
         }
     }
@@ -338,9 +339,9 @@
 
     private string ArrowOffsetX => "" + (int)(1.1f * Size) + "px";
 
-    private string UpStyle => _upHovered && MayIncrease ? string.Format("brightness(150%) drop-shadow(1px 1px 1px {0})", ArrowColor) : "";
+    private string UpStyle => _upHovered && MayIncrease ? $"brightness(150%) drop-shadow(1px 1px 1px {ArrowColor})" : "";
 
-    private string DownStyle => _downHovered && MayDecrease ? string.Format("brightness(150%) drop-shadow(1px 1px 1px {0})", ArrowColor) : "";
+    private string DownStyle => _downHovered && MayDecrease ? $"brightness(150%) drop-shadow(1px 1px 1px {ArrowColor})" : "";
 
     private async Task SetValue(int newValue) {
 

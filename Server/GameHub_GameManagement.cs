@@ -5,7 +5,7 @@ namespace Treachery.Server;
 
 public partial class GameHub
 {
-    public async Task<Result<GameInitInfo>> RequestCreateGame(string userToken, string hashedPassword, string stateData, string skin)
+    public async Task<Result<GameInitInfo>> RequestCreateGame(string name, string userToken, string hashedPassword, string stateData, string skin)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<GameInitInfo>(ErrorType.UserNotFound);
@@ -38,7 +38,7 @@ public partial class GameHub
             CreatorUserId = user.Id,
             GameId = gameId,
             Game = game,
-            Name = user.PlayerName,
+            Name = !string.IsNullOrEmpty(name) ? name : $"{user.PlayerName}'s Game",
             HashedPassword = hashedPassword,
             ObserversRequirePassword = false
         };

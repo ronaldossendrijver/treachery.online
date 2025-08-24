@@ -45,9 +45,9 @@
         _undoEventId = Game.History.Count - 1;
     }
 
-    private string DetermineEventDescription(int eventnumber, GameEvent e)
+    private string DetermineEventDescription(int eventNumber, GameEvent e)
     {
-        return "" + eventnumber + ". " + e.GetShortMessage()?.ToString(Client.CurrentSkin);
+        return "" + eventNumber + ". " + e.GetShortMessage()?.ToString(Client.CurrentSkin);
     }
 
     private string DetermineGroup(Moment m)
@@ -64,7 +64,7 @@
             for (var i = Client.Game.History.Count - 1; i > 0; i--)
             {
                 var e = Client.Game.History[i];
-                if (e is AllyPermission or BattleRevision) 
+                if (e is AllyPermission or BattleRevision or AutomationConfigured) 
                     continue;
                 
                 var group = DetermineGroup(Client.Game.Moments[i-1]);

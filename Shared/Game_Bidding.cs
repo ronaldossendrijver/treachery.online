@@ -162,19 +162,20 @@ public partial class Game
 
     internal void CheckIfGreenOrGreenAllyPassedBid(IBid bid)
     {
-        if (bid.Initiator is Faction.Green) LatestBidByGreenWasPassed = bid.Passed;
-        
-        var greenAlly = GetAlly(Faction.Green);
-        if (bid.Initiator == greenAlly) LatestBidByGreenAllyWasPassed = bid.Passed;
+        var green = GetPlayer(Faction.Green);
+        if (green == null) return;
+
+        if (bid.Initiator == green.Faction || bid.Initiator == green.Ally)
+        {
+            LatestBidByGreenOrGreenAllyWasPassed = bid.Passed;
+        }
     }
-
-    public bool LatestBidByGreenAllyWasPassed { get; set; }
-
-    public bool LatestBidByGreenWasPassed { get; set; }
+    
+    public bool LatestBidByGreenOrGreenAllyWasPassed { get; set; }
 
     internal void ReturnKarmaCardUsedForBid()
     {
-        if (CurrentBid != null && CurrentBid.UsingKarmaToRemoveBidLimit) CurrentBid.Player.TreacheryCards.Add(CurrentBid.KarmaCard);
+        if (CurrentBid is { UsingKarmaToRemoveBidLimit: true }) CurrentBid.Player.TreacheryCards.Add(CurrentBid.KarmaCard);
     }
 
     internal void LogBid(Player initiator, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, MessagePart receiverIncome)
@@ -379,8 +380,7 @@ public partial class Game
         CardSoldOnBlackMarket = null;
         CurrentBid = null;
         FactionThatMayReplaceBoughtCard = Faction.None;
-        LatestBidByGreenWasPassed = false;
-        LatestBidByGreenAllyWasPassed = false;
+        LatestBidByGreenOrGreenAllyWasPassed = false;
         
         Bids.Clear();
 
