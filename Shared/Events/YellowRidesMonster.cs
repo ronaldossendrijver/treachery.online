@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class YellowRidesMonster : PlacementEvent
@@ -84,7 +82,7 @@ public class YellowRidesMonster : PlacementEvent
                 return yellow.ForcesOnPlanet.Keys.Where(l => !l.IsProtectedFromStorm && !l.IsStronghold && (mayRideFromStorm || !g.IsInStorm(l)));
             if (!g.Prevented(FactionAdvantage.YellowRidesMonster))
                 return territory.Locations.Where(l => (mayRideFromStorm || !g.IsInStorm(l)) && yellow.AnyForcesIn(l) > 0);
-            return Array.Empty<Location>();
+            return [];
         }
 
         return territory.Locations.Where(l => yellow.AnyForcesIn(l) > 0);
@@ -99,7 +97,7 @@ public class YellowRidesMonster : PlacementEvent
             if (!toRide.IsGreatMonster) return LocationsWithForcesThatCanRide(g, yellow, toRide.Territory);
         }
 
-        return Array.Empty<Location>();
+        return [];
     }
 
     public static int MaxForcesFromReserves(Game g, Player p, bool special)
@@ -118,7 +116,12 @@ public class YellowRidesMonster : PlacementEvent
             (mayMoveIntoStorm || l.Sector != g.SectorInStorm) &&
             (l is not AttachedLocation al || (al.AttachedToLocation != null && al.AttachedToLocation.Sector != g.SectorInStorm)) &&
             (!l.Territory.IsStronghold || g.NrOfOccupantsExcludingFaction(l, p.Faction) < 2) &&
-            (!p.HasAlly || l == g.Map.PolarSink || !p.AlliedPlayer.Occupies(l)));
+            (!p.HasAlly || Equals(l, g.Map.PolarSink) || !p.AlliedPlayer.Occupies(l)));
+    }
+    
+    private static bool IsEitherValidDiscoveryOrNoDiscovery(Location l)
+    {
+        return l is not DiscoveredLocation ds || ds.Visible;
     }
 
     #endregion Validation
@@ -140,15 +143,11 @@ public class YellowRidesMonster : PlacementEvent
 
             var initiator = GetPlayer(Initiator);
             Game.LastShipmentOrMovement = this;
-            var totalNumberOfForces = 0;
-            var totalNumberOfSpecialForces = 0;
             foreach (var fl in ForceLocations)
             {
                 var from = fl.Key;
                 initiator.MoveForces(from, To, fl.Value.AmountOfForces);
                 initiator.MoveSpecialForces(from, To, fl.Value.AmountOfSpecialForces);
-                totalNumberOfForces += fl.Value.AmountOfForces;
-                totalNumberOfSpecialForces += fl.Value.AmountOfSpecialForces;
                 Log(
                     MessagePart.ExpressIf(fl.Value.AmountOfForces > 0, fl.Value.AmountOfForces, initiator.Force),
                     MessagePart.ExpressIf(fl.Value.AmountOfSpecialForces > 0, fl.Value.AmountOfSpecialForces, initiator.SpecialForce),

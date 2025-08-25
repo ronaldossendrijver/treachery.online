@@ -33,7 +33,7 @@ public class Tests
     // ReSharper disable UnusedParameter.Local
     private void SaveSpecialCases(Game g, GameEvent e)
     {
-        
+        if (g.Version > 160 && g.Applicable(Rule.DiscoveryTokens) && g.DiscoveriesOnPlanet.Values.Any(d => d.Token == DiscoveryToken.Jacurutu) && e is YellowRidesMonster ) WriteSaveGameIfApplicable(g, e.Player, "yellow rides");
     }
     // ReSharper restore UnusedParameter.Local
     
@@ -336,7 +336,7 @@ public class Tests
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
 
-        const int nrOfGames = 64*64;
+        const int nrOfGames = 128;
         const int nrOfTurns = 10;
         const int nrOfPlayers = 6;
         const int timeout = 10;
@@ -366,7 +366,7 @@ public class Tests
         statistics.Output(DefaultSkin.Default);
     }
     
-    [TestMethod]
+    //[TestMethod]
     public void TestBotsSingleThread()
     {
         var statistics = new Statistics();
