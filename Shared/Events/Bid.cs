@@ -150,7 +150,7 @@ public class Bid : PassableGameEvent, IBid
         while (playerToBidWithPassNormalBid != null)
         {
             Game.ExecuteBid(new Bid(Game, playerToBidWithPassNormalBid.Faction) { Passed = true });
-            playerToBidWithPassNormalBid = Game.Players.FirstOrDefault(p => MayBePlayed(Game, p));
+            playerToBidWithPassNormalBid = Game.Players.FirstOrDefault(p => MayBePlayed(Game, p) && Game.IsAutoPassedBid(p.Faction));;
         }
     }
 

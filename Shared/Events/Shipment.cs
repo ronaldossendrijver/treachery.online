@@ -95,10 +95,12 @@ public class Shipment : PassableGameEvent, ILocationEvent
     public bool IsUsingKarma => KarmaCard != null;
 
     [JsonIgnore]
-    public bool IsBackToReserves => ShipmentType is ShipmentType.ShipmentBack || ForceAmount + SpecialForceAmount < 0;
+    public bool IsBackToReserves => ShipmentType is ShipmentType.ShipmentBack 
+                                    || ShipmentType is ShipmentType.Unknown && ForceAmount + SpecialForceAmount < 0;
     
     [JsonIgnore]
-    private bool IsSiteToSite => ShipmentType is ShipmentType.ShipmentSiteToSite || From != null;
+    private bool IsSiteToSite => ShipmentType is ShipmentType.ShipmentSiteToSite 
+                                 || ShipmentType is ShipmentType.Unknown && From != null;
     
     [JsonIgnore]
     public bool IsNoField => NoFieldValue >= 0;

@@ -48,10 +48,24 @@ public partial class Game
     internal void StartShipAndMoveSequence()
     {
         if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeMayShipOutOfTurnOrder) ShipmentAndMoveSequence.NextPlayer();
-
+        
         Enter(JuiceForcesFirstPlayer && CurrentJuice.Initiator != Faction.Orange, 
             Phase.NonOrangeShip, 
-            IsPlaying(Faction.Orange) && OrangeMayShipOutOfTurnOrder, Phase.OrangeShip, Phase.NonOrangeShip);
+            CheckIfOrangeActsOrAutoDelays(), Phase.OrangeShip, Phase.NonOrangeShip);
+    }
+
+    private bool CheckIfOrangeActsOrAutoDelays()
+    {
+        var orange = GetPlayer(Faction.Orange);
+        var orangeHasToAct = IsPlaying(Faction.Orange) && HasActedOrPassed.All(p => p != Faction.Orange) && OrangeMayShipOutOfTurnOrder;
+        var orangeMayDelay = Players.Any(p => p.Faction is not Faction.Orange && !HasActedOrPassed.Contains(p.Faction));
+        var orangeIsOnAutoDelay = orange != null && IsAutomated(AutomationRuleType.ShipmentOrangeAutoDelay, orange);
+        if (orangeHasToAct && orangeIsOnAutoDelay && orangeMayDelay)
+        {
+            Log(Faction.Orange, " delay their shipment");
+        }
+
+        return orangeHasToAct && !(orangeIsOnAutoDelay && orangeMayDelay);
     }
 
     internal void PerformMoveFromLocations(Player initiator, Dictionary<Location, Battalion> forceLocations, ILocationEvent evt, bool asAdvisors, bool byCaravan)
@@ -695,23 +709,9 @@ public partial class Game
         }
         else
         {
-            var orange = GetPlayer(Faction.Orange);
-            
-            var orangeHasToAct = IsPlaying(Faction.Orange) && HasActedOrPassed.All(p => p != Faction.Orange) &&
-                                 OrangeMayShipOutOfTurnOrder;
-
-            var orangeMayDelay = Players.Any(p => p.Faction is not Faction.Orange && !HasActedOrPassed.Contains(p.Faction));
-
-            var orangeIsOnAutoDelay = orange != null && IsAutomated(AutomationRuleType.ShipmentOrangeAutoDelay, orange);
-
-            if (orangeHasToAct && orangeIsOnAutoDelay && orangeMayDelay)
-            {
-                Log(Faction.Orange, " delay their shipment");
-            }
-            
             Enter(
                 EveryoneActedOrPassed, ConcludeShipmentAndMove,
-                orangeHasToAct && !(orangeIsOnAutoDelay && orangeMayDelay), Phase.OrangeShip,
+                CheckIfOrangeActsOrAutoDelays(), Phase.OrangeShip,
                 Phase.NonOrangeShip);
         }
     }

@@ -217,11 +217,6 @@ public class EndPhase : GameEvent
         }
         else
         {
-            foreach (var p in Game.Players.Where(p => CharityClaimed.CanBePlayed(Game, p) && Game.IsAutomated(AutomationRuleType.CharityAutoClaim, p)))
-            {
-                Game.ClaimCharity(p);
-            } 
-            
             Game.Enter(Phase.BeginningOfCharity);
         }
     }
@@ -261,6 +256,11 @@ public class EndPhase : GameEvent
                 }
             }
         }
+        
+        foreach (var p in Game.Players.Where(p => CharityClaimed.CanBePlayed(Game, p) && Game.IsAutomated(AutomationRuleType.CharityAutoClaim, p)))
+        {
+            Game.ClaimCharity(p);
+        } 
 
         Game.MainPhaseMiddle();
         Game.Enter(Phase.ClaimingCharity);
@@ -330,7 +330,7 @@ public class EndPhase : GameEvent
         Game.FactionsWithOrnithoptersAtStartOfMovement = Game.Players.Where(p => Game.OccupiesArrakeenOrCarthag(p)).Select(p => p.Faction).ToList();
         Game.RecentMoves.Clear();
         Game.BeginningOfShipmentAndMovePhase = true;
-        Game.FactionsWithIncreasedRevivalLimits = Array.Empty<Faction>();
+        Game.FactionsWithIncreasedRevivalLimits = [];
         Game.EarlyRevivalsOffers.Clear();
 
         Game.ShipsTechTokenIncome = false;
