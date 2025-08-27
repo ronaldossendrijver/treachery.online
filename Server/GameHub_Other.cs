@@ -311,38 +311,45 @@ public partial class GameHub
             }
 
             RunningGamesByGameId.Clear();
-            
+
             foreach (var persistedGame in context.PersistedGames.AsNoTracking())
             {
+
                 var id = persistedGame.GameId;
 
                 if (id == null) continue;
-                
-                var gameState = GameState.Load(persistedGame.GameState);
-                var gameName = persistedGame.GameName;
-                var participation = Utilities.Deserialize<Participation>(persistedGame.GameParticipation);
-                var loadMessage = Game.TryLoad(gameState, participation, false, true, out var game);
-                if (loadMessage == null)
+                try
                 {
-                    var managedGame = new ManagedGame
+                    var gameState = GameState.Load(persistedGame.GameState);
+                    var gameName = persistedGame.GameName;
+                    var participation = Utilities.Deserialize<Participation>(persistedGame.GameParticipation);
+                    var loadMessage = Game.TryLoad(gameState, participation, false, true, out var game);
+                    if (loadMessage == null)
                     {
-                        CreationDate = persistedGame.CreationDate,
-                        CreatorUserId = persistedGame.CreatorUserId,
-                        GameId = persistedGame.GameId,
-                        Game = game,
-                        Name = gameName,
-                        HashedPassword = persistedGame.HashedPassword,
-                        ObserversRequirePassword = persistedGame.ObserversRequirePassword,
-                        StatisticsSent = persistedGame.StatisticsSent,
-                        LastActivity = persistedGame.LastAction,
-                        LastAsyncPlayMessageSent = persistedGame.LastAsyncPlayMessageSent,
-                    };
-                    
-                    RunningGamesByGameId.TryAdd(id, managedGame);
-                    amountRunning++;
+                        var managedGame = new ManagedGame
+                        {
+                            CreationDate = persistedGame.CreationDate,
+                            CreatorUserId = persistedGame.CreatorUserId,
+                            GameId = persistedGame.GameId,
+                            Game = game,
+                            Name = gameName,
+                            HashedPassword = persistedGame.HashedPassword,
+                            ObserversRequirePassword = persistedGame.ObserversRequirePassword,
+                            StatisticsSent = persistedGame.StatisticsSent,
+                            LastActivity = persistedGame.LastAction,
+                            LastAsyncPlayMessageSent = persistedGame.LastAsyncPlayMessageSent,
+                        };
+
+                        RunningGamesByGameId.TryAdd(id, managedGame);
+                        amountRunning++;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log("Unable to restore game " + id + ": " + ex);
                 }
             }
-            
+
             ScheduledGamesByGameId.Clear();
             
             foreach (var scheduledGame in context.ScheduledGames.AsNoTracking())

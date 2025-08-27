@@ -114,7 +114,7 @@ public class EndPhase : GameEvent
                 break;
 
             case Phase.BeginningOfResurrection:
-                Game.Enter(Phase.Resurrection);
+                ContinueToRevivals();
                 break;
 
             case Phase.Resurrection:
@@ -169,6 +169,16 @@ public class EndPhase : GameEvent
                 Game.FlipBlueAdvisorsWhenAlone();
                 break;
         }
+    }
+
+    private void ContinueToRevivals()
+    {
+        Game.Enter(Phase.Resurrection);
+
+        foreach (var p in Game.Players.Where(p => Game.IsAutomated(AutomationRuleType.RevivalAutoClaimFreeRevival, p)))
+        {
+            Game.ClaimFreeRevival(p);
+        } 
     }
 
     private void EstablishDecks()
@@ -298,11 +308,6 @@ public class EndPhase : GameEvent
             Game.Enter(Phase.Resurrection);
         else
             Game.Enter(Phase.BeginningOfResurrection);
-        
-        foreach (var p in Game.Players.Where(p => CharityClaimed.CanBePlayed(Game, p) && Game.IsAutomated(AutomationRuleType.RevivalAutoClaimFreeRevival, p)))
-        {
-            Game.ClaimFreeRevival(p);
-        } 
     }
 
     private void EndResurrectionPhase()

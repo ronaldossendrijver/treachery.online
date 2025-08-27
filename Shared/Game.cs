@@ -648,6 +648,7 @@ public partial class Game
             foreach (var e in state.Events)
             {
                 e.Initialize(result);
+
                 var message = e.Execute(performValidation, isHost);
                 if (message != null)
                 {

@@ -137,16 +137,16 @@ public partial class Game
         var maxRevivableSpecialForces = Revival.ValidMaxRevivals(this, player, true, false);
         var maxRevivableNormalForces = Revival.ValidMaxRevivals(this, player, false, false);
         
-        while (freeRevivedSpecialForces + freeRevivedNormalForces <= maxFreeRevivals)
+        while (freeRevivedSpecialForces <= maxFreeRevivals &&
+               freeRevivedSpecialForces < maxRevivableSpecialForces)
         {
-            if (freeRevivedSpecialForces < maxRevivableSpecialForces)
-            {
-                freeRevivedSpecialForces++;
-            }
-            else if (freeRevivedNormalForces < maxRevivableNormalForces)
-            {
-                freeRevivedNormalForces++;
-            }
+            freeRevivedSpecialForces++;
+        }
+        
+        while (freeRevivedSpecialForces + freeRevivedNormalForces <= maxFreeRevivals &&
+               freeRevivedNormalForces < maxRevivableNormalForces)
+        {
+            freeRevivedNormalForces++;
         }
         
         if (freeRevivedSpecialForces > 0)
