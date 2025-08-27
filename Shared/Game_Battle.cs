@@ -152,16 +152,15 @@ public partial class Game
         else if (lasgunShield)
         {
             LasgunShieldExplosion(agg, def, agg.Player, def.Player, b.Territory, agg.Hero, def.Hero);
-            DetermineIfCapturedLeadersMustBeReleased();
         }
         else
         {
             SetHeroLocations(agg, b.Territory);
             SetHeroLocations(def, b.Territory);
             HandleBattleOutcome(agg, def, b.Territory);
-            DetermineIfCapturedLeadersMustBeReleased();
         }
-        
+
+        DetermineIfCapturedLeadersMustBeReleased();
         AuditorSurvivedBattle = (agg.Hero?.HeroType == HeroType.Auditor && IsAlive(agg.Hero)) || (def.Hero?.HeroType == HeroType.Auditor && IsAlive(def.Hero));
     }
 
@@ -388,10 +387,13 @@ public partial class Game
             foreach (var captive in deadCaptives) ReturnCapturedLeader(black, captive);
 
             //DetermineIfLeaderUsedInBattleMustBeReleased
-            var usedLeaderInBattle = CurrentBattle?.PlanOf(black)?.Hero;
-            if (usedLeaderInBattle is Leader leader && CapturedLeaders.ContainsKey(leader)) 
-                ReturnCapturedLeader(black, leader);
-
+            if (Version < 179 || !BlackDoNotHaveToReturnUsedCapturedLeader)
+            {
+                var usedLeaderInBattle = CurrentBattle?.PlanOf(black)?.Hero;
+                if (usedLeaderInBattle is Leader leader && CapturedLeaders.ContainsKey(leader)) 
+                    ReturnCapturedLeader(black, leader);
+            }
+            
             //DetermineIfCapturedLeadersMustBeReleasedWhenBlackHasNoLeadersLeft
             if (!black.Leaders.Any(l => !CapturedLeaders.ContainsKey(l) && IsAlive(l)))
             {
@@ -765,12 +767,13 @@ public partial class Game
 
     #region NonBattleOutcomes
 
+    private bool BlackDoNotHaveToReturnUsedCapturedLeader { get; set; }
+    
     private void TraitorCalled(BattleInitiated b, Battle agg, Battle def, TreacheryCalled defenderTreachery, IHero aggLeader, IHero defLeader)
     {
         if (AggressorTraitorAction.Succeeded && defenderTreachery.Succeeded)
         {
             TwoTraitorsCalled(agg, def, agg.Player, def.Player, b.Territory, aggLeader, defLeader);
-            DetermineIfCapturedLeadersMustBeReleased();
         }
         else
         {
@@ -778,10 +781,8 @@ public partial class Game
             var loser = AggressorTraitorAction.Succeeded ? def.Player : agg.Player;
             var loserGambit = AggressorTraitorAction.Succeeded ? def : agg;
             var winnerGambit = AggressorTraitorAction.Succeeded ? agg : def;
+            if (winner.Is(Faction.Black)) BlackDoNotHaveToReturnUsedCapturedLeader = true;
             OneTraitorCalled(b.Territory, winner, loser, loserGambit, winnerGambit);
-            
-            if (Version < 179 || winner.Faction != Faction.Black)
-                DetermineIfCapturedLeadersMustBeReleased();
         }
     }
 
@@ -978,6 +979,7 @@ public partial class Game
         CurrentDiplomacy = null;
         CurrentRockWasMelted = null;
         CurrentPortableAntidoteUsed = null;
+        BlackDoNotHaveToReturnUsedCapturedLeader = false;
         FinishDeciphererIfApplicable();
         if (NextPlayerToBattle == null) MainPhaseEnd();
         Enter(Phase.BattleReport);
