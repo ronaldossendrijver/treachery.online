@@ -152,15 +152,16 @@ public partial class Game
         else if (lasgunShield)
         {
             LasgunShieldExplosion(agg, def, agg.Player, def.Player, b.Territory, agg.Hero, def.Hero);
+            DetermineIfCapturedLeadersMustBeReleased();
         }
         else
         {
             SetHeroLocations(agg, b.Territory);
             SetHeroLocations(def, b.Territory);
             HandleBattleOutcome(agg, def, b.Territory);
+            DetermineIfCapturedLeadersMustBeReleased();
         }
-
-        DetermineIfCapturedLeadersMustBeReleased();
+        
         AuditorSurvivedBattle = (agg.Hero?.HeroType == HeroType.Auditor && IsAlive(agg.Hero)) || (def.Hero?.HeroType == HeroType.Auditor && IsAlive(def.Hero));
     }
 
@@ -769,6 +770,7 @@ public partial class Game
         if (AggressorTraitorAction.Succeeded && defenderTreachery.Succeeded)
         {
             TwoTraitorsCalled(agg, def, agg.Player, def.Player, b.Territory, aggLeader, defLeader);
+            DetermineIfCapturedLeadersMustBeReleased();
         }
         else
         {
@@ -777,6 +779,9 @@ public partial class Game
             var loserGambit = AggressorTraitorAction.Succeeded ? def : agg;
             var winnerGambit = AggressorTraitorAction.Succeeded ? agg : def;
             OneTraitorCalled(b.Territory, winner, loser, loserGambit, winnerGambit);
+            
+            if (Version < 179 || winner.Faction != Faction.Black)
+                DetermineIfCapturedLeadersMustBeReleased();
         }
     }
 
