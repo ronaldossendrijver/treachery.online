@@ -74,11 +74,13 @@ public partial class Game
         if (player.Ally == Faction.Yellow && YellowAllowsThreeFreeRevivals ||
             CurrentYellowSecretAlly != null && CurrentYellowSecretAlly.Player == player) nrOfFreeRevivals = 3;
         
-        if (Version >= 176 && CurrentRecruitsPlayed != null) nrOfFreeRevivals *= 2;
+        if (Version is >= 176 and <= 179 && CurrentRecruitsPlayed != null) nrOfFreeRevivals *= 2;
 
         if (usesRedSecretAlly) nrOfFreeRevivals += 3;
 
         if (GetsExtraCharityAndFreeRevivalDueToLowThreshold(player)) nrOfFreeRevivals += 1;
+        
+        if (Version >= 179 && CurrentRecruitsPlayed != null) nrOfFreeRevivals *= 2;
 
         return nrOfFreeRevivals;
     }
