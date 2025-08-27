@@ -282,7 +282,9 @@ public partial class Game
         if (Version < 179 || CurrentPhase is not Phase.OrangeMove and not Phase.NonOrangeMove)
             return;
         
-        var player = ShipmentAndMoveSequence.CurrentPlayer;
+        var player = CurrentPhase is Phase.OrangeMove 
+            ? GetPlayer(Faction.Orange) 
+            : ShipmentAndMoveSequence.CurrentPlayer;
 
         if (player == null)
             return;

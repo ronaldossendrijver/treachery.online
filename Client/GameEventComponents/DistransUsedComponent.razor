@@ -15,8 +15,10 @@
 
         <SelectFromImageComponent @bind-Value="target" Values="DistransUsed.ValidTargets(Game, Player)" Required="true" ImageWidth="40" />
 
-        <SelectFromImageComponent @bind-Value="card" Values="DistransUsed.ValidCards(Player)" Required="true" ImageWidth="80" />
-
+        <div class="mt-1">
+            <SelectFromImageComponent @bind-Value="card" Values="DistransUsed.ValidCards(Player)" Required="true" ImageWidth="80" />
+        </div>
+        
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Distrans)" ConfirmError="@Validation" />
 
     </Body>
