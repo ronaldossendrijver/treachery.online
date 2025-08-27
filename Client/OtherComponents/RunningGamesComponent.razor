@@ -81,11 +81,11 @@
                                 {
                                     if (av.HasPassword)
                                     {
-                                        <input class="form-inline form-control-sm" style="max-width:80px" @bind="Passwords[av.GameId]" maxlength="24" placeholder="Game password"/>
+                                        <input class="form-inline form-control-sm" style="max-width:80px" @bind="Passwords[av.GameId]" maxlength="24" placeholder="Password"/>
                                     }
                                     if (av.Phase == Phase.AwaitingPlayers)
                                     {
-                                        <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, Passwords[av.GameId], -1))" MarginClass="m-1">Join</CommandButton>
+                                        <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, Passwords[av.GameId], -1))" Title="Join game" MarginClass="m-1">Join</CommandButton>
                                     }
                                     else if (av.Phase != Phase.SelectingFactions)
                                     {
@@ -101,11 +101,11 @@
                                             </CommandButton>
                                         }
                                     }
-                                    <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, Passwords[av.GameId]))" MarginClass="m-1">👁</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, Passwords[av.GameId]))" Title="Observe game" MarginClass="m-1">👁</CommandButton>
                                 }
                                 else
                                 {
-                                    <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" MarginClass="m-1">▶</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" Title="Resume game" MarginClass="m-1">▶</CommandButton>
                                 }
                                 <div class="text-danger">@JoinErrors[av.GameId]</div>
                             </td>
@@ -222,11 +222,11 @@
                             <td>
                                 @if (!av.YouAreIn(Client.UserId))
                                 {
-                                    <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, Passwords[av.GameId]))" MarginClass="m-1">👁</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, Passwords[av.GameId]))" Title="Observe game" MarginClass="m-1">👁</CommandButton>
                                 }
                                 else
                                 {
-                                    <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" MarginClass="m-1">▶</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" Title="Resume game" MarginClass="m-1">▶</CommandButton>
                                 }
                                 <div class="text-danger">@JoinErrors[av.GameId]</div>
                             </td>
@@ -262,5 +262,5 @@
         JoinErrors[gameId] = await Client.RequestObserveGame(gameId, password);
     }
 
-    private string JoinButtonTitle(Faction faction) => $"Join as {Name(faction)}";
+    private string JoinButtonTitle(Faction faction) => $"Join game as {Name(faction)}";
 }

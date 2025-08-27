@@ -71,9 +71,9 @@
                                 <td class="w-25" style="text-align: right;">
                                     @if (av.YouAreIn(Client.UserId))
                                     {
-                                        <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" MarginClass="m-1">▶</CommandButton>
+                                        <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" MarginClass="m-1" Title="Resume game">▶</CommandButton>
                                     }
-                                    <CommandButton Small OnClick="@(_ => Delete(av))" MarginClass="m-1">🗙</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => Delete(av))" MarginClass="m-1" Title="Delete game">🗙</CommandButton>
                                 </td>
                             </tr>
                         }
