@@ -336,7 +336,7 @@ public class Tests
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
 
-        const int nrOfGames = 512;
+        const int nrOfGames = 64*64;
         const int nrOfTurns = 10;
         const int nrOfPlayers = 6;
         const int timeout = 10;

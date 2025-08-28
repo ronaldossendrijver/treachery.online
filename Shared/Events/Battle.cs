@@ -170,7 +170,7 @@ public class Battle : GameEvent
             Defense);
     }
 
-    private void ActivateDynamicWeapons(TreacheryCard opponentWeapon, TreacheryCard opponentDefense)
+    private void ActivateDynamicWeapons(IHero hero, TreacheryCard opponentWeapon, TreacheryCard opponentDefense)
     {
         if (Weapon is { Type: TreacheryCardType.MirrorWeapon })
         {
@@ -179,9 +179,9 @@ public class Battle : GameEvent
             Log(OriginalWeapon, " becomes a ", Weapon);
         }
 
-        /*if (Game.Version < 179)
+        if (Game.Version < 179)
         {
-            if (Defense != null && Defense.IsUseless &&
+            if (Defense is { IsUseless: true } &&
                 Game.SkilledAs(hero, LeaderSkill.Diplomat) &&
                 opponentDefense != null && opponentWeapon != null &&
                 (opponentWeapon.CounteredBy(opponentDefense, Weapon) ||
@@ -193,15 +193,12 @@ public class Battle : GameEvent
                 Game.CardUsedByDiplomat = OriginalDefense;
             }
         }
-        else
-        {*/
-            if (Game.CurrentDiplomacy != null && Game.CurrentDiplomacy.By(Initiator))
-            {
-                OriginalDefense = Defense;
-                Defense = opponentDefense;
-                Game.CardUsedByDiplomat = OriginalDefense;
-            }
-        //}
+        else if (Game.CurrentDiplomacy != null && Game.CurrentDiplomacy.By(Initiator))
+        {
+            OriginalDefense = Defense;
+            Defense = opponentDefense;
+            Game.CardUsedByDiplomat = OriginalDefense;
+        }
 
         if (IsUsingPortableAntidote(Game, Initiator))
         {
@@ -255,8 +252,8 @@ public class Battle : GameEvent
 
         //Determine result
 
-        agg.ActivateDynamicWeapons(def.Weapon, def.Defense);
-        def.ActivateDynamicWeapons(agg.Weapon, agg.Defense);
+        agg.ActivateDynamicWeapons(agg.Hero, def.Weapon, def.Defense);
+        def.ActivateDynamicWeapons(def.Hero, agg.Weapon, agg.Defense);
 
         var poisonToothUsed = !game.PoisonToothCancelled && (agg.HasPoisonTooth || def.HasPoisonTooth);
         var artilleryUsed = agg.HasArtillery || def.HasArtillery;
