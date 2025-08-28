@@ -110,7 +110,7 @@ public interface IGameService
     Task<string> RequestAssignSeats(Dictionary<int, int> seatedPlayers);
     Task<string> RequestSetSkin(string skin);
     Task<string> RequestUndo(int untilEventNr);
-    Task<string> RequestPauseBots();
+    Task<string> RequestSetBotSpeed(int speed);
     
     //Game Events
     Task<string> SetTimer(int value);

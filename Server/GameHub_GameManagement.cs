@@ -482,7 +482,7 @@ public partial class GameHub
         return Success();
     }
 
-    public async Task<VoidResult> RequestPauseBots(string userToken, string gameId)
+    public async Task<VoidResult> RequestSetBotSpeed(string userToken, string gameId, int speed)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
             return error!;
@@ -490,8 +490,8 @@ public partial class GameHub
         if (!game!.Game.IsHost(user!.Id))
             return Error(ErrorType.NoHost);
 
-        game.Game.Participation.BotsArePaused = !game.Game.Participation.BotsArePaused;
-        await Clients.All.HandleBotStatus(game.Game.Participation.BotsArePaused);
+        game.Game.Participation.BotsSpeed = speed;
+        await Clients.All.HandleBotSpeed(game.Game.Participation.BotsSpeed);
         
         await PersistGameIfNeeded(game);
 

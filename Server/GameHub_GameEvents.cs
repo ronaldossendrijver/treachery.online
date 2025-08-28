@@ -312,7 +312,7 @@ public partial class GameHub
         }
         else
         {
-            var delay = DetermineBotDelay(managedGame.Game.CurrentMainPhase, managedGame.Game.LatestEvent());
+            var delay = DetermineBotDelay(managedGame.Game.CurrentMainPhase, managedGame.Game.LatestEvent(), managedGame.Game.Participation.BotsSpeed);
             _ = Task.Delay(delay).ContinueWith(_ => PerformBotEvent(managedGame));    
         }
     }
@@ -322,7 +322,7 @@ public partial class GameHub
         var game = managedGame.Game;
         var botsActAsHosts = game.Participation.Hosts.Count == 0 && game.NumberOfObservers > 0;
         
-        if (!game.Participation.BotsArePaused && game.CurrentPhase > Phase.AwaitingPlayers)
+        if (game.Participation.BotsSpeed > 0 && game.CurrentPhase > Phase.AwaitingPlayers)
         {
             var bots = Deck<Player>.Randomize(game.Players.Where(p => p.IsBot));
             var eventsPerBot = bots.ToDictionary(x => x.Seat, x => game.GetApplicableEvents(x, botsActAsHosts));
@@ -372,8 +372,6 @@ public partial class GameHub
                     await ValidateAndExecute(evt, managedGame, true);
                     return;
                 }
-            
-            
         }
     }
 
@@ -390,18 +388,23 @@ public partial class GameHub
         return bot;
     }
     
-    private static int DetermineBotDelay(MainPhase phase, GameEvent e)
+    private static int DetermineBotDelay(MainPhase phase, GameEvent e, int speed)
     {
-        if (phase is MainPhase.Resurrection or MainPhase.Charity || e is AllyPermission or DealOffered or SetShipmentPermission)
-            return 800;
+        if (speed == 0) return 0;
         
+        if (e is AllyPermission or DealOffered or SetShipmentPermission)
+            return 800 / speed;
+
         if (e is Bid)
-            return 1200;
+            return 1600 / speed;
+
+        if (phase is MainPhase.Resurrection or MainPhase.Charity)
+            return 2400 / speed;
         
         if (phase is MainPhase.ShipmentAndMove or MainPhase.Battle)
-            return 4800;
+            return 9600 / speed;
         
-        return 2000;
+        return 4800 / speed;
     }
 
     private async Task SendMailAndStatistics(ManagedGame game)

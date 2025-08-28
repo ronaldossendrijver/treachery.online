@@ -30,7 +30,7 @@ public interface IGameHub
     Task<VoidResult> RequestSetSkin(string userToken, string gameId, string skin);
     Task<VoidResult> RequestUndo(string userToken, string gameId, int untilEventNr);
     Task<Result<GameInitInfo>> RequestGameState(string userToken, string gameId);
-    Task<VoidResult> RequestPauseBots(string userToken, string gameId);
+    Task<VoidResult> RequestSetBotSpeed(string userToken, string gameId, int speed);
     Task<Result<ServerStatus>> RequestHeartbeat(string userToken, GameListScope scope);
     Task<VoidResult> RequestAssignSeats(string userToken, string gameId, Dictionary<int, int> assignment);
     Task<Result<ServerStatus>> RequestScheduleGame(string userToken,  

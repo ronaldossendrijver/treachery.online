@@ -25,7 +25,7 @@ public interface IGameClient
     Task HandleObserveGame(int userId, string userName);
     Task HandleOpenOrCloseSeats(int[] seats);
     Task HandleRemoveUser(int userId, bool kick);
-    Task HandleBotStatus(bool botsArePaused);
+    Task HandleBotSpeed(int speed);
     Task HandleLoadGame(GameInitInfo initInfo);
     Task HandleAssignSeats(Dictionary<int, int> assignment);
 }

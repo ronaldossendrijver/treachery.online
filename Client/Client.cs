@@ -142,7 +142,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         _connection.On<int,string>(nameof(HandleObserveGame), HandleObserveGame);
         _connection.On<int[]>(nameof(HandleOpenOrCloseSeats), HandleOpenOrCloseSeats);
         _connection.On<int,bool>(nameof(HandleRemoveUser), HandleRemoveUser);
-        _connection.On<bool>(nameof(HandleBotStatus), HandleBotStatus);
+        _connection.On<int>(nameof(HandleBotSpeed), HandleBotSpeed);
         _connection.On<GameInitInfo>(nameof(HandleLoadGame), HandleLoadGame);
         _connection.On<Dictionary<int, int>>(nameof(HandleAssignSeats), HandleAssignSeats);
     }
@@ -224,10 +224,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
     }
 
-    public Task HandleBotStatus(bool paused)
+    public Task HandleBotSpeed(int speed)
     {
-        Game.Participation.BotsArePaused = paused;
-        Refresh(nameof(HandleBotStatus));
+        Game.Participation.BotsSpeed = speed;
+        Refresh(nameof(HandleBotSpeed));
         return Task.CompletedTask;
     }
 
@@ -572,8 +572,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
     }
 
-    public async Task<string> RequestPauseBots() =>
-        CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestPauseBots), UserToken, GameId)).Error);
+    public async Task<string> RequestSetBotSpeed(int speed) =>
+        CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestSetBotSpeed), UserToken, GameId, speed)).Error);
 
     public async Task SendChatMessage(GameChatMessage message) =>
         await Invoke(nameof(IGameHub.SendChatMessage), UserToken, GameId, message);

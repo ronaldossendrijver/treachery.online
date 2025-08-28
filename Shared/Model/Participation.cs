@@ -31,6 +31,6 @@ public class Participation
     /// Kicked users (UserIds)
     /// </summary>
     public HashSet<int> Kicked { get; set; } = [];
-    
-    public bool BotsArePaused { get; set; }
+
+    public int BotsSpeed { get; set; } = 1;
 }

@@ -387,38 +387,6 @@ public partial class GameHub
         return (amountRunning, amountScheduled);
     }
     
-    // private async Task RestoreGame(string gameId)
-    // {
-    //     await using var context = GetDbContext();
-    //     var persistedGame = await context.PersistedGames.FirstOrDefaultAsync(g => g.GameId == gameId);
-    //     if (persistedGame == null)
-    //         return;
-    //     
-    //     var id = persistedGame.GameId;
-    //     var gameState = GameState.Load(persistedGame.GameState);
-    //     var gameName = persistedGame.GameName;
-    //     var participation = Utilities.Deserialize<Participation>(persistedGame.GameParticipation);
-    //     var loadMessage = Game.TryLoad(gameState, participation, false, true, out var game);
-    //     if (loadMessage == null)
-    //     {
-    //         var managedGame = new ManagedGame
-    //         {
-    //             CreationDate = persistedGame.CreationDate,
-    //             CreatorUserId = persistedGame.CreatorUserId,
-    //             GameId = persistedGame.GameId,
-    //             Game = game,
-    //             Name = gameName,
-    //             HashedPassword = persistedGame.HashedPassword,
-    //             ObserversRequirePassword = persistedGame.ObserversRequirePassword,
-    //             StatisticsSent = persistedGame.StatisticsSent,
-    //             LastActivity = persistedGame.LastAction,
-    //             LastAsyncPlayMessageSent = persistedGame.LastAsyncPlayMessageSent,
-    //         };
-    //                 
-    //         RunningGamesByGameId[id] = managedGame;
-    //     }
-    // }
-
     public async Task<Result<string>> AdminCloseGame(string userToken, string gameId)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
