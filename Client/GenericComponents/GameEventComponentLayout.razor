@@ -11,7 +11,7 @@
 
     @if (Collapsible)
     {
-        <div class="card-header" style="@HeaderStyle;cursor:pointer;" @onclick=@(e => CollapsedInternal = !CollapsedInternal)>
+        <div class="card-header" style="@HeaderStyle;cursor:pointer;" @onclick=@(_ => CollapsedInternal = !CollapsedInternal)>
 
             <CollapseButton @bind-Collapsed=@CollapsedInternal />
             @Header
@@ -22,7 +22,7 @@
     @if (!_collapsedInternal) 
     {
         <div class="card-body" style="@BodyStyle">
-            <ErrorBoundary @ref=errorBoundary>
+            <ErrorBoundary @ref=_errorBoundary>
                 <ChildContent>
                     @Body
                 </ChildContent>
@@ -45,7 +45,7 @@
 
 @code {
 
-    private static Dictionary<Type, bool> SavedCollapsedStateValues = new();
+    private static readonly Dictionary<Type, bool> SavedCollapsedStateValues = new();
 
     [Parameter]
     public bool IsUrgent { get; set; }
@@ -81,7 +81,7 @@
         set
         {
             _collapsedInternal = value;
-            SaveCollapsed(value);
+            SaveCollapsed();
         }
     }
 
@@ -91,15 +91,15 @@
     public Type CollapsedType { get; set; }
 
     [Parameter]
-    public GameEvent TimedEvent { get; set; } = null;
+    public GameEvent TimedEvent { get; set; }
 
     private string Border => IsUrgent ? "border-white" : "";
 
-    private ErrorBoundary errorBoundary;
+    private ErrorBoundary _errorBoundary;
 
     protected override void OnAfterRender(bool firstRender)
     {
-        errorBoundary?.Recover();
+        _errorBoundary?.Recover();
     }
 
     private bool _parametersSet;
@@ -129,7 +129,7 @@
         }
     }
 
-    protected void SaveCollapsed(bool value) {
+    private void SaveCollapsed() {
 
         if (CollapsedType != null)
         {

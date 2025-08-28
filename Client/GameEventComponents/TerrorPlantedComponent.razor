@@ -15,7 +15,7 @@
 
         @if (!TerrorPlanted.MayRemoveTokens(Game, Player))
         {
-            <SelectComponent ButtonHint=ClickHintButton.LMB @bind-Value=_stronghold Values=@TerrorPlanted.ValidStrongholds(Game, Player)>
+            <SelectComponent ButtonHint=ClickHintButton.Lmb @bind-Value=_stronghold Values=@TerrorPlanted.ValidStrongholds(Game, Player)>
                 <Label>Stronghold</Label>
             </SelectComponent>
         }

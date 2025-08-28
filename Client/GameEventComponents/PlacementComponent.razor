@@ -27,14 +27,14 @@
             }
             else
             {
-                <SelectComponent T=Territory OnChanged="StateHasChanged" ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" @bind-Value="fromTerritory" Values="ValidSources">
+                <SelectComponent T=Territory OnChanged="StateHasChanged" ButtonHint="ClickHintButton.Lmb" ModifierHint="ClickHintModifier.Ctrl" @bind-Value="fromTerritory" Values="ValidSources">
                     <Label>From</Label>
                 </SelectComponent>
 
                 <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="forces" Locations="Player.LocationsWithAnyForcesInTerritory(fromTerritory).Where(l => !Game.IsInStorm(l))" InitializeToMaximum="true"/>
             }
 
-            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="toLocation" Values="ValidTargets">
+            <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="toLocation" Values="ValidTargets">
                 <Label>To</Label>
             </SelectComponent>
 

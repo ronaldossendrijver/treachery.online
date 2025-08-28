@@ -14,7 +14,7 @@
     <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to make @Client.CurrentSkin.Describe(Concept.Monster) appear in a territory of choice</Header>
     <Body>
 
-        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="KarmaMonster.ValidTargets(Game).OrderBy(t => Name(t))">
+        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="target" Values="KarmaMonster.ValidTargets(Game).OrderBy(t => Name(t))">
             <Label>Territory</Label>
         </SelectComponent>
 

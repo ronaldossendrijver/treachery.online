@@ -6,6 +6,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
+
 @inherits GameComponent
 @typeparam T
  
@@ -91,10 +92,10 @@
                     return "";
                 }
 
-                return string.Format("background-color: {0};", Client.CurrentSkin.GetFactionColorTransparent(IsFactionSpecific, "bb"));
+                return $"background-color: {Client.CurrentSkin.GetFactionColorTransparent(IsFactionSpecific, "bb")};";
             }
 
-            return string.Format("background-color: rgba(0,0,0,0); background-image: url('{0}'); background-origin: content-box; background-size: cover; background-repeat: no-repeat;", BackgroundImage);
+            return $"background-color: rgba(0,0,0,0); background-image: url('{BackgroundImage}'); background-origin: content-box; background-size: cover; background-repeat: no-repeat;";
         }
     }
 

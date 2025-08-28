@@ -89,13 +89,13 @@
                     if (validSources.Any())
                     {
                         <div class="mt-1 mb-1">
-                            <SelectComponent T=Territory OnChanged="StateHasChanged" ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" @bind-Value="_yellowFromTerritory" Values="validSources">
+                            <SelectComponent T=Territory OnChanged="StateHasChanged" ButtonHint="ClickHintButton.Lmb" ModifierHint="ClickHintModifier.Ctrl" @bind-Value="_yellowFromTerritory" Values="validSources">
                                 <Label>From</Label>
                             </SelectComponent>
 
                             <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="_yellowForces" Locations="Player.LocationsWithAnyForcesInTerritory(_yellowFromTerritory)" InitializeToMaximum="true"/>
 
-                            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="_yellowOrOrangeToLocation" Values=@AmbassadorActivated.ValidYellowTargets(Game, Player)>
+                            <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="_yellowOrOrangeToLocation" Values=@AmbassadorActivated.ValidYellowTargets(Game, Player)>
                                 <Label>To</Label>
                             </SelectComponent>
                         </div>
@@ -147,7 +147,7 @@
                     if (validTargets.Any())
                     {
                         <div class="mt-1 mb-1">
-                            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="_yellowOrOrangeToLocation" Values="validTargets.OrderByDescending(l => l.IsStronghold).ThenBy(l => Name(l))">
+                            <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="_yellowOrOrangeToLocation" Values="validTargets.OrderByDescending(l => l.IsStronghold).ThenBy(l => Name(l))">
                                 <Label>To</Label>
                             </SelectComponent>
                         </div>

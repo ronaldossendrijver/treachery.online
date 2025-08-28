@@ -18,18 +18,7 @@
     protected Faction Faction => Client.Faction;
 
     private string _id;
-    protected string Id
-    {
-        get
-        {
-            if (_id == null)
-            {
-                _id = Guid.NewGuid().ToString();
-            }
-
-            return _id;
-        }
-    }
+    protected string Id => _id ??= Guid.NewGuid().ToString();
 
     protected override void OnInitialized()
     {
@@ -57,7 +46,7 @@
         if (!_redrawCycleStarted && interval > 0)
         {
             _redrawCycleStarted = true;
-            _ = Task.Delay(interval).ContinueWith(e => ContinueRedrawCycle(interval, false));
+            _ = Task.Delay(interval).ContinueWith(_ => ContinueRedrawCycle(interval));
         }
     }
 
@@ -66,25 +55,25 @@
         if (!_redrawCycleStarted && interval > 0)
         {
             _redrawCycleStarted = true;
-            await Task.Delay(interval).ContinueWith(e => ContinueRedrawCycleAsync(interval, false));
+            await Task.Delay(interval).ContinueWith(_ => ContinueRedrawCycleAsync(interval));
         }
     }
 
-    private void ContinueRedrawCycle(int interval, bool firstCall = true)
+    private void ContinueRedrawCycle(int interval)
     {
         if (_redrawCycleStarted)
         {
             Redraw();
-            _ = Task.Delay(interval).ContinueWith(e => ContinueRedrawCycle(interval, false));
+            _ = Task.Delay(interval).ContinueWith(_ => ContinueRedrawCycle(interval));
         }
     }
 
-    private async Task ContinueRedrawCycleAsync(int interval, bool firstCall = true)
+    private async Task ContinueRedrawCycleAsync(int interval)
     {
         if (_redrawCycleStarted)
         {
             await RedrawAsync();
-            await Task.Delay(interval).ContinueWith(e => ContinueRedrawCycleAsync(interval, false));
+            await Task.Delay(interval).ContinueWith(_ => ContinueRedrawCycleAsync(interval));
         }
     }
 
@@ -95,7 +84,7 @@
 
     protected virtual async Task RedrawAsync()
     {
-        await Task.Delay(10).ContinueWith(e => StateHasChanged());
+        await Task.Delay(10).ContinueWith(_ => StateHasChanged());
     }
 
     private bool _timerCycleStarted;
@@ -104,7 +93,7 @@
         if (!_timerCycleStarted && interval > 0)
         {
             _timerCycleStarted = true;
-            _ = Task.Delay(interval).ContinueWith(e => ContinueTimerCycle(interval, false));
+            _ = Task.Delay(interval).ContinueWith(_ => ContinueTimerCycle(interval));
         }
     }
 
@@ -113,25 +102,25 @@
         if (!_timerCycleStarted && interval > 0)
         {
             _timerCycleStarted = true;
-            await Task.Delay(interval).ContinueWith(e => ContinueTimerCycleAsync(interval, false));
+            await Task.Delay(interval).ContinueWith(_ => ContinueTimerCycleAsync(interval));
         }
     }
 
-    private void ContinueTimerCycle(int interval, bool firstCall = true)
+    private void ContinueTimerCycle(int interval)
     {
         if (_timerCycleStarted)
         {
             Cycle();
-            _ = Task.Delay(interval).ContinueWith(e => ContinueTimerCycle(interval, false));
+            _ = Task.Delay(interval).ContinueWith(_ => ContinueTimerCycle(interval));
         }
     }
 
-    private async Task ContinueTimerCycleAsync(int interval, bool firstCall = true)
+    private async Task ContinueTimerCycleAsync(int interval)
     {
         if (_timerCycleStarted)
         {
             await CycleAsync();
-            await Task.Delay(interval).ContinueWith(e => ContinueTimerCycleAsync(interval, false));
+            await Task.Delay(interval).ContinueWith(_ => ContinueTimerCycleAsync(interval));
         }
     }
 
@@ -168,16 +157,10 @@
     protected string GetId(object value)
     {
         if (value == null)
-        {
-            return "";
-        }
+            return string.Empty;
 
-        var valueAsIdentifiable = value as IIdentifiable;
-
-        if (valueAsIdentifiable != null)
-        {
+        if (value is IIdentifiable valueAsIdentifiable)
             return valueAsIdentifiable.Id.ToString();
-        }
 
         return Client.CurrentSkin.Describe(value);
     }

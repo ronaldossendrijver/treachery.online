@@ -53,7 +53,7 @@
             {
                 <SelectForcesComponent @bind-Value="_forcesInSneakAttack" Min="0" Max=@TerrorRevealed.MaxAmountOfForcesInSneakAttack(Player) Faction=Faction Special=false Label="Amount of forces" />
 
-                <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="_sneakAttackTo" Values="TerrorRevealed.ValidSneakAttackTargets(Game, Player)">
+                <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="_sneakAttackTo" Values="TerrorRevealed.ValidSneakAttackTargets(Game, Player)">
                     <Label>To</Label>
                 </SelectComponent>
             }

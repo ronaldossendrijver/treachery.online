@@ -55,13 +55,13 @@
 
         @if (ShipmentType is ShipmentType.ShipmentSiteToSite)
         {
-            <SelectComponent ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" @bind-Value="_shipmentFrom" Values="@Shipment.ValidSourceLocations(Game, Player)">
+            <SelectComponent ButtonHint="ClickHintButton.Lmb" ModifierHint="ClickHintModifier.Ctrl" @bind-Value="_shipmentFrom" Values="@Shipment.ValidSourceLocations(Game, Player)">
                 <Label>From</Label>
             </SelectComponent>
         }
         else if (ShipmentType is ShipmentType.ShipmentSiteToSite && Player.HomeWorlds.Count > 1)
         {
-            <SelectComponent ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" @bind-Value="_shipmentFrom" Values="@Player.HomeWorlds">
+            <SelectComponent ButtonHint="ClickHintButton.Lmb" ModifierHint="ClickHintModifier.Ctrl" @bind-Value="_shipmentFrom" Values="@Player.HomeWorlds">
                 <Label>To</Label>
             </SelectComponent>
         }
@@ -71,7 +71,7 @@
         }
 
         <div class="mt-1 mb-1">
-            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="_shipmentTo" Values="ValidShipmentLocations.OrderByDescending(l => l.IsStronghold).ThenBy(Name)">
+            <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="_shipmentTo" Values="ValidShipmentLocations.OrderByDescending(l => l.IsStronghold).ThenBy(Name)">
                 <Label>
                     @if (ShipmentType is ShipmentType.ShipmentBack)
                     {

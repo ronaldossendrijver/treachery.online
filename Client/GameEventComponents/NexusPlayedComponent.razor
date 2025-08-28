@@ -149,7 +149,7 @@
 
                     if (purpleAmountOfSpecialForcesToLocation > 0)
                     {
-                        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value=purpleOrYellowLocation Values=@Revival.ValidRevivedForceLocations(Game, Player)>
+                        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value=purpleOrYellowLocation Values=@Revival.ValidRevivedForceLocations(Game, Player)>
                             <Label>Place them where?</Label>
                         </SelectComponent>
                     }
@@ -201,7 +201,7 @@
 
                 case Faction.Pink when betrayal:
                     <div>Return all <FactionComponent Faction=@Faction.Pink Diameter="20"/> in a territory they occupy with their ally to reserves?</div>
-                    <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value=pinkTerritory Values=@NexusPlayed.ValidPinkTerritories(Game)>
+                    <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value=pinkTerritory Values=@NexusPlayed.ValidPinkTerritories(Game)>
                         <Label>Territory</Label>
                     </SelectComponent>
                     break;
@@ -217,7 +217,7 @@
 
                 case Faction.Cyan when betrayal:
                     <div>Remove a Terror token from a stronghold?</div>
-                    <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value=cyanTerritory Values=@NexusPlayed.ValidCyanTerritories(Game)>
+                    <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value=cyanTerritory Values=@NexusPlayed.ValidCyanTerritories(Game)>
                         <Label>Stronghold</Label>
                     </SelectComponent>
                     break;

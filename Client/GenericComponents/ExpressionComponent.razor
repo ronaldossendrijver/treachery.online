@@ -8,10 +8,8 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-@for (var elementnr = 0; elementnr < Expression.Elements.Length; elementnr++)
+@foreach (var part in Expression.Elements)
 {
-    var part = Expression.Elements[elementnr];
-
     switch (part)
     {
         case null:
@@ -51,7 +49,7 @@
 
         case Payment payment:
             <TextBeforeImage ImageUrl="@Client.CurrentSkin.Harvester_URL" Size=@Size Title="@Client.CurrentSkin.Describe(Concept.Resource)">@payment.Amount</TextBeforeImage>
-            @if (payment.By != Faction.None)
+            if (payment.By != Faction.None)
             {
                 <span> by <FactionComponent Faction=payment.By Diameter=@Size/></span>
             }
@@ -126,9 +124,7 @@
         return result;
     }
 
-    private bool ShowWithSeparator(object e)
-    {
-        return !(e is Faction || e is MessagePart || e is FactionForce || e is FactionSpecialForce || e is Leader);
-    }
+    private static bool ShowWithSeparator(object e) 
+        => !(e is Faction || e is MessagePart || e is FactionForce || e is FactionSpecialForce || e is Leader);
 
 }

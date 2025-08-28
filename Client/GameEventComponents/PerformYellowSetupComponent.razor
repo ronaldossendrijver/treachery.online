@@ -19,13 +19,13 @@
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
         <div>You can use the planet map:</div>
-        <div>Add @Client.CurrentSkin.Describe(Player.Force): <ClickHintComponent Button="ClickHintButton.LMB" /></div>
-        <div>Remove @Client.CurrentSkin.Describe(Player.Force): <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.SHIFT" /></div>
+        <div>Add @Client.CurrentSkin.Describe(Player.Force): <ClickHintComponent Button="ClickHintButton.Lmb" /></div>
+        <div>Remove @Client.CurrentSkin.Describe(Player.Force): <ClickHintComponent Button="ClickHintButton.Lmb" Modifier="ClickHintModifier.Shift" /></div>
 
         @if (Player.HasSpecialForces)
         {
-            <div>Add @Client.CurrentSkin.Describe(Player.SpecialForce): <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL" /> </div>
-            <div>Remove @Client.CurrentSkin.Describe(Player.SpecialForce): <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL | ClickHintModifier.SHIFT" /></div>
+            <div>Add @Client.CurrentSkin.Describe(Player.SpecialForce): <ClickHintComponent Button="ClickHintButton.Lmb" Modifier="ClickHintModifier.Ctrl" /> </div>
+            <div>Remove @Client.CurrentSkin.Describe(Player.SpecialForce): <ClickHintComponent Button="ClickHintButton.Lmb" Modifier="ClickHintModifier.Ctrl | ClickHintModifier.Shift" /></div>
         }
 
     </Body>

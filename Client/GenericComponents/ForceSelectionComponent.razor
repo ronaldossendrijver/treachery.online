@@ -23,12 +23,16 @@
 
                     if (Max(l) > 0 && ShowNormalForces) 
                     {
-                        <td class="ps-0 bg-transparent"><SelectForcesComponent Value=@Forces[l].AmountOfForces OnDown="e => ChangeForceAmount(l, -1, false)" OnUp="e => ChangeForceAmount(l, 1, false)" Min="Min" Max="Max(l)" Faction="Player.Faction" Special="false" /></td>
+                        <td class="ps-0 bg-transparent">
+                            <SelectForcesComponent Value=@Forces[l].AmountOfForces OnDown="@(_ => ChangeForceAmount(l, -1, false))" OnUp="@(_ => ChangeForceAmount(l, 1, false))" Min="Min" Max="Max(l)" Faction="Player.Faction" Special="false"/>
+                        </td>
                     }
 
                     if (MaxSpecial(l) > 0 && ShowSpecialForces) 
                     {
-                        <td class="ps-0 bg-transparent"><SelectForcesComponent Value=@Forces[l].AmountOfSpecialForces OnDown="e => ChangeForceAmount(l, -1, true)" OnUp="e => ChangeForceAmount(l, 1, true)" Min="Min" Max="MaxSpecial(l)" Faction="Player.Faction" Special="true" /></td>
+                        <td class="ps-0 bg-transparent">
+                            <SelectForcesComponent Value=@Forces[l].AmountOfSpecialForces OnDown="@(_ => ChangeForceAmount(l, -1, true))" OnUp="@(_ => ChangeForceAmount(l, 1, true))" Min="Min" Max="MaxSpecial(l)" Faction="Player.Faction" Special="true"/>
+                        </td>
                     }
                 }
                 else
@@ -57,13 +61,13 @@
     public IEnumerable<Location> Locations { get; set; }
 
     [Parameter]
-    public bool MaySelectFromStorm { get; set; } = false;
+    public bool MaySelectFromStorm { get; set; }
 
     [Parameter]
-    public bool AlwaysShowLocation { get; set; } = false;
+    public bool AlwaysShowLocation { get; set; }
 
     [Parameter]
-    public bool FullLocationName { get; set; } = false;
+    public bool FullLocationName { get; set; }
 
     [Parameter]
     public int FixedMaxForces { get; set; } = -1;
@@ -81,10 +85,10 @@
     public EventCallback OnChanged { get; set; }
 
     [Parameter]
-    public bool AllowMultipleTerritories { get; set; } = false;
+    public bool AllowMultipleTerritories { get; set; }
 
     [Parameter]
-    public bool InitializeToMaximum { get; set; } = false;
+    public bool InitializeToMaximum { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -142,14 +146,9 @@
         }
         else if (amount > 0)
         {
-            if (specialForces)
-            {
-                Forces.Add(location, new Battalion(Player.Faction, 0, amount, location));
-            }
-            else
-            {
-                Forces.Add(location, new Battalion(Player.Faction, amount, 0, location));
-            }
+            Forces.Add(location, specialForces 
+                ? new Battalion(Player.Faction, 0, amount, location) 
+                : new Battalion(Player.Faction, amount, 0, location));
         }
 
         await OnChanged.InvokeAsync();

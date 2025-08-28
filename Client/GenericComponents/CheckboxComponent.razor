@@ -10,7 +10,7 @@
 @inherits GameComponent
 
 <div class="form-check @Class">
-    <input class="form-check-input" style="cursor:pointer" type="checkbox" id="@Id" @onchange="@(e => ChangeValue(e))" checked="@Value">
+    <input class="form-check-input" style="cursor:pointer" type="checkbox" id="@Id" @onchange="@ChangeValue" checked="@Value">
     <label class="form-check-label" style="cursor:pointer" for="@Id">@ChildContent</label>
 </div>
 

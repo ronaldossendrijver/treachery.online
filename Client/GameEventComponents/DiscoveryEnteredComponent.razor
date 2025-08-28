@@ -15,7 +15,7 @@
 
         @if (DiscoveryEntered.ValidTargets(Game, Player).Count() > 1)
         {
-            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="toLocation" Values=@DiscoveryEntered.ValidTargets(Game, Player)>
+            <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="toLocation" Values=@DiscoveryEntered.ValidTargets(Game, Player)>
                 <Label>Which stronghold to enter?</Label>
             </SelectComponent>
         }
