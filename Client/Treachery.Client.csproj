@@ -29,8 +29,6 @@
   <PropertyGroup>
     <BlazorWebAssemblyLoadAllGlobalizationData>false</BlazorWebAssemblyLoadAllGlobalizationData>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <PublishTrimmed>true</PublishTrimmed>
-    <TrimMode>link</TrimMode>
   </PropertyGroup>
 
 </Project>
