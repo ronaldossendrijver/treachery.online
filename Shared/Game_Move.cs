@@ -57,8 +57,8 @@ public partial class Game
     private bool CheckIfOrangeActsOrAutoDelays()
     {
         var orange = GetPlayer(Faction.Orange);
+        var orangeMayDelay = OrangeMayDelay;
         var orangeHasToAct = IsPlaying(Faction.Orange) && HasActedOrPassed.All(p => p != Faction.Orange) && OrangeMayShipOutOfTurnOrder;
-        var orangeMayDelay = Players.Any(p => p.Faction is not Faction.Orange && !HasActedOrPassed.Contains(p.Faction));
         var orangeIsOnAutoDelay = orange != null && IsAutomated(AutomationRuleType.ShipmentOrangeAutoDelay, orange);
         if (orangeHasToAct && orangeIsOnAutoDelay && orangeMayDelay)
         {

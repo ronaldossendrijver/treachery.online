@@ -19,7 +19,7 @@
         </label>
     }
 
-    <select class="form-select" style="cursor:pointer" @onchange="@(e => ChangeValue(e))" disabled="@Disabled" id="@Id">
+    <select class="form-select" style="cursor:pointer" @onchange="@(ChangeValue)" disabled="@Disabled" id="@Id">
 
         @if (AddEmptyValue)
         {
