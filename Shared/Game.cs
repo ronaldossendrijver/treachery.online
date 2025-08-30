@@ -14,7 +14,7 @@ public partial class Game
     #region Version
 
     private const int LowestSupportedVersion = 100;
-    public const int LatestVersion = 179;
+    public const int LatestVersion = 180;
     
     #endregion Version
 
