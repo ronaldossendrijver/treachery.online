@@ -85,7 +85,6 @@ public partial class Game
         if (pink != null)
         {
             AssignInitialAmbassadors(pink);
-            Log(Faction.Pink, " get ", Ambassador.Pink, " and draw 4 random ambassadors");
 
             if (Applicable(Rule.PinkLoyalty))
             {
@@ -325,7 +324,7 @@ public partial class Game
 
         UnassignedAmbassadors.Shuffle();
         Stone(Milestone.Shuffled);
-        Log(p.Faction, " draw 5 random Ambassadors");
+        Log(p.Faction, " get 5 random Ambassadors");
         for (var i = 0; i < 5; i++) p.Ambassadors.Add(UnassignedAmbassadors.Draw());
     }
 

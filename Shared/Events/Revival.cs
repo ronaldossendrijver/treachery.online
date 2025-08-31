@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class Revival : GameEvent, ILocationEvent
@@ -27,13 +25,13 @@ public class Revival : GameEvent, ILocationEvent
 
     #region Properties
 
-    public int AmountOfForces { get; set; } = 0;
+    public int AmountOfForces { get; set; }
 
-    public int AmountOfSpecialForces { get; set; } = 0;
+    public int AmountOfSpecialForces { get; set; }
 
-    public int ExtraForcesPaidByRed { get; set; } = 0;
+    public int ExtraForcesPaidByRed { get; set; }
 
-    public int ExtraSpecialForcesPaidByRed { get; set; } = 0;
+    public int ExtraSpecialForcesPaidByRed { get; set; }
 
     public int NumberOfForcesInLocation { get; set; }
 
@@ -60,7 +58,7 @@ public class Revival : GameEvent, ILocationEvent
         set => _heroId = LeaderManager.HeroLookup.GetId(value);
     }
 
-    public bool AssignSkill { get; set; } = false;
+    public bool AssignSkill { get; set; }
 
     public bool UsesRedSecretAlly { get; set; }
 
@@ -91,9 +89,9 @@ public class Revival : GameEvent, ILocationEvent
 
         if (Game.Version >= 124)
         {
-            var limit = Game.GetRevivalLimit(Game, p, UsesRedSecretAlly);
-            if (UsesRedSecretAlly) limit += 3;
-            if (AmountOfForces + AmountOfSpecialForces > limit) return Message.Express("You can't revive more than your limit of ", limit);
+            var limit = Game.GetMaxRevivals(Game, p, UsesRedSecretAlly);
+            if (Game.Version < 180 && UsesRedSecretAlly) limit += 3;
+            if (AmountOfForces + AmountOfSpecialForces > limit) return Message.Express("You can't revive more than ", limit);
 
             var allyLimit = ValidMaxRevivalsByRed(Game, p);
             if (ExtraForcesPaidByRed + ExtraSpecialForcesPaidByRed > ValidMaxRevivalsByRed(Game, p)) return Message.Express("Your ally won't revive more than ", allyLimit);
@@ -101,9 +99,11 @@ public class Revival : GameEvent, ILocationEvent
         else
         {
             var emperorRevivals = ValidMaxRevivalsByRed(Game, p);
-            var limit = Game.GetRevivalLimit(Game, p, UsesRedSecretAlly);
+            var limit = Game.GetMaxRevivals(Game, p, UsesRedSecretAlly);
             if (AmountOfForces + AmountOfSpecialForces > limit + emperorRevivals) Message.Express("You can't revive that many");
         }
+        
+        if (Initiator is not Faction.Purple && Game.FactionsThatRevivedLeadersThisTurn.Contains(Initiator)) Message.Express("You cannot revive more leaders this turn");
 
         var costOfRevival = DetermineCost(Game, p, Hero, AmountOfForces, AmountOfSpecialForces, ExtraForcesPaidByRed, ExtraSpecialForcesPaidByRed, UsesRedSecretAlly);
         if (costOfRevival.TotalCostForPlayer > p.Resources) return Message.Express("You can't pay that many");
@@ -207,17 +207,17 @@ public class Revival : GameEvent, ILocationEvent
 
         if (p.Faction != Faction.Purple)
             result.AddRange(NormallyRevivableHeroes(g, p));
-        else if (p.Leaders.Count(l => g.IsAlive(l)) < 5) result.AddRange(UnrestrictedRevivableHeroes(g, p));
+        else if (p.Leaders.Count(g.IsAlive) < 5) result.AddRange(UnrestrictedRevivableHeroes(g, p));
 
         if (result.Count == 0)
         {
             var purple = g.GetPlayer(Faction.Purple);
-            var gholas = purple != null ? purple.Leaders.Where(l => l.Faction == p.Faction) : Array.Empty<Leader>();
+            var gholas = purple != null ? purple.Leaders.Where(l => l.Faction == p.Faction) : [];
 
             return g.KilledHeroes(p).Union(gholas).Where(h => IsAllowedEarlyRevival(g, h));
         }
 
-        var livingLeaders = p.Leaders.Count(l => g.IsAlive(l));
+        var livingLeaders = p.Leaders.Count(g.IsAlive);
         if (g.Version >= 139) livingLeaders += g.Players.Where(player => player != p).SelectMany(player => player.Leaders.Where(l => l.Faction == p.Faction)).Count();
 
         if (p.Is(Faction.Purple) && g.Applicable(Rule.PurpleGholas) && livingLeaders < 5 && (g.Version < 164 || !g.Prevented(FactionAdvantage.PurpleReviveGhola)))
@@ -286,22 +286,34 @@ public class Revival : GameEvent, ILocationEvent
 
     public static int ValidMaxRevivals(Game g, Player p, bool specialForces, bool usingRedSecretAlly)
     {
-        var increasedRevivalDueToRedSecretAlly = usingRedSecretAlly ? 3 : 0;
-        var normalForceRevivalLimit = g.GetRevivalLimit(g, p, usingRedSecretAlly) + increasedRevivalDueToRedSecretAlly;
+        //var increasedRevivalDueToRedSecretAlly = usingRedSecretAlly ? 3 : 0;
+        var normalForceRevivalLimit = g.GetMaxRevivals(g, p, usingRedSecretAlly);
 
         if (g.Version >= 124)
         {
             if (!specialForces)
                 return Math.Min(normalForceRevivalLimit, p.ForcesKilled);
-            return Math.Min(p.Is(Faction.Grey) ? normalForceRevivalLimit : g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction) ? 0 : 1, p.SpecialForcesKilled);
+            
+            return Math.Min(p.Is(Faction.Grey) 
+                ? normalForceRevivalLimit : 
+                g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction) 
+                    ? 0 
+                    : 1, p.SpecialForcesKilled);
         }
+        // ReSharper disable once RedundantIfElseBlock
+        else
+        {
+            var amountPaidByEmperor = RedExtraRevivalLimit(g, p);
 
-        var amountPaidByEmperor = RedExtraRevivalLimit(g, p);
-
-        if (!specialForces)
-            return Math.Min(normalForceRevivalLimit + amountPaidByEmperor, p.ForcesKilled);
+            if (!specialForces)
+                return Math.Min(normalForceRevivalLimit + amountPaidByEmperor, p.ForcesKilled);
         
-        return Math.Min(p.Is(Faction.Grey) ? normalForceRevivalLimit + amountPaidByEmperor : g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction) ? 0 : 1, p.SpecialForcesKilled);
+            return Math.Min(p.Is(Faction.Grey) 
+                ? normalForceRevivalLimit + amountPaidByEmperor 
+                : g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction) 
+                    ? 0 
+                    : 1, p.SpecialForcesKilled);
+        }
     }
 
     public static bool MayAssignSkill(Game g, Player p, IHero h)
@@ -427,7 +439,7 @@ public class Revival : GameEvent, ILocationEvent
             (p.Faction == Faction.Yellow || l.Sector != g.SectorInStorm) &&
             (!l.Territory.IsStronghold || g.NrOfOccupantsExcludingFaction(l, p.Faction) < 2) &&
             l.Visible &&
-            (!p.HasAlly || l == g.Map.PolarSink || !p.AlliedPlayer.Occupies(l)) &&
+            (!p.HasAlly || Equals(l, g.Map.PolarSink) || !p.AlliedPlayer.Occupies(l)) &&
             (p.Faction == Faction.Purple || (p.Faction == Faction.Yellow && p.AnyForcesIn(l.Territory) >= 1)));
     }
 
@@ -437,7 +449,7 @@ public class Revival : GameEvent, ILocationEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        if (UsesRedSecretAlly) Game.PlayNexusCard(Player, "Secret Ally", "revive ", 3, " additional forces beyond revival limits for free");
+        if (UsesRedSecretAlly) Game.PlayNexusCard(Player, " revive ", 3, " additional forces beyond revival limits for free");
 
         //Payment
         var cost = DetermineCost(Game, Player, Hero, AmountOfForces, AmountOfSpecialForces, ExtraForcesPaidByRed, ExtraSpecialForcesPaidByRed, UsesRedSecretAlly);
@@ -460,10 +472,13 @@ public class Revival : GameEvent, ILocationEvent
 
         //Register free revival
         var usesFreeRevival = false;
-        if (AmountOfForces + AmountOfSpecialForces > 0 && Game.FreeRevivals(Player, UsesRedSecretAlly) > 0)
+        var nrOfFreeRevivals = Math.Min(Game.FreeRevivals(Player, UsesRedSecretAlly),
+            AmountOfForces + AmountOfSpecialForces);
+        
+        if (nrOfFreeRevivals > 0)
         {
             usesFreeRevival = true;
-            Game.FactionsThatTookFreeRevival.Add(Initiator);
+            Game.FreeRevivalsThisTurn[Initiator] = Game.FreeRevivalsThisTurn.GetValueOrDefault(Initiator, 0) + nrOfFreeRevivals;
         }
 
         //Tech token activated?
@@ -502,6 +517,8 @@ public class Revival : GameEvent, ILocationEvent
         var asGhola = false;
         if (Hero != null)
         {
+            Game.FactionsThatRevivedLeadersThisTurn.Add(Initiator);
+            
             if (Initiator != Hero.Faction && Hero is Leader leader)
             {
                 asGhola = true;
@@ -525,7 +542,7 @@ public class Revival : GameEvent, ILocationEvent
 
         //Logging
         Game.Stone(Milestone.Revival);
-        LogRevival(cost, totalProfitsForPurple, asGhola, highThresholdBonus);
+        RegisterAndLogRevival(cost, totalProfitsForPurple, asGhola, highThresholdBonus);
 
         if (Location != null)
         {
@@ -559,9 +576,11 @@ public class Revival : GameEvent, ILocationEvent
         if (Game.Version < 179 && Initiator != Faction.Purple) Game.HasActedOrPassed.Add(Initiator);
     }
 
-    private void LogRevival(RevivalCost cost, int purpleReceivedResources, bool asGhola, int highThresholdBonus)
+    private void RegisterAndLogRevival(RevivalCost cost, int purpleReceivedResources, bool asGhola, int highThresholdBonus)
     {
         var totalAmountOfForces = AmountOfForces + ExtraForcesPaidByRed + highThresholdBonus;
+        
+        Game.TotalRevivalsThisTurn[Initiator] = Game.TotalRevivalsThisTurn.GetValueOrDefault(Initiator, 0) + totalAmountOfForces; 
 
         Log(
             Initiator,

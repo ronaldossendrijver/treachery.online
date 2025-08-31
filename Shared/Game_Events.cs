@@ -243,7 +243,6 @@ public partial class Game
 
             case Phase.Resurrection:
                 if (IsPlaying(Faction.Purple) && faction != Faction.Purple &&
-                    (Version <= 78 || !HasActedOrPassed.Contains(faction)) &&
                     KilledHeroes(player).Any() &&
                     !Revival.NormallyRevivableHeroes(this, player).Any()) result.Add(typeof(RequestPurpleRevival));
 

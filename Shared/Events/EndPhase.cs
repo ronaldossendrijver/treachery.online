@@ -300,8 +300,10 @@ public class EndPhase : GameEvent
         Game.Allow(FactionAdvantage.GreyAllyDiscardingCard);
         Game.RevivalTechTokenIncome = false;
         Game.AmbassadorsPlacedThisTurn = 0;
-        Game.FactionsThatTookFreeRevival.Clear();
-        Game.HasActedOrPassed.Clear();
+        Game.FreeRevivalsThisTurn.Clear();
+        Game.TotalRevivalsThisTurn.Clear();
+        Game.FactionsThatRevivedLeadersThisTurn.Clear();
+        //Game.HasActedOrPassed.Clear();
         Game.PurpleStartedRevivalWithLowThreshold = Game.HasLowThreshold(Faction.Purple);
 
         if (Game.Version < 122)
@@ -317,7 +319,7 @@ public class EndPhase : GameEvent
         Game.CurrentKarmaRevivalPrevention = null;
         Game.CurrentYellowSecretAlly = null;
         Game.CurrentRecruitsPlayed = null;
-
+        
         if (Game.Version < 122)
         {
             EnterShipmentAndMovePhase();

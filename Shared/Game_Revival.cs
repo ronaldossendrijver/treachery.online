@@ -14,16 +14,19 @@ public partial class Game
     #region BeginningOfRevival
 
     internal bool RevivalTechTokenIncome { get; set; }
-    public List<Faction> FactionsThatTookFreeRevival { get; } = [];
+    public Dictionary<Faction, int> TotalRevivalsThisTurn { get; set; } = [];
+    public Dictionary<Faction, int> FreeRevivalsThisTurn { get; } = [];
+    public List<Faction> FactionsThatRevivedSpecialForcesThisTurn { get; } = [];
+    public List<Faction> FactionsThatRevivedLeadersThisTurn { get; } = [];
     internal bool PurpleStartedRevivalWithLowThreshold { get; set; }
     public RecruitsPlayed CurrentRecruitsPlayed { get; set; }
-    public List<Faction> FactionsThatRevivedSpecialForcesThisTurn { get; } = [];
     public Faction[] FactionsWithIncreasedRevivalLimits { get; internal set; } = [];
     public List<RequestPurpleRevival> CurrentRevivalRequests { get; } = [];
     public Dictionary<IHero, int> EarlyRevivalsOffers { get; } = new();
     public BrownFreeRevivalPrevention CurrentFreeRevivalPrevention { get; internal set; }
     internal KarmaRevivalPrevention CurrentKarmaRevivalPrevention { get; set; }
     public int AmbassadorsPlacedThisTurn { get; internal set; }
+    
 
     #endregion
 
@@ -48,7 +51,9 @@ public partial class Game
 
     public int FreeRevivals(Player player, bool usesRedSecretAlly)
     {
-        if (FactionsThatTookFreeRevival.Contains(player.Faction) || FreeRevivalPrevented(player.Faction)) return 0;
+        if (FreeRevivalPrevented(player.Faction)) return 0;
+
+        if (Version < 181 && FreeRevivalsThisTurn.ContainsKey(player.Faction)) return 0;
 
         var nrOfFreeRevivals = 0;
 
@@ -82,7 +87,7 @@ public partial class Game
         
         if (Version >= 179 && CurrentRecruitsPlayed != null) nrOfFreeRevivals *= 2;
 
-        return nrOfFreeRevivals;
+        return Math.Max(nrOfFreeRevivals - FreeRevivalsThisTurn.GetValueOrDefault(player.Faction, 0), 0);
     }
 
     private bool GetsExtraCharityAndFreeRevivalDueToLowThreshold(Player player)
@@ -92,20 +97,24 @@ public partial class Game
                (player.Is(Faction.Brown) && player.HasLowThreshold() && OccupierOf(World.Brown) == null);
     }
 
-    public int GetRevivalLimit(Game g, Player p, bool redSecretAllyUsed)
+    public int GetMaxRevivals(Game g, Player p, bool redSecretAllyUsed)
     {
-        int nrOfFreeRevivals = g.FreeRevivals(p, redSecretAllyUsed);
-        
+        //int nrOfFreeRevivals = g.FreeRevivals(p, redSecretAllyUsed);
+
         if (p.Is(Faction.Purple) || (p.Is(Faction.Brown) && !g.Prevented(FactionAdvantage.BrownRevival)))
-            return Math.Max(100, nrOfFreeRevivals);
+            return int.MaxValue;
+
+        var redSecretAlly = redSecretAllyUsed ? 3 : 0;
+        var lowThreshold = g.HasLowThreshold(p.Faction) ? 1 : 0;
+        var alreadyRevived = g.TotalRevivalsThisTurn.GetValueOrDefault(p.Faction, 0);
         
         if (CurrentRecruitsPlayed != null)
-            return Math.Max(7, nrOfFreeRevivals);
+            return Math.Max(7 + redSecretAlly + lowThreshold - alreadyRevived, 0);
         
         if (FactionsWithIncreasedRevivalLimits.Contains(p.Faction))
-            return Math.Max(5, nrOfFreeRevivals);
+            return Math.Max(5 + lowThreshold + redSecretAlly - alreadyRevived, 0);
         
-        return Math.Max(3, nrOfFreeRevivals);
+        return Math.Max(3 + lowThreshold + redSecretAlly - alreadyRevived, 0);
     }
 
     private bool FreeRevivalPrevented(Faction f)
@@ -131,8 +140,6 @@ public partial class Game
         
         if (maxFreeRevivals <= 0) return;
         
-        FactionsThatTookFreeRevival.Add(player.Faction);
-
         var freeRevivedSpecialForces = 0;
         var freeRevivedNormalForces = 0;
         
@@ -167,6 +174,9 @@ public partial class Game
         {
             purple.Resources += 1;
         }
+        
+        FreeRevivalsThisTurn[player.Faction] = FreeRevivalsThisTurn.GetValueOrDefault(player.Faction, 0) + freeRevivedNormalForces + freeRevivedSpecialForces;
+        TotalRevivalsThisTurn[player.Faction] = TotalRevivalsThisTurn.GetValueOrDefault(player.Faction, 0) + freeRevivedNormalForces + freeRevivedSpecialForces;
         
         Log(player.Faction, " revive ",
             MessagePart.ExpressIf(freeRevivedSpecialForces > 0, freeRevivedSpecialForces, player.SpecialForce),

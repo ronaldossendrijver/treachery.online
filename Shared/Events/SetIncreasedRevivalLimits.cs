@@ -57,6 +57,7 @@ public class SetIncreasedRevivalLimits : GameEvent
     {
         if (Factions.Any())
             return Message.Express(Initiator, " grant a revival limit of ", 5, " to ", Factions);
+        
         return Message.Express(Initiator, " don't grant increased revival limits");
     }
 

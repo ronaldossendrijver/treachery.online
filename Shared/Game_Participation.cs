@@ -35,7 +35,7 @@ public partial class Game
 
     public string GetPlayerName(Player player) => Version >= 170
         ? player.IsBot ? "Bot" : Participation.PlayerNames.GetValueOrDefault(UserIdInSeat(player.Seat), "?")
-        : LegacyNames.GetValueOrDefault(player);
+        : LegacyNames.GetValueOrDefault(player, string.Empty);
     
     public Player GetPlayerByUserId(int userId) => GetPlayerBySeat(SeatOf(userId));
 

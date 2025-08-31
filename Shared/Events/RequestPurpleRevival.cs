@@ -50,7 +50,7 @@ public class RequestPurpleRevival : GameEvent
     public static IEnumerable<IHero> ValidTargets(Game g, Player p)
     {
         var purple = g.GetPlayer(Faction.Purple);
-        var gholas = purple != null ? purple.Leaders.Where(l => l.Faction == p.Faction) : Array.Empty<Leader>();
+        var gholas = purple != null ? purple.Leaders.Where(l => l.Faction == p.Faction) : [];
         return g.KilledHeroes(p).Union(gholas);
     }
 
