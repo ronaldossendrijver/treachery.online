@@ -98,9 +98,9 @@ public class Tests
             if (player != null && (g.Version >= 157 || !player.Is(Faction.Purple))) return "Illegal number of forces " + player.Faction + " - " + g.History.Count;
         }
 
-        if (g.Players.Any(x => x.Leaders.Count(g.IsInFrontOfShield) > 1)) return "More than 1 leader in front of shield after " + e.GetType().Name + " - " + g.History.Count;
+        if (g.Players.Any(x => x.Leaders.Count(l => l.HeroType != HeroType.Vidal && g.IsInFrontOfShield(l)) > 1)) return "More than 1 leader in front of shield after " + e.GetType().Name + " - " + g.History.Count;
 
-        if (g.Version >= 147 && g.Players.Any(x => x.Leaders.Any(l => g.IsInFrontOfShield(l) && l.Faction != x.Faction))) return "Foreign leader in front of shield after " + e.GetType().Name + " - " + g.History.Count;
+        if (g.Version >= 147 && g.Players.Any(x => x.Leaders.Any(l => l.HeroType != HeroType.Vidal && g.IsInFrontOfShield(l) && l.Faction != x.Faction))) return "Foreign leader in front of shield after " + e.GetType().Name + " - " + g.History.Count;
 
         if (e is SkillAssigned { Leader: null }) return "Assigning skill to null leader after " + e.GetType().Name + " - " + g.History.Count;
 

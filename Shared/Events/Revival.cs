@@ -578,7 +578,9 @@ public class Revival : GameEvent, ILocationEvent
 
     private void RegisterAndLogRevival(RevivalCost cost, int purpleReceivedResources, bool asGhola, int highThresholdBonus)
     {
-        var totalAmountOfForces = AmountOfForces + ExtraForcesPaidByRed + highThresholdBonus;
+        var totalAmountOfForces = Game.Version < 182 
+            ? AmountOfForces + ExtraForcesPaidByRed + highThresholdBonus
+            : AmountOfForces + ExtraForcesPaidByRed + AmountOfSpecialForces + ExtraSpecialForcesPaidByRed + highThresholdBonus;
         
         Game.TotalRevivalsThisTurn[Initiator] = Game.TotalRevivalsThisTurn.GetValueOrDefault(Initiator, 0) + totalAmountOfForces; 
 
@@ -587,8 +589,8 @@ public class Revival : GameEvent, ILocationEvent
             " revive ",
             MessagePart.ExpressIf(Hero != null, Hero),
             MessagePart.ExpressIf(asGhola, " as Ghola"),
-            MessagePart.ExpressIf(Hero != null && totalAmountOfForces + AmountOfSpecialForces + ExtraSpecialForcesPaidByRed > 0, " and "),
-            MessagePart.ExpressIf(totalAmountOfForces > 0, totalAmountOfForces, Player.Force),
+            MessagePart.ExpressIf(Hero != null && totalAmountOfForces > 0, " and "),
+            MessagePart.ExpressIf(AmountOfForces + ExtraForcesPaidByRed > 0, totalAmountOfForces, Player.Force),
             MessagePart.ExpressIf(AmountOfSpecialForces + ExtraSpecialForcesPaidByRed > 0, AmountOfSpecialForces + ExtraSpecialForcesPaidByRed, Player.SpecialForce),
             " for ",
             Payment.Of(cost.TotalCostForPlayer + cost.CostForEmperor),
