@@ -73,7 +73,7 @@
                                     {
                                         <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" MarginClass="m-1" Title="Resume game">▶</CommandButton>
                                     }
-                                    <CommandButton Small OnClick="@(_ => Delete(av))" MarginClass="m-1" Title="Delete game">🗑</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => Delete(av))" MarginClass="m-1" Title="Delete game">🗑️</CommandButton>
                                 </td>
                             </tr>
                         }
@@ -192,24 +192,15 @@
                 <input type="text" readonly class="form-control-plaintext" id="userName" value="@Client.UserName">
             </div>
         </div>
-        @if (!EditUser)
+        @if (DeleteUser)
         {
-            <div class="row">
-                <label for="playerName" class="col-4 col-form-label">Player name</label>
-                <div class="col-8">
-                    <input type="text" readonly class="form-control-plaintext" id="playerName" @bind="@PlayerName"
-                           style="font: normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif;">
-                </div>
+            <div class="form-label alert-danger">
+                Are your sure you wish to delete your account and all your games?
             </div>
-            <div class="row">
-                <label for="email" class="col-4 col-form-label">E-mail address</label>
-                <div class="col-8">
-                    <input type="text" readonly class="form-control-plaintext" id="email" @bind="@Email">
-                </div>
-            </div>
-            <button class="btn btn-primary me-1" @onclick="@EnterEdit">Change account info</button>
+            <button class="btn btn-secondary btn-sm me-1" @onclick="@CancelDelete">Cancel</button>
+            <CommandButton Class="btn-danger" OnClick="@DeleteUserInfo" Small>Yes, delete my account</CommandButton>
         }
-        else
+        else if (EditUser)
         {
             <div class="row">
                 <label for="playerName" class="col-4 col-form-label">Player name</label>
@@ -230,15 +221,33 @@
                     <input type="password" class="form-control" id="password1" autocomplete="new-password" @bind="@Password1">
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-1">
                 <label for="password2" class="col-4 col-form-label">Repeat password</label>
                 <div class="col-8">
                     <input type="password" class="form-control" id="password2" autocomplete="new-password" @bind="@Password2">
                 </div>
             </div>
-            <div class="text-danger small">@ChangeUserInfoMessage</div>
+            <div class="text-danger small mb-1">@ChangeUserInfoMessage</div>
+            <button class="btn btn-danger btn-sm me-1" @onclick="@EnterDelete">Delete account</button>
             <button class="btn btn-secondary btn-sm me-1" @onclick="@CancelEdit">Cancel</button>
             <CommandButton OnClick="@UpdateUserInfo" Small>Apply changes</CommandButton>
+        }
+        else 
+        {
+            <div class="row">
+                <label for="playerName" class="col-4 col-form-label">Player name</label>
+                <div class="col-8">
+                    <input type="text" readonly class="form-control-plaintext" id="playerName" @bind="@PlayerName"
+                           style="font: normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif;">
+                </div>
+            </div>
+            <div class="row">
+                <label for="email" class="col-4 col-form-label">E-mail address</label>
+                <div class="col-8">
+                    <input type="text" readonly class="form-control-plaintext" id="email" @bind="@Email">
+                </div>
+            </div>
+            <button class="btn btn-primary me-1" @onclick="@EnterEdit">Change account info</button>
         }
     </div>
 </div>
@@ -285,6 +294,7 @@
     
     private string ScheduleError { get; set; } = string.Empty;
     private bool EditUser { get; set; }
+    private bool DeleteUser { get; set; }
     private string UserName { get; set; }
     private string PlayerName { get; set; }
     private string Password1 { get; set; }
@@ -375,6 +385,11 @@
         GetUserInfoFromClient();
         EditUser = false;
     }
+    
+    private void CancelDelete()
+    {
+        DeleteUser = false;
+    }
 
     private void GetUserInfoFromClient()
     {
@@ -395,6 +410,13 @@
         }
     }
     
+    private async Task DeleteUserInfo()
+    {
+            await Client.AdminDeleteUser(Client.UserId);
+            DeleteUser = false;
+            Client.Logout();
+    }
+    
     private bool ValidateUpdatedUserInfo()
     {
         if (!string.IsNullOrEmpty(Password1) && Password1.Length < 6) ChangeUserInfoMessage = "Password must be at least 6 characters";
@@ -408,6 +430,11 @@
     private void EnterEdit()
     {
         EditUser = true;
+    }
+    
+    private void EnterDelete()
+    {
+        DeleteUser = true;
     }
     
     private async Task JoinGameAsPlayer(string gameId, string password, int seat = -1)

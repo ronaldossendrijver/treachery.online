@@ -933,6 +933,7 @@ public class Skin : IDescriber
             ErrorType.UserCreationFailed => "User creation failed",
             ErrorType.InvalidGameVersion => "Invalid game version",
             ErrorType.InvalidUserNameOrPassword => "Invalid user name or password",
+            ErrorType.NotAdmin => "You are not ad administrator",
             ErrorType.UnknownUsernameOrEmailAddress => "Unknown user name or email address",
             ErrorType.ResetRequestTooSoon => "Please wait at least 5 minutes before requesting another password reset",
             ErrorType.UnknownUserName => "Unknown user name",

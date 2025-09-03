@@ -41,6 +41,7 @@ public enum ErrorType
     UserCreationFailed,
     InvalidGameVersion,
     InvalidUserNameOrPassword,
+    NotAdmin,
     UnknownUsernameOrEmailAddress,
     ResetRequestTooSoon,
     UnknownUserName,

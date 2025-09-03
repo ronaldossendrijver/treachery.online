@@ -84,6 +84,7 @@ public interface IGameService
     
     Task<Result<LoginInfo>> RequestCreateUser(string userName, string hashedPassword, string email, string playerName);
     Task<Result<LoginInfo>> RequestLogin(string userName, string hashedPassword);
+    void Logout();
     Task<VoidResult> RequestPasswordReset(string usernameOrEmail);
     Task<Result<LoginInfo>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword);
     Task<string> RequestUpdateUserInfo(string hashedPassword, string email, string playerName);
@@ -128,5 +129,4 @@ public interface IGameService
     Task<string> AdminCancelGame(string scheduledGameId);
     Task<string> AdminDeleteUser(int userId);
     Task<string> GetAdminInfo();
-    
 }

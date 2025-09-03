@@ -102,13 +102,13 @@ else
                         {
                             var fontColorStyle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20 ? "color:grey" : "color:white";
                             <tr class="small table-dark">
-                                <td class="w-25" style="@fontColorStyle">
+                                <td style="@fontColorStyle">
                                     @av.LastActivity
                                 </td>
-                                <td class="w-25" style="@fontColorStyle">
+                                <td style="@fontColorStyle">
                                     @av.Name
                                 </td>
-                                <td class="w-25">
+                                <td>
                                     <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Close(av))">Close</button>
                                 </td>
                             </tr>

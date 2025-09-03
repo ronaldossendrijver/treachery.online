@@ -382,6 +382,13 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return result;
     }
 
+    public void Logout()
+    {
+        StoredPassword = null;
+        LoginInfo = null;
+        Refresh(nameof(Logout));
+    }
+
     public async Task<VoidResult> RequestPasswordReset(string usernameOrEmail) 
         => await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestPasswordReset), usernameOrEmail);
 
@@ -613,7 +620,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     public async Task<string> AdminDeleteUser(int userId)
     {
-        var result = await Invoke<string>(nameof(IGameHub.AdminDeleteUser), UserToken, userId);
+        var result = await Invoke<string>(nameof(IGameHub.DeleteUser), UserToken, userId);
         return result.Success ? result.Contents : CurrentSkin.Describe(result.Error);
     }
 

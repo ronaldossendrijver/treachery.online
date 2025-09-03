@@ -416,10 +416,26 @@ public partial class GameHub
         return await Task.FromResult(Success("Scheduled game cancelled"));
     }
     
-    public async Task<Result<string>> AdminDeleteUser(string userToken, int userId)
+    public async Task<Result<string>> DeleteUser(string userToken, int userId)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
+        if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
+
+        if (userId != user.Id && user.Username != Configuration["GameAdminUsername"])
+            return Error<string>(ErrorType.NotAdmin);
+
+        foreach (var game in RunningGamesByGameId.Values.Where(x => x.CreatorUserId == userId).ToArray())
+        {
+            foreach (var participatingUserId in game.Game.Participation.PlayerNames.Keys)
+            {
+                game.Game.RemoveUser(participatingUserId, true);
+                await Clients.Group(game.GameId).HandleRemoveUser(participatingUserId, true);
+                await RemoveFromGroup(game.GameId, participatingUserId);
+            }
+            
+            RunningGamesByGameId.Remove(game.GameId, out _);
+            await EraseGame(game);
+        }
 
         await using var db = GetDbContext();
         await db.Users.Where(u => u.Id == userId).ExecuteDeleteAsync();

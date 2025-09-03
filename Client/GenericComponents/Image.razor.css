@@ -3,7 +3,7 @@
     
 }
 
-.image.shadow
+.image.shadowy
 {
     filter: drop-shadow(1px 1px 1px black);
 }
@@ -38,7 +38,7 @@
     filter: brightness(130%);
 }
 
-.image-hover.shadow
+.image-hover.shadowy
 {
     filter: drop-shadow(1px 1px 1px black);
 }
