@@ -18,13 +18,13 @@
     @foreach (var valueToShow in Values)
     {
         <Image Shown=@valueToShow Game=Game
-               OnClick="e => Click(valueToShow)"
-               OnMouseOver="e => MouseOver(valueToShow)"
-               OnMouseOut="e => MouseOut(valueToShow)"
-               Filter=@DetermineFilter(valueToShow)
-               Style="cursor:pointer;padding-right:4px"
-               Width=@ImageWidth 
-               PopoverAsTooltip=@PopupsAsTooltip/>
+               Class="pe-1"
+               OnClick="@(_ => Click(valueToShow))"
+               Darkened="@DetermineDarkened(valueToShow)"
+               Pointer
+               Width="@ImageWidth" 
+               PopoverAsTooltip="@PopupsAsTooltip"
+               HighlightOnHover/>
     }
 
 </div>
@@ -62,10 +62,10 @@
     public RenderFragment Label { get; set; }
 
     [Parameter]
-    public bool Disabled { get; set; } = false;
+    public bool Disabled { get; set; }
 
     [Parameter]
-    public bool PopupsAsTooltip { get; set; } = false;
+    public bool PopupsAsTooltip { get; set; }
 
     [Parameter]
     public Game Game { get; set; }
@@ -122,35 +122,8 @@
         }
     }
 
-    private T _hovered = default;
-
-    private void MouseOver(T item)
-    {
-        _hovered = item;
-    }
-
-    private void MouseOut(T item)
-    {
-        _hovered = default;
-    }
-
-    private string DetermineFilter(T item)
-    {
-        var result = "filter:";
-
-        if (Selected == null)
-        {
-            if (!Equals(Value, item)) result += UnselectedFilter + " ";
-        }
-        else
-        {
-            if (!Selected.Contains(item)) result += UnselectedFilter + " ";
-        }
-
-        if (Equals(_hovered, item)) result += HoverFilter;
-        return result;
-    }
-
+    private bool DetermineDarkened(T item) => !Selected?.Contains(item) ?? !Equals(Value, item);
+    
     private async Task Notify() {
 
         await ValueChanged.InvokeAsync(Value);

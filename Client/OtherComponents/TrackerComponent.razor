@@ -52,7 +52,7 @@
                         var selIndex = i;
                         var cardId = Info.TrackedTreacheryCards[p.Faction][selIndex];
 
-                        <a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#picker" @onmousedown="e => InitiatePick(p.Faction, selIndex)" title=@DeterminePopup(Info.TrackedTreacheryCards[p.Faction][selIndex])>
+                        <a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#picker" @onmousedown="@(_ => InitiatePick(p.Faction, selIndex))" title=@DeterminePopup(Info.TrackedTreacheryCards[p.Faction][selIndex])>
                             @if (cardId == TreacheryCard.None)
                             {
                                 <svg class="img-fluid w-100" viewBox="0 0 268 372" xmlns="http://www.w3.org/2000/svg">
@@ -66,7 +66,7 @@
                             else
                             {
                                 var card = TreacheryCardManager.Lookup.Find(cardId);
-                                <Image Shown=card Class="img-fluid" Style="cursor:pointer"/>
+                                <Image Shown=card Class="img-fluid" Pointer/>
                             }
                         </a>
                     }

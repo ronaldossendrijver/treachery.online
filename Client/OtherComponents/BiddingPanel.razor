@@ -174,7 +174,7 @@
             if ((Game.CurrentBid != null && Client.AutoPass && Game.CurrentBid.TotalAmount + 1 > Client.BidAutoPassThreshold) ||
                 (Game.CurrentBid == null && Client.AutoPass && Client.BidAutoPassThreshold == 0))
                 {
-                _ = Task.Delay(800 + Random.Shared.Next(1600)).ContinueWith(e => AutoPass());
+                _ = Task.Delay(800 + Random.Shared.Next(1600)).ContinueWith(_ => AutoPass());
             }
         }
 
@@ -231,5 +231,5 @@
 
     private bool IsSilentAuction => Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent;
 
-    private string AuctionDescriptionStyle => string.Format("font-size: 22px; font-weight: bold; {0}", Support.TextBorder(2, "black"));
+    private static string AuctionDescriptionStyle => $"font-size: 22px; font-weight: bold; {Support.TextBorder(2, "black")}";
 }

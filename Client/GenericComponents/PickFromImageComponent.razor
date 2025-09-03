@@ -14,7 +14,7 @@
     <div @ref="@_modalElement" class="row row-cols-3 row-cols-md-6 m-0">
 
         <div class="card p-1 m-0 border-0">
-            <div class="card-img-top" @onclick="e => Click(default)" style="@DetermineFilter(default);cursor:pointer;">
+            <div class="card-img-top" @onclick="@(_ => Click(default))" style="cursor:pointer;">
                 @if (Placeholder != null)
                 {
                     @Placeholder
@@ -35,12 +35,12 @@
                 <div class="card-img-top">
 
                     <Image Class="card-img"
-                           Shown=@valueToShow
-                           OnClick="_ => Click(valueToShow)"
-                           OnMouseOver="_ => MouseOver(valueToShow)"
-                           OnMouseOut="_ => MouseOut(valueToShow)"
-                           Filter=@DetermineFilter(valueToShow)
-                           Style="cursor:pointer;" />
+                           Shown="@valueToShow"
+                           OnClick="@(_ => Click(valueToShow))"
+                           Highlighted="@DetermineHighlighted(valueToShow)"
+                           Darkened="@DetermineDarkened(valueToShow)"
+                           Pointer
+                           HighlightOnHover/>
                 </div>
             </div>
         }
@@ -51,9 +51,9 @@
 
 <a @ref="@_valueElement" class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#@Id">
     
-    @if (Value != null && !Value.Equals(default))
+    @if (Value != null && !Value.Equals(null))
     {
-        <Image Shown=@Value Width=@ImageWidth Style="cursor:pointer;" />
+        <Image Shown="@Value" Width="@ImageWidth" Pointer/>
     }
     else
     {
@@ -101,9 +101,6 @@
     public string UnselectedFilter { get; set; } = "grayscale(50%) brightness(50%) contrast(80%)";
 
     [Parameter]
-    public string HoverFilter { get; set; } = "brightness(130%)";
-
-    [Parameter]
     public string HighlightFilter { get; set; } = "hue-rotate(90deg);";
 
     [Parameter]
@@ -133,7 +130,7 @@
     {
         if (!Disabled)
         {
-            if (Equal(Value, item))
+            if (Equals(Value, item))
             {
                 if (!Required)
                 {
@@ -151,39 +148,13 @@
         }
     }
 
-    private T _hovered = default;
-
-    private void MouseOver(T item)
-    {
-        _hovered = item;
-    }
-
-    private void MouseOut(T item)
-    {
-        _hovered = default;
-    }
-
-    private string DetermineFilter(T item)
-    {
-        var result = "filter:";
-
-        if (!Equal(Value, item)) result += UnselectedFilter + " ";
-
-        if (!Equal(_hovered, default) && Equal(_hovered, item)) result += HoverFilter;
-
-        if (Equal(Highlighted, item)) result += HighlightFilter;
-
-        return result;
-    }
-
-    private bool Equal(T a, T b)
-    {
-        return (a == null && b == null) || (a != null && a.Equals(b));
-    }
-
     private ElementReference _modalElement;
     private ElementReference _valueElement;
 
+    private bool DetermineHighlighted(T item) => Equals(Highlighted, item);
+
+    private bool DetermineDarkened(T item) => !Equals(Value, item);
+    
     public void Dispose()
     {
         _ = Browser.RemovePopovers(_valueElement);

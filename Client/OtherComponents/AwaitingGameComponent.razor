@@ -85,14 +85,5 @@
 
     private GameSettings Settings => Game.Settings;
     
-    private string StyleDef(Faction f) => $"color:{Client.CurrentSkin.GetFactionColor(f)}";
-
-    private string DetermineRuleClass(bool applicable) => applicable ? "color:white" : "color:grey";
-/*
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        StartRedrawCycle(3600);
-    }
-    */
+    private static string DetermineRuleClass(bool applicable) => applicable ? "color:white" : "color:grey";
 }

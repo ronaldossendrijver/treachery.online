@@ -1,0 +1,69 @@
+.image 
+{
+    
+}
+
+.image.shadow
+{
+    filter: drop-shadow(1px 1px 1px black);
+}
+
+.image.highlighted
+{
+    filter: hue-rotate(90deg);
+}
+
+.image.darkened
+{
+    filter: grayscale(50%) brightness(50%) contrast(80%);
+}
+
+.image.blurred
+{
+    filter: brightness(150%) contrast(100%) blur(1px);
+}
+
+.image.greyed
+{
+    filter: grayscale(100%) opacity(60%);
+}
+
+.image.pointer
+{
+    cursor: pointer;
+}
+
+.image-hover:hover
+{
+    filter: brightness(130%);
+}
+
+.image-hover.shadow
+{
+    filter: drop-shadow(1px 1px 1px black);
+}
+
+.image-hover.highlighted
+{
+    filter: hue-rotate(90deg);
+}
+
+.image-hover.darkened
+{
+    filter: grayscale(50%) brightness(50%) contrast(80%);
+}
+
+.image-hover.blurred
+{
+    filter: brightness(150%) contrast(100%) blur(1px);
+}
+
+.image-hover.greyed
+{
+    filter: grayscale(100%) opacity(60%);
+}
+
+.image-hover.pointer
+{
+    cursor: pointer;
+}

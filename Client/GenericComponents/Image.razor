@@ -10,22 +10,22 @@
 
 @if (!PopoverAsTooltip && Popover != null)
 {
-    if (OnClick.HasDelegate || OnMouseOver.HasDelegate || OnMouseOut.HasDelegate)
+    if (OnClick.HasDelegate)
     {
-        <img class=@Class style="@Shadow; @Style; @Pointer; @Filter" width=@ImgWidth src=@Src @onclick="e => OnClick.InvokeAsync()" @onmouseenter="e => OnMouseOver.InvokeAsync()" @onmouseout="e => OnMouseOut.InvokeAsync()" @ref=@element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover />
+        <img alt="@Popover" class="@ImageClass @Class @ShadowClass @PointerClass @HighlightedClass @DarkenedClass @BlurredClass @GreyedOutClass" width=@_imgWidth src=@Src @onclick="@OnClick" @ref=@_element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover />
     }
     else
     {
-        <img class=@Class style="@Shadow; @Style; @Pointer; @Filter" width=@ImgWidth src=@Src @ref=@element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover />
+        <img alt="@Popover" class="@ImageClass @Class @ShadowClass @PointerClass @HighlightedClass @DarkenedClass @BlurredClass @GreyedOutClass" width=@_imgWidth src=@Src @ref=@_element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover />
     }
 }
 else if (Popover != null)
 {
-    <img class=@Class style="@Shadow; @Style; @Pointer; @Filter" width=@ImgWidth src=@Src @onclick="e => OnClick.InvokeAsync()" @onmouseenter="e => OnMouseOver.InvokeAsync()" @onmouseout="e => OnMouseOut.InvokeAsync()" title=@Popover />
+    <img alt="@Popover" class="@ImageClass @Class @ShadowClass @PointerClass @HighlightedClass @DarkenedClass @BlurredClass @GreyedOutClass" width=@_imgWidth src=@Src @onclick="@OnClick" title=@Popover />
 }
 else
 {
-    <img class=@Class style="@Shadow; @Style; @Pointer; @Filter" width=@ImgWidth src=@Src @onclick="e => OnClick.InvokeAsync()" @onmouseenter="e => OnMouseOver.InvokeAsync()" @onmouseout="e => OnMouseOut.InvokeAsync()" />
+    <img alt="" class="@ImageClass @Class @ShadowClass @PointerClass @HighlightedClass @DarkenedClass @BlurredClass @GreyedOutClass" width=@_imgWidth src=@Src @onclick="@OnClick"/>
 }
 
 @code {
@@ -39,46 +39,52 @@ else
     [Parameter]
     public string Popover { get; set; }
     private string _popover;
-    private bool _popoverNeedsRefresh = false;
+    private bool _popoverNeedsRefresh;
 
     [Parameter]
-    public bool PopoverAsTooltip { get; set; } = false;
+    public bool PopoverAsTooltip { get; set; }
 
     [Parameter]
-    public float Width { get; set; } = 0;
+    public float Width { get; set; }
 
     [Parameter]
     public string Class { get; set; } = "";
 
     [Parameter]
-    public string Style { get; set; } = "";
-
-    [Parameter]
-    public string Filter { get; set; } = "";
-
-    [Parameter]
     public EventCallback OnClick { get; set; }
 
     [Parameter]
-    public EventCallback OnMouseOver { get; set; }
-
-    [Parameter]
-    public EventCallback OnMouseOut { get; set; }
-
-    [Parameter]
     public Game Game { get; set; }
+    
+    [Parameter]
+    public bool NoShadow { get; set; }
+    
+    [Parameter]
+    public bool HighlightOnHover { get; set; }
+    
+    [Parameter]
+    public bool Highlighted { get; set; }
+    
+    [Parameter]
+    public bool Darkened { get; set; }
+    
+    [Parameter]
+    public bool Blurred { get; set; }
+    
+    [Parameter]
+    public bool GreyedOut { get; set; }
 
     [Parameter]
-    public string Shadow { get; set; } = "filter: drop-shadow(1px 1px 1px black);";
-
-    private ElementReference element;
-    private string ImgWidth;
+    public bool Pointer { get; set; }
+    
+    private ElementReference _element;
+    private string _imgWidth;
 
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
 
-        ImgWidth = Width > 0 ? Support.Round(Width) : "";
+        _imgWidth = Width > 0 ? Support.Round(Width) : "";
 
         if (Shown != null)
         {
@@ -98,12 +104,12 @@ else
     {
         if (firstRender && Popover != null && !PopoverAsTooltip)
         {
-            await Browser.EnablePopover(element);
+            await Browser.EnablePopover(_element);
         }
         else if (_popoverNeedsRefresh)
         {
             _popoverNeedsRefresh = false;
-            await Browser.RefreshPopover(element);
+            await Browser.RefreshPopover(_element);
         }
     }
 
@@ -111,7 +117,7 @@ else
     {
         if (Popover != null && !PopoverAsTooltip)
         {
-            _ = Browser.RemovePopover(element);
+            _ = Browser.RemovePopover(_element);
         }
     }
 
@@ -136,5 +142,17 @@ else
 
     private bool ShownHasRichPopover => Shown is TreacheryCard || Shown is ResourceCard || Shown is IHero || Shown is LeaderSkill || Shown is TechToken || Shown is StrongholdAdvantage;
 
-    private string Pointer => Popover != null ? "cursor:pointer" : "";
+    private string PointerClass => Popover != null || Pointer ? "pointer" : "";
+
+    private string ImageClass => HighlightOnHover ? "image-hover" : "image";
+    
+    private string ShadowClass => NoShadow ? "" : "shadow";
+    
+    private string HighlightedClass => Highlighted ? "highlighted" : "";
+    
+    private string DarkenedClass => Darkened ? "darkened" : "";
+    
+    private string BlurredClass => Blurred ? "blurred" : "";
+    
+    private string GreyedOutClass => GreyedOut ? "greyed" : "";
 }

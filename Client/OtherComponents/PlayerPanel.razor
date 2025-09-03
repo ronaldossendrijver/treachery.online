@@ -61,13 +61,12 @@
                         <!-- Leaders -->
                         @foreach (var v in ShownPlayer.Leaders.Where(l => Client.Game.IsAlive(l)))
                         {
-                            var style = Game.IsSkilled(v) ? "filter:brightness(150%) contrast(100%)" : "";
-                            <Image Src=@Client.CurrentSkin.GetImageUrl(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
+                            <Image Src=@Client.CurrentSkin.GetImageUrl(v) Highlighted="@Game.IsSkilled(v)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
                         }
 
                         @foreach (var v in ShownPlayer.Leaders.Where(l => !Client.Game.IsAlive(l)))
                         {
-                            <Image Src=@Client.CurrentSkin.GetImageUrl(v) Style="filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
+                            <Image Src=@Client.CurrentSkin.GetImageUrl(v) Darkened Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
                         }
 
                         <!-- Traitors and Face Dancers -->
@@ -76,8 +75,7 @@
                             <h5 class="mt-1 mb-0">Face Dancers</h5>
                             @foreach (var v in ShownPlayer.FaceDancers)
                             {
-                                var style = ShownPlayer.RevealedFaceDancers.Contains(v) ? "filter:brightness(150%) contrast(100%) blur(1px)" : "";
-                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
+                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) Blurred="@ShownPlayer.RevealedFaceDancers.Contains(v)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
                             }
                         }
                         else if (!Client.Game.AssistedNotekeepingEnabled(Player) && ShownPlayer.Traitors.Count == 1)
@@ -102,13 +100,12 @@
 
                             @foreach (var v in ShownPlayer.Traitors)
                             {
-                                var style = ShownPlayer.RevealedTraitors.Contains(v) ? "filter:brightness(150%) contrast(110%) blur(1px)" : "";
-                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
+                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) Blurred="@ShownPlayer.RevealedTraitors.Contains(v)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
                             }
 
                             @foreach (var v in ShownPlayer.DiscardedTraitors)
                             {
-                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) Style="filter:grayscale(100%) opacity(60%)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
+                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) GreyedOut Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
                             }
                         }
 
