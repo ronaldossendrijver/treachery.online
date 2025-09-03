@@ -158,12 +158,14 @@ public partial class Game
             freeRevivedNormalForces++;
         }
         
-        if (freeRevivedSpecialForces > 0)
-            player.ReviveSpecialForces(freeRevivedSpecialForces);
+        if (freeRevivedNormalForces + freeRevivedSpecialForces <= 0) return;
         
         if (freeRevivedNormalForces > 0)
             player.ReviveForces(freeRevivedNormalForces);
-        
+
+        if (freeRevivedSpecialForces > 0)
+            player.ReviveSpecialForces(freeRevivedSpecialForces);
+       
         if (player.Faction != Faction.Purple) RevivalTechTokenIncome = true;
 
         var purple = GetPlayer(Faction.Purple);

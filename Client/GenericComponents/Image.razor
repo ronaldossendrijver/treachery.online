@@ -12,20 +12,20 @@
 {
     if (OnClick.HasDelegate)
     {
-        <img alt="@Popover" class="@ImageClass @Class @ShadowClass @PointerClass @HighlightedClass @DarkenedClass @BlurredClass @GreyedOutClass" width=@_imgWidth src=@Src @onclick="@OnClick" @ref=@_element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover />
+        <img alt="@Alt" class="@JointClass" width=@_imgWidth src=@Src @onclick="@OnClick" @ref=@_element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover />
     }
     else
     {
-        <img alt="@Popover" class="@ImageClass @Class @ShadowClass @PointerClass @HighlightedClass @DarkenedClass @BlurredClass @GreyedOutClass" width=@_imgWidth src=@Src @ref=@_element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover />
+        <img alt="@Alt" class="@JointClass" width=@_imgWidth src=@Src @ref=@_element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover />
     }
 }
 else if (Popover != null)
 {
-    <img alt="@Popover" class="@ImageClass @Class @ShadowClass @PointerClass @HighlightedClass @DarkenedClass @BlurredClass @GreyedOutClass" width=@_imgWidth src=@Src @onclick="@OnClick" title=@Popover />
+    <img alt="@Alt" class="@JointClass" width=@_imgWidth src=@Src @onclick="@OnClick" title=@Popover />
 }
 else
 {
-    <img alt="" class="@ImageClass @Class @ShadowClass @PointerClass @HighlightedClass @DarkenedClass @BlurredClass @GreyedOutClass" width=@_imgWidth src=@Src @onclick="@OnClick"/>
+    <img alt="@Alt" class="@JointClass" width=@_imgWidth src=@Src @onclick="@OnClick"/>
 }
 
 @code {
@@ -132,15 +132,17 @@ else
             LeaderSkill ls => Client.CurrentSkin.GetPopup(ls),
             TechToken tt => Client.CurrentSkin.GetPopup(tt),
             StrongholdAdvantage loc => Client.CurrentSkin.GetPopup(loc),
-
             TerrorType terr => Client.CurrentSkin.GetTerrorTypeDescription(terr),
             Ambassador amb => Client.CurrentSkin.GetAmbassadorDescription(amb),
-
             _ => Client.CurrentSkin.Describe(Shown)
         };
     }
 
-    private bool ShownHasRichPopover => Shown is TreacheryCard || Shown is ResourceCard || Shown is IHero || Shown is LeaderSkill || Shown is TechToken || Shown is StrongholdAdvantage;
+    private string Alt => Shown != null ? Client.CurrentSkin.Describe(Shown) : "";
+
+    private string JointClass => $"{ImageClass} {Class} {ShadowClass} {PointerClass} {HighlightedClass} {DarkenedClass} {BlurredClass} {GreyedOutClass}";
+
+    private bool ShownHasRichPopover => Shown is TreacheryCard or ResourceCard or IHero or LeaderSkill or TechToken or StrongholdAdvantage;
 
     private string PointerClass => Popover != null || Pointer ? "pointer" : "";
 
