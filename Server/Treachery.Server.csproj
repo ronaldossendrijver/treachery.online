@@ -6,6 +6,7 @@
     <LangVersion>13</LangVersion>
     <Version>171</Version>
     <Nullable>enable</Nullable>
+    <AssemblyVersion>182</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

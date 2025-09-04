@@ -7,7 +7,7 @@
 
     <OutputType>Library</OutputType>
 
-    <AssemblyVersion>171</AssemblyVersion>
+    <AssemblyVersion>182</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
