@@ -20,14 +20,14 @@
 
             <div class="mt-1 mb-0"><strong>Maximum number of players:</strong> @Settings.NumberOfPlayers</div>
 
-            <div class="mt-1 mb-0"><strong>Players:</strong> @Client.CurrentSkin.Join(Client.Game.PlayerNames)</div>
-
             <div class="mt-1 mb-0">
                 @foreach (var faction in Settings.AllowedFactionsInPlay)
                 {
                     <FactionComponent Faction="@faction"/>
                 }
             </div>
+            
+            <JoinedPlayersPanel/>
             
             <label class="mt-1 mb-0 small">Core Game, Advanced Rules</label>
             <ul class="mt-0 mb-1">

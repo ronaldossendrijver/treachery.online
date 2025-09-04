@@ -17,7 +17,7 @@
         <SelectNumberComponent @bind-Value="@Settings.MaximumTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns:"/>
 
         <SelectNumberComponent @bind-Value="@Settings.NumberOfPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Label="Number of players:"/>
-
+        
         <SelectFromImageComponent Selected="@Settings.AllowedFactionsInPlay" Values="EstablishPlayers.AvailableFactions()" T="Faction" OnChanged="@StateHasChanged" ImageWidth="40" Required="false">
             <Label>Factions in play:</Label>
         </SelectFromImageComponent>
@@ -25,8 +25,11 @@
         <SelectComponent @bind-Value="@Ruleset" Values="@Game.GetAvailableRulesets()">
             <Label>Ruleset:</Label>
         </SelectComponent>
-
-        <ButtonRowComponent Confirm="@Confirm" ConfirmText="Start" ConfirmError="@Validation" />
+        
+        <JoinedPlayersPanel/>
+        
+        <ButtonRowComponent Pass="@Cancel" PassText="Cancel game" Confirm="@Confirm" ConfirmText="Start" ConfirmError="@Validation" />
+        
         <CheckboxComponent @bind-Value="@Settings.AutoOpenEmptySeats">Auto open all bot seats to other players at start</CheckboxComponent>
         <CheckboxComponent @bind-Value="@Settings.AsyncPlay">Async play (send e-mail updates)</CheckboxComponent>
         @if (Settings.AsyncPlay)
@@ -129,6 +132,11 @@
     {
         await StoreSettings();
         await base.Confirm();
+    }
+    
+    private async Task Cancel()
+    {
+        await Client.RequestCloseGame(Client.GameId);
     }
 
     private async Task UpdateSettings()
