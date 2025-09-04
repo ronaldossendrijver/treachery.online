@@ -10,7 +10,7 @@
 
 .image.highlighted
 {
-    filter: hue-rotate(90deg);
+    filter: drop-shadow(0 0 0.75rem rgb(255, 217, 0));
 }
 
 .image.darkened
@@ -45,7 +45,7 @@
 
 .image-hover.highlighted
 {
-    filter: hue-rotate(90deg);
+    filter: drop-shadow(0 0 0.75rem rgb(255, 217, 0));
 }
 
 .image-hover.darkened

@@ -8,16 +8,19 @@
 *@
 @inherits GameComponent
 
-<div class="mt-1 p-1 border">
+<div class="mt-2 p-1 border">
     @if (Game.CurrentPhase is Phase.AwaitingPlayers)
     {
-        foreach (var userId in Game.Participation.SeatedPlayers.Keys)
+        var players = Game.Participation.SeatedPlayers.Keys.ToArray();
+        
+        foreach (var userId in players)
         {
             var isMe = Client.UserId == userId;
             var isHost = Game.IsHost(userId);
             var emphasis = isMe ? "gold" : "white";
+            var rowBorder = userId == players[0] ? "vertical-align: center; min-height: 2rem;" : "border-top: 1px solid darkgrey; vertical-align: center; min-height: 2rem;";
 
-            <div style="border-bottom: 1px solid darkgrey; min-height: 2rem; vertical-align: center;">
+            <div style="@rowBorder">
                 <span class="@emphasis" style="font: normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif; color: @emphasis;">
                     @Game.GetPlayerName(userId)
                 </span>
@@ -29,7 +32,7 @@
                 {
                     if (!isHost)
                     {
-                        <CommandButton Small MarginClass="m-1" OnClick="@(_ => SetOrUnsetHost(userId))">Make host</CommandButton>
+                        <CommandButton Small MarginClass="m-1 ms-2" OnClick="@(_ => SetOrUnsetHost(userId))">Make host</CommandButton>
                     }
                     if (!isMe)
                     {
@@ -41,14 +44,17 @@
     }
     else
     {
-        foreach (var player in Game.Players.OrderBy(p => p.Seat))
+        var playersOrderedBySeat = Game.Players.OrderBy(p => p.Seat).ToArray();
+        
+        foreach (var player in playersOrderedBySeat)
         {
             var userId = Game.GetUserIdOfPlayer(player);
             var makeAvailableText = Game.SeatIsAvailable(player.Seat) ? "Close" : "Open";
             var isMe = Client.UserId == userId;
             var isHost = Game.IsHost(userId);
-
-            <div style="border-bottom: 1px solid darkgrey; min-height: 2rem;">
+            var rowBorder = player == playersOrderedBySeat[0] ? "min-height: 2rem;" : "border-top: 1px solid darkgrey; min-height: 2rem;";
+            
+            <div style="@rowBorder">
                 @if (player.Faction != Faction.None)
                 {
                     <FactionComponent Faction="@player.Faction" Diameter="20"/>    
@@ -92,7 +98,7 @@
         }
     }
     <div class="text-danger align-bottom">@ActionResult</div>
-    @if (!Client.IsHost)
+    @if (!Client.IsHost || Game.CurrentPhase > Phase.AwaitingPlayers)
     {
         <CommandButton Small Class="btn-danger" MarginClass="mt-2" OnClick="@(_ => Remove(Client.UserId, false))">Leave game</CommandButton>
     }
