@@ -132,13 +132,13 @@
             Homeworld[] worlds = [];
             if (ShipmentType is ShipmentType.ShipmentNormal or ShipmentType.ShipmentWhiteSecretAlly)
             {
-                var worldWithNormalForces = Shipment.HomeworldsToShipFrom(Player, false).ToArray();
-                selectNormalForceSources = worldWithNormalForces.Length > 1;
+                var worldsWithNormalForces = Shipment.HomeworldsToShipFrom(Player, false).ToArray();
+                selectNormalForceSources = worldsWithNormalForces.Length > 1;
             
                 var worldsWithSpecialForces = Shipment.HomeworldsToShipFrom(Player, true).ToArray();
                 selectSpecialForceSources = worldsWithSpecialForces.Length > 1;
 
-                worlds = worldsWithSpecialForces.Union(worldsWithSpecialForces).ToArray();
+                worlds = worldsWithNormalForces.Union(worldsWithSpecialForces).ToArray();
             }
             
             <div class="mt-1">
@@ -161,7 +161,7 @@
                     ShipmentSpecialForceAmount = NoFieldValue < 0 ? 0 : 1;
                 }
 
-                @if (worlds.Length > 1 && ShipmentForceAmount + ShipmentSpecialForceAmount > 0)
+                @if (selectNormalForceSources || selectSpecialForceSources)
                 {
                     <div class="mt-1">Select from which worlds to ship these forces:</div>
                     <ForceSelectionComponent Game=Game 

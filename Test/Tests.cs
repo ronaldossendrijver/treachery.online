@@ -33,7 +33,16 @@ public class Tests
     // ReSharper disable UnusedParameter.Local
     private void SaveSpecialCases(Game g, GameEvent e)
     {
-        if (g.Version > 160 && g.Applicable(Rule.DiscoveryTokens) && g.DiscoveriesOnPlanet.Values.Any(d => d.Token == DiscoveryToken.Jacurutu) && e is YellowRidesMonster ) WriteSaveGameIfApplicable(g, e.Player, "yellow rides");
+        //if (g.Version > 160 && g.Applicable(Rule.DiscoveryTokens) && g.DiscoveriesOnPlanet.Values.Any(d => d.Token == DiscoveryToken.Jacurutu) && e is YellowRidesMonster ) WriteSaveGameIfApplicable(g, e.Player, "yellow rides");
+
+        /*
+        if (g.Version >= 164 && e is Shipment s && e.Initiator is Faction.Red
+                            && s.Player.SpecialForcesInReserve > 0
+                            && s.Player.ForcesInReserve > 0
+                            && (Shipment.HomeworldsToShipFrom(s.Player, true).Count() > 1 || Shipment.HomeworldsToShipFrom(s.Player, false).Count() > 1))
+        {
+            WriteSaveGameIfApplicable(g, s.Player, "sardaukar selection");
+        }*/
     }
     // ReSharper restore UnusedParameter.Local
     
@@ -45,7 +54,7 @@ public class Tests
         lock (_writtenCases)
         {
             if (_writtenCases.Contains(c)) return;
-            var id = playerWithAction == null ? "x" : playerWithAction.Name.Replace('*', 'X');
+            var id = playerWithAction == null ? "x" : playerWithAction.Faction.ToString();
             File.WriteAllText(c + "-" + id + ".special.json", GameState.GetStateAsString(g));
             _writtenCases.Add(c);
         }

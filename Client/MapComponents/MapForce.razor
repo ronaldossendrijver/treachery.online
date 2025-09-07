@@ -12,7 +12,7 @@
 
     @for (var i = 0; i < Amount; i++)
     {
-        <img src="@ForceUrl" style=@($"{PointerType};position:absolute;left:{Px(-0.07 * i * Diameter)};top:{Px(-0.08 * i * Diameter)};width:{Diameter}px;opacity:{Opacity};filter:drop-shadow({Px(ShadowSize)} {Px(ShadowSize)} {Px(ShadowBlur)} {ShadowColor})") alt="Token"/>
+        <img src="@ForceUrl" style=@($"{PointerType};position:absolute;left:{Px(-0.07 * i * Diameter)};top:{Px(-0.08 * i * Diameter)};width:{Px(Diameter)};opacity:{Opacity};filter:drop-shadow({Px(ShadowSize)} {Px(ShadowSize)} {Px(ShadowBlur)} {ShadowColor})") alt="Token"/>
     }
 
 </div>
@@ -39,7 +39,7 @@
     [Parameter]
     public bool ShowPopover { get; set; } = true;
 
-    private bool _popoverNeedsRefresh = false;
+    private bool _popoverNeedsRefresh;
 
     [Parameter]
     public string Font { get; set; } = "";

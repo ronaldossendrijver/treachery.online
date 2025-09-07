@@ -118,7 +118,7 @@ public static class Utilities
     }
     
     public static string Px(double x)
-        => x.ToString(CultureInfo.InvariantCulture) + "px";
+        => x is > -0.001 and < 0.001 ? "0" : x.ToString(CultureInfo.InvariantCulture) + "px";
 
     public static string Round(double x)
         => x.ToString(CultureInfo.InvariantCulture);

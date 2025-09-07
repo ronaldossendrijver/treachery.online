@@ -227,11 +227,17 @@ public class Shipment : PassableGameEvent, ILocationEvent
         if (UseWhiteSecretAlly && !MayUseWhiteSecretAlly(Game, Player)) return Message.Express(Faction.White, " are not your secret ally");
         if (UseWhiteSecretAlly && ForceAmount + SpecialForceAmount > 5) return Message.Express("You can't ship that much using ", Faction.White, " as your secret ally");
 
-        if (Game.Version >= 164 && HomeworldsToShipFrom(Player, false).Count() > 1 && ForceLocations.Sum(fl => fl.Value.AmountOfForces) != ForcesAddedToLocation) 
+        var numberOfForcesSelected = ForceLocations.Sum(fl => fl.Value.AmountOfForces);
+        if (Game.Version >= 164 && ForcesAddedToLocation > 0 && HomeworldsToShipFrom(Player, false).Count() > 1 && numberOfForcesSelected <= 0) 
             return Message.Express("Please specify where to ship your ", p.Force, " from");
-
-        if (Game.Version >= 164 && HomeworldsToShipFrom(Player, true).Count() > 1 && ForceLocations.Sum(fl => fl.Value.AmountOfSpecialForces) != SpecialForcesAddedToLocation) 
+        if (Game.Version >= 164 && numberOfForcesSelected > 0 && numberOfForcesSelected != ForcesAddedToLocation) 
+            return Message.Express("Select the source of in total ", ForcesAddedToLocation, p.Force);
+        
+        var numberOfSpecialForcesSelected = ForceLocations.Sum(fl => fl.Value.AmountOfSpecialForces);
+        if (Game.Version >= 164 && SpecialForcesAddedToLocation > 0 && HomeworldsToShipFrom(Player, true).Count() > 1 && numberOfSpecialForcesSelected <= 0) 
             return Message.Express("Please specify where to ship your ", p.SpecialForce, " from");
+        if (Game.Version >= 164 && numberOfSpecialForcesSelected > 0 && numberOfSpecialForcesSelected != SpecialForcesAddedToLocation) 
+            return Message.Express("Select the source of in total ", SpecialForcesAddedToLocation, p.SpecialForce);
 
         return null;
     }
