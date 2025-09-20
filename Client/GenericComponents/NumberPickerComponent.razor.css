@@ -1,0 +1,27 @@
+﻿.number-picker-component
+{
+    display: inline-block;
+    position: relative;
+    user-select: none;
+}
+
+.arrow-up
+{
+    position: absolute; 
+    top: 3px; 
+    pointer-events: bounding-box; 
+    cursor: pointer;
+}
+
+.arrow-down
+{
+    position: absolute;
+    bottom: 3px;
+    pointer-events: bounding-box;
+    cursor: pointer;
+}
+
+.arrow-on:hover
+{
+    filter: brightness(150%); drop-shadow(1px 1px 1px black);
+}

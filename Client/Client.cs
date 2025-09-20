@@ -66,7 +66,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     //Settings
     public float CurrentEffectVolume { get; set; } = -1;
     public float CurrentChatVolume { get; set; } = -1;
-    public Battle BattleUnderConstruction { get; set; } = null;
     public int BidAutoPassThreshold { get; set; } = 0;
     public bool AutoPass { get; set; }
     public bool KeepAutoPassSetting { get; set; } = false;
@@ -557,7 +556,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public async Task<string> SetTimer(int value) =>
         CurrentSkin.Describe((await Invoke(nameof(IGameHub.SetTimer), value)).Error);
 
-    //TODO: make strongly typed methods
     public async Task<string> RequestGameEvent<T>(T gameEvent) where T : GameEvent
     {
         var result = await Invoke($"Request{typeof(T).Name}", UserToken, GameId, gameEvent);

@@ -211,8 +211,12 @@ else
         var existingSkinData = await Browser.LoadStringSetting("treachery.online;setting.skin");
         if (existingSkinData is { Length: > 0 })
         {
-            Client.CurrentSkin = Skin.Load(existingSkinData, DefaultSkin.Default);
-            Message.DefaultDescriber = Client.CurrentSkin;
+            var skin = Skin.Load(existingSkinData, DefaultSkin.Default);
+            if (skin.Version == Skin.LatestVersion)
+            {
+                Client.CurrentSkin = Skin.Load(existingSkinData, DefaultSkin.Default);
+                Message.DefaultDescriber = Client.CurrentSkin;
+            }
         }
     }
 

@@ -15,7 +15,7 @@
     }
 
     <NumberPickerComponent Disabled="@Disabled" @bind-Value="@Value" OnChanged="@Notify" OnDown="OnDown" OnUp="OnUp" Min="Min" Max="Max"
-                           SymbolSrc="@ForceSymbolSRC" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="black"
+                           SymbolSrc="@ForceSymbolSrc" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="black"
                            NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
 </div>
 
@@ -47,61 +47,21 @@
     public string Label { get; set; } = "";
 
     [Parameter]
-    public bool Disabled { get; set; } = false;
+    public bool Disabled { get; set; }
 
     [Parameter]
     public Faction Faction { get; set; } = Faction.None;
 
     [Parameter]
-    public bool Special { get; set; } = false;
+    public bool Special { get; set; }
 
     [Parameter]
-    public bool Inline { get; set; } = false;
-
-    private string DisplayClass
-    {
-        // 1 abc <label> <picker> def
-        // 
-        // 2 abc
-        //   <label>
-        //   <picker>
-        //   def
-        //
-        // 3 abc <picker> def
-        //
-        // 4 abc
-        //   <picker>
-        //   def
-
-        get
-        {
-            if (Label != "")
-            {
-                if (Inline)
-                {
-                    //1
-                    return "d-inline-block justify-content-start";
-                }
-
-                //2
-                return "row ms-0 mt-1 mb-1 justify-content-start";
-            }
-
-            if (Inline)
-            {
-                //3
-                return "d-inline-block";
-            }
-
-            //4
-            return "row ms-0 mt-1 mb-1";
-        }
-    }
+    public bool Inline { get; set; }
 
     [Parameter]
     public string Class { get; set; } = "d-inline-flex align-items-center";
 
-    private string ForceSymbolSRC => Special ? Client.CurrentSkin.GetFactionSpecialForceImageUrl(Faction) : Client.CurrentSkin.GetFactionForceImageUrl(Faction);
+    private string ForceSymbolSrc => Special ? Client.CurrentSkin.GetFactionSpecialForceImageUrl(Faction) : Client.CurrentSkin.GetFactionForceImageUrl(Faction);
 
     private async Task Notify() {
 

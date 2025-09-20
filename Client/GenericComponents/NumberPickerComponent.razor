@@ -7,44 +7,48 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-<div style="display:inline-block;position:relative;height:@SymbolSize;width:@TotalWidth;user-select:none;" title="@Title">
+<div class="number-picker-component" style="height:@SymbolSize;width:@TotalWidth;" title="@Title">
 
     @if (DrawSymbolBackground)
     {
         <svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0; top: 0; width: @SymbolSize; height: @SymbolSize;" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="15.5" stroke="@SymbolBackgroundBorderColor" stroke-width="2%" fill="@SymbolBackgroundFillColor" /></svg>
     }
-
     
     @if (SymbolSrc != null)
     {
-        <img src="@SymbolSrc" style="position: absolute; left: 0; top: 0; width: @SymbolSize;"/>
+        <img src="@SymbolSrc" style="position: absolute; left: 0; top: 0; width: @SymbolSize;" alt="@Value"/>
     }
 
     @if (DrawNumberBackground)
     {
-        <svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0; top: 0; width: @SymbolSize; height: @SymbolSize;" width="16" height="16" viewBox="0 0 16 16"><circle cx="@NumberBackgroundOffsetX" cy="@NumberBackgroundOffsetY" r="@NumberBackgroundRadius" stroke="@NumberBackgroundBorderColor" stroke-width="2%" fill="@NumberBackgroundFillColor" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0; top: 0; width: @SymbolSize; height: @SymbolSize;" width="16" height="16" viewBox="0 0 16 16">
+            <circle cx="@NumberBackgroundOffsetX" cy="@NumberBackgroundOffsetY" r="@NumberBackgroundRadius" stroke="@NumberBackgroundBorderColor" stroke-width="2%" fill="@NumberBackgroundFillColor"/>
+        </svg>
     }
 
     @if (BehindNumberSrc != null)
     {
-        <img src="@BehindNumberSrc" style="position: absolute; left: @BehindNumberImageOffsetX; top:@BehindNumberImageOffsetY; width: @BehindNumberImageSize;" />
+        <img src="@BehindNumberSrc" style="position: absolute; left: @BehindNumberImageOffsetX; top:@BehindNumberImageOffsetY; width: @BehindNumberImageSize;" alt="@Value"/>
     }
 
     <span @onclick="@(async e => await Click(e))" style="cursor: pointer; position: absolute; left: @NumberBoxOffsetX; top:@NumberBoxOffsetY; width: @NumberBoxSize; font-size: @NumberFontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap;">@Value</span>
 
     <svg 
         @onclick="@(async e => await Increase())"
-        @onmouseover="@(e => MouseOver(true))"
-        @onmouseout="@(e => MouseOut(true))"
-        xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@IncreaseArrowColor" viewBox="0 0 16 16" style="position: absolute; left: @ArrowOffsetX; top: 3px; width: @ArrowSize; filter: @UpStyle; pointer-events: bounding-box; cursor:pointer;">
+        xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" 
+        height="@ArrowSize" 
+        viewBox="0 0 16 16"
+        class="arrow-up @ArrowUpClass"
+        style="left: @ArrowOffsetX; width: @ArrowSize; filter: @ArrowUpClass; fill: @IncreaseArrowColor">
          <path fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" />
     </svg>
 
     <svg 
         @onclick="@(async e => await Decrease())"
-        @onmouseover="@(e => MouseOver(false))"
-        @onmouseout="@(e => MouseOut(false))"
-         xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@DecreaseArrowColor" viewBox="0 0 16 16" style="position: absolute; left: @ArrowOffsetX; bottom: 3px; width: @ArrowSize; filter: @DownStyle; pointer-events: bounding-box; cursor:pointer;">
+        xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" 
+        height="@ArrowSize" viewBox="0 0 16 16" 
+        class="arrow-down @ArrowDownClass"
+        style="left: @ArrowOffsetX; width: @ArrowSize; filter: @ArrowDownClass; fill: @DecreaseArrowColor">
         <path transform="rotate(180,8,8)" fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" />
     </svg>
 
@@ -165,33 +169,6 @@
     private bool MayIncrease => !Disabled && Value + StepUp <= Max;
 
     private bool MayDecrease => !Disabled && Value - StepDown >= Min;
-
-    private bool _upHovered;
-    private bool _downHovered;
-
-    private void MouseOver(bool up)
-    {
-        if (up)
-        {
-            _upHovered = true;
-        }
-        else
-        {
-            _downHovered = true;
-        }
-    }
-
-    private void MouseOut(bool up)
-    {
-        if (up)
-        {
-            _upHovered = false;
-        }
-        else
-        {
-            _downHovered = false;
-        }
-    }
 
     private string SymbolSize => "" + Size + "px";
 
@@ -339,9 +316,9 @@
 
     private string ArrowOffsetX => "" + (int)(1.1f * Size) + "px";
 
-    private string UpStyle => _upHovered && MayIncrease ? $"brightness(150%) drop-shadow(1px 1px 1px {ArrowColor})" : "";
+    private string ArrowUpClass => MayIncrease ? "arrow-on" : "";
 
-    private string DownStyle => _downHovered && MayDecrease ? $"brightness(150%) drop-shadow(1px 1px 1px {ArrowColor})" : "";
+    private string ArrowDownClass => MayDecrease ? "arrow-on" : "";
 
     private async Task SetValue(int newValue) {
 
