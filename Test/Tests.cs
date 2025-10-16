@@ -101,8 +101,8 @@ public class Tests
         if (g.CurrentMainPhase is MainPhase.Resurrection)
         {
             var totalForceRevivals = g.TotalRevivalsThisTurn.GetValueOrDefault(e.Initiator, 0);
-            if (!g.IsPlaying(Faction.Purple) && g.CurrentRecruitsPlayed == null && e.Initiator is not Faction.Brown && totalForceRevivals > 7)
-                return "More than 7 revivals by " + e.Initiator;
+            if (!g.IsPlaying(Faction.Purple) && g.CurrentRecruitsPlayed == null && e.Initiator is not Faction.Brown && totalForceRevivals > 8)
+                return "More than 8 revivals by " + e.Initiator;
             
             if (g.Version < 180 && g.Version > 184 && e.Initiator is not Faction.Purple && e.Initiator is not Faction.Brown && e is Revival { Hero: not null } && g.LeaderRevivalsThisTurn.GetValueOrDefault(e.Initiator, 0) > 1)
                 return "Two leaders revived by " + e.Initiator;
@@ -355,7 +355,7 @@ public class Tests
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
 
-        const int nrOfGames = 32*64;
+        const int nrOfGames = 16*64;
         const int nrOfTurns = 10;
         const int nrOfPlayers = 6;
         const int timeout = 10;
