@@ -103,7 +103,7 @@ public class Revival : GameEvent, ILocationEvent
             if (AmountOfForces + AmountOfSpecialForces > limit + emperorRevivals) Message.Express("You can't revive that many");
         }
         
-        if (Initiator is not Faction.Purple && Game.FactionsThatRevivedLeadersThisTurn.Contains(Initiator)) Message.Express("You cannot revive more leaders this turn");
+        if (Initiator is not Faction.Purple && Game.LeaderRevivalsThisTurn.GetValueOrDefault(Initiator, 0) > 0) Message.Express("You cannot revive more leaders this turn");
 
         var costOfRevival = DetermineCost(Game, p, Hero, AmountOfForces, AmountOfSpecialForces, ExtraForcesPaidByRed, ExtraSpecialForcesPaidByRed, UsesRedSecretAlly);
         if (costOfRevival.TotalCostForPlayer > p.Resources) return Message.Express("You can't pay that many");
@@ -146,7 +146,7 @@ public class Revival : GameEvent, ILocationEvent
             var costForForceRevival = GetPriceOfForceRevival(g, initiator, amountOfForces, amountOfSpecialForces, usesRedSecretAlly, out var nrOfPaidSpecialForces, out var numberOfForcesRevivedForFree);
             var amountPaidForByEmperor = ValidMaxRevivalsByRed(g, initiator);
             var emperor = g.GetPlayer(Faction.Red);
-            var emperorsSpice = emperor != null ? emperor.Resources : 0;
+            var emperorsSpice = emperor?.Resources ?? 0;
 
             result.CostForEmperor = DetermineCostForEmperor(g, initiator.Faction, costForForceRevival, amountOfForces, amountOfSpecialForces, emperorsSpice, amountPaidForByEmperor);
             result.CostForForceRevivalForPlayer = costForForceRevival - result.CostForEmperor;
@@ -206,9 +206,17 @@ public class Revival : GameEvent, ILocationEvent
         var result = new List<IHero>();
 
         if (p.Faction != Faction.Purple)
-            result.AddRange(NormallyRevivableHeroes(g, p));
-        else if (p.Leaders.Count(g.IsAlive) < 5) result.AddRange(UnrestrictedRevivableHeroes(g, p));
+        {
+            if (g.LeaderRevivalsThisTurn.ContainsKey(p.Faction))
+                return [];
 
+            result.AddRange(NormallyRevivableHeroes(g, p));
+        }
+        else if (p.Leaders.Count(g.IsAlive) < 5)
+        {
+            result.AddRange(UnrestrictedRevivableHeroes(g, p));
+        } 
+            
         if (result.Count == 0)
         {
             var purple = g.GetPlayer(Faction.Purple);
@@ -231,7 +239,7 @@ public class Revival : GameEvent, ILocationEvent
         return result;
     }
 
-    public static bool IsAllowedEarlyRevival(Game g, IHero h)
+    private static bool IsAllowedEarlyRevival(Game g, IHero h)
     {
         return g.EarlyRevivalsOffers.TryGetValue(h, out var value) && value < int.MaxValue;
     }
@@ -243,7 +251,7 @@ public class Revival : GameEvent, ILocationEvent
         if (AllAvailableLeadersHaveDiedOnce(g, p) || AtLeastFiveLeadersHaveDiedOnce(g, p))
             if (p.Leaders.Any())
             {
-                var lowestDeathCount = p.Leaders.Min(l => g.DeathCount(l));
+                var lowestDeathCount = p.Leaders.Min(g.DeathCount);
 
                 result.AddRange(p.Leaders.Where(l => g.DeathCount(l) == lowestDeathCount && !g.IsAlive(l)));
 
@@ -273,7 +281,7 @@ public class Revival : GameEvent, ILocationEvent
         return p.Leaders.All(l => g.DeathCount(l) > 0);
     }
 
-    public static IEnumerable<IHero> UnrestrictedRevivableHeroes(Game g, Player p)
+    private static IEnumerable<IHero> UnrestrictedRevivableHeroes(Game g, Player p)
     {
         var result = new List<IHero>();
 
@@ -318,7 +326,7 @@ public class Revival : GameEvent, ILocationEvent
 
     public static bool MayAssignSkill(Game g, Player p, IHero h)
     {
-        var capturedLeadersToConsider = g.IsPlaying(Faction.Black) ? g.GetPlayer(Faction.Black).Leaders.Where(l => l.Faction == p.Faction) : Array.Empty<Leader>();
+        var capturedLeadersToConsider = g.IsPlaying(Faction.Black) ? g.GetPlayer(Faction.Black).Leaders.Where(l => l.Faction == p.Faction) : [];
 
         return
             h is Leader &&
@@ -327,11 +335,11 @@ public class Revival : GameEvent, ILocationEvent
             g.Applicable(Rule.LeaderSkills) &&
             !g.CapturedLeaders.Any(cl => cl.Value == p.Faction && g.IsSkilled(cl.Key)) &&
             !(p.Is(Faction.Pink) && g.IsSkilled(g.Vidal)) &&
-            !p.Leaders.Any(l => g.IsSkilled(l)) &&
-            !capturedLeadersToConsider.Any(l => g.IsSkilled(l));
+            !p.Leaders.Any(g.IsSkilled) &&
+            !capturedLeadersToConsider.Any(g.IsSkilled);
     }
 
-    public static bool MayReviveWithDiscount(Game g, Player p)
+    private static bool MayReviveWithDiscount(Game g, Player p)
     {
         return (p.Is(Faction.Purple) && !g.Prevented(FactionAdvantage.PurpleRevivalDiscount)) ||
                (p.Ally == Faction.Purple && g.PurpleAllowsRevivalDiscount && !g.Prevented(FactionAdvantage.PurpleRevivalDiscountAlly));
@@ -517,7 +525,7 @@ public class Revival : GameEvent, ILocationEvent
         var asGhola = false;
         if (Hero != null)
         {
-            Game.FactionsThatRevivedLeadersThisTurn.Add(Initiator);
+            Game.LeaderRevivalsThisTurn[Initiator] = Game.LeaderRevivalsThisTurn.GetValueOrDefault(Initiator, 0) + 1;
             
             if (Initiator != Hero.Faction && Hero is Leader leader)
             {

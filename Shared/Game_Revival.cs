@@ -17,7 +17,7 @@ public partial class Game
     public Dictionary<Faction, int> TotalRevivalsThisTurn { get; set; } = [];
     public Dictionary<Faction, int> FreeRevivalsThisTurn { get; } = [];
     public List<Faction> FactionsThatRevivedSpecialForcesThisTurn { get; } = [];
-    public List<Faction> FactionsThatRevivedLeadersThisTurn { get; } = [];
+    public Dictionary<Faction, int> LeaderRevivalsThisTurn { get; } = [];
     internal bool PurpleStartedRevivalWithLowThreshold { get; set; }
     public RecruitsPlayed CurrentRecruitsPlayed { get; set; }
     public Faction[] FactionsWithIncreasedRevivalLimits { get; internal set; } = [];

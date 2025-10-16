@@ -302,7 +302,7 @@ public class EndPhase : GameEvent
         Game.AmbassadorsPlacedThisTurn = 0;
         Game.FreeRevivalsThisTurn.Clear();
         Game.TotalRevivalsThisTurn.Clear();
-        Game.FactionsThatRevivedLeadersThisTurn.Clear();
+        Game.LeaderRevivalsThisTurn.Clear();
         //Game.HasActedOrPassed.Clear();
         Game.PurpleStartedRevivalWithLowThreshold = Game.HasLowThreshold(Faction.Purple);
 
