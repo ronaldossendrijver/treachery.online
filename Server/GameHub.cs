@@ -29,6 +29,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     
     //Other
     private static DateTimeOffset LastRestored { get; set; }
+    private static DateTimeOffset LastPersistedRunningGames { get; set; }
     private static DateTimeOffset LastPersistedScheduledGames { get; set; }
     private static DateTimeOffset MaintenanceDate { get; set; }
     private static DateTimeOffset LastCleanedUpUserTokens { get; set; }

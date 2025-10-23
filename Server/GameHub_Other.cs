@@ -105,6 +105,8 @@ public partial class GameHub
         if (LastRestored == default)
             return (0, 0, 0, 0);
         
+        var now = DateTimeOffset.Now;
+        
         Log($"{nameof(PersistRunningGames)} started...");
 
         var amountOfNewGames = 0;
@@ -114,7 +116,7 @@ public partial class GameHub
         
         await using (var context = GetDbContext())
         {
-            foreach (var (key, game) in RunningGamesByGameId)
+            foreach (var (key, game) in RunningGamesByGameId.Where(x => x.Value.LastActivity > LastPersistedRunningGames))
             {
                 var persistedGame = await context.PersistedGames.FirstOrDefaultAsync(g => g.GameId == game.GameId);
                 if (persistedGame != null)
@@ -162,6 +164,8 @@ public partial class GameHub
                 context.Remove(persistedGame);
                 amountOfDeletedGames++;
             }
+
+            LastPersistedRunningGames = now;
                 
             await context.SaveChangesAsync();
             context.ChangeTracker.Clear();
@@ -379,6 +383,7 @@ public partial class GameHub
         }
         
         LastRestored = DateTimeOffset.Now;
+        LastPersistedRunningGames = LastRestored;
         
         Log($"{nameof(RestoreGamesAndUserCache)} {amountRunning} {amountScheduled}");
 
