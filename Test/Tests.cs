@@ -98,13 +98,17 @@ public class Tests
             if (player != null) return "Negative spice " + player.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
         }
 
-        if (g.CurrentMainPhase is MainPhase.Resurrection)
+        if (g.CurrentMainPhase is MainPhase.Resurrection && e is Revival r)
         {
             var totalForceRevivals = g.TotalRevivalsThisTurn.GetValueOrDefault(e.Initiator, 0);
-            if (!g.IsPlaying(Faction.Purple) && g.CurrentRecruitsPlayed == null && e.Initiator is not Faction.Brown && totalForceRevivals > 8)
+            if (totalForceRevivals > 8 && !g.IsPlaying(Faction.Purple) && g.CurrentRecruitsPlayed == null && e.Initiator is not Faction.Brown)
                 return "More than 8 revivals by " + e.Initiator;
-            
-            if (g.Version < 180 && g.Version > 184 && e.Initiator is not Faction.Purple && e.Initiator is not Faction.Brown && e is Revival { Hero: not null } && g.LeaderRevivalsThisTurn.GetValueOrDefault(e.Initiator, 0) > 1)
+
+            if (totalForceRevivals > 4 && (g.Version > 169 || e.Initiator is not Faction.Grey) && !g.IsPlaying(Faction.Purple) && 
+                g.CurrentRecruitsPlayed == null && e.Initiator is not Faction.Brown && !g.HasLowThreshold(e.Initiator) && g.GetPlayer(r.Initiator).Ally is not Faction.Red && !r.UsesRedSecretAlly && (e.Initiator is not Faction.Grey || r.AmountOfSpecialForces == 0 || g.HasLowThreshold(e.Initiator))) 
+                return "More than 4 revivals by " + e.Initiator;
+
+            if (g.Version is < 180 or >= 185 && e.Initiator is not Faction.Purple && e.Initiator is not Faction.Brown && e is Revival { Hero: not null } && g.LeaderRevivalsThisTurn.GetValueOrDefault(e.Initiator, 0) > 1)
                 return "Two leaders revived by " + e.Initiator;
         }
 

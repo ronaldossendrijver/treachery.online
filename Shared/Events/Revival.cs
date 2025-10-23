@@ -468,12 +468,12 @@ public class Revival : GameEvent, ILocationEvent
         }
         Player.Resources -= cost.TotalCostForPlayer;
 
-        var highThresholdBonus = Initiator == Faction.Grey && Player.HasHighThreshold() && (Game.Version < 169 || cost.IncludesCostsForSpecialForces) ? 
+        var highThresholdExtraSuboids = Initiator == Faction.Grey && Player.HasHighThreshold() && (Game.Version < 169 || cost.IncludesCostsForSpecialForces) ? 
             Math.Max(0, Math.Min(2, Player.ForcesKilled - AmountOfForces - ExtraForcesPaidByRed)) : 
             0;
 
         //Force revival
-        Player.ReviveForces(AmountOfForces + ExtraForcesPaidByRed + highThresholdBonus);
+        Player.ReviveForces(AmountOfForces + ExtraForcesPaidByRed + highThresholdExtraSuboids);
         Player.ReviveSpecialForces(AmountOfSpecialForces + ExtraSpecialForcesPaidByRed);
 
         if (AmountOfSpecialForces > 0) Game.FactionsThatRevivedSpecialForcesThisTurn.Add(Initiator);
@@ -550,7 +550,7 @@ public class Revival : GameEvent, ILocationEvent
 
         //Logging
         Game.Stone(Milestone.Revival);
-        RegisterAndLogRevival(cost, totalProfitsForPurple, asGhola, highThresholdBonus);
+        RegisterAndLogRevival(cost, totalProfitsForPurple, asGhola, highThresholdExtraSuboids);
 
         if (Location != null)
         {
@@ -584,11 +584,11 @@ public class Revival : GameEvent, ILocationEvent
         if (Game.Version < 179 && Initiator != Faction.Purple) Game.HasActedOrPassed.Add(Initiator);
     }
 
-    private void RegisterAndLogRevival(RevivalCost cost, int purpleReceivedResources, bool asGhola, int highThresholdBonus)
+    private void RegisterAndLogRevival(RevivalCost cost, int purpleReceivedResources, bool asGhola, int highThresholdExtraSuboids)
     {
         var totalAmountOfForces = Game.Version < 182 
-            ? AmountOfForces + ExtraForcesPaidByRed + highThresholdBonus
-            : AmountOfForces + ExtraForcesPaidByRed + AmountOfSpecialForces + ExtraSpecialForcesPaidByRed + highThresholdBonus;
+            ? AmountOfForces + ExtraForcesPaidByRed + highThresholdExtraSuboids
+            : AmountOfForces + ExtraForcesPaidByRed + AmountOfSpecialForces + ExtraSpecialForcesPaidByRed + highThresholdExtraSuboids;
         
         Game.TotalRevivalsThisTurn[Initiator] = Game.TotalRevivalsThisTurn.GetValueOrDefault(Initiator, 0) + totalAmountOfForces; 
 
@@ -603,7 +603,8 @@ public class Revival : GameEvent, ILocationEvent
             " for ",
             Payment.Of(cost.TotalCostForPlayer + cost.CostForEmperor),
             MessagePart.ExpressIf(ExtraForcesPaidByRed > 0 || ExtraSpecialForcesPaidByRed > 0, " (", Payment.Of(cost.CostForEmperor, Faction.Red), ")"),
-            MessagePart.ExpressIf(purpleReceivedResources > 0, " → ", Faction.Purple, " get ", Payment.Of(purpleReceivedResources)));
+            MessagePart.ExpressIf(purpleReceivedResources > 0, " → ", Faction.Purple, " get ", Payment.Of(purpleReceivedResources)),
+            MessagePart.ExpressIf(highThresholdExtraSuboids > 0, " + ", highThresholdExtraSuboids, FactionForce.Grey, " for free"));
     }
 
     public override Message GetMessage()
