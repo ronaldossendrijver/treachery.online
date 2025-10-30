@@ -34,11 +34,11 @@
 
     if (maySeeAggressorBattlePlan || maySeeBothBattlePlans)
     {
-        <BattlePlan  Plan="Game.AggressorPlan" ShowEntirePlan=true OpponentPlan="Game.DefenderPlan" Facedanced="aggressorWasFacedanced" TraitorCalled="defenderCallsTraitor" IsAggressor="true" X="x" Y="y" />
+        <BattlePlan Plan="Game.AggressorPlan" ShowEntirePlan=true OpponentPlan="Game.DefenderPlan" Facedanced="aggressorWasFacedanced" TraitorCalled="defenderCallsTraitor" IsAggressor="true" X="x" Y="y" />
     }
     else if (aggressorIsAffectedByPartialPrescience)
     {
-        <BattlePlan  Plan="Game.AggressorPlan" ShowEntirePlan=false OpponentPlan="Game.DefenderPlan" Facedanced="aggressorWasFacedanced" TraitorCalled="false" IsAggressor="true" X="x" Y="y" Opacity="0.5f" />
+        <BattlePlan Plan="Game.AggressorPlan" ShowEntirePlan=false OpponentPlan="Game.DefenderPlan" Facedanced="aggressorWasFacedanced" TraitorCalled="false" IsAggressor="true" X="x" Y="y" Opacity="0.5f" />
     }
 
     x = 0.4f * Client.CurrentSkin.MapDimensions.X;

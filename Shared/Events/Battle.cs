@@ -411,7 +411,7 @@ public class Battle : GameEvent
             : playerThatFights;
     }
 
-    public static float ForceValue(Game g, Faction player, Faction opponent, int forces, int specialForces, int forcesAtHalfStrength, int specialForcesAtHalfStrength)
+    private static float ForceValue(Game g, Faction player, Faction opponent, int forces, int specialForces, int forcesAtHalfStrength, int specialForcesAtHalfStrength)
     {
         var nrOfForcesToCountAsSpecialDueToRedCunning = g.CurrentRedCunning != null && g.CurrentRedCunning.Initiator == player ? Math.Min(5, forces) : 0;
         var forcesAdjustedForCunning = forces - nrOfForcesToCountAsSpecialDueToRedCunning;

@@ -486,7 +486,7 @@ public class Revival : GameEvent, ILocationEvent
         if (nrOfFreeRevivals > 0)
         {
             var freeRevivalsThisTurn = Game.FreeRevivalsThisTurn.GetValueOrDefault(Initiator, 0);
-            firstFreeRevivalThisTurn = freeRevivalsThisTurn == 0;
+            firstFreeRevivalThisTurn = Game.Version < 186 || freeRevivalsThisTurn == 0;
             Game.FreeRevivalsThisTurn[Initiator] = freeRevivalsThisTurn + nrOfFreeRevivals;
         }
 
