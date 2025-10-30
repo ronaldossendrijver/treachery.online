@@ -479,25 +479,26 @@ public class Revival : GameEvent, ILocationEvent
         if (AmountOfSpecialForces > 0) Game.FactionsThatRevivedSpecialForcesThisTurn.Add(Initiator);
 
         //Register free revival
-        var usesFreeRevival = false;
+        var firstFreeRevivalThisTurn = false;
         var nrOfFreeRevivals = Math.Min(Game.FreeRevivals(Player, UsesRedSecretAlly),
             AmountOfForces + AmountOfSpecialForces);
         
         if (nrOfFreeRevivals > 0)
         {
-            usesFreeRevival = true;
-            Game.FreeRevivalsThisTurn[Initiator] = Game.FreeRevivalsThisTurn.GetValueOrDefault(Initiator, 0) + nrOfFreeRevivals;
+            var freeRevivalsThisTurn = Game.FreeRevivalsThisTurn.GetValueOrDefault(Initiator, 0);
+            firstFreeRevivalThisTurn = freeRevivalsThisTurn == 0;
+            Game.FreeRevivalsThisTurn[Initiator] = freeRevivalsThisTurn + nrOfFreeRevivals;
         }
 
         //Tech token activated?
-        if (usesFreeRevival && Initiator != Faction.Purple) Game.RevivalTechTokenIncome = true;
+        if (firstFreeRevivalThisTurn && Initiator != Faction.Purple) Game.RevivalTechTokenIncome = true;
 
         //Purple income
         var purple = GetPlayer(Faction.Purple);
         var totalProfitsForPurple = 0;
         if (purple != null)
         {
-            if (usesFreeRevival && !Game.PurpleStartedRevivalWithLowThreshold) totalProfitsForPurple += 1;
+            if (firstFreeRevivalThisTurn && !Game.PurpleStartedRevivalWithLowThreshold) totalProfitsForPurple += 1;
 
             if (Initiator != Faction.Purple)
             {
