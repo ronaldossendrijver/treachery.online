@@ -21,6 +21,7 @@ using Treachery.Bots;
 using Treachery.Shared;
 using Treachery.Shared.Model;
 
+[assembly: Parallelize(Scope = ExecutionScope.MethodLevel)]
 namespace Treachery.Test;
 
 [TestClass]
@@ -497,7 +498,7 @@ public class Tests
                 if (game.History.Count == maxNumberOfEvents) File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
                 Assert.AreNotEqual(maxNumberOfEvents, game.History.Count, "bots got stuck");
 
-                Assert.IsFalse(_failedGames.Contains(game), "timeout");
+                Assert.DoesNotContain(game, _failedGames, "timeout");
 
                 if (performTests)
                 {
