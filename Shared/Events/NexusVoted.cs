@@ -43,7 +43,10 @@ public class NexusVoted : PassableGameEvent
             if (2 * Game.NexusVotes.Count(v => v.Passed) >= Game.Players.Count)
                 Game.Enter(Game.CurrentPhase == Phase.VoteAllianceA && Game.Applicable(Rule.IncreasedResourceFlow), Game.EnterBlowB, Game.StartNexusCardPhase);
             else
+            {
+                if (Game.Applicable(Rule.BreakAlliancesOnAlliancePhase)) Game.BreakAllAlliances();
                 Game.Enter(Game.CurrentPhase == Phase.VoteAllianceA, Phase.AllianceA, Phase.AllianceB);
+            }
         }
     }
 
