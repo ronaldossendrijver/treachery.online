@@ -33,6 +33,9 @@ public partial class Game
     public List<Rule> AllRules { get; internal set; } = [];
     public List<GameEvent> History { get; } = [];
     public List<Moment> Moments { get; } = [];
+    public int RecentlyUndoneEventCount { get; set; }
+    public List<GameEvent> RecentlyUndoneEvents { get; } = [];
+    public Game PreviousGameState { get; set; }
     public int CurrentTurn { get; private set; }
     public MainPhase CurrentMainPhase { get; internal set; } = MainPhase.Started;
     public MainPhaseMoment CurrentMoment { get; private set; } = MainPhaseMoment.None;
@@ -137,6 +140,8 @@ public partial class Game
     public Game Undo(int untilEventNr)
     {
         var result = new Game(Version, Participation);
+        result.PreviousGameState = this; // Store the current game state
+
         var maxEventNr = Math.Min(untilEventNr, History.Count);
 
         for (var i = 0; i < maxEventNr; i++)
@@ -144,6 +149,65 @@ public partial class Game
             History[i].Initialize(result);
             History[i].Execute(false, false);
         }
+
+        // Store the recently undone events
+        result.RecentlyUndoneEventCount = History.Count - maxEventNr;
+        for (var i = maxEventNr; i < History.Count; i++)
+        {
+            result.RecentlyUndoneEvents.Add(History[i]);
+        }
+
+        return result;
+    }
+
+    public Game RestoreRecentlyUndone()
+    {
+        if (PreviousGameState != null)
+        {
+            return PreviousGameState;
+        }
+        
+        if (RecentlyUndoneEventCount == 0 || RecentlyUndoneEvents.Count == 0)
+            return this;
+
+        var result = new Game(Version, Participation);
+        
+        // Replay all current history
+        for (var i = 0; i < History.Count; i++)
+        {
+            History[i].Initialize(result);
+            History[i].Execute(false, false);
+        }
+
+        // Add back the recently undone events to history and execute them
+        foreach (var evt in RecentlyUndoneEvents)
+        {
+            evt.Initialize(result);
+            evt.Execute(false, false);
+        }
+
+        // Clear the recently undone events after restoring
+        result.RecentlyUndoneEventCount = 0;
+        result.RecentlyUndoneEvents.Clear();
+
+        return result;
+    }
+
+    public Game DismissRecentlyUndone()
+    {
+        var result = new Game(Version, Participation);
+        var maxEventNr = History.Count;
+
+        for (var i = 0; i < maxEventNr; i++)
+        {
+            History[i].Initialize(result);
+            History[i].Execute(false, false);
+        }
+
+        // Clear the recently undone events and previous game state
+        result.RecentlyUndoneEventCount = 0;
+        result.RecentlyUndoneEvents.Clear();
+        result.PreviousGameState = null;
 
         return result;
     }

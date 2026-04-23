@@ -19,6 +19,8 @@ public interface IGameClient
     Task HandleSetTimer(int value);
     Task HandleSetSkin(string skin);
     Task HandleUndo(int untilEventNr);
+    Task HandleRestoreRecentlyUndone();
+    Task HandleDismissRecentlyUndone();
     Task HandleUpdateSettings(GameSettings settings);
     Task HandleJoinGame(int userId, string userName, int seat);
     Task HandleSetOrUnsetHost(int userId);

@@ -111,6 +111,8 @@ public interface IGameService
     Task<string> RequestAssignSeats(Dictionary<int, int> seatedPlayers);
     Task<string> RequestSetSkin(string skin);
     Task<string> RequestUndo(int untilEventNr);
+    Task<string> RequestRestoreRecentlyUndone();
+    Task<string> RequestDismissRecentlyUndone();
     Task<string> RequestSetBotSpeed(int speed);
     
     //Game Events
