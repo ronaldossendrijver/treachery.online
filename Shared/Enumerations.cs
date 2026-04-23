@@ -635,6 +635,7 @@ public enum Rule
     AssistedNotekeepingForGreen = 117,
     YellowAllyGetsDialedResourcesRefunded = 118,
     DisableNovaFlipping = 119,
+    BreakAlliancesOnAlliancePhase = 120,
 
     ExtraKaramaCards = 999,
 

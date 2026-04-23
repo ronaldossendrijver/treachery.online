@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 
 namespace Treachery.Server;
@@ -15,5 +16,6 @@ public partial class TreacheryContext(DbContextOptions<TreacheryContext> options
     {
         var connectionString = configuration.GetConnectionString("TreacheryDatabase");
         optionsBuilder.UseSqlite(connectionString);
+        optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
     }
 }
