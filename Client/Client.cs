@@ -136,6 +136,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         _connection.On<int>(nameof(HandleSetTimer), HandleSetTimer);
         _connection.On<string>(nameof(HandleSetSkin), HandleSetSkin);
         _connection.On<int>(nameof(HandleUndo), HandleUndo);
+        _connection.On(nameof(HandleRestoreRecentlyUndone), HandleRestoreRecentlyUndone);
+        _connection.On(nameof(HandleDismissRecentlyUndone), HandleDismissRecentlyUndone);
         _connection.On<int,string,int>(nameof(HandleJoinGame), HandleJoinGame);
         _connection.On<int>(nameof(HandleSetOrUnsetHost), HandleSetOrUnsetHost);
         _connection.On<int,string>(nameof(HandleObserveGame), HandleObserveGame);
@@ -266,6 +268,39 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         try
         {
             Game = Game.Undo(untilEventNr);
+            await PerformPostEventTasks();
+        }
+        catch (Exception ex)
+        {
+            Support.Log(ex.ToString());
+        }
+    }
+
+    public async Task HandleRestoreRecentlyUndone()
+    {
+        
+        if (!InGame)
+            return;
+        
+        try
+        {
+            Game = Game.RestoreRecentlyUndone();
+            await PerformPostEventTasks();
+        }
+        catch (Exception ex)
+        {
+            Support.Log(ex.ToString());
+        }
+    }
+
+    public async Task HandleDismissRecentlyUndone()
+    {
+        if (!InGame)
+            return;
+        
+        try
+        {
+            Game = Game.DismissRecentlyUndone();
             await PerformPostEventTasks();
         }
         catch (Exception ex)
@@ -552,6 +587,12 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         
     public async Task<string> RequestUndo(int untilEventNr) =>
         CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestUndo), UserToken, GameId, untilEventNr)).Error);
+
+    public async Task<string> RequestRestoreRecentlyUndone() =>
+        CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestRestoreRecentlyUndone), UserToken, GameId)).Error);
+
+    public async Task<string> RequestDismissRecentlyUndone() =>
+        CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestDismissRecentlyUndone), UserToken, GameId)).Error);
 
     public async Task<string> SetTimer(int value) =>
         CurrentSkin.Describe((await Invoke(nameof(IGameHub.SetTimer), value)).Error);

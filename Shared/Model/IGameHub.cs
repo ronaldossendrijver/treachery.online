@@ -29,6 +29,8 @@ public interface IGameHub
     Task<VoidResult> RequestLoadGame(string userToken, string hashedPassword, string state, string skin);
     Task<VoidResult> RequestSetSkin(string userToken, string gameId, string skin);
     Task<VoidResult> RequestUndo(string userToken, string gameId, int untilEventNr);
+    Task<VoidResult> RequestRestoreRecentlyUndone(string userToken, string gameId);
+    Task<VoidResult> RequestDismissRecentlyUndone(string userToken, string gameId);
     Task<Result<GameInitInfo>> RequestGameState(string userToken, string gameId);
     Task<VoidResult> RequestSetBotSpeed(string userToken, string gameId, int speed);
     Task<Result<ServerStatus>> RequestHeartbeat(string userToken, GameListScope scope);

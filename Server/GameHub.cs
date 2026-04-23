@@ -160,4 +160,5 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         result.Position = 0;
         return result;
     }
+    private static string RecentlyUndoneEventNrKey(string gameId) => $"RecentlyUndoneEventNr_{gameId}";
 }

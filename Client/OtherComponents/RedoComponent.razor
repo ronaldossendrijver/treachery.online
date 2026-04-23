@@ -1,0 +1,35 @@
+@*
+ * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
+ * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
+ * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+*@
+@inherits GameComponent
+
+<div class="card p-1 mb-2" style="@(Game.RecentlyUndoneEventCount > 0 ? "" : "display: none;")">
+    <div class="card-header">Recently undone @Game.RecentlyUndoneEventCount event(s)</div>
+    <div class="card-body">
+        <div class="mb-2">
+            @foreach (var evt in Game.RecentlyUndoneEvents)
+            {
+                <div class="small text-muted">@evt.GetShortMessage()?.ToString(Client.CurrentSkin)</div>
+            }
+        </div>
+        <button class="btn btn-success me-2" @onclick="RestoreUndone">Restore</button>
+        <button class="btn btn-secondary" @onclick="DismissUndone">Dismiss</button>
+    </div>
+</div>
+
+@code {
+    private async Task RestoreUndone()
+    {
+        await Client.RequestRestoreRecentlyUndone();
+    }
+
+    private async Task DismissUndone()
+    {
+        await Client.RequestDismissRecentlyUndone();
+    }
+}

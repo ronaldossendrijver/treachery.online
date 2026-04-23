@@ -482,6 +482,40 @@ public partial class GameHub
         return Success();
     }
 
+    public async Task<VoidResult> RequestRestoreRecentlyUndone(string userToken, string gameId)
+    {
+        if (!AreValid(userToken, gameId, out var user, out var game, out var error))
+            return error!;
+
+        if (!game!.Game.IsHost(user!.Id))
+            return Error(ErrorType.NoHost);
+
+        game.Game = game.Game.RestoreRecentlyUndone();
+        await Clients.Group(gameId).HandleRestoreRecentlyUndone();
+
+        game.LastActivity = DateTimeOffset.Now;
+        await PersistGameIfNeeded(game);
+        ScheduleBotEvent(game);
+        return Success();
+    }
+
+    public async Task<VoidResult> RequestDismissRecentlyUndone(string userToken, string gameId)
+    {
+        if (!AreValid(userToken, gameId, out var user, out var game, out var error))
+            return error!;
+
+        if (!game!.Game.IsHost(user!.Id))
+            return Error(ErrorType.NoHost);
+
+        game.Game = game.Game.DismissRecentlyUndone();
+        await Clients.Group(gameId).HandleDismissRecentlyUndone();
+
+        game.LastActivity = DateTimeOffset.Now;
+        await PersistGameIfNeeded(game);
+        ScheduleBotEvent(game);
+        return Success();
+    }
+
     public async Task<VoidResult> RequestSetBotSpeed(string userToken, string gameId, int speed)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
