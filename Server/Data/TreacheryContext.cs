@@ -16,6 +16,5 @@ public partial class TreacheryContext(DbContextOptions<TreacheryContext> options
     {
         var connectionString = configuration.GetConnectionString("TreacheryDatabase");
         optionsBuilder.UseSqlite(connectionString);
-        optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
     }
 }
