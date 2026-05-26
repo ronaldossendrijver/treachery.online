@@ -237,6 +237,8 @@ public partial class Game
         {
             CurrentAllianceOffers.Clear();
 
+            if (Applicable(Rule.BreakAlliancesOnAlliancePhase)) BreakAllAlliances();
+
             if (Monsters.Count == 1 && Monsters[0].IsGreatMonster)
             {
                 NexusVotes.Clear();

@@ -63,6 +63,16 @@ public partial class Game
         while (playerB.HandSizeExceeded) Discard(playerB, playerB.TreacheryCards.RandomOrDefault(Random));
     }
 
+    internal void BreakAllAlliances()
+    {
+        foreach (var p in Players.Where(p => p.HasAlly).ToList())
+            if (p.HasAlly)
+            {
+                Log(p.Faction, " and ", p.Ally, " alliance is broken");
+                BreakAlliance(p.Faction);
+            }
+    }
+
     internal void BreakAlliance(Faction f)
     {
         var initiator = GetPlayer(f);
