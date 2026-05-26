@@ -562,7 +562,7 @@ public class Player : ICloneable
 
     #region Information
 
-    public Player AlliedPlayer => Game.GetPlayer(Ally);
+    public Player? AlliedPlayer => Game.GetPlayer(Ally);
     public int AlliedResources => AlliedPlayer?.Resources ?? 0;
     
     public bool HasAlly => Ally != Faction.None;

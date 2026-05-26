@@ -158,21 +158,19 @@ public partial class Game
 
     public int SpiceForBidsRedCanPay(Faction f)
     {
-        if (PermittedUseOfRedSpice.TryGetValue(f, out var value))
-        {
-            var red = GetPlayer(Faction.Red);
-            return Math.Min(value, red.Resources);
-        }
-
-        return 0;
+        if (!PermittedUseOfRedSpice.TryGetValue(f, out var value)) return 0;
+        
+        var red = GetPlayer(Faction.Red);
+        return Math.Min(value, red.Resources);
     }
 
-    public TreacheryCard GetPermittedUseOfAllyKarma(Faction f)
+    public TreacheryCard? GetPermittedUseOfAllyKarma(Faction f)
     {
         var ally = Players.SingleOrDefault(p => p.Ally == f);
 
-        if (PermittedUseOfAllyKarma.TryGetValue(f, out var value) && ally != null && ally.Has(value))
+        if (ally != null && PermittedUseOfAllyKarma.TryGetValue(f, out var value) && ally.Has(value))
             return PermittedUseOfAllyKarma[f];
+        
         return null;
     }
 
@@ -180,9 +178,9 @@ public partial class Game
     {
         var ally = GetPlayer(f).AlliedPlayer;
 
-        if (!PermittedUseOfAllySpice.ContainsKey(f) || ally == null)
+        if (!PermittedUseOfAllySpice.TryGetValue(f, out int value) || ally == null)
             return 0;
-        return Math.Min(PermittedUseOfAllySpice[f], ally.Resources);
+        return Math.Min(value, ally.Resources);
     }
 
     #endregion Information

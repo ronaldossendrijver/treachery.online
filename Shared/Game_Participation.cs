@@ -19,9 +19,9 @@ public partial class Game
     
     public bool IsPlaying(Faction faction) => Players.Any(p => p.Faction == faction);
 
-    public Player GetPlayer(Faction? f) => Players.FirstOrDefault(p => p.Faction == f);
+    public Player? GetPlayer(Faction? f) => Players.FirstOrDefault(p => p.Faction == f);
 
-    private Player GetPlayerInSeat(int seat) => Players.FirstOrDefault(p => p.Seat == seat);
+    private Player? GetPlayerInSeat(int seat) => Players.FirstOrDefault(p => p.Seat == seat);
     
     public Faction GetFactionInSeat(int seat) => GetPlayerInSeat(seat)?.Faction ?? Faction.None;
     
@@ -37,13 +37,13 @@ public partial class Game
         ? player.IsBot ? "Bot" : Participation.PlayerNames.GetValueOrDefault(UserIdInSeat(player.Seat), "?")
         : LegacyNames.GetValueOrDefault(player, string.Empty);
     
-    public Player GetPlayerByUserId(int userId) => GetPlayerBySeat(SeatOf(userId));
+    public Player? GetPlayerByUserId(int userId) => GetPlayerBySeat(SeatOf(userId));
 
-    public Player GetPlayerByName(string name) => Players.FirstOrDefault(p => GetPlayerName(p) == name);
+    public Player? GetPlayerByName(string name) => Players.FirstOrDefault(p => GetPlayerName(p) == name);
 
     public int GetUserIdByName(string name) => Participation.PlayerNames.FirstOrDefault(u => u.Value == name).Key;
     
-    public Player GetPlayerBySeat(int seatNr) => Players.FirstOrDefault(p => p.Seat == seatNr);
+    public Player? GetPlayerBySeat(int seatNr) => Players.FirstOrDefault(p => p.Seat == seatNr);
 
     public int UserIdInSeat(int seat)
     {
