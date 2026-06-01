@@ -335,7 +335,8 @@ public class EstablishPlayers : GameEvent
             #pragma warning disable CS0612 // Type or member is obsolete
             foreach (var newPlayer in Players)
             {
-                var p = new Player(Game, newPlayer);
+                var p = new Player(Game);
+                Game.LegacyNames.Add(p, newPlayer);
                 Game.Players.Add(p);
                 Log(p.Name, " joins the game");
             }

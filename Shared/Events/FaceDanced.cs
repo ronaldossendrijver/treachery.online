@@ -108,7 +108,7 @@ public class FaceDanced : PlacementEvent
     {
         if (Game.Version > 150 || (Game.Version <= 150 && FaceDancerCalled))
         {
-            var facedancer = Player.FaceDancers.FirstOrDefault(f => Game.WinnerHero.IsFaceDancer(f));
+            var facedancer = Player.FaceDancers.First(f => Game.WinnerHero.IsFaceDancer(f));
 
             if (Game.Version <= 150)
             {
@@ -119,9 +119,9 @@ public class FaceDanced : PlacementEvent
             if (facedancer is Leader && Game.IsAlive(facedancer)) Game.KillHero(facedancer);
 
             foreach (var p in Game.Players)
-                if (!p.KnownNonTraitors.Contains(facedancer)) p.KnownNonTraitors.Add(facedancer);
+                p.KnownNonTraitors.Add(facedancer);
 
-            if (!Player.RevealedFaceDancers.Contains(facedancer)) Player.RevealedFaceDancers.Add(facedancer);
+            Player.RevealedFaceDancers.Add(facedancer);
 
             if (!Player.UnrevealedFaceDancers.Any()) ReplaceFacedancers();
 
@@ -160,8 +160,8 @@ public class FaceDanced : PlacementEvent
             foreach (var fl in TargetForceLocations)
             {
                 var location = fl.Key;
-                Player.AddForces(location, fl.Value.AmountOfForces, false, Player.GetHomeworld(false));
-                Player.AddSpecialForces(location, fl.Value.AmountOfSpecialForces, false, Player.GetHomeworld(true));
+                Player.AddForces(location, fl.Value.AmountOfForces, false);
+                Player.AddSpecialForces(location, fl.Value.AmountOfSpecialForces, false);
             }
 
             Log(nrOfRemovedForces, " ", winner.Faction,

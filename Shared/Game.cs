@@ -66,7 +66,7 @@ public partial class Game
 
     public Dictionary<TerrorType, Territory> TerrorOnPlanet { get; private set; } = new();
     public Deck<Ambassador> UnassignedAmbassadors { get; internal set; }
-    public Territory AtomicsAftermath { get; internal set; }
+    public Territory? AtomicsAftermath { get; internal set; }
     public List<Ambassador> AmbassadorsSetAside { get; } = [];
     public Deck<DiscoveryToken> YellowDiscoveryTokens { get; set; }
     public Deck<DiscoveryToken> OrangeDiscoveryTokens { get; set; }
@@ -821,7 +821,7 @@ public partial class Game
         return false;
     }
 
-    public Player OccupierOf(World w)
+    public Player? OccupierOf(World w)
     {
         var hwOccupation = HomeworldOccupation.Keys.FirstOrDefault(hw => hw.World == w);
         if (hwOccupation != null) return GetPlayer(HomeworldOccupation[hwOccupation]);

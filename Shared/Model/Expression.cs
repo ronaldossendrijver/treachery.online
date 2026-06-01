@@ -9,19 +9,9 @@
 
 namespace Treachery.Shared;
 
-public class Expression
+public class Expression(params object?[] elements)
 {
-    public object[] Elements { get; private set; }
-
-    public Expression(params object[] elements)
-    {
-        Elements = elements;
-    }
-
-    public Expression(List<object> elements)
-    {
-        Elements = elements.ToArray();
-    }
+    public object?[] Elements { get; private set; } = elements;
 
     public static Expression Express(params object[] list)
     {

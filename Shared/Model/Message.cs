@@ -69,10 +69,11 @@ public class MessagePart
         return new MessagePart(new Expression(list));
     }
 
-    public static MessagePart ExpressIf(bool condition, params object[] list)
+    public static MessagePart ExpressIf(bool condition, params object?[] list)
     {
         if (condition)
             return new MessagePart(new Expression(list));
+        
         return new MessagePart(new Expression());
     }
 
