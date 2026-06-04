@@ -13,7 +13,7 @@ public interface IHero : IIdentifiable
 {
     public int Value { get; }
 
-    public int ValueInCombatAgainst(IHero opposingHero);
+    public int ValueInCombatAgainst(IHero? opposingHero);
 
     public int SkinId { get; }
 

@@ -19,82 +19,81 @@ public class Skin : IDescriber
 
     public const int LatestVersion = 151;
 
-    public string Description;
     public int Version;
 
-    public Dictionary<Concept, string> Concept_STR;
-    public Dictionary<MainPhase, string> MainPhase_STR;
-    public Dictionary<int, string> PersonName_STR;
-    public Dictionary<int, string> PersonImage_URL;
-    public Dictionary<int, string> TerritoryName_STR;
-    public Dictionary<int, string> TerritoryBorder_SVG;
-    public Dictionary<int, PointD> LocationCenter_Point;
-    public Dictionary<int, PointD> LocationSpice_Point;
-    public Dictionary<Faction, string> FactionName_STR;
-    public Dictionary<Faction, string> FactionImage_URL;
-    public Dictionary<Faction, string> FactionTableImage_URL;
-    public Dictionary<Faction, string> FactionFacedownImage_URL;
-    public Dictionary<Faction, string> FactionForceImage_URL;
-    public Dictionary<Faction, string> FactionSpecialForceImage_URL;
-    public Dictionary<Faction, string> FactionColor;
-    public Dictionary<Faction, string> ForceName_STR;
-    public Dictionary<Faction, string> SpecialForceName_STR;
-    public Dictionary<TechToken, string> TechTokenName_STR;
-    public Dictionary<TechToken, string> TechTokenImage_URL;
-    public Dictionary<Milestone, string> Sound;
-    public Dictionary<TreacheryCardType, string> TreacheryCardType_STR;
-    public Dictionary<int, string> TreacheryCardName_STR;
-    public Dictionary<int, string> TreacheryCardDescription_STR;
-    public Dictionary<int, string> TreacheryCardImage_URL;
-    public Dictionary<TechToken, string> TechTokenDescription_STR;
-    public Dictionary<int, string> ResourceCardImage_URL;
-    public Dictionary<LeaderSkill, string> LeaderSkillCardName_STR;
-    public Dictionary<LeaderSkill, string> LeaderSkillCardImage_URL;
-    public Dictionary<int, string> StrongholdCardName_STR;
-    public Dictionary<StrongholdAdvantage, string> StrongholdCardImage_URL;
-    public Dictionary<World, string> HomeWorldImage_URL;
-    public Dictionary<World, string> HomeWorldCardImage_URL;
-    public Dictionary<Nexus, string> NexusCardImage_URL;
-    public Dictionary<TerrorType, string> TerrorTokenName_STR;
-    public Dictionary<TerrorType, string> TerrorTokenDescription_STR;
-    public Dictionary<DiscoveryToken, string> DiscoveryTokenName_STR;
-    public Dictionary<DiscoveryToken, string> DiscoveryTokenDescription_STR;
-    public Dictionary<DiscoveryToken, string> DiscoveryTokenImage_URL;
-    public Dictionary<DiscoveryTokenType, string> DiscoveryTokenTypeName_STR;
-    public Dictionary<DiscoveryTokenType, string> DiscoveryTokenTypeImage_URL;
-    public Dictionary<Ambassador, string> AmbassadorImage_URL;
-    public Dictionary<Ambassador, string> AmbassadorName_STR;
-    public Dictionary<Ambassador, string> AmbassadorDescription_STR;
+    public Dictionary<Concept, string> Concept_STR = [];
+    public Dictionary<MainPhase, string> MainPhase_STR = [];
+    public Dictionary<int, string> PersonName_STR = [];
+    public Dictionary<int, string> PersonImage_URL = [];
+    public Dictionary<int, string> TerritoryName_STR = [];
+    public Dictionary<int, string> TerritoryBorder_SVG = [];
+    public Dictionary<int, PointD> LocationCenter_Point = [];
+    public Dictionary<int, PointD> LocationSpice_Point = [];
+    public Dictionary<Faction, string> FactionName_STR = [];
+    public Dictionary<Faction, string> FactionImage_URL = [];
+    public Dictionary<Faction, string> FactionTableImage_URL = [];
+    public Dictionary<Faction, string> FactionFacedownImage_URL = [];
+    public Dictionary<Faction, string> FactionForceImage_URL = [];
+    public Dictionary<Faction, string> FactionSpecialForceImage_URL = [];
+    public Dictionary<Faction, string> FactionColor = [];
+    public Dictionary<Faction, string> ForceName_STR = [];
+    public Dictionary<Faction, string> SpecialForceName_STR = [];
+    public Dictionary<TechToken, string> TechTokenName_STR = [];
+    public Dictionary<TechToken, string> TechTokenImage_URL = [];
+    public Dictionary<Milestone, string> Sound = [];
+    public Dictionary<TreacheryCardType, string> TreacheryCardType_STR = [];
+    public Dictionary<int, string> TreacheryCardName_STR = [];
+    public Dictionary<int, string> TreacheryCardDescription_STR = [];
+    public Dictionary<int, string> TreacheryCardImage_URL = [];
+    public Dictionary<TechToken, string> TechTokenDescription_STR = [];
+    public Dictionary<int, string> ResourceCardImage_URL = [];
+    public Dictionary<LeaderSkill, string> LeaderSkillCardName_STR = [];
+    public Dictionary<LeaderSkill, string> LeaderSkillCardImage_URL = [];
+    public Dictionary<int, string> StrongholdCardName_STR = [];
+    public Dictionary<StrongholdAdvantage, string> StrongholdCardImage_URL = [];
+    public Dictionary<World, string> HomeWorldImage_URL = [];
+    public Dictionary<World, string> HomeWorldCardImage_URL = [];
+    public Dictionary<Nexus, string> NexusCardImage_URL = [];
+    public Dictionary<TerrorType, string> TerrorTokenName_STR = [];
+    public Dictionary<TerrorType, string> TerrorTokenDescription_STR = [];
+    public Dictionary<DiscoveryToken, string> DiscoveryTokenName_STR = [];
+    public Dictionary<DiscoveryToken, string> DiscoveryTokenDescription_STR = [];
+    public Dictionary<DiscoveryToken, string> DiscoveryTokenImage_URL = [];
+    public Dictionary<DiscoveryTokenType, string> DiscoveryTokenTypeName_STR = [];
+    public Dictionary<DiscoveryTokenType, string> DiscoveryTokenTypeImage_URL = [];
+    public Dictionary<Ambassador, string> AmbassadorImage_URL = [];
+    public Dictionary<Ambassador, string> AmbassadorName_STR = [];
+    public Dictionary<Ambassador, string> AmbassadorDescription_STR = [];
 
     public bool DrawResourceIconsOnMap { get; set; }
     public bool ShowVerboseToolipsOnMap { get; set; }
     public bool ShowArrowsForRecentMoves { get; set; }
 
-    public string MusicGeneral_URL;
-    public string MusicResourceBlow_URL;
-    public string MusicSetup_URL;
-    public string MusicBidding_URL;
-    public string MusicShipmentAndMove_URL;
-    public string MusicBattle_URL;
-    public string MusicBattleClimax_URL;
-    public string MusicMentat_URL;
+    public string MusicGeneral_URL = string.Empty;
+    public string MusicResourceBlow_URL = string.Empty;
+    public string MusicSetup_URL = string.Empty;
+    public string MusicBidding_URL = string.Empty;
+    public string MusicShipmentAndMove_URL = string.Empty;
+    public string MusicBattle_URL = string.Empty;
+    public string MusicBattleClimax_URL = string.Empty;
+    public string MusicMentat_URL = string.Empty;
 
-    public string Sound_YourTurn_URL;
-    public string Sound_Chatmessage_URL;
+    public string Sound_YourTurn_URL = string.Empty;
+    public string Sound_Chatmessage_URL = string.Empty;
 
-    public string Map_URL;
-    public string Eye_URL;
-    public string EyeSlash_URL;
-    public string CardBack_ResourceCard_URL;
-    public string CardBack_TreacheryCard_URL;
-    public string BattleScreen_URL;
-    public string Messiah_URL;
-    public string Monster_URL;
-    public string Harvester_URL;
-    public string Resource_URL;
-    public string HMS_URL;
-    public string HighThreshold_URL;
-    public string LowThreshold_URL;
+    public string Map_URL = string.Empty;
+    public string Eye_URL = string.Empty;
+    public string EyeSlash_URL = string.Empty;
+    public string CardBack_ResourceCard_URL = string.Empty;
+    public string CardBack_TreacheryCard_URL = string.Empty;
+    public string BattleScreen_URL = string.Empty;
+    public string Messiah_URL = string.Empty;
+    public string Monster_URL = string.Empty;
+    public string Harvester_URL = string.Empty;
+    public string Resource_URL = string.Empty;
+    public string HMS_URL = string.Empty;
+    public string HighThreshold_URL = string.Empty;
+    public string LowThreshold_URL = string.Empty;
 
     public PointD MapDimensions;
     public PointD PlanetCenter;
@@ -122,45 +121,45 @@ public class Skin : IDescriber
     public int MONSTERTOKEN_RADIUS;
 
     //Force tokens
-    public string FORCETOKEN_FONT;
-    public string FORCETOKEN_FONTCOLOR;
-    public string FORCETOKEN_FONT_BORDERCOLOR;
+    public string FORCETOKEN_FONT = string.Empty;
+    public string FORCETOKEN_FONTCOLOR = string.Empty;
+    public string FORCETOKEN_FONT_BORDERCOLOR = string.Empty;
     public int FORCETOKEN_FONT_BORDERWIDTH;
     public int FORCETOKEN_RADIUS;
 
     //Spice tokens
-    public string RESOURCETOKEN_FONT;
-    public string RESOURCETOKEN_FONTCOLOR;
-    public string RESOURCETOKEN_FONT_BORDERCOLOR;
+    public string RESOURCETOKEN_FONT = string.Empty;
+    public string RESOURCETOKEN_FONTCOLOR = string.Empty;
+    public string RESOURCETOKEN_FONT_BORDERCOLOR = string.Empty;
     public int RESOURCETOKEN_FONT_BORDERWIDTH;
     public int RESOURCETOKEN_RADIUS;
 
     //Other highlights
-    public string HIGHLIGHT_OVERLAY_COLOR;
-    public string METHEOR_OVERLAY_COLOR;
-    public string BLOWNSHIELDWALL_OVERLAY_COLOR;
-    public string STORM_OVERLAY_COLOR;
-    public string STORM_PRESCIENCE_OVERLAY_COLOR;
+    public string HIGHLIGHT_OVERLAY_COLOR = string.Empty;
+    public string METHEOR_OVERLAY_COLOR = string.Empty;
+    public string BLOWNSHIELDWALL_OVERLAY_COLOR = string.Empty;
+    public string STORM_OVERLAY_COLOR = string.Empty;
+    public string STORM_PRESCIENCE_OVERLAY_COLOR = string.Empty;
 
     //Card piles
-    public string CARDPILE_FONT;
-    public string CARDPILE_FONTCOLOR;
-    public string CARDPILE_FONT_BORDERCOLOR;
+    public string CARDPILE_FONT = string.Empty;
+    public string CARDPILE_FONTCOLOR = string.Empty;
+    public string CARDPILE_FONT_BORDERCOLOR = string.Empty;
     public int CARDPILE_FONT_BORDERWIDTH;
 
     //Phases
-    public string PHASE_FONT;
-    public string PHASE_ACTIVE_FONT;
-    public string PHASE_FONTCOLOR;
-    public string PHASE_ACTIVE_FONTCOLOR;
-    public string PHASE_FONT_BORDERCOLOR;
+    public string PHASE_FONT = string.Empty;
+    public string PHASE_ACTIVE_FONT = string.Empty;
+    public string PHASE_FONTCOLOR = string.Empty;
+    public string PHASE_ACTIVE_FONTCOLOR = string.Empty;
+    public string PHASE_FONT_BORDERCOLOR = string.Empty;
     public int PHASE_FONT_BORDERWIDTH;
     public int PHASE_ACTIVE_FONT_BORDERWIDTH;
 
     //Player names
-    public string PLAYERNAME_FONT;
-    public string PLAYERNAME_FONTCOLOR;
-    public string PLAYERNAME_FONT_BORDERCOLOR;
+    public string PLAYERNAME_FONT = string.Empty;
+    public string PLAYERNAME_FONTCOLOR = string.Empty;
+    public string PLAYERNAME_FONT_BORDERCOLOR = string.Empty;
     public int PLAYERNAME_FONT_BORDERWIDTH;
 
     //Skill names
@@ -258,11 +257,11 @@ public class Skin : IDescriber
         return location.SpiceBlowAmount != 0 ? LocationSpice_Point[location.Id] : new PointD(0, 0);
     }
 
-    public string Describe(object value)
+    public string Describe(object? value)
     {
         return value switch
         {
-            null => "",
+            null => string.Empty,
             string str => str,
             bool b => b ? "Yes" : "No",
             Message msg => msg.ToString(this),
@@ -301,7 +300,7 @@ public class Skin : IDescriber
             StrongholdAdvantage sa => Describe(sa),
             ClairVoyanceAnswer cva => Describe(cva),
             IEnumerable iEnum => Join(iEnum.Cast<object>()),
-            _ => value.ToString()
+            _ => value.ToString() ?? string.Empty
         };
     }
 
@@ -389,7 +388,7 @@ public class Skin : IDescriber
         return GetLabel(TreacheryCardType_STR, t);
     }
 
-    public string Describe(ResourceCard c)
+    public string Describe(ResourceCard? c)
     {
         if (c == null)
             return "?";
@@ -443,7 +442,7 @@ public class Skin : IDescriber
     public string GetPopup(Homeworld w)
         => $"<div style='position:relative'><img width=480 style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{GetHomeworldCardImageUrl(w.World)}'/></div>";
 
-    public string GetPopup(TreacheryCard c)
+    public string GetPopup(TreacheryCard? c)
     {
         if (c == null)
             return "";
@@ -456,7 +455,7 @@ public class Skin : IDescriber
         return GetImageHoverHtml(GetImageUrl(h));
     }
 
-    public string GetPopup(IHero h, Game g)
+    public string GetPopup(IHero? h, Game g)
     {
         if (h == null) return "";
 
@@ -470,7 +469,7 @@ public class Skin : IDescriber
         return GetPopup(h as Leader, skill);
     }
 
-    public string GetPopup(Leader l, LeaderSkill s)
+    public string GetPopup(Leader? l, LeaderSkill s)
         => l == null ? "" : $"<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{GetImageUrl(s)}' width=300/><img src='{GetImageUrl(l)}' width=140 style='position:absolute;left:200px;top:120px;filter:drop-shadow(-2px 2px 2px black);'/></div>";
     
     public string GetPopup(StrongholdAdvantage adv)
@@ -961,12 +960,12 @@ public class Skin : IDescriber
 
     #region NamesAndImages
 
-    public string GetTerritoryBorder(Territory t)
+    public string GetTerritoryBorder(Territory? t)
     {
         return t != null ? GetLabel(TerritoryBorder_SVG, t.SkinId) : "";
     }
 
-    public string GetImageUrl(TreacheryCard c)
+    public string GetImageUrl(TreacheryCard? c)
     {
         return c != null ? GetLabel(TreacheryCardImage_URL, c.SkinId) : "";
     }
@@ -981,7 +980,7 @@ public class Skin : IDescriber
         return GetLabel(StrongholdCardImage_URL, a);
     }
 
-    public string GetImageUrl(ResourceCard c)
+    public string GetImageUrl(ResourceCard? c)
     {
         return c != null ? GetLabel(ResourceCardImage_URL, c.SkinId) : "";
     }
@@ -991,12 +990,12 @@ public class Skin : IDescriber
         return GetLabel(LeaderSkillCardImage_URL, s);
     }
 
-    private string GetTreacheryCardDescription(TreacheryCard c)
+    private string GetTreacheryCardDescription(TreacheryCard? c)
     {
         return c != null ? GetLabel(TreacheryCardDescription_STR, c.SkinId) : "";
     }
 
-    public string GetImageUrl(IHero h)
+    public string GetImageUrl(IHero? h)
     {
         if (h == null)
             return "";
@@ -1016,67 +1015,34 @@ public class Skin : IDescriber
         return GetLabel(FactionTableImage_URL, faction);
     }
 
-    public string GetFactionFacedownImageUrl(Faction faction)
-    {
-        return GetLabel(FactionFacedownImage_URL, faction);
-    }
+    public string GetFactionFaceDownImageUrl(Faction faction) => GetLabel(FactionFacedownImage_URL, faction);
 
-    public string GetFactionForceImageUrl(Faction f)
-    {
-        return GetLabel(FactionForceImage_URL, f);
-    }
+    public string GetFactionForceImageUrl(Faction f) => GetLabel(FactionForceImage_URL, f);
 
-    public string GetFactionSpecialForceImageUrl(Faction f)
-    {
-        return GetLabel(FactionSpecialForceImage_URL, f);
-    }
+    public string GetFactionSpecialForceImageUrl(Faction f) => GetLabel(FactionSpecialForceImage_URL, f);
 
-    private string GetImageUrl(FactionForce ff)
-    {
-        return GetFactionForceImageUrl(GetFaction(ff));
-    }
+    private string GetImageUrl(FactionForce ff) => GetFactionForceImageUrl(GetFaction(ff));
 
-    private string GetImageUrl(FactionSpecialForce fsf)
-    {
-        return GetFactionSpecialForceImageUrl(GetFaction(fsf));
-    }
+    private string GetImageUrl(FactionSpecialForce fsf) => GetFactionSpecialForceImageUrl(GetFaction(fsf));
 
-    public string GetHomeworldCardImageUrl(World w)
-    {
-        return GetLabel(HomeWorldCardImage_URL, w);
-    }
+    public string GetHomeworldCardImageUrl(World w) => GetLabel(HomeWorldCardImage_URL, w);
 
-    public string GetImageUrl(Nexus n)
-    {
-        return GetLabel(NexusCardImage_URL, n);
-    }
+    public string GetImageUrl(Nexus n) => GetLabel(NexusCardImage_URL, n);
 
-    public string GetImageUrl(TechToken tech)
-    {
-        return GetLabel(TechTokenImage_URL, tech);
-    }
+    public string GetImageUrl(TechToken tech) => GetLabel(TechTokenImage_URL, tech);
 
-    private static string GetLabel<T>(Dictionary<T, string> labels, T key)
+    private static string GetLabel<T>(Dictionary<T, string>? labels, T key) where T : notnull
     {
         if (labels != null && labels.TryGetValue(key, out var result)) return result;
 
         return "";
     }
 
-    public string GetSound(Milestone m)
-    {
-        return GetLabel(Sound, m);
-    }
+    public string GetSound(Milestone m) => GetLabel(Sound, m);
 
-    public string GetFactionColor(Faction faction)
-    {
-        return GetLabel(FactionColor, faction);
-    }
+    public string GetFactionColor(Faction faction) => GetLabel(FactionColor, faction);
 
-    public string GetFactionColorTransparent(Faction faction, string transparency)
-    {
-        return GetLabel(FactionColor, faction) + transparency;
-    }
+    public string GetFactionColorTransparent(Faction faction, string transparency) => GetLabel(FactionColor, faction) + transparency;
 
     #endregion NamesAndImages
 
@@ -1123,12 +1089,12 @@ public class Skin : IDescriber
             g.Map.HiddenMobileStronghold, // 34
             Faction.White, //35
             Faction.Brown, //36
-            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardBaliset).SkinId], //37
-            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardJubbaCloak).SkinId], //38
-            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardKullWahad).SkinId], //39
-            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardKulon).SkinId], //40
-            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardLalala).SkinId], //41
-            TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardTripToGamont).SkinId], //42
+            TreacheryCardName_STR.GetValueOrDefault(TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardBaliset)?.SkinId ?? -1, "?"), //37
+            TreacheryCardName_STR.GetValueOrDefault(TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardJubbaCloak)?.SkinId ?? -1, "?"), //38
+            TreacheryCardName_STR.GetValueOrDefault(TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardKullWahad)?.SkinId ?? -1, "?"), //39
+            TreacheryCardName_STR.GetValueOrDefault(TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardKulon)?.SkinId ?? -1, "?"), //40
+            TreacheryCardName_STR.GetValueOrDefault(TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardLalala)?.SkinId ?? -1, "?"), //41
+            TreacheryCardName_STR.GetValueOrDefault(TreacheryCardManager.Lookup.Find(TreacheryCardManager.CardTripToGamont)?.SkinId ?? -1, "?"), //42
             MainPhase_STR[MainPhase.Contemplate], //43
             PersonName_STR[1036], //44
             MainPhase_STR[MainPhase.Bidding], //45

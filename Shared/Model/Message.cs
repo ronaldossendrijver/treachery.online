@@ -11,7 +11,7 @@ namespace Treachery.Shared;
 
 public class Message
 {
-    public static IDescriber DefaultDescriber = null;
+    public static IDescriber? DefaultDescriber = null;
 
     private static int Counter { get; set; }
 
@@ -44,7 +44,7 @@ public class Message
         return string.Join("", Expression.Elements.Select(describer.Describe));
     }
 
-    public static Message Express(params object[] list)
+    public static Message Express(params object?[] list)
     {
         return new Message(new Expression(list));
     }

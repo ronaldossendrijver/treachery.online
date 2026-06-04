@@ -11,7 +11,7 @@ namespace Treachery.Shared;
 
 public interface IFetcher<T>
 {
-    T Find(int id);
+    T? Find(int id);
 
     int GetId(T obj);
 }

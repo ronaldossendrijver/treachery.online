@@ -15,7 +15,7 @@ public class Report(MainPhase about)
 
     public readonly LinkedList<Message> Messages = [];
 
-    public void Express(params object[] list)
+    public void Express(params object?[] list)
     {
         Add(Message.Express(list));
     }

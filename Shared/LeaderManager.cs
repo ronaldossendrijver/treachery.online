@@ -109,14 +109,14 @@ public static class LeaderManager
 
     public class LeaderFetcher : IFetcher<Leader>
     {
-        public Leader Find(int id)
+        public Leader? Find(int id)
         {
             if (id == -1)
                 return null;
             return Leaders.SingleOrDefault(t => t.Id == id);
         }
 
-        public int GetId(Leader obj)
+        public int GetId(Leader? obj)
         {
             if (obj == null)
                 return -1;
@@ -126,7 +126,7 @@ public static class LeaderManager
 
     public class HeroFetcher : IFetcher<IHero>
     {
-        public IHero Find(int id)
+        public IHero? Find(int id)
         {
             if (id < 0)
                 return null;
@@ -137,7 +137,7 @@ public static class LeaderManager
             return TreacheryCardManager.Lookup.Find(id);
         }
 
-        public int GetId(IHero obj)
+        public int GetId(IHero? obj)
         {
             if (obj == null)
                 return -1;

@@ -13,15 +13,15 @@ public partial class Game
 {
     #region BrownCardTrading
 
-    public CardTraded CurrentCardTradeOffer { get; internal set; }
-    internal Phase PhaseBeforeCardTrade { get; set; }
+    public CardTraded? CurrentCardTradeOffer { get; internal set; }
+    internal Phase? PhaseBeforeCardTrade { get; set; }
     internal int LastTurnCardWasTraded { get; set; } = -1;
 
     #endregion
 
     #region Nexus
 
-    public List<AllianceOffered> CurrentAllianceOffers { get; } = new();
+    public List<AllianceOffered> CurrentAllianceOffers { get; } = [];
     internal bool NexusHasOccured { get; set; }
 
     internal Dictionary<Faction, int> PermittedUseOfAllySpice { get; } = new();

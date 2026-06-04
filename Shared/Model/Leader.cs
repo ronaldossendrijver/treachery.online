@@ -29,7 +29,7 @@ public class Leader : IHero
         return Faction == f;
     }
 
-    public int ValueInCombatAgainst(IHero opposingHero)
+    public int ValueInCombatAgainst(IHero? opposingHero)
     {
         if (HeroType == HeroType.VariableValue)
         {

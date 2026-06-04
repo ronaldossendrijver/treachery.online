@@ -19,13 +19,13 @@ public partial class Game
     
     public bool IsPlaying(Faction faction) => Players.Any(p => p.Faction == faction);
 
-    public Player? GetPlayer(Faction? f) => Players.FirstOrDefault(p => p.Faction == f);
+    public Player GetPlayer(Faction? f) => Players.First(p => p.Faction == f);
 
-    private Player? GetPlayerInSeat(int seat) => Players.FirstOrDefault(p => p.Seat == seat);
+    private Player GetPlayerInSeat(int seat) => Players.First(p => p.Seat == seat);
     
-    public Faction GetFactionInSeat(int seat) => GetPlayerInSeat(seat)?.Faction ?? Faction.None;
+    public Faction GetFactionInSeat(int seat) => GetPlayerInSeat(seat).Faction;
     
-    public Faction GetAlly(Faction f) => GetPlayer(f)?.Ally ?? Faction.None;
+    public Faction GetAlly(Faction f) => GetPlayer(f).Ally;
 
     public IEnumerable<Faction> PlayersOtherThan(Player p) => Players.Where(x => x.Faction != p.Faction).Select(x => x.Faction);
 

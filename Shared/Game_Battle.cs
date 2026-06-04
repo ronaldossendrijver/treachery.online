@@ -13,44 +13,44 @@ public partial class Game
 {
     #region State
 
-    public PlayerSequence BattleSequence { get; internal set; }
-    public BattleInitiated BattleAboutToStart { get; internal set; }
-    public BattleInitiated CurrentBattle { get; internal set; }
-    public Battle AggressorPlan { get; internal set; }
-    public Battle PreviousAggressorPlan { get; internal set; }
-    public TreacheryCalled AggressorTraitorAction { get; internal set; }
-    public Battle DefenderPlan { get; internal set; }
-    public Battle PreviousDefenderPlan { get; internal set; }
-    public TreacheryCalled DefenderTraitorAction { get; internal set; }
-    public BattleOutcome BattleOutcome { get; private set; }
-    public Faction BattleWinner { get; internal set; }
-    public Faction BattleLoser { get; internal set; }
+    public PlayerSequence? BattleSequence { get; internal set; }
+    public BattleInitiated? BattleAboutToStart { get; internal set; }
+    public BattleInitiated? CurrentBattle { get; internal set; }
+    public Battle? AggressorPlan { get; internal set; }
+    public Battle? PreviousAggressorPlan { get; internal set; }
+    public TreacheryCalled? AggressorTraitorAction { get; internal set; }
+    public Battle? DefenderPlan { get; internal set; }
+    public Battle? PreviousDefenderPlan { get; internal set; }
+    public TreacheryCalled? DefenderTraitorAction { get; internal set; }
+    public BattleOutcome? BattleOutcome { get; private set; }
+    public Faction? BattleWinner { get; internal set; }
+    public Faction? BattleLoser { get; internal set; }
     internal int NrOfBattlesFought { get; set; }
 
-    public Faction CurrentPinkOrAllyFighter { get; internal set; }
+    public Faction? CurrentPinkOrAllyFighter { get; internal set; }
     public int CurrentPinkBattleContribution { get; internal set; }
 
-    public Voice CurrentVoice { get; internal set; }
-    public Prescience CurrentPrescience { get; internal set; }
-    public Thought CurrentThought { get; internal set; }
-    public StrongholdAdvantage ChosenHmsAdvantage { get; internal set; }
+    public Voice? CurrentVoice { get; internal set; }
+    public Prescience? CurrentPrescience { get; internal set; }
+    public Thought? CurrentThought { get; internal set; }
+    public StrongholdAdvantage? ChosenHmsAdvantage { get; internal set; }
 
-    public PortableAntidoteUsed CurrentPortableAntidoteUsed { get; internal set; }
+    public PortableAntidoteUsed? CurrentPortableAntidoteUsed { get; internal set; }
     internal bool PoisonToothCancelled { get; set; }
-    internal RockWasMelted CurrentRockWasMelted { get; set; }
+    internal RockWasMelted? CurrentRockWasMelted { get; set; }
 
-    public List<IHero> TraitorsDeciphererCanLookAt { get; } = new();
+    public List<IHero> TraitorsDeciphererCanLookAt { get; } = [];
     public bool DeciphererMayReplaceTraitor { get; private set; }
     public bool LoserMayTryToAssassinate { get; internal set; }
     public bool BattleWinnerMayChooseToDiscard { get; internal set; } = true;
     internal bool SecretAllyAllowsKeepingCardsAfterLosingBattle { get; set; }
-    public List<TreacheryCard> CardsToBeDiscardedByLoserAfterBattle { get; } = new();
-    public Diplomacy CurrentDiplomacy { get; internal set; }
-    public List<TreacheryCard> AuditedCards { get; } = new();
-    public Leader BlackVictim { get; internal set; }
+    public List<TreacheryCard> CardsToBeDiscardedByLoserAfterBattle { get; } = [];
+    public Diplomacy? CurrentDiplomacy { get; internal set; }
+    public List<TreacheryCard> AuditedCards { get; } = [];
+    public Leader? BlackVictim { get; internal set; }
     public int GreySpecialForceLossesToTake { get; internal set; }
-    internal TriggeredBureaucracy BattleTriggeredBureaucracy { get; set; }
-    internal TreacheryCard CardUsedByDiplomat { get; set; }
+    internal TriggeredBureaucracy? BattleTriggeredBureaucracy { get; set; }
+    internal TreacheryCard? CardUsedByDiplomat { get; set; }
     internal bool AuditorSurvivedBattle { get; private set; }
 
     #endregion State
@@ -59,7 +59,8 @@ public partial class Game
 
     internal void InitiateBattle()
     {
-        CurrentBattle = BattleAboutToStart;
+        CurrentBattle = BattleAboutToStart ?? throw new Exception("Cannot initiate battle when BattleAboutToStart is null");
+        
         ChosenHmsAdvantage = StrongholdAdvantage.None;
         BattleOutcome = null;
         NrOfBattlesFought++;
@@ -86,6 +87,9 @@ public partial class Game
 
     internal void HandleRevealedBattlePlans()
     {
+        if (CurrentBattle is null || AggressorPlan is null || DefenderPlan is null || AggressorTraitorAction is null || DefenderTraitorAction is null || BattleOutcome is null)
+            throw new NullReferenceException();
+        
         ResolveEffectOfOwnedTueksSietch(AggressorPlan);
         ResolveEffectOfOwnedTueksSietch(DefenderPlan);
 
@@ -127,6 +131,9 @@ public partial class Game
 
     private void DiscardOneTimeCardsUsedInBattle(TreacheryCalled aggressorCall, TreacheryCalled defenderCall)
     {
+        if (AggressorPlan is null || DefenderPlan is null)
+            throw new NullReferenceException();
+        
         var aggressorKeepsCards = aggressorCall.Succeeded && !defenderCall.Succeeded;
         if (!aggressorKeepsCards) DiscardOneTimeCards(AggressorPlan);
 
@@ -168,13 +175,12 @@ public partial class Game
 
     private void CaptureLeaderIfApplicable()
     {
-        if (Version < 116 && BattleWinner == Faction.Black && Applicable(Rule.BlackCapturesOrKillsLeaders))
-        {
-            if (!Prevented(FactionAdvantage.BlackCaptureLeader))
-                CaptureLeader();
-            else
-                LogPreventionByKarma(FactionAdvantage.BlackCaptureLeader);
-        }
+        if (Version >= 116 || BattleWinner != Faction.Black || !Applicable(Rule.BlackCapturesOrKillsLeaders)) return;
+        
+        if (!Prevented(FactionAdvantage.BlackCaptureLeader))
+            CaptureLeader();
+        else
+            LogPreventionByKarma(FactionAdvantage.BlackCaptureLeader);
     }
 
     internal void CaptureLeader()
@@ -436,6 +442,8 @@ public partial class Game
 
     private void HandleBattleOutcome(Battle agg, Battle def, Territory territory)
     {
+        if (BattleOutcome is null) throw new NullReferenceException();
+        
         LogIf(BattleOutcome.AggHeroSkillBonus != 0, agg.Hero, " ", BattleOutcome.AggActivatedBonusSkill, " bonus: ", BattleOutcome.AggHeroSkillBonus);
         LogIf(BattleOutcome.DefHeroSkillBonus != 0, def.Hero, " ", BattleOutcome.DefActivatedBonusSkill, " bonus: ", BattleOutcome.DefHeroSkillBonus);
 
@@ -448,12 +456,12 @@ public partial class Game
         BattleWinner = BattleOutcome.Winner.Faction;
         BattleLoser = BattleOutcome.Loser.Faction;
 
-        if (BattleOutcome.AggHeroKilled)
+        if (BattleOutcome.AggHeroKilled && agg.Hero != null)
             KillLeaderInBattle(agg.Hero, BattleOutcome.AggHeroCauseOfDeath, BattleOutcome.Winner, BattleOutcome.AggHeroEffectiveStrength);
         else
             LogIf(BattleOutcome.AggSavedByCarthag, Map.Carthag, " stronghold advantage saves ", agg.Hero, " from death by ", TreacheryCardType.Poison);
 
-        if (BattleOutcome.DefHeroKilled)
+        if (BattleOutcome.DefHeroKilled && def.Hero != null)
             KillLeaderInBattle(def.Hero, BattleOutcome.DefHeroCauseOfDeath, BattleOutcome.Winner, BattleOutcome.DefHeroEffectiveStrength);
         else
             LogIf(BattleOutcome.DefSavedByCarthag, Map.Carthag, " stronghold advantage saves ", def.Hero, " from death by ", TreacheryCardType.Poison);
@@ -481,6 +489,7 @@ public partial class Game
 
         var loserMayRetreat =
             !BattleOutcome.LoserHeroKilled &&
+            BattleOutcome.LoserBattlePlan.Hero != null &&
             SkilledAs(BattleOutcome.LoserBattlePlan.Hero, LeaderSkill.Diplomat) &&
             Retreat.MaxTotalForces(this, BattleOutcome.Loser) > 0 &&
             (Retreat.MaxForces(this, BattleOutcome.Loser) > 0 || Retreat.MaxSpecialForces(this, BattleOutcome.Loser) > 0) &&
@@ -491,28 +500,31 @@ public partial class Game
 
     private void HandleHarassAndWithdraw(Battle plan, Territory territory)
     {
-        if (plan.Weapon is { Type: TreacheryCardType.HarassAndWithdraw } ||
-            plan.Defense is { Type: TreacheryCardType.HarassAndWithdraw })
-        {
-            var forceSupplier = Battle.DetermineForceSupplier(this, plan.Player);
-            var undialedNormalForces = forceSupplier.ForcesIn(CurrentBattle.Territory) - plan.Forces - plan.ForcesAtHalfStrength;
-            var undialedSpecialForces = forceSupplier.SpecialForcesIn(CurrentBattle.Territory) - plan.SpecialForces - plan.SpecialForcesAtHalfStrength;
-            forceSupplier.ForcesToReserves(territory, undialedNormalForces, false);
-            forceSupplier.ForcesToReserves(territory, undialedSpecialForces, true);
+        if (CurrentBattle == null ||
+            (plan.Weapon is not { Type: TreacheryCardType.HarassAndWithdraw } &&
+             plan.Defense is not { Type: TreacheryCardType.HarassAndWithdraw })) return;
+        
+        var forceSupplier = Battle.DetermineForceSupplier(this, plan.Player);
+        var undialedNormalForces = forceSupplier.ForcesIn(CurrentBattle.Territory) - plan.Forces - plan.ForcesAtHalfStrength;
+        var undialedSpecialForces = forceSupplier.SpecialForcesIn(CurrentBattle.Territory) - plan.SpecialForces - plan.SpecialForcesAtHalfStrength;
+        forceSupplier.ForcesToReserves(territory, undialedNormalForces, false);
+        forceSupplier.ForcesToReserves(territory, undialedSpecialForces, true);
 
-            if (undialedNormalForces + undialedSpecialForces > 0)
-                Log(
-                    plan.Initiator,
-                    " withdraw ",
-                    MessagePart.ExpressIf(undialedNormalForces > 0, undialedNormalForces, forceSupplier.Force),
-                    MessagePart.ExpressIf(undialedNormalForces > 0 && undialedSpecialForces > 0, " and "),
-                    MessagePart.ExpressIf(undialedSpecialForces > 0, undialedSpecialForces, forceSupplier.SpecialForce),
-                    " to reserves");
-        }
+        if (undialedNormalForces + undialedSpecialForces > 0)
+            Log(
+                plan.Initiator,
+                " withdraw ",
+                MessagePart.ExpressIf(undialedNormalForces > 0, undialedNormalForces, forceSupplier.Force),
+                MessagePart.ExpressIf(undialedNormalForces > 0 && undialedSpecialForces > 0, " and "),
+                MessagePart.ExpressIf(undialedSpecialForces > 0, undialedSpecialForces, forceSupplier.SpecialForce),
+                " to reserves");
     }
 
     internal void HandleLosses()
     {
+        if (CurrentBattle is null || BattleOutcome is null)
+            return;
+        
         ProcessWinnerLosses(CurrentBattle.Territory, BattleOutcome.Winner, BattleOutcome.WinnerBattlePlan, false);
         ProcessLoserLosses(CurrentBattle.Territory, BattleOutcome.Loser, BattleOutcome.LoserBattlePlan);
     }
@@ -520,7 +532,7 @@ public partial class Game
     internal bool IsProtectedByCarthagAdvantage(Battle plan, Territory territory)
     {
         return HasStrongholdAdvantage(plan.Initiator, StrongholdAdvantage.CountDefensesAsAntidote, territory) &&
-               !plan.HasPoison && !plan.HasPoisonTooth && plan.Defense is { IsDefense: true };
+               plan is { HasPoison: false, HasPoisonTooth: false, Defense.IsDefense: true };
     }
 
     private void ProcessLoserLosses(Territory territory, Player loser, Battle loserGambit)
@@ -769,13 +781,16 @@ public partial class Game
 
     private bool BlackDoNotHaveToReturnUsedCapturedLeader { get; set; }
     
-    private void TraitorCalled(BattleInitiated b, Battle agg, Battle def, TreacheryCalled defenderTreachery, IHero aggLeader, IHero defLeader)
+    private void TraitorCalled(BattleInitiated b, Battle agg, Battle def, TreacheryCalled defenderTreachery, IHero? aggLeader, IHero? defLeader)
     {
-        if (AggressorTraitorAction.Succeeded && defenderTreachery.Succeeded)
+        if (AggressorTraitorAction is { Succeeded: true } && defenderTreachery.Succeeded)
         {
+            if (aggLeader is null || defLeader is null)
+                throw new NullReferenceException();
+            
             TwoTraitorsCalled(agg, def, agg.Player, def.Player, b.Territory, aggLeader, defLeader);
         }
-        else
+        else if (AggressorTraitorAction != null)
         {
             var winner = AggressorTraitorAction.Succeeded ? agg.Player : def.Player;
             var loser = AggressorTraitorAction.Succeeded ? def.Player : agg.Player;
@@ -786,12 +801,13 @@ public partial class Game
         }
     }
 
-    private void OneTraitorCalled(Territory territory, Player winner, Player loser, Battle loserGambit, Battle winnerGambit)
+    private void OneTraitorCalled(Territory territory, Player winner, Player loser, Battle loserPlan, Battle winnerPlan)
     {
+        var traitor = loserPlan.Hero;
+        if (traitor is null) throw new Exception("Traitor cannot be null in OneTraitorCalled");
+        
         var hadMessiahBeforeLosses = loser.MessiahAvailable;
-
-        var traitor = loserGambit.Hero;
-        var traitorValue = traitor.ValueInCombatAgainst(winnerGambit.Hero);
+        var traitorValue = traitor.ValueInCombatAgainst(winnerPlan.Hero);
         var traitorOwner = winner.Traitors.Any(t => t.IsTraitor(traitor)) ? winner.Faction : Faction.Black;
 
         Log(traitor, " is a ", traitorOwner, " traitor! ", loser.Faction, " lose everything");
@@ -818,8 +834,8 @@ public partial class Game
 
         Log(loser.Faction, " lose all ", loser.SpecialForcesIn(territory) + loser.ForcesIn(territory), " forces ", InOrOn(territory), territory);
         loser.KillAllForces(territory, true);
-        LoseCards(loserGambit, MayKeepCardsAfterLosingBattle(loser));
-        PayDialedSpice(loser, loserGambit, true);
+        LoseCards(loserPlan, MayKeepCardsAfterLosingBattle(loser));
+        PayDialedSpice(loser, loserPlan, true);
 
         if (loser.MessiahAvailable && !hadMessiahBeforeLosses) Stone(Milestone.Messiah);
     }
@@ -868,7 +884,7 @@ public partial class Game
         return t.IsHomeworld ? " on " : " in ";
     }
 
-    private void LasgunShieldExplosion(Battle agg, Battle def, Player aggressor, Player defender, Territory territory, IHero aggLeader, IHero defLeader)
+    private void LasgunShieldExplosion(Battle agg, Battle def, Player aggressor, Player defender, Territory territory, IHero? aggLeader, IHero? defLeader)
     {
         var hadMessiahBeforeLosses = aggressor.MessiahAvailable || defender.MessiahAvailable;
 
@@ -884,7 +900,7 @@ public partial class Game
         if (defLeader != null)
         {
             Log("The explosion kills ", defLeader);
-            KillHero(def.Hero);
+            KillHero(defLeader);
         }
 
         if (agg.Messiah || def.Messiah)

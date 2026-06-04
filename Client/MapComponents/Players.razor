@@ -64,7 +64,7 @@
 
                         <MapImage X=@(homeworldXY.X + 0.75f * Client.CurrentSkin.PlayerTokenRadius) Y=@(homeworldXY.Y + 1.5f * Client.CurrentSkin.PlayerTokenRadius)
                                   Diameter=@(0.5f * Client.CurrentSkin.PlayerTokenRadius)
-                                  Src="@Client.CurrentSkin.GetFactionFacedownImageUrl(occupier)" ShadowColor="white" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
+                                  Src="@Client.CurrentSkin.GetFactionFaceDownImageUrl(occupier)" ShadowColor="white" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
                                   Popover=@occupierMessage PopoverAsTooltip="true" />
                     }
                     else if (p.HasHighThreshold(homeworld.World))

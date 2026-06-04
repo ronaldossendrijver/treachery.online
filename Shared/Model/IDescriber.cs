@@ -11,7 +11,7 @@ namespace Treachery.Shared;
 
 public interface IDescriber
 {
-    public string Describe(object obj);
+    public string Describe(object? obj);
 
-    public string Format(string m, params object[] list);
+    public string Format(string m, params object?[] list);
 }

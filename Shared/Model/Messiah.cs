@@ -13,7 +13,7 @@ public class Messiah : IHero
 {
     public int Value => 2;
 
-    public int ValueInCombatAgainst(IHero opposingHero)
+    public int ValueInCombatAgainst(IHero? _)
     {
         return Value;
     }

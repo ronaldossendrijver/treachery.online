@@ -35,13 +35,13 @@ public partial class Game
     public List<Moment> Moments { get; } = [];
     public int RecentlyUndoneEventCount { get; set; }
     public List<GameEvent> RecentlyUndoneEvents { get; } = [];
-    public Game PreviousGameState { get; set; }
+    private Game PreviousGameState { get; set; }
     public int CurrentTurn { get; private set; }
     public MainPhase CurrentMainPhase { get; internal set; } = MainPhase.Started;
     public MainPhaseMoment CurrentMoment { get; private set; } = MainPhaseMoment.None;
     public Phase CurrentPhase { get; private set; } = Phase.None;
     public List<Faction> HasActedOrPassed { get; } = [];
-    public Report CurrentReport { get; internal set; }
+    public Report CurrentReport { get; internal set; } = new(MainPhase.None);
     public Deck<TreacheryCard> TreacheryDeck { get; internal set; }
     public Deck<TreacheryCard> TreacheryDiscardPile { get; internal set; }
     public List<TreacheryCard> RemovedTreacheryCards { get; } = [];
@@ -61,7 +61,7 @@ public partial class Game
     internal List<Payment> StoredRecentlyPaid { get; private set; } = [];
 
     public Deck<LeaderSkill> SkillDeck { get; private set; }
-    public List<TreacheryCard> WhiteCache { get; internal set; } = new();
+    public List<TreacheryCard> WhiteCache { get; internal set; } = [];
     public BrownEconomicsStatus EconomicsStatus { get; internal set; } = BrownEconomicsStatus.None;
 
     public Dictionary<TerrorType, Territory> TerrorOnPlanet { get; private set; } = new();
@@ -79,10 +79,10 @@ public partial class Game
     internal Faction FactionThatMustDiscardTraitor { get; set; }
     internal int NumberOfTraitorsToDiscard { get; set; }
 
-    public List<Faction> FactionsInPlay { get; internal set; }
+    public List<Faction> FactionsInPlay { get; internal set; } = [];
     public List<TerrorType> UnplacedTerrorTokens { get; internal set; } = [];
     internal Deck<IHero> TraitorDeck { get; private set; }
-    public Leader PinkLoyalLeader { get; private set; }
+    public Leader? PinkLoyalLeader { get; private set; }
 
     public List<AutomationConfigured> AutomationRules { get; set; } = [];
 
@@ -735,12 +735,12 @@ public partial class Game
         CurrentReport.Express(expression);
     }
 
-    internal void LogIf(bool condition, params object[] expression)
+    internal void LogIf(bool condition, params object?[] expression)
     {
         if (condition) CurrentReport.Express(expression);
     }
 
-    internal void LogTo(Faction faction, params object[] expression)
+    internal void LogTo(Faction faction, params object?[] expression)
     {
         CurrentReport.ExpressTo(faction, expression);
     }

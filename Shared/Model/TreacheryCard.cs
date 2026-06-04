@@ -27,7 +27,7 @@ public class TreacheryCard(int id, int skinId, TreacheryCardType type, Rule[] ru
 
     public bool Is(Faction f) => false;
 
-    public int ValueInCombatAgainst(IHero opposingHero) => 0;
+    public int ValueInCombatAgainst(IHero? _) => 0;
 
     public Faction Faction => Faction.None;
 
