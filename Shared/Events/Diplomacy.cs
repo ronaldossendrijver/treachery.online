@@ -39,7 +39,7 @@ public class Diplomacy : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         return null;
     }

@@ -27,7 +27,7 @@ public class FaceDancerReplaced : PassableGameEvent
         set => dancerId = LeaderManager.HeroLookup.GetId(value);
     }
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!Passed)
         {

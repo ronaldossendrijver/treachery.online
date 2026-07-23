@@ -6,7 +6,7 @@ public class LeaderState : ICloneable
 {
     private static int moment;
 
-    public Territory CurrentTerritory { get; set; }
+    public Territory? CurrentTerritory { get; set; }
 
     //even = alive, odd = dead
     public int DeathCounter { get; set; }

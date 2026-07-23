@@ -186,7 +186,7 @@ public abstract class GameEvent
 
     #region Validation
 
-    public abstract Message Validate();
+    public abstract Message? Validate();
 
     [JsonIgnore]
     public bool IsValid => Validate() == null;
@@ -214,7 +214,7 @@ public abstract class GameEvent
         Initialize(game, Initiator);
     }
 
-    public virtual Message Execute(bool performValidation, bool isHost)
+    public virtual Message? Execute(bool performValidation, bool isHost)
     {
         if (Game == null) throw new ArgumentException("Cannot execute a GameEvent without a Game.");
 
@@ -222,7 +222,7 @@ public abstract class GameEvent
         {
             var momentJustBeforeEvent = Game.CurrentMoment;
 
-            Message result = null;
+            Message? result = null;
 
             if (performValidation)
             {

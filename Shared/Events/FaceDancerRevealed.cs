@@ -25,7 +25,7 @@ public class FaceDancerRevealed : PassableGameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Passed) return null;
 

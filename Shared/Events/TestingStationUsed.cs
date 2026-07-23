@@ -31,7 +31,7 @@ public class TestingStationUsed : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (ValueAdded != -1 && ValueAdded != 1) return Message.Express("Invalid amount");
 

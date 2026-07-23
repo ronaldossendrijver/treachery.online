@@ -35,7 +35,7 @@ public class TreacheryCalled : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!TraitorCalled) return null;
 

@@ -69,7 +69,7 @@ public class TerrorRevealed : PassableGameEvent, ILocationEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Passed && !MayPass(Game)) return Message.Express("You must reveal a terror token");
         if (AllianceOffered && !MayOfferAlliance(Game)) return Message.Express("You can't offer an alliance to this faction");

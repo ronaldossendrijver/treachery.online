@@ -55,7 +55,7 @@ public class LoserConcluded : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Assassinate && !CanAssassinate(Game, Player)) return Message.Express("You can't assassinate");
         if (KeptCard != null && !CardsLoserMayKeep(Game).Contains(KeptCard)) return Message.Express("You can't keep ", KeptCard);

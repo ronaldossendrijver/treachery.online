@@ -43,7 +43,7 @@ public class WhiteSpecifiesAuction : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!Game.WhiteOccupierSpecifiedCard && !ValidCards(Game).Contains(Card)) return Message.Express("Invalid card");
 

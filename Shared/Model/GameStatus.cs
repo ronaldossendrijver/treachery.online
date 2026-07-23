@@ -27,12 +27,12 @@ public class GameStatus
 
     private Message DescriptionWhenWaiting { get; }
 
-    private GameStatus(Message messageWhenAwaited, Message messageWhenWaiting, Player waitingForPlayer, GameEvent timedEvent = null) :
+    private GameStatus(Message messageWhenAwaited, Message messageWhenWaiting, Player waitingForPlayer, GameEvent? timedEvent = null) :
         this(messageWhenAwaited, messageWhenWaiting, [waitingForPlayer], timedEvent)
     {
     }
 
-    private GameStatus(Message messageWhenAwaited, Message messageWhenWaiting, List<Player> waitingForPlayers, GameEvent timedEvent = null)
+    private GameStatus(Message messageWhenAwaited, Message messageWhenWaiting, List<Player> waitingForPlayers, GameEvent? timedEvent = null)
     {
         DescriptionWhenAwaited = messageWhenAwaited;
         DescriptionWhenWaiting = messageWhenWaiting;
@@ -40,7 +40,7 @@ public class GameStatus
         TimedEvent = timedEvent;
     }
 
-    private GameStatus(Message messageWhenAwaited, Message messageWhenWaiting, GameEvent timedEvent = null)
+    private GameStatus(Message messageWhenAwaited, Message messageWhenWaiting, GameEvent? timedEvent = null)
     {
         DescriptionWhenAwaited = messageWhenAwaited;
         DescriptionWhenWaiting = messageWhenWaiting;
@@ -48,7 +48,7 @@ public class GameStatus
         TimedEvent = timedEvent;
     }
 
-    private GameStatus(Message message, GameEvent timedEvent = null) : this(message, message, timedEvent)
+    private GameStatus(Message message, GameEvent? timedEvent = null) : this(message, message, timedEvent)
     {
     }
 
@@ -626,40 +626,40 @@ public class GameStatus
         return result;
     }
 
-    private static GameStatus Status(string message, GameEvent timedEvent = null) 
+    private static GameStatus Status(string message, GameEvent? timedEvent = null) 
         => new(Message.Express(message), timedEvent);
 
-    private static GameStatus Status(Message message, GameEvent timedEvent = null) 
+    private static GameStatus Status(Message message, GameEvent? timedEvent = null) 
         => new(message, timedEvent);
 
-    private static GameStatus Status(Message message, List<Player> waitingForPlayers, GameEvent timedEvent = null) 
+    private static GameStatus Status(Message message, List<Player> waitingForPlayers, GameEvent? timedEvent = null) 
         => new(message, message, waitingForPlayers, timedEvent);
 
-    private static GameStatus Status(string messageAwaited, string messageWhenWaiting, GameEvent timedEvent = null) 
+    private static GameStatus Status(string messageAwaited, string messageWhenWaiting, GameEvent? timedEvent = null) 
         => new(Message.Express(messageAwaited), Message.Express(messageWhenWaiting), timedEvent);
 
-    private static GameStatus Status(Message messageAwaited, Message messageWhenWaiting, GameEvent timedEvent = null) 
+    private static GameStatus Status(Message messageAwaited, Message messageWhenWaiting, GameEvent? timedEvent = null) 
         => new(messageAwaited, messageWhenWaiting, timedEvent);
 
-    private static GameStatus Status(string messageWhenAwaited, string messageWhenWaiting, List<Player> waitingForPlayers, GameEvent timedEvent = null) 
+    private static GameStatus Status(string messageWhenAwaited, string messageWhenWaiting, List<Player> waitingForPlayers, GameEvent? timedEvent = null) 
         => new(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), waitingForPlayers, timedEvent);
 
-    private static GameStatus Status(Message messageWhenAwaited, Message messageWhenWaiting, List<Player> waitingForPlayers, GameEvent timedEvent = null) 
+    private static GameStatus Status(Message messageWhenAwaited, Message messageWhenWaiting, List<Player> waitingForPlayers, GameEvent? timedEvent = null) 
         => new(messageWhenAwaited, messageWhenWaiting, waitingForPlayers, timedEvent);
 
-    private static GameStatus Status(Game game, string messageWhenAwaited, string messageWhenWaiting, List<Faction> waitingForFactions, GameEvent timedEvent = null) 
+    private static GameStatus Status(Game game, string messageWhenAwaited, string messageWhenWaiting, List<Faction> waitingForFactions, GameEvent? timedEvent = null) 
         => new(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), waitingForFactions.Select(f => game.GetPlayer(f)).ToList(), timedEvent);
 
-    private static GameStatus Status(string messageWhenAwaited, string messageWhenWaiting, Player waitingForPlayer, GameEvent timedEvent = null) 
+    private static GameStatus Status(string messageWhenAwaited, string messageWhenWaiting, Player waitingForPlayer, GameEvent? timedEvent = null) 
         => new(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), waitingForPlayer, timedEvent);
 
-    private static GameStatus Status(Message messageWhenAwaited, Message messageWhenWaiting, Player waitingForPlayer, GameEvent timedEvent = null) 
+    private static GameStatus Status(Message messageWhenAwaited, Message messageWhenWaiting, Player waitingForPlayer, GameEvent? timedEvent = null) 
         => new(messageWhenAwaited, messageWhenWaiting, waitingForPlayer, timedEvent);
 
-    private static GameStatus Status(Game game, string messageWhenAwaited, string messageWhenWaiting, Faction waitingForFaction, GameEvent timedEvent = null) 
+    private static GameStatus Status(Game game, string messageWhenAwaited, string messageWhenWaiting, Faction waitingForFaction, GameEvent? timedEvent = null) 
         => new(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), game.GetPlayer(waitingForFaction), timedEvent);
 
-    private static GameStatus Status(Game game, Message messageWhenAwaited, Message messageWhenWaiting, Faction? waitingForFaction, GameEvent timedEvent = null) 
+    private static GameStatus Status(Game game, Message messageWhenAwaited, Message messageWhenWaiting, Faction? waitingForFaction, GameEvent? timedEvent = null) 
         => new(messageWhenAwaited, messageWhenWaiting, game.GetPlayer(waitingForFaction), timedEvent);
 
     private static List<FlashInfo> DetermineFlash(Game g, Faction myFaction, bool isPlayer)

@@ -33,7 +33,7 @@ public class ResourcesTransferred : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Resources > MaxAmount(Player)) return Message.Express("You can't transfer more than ", Payment.Of(MaxAmount(Player)));
         if (!MayTransfer(Game, Player)) return Message.Express("You currently can't transfer ", Concept.Resource);

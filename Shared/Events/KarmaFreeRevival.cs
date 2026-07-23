@@ -46,7 +46,7 @@ public class KarmaFreeRevival : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         var p = Player;
 

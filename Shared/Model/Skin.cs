@@ -208,7 +208,7 @@ public class Skin : IDescriber
         }
     }
 
-    public string Join<T>(IEnumerable<T> items)
+    public string Join<T>(IEnumerable<T>? items)
     {
         if (items == null) return "";
 

@@ -39,7 +39,7 @@ public class BrownDiscarded : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!ValidCards(Player).Contains(Card)) return Message.Express("Invalid card");
 

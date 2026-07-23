@@ -139,7 +139,7 @@ public static class TreacheryCardManager
         return Items.SingleOrDefault(i => i.Id == id);
     }
 
-    public static int GetId(TreacheryCard value)
+    public static int GetId(TreacheryCard? value)
     {
         if (value != null)
             return value.Id;
@@ -155,7 +155,7 @@ public static class TreacheryCardManager
             return Items.SingleOrDefault(t => t.Id == id);
         }
 
-        int IFetcher<TreacheryCard>.GetId(TreacheryCard obj)
+        int IFetcher<TreacheryCard>.GetId(TreacheryCard? obj)
         {
             if (obj == null)
                 return -1;

@@ -39,7 +39,7 @@ public class DiscardedSearched : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!ValidCards(Game).Contains(Card)) return Message.Express("Invalid card");
 

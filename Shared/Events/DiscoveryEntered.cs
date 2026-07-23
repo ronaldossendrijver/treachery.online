@@ -25,7 +25,7 @@ public class DiscoveryEntered : PlacementEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!Passed)
             if (!ValidTargets(Game, Player).Contains(To)) return Message.Express("You can't move there");

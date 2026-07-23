@@ -41,7 +41,7 @@ public class Karma : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!ValidFactionAdvantages(Game, Player).Contains(Prevented)) return Message.Express("You cannot prevent ", Prevented, " at this moment");
 

@@ -48,7 +48,7 @@ public class KarmaBrownDiscard : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         var karmaCardToUse = Game.Version < 171 ? Karma.ValidKarmaCards(Game, Player).FirstOrDefault() : CardToUse;
         

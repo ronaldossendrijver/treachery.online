@@ -36,7 +36,7 @@ public class YellowRidesMonster : PlacementEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Passed) return null;
 

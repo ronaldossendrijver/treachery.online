@@ -34,11 +34,17 @@
                                 var size = p.Seat == currentSeatOfUserId ? 60 : 30;
                                 if (p.Faction != Faction.None)
                                 {
-                                    <FactionComponent Diameter="@size" Faction="@p.Faction" OnClick="@(f => AssignFaction(userId, p.Faction))"/>
+                                    <FactionComponent Diameter="@size" 
+                                                      Faction="@p.Faction" 
+                                                      OnClick="@(f => AssignFaction(userId, p.Faction))"/>
                                 }
                                 else
                                 {
-                                    <NumberComponent Size="@size" Value="@p.Seat" OnClick="@(f => AssignSeat(userId, p.Seat))" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black"/>
+                                    <NumberComponent Size="@size" 
+                                                     Value="@p.Seat" 
+                                                     OnClick="@(f => AssignSeat(userId, p.Seat))" 
+                                                     NumberBackgroundFillColor="white" 
+                                                     NumberBackgroundBorderColor="black"/>
                                 }
                             }
                         }
@@ -61,8 +67,8 @@
 </div>
 
 @code {
-    
-    private Dictionary<int, int> SeatedPlayers { get; set; }
+
+    private Dictionary<int, int> SeatedPlayers { get; set; } = [];
 
     protected override void OnParametersSet()
     {
@@ -72,7 +78,7 @@
     private Faction GetAssignedFaction(int userId)
     {
         var seat = SeatedPlayers.GetValueOrDefault(userId);
-        return seat == -1 ? Faction.None : Client.Game.GetFactionInSeat(seat);
+        return seat == -1 ? Faction.None : Client.Game.GetFactionInSeat(seat) ?? Faction.None;
     }
 
     private void AssignFaction(int userId, Faction faction)

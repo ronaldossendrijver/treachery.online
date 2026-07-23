@@ -31,7 +31,7 @@ public class KarmaRevivalPrevention : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!GetValidTargets(Game, Player).Contains(Target)) return Message.Express("Invalid target");
 

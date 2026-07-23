@@ -21,7 +21,7 @@ public class Caravan : PlacementEvent
 
     public bool AsAdvisors { get; set; }
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         return ValidateMove(AsAdvisors);
     }

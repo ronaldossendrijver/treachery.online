@@ -40,7 +40,7 @@ public class GameInfo
 
     public bool YouAreIn(int userId) => SeatedPlayers.ContainsKey(userId);
 
-    public override bool Equals(object obj) => obj is GameInfo info && info.GameId == GameId;
+    public override bool Equals(object? obj) => obj is GameInfo info && info.GameId == GameId;
 
     public override int GetHashCode() => GameId.GetHashCode();
 }

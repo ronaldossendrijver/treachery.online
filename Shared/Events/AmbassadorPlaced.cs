@@ -41,7 +41,7 @@ public class AmbassadorPlaced : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!ValidStrongholds(Game, Player).Contains(Stronghold)) return Message.Express("Invalid stronghold");
         if (!ValidAmbassadors(Player).Contains(Ambassador)) return Message.Express("Ambassador not available");

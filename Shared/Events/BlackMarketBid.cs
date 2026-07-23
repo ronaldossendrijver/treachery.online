@@ -196,7 +196,7 @@ public class BlackMarketBid : PassableGameEvent, IBid
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Passed) return null;
 

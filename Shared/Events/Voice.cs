@@ -38,7 +38,7 @@ public class Voice : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!MayUseVoice(Game, Player)) return Message.Express("You cannot use Voice");
         if (!ValidTypes(Game).Contains(Type)) return Message.Express("Invalid use of Voice");

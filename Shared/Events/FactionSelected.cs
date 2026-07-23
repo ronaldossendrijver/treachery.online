@@ -35,7 +35,7 @@ public class FactionSelected : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Faction != Faction.None && !ValidFactions(Game).Contains(Faction)) return Message.Express("Faction not available");
 

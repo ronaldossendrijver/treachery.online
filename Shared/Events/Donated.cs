@@ -46,7 +46,7 @@ public class Donated : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (FromBank) return null;
 

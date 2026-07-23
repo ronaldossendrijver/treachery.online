@@ -25,7 +25,7 @@ public class CardGiven : PassableGameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         return null;
     }

@@ -25,7 +25,7 @@ public class PerformYellowSetup : PlacementEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         var p = Player;
         var numberOfSpecialForces = ForceLocations.Sum(fl => fl.Value.AmountOfSpecialForces);

@@ -25,7 +25,7 @@ public class AllianceBroken : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!Player.HasAlly) return Message.Express("You currently have no ally");
 

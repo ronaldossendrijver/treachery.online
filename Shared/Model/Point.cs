@@ -20,7 +20,7 @@ public struct PointD
         Y = y;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return obj is PointD other && Equals(other);
     }

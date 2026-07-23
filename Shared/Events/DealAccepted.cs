@@ -45,7 +45,7 @@ public class DealAccepted : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!MayDeal(Game, Player, Price)) return Message.Express("You currently have an outstanding bid");
         if (Game.Version >= 142 && !MayDeal(Game, Game.GetPlayer(BoundFaction), Benefit)) return Message.Express(BoundFaction, " currently have an outstanding bid");

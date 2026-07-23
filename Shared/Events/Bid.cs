@@ -60,7 +60,7 @@ public class Bid : PassableGameEvent, IBid
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if ((Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent) && Passed) return Message.Express("You cannot pass a silent bid");
 

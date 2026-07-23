@@ -33,7 +33,7 @@ public class AuditCancelled : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Cancelled && Player.Resources < Cost(Game)) return Message.Express("You can't pay enough to prevent the audit");
 

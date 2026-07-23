@@ -33,7 +33,7 @@ public class SetShipmentPermission : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!Factions.Any()) return Message.Express("Select one or more factions");
         if (Factions.Any(f => !ValidTargets(Game, Player).Contains(f))) return Message.Express("Invalid faction");

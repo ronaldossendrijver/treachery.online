@@ -37,7 +37,7 @@ public class TakeLosses : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (UseUselessCard && !CanPreventLosses(Game, Player)) return Message.Express("You can't use a card to prevent force losses");
         if (UseUselessCard) return null;

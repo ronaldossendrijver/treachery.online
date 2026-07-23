@@ -31,7 +31,7 @@ public class AllianceOffered : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!ValidTargets(Game, Player).Contains(Target)) return Message.Express("Invalid faction");
 

@@ -112,7 +112,7 @@ public class NexusPlayed : GameEvent, ILocationEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         switch (Faction)
         {

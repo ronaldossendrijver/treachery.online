@@ -44,7 +44,7 @@ public class FaceDanced : PlacementEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Game.Version <= 150 && !FaceDancerCalled) return null;
 

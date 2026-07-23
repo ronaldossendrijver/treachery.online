@@ -22,13 +22,12 @@ public partial class Game
         DetermineIfCapturedLeadersMustBeReleased();
         DetermineIfKilledGholaReturnsToOriginalFaction(h);
 
-        if (h.HeroType == HeroType.Vidal)
-        {
-            var currentOwner = OwnerOf(h);
-            currentOwner.Leaders.Remove(h as Leader);
-            var pink = GetPlayer(Faction.Pink);
-            pink?.Leaders.Add(h as Leader);
-        }
+        if (h.HeroType != HeroType.Vidal) return;
+        var currentOwner = OwnerOf(h);
+        var leaderToRemove = (Leader)h;
+        currentOwner!.Leaders.Remove(leaderToRemove);
+        var pink = GetPlayer(Faction.Pink);
+        pink?.Leaders.Add(leaderToRemove);
     }
 
     internal void Revive(Player initiator, IHero h)
@@ -113,16 +112,17 @@ public partial class Game
         return player.Leaders.Where(IsSkilled);
     }
 
-    public LeaderSkill GetSkill(Player p)
+    public LeaderSkill? GetSkill(Player p)
     {
-        return Skill(GetSkilledLeaders(p).FirstOrDefault(IsInFrontOfShield));
+        var hero = GetSkilledLeaders(p).FirstOrDefault(IsInFrontOfShield);
+        return hero != null ? Skill(hero) : null;
     }
 
     public LeaderSkill Skill(IHero l)
     {
-        if (l != null && LeaderState.TryGetValue(l, out var state))
-            return state.Skill;
-        return LeaderSkill.None;
+        return LeaderState.TryGetValue(l, out var state) 
+            ? state.Skill 
+            : LeaderSkill.None;
     }
 
     internal void SetSkill(Leader l, LeaderSkill skill)
@@ -132,30 +132,29 @@ public partial class Game
 
     internal void SetInFrontOfShield(Leader l, bool value)
     {
-        if (l != null && LeaderState.TryGetValue(l, out var ls)) ls.InFrontOfShield = value;
+        if (LeaderState.TryGetValue(l, out var ls)) ls.InFrontOfShield = value;
     }
 
     public bool IsInFrontOfShield(IHero l)
     {
-        return l != null && LeaderState.ContainsKey(l) && LeaderState[l].InFrontOfShield;
+        return LeaderState.ContainsKey(l) && LeaderState[l].InFrontOfShield;
     }
 
     public bool MessiahIsAlive => IsAlive(LeaderManager.Messiah);
 
     private bool HasSomethingToRevive(Player player)
     {
-        if (player.ForcesKilled > 0 || player.SpecialForcesKilled > 0 || Revival.ValidRevivalHeroes(this, player).Any())
+        while (true)
         {
-            return true;
-        }
+            if (player.ForcesKilled > 0 || player.SpecialForcesKilled > 0 || Revival.ValidRevivalHeroes(this, player).Any())
+            {
+                return true;
+            }
 
-        if (player.Is(Faction.Purple) && player.Ally != Faction.None)
-        {
             var ally = GetPlayer(player.Ally);
-            return HasSomethingToRevive(ally);
+            if (!player.Is(Faction.Purple) || ally == null || player.Ally == Faction.None) return false;
+            player = ally;
         }
-
-        return false;
     }
 
     public IEnumerable<IHero> KilledHeroes(Player p)

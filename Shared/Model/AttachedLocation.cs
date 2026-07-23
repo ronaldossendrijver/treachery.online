@@ -9,25 +9,20 @@
 
 namespace Treachery.Shared;
 
-public abstract class AttachedLocation : Location
+public abstract class AttachedLocation(int id) : Location(id)
 {
-    public Location AttachedToLocation { get; private set; }
+    public Location? AttachedToLocation { get; private set; }
 
     //Needed to check game version
-    public Game Game { get; private set; }
+    public Game? Game { get; private set; }
 
     public override bool Visible => AttachedToLocation != null;
 
     public override int Sector => Game?.Version >= 159 && AttachedToLocation != null ? AttachedToLocation.Sector : -1;
 
-    public AttachedLocation(int id) : base(id)
-    {
-
-    }
-
     public void PointAt(Game game, Location newLocation)
     {
-        if (AttachedToLocation != null) AttachedToLocation.Neighbours.Remove(this);
+        AttachedToLocation?.Neighbours.Remove(this);
 
         newLocation.Neighbours.Add(this);
         AttachedToLocation = newLocation;

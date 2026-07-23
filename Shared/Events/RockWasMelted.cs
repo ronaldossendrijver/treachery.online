@@ -31,7 +31,7 @@ public class RockWasMelted : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         return null;
     }

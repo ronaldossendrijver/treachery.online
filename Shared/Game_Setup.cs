@@ -34,7 +34,7 @@ public partial class Game
     internal void AssignFactionsAndEnterFactionTrade()
     {
         var availableFactions = Version < 174 ? FactionsInPlay : FactionsInPlay.Where(f => !IsPlaying(f));
-        var selectable = new Deck<Faction>(availableFactions, Random);
+        var selectable = new Deck<Faction>(availableFactions, Random!);
         Stone(Milestone.Shuffled);
         selectable.Shuffle();
 
@@ -51,7 +51,7 @@ public partial class Game
 
     internal void DeterminePositionsAtTable()
     {
-        var seats = new Deck<int>(Random);
+        var seats = new Deck<int>(Random!);
         for (var i = 0; i < Settings.NumberOfPlayers; i++)
             seats.PutOnTop(i);
         
@@ -88,8 +88,8 @@ public partial class Game
 
             if (Applicable(Rule.PinkLoyalty))
             {
-                PinkLoyalLeader = pink.Leaders.RandomOrDefault(Random);
-                Log(PinkLoyalLeader, " is forever loyal to ", Faction.Pink);
+                PinkLoyalLeader = pink.Leaders.RandomOrDefault(Random!);
+                Log(PinkLoyalLeader!, " is forever loyal to ", Faction.Pink);
             }
         }
 
@@ -99,7 +99,7 @@ public partial class Game
     internal void DealTraitors()
     {
         Stone(Milestone.Shuffled);
-        TraitorDeck = CreateAndShuffleTraitorDeck(Random);
+        TraitorDeck = CreateAndShuffleTraitorDeck(Random!);
 
         if (Applicable(Rule.BlackMulligan) && IsPlaying(Faction.Black))
         {
@@ -135,6 +135,7 @@ public partial class Game
     internal void DealBlackTraitorCards()
     {
         var black = GetPlayer(Faction.Black);
+        if (black is null) return;
         for (var i = 1; i <= 4; i++) black.Traitors.Add(TraitorDeck.Draw());
     }
 
@@ -170,7 +171,7 @@ public partial class Game
     {
         if (Applicable(Rule.LeaderSkills))
         {
-            SkillDeck = new Deck<LeaderSkill>(Enumerations.GetValuesExceptDefault(LeaderSkill.None), Random);
+            SkillDeck = new Deck<LeaderSkill>(Enumerations.GetValuesExceptDefault(LeaderSkill.None), Random!);
             SkillDeck.Shuffle();
             Stone(Milestone.Shuffled);
 
@@ -312,17 +313,17 @@ public partial class Game
     private void AssignInitialAmbassadors(Player p)
     {
         p.Ambassadors.Add(Ambassador.Pink);
-        UnassignedAmbassadors.Items.Remove(Ambassador.Pink);
+        UnassignedAmbassadors!.Items.Remove(Ambassador.Pink);
         Log(p.Faction, " receive the ", Faction.Pink, " ambassador");
         AssignRandomAmbassadors(p);
     }
 
     internal void AssignRandomAmbassadors(Player p)
     {
-        foreach (var item in AmbassadorsSetAside) UnassignedAmbassadors.Items.Add(item);
+        foreach (var item in AmbassadorsSetAside) UnassignedAmbassadors!.Items.Add(item);
         AmbassadorsSetAside.Clear();
 
-        UnassignedAmbassadors.Shuffle();
+        UnassignedAmbassadors!.Shuffle();
         Stone(Milestone.Shuffled);
         Log(p.Faction, " get 5 random Ambassadors");
         for (var i = 0; i < 5; i++) p.Ambassadors.Add(UnassignedAmbassadors.Draw());
@@ -330,10 +331,10 @@ public partial class Game
 
     internal void DealStartingTreacheryCards()
     {
-        StartingTreacheryCards = new Deck<TreacheryCard>(Random);
+        StartingTreacheryCards = new Deck<TreacheryCard>(Random!);
         foreach (var p in Players)
         {
-            StartingTreacheryCards.Items.Add(TreacheryDeck.Draw());
+            StartingTreacheryCards.Items.Add(TreacheryDeck!.Draw());
 
             if (p.Is(Faction.Black)) ExtraStartingCardForBlack = TreacheryDeck.Draw();
         }

@@ -41,7 +41,7 @@ public class DistransUsed : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!ValidCards(Player).Contains(Card)) return Message.Express("Invalid card");
         if (!ValidTargets(Game, Player).Contains(Target)) return Message.Express("Invalid target");

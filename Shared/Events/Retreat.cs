@@ -44,7 +44,7 @@ public class Retreat : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!ValidTargets(Game, Player).Contains(Location)) return Message.Express("Invalid location");
         if (Forces > MaxForces(Game, Player)) return Message.Express("You selected too many ", Player.Force);

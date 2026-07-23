@@ -113,7 +113,7 @@ public class ClairVoyancePlayed : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         return null;
     }
@@ -146,7 +146,7 @@ public class ClairVoyancePlayed : GameEvent
         };
     }
 
-    public static Message Express(ClairvoyanceQuestion q, object parameter1 = null, object parameter2 = null)
+    public static Message Express(ClairvoyanceQuestion q, object? parameter1 = null, object parameter2 = null)
     {
         var p1 = parameter1 ?? "...";
         var p2 = parameter2 ?? "...";

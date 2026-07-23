@@ -25,7 +25,7 @@ public class MulliganPerformed : PassableGameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!Passed && Game.Version >= 150 && !MayMulligan(Player)) return Message.Express("You can't take a mulligan");
 

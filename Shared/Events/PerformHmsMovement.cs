@@ -39,7 +39,7 @@ public class PerformHmsMovement : PassableGameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!Passed)
             if (!ValidLocations(Game).Contains(Target)) return Message.Express("Invalid location");

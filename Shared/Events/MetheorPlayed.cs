@@ -25,7 +25,7 @@ public class MetheorPlayed : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!MayPlayMetheor(Game, Player)) return Message.Express("You cannot use ", TreacheryCardType.Metheor);
 

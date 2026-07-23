@@ -75,7 +75,7 @@ public class Revival : GameEvent, ILocationEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         var p = Player;
 

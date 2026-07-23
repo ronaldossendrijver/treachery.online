@@ -31,7 +31,7 @@ public class FactionTradeOffered : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Game.Version >= 132)
         {

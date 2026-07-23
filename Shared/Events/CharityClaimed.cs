@@ -25,7 +25,7 @@ public class CharityClaimed : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         var p = Player;
         if (p.Resources > 1) return Message.Express("You cannot claim charity");

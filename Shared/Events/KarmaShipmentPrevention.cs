@@ -31,7 +31,7 @@ public class KarmaShipmentPrevention : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Game.Version >= 138 && !GetValidTargets(Game, Player).Contains(Target)) return Message.Express("Invalid target");
 

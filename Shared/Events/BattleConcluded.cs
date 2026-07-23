@@ -91,7 +91,7 @@ public class BattleConcluded : GameEvent
     {
     }
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         var p = Player;
         if (SpecialForceLossesReplaced > 0 && Game.Prevented(FactionAdvantage.GreyReplacingSpecialForces)) return Message.Express(TreacheryCardType.Karma, " prevents replacing ", FactionSpecialForce.Grey, " losses");

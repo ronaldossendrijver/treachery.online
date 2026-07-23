@@ -39,7 +39,7 @@ public class KarmaWhiteBuy : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Player.Resources < 3) return Message.Express("You can't pay ", Payment.Of(3));
         if (!Game.WhiteCache.Contains(Card)) return Message.Express("Invalid card");

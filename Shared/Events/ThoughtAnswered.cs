@@ -39,7 +39,7 @@ public class ThoughtAnswered : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!ValidCards(Game, Player).Any()) return null;
 

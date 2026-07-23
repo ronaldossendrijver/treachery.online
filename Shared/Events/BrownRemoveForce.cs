@@ -43,7 +43,7 @@ public class BrownRemoveForce : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!ValidLocations(Game).Contains(Location)) return Message.Express("Invalid location");
         if (!ValidFactions(Game, Player, Location).Contains(Target)) return Message.Express("Invalid faction");

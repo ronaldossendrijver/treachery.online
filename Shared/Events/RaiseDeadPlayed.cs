@@ -69,7 +69,7 @@ public class RaiseDeadPlayed : GameEvent, ILocationEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         var p = Player;
         if (AmountOfForces < 0 || AmountOfSpecialForces < 0) return Message.Express("You can't revive a negative amount of forces");

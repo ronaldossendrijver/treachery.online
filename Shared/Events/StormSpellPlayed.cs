@@ -31,7 +31,7 @@ public class StormSpellPlayed : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (MoveAmount < 0 || MoveAmount > 10) return Message.Express("Invalid number of sectors");
 

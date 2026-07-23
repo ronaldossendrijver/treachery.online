@@ -88,7 +88,7 @@ public class AllyPermission : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         return null;
     }
@@ -148,8 +148,8 @@ public class AllyPermission : GameEvent
 
         }
 
-        Game.PermittedUseOfAllySpice.Set(ally, PermittedResources);
-        Game.PermittedUseOfAllyKarma.Set(ally, PermittedKarmaCard);
+        Game.PermittedUseOfAllySpice[ally] = PermittedResources;
+        Game.PermittedUseOfAllyKarma[ally] = PermittedKarmaCard;
     }
 
     public override Message GetMessage()

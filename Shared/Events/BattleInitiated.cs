@@ -193,7 +193,7 @@ public class BattleInitiated : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Territory == null) return Message.Express("Territory not selected");
 

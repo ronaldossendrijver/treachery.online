@@ -39,7 +39,7 @@ public class KarmaHandSwap : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (ReturnedCards.Count() != Game.KarmaHandSwapNumberOfCards) return Message.Express("Select ", Game.KarmaHandSwapNumberOfCards, " cards to return");
 

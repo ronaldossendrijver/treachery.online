@@ -39,7 +39,7 @@ public class YellowSentMonster : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Territory == null) return Message.Express("No territory selected");
         if (Territory.IsProtectedFromWorm) return Message.Express("Selected territory is protected");

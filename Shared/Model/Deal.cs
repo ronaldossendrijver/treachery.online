@@ -61,7 +61,7 @@ public class Deal
             End);
     }
 
-    public static Message Express(DealType d, object parameter = null)
+    public static Message Express(DealType d, object? parameter = null)
     {
         var p = parameter ?? "...";
 

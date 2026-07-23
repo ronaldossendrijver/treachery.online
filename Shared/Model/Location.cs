@@ -45,7 +45,7 @@ public class Location(int id) : IIdentifiable
 
     public StrongholdAdvantage Advantage => Territory.Advantage;
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return obj is Location l && l.Id == Id;
     }

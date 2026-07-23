@@ -39,7 +39,7 @@ public class BrownMovePrevention : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!ValidTerritories(Player).Contains(Territory)) return Message.Express("Invalid territory");
         return null;

@@ -13,41 +13,42 @@ public partial class Game
 {
     #region State
 
-    public PlayerSequence ShipmentAndMoveSequence { get; internal set; }
-    public ILocationEvent LastShipmentOrMovement { get; internal set; }
+    public PlayerSequence? ShipmentAndMoveSequence { get; internal set; }
+    public ILocationEvent? LastShipmentOrMovement { get; internal set; }
     private Queue<Intrusion> Intrusions { get; } = new();
     public bool ShipsTechTokenIncome { get; internal set; }
-    public List<IPlacement> RecentMoves { get; } = new();
+    public List<IPlacement> RecentMoves { get; } = [];
     public int CurrentNoFieldValue { get; internal set; } = -1;
     public int LatestRevealedNoFieldValue { get; internal set; } = -1;
     public Dictionary<Faction, ShipmentPermission> ShipmentPermissions { get; } = new();
-    internal List<Faction> FactionsWithOrnithoptersAtStartOfMovement { get; set; }
+    internal List<Faction> FactionsWithOrnithoptersAtStartOfMovement { get; set; } = [];
     internal bool BeginningOfShipmentAndMovePhase { get; set; }
-    internal KarmaShipmentPrevention CurrentKarmaShipmentPrevention { get; set; }
-    internal List<Territory> ChosenDestinationsWithAllies { get; } = new();
+    internal KarmaShipmentPrevention? CurrentKarmaShipmentPrevention { get; set; }
+    internal List<Territory> ChosenDestinationsWithAllies { get; } = [];
     internal bool CurrentPlayerMayPerformExtraMove { get; set; }
     internal bool BlueMayAccompany { get; set; }
     internal Phase PhaseBeforeCaravanCausedIntrusion { get; set; }
     internal Phase PhaseBeforeRevivalCausedIntrusion { get; set; }
-    internal FlightUsed CurrentFlightUsed { get; set; }
-    internal FlightDiscoveryUsed CurrentFlightDiscoveryUsed { get; set; }
-    internal AmbassadorActivated CurrentAmbassadorActivated { get; set; }
+    internal FlightUsed? CurrentFlightUsed { get; set; }
+    internal FlightDiscoveryUsed? CurrentFlightDiscoveryUsed { get; set; }
+    internal AmbassadorActivated? CurrentAmbassadorActivated { get; set; }
     public Faction AllianceByAmbassadorOfferedTo { get; internal set; }
     internal Phase PausedAmbassadorPhase { get; set; }
-    private Player PlayerToSetAsideVidal { get; set; }
+    private Player? PlayerToSetAsideVidal { get; set; }
     private VidalMoment WhenToSetAsideVidal { get; set; }
     internal Phase PausedTerrorPhase { get; set; }
     public bool AllianceByTerrorWasOffered { get; internal set; }
     public Faction AllianceByTerrorOfferedTo { get; internal set; }
     public bool InOrangeCunningShipment { get; internal set; }
-    public List<Territory> CurrentBlockedTerritories { get; } = new();
+    public List<Territory> CurrentBlockedTerritories { get; } = [];
     internal bool BrownHasExtraMove { get; set; }
 
     #endregion State
 
     internal void StartShipAndMoveSequence()
     {
-        if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeMayShipOutOfTurnOrder) ShipmentAndMoveSequence.NextPlayer();
+        if (ShipmentAndMoveSequence?.CurrentFaction == Faction.Orange && OrangeMayShipOutOfTurnOrder) 
+            ShipmentAndMoveSequence.NextPlayer();
         
         Enter(JuiceForcesFirstPlayer && CurrentJuice.Initiator != Faction.Orange, 
             Phase.NonOrangeShip, 
@@ -101,7 +102,7 @@ public partial class Game
         {
             var paths = Map.FindPaths(fl.Key, to, dist, initiator.Faction == Faction.Yellow && Applicable(Rule.YellowMayMoveIntoStorm), initiator.Faction, this);
             var mostSpice = 0;
-            List<Location> pathWithMostSpice = null;
+            List<Location>? pathWithMostSpice = null;
             foreach (var p in paths)
             {
                 var amountOfSpiceLocations = p.Where(l => ResourcesOnPlanet.ContainsKey(l)).Distinct().Count();
@@ -156,8 +157,6 @@ public partial class Game
 
     private bool MustMoveThroughStorm(Player initiator, Location from, Location to, Battalion moved)
     {
-        if (from == null || to == null) return false;
-
         var max = DetermineMaximumMoveDistance(initiator, [moved]);
         var targetsAvoidingStorm = Map.FindNeighbours(from, max, false, initiator.Faction, this);
         var targetsIgnoringStorm = Map.FindNeighbours(from, max, true, initiator.Faction, this);
@@ -187,6 +186,8 @@ public partial class Game
     internal void TakeVidal(Player p, VidalMoment whenToSetAside)
     {
         var vidal = Vidal;
+
+        if (vidal is null) return;
 
         var currentOwner = OwnerOf(vidal);
         if (currentOwner != null)
@@ -221,7 +222,7 @@ public partial class Game
         {
             var pink = GetPlayer(Faction.Pink);
             AmbassadorsOnPlanet.Remove(territory);
-            pink.Ambassadors.Add(ambassador);
+            pink!.Ambassadors.Add(ambassador);
             Log("The ambassador in ", territory, " returns to ", Faction.Pink);
         }
     }
@@ -284,7 +285,7 @@ public partial class Game
         
         var player = CurrentPhase is Phase.OrangeMove 
             ? GetPlayer(Faction.Orange) 
-            : ShipmentAndMoveSequence.CurrentPlayer;
+            : ShipmentAndMoveSequence!.CurrentPlayer;
 
         if (player == null)
             return;
@@ -297,7 +298,7 @@ public partial class Game
 
         if (CurrentPhase is Phase.NonOrangeMove)
         {
-            ShipmentAndMoveSequence.NextPlayer();
+            ShipmentAndMoveSequence!.NextPlayer();
             if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeMayShipOutOfTurnOrder)
                 ShipmentAndMoveSequence.NextPlayer();
         }
@@ -334,7 +335,7 @@ public partial class Game
                 i++;
                 if (i > 100) throw new Exception("Stuck");
 
-                if (LastBlueIntrusion != null && GetPlayer(Faction.Blue).ForcesIn(LastBlueIntrusion.Territory) == 0)
+                if (LastBlueIntrusion != null && GetPlayer(Faction.Blue)!.ForcesIn(LastBlueIntrusion.Territory) == 0)
                     DequeueIntrusion(IntrusionType.BlueIntrusion);
                 else if (LastTerrorTrigger != null && !TerrorIn(LastTerrorTrigger.Territory).Any())
                     DequeueIntrusion(IntrusionType.Terror);
@@ -668,8 +669,12 @@ public partial class Game
             {
                 //Forces that must be destroyed if both the player and his ally have moved
 
-                var playerTerritories = Applicable(Rule.AdvisorsDontConflictWithAlly) ? p.OccupiedTerritories : p.TerritoriesWithForces;
-                var allyTerritories = Applicable(Rule.AdvisorsDontConflictWithAlly) ? GetPlayer(p.Ally).OccupiedTerritories : GetPlayer(p.Ally).TerritoriesWithForces;
+                var playerTerritories = Applicable(Rule.AdvisorsDontConflictWithAlly) 
+                    ? p.OccupiedTerritories 
+                    : p.TerritoriesWithForces;
+                var allyTerritories = (Applicable(Rule.AdvisorsDontConflictWithAlly) 
+                    ? GetPlayer(p.Ally)?.OccupiedTerritories 
+                    : GetPlayer(p.Ally)?.TerritoriesWithForces) ?? [];
 
                 foreach (var t in playerTerritories.Intersect(allyTerritories).Where(x => x != Map.PolarSink.Territory).ToList())
                 {
@@ -853,7 +858,7 @@ public partial class Game
 
     #region Information
 
-    public Leader Vidal => LeaderState.Keys.FirstOrDefault(h => h.HeroType == HeroType.Vidal) as Leader;
+    public Leader? Vidal => LeaderState.Keys.FirstOrDefault(h => h.HeroType == HeroType.Vidal) as Leader;
     public bool VidalIsAlive => Vidal != null && IsAlive(Vidal);
 
     public bool VidalIsCapturedOrGhola
@@ -877,11 +882,11 @@ public partial class Game
                (permissions & permission) == permission;
     }
 
-    public Intrusion LastBlueIntrusion => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.BlueIntrusion ? Intrusions.Peek() : null;
+    public Intrusion? LastBlueIntrusion => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.BlueIntrusion ? Intrusions.Peek() : null;
 
-    public Intrusion LastTerrorTrigger => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.Terror ? Intrusions.Peek() : null;
+    public Intrusion? LastTerrorTrigger => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.Terror ? Intrusions.Peek() : null;
 
-    public Intrusion LastAmbassadorTrigger => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.Ambassador ? Intrusions.Peek() : null;
+    public Intrusion? LastAmbassadorTrigger => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.Ambassador ? Intrusions.Peek() : null;
 
     internal bool OccupiesArrakeenOrCarthag(Player p)
     {

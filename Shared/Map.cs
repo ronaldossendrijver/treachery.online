@@ -1691,7 +1691,7 @@ public class Map
         internal Faction Faction;
         internal bool IgnoreStorm;
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return
                 obj is NeighbourCacheKey c &&

@@ -39,7 +39,7 @@ public class BlueBattleAnnouncement : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Initiator != Faction.Blue) return Message.Express("Your faction can't announce battle");
         var p = Player;

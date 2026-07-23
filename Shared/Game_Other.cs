@@ -195,9 +195,11 @@ public partial class Game
         return CurrentKarmaPrevention != null && CurrentKarmaPrevention.Target == f;
     }
 
-    public bool JuiceForcesFirstPlayer => CurrentJuice != null && CurrentJuice.Type == JuiceType.GoFirst;
+    [MemberNotNullWhen(true, nameof(CurrentJuice))]
+    internal bool JuiceForcesFirstPlayer => CurrentJuice != null && CurrentJuice.Type == JuiceType.GoFirst;
 
-    public bool JuiceForcesLastPlayer => CurrentJuice != null && CurrentJuice.Type == JuiceType.GoLast;
+    [MemberNotNullWhen(true, nameof(CurrentJuice))]
+    internal bool JuiceForcesLastPlayer => CurrentJuice != null && CurrentJuice.Type == JuiceType.GoLast;
 
     public bool YieldsSecrets(Player p)
     {

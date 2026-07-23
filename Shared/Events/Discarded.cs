@@ -39,7 +39,7 @@ public class Discarded : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Card == null) return Message.Express("Choose a card to discard");
         if (!Player.Has(Card)) return Message.Express("Invalid card");

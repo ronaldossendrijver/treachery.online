@@ -39,7 +39,7 @@ public class DiscoveryRevealed : PassableGameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!GetLocations(Game, Player).Contains(Location)) return Message.Express("Invalid location");
 

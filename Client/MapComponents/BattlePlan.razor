@@ -8,6 +8,8 @@
 *@
 @inherits MapComponent
 
+@if (Game.CurrentBattle is null) return;
+
 @if (_showPlan) {
 
     <MapImage X=X Y=Y Diameter="@(Client.CurrentSkin.BattleScreenWidth)" Src="@Client.CurrentSkin.BattleScreen_URL" 
@@ -150,11 +152,11 @@
             }
 
             var passiveSkill = Game.GetSkill(Plan.Player);
-            if (passiveSkill != heroSkill && PassiveSkillIsRelevantForBattlePlan(passiveSkill))
+            if (passiveSkill != null && passiveSkill != heroSkill && PassiveSkillIsRelevantForBattlePlan(passiveSkill.Value))
             {
                 <MapImage X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Client.CurrentSkin.BattleWheelCardWidth) Height="@(0.4f * Client.CurrentSkin.BattleWheelCardHeight)" Src="@Client.CurrentSkin.GetImageUrl(passiveSkill)"
                        ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0"
-                       Popover="@Client.CurrentSkin.GetPopup(passiveSkill)" />
+                       Popover="@Client.CurrentSkin.GetPopup(passiveSkill.Value)" />
             }
 
             <MapLeader ToShow="Plan.Hero" 
@@ -234,7 +236,7 @@
                      Align="@TextAlignment.Center" />
         }
 
-        if (Plan.Initiator == Faction.Green && Plan.Messiah)
+        if (Plan is { Initiator: Faction.Green, Messiah: true })
         {
             <MapImage X="@(X + Client.CurrentSkin.BattleScreenHeroX + Client.CurrentSkin.BattleWheelHeroWidth / 1.5f)" 
                       Y="@(Y + 0.8f * Client.CurrentSkin.BattleScreenHeroY)" 
@@ -271,7 +273,7 @@
         }
     }
 
-    if (ShowEntirePlan || (Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Weapon) || (Game.CurrentNexusPrescience != null && Game.CurrentNexusPrescience.GreenPrescienceAspect == PrescienceAspect.Weapon))
+    if (ShowEntirePlan || (Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Weapon) || Game.CurrentNexusPrescience is { GreenPrescienceAspect: PrescienceAspect.Weapon })
     {
         if (Plan.Weapon != null && (ShowEntirePlan || Plan.Weapon.IsWeapon))
         {
@@ -282,7 +284,8 @@
         else if (!ShowEntirePlan)
         {
             <MapText ToShow="no weapon"
-                     X="@(X + Client.CurrentSkin.BattleWheelCardX + Client.CurrentSkin.BattleWheelCardWidth / 2)" Y="@(Y + 1.1f * Client.CurrentSkin.BattleWheelCardY + Client.CurrentSkin.BattleWheelCardHeight / 2)"
+                     X="@(X + Client.CurrentSkin.BattleWheelCardX + 0.5f * Client.CurrentSkin.BattleWheelCardWidth)" 
+                     Y="@(Y + 1.1f * Client.CurrentSkin.BattleWheelCardY + 0.5f * Client.CurrentSkin.BattleWheelCardHeight)"
                      Font="@Client.CurrentSkin.TURN_FONT" FontColor="white"
                      BorderWidth="Client.CurrentSkin.TURN_FONT_BORDERWIDTH" BorderColor="black"
                      Align="@TextAlignment.Center" />
@@ -306,28 +309,34 @@ else
 
     private bool _showPlan = true;
 
-    [Parameter] public Battle Plan { get; set; }
+    [Parameter, EditorRequired] 
+    public Battle Plan { get; set; }
 
-    [Parameter] public Battle OpponentPlan { get; set; }
+    [Parameter, EditorRequired] 
+    public Battle? OpponentPlan { get; set; }
 
-    [Parameter] public bool TraitorCalled { get; set; }
+    [Parameter, EditorRequired] 
+    public bool TraitorCalled { get; set; }
 
-    [Parameter] public bool Facedanced { get; set; }
+    [Parameter, EditorRequired] 
+    public bool Facedanced { get; set; }
 
-    [Parameter] public bool IsAggressor { get; set; }
+    [Parameter, EditorRequired] 
+    public bool IsAggressor { get; set; }
 
-    [Parameter] public bool ShowEntirePlan { get; set; }
+    [Parameter, EditorRequired] 
+    public bool ShowEntirePlan { get; set; }
 
     private static bool PassiveSkillIsRelevantForBattlePlan(LeaderSkill skill)
     {
         return
-            skill == LeaderSkill.Diplomat ||
-            skill == LeaderSkill.Graduate ||
-            skill == LeaderSkill.Warmaster ||
-            skill == LeaderSkill.Adept ||
-            skill == LeaderSkill.Swordmaster ||
-            skill == LeaderSkill.KillerMedic ||
-            skill == LeaderSkill.MasterOfAssassins;
+            skill is LeaderSkill.Diplomat 
+                or LeaderSkill.Graduate 
+                or LeaderSkill.Warmaster 
+                or LeaderSkill.Adept 
+                or LeaderSkill.Swordmaster 
+                or LeaderSkill.KillerMedic 
+                or LeaderSkill.MasterOfAssassins;
     }
 
     private void OnShowPlanClick(MouseEventArgs e)

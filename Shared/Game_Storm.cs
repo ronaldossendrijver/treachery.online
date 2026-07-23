@@ -51,7 +51,8 @@ public partial class Game
 
     internal void MoveHmsBeforeDiallingStorm()
     {
-        if (IsPlaying(Faction.Grey) && GetPlayer(Faction.Grey).AnyForcesIn(Map.HiddenMobileStronghold) > 0)
+        var grey = GetPlayer(Faction.Grey);
+        if (grey != null && grey.AnyForcesIn(Map.HiddenMobileStronghold) > 0)
         {
             if (Prevented(FactionAdvantage.GreyMovingHms))
             {
@@ -86,7 +87,7 @@ public partial class Game
 
     internal int DetermineLaterStormWithStormDeck()
     {
-        return Random.Next(6) + 1;
+        return Random!.Next(6) + 1;
     }
 
     internal void DetermineStorm()
@@ -112,14 +113,14 @@ public partial class Game
 
     internal void CollectSpiceFrom(Faction faction, Location l, int maximumAmount)
     {
-        if (ResourcesOnPlanet.TryGetValue(l, out var value))
-        {
-            var collected = Math.Min(value, maximumAmount);
-            ChangeResourcesOnPlanet(l, -collected);
-            var collector = GetPlayer(faction);
-            collector.Resources += collected;
-            Log(faction, " collect ", Payment.Of(collected), " from ", l);
-        }
+        if (!ResourcesOnPlanet.TryGetValue(l, out var value)) return;
+        
+        var collected = Math.Min(value, maximumAmount);
+        ChangeResourcesOnPlanet(l, -collected);
+        var collector = GetPlayer(faction);
+        if (collector == null) return;
+        collector.Resources += collected;
+        Log(faction, " collect ", Payment.Of(collected), " from ", l);
     }
 
     internal void MoveStormAndDetermineNext(int amount)
@@ -143,6 +144,7 @@ public partial class Game
         foreach (var battalion in l.Value)
         {
             var player = GetPlayer(battalion.Faction);
+            if (player is null) continue;
 
             var killCount = 0;
             if (battalion.Is(Faction.Yellow) && Applicable(Rule.YellowStormLosses))
@@ -180,6 +182,7 @@ public partial class Game
             if (ambassador != Ambassador.None)
             {
                 var pink = GetPlayer(Faction.Pink);
+                if (pink is null) continue;
                 AmbassadorsOnPlanet.Remove(t);
                 pink.Ambassadors.Add(ambassador);
                 Log("The ambassador in ", t, " returns to ", Faction.Pink);

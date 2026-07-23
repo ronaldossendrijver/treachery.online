@@ -50,7 +50,7 @@ public class CardTraded : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!ValidCards(Player).Contains(Card)) return Message.Express("Invalid card");
         if (!Player.AlliedPlayer.TreacheryCards.Any()) Message.Express("Your ally does not have cards to trade");

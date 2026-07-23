@@ -33,7 +33,7 @@ public class BluePrediction : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!Game.IsPlaying(ToWin)) return Message.Express("Invalid target");
         if (Turn < 1 || Turn > Game.MaximumTurns) return Message.Express("Invalid turn");

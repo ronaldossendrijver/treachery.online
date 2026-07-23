@@ -31,7 +31,7 @@ public class PerformSetup : PlacementEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         var faction = Game.NextFactionToPerformCustomSetup;
         var p = Game.GetPlayer(faction);

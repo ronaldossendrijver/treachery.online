@@ -13,19 +13,19 @@ public partial class Game
 {
     #region State
 
-    public PlayerSequence BidSequence { get; private set; }
-    public Deck<TreacheryCard> CardsOnAuction { get; private set; }
+    public PlayerSequence? BidSequence { get; private set; }
+    public Deck<TreacheryCard>? CardsOnAuction { get; private set; }
     public AuctionType CurrentAuctionType { get; private set; }
     public int CardNumber { get; private set; }
-    public IBid CurrentBid { get; internal set; }
+    public IBid? CurrentBid { get; internal set; }
     public Dictionary<Faction, IBid> Bids { get; } = new();
-    public TreacheryCard CardJustWon { get; internal set; }
-    public IBid WinningBid { get; internal set; }
+    public TreacheryCard? CardJustWon { get; internal set; }
+    public IBid? WinningBid { get; internal set; }
     internal bool BiddingRoundWasStarted { get; private set; }
     internal bool RegularBiddingIsDone { get; set; }
-    public TreacheryCard CardThatMustBeKeptOrGivenToAlly { get; internal set; }
+    public TreacheryCard? CardThatMustBeKeptOrGivenToAlly { get; internal set; }
     internal int NumberOfCardsOnAuction { get; set; }
-    internal TriggeredBureaucracy BiddingTriggeredBureaucracy { get; set; }
+    internal TriggeredBureaucracy? BiddingTriggeredBureaucracy { get; set; }
     internal bool GreySwappedCardOnBid { get; set; }
 
     public Faction FactionThatMayReplaceBoughtCard { get; internal set; }
@@ -36,7 +36,7 @@ public partial class Game
     internal Phase KarmaHandSwapPausedPhase { get; set; }
 
     private AuctionType BlackMarketAuctionType { get; set; }
-    public TreacheryCard CardSoldOnBlackMarket { get; set; }
+    public TreacheryCard? CardSoldOnBlackMarket { get; set; }
     internal bool WhiteAuctionShouldStillHappen { get; set; }
     public bool WhiteBiddingJustFinished { get; private set; }
     public bool WhiteOccupierSpecifiedCard { get; internal set; }
@@ -50,7 +50,7 @@ public partial class Game
         MainPhaseStart(MainPhase.Bidding);
         Allow(FactionAdvantage.BrownControllingCharity);
         Allow(FactionAdvantage.BlueCharity);
-        CardsOnAuction = new Deck<TreacheryCard>(Random);
+        CardsOnAuction = new Deck<TreacheryCard>(Random ?? throw new Exception("Random generator is not initialized"));
         GreySwappedCardOnBid = false;
         CardSoldOnBlackMarket = null;
         BlackMarketAuctionType = AuctionType.None;
@@ -484,7 +484,7 @@ public partial class Game
         Enter(Phase.Bidding);
     }
 
-    internal void StartBidSequenceAndAuctionType(AuctionType auctionType, Player whitePlayer = null, int direction = 1)
+    internal void StartBidSequenceAndAuctionType(AuctionType auctionType, Player? whitePlayer = null, int direction = 1)
     {
         switch (auctionType)
         {

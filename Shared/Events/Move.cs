@@ -31,7 +31,7 @@ public class Move : PlacementEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!Passed && Game.InOrangeCunningShipment) return Message.Express("You cannot move after Cunning shipment");
 

@@ -39,7 +39,7 @@ public class TraitorsSelected : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!Player.Traitors.Contains(SelectedTraitor)) return Message.Express("Invalid traitor");
         return null;

@@ -105,7 +105,7 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!Passed)
         {

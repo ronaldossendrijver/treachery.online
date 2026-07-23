@@ -31,7 +31,7 @@ public class StormDialled : GameEvent
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (Amount < ValidMinAmount(Game) || Amount > ValidMaxAmount(Game)) return Message.Express("Invalid amount");
 

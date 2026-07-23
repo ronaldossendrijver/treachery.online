@@ -30,7 +30,7 @@ public class ResourcesAudited : GameEvent
     #endregion Properties
 
     #region Validation
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!ValidFactions(Game, Player).Contains(Target)) return Message.Express("Invalid faction");
 
