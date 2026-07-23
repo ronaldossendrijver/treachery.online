@@ -38,10 +38,18 @@ public class BattleInitiated : GameEvent
     public Faction Target { get; set; }
 
     [JsonIgnore]
-    public Faction ActualInitiator => Game.CurrentPinkOrAllyFighter != Faction.None && Initiator == Game.GetAlly(Game.CurrentPinkOrAllyFighter) ? Game.CurrentPinkOrAllyFighter : Initiator;
+    public Faction ActualInitiator => Game.CurrentPinkOrAllyFighter != null 
+                                      && Game.CurrentPinkOrAllyFighter.Value != Faction.None 
+                                      && Initiator == Game.GetAlly(Game.CurrentPinkOrAllyFighter.Value) 
+        ? Game.CurrentPinkOrAllyFighter.Value 
+        : Initiator;
 
     [JsonIgnore]
-    public Faction ActualTarget => Game.CurrentPinkOrAllyFighter != Faction.None && Target == Game.GetAlly(Game.CurrentPinkOrAllyFighter) ? Game.CurrentPinkOrAllyFighter : Target;
+    public Faction ActualTarget => Game.CurrentPinkOrAllyFighter != null 
+                                   && Game.CurrentPinkOrAllyFighter.Value != Faction.None 
+                                   && Target == Game.GetAlly(Game.CurrentPinkOrAllyFighter.Value) 
+        ? Game.CurrentPinkOrAllyFighter.Value 
+        : Target;
 
     [JsonIgnore]
     public Faction Defender => ActualInitiator == Aggressor ? ActualTarget : ActualInitiator;

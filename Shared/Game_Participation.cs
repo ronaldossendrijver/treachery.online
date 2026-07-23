@@ -25,7 +25,7 @@ public partial class Game
     
     public Faction GetFactionInSeat(int seat) => GetPlayerInSeat(seat).Faction;
     
-    public Faction GetAlly(Faction f) => GetPlayer(f).Ally;
+    public Faction GetAlly(Faction? f) => GetPlayer(f).Ally;
 
     public IEnumerable<Faction> PlayersOtherThan(Player p) => Players.Where(x => x.Faction != p.Faction).Select(x => x.Faction);
 
@@ -108,17 +108,14 @@ public partial class Game
     
     public void AddObserver(int userId, string observerName)
     {
-        if (CurrentReport != null)
-            Log(observerName, " is now observing");
-        
+        Log(observerName, " is now observing");
         Participation.Observers.Add(userId);
         Participation.PlayerNames[userId] = observerName;
     }
 
     public void RemoveUser(int userId, bool kick)
     {
-        if (CurrentReport != null)
-            Log(GetPlayerName(userId), kick ? " was kicked from" : " left", " the game");
+        Log(GetPlayerName(userId), kick ? " was kicked from" : " left", " the game");
         
         Participation.SeatedPlayers.Remove(userId);
         Participation.Observers.Remove(userId);

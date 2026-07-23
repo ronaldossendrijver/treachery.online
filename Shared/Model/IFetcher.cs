@@ -13,5 +13,5 @@ public interface IFetcher<T>
 {
     T? Find(int id);
 
-    int GetId(T obj);
+    int GetId(T? obj);
 }

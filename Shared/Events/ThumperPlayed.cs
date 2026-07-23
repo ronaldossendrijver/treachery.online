@@ -39,7 +39,7 @@ public class ThumperPlayed : GameEvent
         Game.Discard(Player, TreacheryCardType.Thumper);
         Log();
         Game.Stone(Milestone.Thumper);
-        Game.ThumperCallsMonster = Game.CurrentTurn > 1;
+        Game.ThumperCalledShaiHulud = Game.CurrentTurn > 1;
         Game.EnterBlowA();
     }
 

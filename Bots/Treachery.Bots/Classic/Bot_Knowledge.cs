@@ -59,16 +59,16 @@ public partial class ClassicBot
     private Prescience? MyPrescience => Game.CurrentPrescience != null && (Game.CurrentPrescience.Initiator == Faction || Game.CurrentPrescience.Initiator == Ally) ? Game.CurrentPrescience : null;
 
     private static ClairVoyanceQandA? MyClairvoyanceAboutEnemyDefenseInCurrentBattle(Game game, Player player) =>
-        game is { LatestClairvoyance: not null, LatestClairvoyanceQandA: not null } &&
+        game is { LatestClairvoyance: not null, LatestClairvoyanceQnA: not null } &&
         game.LatestClairvoyanceBattle == game.CurrentBattle &&
         (game.LatestClairvoyance.Initiator == player.Faction || game.LatestClairvoyance.Initiator == player.Ally) &&
-        game.LatestClairvoyance.Question is ClairvoyanceQuestion.CardTypeAsDefenseInBattle or ClairvoyanceQuestion.CardTypeInBattle ? game.LatestClairvoyanceQandA : null;
+        game.LatestClairvoyance.Question is ClairvoyanceQuestion.CardTypeAsDefenseInBattle or ClairvoyanceQuestion.CardTypeInBattle ? game.LatestClairvoyanceQnA : null;
 
     private static ClairVoyanceQandA? PlayerClairvoyanceAboutEnemyWeaponInCurrentBattle(Game game, Player player) =>
-        game is { LatestClairvoyance: not null, LatestClairvoyanceQandA: not null } &&
+        game is { LatestClairvoyance: not null, LatestClairvoyanceQnA: not null } &&
         game.LatestClairvoyanceBattle == game.CurrentBattle &&
         (game.LatestClairvoyance.Initiator == player.Faction || game.LatestClairvoyance.Initiator == player.Ally) &&
-        game.LatestClairvoyance.Question is ClairvoyanceQuestion.CardTypeAsWeaponInBattle or ClairvoyanceQuestion.CardTypeInBattle ? game.LatestClairvoyanceQandA : null;
+        game.LatestClairvoyance.Question is ClairvoyanceQuestion.CardTypeAsWeaponInBattle or ClairvoyanceQuestion.CardTypeInBattle ? game.LatestClairvoyanceQnA : null;
 
     private Voice? MyVoice => Game.CurrentVoice != null && (Faction == Faction.Blue || Ally == Faction.Blue) ? Game.CurrentVoice : null;
 

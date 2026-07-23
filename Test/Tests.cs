@@ -976,7 +976,6 @@ public class Tests
     public void ScanForMapErrors()
     {
         var map = new Map();
-        map.Initialize();
         var issueFound = false;
 
         foreach (var l in map.Locations(false))

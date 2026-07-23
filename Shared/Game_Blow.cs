@@ -13,22 +13,22 @@ public partial class Game
 {
     #region State
 
-    public ResourceCard LatestSpiceCardA { get; private set; }
-    public ResourceCard LatestSpiceCardB { get; private set; }
+    public ResourceCard? LatestSpiceCardA { get; private set; }
+    public ResourceCard? LatestSpiceCardB { get; private set; }
 
-    private List<ResourceCard> IgnoredMonsters { get; } = new();
-    public List<MonsterAppearence> Monsters { get; } = new();
+    private List<ResourceCard> IgnoredMonsters { get; } = [];
+    public List<MonsterAppearence> Monsters { get; } = [];
     public int NumberOfMonsters { get; internal set; }
 
-    internal List<NexusVoted> NexusVotes { get; } = new();
-    internal bool ThumperCallsMonster { get; set; }
+    internal List<NexusVoted> NexusVotes { get; } = [];
+    internal bool ThumperCalledShaiHulud { get; set; }
 
-    private ResourceCard IgnoredSandtrout { get; set; }
-    public ResourceCard SandTrout { get; private set; }
+    private ResourceCard? IgnoredSandtrout { get; set; }
+    public ResourceCard? SandTrout { get; private set; }
     private bool SandTroutDoublesResources { get; set; }
 
-    public List<Faction> FactionsThatMayDrawNexusCard { get; private set; } = new();
-    public List<Faction> FactionsThatDrewNexusCard { get; } = new();
+    public List<Faction> FactionsThatMayDrawNexusCard { get; private set; } = [];
+    public List<Faction> FactionsThatDrewNexusCard { get; } = [];
 
     #endregion State
 
@@ -53,12 +53,12 @@ public partial class Game
 
     internal void DrawResourceCard()
     {
-        ResourceCard drawn = null;
-        while (ThumperCallsMonster || !(drawn = DrawAndDiscardResourceCard(CurrentDiscardPile)).IsSpiceBlow)
+        ResourceCard? drawn = null;
+        while (ThumperCalledShaiHulud || !(drawn = DrawAndDiscardResourceCard(CurrentDiscardPile)).IsSpiceBlow)
         {
-            if (ThumperCallsMonster && Version <= 150)
+            if (ThumperCalledShaiHulud && Version <= 150)
             {
-                ThumperCallsMonster = false;
+                ThumperCalledShaiHulud = false;
                 NumberOfMonsters++;
                 LetMonsterAppear(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud || PreviousBlowCard.IsGreatMaker ? null : PreviousBlowCard.Territory, false);
                 if (CurrentPhase == Phase.YellowSendingMonsterA || CurrentPhase == Phase.YellowSendingMonsterB) break;
@@ -68,24 +68,26 @@ public partial class Game
                 Log(drawn.IsShaiHulud ? Concept.Monster : Concept.GreatMonster, " on turn 1 was ignored");
                 IgnoredMonsters.Add(CurrentDiscardPile.Draw());
             }
-            else if ((ThumperCallsMonster && Version > 150) || drawn is { IsShaiHulud: true } || drawn is { IsGreatMaker: true })
+            else if ((ThumperCalledShaiHulud && Version > 150) || drawn is { IsShaiHulud: true } || drawn is { IsGreatMaker: true })
             {
-                if (!ThumperCallsMonster)
+                if (!ThumperCalledShaiHulud)
                 {
-                    Stone(drawn.IsShaiHulud ? Milestone.Monster : Milestone.GreatMonster);
+                    Stone(drawn?.IsShaiHulud is true ? Milestone.Monster : Milestone.GreatMonster);
                 }
 
                 if (!SandTroutOccured)
                 {
                     SandTroutDoublesResources = false;
                     NumberOfMonsters++;
-                    LetMonsterAppear(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud || PreviousBlowCard.IsGreatMaker ? null : PreviousBlowCard.Territory, !ThumperCallsMonster && drawn.IsGreatMaker);
-                    if (CurrentPhase == Phase.YellowSendingMonsterA || CurrentPhase == Phase.YellowSendingMonsterB) break;
+                    LetMonsterAppear(PreviousBlowCard == null 
+                                     || PreviousBlowCard.IsShaiHulud 
+                                     || PreviousBlowCard.IsGreatMaker ? null : PreviousBlowCard.Territory, !ThumperCalledShaiHulud && drawn?.IsGreatMaker is true);
+                    if (CurrentPhase is Phase.YellowSendingMonsterA or Phase.YellowSendingMonsterB) break;
                 }
                 else
                 {
                     //Sandtrout triggers
-                    if (Version >= 150)
+                    if (Version >= 150 && SandTrout != null)
                     {
                         if (drawn != null) CurrentDiscardPile.Items.Remove(drawn);
                         CurrentDiscardPile.PutOnTop(SandTrout);
@@ -114,7 +116,7 @@ public partial class Game
                 }
             }
 
-            ThumperCallsMonster = false;
+            ThumperCalledShaiHulud = false;
         }
 
         if (CurrentPhase != Phase.YellowSendingMonsterA && CurrentPhase != Phase.YellowSendingMonsterB)
@@ -239,24 +241,24 @@ public partial class Game
 
             if (Applicable(Rule.BreakAlliancesOnAlliancePhase)) BreakAllAlliances();
 
-            if (Monsters.Count == 1 && Monsters[0].IsGreatMonster)
+            if (Monsters is [{ IsGreatMonster: true }])
             {
                 NexusVotes.Clear();
-                Enter(CurrentPhase == Phase.BlowA || CurrentPhase == Phase.HarvesterA, Phase.VoteAllianceA, Phase.VoteAllianceB);
+                Enter(CurrentPhase is Phase.BlowA or Phase.HarvesterA, Phase.VoteAllianceA, Phase.VoteAllianceB);
             }
             else
             {
-                Enter(CurrentPhase == Phase.BlowA || CurrentPhase == Phase.HarvesterA, Phase.AllianceA, Phase.AllianceB);
+                Enter(CurrentPhase is Phase.BlowA or Phase.HarvesterA, Phase.AllianceA, Phase.AllianceB);
             }
         }
     }
 
-    internal void LetMonsterAppear(Territory t, bool isGreatMonster)
+    internal void LetMonsterAppear(Territory? t, bool isGreatMonster)
     {
-        var m = new MonsterAppearence(t, isGreatMonster);
-
-        if (CurrentTurn != 1)
+        if (CurrentTurn != 1 && t != null)
         {
+            var m = new MonsterAppearence(t, isGreatMonster);
+            
             if (m.IsGreatMonster)
                 Log(Concept.GreatMonster, " appears in ", m.Territory);
             else if (Monsters.Count > 0)
@@ -292,7 +294,7 @@ public partial class Game
         }
         else
         {
-            Log(m.DescribingConcept, " on turn 1 was ignored");
+            Log(isGreatMonster ? Concept.GreatMonster : Concept.Monster, " on turn 1 was ignored");
         }
     }
 
@@ -463,7 +465,7 @@ public partial class Game
 
     private Deck<ResourceCard> CurrentDiscardPile => CurrentPhase == Phase.BlowA ? ResourceCardDiscardPileA : ResourceCardDiscardPileB;
 
-    private ResourceCard PreviousBlowCard
+    private ResourceCard? PreviousBlowCard
     {
         get => CurrentPhase == Phase.BlowA ? LatestSpiceCardA : LatestSpiceCardB;
         set

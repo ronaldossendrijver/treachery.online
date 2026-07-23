@@ -17,71 +17,71 @@ public class Map
     public readonly LocationFetcher LocationLookup;
     public readonly TerritoryFetcher TerritoryLookup;
 
-    public Location TheGreaterFlat { get; private set; }
+    public Location TheGreaterFlat { get; private set; } = new(-1);
 
-    public Location PolarSink { get; private set; }
+    public Location PolarSink { get; private set; } = new(-1);
 
-    public Location Arrakeen { get; private set; }
+    public Location Arrakeen { get; private set; } = new(-1);
 
-    public Location Carthag { get; private set; }
+    public Location Carthag { get; private set; } = new(-1);
 
-    public Location TueksSietch { get; private set; }
+    public Location TueksSietch { get; private set; } = new(-1);
 
-    public Location SietchTabr { get; private set; }
+    public Location SietchTabr { get; private set; } = new(-1);
 
-    public Location HabbanyaSietch { get; private set; }
+    public Location HabbanyaSietch { get; private set; } = new(-1);
 
-    public Territory FalseWallSouth { get; private set; }
+    public Territory FalseWallSouth { get; private set; } = new(-1);
 
-    private Territory Meridan { get; set; }
+    private Territory Meridan { get; set; } = new(-1);
 
-    public Territory FalseWallWest { get; private set; }
+    public Territory FalseWallWest { get; private set; } = new(-1);
 
-    public Territory ImperialBasin { get; private set; }
+    public Territory ImperialBasin { get; private set; } = new(-1);
 
-    public Territory ShieldWall { get; private set; }
+    public Territory ShieldWall { get; private set; } = new(-1);
 
-    private Territory HoleInTheRock { get; set; }
+    private Territory HoleInTheRock { get; set; } = new(-1);
 
-    public Territory FalseWallEast { get; private set; }
+    public Territory FalseWallEast { get; private set; } = new(-1);
 
-    private Territory TheMinorErg { get; set; }
+    private Territory TheMinorErg { get; set; } = new(-1);
 
-    public Territory PastyMesa { get; private set; }
+    public Territory PastyMesa { get; private set; } = new(-1);
 
-    private Territory GaraKulon { get; set; }
+    private Territory GaraKulon { get; set; } = new(-1);
 
-    private Territory OldGap { get; set; }
+    private Territory OldGap { get; set; } = new(-1);
 
-    private Territory SihayaRidge { get; set; }
+    private Territory SihayaRidge { get; set; } = new(-1);
 
-    public Location FuneralPlain { get; private set; }
+    public Location FuneralPlain { get; private set; } = new(-1);
 
-    public Territory BightOfTheCliff { get; private set; }
+    public Territory BightOfTheCliff { get; private set; } = new(-1);
 
-    public Territory PlasticBasin { get; private set; }
+    public Territory PlasticBasin { get; private set; } = new(-1);
 
-    public Territory RockOutcroppings { get; private set; }
+    public Territory RockOutcroppings { get; private set; } = new(-1);
 
-    public Territory BrokenLand { get; private set; }
+    public Territory BrokenLand { get; private set; } = new(-1);
 
-    public Territory Tsimpo { get; private set; }
+    public Territory Tsimpo { get; private set; } = new(-1);
 
-    public Territory HaggaBasin { get; private set; }
+    public Territory HaggaBasin { get; private set; } = new(-1);
 
-    public Territory WindPass { get; private set; }
+    public Territory WindPass { get; private set; } = new(-1);
 
-    public Territory WindPassNorth { get; private set; }
+    public Territory WindPassNorth { get; private set; } = new(-1);
 
-    private Territory CielagoEast { get; set; }
+    private Territory CielagoEast { get; set; } = new(-1);
 
-    public Territory CielagoWest { get; private set; }
+    public Territory CielagoWest { get; private set; } = new(-1);
 
-    public Territory HabbanyaErg { get; private set; }
+    public Territory HabbanyaErg { get; private set; } = new(-1);
 
-    public Location TheGreatFlat { get; private set; }
+    public Location TheGreatFlat { get; private set; } = new(-1);
 
-    public DiscoveredLocation GetDiscoveryStronghold(DiscoveryToken discovery)
+    public DiscoveredLocation? GetDiscoveryStronghold(DiscoveryToken discovery)
     {
         return Locations(false).FirstOrDefault(l => l is DiscoveredLocation ds && ds.Discovery == discovery) as
             DiscoveredLocation;
@@ -99,11 +99,6 @@ public class Map
     {
         LocationLookup = new LocationFetcher(this);
         TerritoryLookup = new TerritoryFetcher(this);
-        Initialize();
-    }
-
-    public void Initialize()
-    {
         InitializeLocations();
         InitializeLocationNeighbours();
     }
@@ -1797,7 +1792,7 @@ public class Map
         return paths;
     }
 
-    private static void FindPaths(List<List<Location>> foundPaths, Stack<Location> currentPath, Location current, Location destination, Location previous, int currentDistance, int maxDistance, int sectorInStorm, List<Location> obstacles)
+    private static void FindPaths(List<List<Location>> foundPaths, Stack<Location> currentPath, Location current, Location destination, Location? previous, int currentDistance, int maxDistance, int sectorInStorm, List<Location> obstacles)
     {
         currentPath.Push(current);
 
@@ -1822,7 +1817,7 @@ public class Map
         currentPath.Pop();
     }
 
-    public static List<Location> FindFirstShortestPath(Location start, Location destination, bool ignoreStorm, Faction f, Game game)
+    public static List<Location>? FindFirstShortestPath(Location start, Location destination, bool ignoreStorm, Faction f, Game game)
     {
         var route = new Stack<Location>();
         var obstacles = DetermineForceObstacles(f, game);
@@ -1834,7 +1829,7 @@ public class Map
         return null;
     }
 
-    private static List<Location> FindPath(Stack<Location> currentRoute, Location current, Location destination, Location previous, int currentDistance, int maxDistance, int sectorInStorm, List<Location> obstacles)
+    private static List<Location>? FindPath(Stack<Location> currentRoute, Location current, Location destination, Location? previous, int currentDistance, int maxDistance, int sectorInStorm, List<Location> obstacles)
     {
         currentRoute.Push(current);
 
@@ -1908,15 +1903,19 @@ public class Map
 
     public class TerritoryFetcher(Map map) : IFetcher<Territory>
     {
-        public Territory Find(int id) => id == -1 ? null : map.Territories(true).SingleOrDefault(t => t.Id == id);
+        public Territory? Find(int id) => id == -1 
+            ? null 
+            : map.Territories(true).SingleOrDefault(t => t.Id == id);
 
-        public int GetId(Territory obj) => obj?.Id ?? -1;
+        public int GetId(Territory? obj) => obj?.Id ?? -1;
     }
 
     public class LocationFetcher(Map map) : IFetcher<Location>
     {
-        public Location Find(int id) => id == -1 ? null : map._locations[id];
+        public Location? Find(int id) => id == -1 
+            ? null 
+            : map._locations[id];
 
-        public int GetId(Location obj) => obj?.Id ?? -1;
+        public int GetId(Location? obj) => obj?.Id ?? -1;
     }
 }

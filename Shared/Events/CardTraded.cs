@@ -101,7 +101,7 @@ public class CardTraded : GameEvent
             Game.CurrentCardTradeOffer = null;
             Game.Stone(Milestone.CardTraded);
             Game.LastTurnCardWasTraded = Game.CurrentTurn;
-            Game.Enter(Game.PhaseBeforeCardTrade);
+            if (Game.PhaseBeforeCardTrade!= null) Game.Enter(Game.PhaseBeforeCardTrade.Value);
         }
     }
 

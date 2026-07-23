@@ -49,7 +49,7 @@ public class Battle : GameEvent
     public int _weaponCardId;
 
     [JsonIgnore]
-    public TreacheryCard Weapon
+    public TreacheryCard? Weapon
     {
         get => TreacheryCardManager.Lookup.Find(_weaponCardId);
         set => _weaponCardId = TreacheryCardManager.Lookup.GetId(value);
@@ -58,7 +58,7 @@ public class Battle : GameEvent
     public int _defenseCardId;
 
     [JsonIgnore]
-    public TreacheryCard Defense
+    public TreacheryCard? Defense
     {
         get => TreacheryCardManager.Lookup.Find(_defenseCardId);
         set => _defenseCardId = TreacheryCardManager.Lookup.GetId(value);
@@ -252,8 +252,8 @@ public class Battle : GameEvent
 
         //Determine result
 
-        agg.ActivateDynamicWeapons(agg.Hero, def.Weapon, def.Defense);
-        def.ActivateDynamicWeapons(def.Hero, agg.Weapon, agg.Defense);
+        if (agg.Hero != null) agg.ActivateDynamicWeapons(agg.Hero, def.Weapon, def.Defense);
+        if (def.Hero != null) def.ActivateDynamicWeapons(def.Hero, agg.Weapon, agg.Defense);
 
         var poisonToothUsed = !game.PoisonToothCancelled && (agg.HasPoisonTooth || def.HasPoisonTooth);
         var artilleryUsed = agg.HasArtillery || def.HasArtillery;

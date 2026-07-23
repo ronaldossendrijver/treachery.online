@@ -21,7 +21,7 @@ public partial class Game
     #region GameState
 
     public int Seed { get; internal set; } = -1;
-    internal LoggedRandom Random { get; set; }
+    internal LoggedRandom? Random { get; set; }
     public int MaximumTurns => Settings.MaximumTurns;
     public int MaximumPlayers => Settings.NumberOfPlayers;
     public List<Milestone> RecentMilestones { get; } = [];
@@ -35,19 +35,19 @@ public partial class Game
     public List<Moment> Moments { get; } = [];
     public int RecentlyUndoneEventCount { get; set; }
     public List<GameEvent> RecentlyUndoneEvents { get; } = [];
-    private Game PreviousGameState { get; set; }
+    private Game? PreviousGameState { get; set; }
     public int CurrentTurn { get; private set; }
     public MainPhase CurrentMainPhase { get; internal set; } = MainPhase.Started;
     public MainPhaseMoment CurrentMoment { get; private set; } = MainPhaseMoment.None;
     public Phase CurrentPhase { get; private set; } = Phase.None;
     public List<Faction> HasActedOrPassed { get; } = [];
     public Report CurrentReport { get; internal set; } = new(MainPhase.None);
-    public Deck<TreacheryCard> TreacheryDeck { get; internal set; }
-    public Deck<TreacheryCard> TreacheryDiscardPile { get; internal set; }
+    public Deck<TreacheryCard>? TreacheryDeck { get; internal set; }
+    public Deck<TreacheryCard>? TreacheryDiscardPile { get; internal set; }
     public List<TreacheryCard> RemovedTreacheryCards { get; } = [];
-    public Deck<ResourceCard> ResourceCardDeck { get; internal set; }
-    public Deck<ResourceCard> ResourceCardDiscardPileA { get; internal set; }
-    public Deck<ResourceCard> ResourceCardDiscardPileB { get; internal set; }
+    public Deck<ResourceCard>? ResourceCardDeck { get; internal set; }
+    public Deck<ResourceCard>? ResourceCardDiscardPileA { get; internal set; }
+    public Deck<ResourceCard>? ResourceCardDiscardPileB { get; internal set; }
     public int SectorInStorm { get; internal set; } = -1;
     public int NextStormMoves { get; internal set; } = -1;
     public bool ShieldWallDestroyed { get; internal set; }
@@ -60,16 +60,16 @@ public partial class Game
     public List<Payment> RecentlyPaid { get; private set; } = [];
     internal List<Payment> StoredRecentlyPaid { get; private set; } = [];
 
-    public Deck<LeaderSkill> SkillDeck { get; private set; }
+    public Deck<LeaderSkill>? SkillDeck { get; private set; }
     public List<TreacheryCard> WhiteCache { get; internal set; } = [];
     public BrownEconomicsStatus EconomicsStatus { get; internal set; } = BrownEconomicsStatus.None;
 
     public Dictionary<TerrorType, Territory> TerrorOnPlanet { get; private set; } = new();
-    public Deck<Ambassador> UnassignedAmbassadors { get; internal set; }
+    public Deck<Ambassador>? UnassignedAmbassadors { get; internal set; }
     public Territory? AtomicsAftermath { get; internal set; }
     public List<Ambassador> AmbassadorsSetAside { get; } = [];
-    public Deck<DiscoveryToken> YellowDiscoveryTokens { get; set; }
-    public Deck<DiscoveryToken> OrangeDiscoveryTokens { get; set; }
+    public Deck<DiscoveryToken>? YellowDiscoveryTokens { get; set; }
+    public Deck<DiscoveryToken>? OrangeDiscoveryTokens { get; set; }
     public Dictionary<Location, Discovery> DiscoveriesOnPlanet { get; } = new();
     public Dictionary<Territory, Ambassador> AmbassadorsOnPlanet { get; private set; } = new();
     public Deck<Faction> NexusCardDeck { get; internal set; }
@@ -121,17 +121,17 @@ public partial class Game
     {
         UpdateTimers(e);
 
-        if (!(e is AllyPermission or PlayerReplaced or NexusPlayed { IsBetrayal: true, Faction: Faction.White }))
+        if (e is not (AllyPermission or PlayerReplaced or NexusPlayed { IsBetrayal: true, Faction: Faction.White }))
         {
             ClearRecentPayments();
 
-            if (!(e is DealOffered or DealAccepted)) RecentlyDiscarded.Clear();
+            if (e is not (DealOffered or DealAccepted)) RecentlyDiscarded.Clear();
         }
     }
 
     public void PerformPostEventTasks(GameEvent e, bool justEnteredStartOfPhase)
     {
-        if (!justEnteredStartOfPhase && e is not AllyPermission && e is not DealOffered && e is not DealAccepted) MainPhaseMiddle();
+        if (!justEnteredStartOfPhase && e is not (AllyPermission or DealOffered or DealAccepted)) MainPhaseMiddle();
 
         History.Add(e);
         Moments.Add(new Moment(CurrentTurn, CurrentMainPhase));
@@ -139,8 +139,10 @@ public partial class Game
 
     public Game Undo(int untilEventNr)
     {
-        var result = new Game(Version, Participation);
-        result.PreviousGameState = this; // Store the current game state
+        var result = new Game(Version, Participation)
+        {
+            PreviousGameState = this // Store the current game state
+        };
 
         var maxEventNr = Math.Min(untilEventNr, History.Count);
 
@@ -890,22 +892,22 @@ public partial class Game
         return ally.AnyForcesIn(to.Territory) > 0;
     }
 
-    private Player OwnerOf(IHero hero)
+    private Player? OwnerOf(IHero hero)
     {
         return Players.FirstOrDefault(p => p.Leaders.Contains(hero));
     }
 
-    public Player OwnerOf(TreacheryCard karmaCard)
+    public Player? OwnerOf(TreacheryCard card)
     {
-        return karmaCard != null ? Players.FirstOrDefault(p => p.Has(karmaCard)) : null;
+        return Players.FirstOrDefault(p => p.Has(card));
     }
 
-    public Player OwnerOf(TreacheryCardType cardType)
+    public Player? OwnerOf(TreacheryCardType cardType)
     {
         return Players.FirstOrDefault(p => p.TreacheryCards.Any(c => c.Type == cardType));
     }
 
-    public Player OwnerOf(Location stronghold)
+    public Player? OwnerOf(Location stronghold)
     {
         return StrongholdOwnership.TryGetValue(stronghold, out var value) ? GetPlayer(value) : null;
     }

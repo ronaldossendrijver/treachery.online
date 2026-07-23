@@ -15,20 +15,19 @@ public partial class Game
 
     internal void KillHero(IHero h)
     {
-        if (h is Leader || h is Messiah)
-        {
-            LeaderState[h].Kill(this);
-            Stone(Milestone.LeaderKilled);
-            DetermineIfCapturedLeadersMustBeReleased();
-            DetermineIfKilledGholaReturnsToOriginalFaction(h);
+        if (h is not (Leader or Messiah)) return;
+        
+        LeaderState[h].Kill(this);
+        Stone(Milestone.LeaderKilled);
+        DetermineIfCapturedLeadersMustBeReleased();
+        DetermineIfKilledGholaReturnsToOriginalFaction(h);
 
-            if (h.HeroType == HeroType.Vidal)
-            {
-                var currentOwner = OwnerOf(h);
-                currentOwner.Leaders.Remove(h as Leader);
-                var pink = GetPlayer(Faction.Pink);
-                pink?.Leaders.Add(h as Leader);
-            }
+        if (h.HeroType == HeroType.Vidal)
+        {
+            var currentOwner = OwnerOf(h);
+            currentOwner.Leaders.Remove(h as Leader);
+            var pink = GetPlayer(Faction.Pink);
+            pink?.Leaders.Add(h as Leader);
         }
     }
 
@@ -104,7 +103,7 @@ public partial class Game
         return Skill(l) != LeaderSkill.None;
     }
 
-    public Player PlayerSkilledAs(LeaderSkill skill)
+    public Player? PlayerSkilledAs(LeaderSkill skill)
     {
         return Players.FirstOrDefault(p => SkilledAs(p, skill));
     }

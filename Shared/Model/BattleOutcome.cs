@@ -30,9 +30,12 @@ public class BattleOutcome
     public int AggReinforcementsContribution;
     public int DefReinforcementsContribution;
 
-    public required Player Winner;
-    public required Player Loser;
+    public Player? Winner;
+    public Player? Loser;
 
+    public Battle? WinnerBattlePlan;
+    public Battle? LoserBattlePlan;
+    
     public bool AggHeroKilled;
     public bool LoserHeroKilled => Loser == Aggressor ? AggHeroKilled : DefHeroKilled;
 
@@ -50,9 +53,6 @@ public class BattleOutcome
 
     public float AggTotal;
     public float DefTotal;
-
-    public required Battle WinnerBattlePlan;
-    public required Battle LoserBattlePlan;
 
     public bool AggSavedByCarthag;
     public bool DefSavedByCarthag;

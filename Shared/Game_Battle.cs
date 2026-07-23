@@ -185,7 +185,8 @@ public partial class Game
 
     internal void CaptureLeader()
     {
-        SelectVictimOfBlackWinner(AggressorPlan.By(BattleWinner) ? DefenderPlan : AggressorPlan);
+        if (BattleWinner is null || AggressorPlan is null || DefenderPlan is null) return;
+        SelectVictimOfBlackWinner(AggressorPlan.By(BattleWinner.Value) ? DefenderPlan : AggressorPlan);
     }
 
     private void HandleReinforcements(Battle plan)
@@ -1089,7 +1090,7 @@ public partial class Game
 
     #region Information
 
-    public Player NextPlayerToBattle
+    public Player? NextPlayerToBattle
     {
         get
         {
@@ -1105,7 +1106,7 @@ public partial class Game
         }
     }
 
-    public Player Auditee
+    public Player? Auditee
     {
         get
         {
@@ -1122,7 +1123,7 @@ public partial class Game
         }
     }
 
-    public IHero WinnerHero
+    public IHero? WinnerHero
     {
         get
         {

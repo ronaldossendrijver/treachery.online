@@ -319,7 +319,7 @@ public abstract class GameEvent
         Game.LogTo(faction, expression);
     }
 
-    protected Player GetPlayer(Faction f)
+    protected Player GetPlayer(Faction? f)
     {
         return Game.GetPlayer(f);
     }

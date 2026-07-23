@@ -706,11 +706,11 @@ public partial class ClassicBot
         return unknownCards.Count(c => c.IsDefense && (weapon == null || weapon.CounteredBy(c, null)));
     }
 
-    private ClairVoyanceQandA? RulingWeaponClairvoyanceForPlayerBattle => Game is { LatestClairvoyance: not null, LatestClairvoyanceQandA: not null } && Game.LatestClairvoyanceQandA.Answer.Initiator == Faction && Game.LatestClairvoyanceBattle != null && Game.LatestClairvoyanceBattle == Game.CurrentBattle &&
-                                                                          (Game.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeAsWeaponInBattle || Game.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeInBattle) ? Game.LatestClairvoyanceQandA : null;
+    private ClairVoyanceQandA? RulingWeaponClairvoyanceForPlayerBattle => Game is { LatestClairvoyance: not null, LatestClairvoyanceQnA: not null } && Game.LatestClairvoyanceQnA.Answer.Initiator == Faction && Game.LatestClairvoyanceBattle != null && Game.LatestClairvoyanceBattle == Game.CurrentBattle &&
+                                                                          (Game.LatestClairvoyanceQnA.Question.Question == ClairvoyanceQuestion.CardTypeAsWeaponInBattle || Game.LatestClairvoyanceQnA.Question.Question == ClairvoyanceQuestion.CardTypeInBattle) ? Game.LatestClairvoyanceQnA : null;
 
-    private ClairVoyanceQandA? RulingDefenseClairvoyanceForPlayerBattle => Game is { LatestClairvoyance: not null, LatestClairvoyanceQandA: not null } && Game.LatestClairvoyanceQandA.Answer.Initiator == Faction && Game.LatestClairvoyanceBattle != null && Game.LatestClairvoyanceBattle == Game.CurrentBattle &&
-                                                                           (Game.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeAsDefenseInBattle || Game.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeInBattle) ? Game.LatestClairvoyanceQandA : null;
+    private ClairVoyanceQandA? RulingDefenseClairvoyanceForPlayerBattle => Game is { LatestClairvoyance: not null, LatestClairvoyanceQnA: not null } && Game.LatestClairvoyanceQnA.Answer.Initiator == Faction && Game.LatestClairvoyanceBattle != null && Game.LatestClairvoyanceBattle == Game.CurrentBattle &&
+                                                                           (Game.LatestClairvoyanceQnA.Question.Question == ClairvoyanceQuestion.CardTypeAsDefenseInBattle || Game.LatestClairvoyanceQnA.Question.Question == ClairvoyanceQuestion.CardTypeInBattle) ? Game.LatestClairvoyanceQnA : null;
 
 
     private static float ChanceOfEnemyLeaderDying(Game game, Player player, Player opponent, VoicePlan? voice, PrescienceAspect? prescience, out TreacheryCard? mostEffectiveWeapon, out bool enemyCanDefendPoisonTooth)
@@ -762,13 +762,13 @@ public partial class ClassicBot
         {
             if (myClairvoyance.Question.IsAbout(TreacheryCardType.ProjectileDefense))
             {
-                if (game.LatestClairvoyanceQandA.Answer.IsNo)
+                if (game.LatestClairvoyanceQnA.Answer.IsNo)
                 {
                     enemyCanDefendPoisonTooth = knownEnemyDefenses.Any(c => c.IsNonAntidotePoisonDefense);
                     mostEffectiveWeapon = usefulWeapons.FirstOrDefault(d => d.IsProjectileWeapon);
                     if (mostEffectiveWeapon != null) return 1f;
                 }
-                else if (game.LatestClairvoyanceQandA.Answer.IsYes)
+                else if (game.LatestClairvoyanceQnA.Answer.IsYes)
                 {
                     mostEffectiveWeapon = usefulWeapons.FirstOrDefault(d => d.IsPoisonWeapon);
                     if (mostEffectiveWeapon != null) return 1f;
@@ -776,12 +776,12 @@ public partial class ClassicBot
             }
             else if (myClairvoyance.Question.IsAbout(TreacheryCardType.PoisonDefense))
             {
-                if (game.LatestClairvoyanceQandA.Answer.IsNo)
+                if (game.LatestClairvoyanceQnA.Answer.IsNo)
                 {
                     mostEffectiveWeapon = usefulWeapons.FirstOrDefault(d => d.IsPoisonWeapon);
                     if (mostEffectiveWeapon != null) return 1f;
                 }
-                else if (game.LatestClairvoyanceQandA.Answer.IsYes)
+                else if (game.LatestClairvoyanceQnA.Answer.IsYes)
                 {
                     enemyCanDefendPoisonTooth = knownEnemyDefenses.Any(c => c.IsNonAntidotePoisonDefense);
                     mostEffectiveWeapon = usefulWeapons.FirstOrDefault(d => d.IsProjectileWeapon);

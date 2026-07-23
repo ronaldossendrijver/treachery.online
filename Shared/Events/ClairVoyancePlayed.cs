@@ -202,7 +202,7 @@ public class ClairVoyancePlayed : GameEvent
         if (Target != Faction.None)
         {
             Game.LatestClairvoyance = this;
-            Game.LatestClairvoyanceQandA = null;
+            Game.LatestClairvoyanceQnA = null;
             Game.LatestClairvoyanceBattle = Game.CurrentBattle;
             Game.PhasePausedByClairvoyance = Game.CurrentPhase;
             Game.Enter(Phase.Clairvoyance);

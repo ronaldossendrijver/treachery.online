@@ -15,7 +15,6 @@ public static class DefaultSkin
     
     public static Skin Default { get; } = new()
     {
-        Description = "1979 Art",
         Version = Skin.LatestVersion,
 
         Map_URL = DEFAULT_ART_LOCATION + "/art/map.svg",

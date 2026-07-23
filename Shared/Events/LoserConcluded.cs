@@ -103,12 +103,15 @@ public class LoserConcluded : GameEvent
 
     public static IEnumerable<TreacheryCard> CardsThatMayBeKeptOrDiscarded(Game game)
     {
+        if (game.CurrentBattle == null || game.BattleWinner == null)
+            return [];
+        
         var result = new List<TreacheryCard>();
-        var winnerPlan = game.CurrentBattle.PlanOf(game.BattleWinner);
+        var winnerPlan = game.CurrentBattle.PlanOf(game.BattleWinner.Value);
 
         if (winnerPlan.Weapon != null) result.Add(winnerPlan.Weapon);
         if (winnerPlan.Defense != null) result.Add(winnerPlan.Defense);
-        if (winnerPlan.Hero is TreacheryCard cheaphero) result.Add(cheaphero);
+        if (winnerPlan.Hero is TreacheryCard cheapHero) result.Add(cheapHero);
 
         return result;
     }

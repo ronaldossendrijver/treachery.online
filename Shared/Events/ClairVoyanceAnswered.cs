@@ -65,7 +65,7 @@ public class ClairVoyanceAnswered : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        Game.LatestClairvoyanceQandA = new ClairVoyanceQandA(Game.LatestClairvoyance, this);
+        Game.LatestClairvoyanceQnA = new ClairVoyanceQandA(Game.LatestClairvoyance, this);
 
         Log();
 
