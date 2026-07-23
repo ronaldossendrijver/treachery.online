@@ -32,7 +32,7 @@ public class AcceptOrCancelPurpleRevival : GameEvent
     public int _heroId;
 
     [JsonIgnore]
-    public IHero Hero
+    public IHero? Hero
     {
         get => LeaderManager.HeroLookup.Find(_heroId);
         set => _heroId = LeaderManager.HeroLookup.GetId(value);

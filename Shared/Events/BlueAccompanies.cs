@@ -29,14 +29,14 @@ public class BlueAccompanies : GameEvent, ILocationEvent
     public int _targetId;
 
     [JsonIgnore]
-    public Location Location
+    public Location? Location
     {
         get => Game.Map.LocationLookup.Find(_targetId);
         set => _targetId = Game.Map.LocationLookup.GetId(value);
     }
 
     [JsonIgnore]
-    public Location To => Location;
+    public Location? To => Location;
 
     public bool Accompanies { get; set; }
 
@@ -62,7 +62,7 @@ public class BlueAccompanies : GameEvent, ILocationEvent
 
         if (Accompanies)
         {
-            if (Player.Occupies(Location.Territory) || !Game.IsOccupied(Location.Territory) || !Game.Applicable(Rule.BlueAdvisors))
+            if (Player.Occupies(Location!.Territory) || !Game.IsOccupied(Location.Territory) || !Game.Applicable(Rule.BlueAdvisors))
                 Player.ShipForces(Location, Game.Version >= 160 ? SpecialForcesAddedToLocation : 1);
             else
                 Player.ShipAdvisors(Location, Game.Version >= 160 ? SpecialForcesAddedToLocation : 1);
@@ -105,7 +105,7 @@ public class BlueAccompanies : GameEvent, ILocationEvent
         return null;
     }
 
-    public static bool BlueMayAccompanyToShipmentLocation(Game g)
+    private static bool BlueMayAccompanyToShipmentLocation(Game g)
     {
         return g.Applicable(Rule.BlueAccompaniesToShipmentLocation) ||
                (g.Version >= 144 && g.Applicable(Rule.BlueAdvisors));
@@ -113,8 +113,10 @@ public class BlueAccompanies : GameEvent, ILocationEvent
 
     public static IEnumerable<Location> ValidTargets(Game g, Player p)
     {
+        if (g.LastShipmentOrMovement?.To is null) throw new Exception("LastShipmentOrMovement is null");
+        
         var result = new List<Location>();
-        if (g.LastShipmentOrMovement.To != g.Map.PolarSink &&
+        if (!ReferenceEquals(g.LastShipmentOrMovement.To, g.Map.PolarSink) &&
             (g.Version < 167 || g.LastShipmentOrMovement.To is not Homeworld) &&
             g.LastShipmentOrMovement.To.Territory != g.AtomicsAftermath &&
             !p.Occupies(g.LastShipmentOrMovement.To.Territory) &&
@@ -136,12 +138,12 @@ public class BlueAccompanies : GameEvent, ILocationEvent
         return
             !g.Applicable(Rule.AdvisorsDontConflictWithAlly) &&
             ally != null &&
-            ally.AnyForcesIn(g.LastShipmentOrMovement.To.Territory) != 0;
+            ally.AnyForcesIn(g.LastShipmentOrMovement?.To?.Territory) != 0;
     }
 
     public static bool MaySendExtraAdvisor(Game g, Player p, Location l)
     {
-        return p.HasHighThreshold() && l == g.Map.PolarSink && p.ForcesInReserve >= 2;
+        return p.HasHighThreshold() && ReferenceEquals(l, g.Map.PolarSink) && p.ForcesInReserve >= 2;
     }
 
     #endregion Validation

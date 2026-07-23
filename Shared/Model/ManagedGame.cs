@@ -11,14 +11,14 @@ public class ManagedGame
     public DateTimeOffset LastPersisted { get; set; }
     
     public int CreatorUserId { get; init; }
+
+    public string GameId { get; init; } = string.Empty;
+
+    public Game Game { get; set; } = null!;
     
-    public string GameId { get; init; }
+    public string Name { get; init; } = string.Empty;
     
-    public Game Game { get; set; }
-    
-    public string Name { get; init; }
-    
-    public string HashedPassword { get; init; }
+    public string HashedPassword { get; init; } = string.Empty;
 
     public bool ObserversRequirePassword { get; init; }
     

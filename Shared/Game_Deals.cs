@@ -20,7 +20,7 @@ public partial class Game
         Deals.Add(deal);
     }
 
-    public bool HasDeal(Faction f, DealType type)
+    private bool HasDeal(Faction f, DealType type)
     {
         return Deals.Any(deal => deal.ConsumingFaction == f && deal.Type == type);
     }
@@ -33,7 +33,7 @@ public partial class Game
 
     public bool IsGhola(IHero l)
     {
-        return l.Faction != Faction.Purple && IsPlaying(Faction.Purple) &&
-               GetPlayer(Faction.Purple).Leaders.Contains(l);
+        var purple = GetPlayer(Faction.Purple);
+        return l.Faction != Faction.Purple && purple != null && purple.Leaders.Contains(l);
     }
 }

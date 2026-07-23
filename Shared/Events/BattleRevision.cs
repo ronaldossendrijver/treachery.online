@@ -36,6 +36,8 @@ public class BattleRevision : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
+        if (Game.CurrentBattle is null) throw new Exception("BattleRevision event executed when there is no current battle");
+        
         if (By(Game.CurrentBattle.Aggressor))
         {
             Game.PreviousAggressorPlan = Game.AggressorPlan;

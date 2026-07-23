@@ -57,7 +57,7 @@ public partial class Game
     public Dictionary<TreacheryCard, Faction> RecentlyDiscarded { get; } = new();
     internal Phase PhaseBeforeDiscarding { get; private set; }
     public List<Faction> FactionsThatMustDiscard { get; } = [];
-    public List<Payment> RecentlyPaid { get; private set; } = [];
+    private List<Payment> RecentlyPaid { get; set; } = [];
     internal List<Payment> StoredRecentlyPaid { get; private set; } = [];
 
     public Deck<LeaderSkill>? SkillDeck { get; private set; }
@@ -121,12 +121,11 @@ public partial class Game
     {
         UpdateTimers(e);
 
-        if (e is not (AllyPermission or PlayerReplaced or NexusPlayed { IsBetrayal: true, Faction: Faction.White }))
-        {
-            ClearRecentPayments();
+        if (e is AllyPermission or PlayerReplaced or NexusPlayed { IsBetrayal: true, Faction: Faction.White }) return;
+        
+        ClearRecentPayments();
 
-            if (e is not (DealOffered or DealAccepted)) RecentlyDiscarded.Clear();
-        }
+        if (e is not (DealOffered or DealAccepted)) RecentlyDiscarded.Clear();
     }
 
     public void PerformPostEventTasks(GameEvent e, bool justEnteredStartOfPhase)
@@ -216,25 +215,28 @@ public partial class Game
 
     private void UpdateTimers(GameEvent e)
     {
-        if (e.Time != default && History.Count > 0 && InTimedPhase && e.Player != null)
+        if (e.Time != default && History.Count > 0 && InTimedPhase)
         {
-            GameEvent previousEvent;
-            if (e is Battle) previousEvent = FindMostRecentEvent(typeof(BattleInitiated));
-            else if (e is Move) previousEvent = FindMostRecentEvent(typeof(Shipment), typeof(EndPhase));
-            else if (e is Shipment) previousEvent = FindMostRecentEvent(typeof(Move), typeof(EndPhase));
-            else previousEvent = FindMostRecentEvent();
-
-            var elapsedTime = e.Time.Subtract(previousEvent.Time);
-            if (elapsedTime.TotalHours < 1)
+            GameEvent? previousEvent = e switch
             {
-                if (!Timers.TryGetValue(e.Player, out var timer))
-                {
-                    timer = new Timer<MainPhase>();
-                    Timers.Add(e.Player, timer);
-                }
+                Battle => FindMostRecentEvent(typeof(BattleInitiated)),
+                Move => FindMostRecentEvent(typeof(Shipment), typeof(EndPhase)),
+                Shipment => FindMostRecentEvent(typeof(Move), typeof(EndPhase)),
+                _ => FindMostRecentEvent()
+            };
 
-                timer.Add(CurrentMainPhase, elapsedTime);
+            if (previousEvent == null) return;
+            
+            var elapsedTime = e.Time.Subtract(previousEvent.Time);
+            if (!(elapsedTime.TotalHours < 1)) return;
+                
+            if (!Timers.TryGetValue(e.Player, out var timer))
+            {
+                timer = new Timer<MainPhase>();
+                Timers.Add(e.Player, timer);
             }
+
+            timer.Add(CurrentMainPhase, elapsedTime);
         }
     }
 
@@ -258,19 +260,13 @@ public partial class Game
         CurrentPhase == Phase.BattlePhase;
 
 
-    public GameEvent LatestEvent(Type eventType)
-    {
-        return History.LastOrDefault(e => e.GetType() == eventType);
-    }
+    public GameEvent? LatestEvent(Type eventType) => History.LastOrDefault(e => e.GetType() == eventType);
 
-    public GameEvent LatestEvent()
-    {
-        return History.Count > 0 ? History[^1] : null;
-    }
+    public GameEvent? LatestEvent() => History.Count > 0 ? History[^1] : null;
 
     public int EventCount => History.Count;
 
-    public GameEvent FindMostRecentEvent(params Type[] types)
+    public GameEvent? FindMostRecentEvent(params Type[] types)
     {
         if (types.Length == 0) return History[^1];
 
@@ -399,12 +395,12 @@ public partial class Game
 
         if (p.HasAlly)
         {
-            var ally = GetPlayer(p.Ally);
+            var ally = p.AlliedPlayer;
             result.AddRange(ally.TreacheryCards);
             result.AddRange(ally.KnownCards);
         }
 
-        return result.Distinct().ToList();
+        return [.. result.Distinct()];
     }
 
     internal void RegisterKnown(TreacheryCard c)
@@ -412,9 +408,9 @@ public partial class Game
         foreach (var p in Players) RegisterKnown(p, c);
     }
 
-    internal static void RegisterKnown(Player p, TreacheryCard c)
+    internal static void RegisterKnown(Player p, TreacheryCard? c)
     {
-        if (c != null && !p.KnownCards.Contains(c)) p.KnownCards.Add(c);
+        if (c != null) p.KnownCards.Add(c);
     }
 
     internal void RegisterKnown(Faction f, TreacheryCard c)
@@ -446,12 +442,12 @@ public partial class Game
     {
         Dictionary<Location, List<Battalion>> result = new();
 
-        foreach (var l in Map.Locations(includeHomeworlds)) result.Add(l, new List<Battalion>());
+        foreach (var l in Map.Locations(includeHomeworlds)) result.Add(l, []);
 
         foreach (var p in Players)
         {
             if (includeHomeworlds)
-                foreach (var w in p.HomeWorlds) result.Add(w, new List<Battalion>());
+                foreach (var w in p.HomeWorlds) result.Add(w, []);
 
             var forces = includeHomeworlds ? p.ForcesInLocations : p.ForcesOnPlanet;
 
@@ -493,7 +489,7 @@ public partial class Game
     {
         var result = new List<Battalion>();
         foreach (var p in Players)
-            if (p.BattalionIn(l, out var battalion)) result.Add(battalion);
+            if (p.BattalionIn(l, out var battalion) && battalion != null) result.Add(battalion);
 
         return result;
     }
@@ -633,8 +629,11 @@ public partial class Game
         }
     }
 
-    private void CheckIfOccupierTakesVidal(Player previousOccupierOfPinkHomeworld)
+    private void CheckIfOccupierTakesVidal(Player? previousOccupierOfPinkHomeworld)
     {
+        if (Vidal is null)
+            return;
+        
         var occupierOfPinkHomeworld = OccupierOf(World.Pink);
         if (occupierOfPinkHomeworld != null)
         {
@@ -649,6 +648,8 @@ public partial class Game
 
     private void SetAsideVidal()
     {
+        if (Vidal is null || PlayerToSetAsideVidal is null) return;
+        
         if (IsAlive(Vidal) && PlayerToSetAsideVidal.Leaders.Contains(Vidal))
         {
             PlayerToSetAsideVidal.Leaders.Remove(Vidal);
@@ -782,7 +783,7 @@ public partial class Game
     private void ClearRecentPayments()
     {
         StoredRecentlyPaid = RecentlyPaid;
-        RecentlyPaid = new List<Payment>();
+        RecentlyPaid = [];
     }
 
     public bool HasRecentPaymentFor(Type t)
@@ -796,7 +797,7 @@ public partial class Game
                StoredRecentlyPaid.Any(p => p.To == f);
     }
     
-    public Payment QuiteRecentPaymentTo(Faction f)
+    public Payment? QuiteRecentPaymentTo(Faction f)
     {
         var res = RecentlyPaid.FirstOrDefault(p => p.To == f) ??
                           StoredRecentlyPaid.FirstOrDefault(p => p.To == f);
@@ -824,48 +825,20 @@ public partial class Game
     public Player? OccupierOf(World w)
     {
         var hwOccupation = HomeworldOccupation.Keys.FirstOrDefault(hw => hw.World == w);
-        if (hwOccupation != null) return GetPlayer(HomeworldOccupation[hwOccupation]);
-
-        return null;
+        return hwOccupation != null 
+            ? GetPlayer(HomeworldOccupation[hwOccupation]) 
+            : null;
     }
 
-    public HomeworldStatus GetStatusOf(Homeworld w)
-    {
-        var player = Players.FirstOrDefault(p => p.IsNative(w));
+    public bool IsInStorm(Location l) => l.Sector == SectorInStorm;
 
-        if (player != null)
-        {
-            var occupier = OccupierOf(w.World);
-            return new HomeworldStatus(player.HasHighThreshold(w.World), occupier?.Faction ?? Faction.None);
-        }
+    public bool IsInStorm(Territory t) => t.Locations.Any(IsInStorm);
 
-        return null;
-    }
+    public bool IsOccupied(Location l) => Players.Any(p => p.Occupies(l));
 
-    public bool IsInStorm(Location l)
-    {
-        return l.Sector == SectorInStorm;
-    }
+    public bool IsOccupied(Territory t) => Players.Any(p => p.Occupies(t));
 
-    public bool IsInStorm(Territory t)
-    {
-        return t.Locations.Any(IsInStorm);
-    }
-
-    public bool IsOccupied(Location l)
-    {
-        return Players.Any(p => p.Occupies(l));
-    }
-
-    public bool IsOccupied(Territory t)
-    {
-        return Players.Any(p => p.Occupies(t));
-    }
-
-    public bool IsOccupied(World world)
-    {
-        return OccupierOf(world) != null;
-    }
+    public bool IsOccupied(World world) => OccupierOf(world) != null;
 
     public bool IsOccupiedByFactionOrTheirAlly(World world, Player p)
     {
@@ -881,12 +854,13 @@ public partial class Game
 
     public bool ContainsConflictingAlly(Player initiator, Location to)
     {
-        if (initiator.Ally == Faction.None || Map.PolarSink.Equals(to) || initiator.Faction == Faction.Pink || initiator.Ally == Faction.Pink || to == null) return false;
+        if (!initiator.HasAlly || Map.PolarSink.Equals(to) || initiator.Faction == Faction.Pink || initiator.Ally == Faction.Pink) return false;
 
         var ally = initiator.AlliedPlayer;
 
         if (initiator.Ally == Faction.Blue && Applicable(Rule.AdvisorsDontConflictWithAlly))
             return ally.ForcesIn(to.Territory) > 0;
+        
         return ally.AnyForcesIn(to.Territory) > 0;
     }
 
@@ -979,19 +953,19 @@ public partial class Game
             !(l.Territory.IsStronghold || l.Territory.IsHomeworld) ||
             (p.Is(Faction.Blue) && p.SpecialForcesIn(l) > 0) ||
             (p.Is(Faction.Pink) && p.HasAlly && p.AlliedPlayer.OccupyingForcesIn(l.Territory) > 0) || //Looks at occupying forces since v171
-            (p.Ally == Faction.Pink && p.AlliedPlayer.OccupyingForcesIn(l.Territory) > 0) || //Looks at occupying forces since v171
+            (p is { HasAlly: true, Ally: Faction.Pink } && p.AlliedPlayer.OccupyingForcesIn(l.Territory) > 0) || //Looks at occupying forces since v171
             NrOfOccupantsExcludingFaction(l, p.Faction) < 2;
     }
 
     internal bool EveryoneActedOrPassed => HasActedOrPassed.Count == Players.Count;
 
-    public bool AssistedNotekeepingEnabled(Player p)
+    public bool AssistedNoteKeepingEnabled(Player p)
     {
         return Applicable(Rule.AssistedNotekeeping) ||
                (p.Is(Faction.Green) && Applicable(Rule.AssistedNotekeepingForGreen));
     }
 
-    public bool HasStormPrescience(Player p)
+    public bool HasStormPrescience(Player? p)
     {
         return
             p != null &&
@@ -1044,7 +1018,7 @@ public partial class Game
         return player != null && player.HasLowThreshold();
     }
 
-    public bool HasResourceDeckPrescience(Player p)
+    public bool HasResourceDeckPrescience(Player? p)
     {
         return
             p != null &&

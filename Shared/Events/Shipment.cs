@@ -527,7 +527,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
 
         if (AllyContributionAmount > 0)
         {
-            Game.GetPlayer(Player.Ally).Resources -= AllyContributionAmount;
+            Game.GetPlayer(Player.Ally)?.Resources -= AllyContributionAmount;
             Game.DecreasePermittedUseOfAllySpice(Initiator, AllyContributionAmount);
         }
 

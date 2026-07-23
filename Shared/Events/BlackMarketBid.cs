@@ -41,7 +41,7 @@ public class BlackMarketBid : PassableGameEvent, IBid
     public bool UsingKarmaToRemoveBidLimit => false;
 
     [JsonIgnore]
-    public TreacheryCard KarmaCard => null;
+    public TreacheryCard? KarmaCard => null;
 
     #endregion Properties
 
@@ -79,6 +79,8 @@ public class BlackMarketBid : PassableGameEvent, IBid
 
             if (winningBid != null && Game.BidSequence.CurrentFaction == winningBid.Initiator)
             {
+                if (Game.CardsOnAuction == null) return;
+
                 var card = Game.WinByHighestBid(
                     winningBid.Player,
                     winningBid,
@@ -92,7 +94,9 @@ public class BlackMarketBid : PassableGameEvent, IBid
             }
             else if (winningBid == null && Game.Bids.Count >= Game.PlayersThatCanBid.Count())
             {
-                GetPlayer(Faction.White).TreacheryCards.Add(Game.CardsOnAuction.Draw());
+                var white = GetPlayer(Faction.White);
+                var card = Game.CardsOnAuction?.Draw();
+                if (white != null && card != null) white.TreacheryCards.Add(card);
                 Log(Faction.White, " keep their card as no faction bid on it");
                 Game.EnterWhiteBidding();
             }
@@ -103,7 +107,7 @@ public class BlackMarketBid : PassableGameEvent, IBid
     {
         var isLastBid = Game.Version < 140 ? Game.Players.Count(p => p.HasRoomForCards) == Game.Bids.Count :
             (Game.CurrentAuctionType == AuctionType.BlackMarketSilent && Game.Players.Count(p => p.HasRoomForCards) == Game.Bids.Count) ||
-            (Game.CurrentAuctionType == AuctionType.BlackMarketOnceAround && Initiator == Faction.White) || (!GetPlayer(Faction.White).HasRoomForCards && Game.BidSequence.HasPassedWhite);
+            (Game.CurrentAuctionType == AuctionType.BlackMarketOnceAround && Initiator == Faction.White) || (GetPlayer(Faction.White)?.HasRoomForCards == false && Game.BidSequence.HasPassedWhite);
 
         if (isLastBid)
         {
@@ -112,6 +116,8 @@ public class BlackMarketBid : PassableGameEvent, IBid
             var highestBid = Game.DetermineHighestBid(Game.Bids);
             if (highestBid is { TotalAmount: > 0 })
             {
+                if (Game.CardsOnAuction == null) return;
+
                 var card = Game.WinByHighestBid(
                     highestBid.Player,
                     highestBid,
@@ -125,7 +131,9 @@ public class BlackMarketBid : PassableGameEvent, IBid
             }
             else
             {
-                GetPlayer(Faction.White).TreacheryCards.Add(Game.CardsOnAuction.Draw());
+                var white = GetPlayer(Faction.White);
+                var card = Game.CardsOnAuction?.Draw();
+                if (white != null && card != null) white.TreacheryCards.Add(card);
                 Log(Faction.White, " keep their card as no faction bid on it");
                 Game.EnterWhiteBidding();
             }
@@ -206,7 +214,7 @@ public class BlackMarketBid : PassableGameEvent, IBid
         if (AllyContributionAmount > ValidMaxAllyAmount(Game, Player)) return Message.Express("your ally won't pay that much");
 
         var red = Game.GetPlayer(Faction.Red);
-        if (RedContributionAmount > 0 && RedContributionAmount > red.Resources) return Message.Express(Faction.Red, " won't pay that much");
+        if (RedContributionAmount > 0 && RedContributionAmount > (red?.Resources ?? 0)) return Message.Express(Faction.Red, " won't pay that much");
 
         if (Game.Version >= 155 && Game.CurrentAuctionType == AuctionType.BlackMarketSilent && TotalAmount > Player.Resources) return Message.Express("In a Silent auction, you can't bid more than you have");
 
@@ -225,9 +233,10 @@ public class BlackMarketBid : PassableGameEvent, IBid
 
     public static IEnumerable<SequenceElement> PlayersToBid(Game g)
     {
+        var playersInSequence = g.BidSequence?.GetPlayersInSequence() ?? Array.Empty<SequenceElement>();
         return g.CurrentAuctionType switch
         {
-            AuctionType.BlackMarketNormal or AuctionType.BlackMarketOnceAround => g.BidSequence.GetPlayersInSequence(),
+            AuctionType.BlackMarketNormal or AuctionType.BlackMarketOnceAround => playersInSequence,
             AuctionType.BlackMarketSilent => g.Players.Select(p => new SequenceElement { Player = p, HasTurn = p.HasRoomForCards && !g.Bids.ContainsKey(p.Faction) }),
             _ => Array.Empty<SequenceElement>()
         };
@@ -236,7 +245,7 @@ public class BlackMarketBid : PassableGameEvent, IBid
     public static bool MayBePlayed(Game game, Player player)
     {
         return (game.CurrentAuctionType == AuctionType.BlackMarketSilent && !game.Bids.ContainsKey(player.Faction) && player.HasRoomForCards) ||
-               (game.CurrentAuctionType != AuctionType.BlackMarketSilent && player == game.BidSequence.CurrentPlayer);
+               (game.CurrentAuctionType != AuctionType.BlackMarketSilent && player == game.BidSequence?.CurrentPlayer);
     }
 
     #endregion Validation

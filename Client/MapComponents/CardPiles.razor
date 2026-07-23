@@ -133,7 +133,7 @@
 
         result += Client.CurrentSkin.Format("<h4>Discard pile: {0} cards</h4>", Client.Game.TreacheryDiscardPile.Items.Count);
 
-        if (Client.Game.AssistedNotekeepingEnabled(Player))
+        if (Client.Game.AssistedNoteKeepingEnabled(Player))
         {
             var known = Game.KnownCards(Player);
             result += "<div class=\"row row-cols-6 mt-1\">";
@@ -204,7 +204,7 @@
         result += $"<h4>Discard pile{pileName}: {Client.Game.ResourceCardDiscardPileA.Items.Count} cards</h4>";
         if (Client.Game.LatestSpiceCardA != null)
         {
-            if (Client.Game.AssistedNotekeepingEnabled(Player))
+            if (Client.Game.AssistedNoteKeepingEnabled(Player))
             {
                 result += GetCardImages(Client.Game.ResourceCardDiscardPileA.Items);
             }
@@ -226,7 +226,7 @@
             result += Client.CurrentSkin.Format("<h4>Discard pile B: {0} cards</h4>", Client.Game.ResourceCardDiscardPileB.Items.Count);
             if (Client.Game.LatestSpiceCardB != null)
             {
-                if (Client.Game.AssistedNotekeepingEnabled(Player))
+                if (Client.Game.AssistedNoteKeepingEnabled(Player))
                 {
                     result += GetCardImages(Client.Game.ResourceCardDiscardPileB.Items); 
                 }

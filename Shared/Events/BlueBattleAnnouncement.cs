@@ -29,7 +29,7 @@ public class BlueBattleAnnouncement : GameEvent
     public int _territoryId;
 
     [JsonIgnore]
-    public Territory Territory
+    public Territory? Territory
     {
         get => Game.Map.TerritoryLookup.Find(_territoryId);
         set => _territoryId = Game.Map.TerritoryLookup.GetId(value);
@@ -66,6 +66,8 @@ public class BlueBattleAnnouncement : GameEvent
     protected override void ExecuteConcreteEvent()
     {
         var initiator = GetPlayer(Initiator);
+        if (initiator is null || Territory is null) return;
+        
         initiator.FlipForces(Territory, false);
         Log();
     }

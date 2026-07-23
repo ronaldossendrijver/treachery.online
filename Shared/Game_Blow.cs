@@ -54,7 +54,7 @@ public partial class Game
     internal void DrawResourceCard()
     {
         ResourceCard? drawn = null;
-        while (ThumperCalledShaiHulud || !(drawn = DrawAndDiscardResourceCard(CurrentDiscardPile)).IsSpiceBlow)
+        while (ThumperCalledShaiHulud || !(drawn = DrawAndDiscardResourceCard(CurrentDiscardPile!)).IsSpiceBlow)
         {
             if (ThumperCalledShaiHulud && Version <= 150)
             {
@@ -66,7 +66,7 @@ public partial class Game
             else if (drawn != null && (drawn.IsShaiHulud || drawn.IsGreatMaker) && CurrentTurn == 1)
             {
                 Log(drawn.IsShaiHulud ? Concept.Monster : Concept.GreatMonster, " on turn 1 was ignored");
-                IgnoredMonsters.Add(CurrentDiscardPile.Draw());
+                IgnoredMonsters.Add(CurrentDiscardPile!.Draw());
             }
             else if ((ThumperCalledShaiHulud && Version > 150) || drawn is { IsShaiHulud: true } || drawn is { IsGreatMaker: true })
             {
@@ -89,8 +89,8 @@ public partial class Game
                     //Sandtrout triggers
                     if (Version >= 150 && SandTrout != null)
                     {
-                        if (drawn != null) CurrentDiscardPile.Items.Remove(drawn);
-                        CurrentDiscardPile.PutOnTop(SandTrout);
+                        if (drawn != null) CurrentDiscardPile!.Items.Remove(drawn);
+                        CurrentDiscardPile!.PutOnTop(SandTrout);
                         if (drawn != null) CurrentDiscardPile.PutOnTop(drawn);
                     }
 
@@ -99,27 +99,27 @@ public partial class Game
                     Log(Concept.Monster, " is ignored due to ", Concept.BabyMonster);
                 }
             }
-            else if (drawn.IsSandTrout)
+            else if (drawn is { IsSandTrout: true })
             {
                 if (Version < 150 || CurrentTurn > 1)
                 {
                     Stone(Milestone.BabyMonster);
                     Log(Concept.BabyMonster, " detected! All alliances are cancelled.");
                     CancelAllAlliances();
-                    CurrentDiscardPile.Items.Remove(drawn);
+                    CurrentDiscardPile!.Items.Remove(drawn);
                     SandTrout = drawn;
                 }
                 else
                 {
                     Log(Concept.BabyMonster, " on turn 1 was ignored");
-                    IgnoredSandtrout = CurrentDiscardPile.Draw();
+                    IgnoredSandtrout = CurrentDiscardPile!.Draw();
                 }
             }
 
             ThumperCalledShaiHulud = false;
         }
 
-        if (CurrentPhase != Phase.YellowSendingMonsterA && CurrentPhase != Phase.YellowSendingMonsterB)
+        if (CurrentPhase != Phase.YellowSendingMonsterA && CurrentPhase != Phase.YellowSendingMonsterB && drawn != null)
         {
             PreviousBlowCard = drawn;
             ProcessBlowCard(drawn);
@@ -134,7 +134,7 @@ public partial class Game
 
     private ResourceCard DrawAndDiscardResourceCard(Deck<ResourceCard> discardPile)
     {
-        if (ResourceCardDeck.IsEmpty) ReshuffleResourceDeck();
+        if (ResourceCardDeck!.IsEmpty) ReshuffleResourceDeck();
 
         var drawn = ResourceCardDeck.Draw();
         discardPile.PutOnTop(drawn);
@@ -144,21 +144,25 @@ public partial class Game
     private void ReshuffleResourceDeck()
     {
         if (Applicable(Rule.IncreasedResourceFlow))
-            Log(ResourceCardDiscardPileA.Items.Count + ResourceCardDiscardPileB.Items.Count, " cards were shuffled from ", Concept.Resource, " discard piles A en B into a new deck.");
+            Log(ResourceCardDiscardPileA!.Items.Count + ResourceCardDiscardPileB!.Items.Count, " cards were shuffled from ", Concept.Resource, " discard piles A en B into a new deck.");
         else
-            Log(ResourceCardDiscardPileA.Items.Count, " cards were shuffled from the ", Concept.Resource, " discard pile into a new deck");
+            Log(ResourceCardDiscardPileA!.Items.Count, " cards were shuffled from the ", Concept.Resource, " discard pile into a new deck");
 
         var excludeDiscoveryCardsWhenReshuffling = Version >= 158;
 
-        if (excludeDiscoveryCardsWhenReshuffling && (ResourceCardDiscardPileA.Items.Any(c => c.IsDiscovery) || ResourceCardDiscardPileB.Items.Any(c => c.IsDiscovery))) Log("Discovery were removed from the game");
+        if (excludeDiscoveryCardsWhenReshuffling && (ResourceCardDiscardPileA.Items.Any(c => c.IsDiscovery) || ResourceCardDiscardPileB!.Items.Any(c => c.IsDiscovery))) Log("Discovery were removed from the game");
 
-        foreach (var i in ResourceCardDiscardPileA.Items.Where(c => !excludeDiscoveryCardsWhenReshuffling || !c.IsDiscovery)) ResourceCardDeck.Items.Add(i);
+        foreach (var i in ResourceCardDiscardPileA.Items.Where(c => !excludeDiscoveryCardsWhenReshuffling || !c.IsDiscovery)) 
+            ResourceCardDeck!.Items.Add(i);
+        
         ResourceCardDiscardPileA.Clear();
 
-        foreach (var i in ResourceCardDiscardPileB.Items.Where(c => !excludeDiscoveryCardsWhenReshuffling || !c.IsDiscovery)) ResourceCardDeck.Items.Add(i);
+        foreach (var i in ResourceCardDiscardPileB!.Items.Where(c => !excludeDiscoveryCardsWhenReshuffling || !c.IsDiscovery)) 
+            ResourceCardDeck!.Items.Add(i);
+        
         ResourceCardDiscardPileB.Clear();
 
-        ResourceCardDeck.Shuffle();
+        ResourceCardDeck!.Shuffle();
         Stone(Milestone.Shuffled);
     }
 
@@ -169,15 +173,15 @@ public partial class Game
 
         if (blowCard.IsDiscovery)
         {
-            if (AnyForcesIn(blowCard.Territory)) KillAllForcesIn(blowCard.Territory, false);
+            if (AnyForcesIn(blowCard.Territory!)) KillAllForcesIn(blowCard.Territory!, false);
 
-            var devouredResources = RemoveResources(blowCard.Territory);
+            var devouredResources = RemoveResources(blowCard.Territory!);
             LogIf(devouredResources > 0, Payment.Of(devouredResources), " in ", blowCard.Territory, " is destroyed");
 
             var drawnToken = DiscoveryToken.None;
-            if (blowCard.DiscoveryLocation.DiscoveryTokenType == DiscoveryTokenType.Orange)
+            if (blowCard.DiscoveryLocation!.DiscoveryTokenType == DiscoveryTokenType.Orange)
             {
-                if (!OrangeDiscoveryTokens.IsEmpty)
+                if (!OrangeDiscoveryTokens!.IsEmpty)
                 {
                     drawnToken = OrangeDiscoveryTokens.Draw();
                     DiscoveriesOnPlanet.Add(blowCard.DiscoveryLocation, new Discovery(drawnToken, DiscoveryTokenType.Orange, blowCard.DiscoveryLocation));
@@ -189,7 +193,7 @@ public partial class Game
             }
             else if (blowCard.DiscoveryLocation.DiscoveryTokenType == DiscoveryTokenType.Yellow)
             {
-                if (!YellowDiscoveryTokens.IsEmpty)
+                if (!YellowDiscoveryTokens!.IsEmpty)
                 {
                     drawnToken = YellowDiscoveryTokens.Draw();
                     DiscoveriesOnPlanet.Add(blowCard.DiscoveryLocation, new Discovery(drawnToken, DiscoveryTokenType.Yellow, blowCard.DiscoveryLocation));
@@ -208,7 +212,7 @@ public partial class Game
         }
 
         var spiceFactor = SandTroutDoublesResources ? 2 : 1;
-        var spiceAmount = spiceFactor * blowCard.Location.SpiceBlowAmount;
+        var spiceAmount = spiceFactor * blowCard.Location!.SpiceBlowAmount;
 
         if (blowCard.Location.Sector != SectorInStorm)
         {
@@ -425,16 +429,16 @@ public partial class Game
             if (IgnoredMonsters.Count > 0)
             {
                 Log(IgnoredMonsters.Count, " ignored ", Concept.Monster, " cards were shuffled back into the ", Concept.Resource, " deck");
-                foreach (var c in IgnoredMonsters) ResourceCardDeck.Items.Add(c);
+                foreach (var c in IgnoredMonsters) ResourceCardDeck!.Items.Add(c);
             }
 
             if (IgnoredSandtrout != null)
             {
                 Log(Concept.BabyMonster, " card was shuffled back into the ", Concept.Resource, " deck");
-                ResourceCardDeck.Items.Add(IgnoredSandtrout);
+                ResourceCardDeck!.Items.Add(IgnoredSandtrout);
             }
 
-            ResourceCardDeck.Shuffle();
+            ResourceCardDeck!.Shuffle();
             Stone(Milestone.Shuffled);
         }
     }
@@ -463,7 +467,8 @@ public partial class Game
         };
     }
 
-    private Deck<ResourceCard> CurrentDiscardPile => CurrentPhase == Phase.BlowA ? ResourceCardDiscardPileA : ResourceCardDiscardPileB;
+    private Deck<ResourceCard>? CurrentDiscardPile 
+        => CurrentPhase == Phase.BlowA ? ResourceCardDiscardPileA : ResourceCardDiscardPileB;
 
     private ResourceCard? PreviousBlowCard
     {

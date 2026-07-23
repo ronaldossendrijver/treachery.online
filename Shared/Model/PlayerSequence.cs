@@ -7,17 +7,14 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class PlayerSequence
 {
     private List<Player> Players { get; }
-    private readonly List<Player> _played = new();
+    private readonly List<Player> _played = [];
     private readonly Game _game;
     private readonly bool _skipPlayersThatCantBidOnCards;
-    private readonly int _direction;
     private int _round;
     private int _fullyCircled;
 
@@ -25,12 +22,13 @@ public class PlayerSequence
     {
         _game = game;
         _skipPlayersThatCantBidOnCards = skipPlayersThatCantBidOnCards;
-        _direction = direction;
+
         _round = 1;
         _fullyCircled = 0;
 
-        Players = _game.Players.OrderBy(p => _direction * p.Seat).ToList();
+        Players = [.. _game.Players.OrderBy(p => direction * p.Seat)];
         FirstPlayer = toStartWith;
+        CurrentPlayer = FirstPlayer;
 
         if (beginNextToThatPlayer && NumberOfPlayersThatMayGetTurn > 1) FirstPlayer = PlayerAfter(FirstPlayer);
 
@@ -64,13 +62,13 @@ public class PlayerSequence
 
     private bool JuiceForcesLast(Player p)
     {
-        return _game.CurrentJuice != null && _game.CurrentJuice.Type == JuiceType.GoLast &&
+        return _game.CurrentJuice is { Type: JuiceType.GoLast } &&
                _game.CurrentJuice.Player == p;
     }
 
     public void CheckCurrentPlayer()
     {
-        if (_round == 1 && !_played.Any()) ChangeFirstPlayerIfTheyCantBid();
+        if (_round == 1 && _played.Count == 0) ChangeFirstPlayerIfTheyCantBid();
 
         CurrentPlayer = DetermineCurrentPlayer();
     }
@@ -79,7 +77,7 @@ public class PlayerSequence
     {
         var currentPlayerFound = false;
 
-        Player firstFound = null;
+        Player? firstFound = null;
         foreach (var p in Players)
         {
             if (currentPlayerFound)
@@ -94,14 +92,12 @@ public class PlayerSequence
             if (firstFound == null && (includePlayersThatCantBid || MayGetTurn(p))) firstFound = p;
         }
 
-        return firstFound;
+        return firstFound ?? throw new Exception("Could not find a player after " + currentPlayer.Faction);
     }
 
-    public Player FirstPlayer { get; private set; }
+    private Player FirstPlayer { get; set; }
 
-    public Faction CurrentFaction => CurrentPlayer != null ? CurrentPlayer.Faction : Faction.None;
-
-    private Player _currentPlayer;
+    public Faction CurrentFaction => CurrentPlayer.Faction;
 
     public Player CurrentPlayer
     {
@@ -109,10 +105,10 @@ public class PlayerSequence
         {
             if (_game.Version > 117)
                 return DetermineCurrentPlayer();
-            return _currentPlayer;
+            return field;
         }
 
-        private set => _currentPlayer = value;
+        private set;
     }
 
     private Player DetermineCurrentPlayer()
@@ -127,7 +123,7 @@ public class PlayerSequence
                     found = p == _played[^1];
         }
 
-        return PlayersInOrder.FirstOrDefault();
+        return PlayersInOrder.FirstOrDefault() ?? throw new Exception("Could not determine the current player.");
     }
 
     public void NextPlayer()
@@ -171,12 +167,12 @@ public class PlayerSequence
         _round++;
     }
 
-    public IEnumerable<Player> PlayersInOrder
+    private IEnumerable<Player> PlayersInOrder
     {
         get
         {
             var result = new List<Player>();
-            var playerWithJuice = _game.CurrentJuice != null && (_game.CurrentJuice.Type == JuiceType.GoFirst || _game.CurrentJuice.Type == JuiceType.GoLast) ? _game.CurrentJuice.Player : null;
+            var playerWithJuice = _game.CurrentJuice is { Type: JuiceType.GoFirst or JuiceType.GoLast } ? _game.CurrentJuice.Player : null;
 
             if (playerWithJuice == null || NumberOfPlayersThatMayGetTurn > 1)
             {
@@ -191,7 +187,7 @@ public class PlayerSequence
 
             if (playerWithJuice != null)
             {
-                if (_game.CurrentJuice.Type == JuiceType.GoFirst)
+                if (_game.CurrentJuice!.Type == JuiceType.GoFirst)
                     result.Insert(0, playerWithJuice);
                 else if (_game.CurrentJuice.Type == JuiceType.GoLast) result.Add(playerWithJuice);
             }
@@ -209,7 +205,7 @@ public class PlayerSequence
     {
         var startLookingInSector = (int)Math.Ceiling((float)g.SectorInStorm * g.MaximumPlayers / Map.NumberOfSectors) % g.MaximumPlayers;
 
-        Player result = null;
+        Player? result = null;
 
         var position = (g.MaximumPlayers + startLookingInSector) % g.MaximumPlayers;
         for (var i = 0; i < g.MaximumPlayers; i++)
@@ -220,7 +216,7 @@ public class PlayerSequence
             position = Mod(g.MaximumPlayers + position + 1, g.MaximumPlayers);
         }
 
-        return null;
+        return result ?? throw new Exception("Could not determine the first player.");
     }
 
     private static int Mod(int x, int m)
@@ -247,6 +243,6 @@ public class PlayerSequence
 
 public class SequenceElement
 {
-    public Player Player;
+    public required Player Player;
     public bool HasTurn;
 }

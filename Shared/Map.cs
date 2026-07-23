@@ -12,74 +12,74 @@ namespace Treachery.Shared;
 public class Map
 {
     public const int NumberOfSectors = 18;
-    private List<Location> _locations;
+    private List<Location> _locations = [];
 
     public readonly LocationFetcher LocationLookup;
     public readonly TerritoryFetcher TerritoryLookup;
 
-    public Location TheGreaterFlat { get; private set; } = new(-1);
+    public Location TheGreaterFlat { get; private set; } = null!;
 
-    public Location PolarSink { get; private set; } = new(-1);
+    public Location PolarSink { get; private set; } = null!;
 
-    public Location Arrakeen { get; private set; } = new(-1);
+    public Location Arrakeen { get; private set; } = null!;
 
-    public Location Carthag { get; private set; } = new(-1);
+    public Location Carthag { get; private set; } = null!;
 
-    public Location TueksSietch { get; private set; } = new(-1);
+    public Location TueksSietch { get; private set; } = null!;
 
-    public Location SietchTabr { get; private set; } = new(-1);
+    public Location SietchTabr { get; private set; } = null!;
 
-    public Location HabbanyaSietch { get; private set; } = new(-1);
+    public Location HabbanyaSietch { get; private set; } = null!;
 
-    public Territory FalseWallSouth { get; private set; } = new(-1);
+    public Territory FalseWallSouth { get; private set; } = null!;
 
-    private Territory Meridan { get; set; } = new(-1);
+    private Territory Meridan { get; set; } = null!;
 
-    public Territory FalseWallWest { get; private set; } = new(-1);
+    public Territory FalseWallWest { get; private set; } = null!;
 
-    public Territory ImperialBasin { get; private set; } = new(-1);
+    public Territory ImperialBasin { get; private set; } = null!;
 
-    public Territory ShieldWall { get; private set; } = new(-1);
+    public Territory ShieldWall { get; private set; } = null!;
 
-    private Territory HoleInTheRock { get; set; } = new(-1);
+    private Territory HoleInTheRock { get; set; } = null!;
 
-    public Territory FalseWallEast { get; private set; } = new(-1);
+    public Territory FalseWallEast { get; private set; } = null!;
 
-    private Territory TheMinorErg { get; set; } = new(-1);
+    private Territory TheMinorErg { get; set; } = null!;
 
-    public Territory PastyMesa { get; private set; } = new(-1);
+    public Territory PastyMesa { get; private set; } = null!;
 
-    private Territory GaraKulon { get; set; } = new(-1);
+    private Territory GaraKulon { get; set; } = null!;
 
-    private Territory OldGap { get; set; } = new(-1);
+    private Territory OldGap { get; set; } = null!;
 
-    private Territory SihayaRidge { get; set; } = new(-1);
+    private Territory SihayaRidge { get; set; } = null!;
 
-    public Location FuneralPlain { get; private set; } = new(-1);
+    public Location FuneralPlain { get; private set; } = null!;
 
-    public Territory BightOfTheCliff { get; private set; } = new(-1);
+    public Territory BightOfTheCliff { get; private set; } = null!;
 
-    public Territory PlasticBasin { get; private set; } = new(-1);
+    public Territory PlasticBasin { get; private set; } = null!;
 
-    public Territory RockOutcroppings { get; private set; } = new(-1);
+    public Territory RockOutcroppings { get; private set; } = null!;
 
-    public Territory BrokenLand { get; private set; } = new(-1);
+    public Territory BrokenLand { get; private set; } = null!;
 
-    public Territory Tsimpo { get; private set; } = new(-1);
+    public Territory Tsimpo { get; private set; } = null!;
 
-    public Territory HaggaBasin { get; private set; } = new(-1);
+    public Territory HaggaBasin { get; private set; } = null!;
 
-    public Territory WindPass { get; private set; } = new(-1);
+    public Territory WindPass { get; private set; } = null!;
 
-    public Territory WindPassNorth { get; private set; } = new(-1);
+    public Territory WindPassNorth { get; private set; } = null!;
 
-    private Territory CielagoEast { get; set; } = new(-1);
+    private Territory CielagoEast { get; set; } = null!;
 
-    public Territory CielagoWest { get; private set; } = new(-1);
+    public Territory CielagoWest { get; private set; } = null!;
 
-    public Territory HabbanyaErg { get; private set; } = new(-1);
+    public Territory HabbanyaErg { get; private set; } = null!;
 
-    public Location TheGreatFlat { get; private set; } = new(-1);
+    public Location TheGreatFlat { get; private set; } = null!;
 
     public DiscoveredLocation? GetDiscoveryStronghold(DiscoveryToken discovery)
     {
@@ -87,13 +87,13 @@ public class Map
             DiscoveredLocation;
     }
 
-    public DiscoveredLocation Shrine { get; private set; }
-    public DiscoveredLocation Cistern { get; private set; }
-    public DiscoveredLocation TestingStation { get; private set; }
-    public DiscoveredLocation Jacurutu { get; private set; }
-    public DiscoveredLocation ProcessingStation { get; private set; }
+    public DiscoveredLocation Shrine { get; private set; } = null!;
+    public DiscoveredLocation Cistern { get; private set; } = null!;
+    public DiscoveredLocation TestingStation { get; private set; } = null!;
+    public DiscoveredLocation Jacurutu { get; private set; } = null!;
+    public DiscoveredLocation ProcessingStation { get; private set; } = null!;
 
-    public HiddenMobileStronghold HiddenMobileStronghold { get; private set; }
+    public HiddenMobileStronghold HiddenMobileStronghold { get; private set; } = null!;
 
     public Map()
     {
@@ -117,7 +117,7 @@ public class Map
 
     public IEnumerable<Location> Strongholds => _locations.Where(l => l.Territory.IsStronghold);
 
-    public Homeworld GetHomeWorld(World w) => Homeworlds.FirstOrDefault(hw => hw.World == w);
+    public Homeworld? GetHomeWorld(World w) => Homeworlds.FirstOrDefault(hw => hw.World == w);
 
     private static IEnumerable<ResourceCard> GetResourceCardsInAndOutsidePlay(Map m)
     {
@@ -151,7 +151,7 @@ public class Map
     {
         return
             c.IsShaiHulud ||
-            (c.IsSpiceBlow && !c.IsDiscovery) ||
+            c is { IsSpiceBlow: true, IsDiscovery: false } ||
             (c.IsSandTrout && g.Applicable(Rule.SandTrout)) ||
             (c.IsGreatMaker && g.Applicable(Rule.GreatMaker)) ||
             (c.IsDiscovery && g.Applicable(Rule.DiscoveryTokens));
@@ -1751,7 +1751,7 @@ public class Map
 
     private static bool BelongsTo(Game game, Battalion b, Faction f)
     {
-        return b.Faction == f || (game.GetPlayer(f).Ally == Faction.Pink && b.Faction == Faction.Pink);
+        return b.Faction == f || (game.GetPlayer(f)?.Ally == Faction.Pink && b.Faction == Faction.Pink);
     }
 
     private static List<Location> DetermineForceObstacles(Faction f, Game game)
@@ -1767,7 +1767,7 @@ public class Map
     private static void FindNeighbours(
         List<Location> found,
         Location current,
-        Location previous,
+        Location? previous,
         int currentDistance,
         int maxDistance,
         int sectorInStorm,
@@ -1863,7 +1863,7 @@ public class Map
         return neighbours;
     }
 
-    private static void FindNeighboursForHmsMovement(List<Location> found, Location current, Location previous, int currentDistance, int maxDistance, bool ignoreStorm, int sectorInStorm)
+    private static void FindNeighboursForHmsMovement(List<Location> found, Location current, Location? previous, int currentDistance, int maxDistance, bool ignoreStorm, int sectorInStorm)
     {
         if (!found.Contains(current)) 
             found.Add(current);
@@ -1887,7 +1887,7 @@ public class Map
         return neighbours;
     }
 
-    private static void FindNeighboursWithinTerritory(List<Location> found, Location current, Location previous, bool ignoreStorm, int sectorInStorm)
+    private static void FindNeighboursWithinTerritory(List<Location> found, Location current, Location? previous, bool ignoreStorm, int sectorInStorm)
     {
         if (!found.Contains(current)) 
             found.Add(current);

@@ -31,7 +31,7 @@ public class AmbassadorPlaced : GameEvent
     public int _strongholdId;
 
     [JsonIgnore]
-    public Territory Stronghold
+    public Territory? Stronghold
     {
         get => Game.Map.TerritoryLookup.Find(_strongholdId);
         set => _strongholdId = Game.Map.TerritoryLookup.GetId(value);
@@ -51,11 +51,8 @@ public class AmbassadorPlaced : GameEvent
 
     public static IEnumerable<Territory> ValidStrongholds(Game g, Player p)
     {
-        var ally = g.GetPlayer(p.Ally);
-
         return g.Map.Territories(false).Where(t =>
-            t.IsVisible &&
-            t.IsStronghold &&
+            t is { IsVisible: true, IsStronghold: true } &&
             !g.IsInStorm(t) &&
             g.AmbassadorIn(t) == Ambassador.None);
     }
@@ -80,6 +77,8 @@ public class AmbassadorPlaced : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
+        if (Stronghold is null) throw new Exception("Stronghold is null");
+        
         Game.AmbassadorsPlacedThisTurn++;
         Player.Resources -= Game.AmbassadorsPlacedThisTurn;
         Log(Initiator, " station the ", Ambassador, " ambassador in ", Stronghold, " for ", Payment.Of(Game.AmbassadorsPlacedThisTurn));

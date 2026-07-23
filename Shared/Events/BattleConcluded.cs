@@ -64,12 +64,12 @@ public class BattleConcluded : GameEvent
 
     public int SpecialForceLossesReplaced { get; set; }
 
-    public string _cardIds;
+    public string? _cardIds;
 
     [JsonIgnore]
     public IEnumerable<TreacheryCard> DiscardedCards
     {
-        get => IdStringToObjects(_cardIds, TreacheryCardManager.Lookup);
+        get => IdStringToObjects(_cardIds ?? string.Empty, TreacheryCardManager.Lookup);
         set => _cardIds = ObjectsToIdString(value, TreacheryCardManager.Lookup);
     }
 
@@ -120,11 +120,12 @@ public class BattleConcluded : GameEvent
 
         if (AddExtraForce && Game.Version >= 161)
         {
-            var to = Game.CurrentBattle.Territory.Locations.FirstOrDefault(l => Player.AnyForcesIn(l) > 0);
+            var territory = Game.CurrentBattle.Territory;
+            var to = territory?.Locations.FirstOrDefault(l => Player.AnyForcesIn(l) > 0);
             if (to != null)
                 Player.ShipForces(to, 1);
             
-            Log(Initiator, " place ", 1, " extra force in ", Game.CurrentBattle.Territory);
+            if (territory != null) Log(Initiator, " place ", 1, " extra force in ", territory);
         }
 
         foreach (var c in DiscardedCards)
@@ -142,7 +143,8 @@ public class BattleConcluded : GameEvent
         TakeTechToken();
         ProcessGreyForceLossesAndSubstitutions();
 
-        if (!LoserConcluded.IsApplicable(Game, GetPlayer(Game.BattleLoser))) Game.Enter(!Game.IsPlaying(Faction.Purple) || Game.BattleWinner == Faction.Purple, Game.FinishBattle, Game.Version <= 150, Phase.Facedancing, Phase.RevealingFacedancer);
+        var loser = GetPlayer(Game.BattleLoser);
+        if (!LoserConcluded.IsApplicable(Game, loser)) Game.Enter(!Game.IsPlaying(Faction.Purple) || Game.BattleWinner == Faction.Purple, Game.FinishBattle, Game.Version <= 150, Phase.Facedancing, Phase.RevealingFacedancer);
     }
 
     private void DeciphererReplacesTraitors()
@@ -153,10 +155,13 @@ public class BattleConcluded : GameEvent
 
         var currentlyHeld = Initiator == Faction.Purple ? Player.FaceDancers : Player.Traitors;
 
+        if (NewTraitor == null || TraitorToReplace == null) return;
+
         currentlyHeld.Add(NewTraitor);
         Game.TraitorsDeciphererCanLookAt.Remove(NewTraitor);
 
         currentlyHeld.Remove(TraitorToReplace);
+        if (Game.TraitorDeck == null) return;
         Game.TraitorDeck.PutOnTop(TraitorToReplace);
 
         Game.Stone(Milestone.Shuffled);
@@ -173,7 +178,10 @@ public class BattleConcluded : GameEvent
         if (Game.Version > 125 && Game.Prevented(FactionAdvantage.BlackCaptureLeader))
             Game.LogPreventionByKarma(FactionAdvantage.BlackCaptureLeader);
         else
-            CaptureOrAssassinateLeader(Player, Game.CurrentBattle.OpponentOf(Player));
+        {
+            var target = Game.CurrentBattle.OpponentOf(Player);
+            if (target != null) CaptureOrAssassinateLeader(Player, target);
+        }
     }
 
     private void TakeTechToken()
@@ -181,7 +189,7 @@ public class BattleConcluded : GameEvent
         if (StolenToken != TechToken.None)
         {
             var loser = GetPlayer(Game.BattleLoser);
-            if (loser.TechTokens.Contains(StolenToken))
+            if (loser != null && loser.TechTokens.Contains(StolenToken))
             {
                 loser.TechTokens.Remove(StolenToken);
                 Player.TechTokens.Add(StolenToken);
@@ -194,10 +202,15 @@ public class BattleConcluded : GameEvent
     {
         if (Game.GreySpecialForceLossesToTake > 0)
         {
-            var plan = Game.CurrentBattle.PlanOf(Player);
-            var territory = Game.CurrentBattle.Territory;
+            var currentBattle = Game.CurrentBattle;
+            if (currentBattle == null) return;
+
+            var plan = currentBattle.PlanOf(Player);
+            var territory = currentBattle.Territory;
+            if (plan == null || territory == null) return;
 
             var winnerGambit = Game.WinnerBattleAction;
+            if (winnerGambit == null) return;
             var forcesToLose = winnerGambit.Forces + winnerGambit.ForcesAtHalfStrength + SpecialForceLossesReplaced;
             var specialForcesToLose = winnerGambit.SpecialForces + winnerGambit.SpecialForcesAtHalfStrength - SpecialForceLossesReplaced;
 
@@ -210,7 +223,7 @@ public class BattleConcluded : GameEvent
             var specialForcesToSaveInTerritory = 0;
             var forcesToSaveInTerritory = 0;
 
-            if (Game.SkilledAs(plan.Hero, LeaderSkill.Graduate))
+            if (plan.Hero != null && Game.SkilledAs(plan.Hero, LeaderSkill.Graduate))
             {
                 specialForcesToSaveInTerritory = Math.Min(specialForcesToLose, 1);
                 forcesToSaveInTerritory = Math.Max(0, Math.Min(forcesToLose, 1 - specialForcesToSaveInTerritory));
@@ -254,6 +267,7 @@ public class BattleConcluded : GameEvent
         if (DecisionToCapture == CaptureDecision.Capture)
         {
             Log(Faction.Black, " capture a leader!");
+            if (Game.BlackVictim == null) return;
             black.Leaders.Add(Game.BlackVictim);
             target.Leaders.Remove(Game.BlackVictim);
             Game.SetInFrontOfShield(Game.BlackVictim, false);
@@ -262,7 +276,7 @@ public class BattleConcluded : GameEvent
         else if (DecisionToCapture == CaptureDecision.Kill)
         {
             Log(Faction.Black, " kill a leader for ", Payment.Of(2));
-            Game.AssassinateLeader(Game.BlackVictim);
+            if (Game.BlackVictim != null) Game.AssassinateLeader(Game.BlackVictim);
             black.Resources += 2;
         }
         else if (DecisionToCapture == CaptureDecision.DontCapture)
@@ -284,6 +298,8 @@ public class BattleConcluded : GameEvent
     {
         if (g.GreySpecialForceLossesToTake == 0) return new[] { 0 };
 
+        if (g.CurrentBattle?.Territory == null || g.WinnerBattleAction == null) return new[] { 0 };
+
         var replacementForcesLeft = p.ForcesIn(g.CurrentBattle.Territory) - (g.WinnerBattleAction.Forces + g.WinnerBattleAction.ForcesAtHalfStrength);
 
         if (replacementForcesLeft <= 0) return new[] { 0 };
@@ -295,6 +311,8 @@ public class BattleConcluded : GameEvent
     {
         if (g.GreySpecialForceLossesToTake == 0) return 0;
 
+        if (g.CurrentBattle?.Territory == null || g.WinnerBattleAction == null) return 0;
+
         var replacementForcesLeft = p.ForcesIn(g.CurrentBattle.Territory) - (g.WinnerBattleAction.Forces + g.WinnerBattleAction.ForcesAtHalfStrength);
 
         if (replacementForcesLeft <= 0) return 0;
@@ -302,8 +320,9 @@ public class BattleConcluded : GameEvent
         return Math.Min(replacementForcesLeft, g.GreySpecialForceLossesToTake);
     }
 
-    public static bool MayCaptureOrKill(Game g, Player p)
+    public static bool MayCaptureOrKill(Game g, Player? p)
     {
+        if (p == null) return false;
         return p.Faction == Faction.Black && g.BattleWinner == Faction.Black && !g.Prevented(FactionAdvantage.BlackCaptureLeader) && g.Applicable(Rule.BlackCapturesOrKillsLeaders) && g.BlackVictim != null;
     }
 
@@ -328,6 +347,7 @@ public class BattleConcluded : GameEvent
 
     public static bool MayAddExtraForce(Game g, Player p)
     {
+        if (g.CurrentBattle?.Territory == null) return false;
         return p.Is(Faction.Green) && p.HasHighThreshold() && p.ForcesInReserve >= 1 &&
                p.AnyForcesIn(g.CurrentBattle.Territory) > 0;
     }

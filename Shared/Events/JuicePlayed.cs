@@ -40,7 +40,7 @@ public class JuicePlayed : GameEvent
     {
         var result = new List<JuiceType>();
 
-        if (g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p) && g.BattleWinner == Faction.None) result.Add(JuiceType.Aggressor);
+        if (g.CurrentBattle != null && g.CurrentBattle!.IsAggressorOrDefender(p) && g.BattleWinner == Faction.None) result.Add(JuiceType.Aggressor);
 
         if ((g.CurrentMainPhase == MainPhase.Bidding && !g.Bids.Any()) ||
             g.CurrentPhase == Phase.BeginningOfShipAndMove ||

@@ -309,12 +309,12 @@ public abstract class GameEvent
         Game.Log(expression);
     }
 
-    protected void LogIf(bool condition, params object[] expression)
+    protected void LogIf(bool condition, params object?[] expression)
     {
         Game.LogIf(condition, expression);
     }
 
-    protected void LogTo(Faction faction, params object[] expression)
+    protected void LogTo(Faction faction, params object?[] expression)
     {
         Game.LogTo(faction, expression);
     }

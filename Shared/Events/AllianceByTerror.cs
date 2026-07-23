@@ -47,7 +47,7 @@ public class AllianceByTerror : PassableGameEvent
             }
 
             var cyan = Game.GetPlayer(Faction.Cyan);
-            if (cyan.HasAlly)
+            if (cyan is { HasAlly: true })
             {
                 Log(Faction.Cyan, " and ", cyan.Ally, " end their alliance");
                 Game.BreakAlliance(Faction.Cyan);
@@ -57,7 +57,7 @@ public class AllianceByTerror : PassableGameEvent
 
             if (Game.HasActedOrPassed.Contains(Initiator) && Game.HasActedOrPassed.Contains(Faction.Cyan)) Game.CheckIfForcesShouldBeDestroyedByAllyPresence(Player);
 
-            var territory = Game.LastTerrorTrigger.Territory;
+            var territory = Game.LastTerrorTrigger!.Territory;
             Log("Terror in ", territory, " is returned to supplies");
             foreach (var t in Game.TerrorIn(territory).ToList())
             {

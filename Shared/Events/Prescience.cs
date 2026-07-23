@@ -38,8 +38,8 @@ public class Prescience : GameEvent
 
     public static IEnumerable<PrescienceAspect> ValidAspects(Game g, Player p)
     {
-        var opponent = g.CurrentBattle.OpponentOf(p);
-        if (opponent.HasNoFieldIn(g.CurrentBattle.Territory))
+        var opponent = g.CurrentBattle!.OpponentOf(p);
+        if (opponent.HasNoFieldIn(g.CurrentBattle!.Territory))
             return new[] { PrescienceAspect.Leader, PrescienceAspect.Weapon, PrescienceAspect.Defense };
         return new[] { PrescienceAspect.Dial, PrescienceAspect.Leader, PrescienceAspect.Weapon, PrescienceAspect.Defense };
     }

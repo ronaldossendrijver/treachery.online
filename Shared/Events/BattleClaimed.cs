@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class BattleClaimed : PassableGameEvent
@@ -49,13 +47,16 @@ public class BattleClaimed : PassableGameEvent
     {
         var fighter = Game.GetPlayer(Game.CurrentPinkOrAllyFighter);
 
-        if (Game.CurrentBattle != null && (fighter.Is(Faction.Pink) || fighter.Ally == Faction.Pink))
+        if (fighter != null && Game.CurrentBattle != null && (fighter.Is(Faction.Pink) || fighter.Ally == Faction.Pink))
         {
             var pink = GetPlayer(Faction.Pink);
-            if (Game.Version < 159)
-                Game.CurrentPinkBattleContribution = (int)(0.5f * pink.AnyForcesIn(Game.CurrentBattle.Territory));
-            else
-                Game.CurrentPinkBattleContribution = (int)Math.Ceiling(0.5f * pink.AnyForcesIn(Game.CurrentBattle.Territory));
+            if (pink != null)
+            {
+                if (Game.Version < 159)
+                    Game.CurrentPinkBattleContribution = (int)(0.5f * pink.AnyForcesIn(Game.CurrentBattle!.Territory!));
+                else
+                    Game.CurrentPinkBattleContribution = (int)Math.Ceiling(0.5f * pink.AnyForcesIn(Game.CurrentBattle!.Territory!));
+            }
         }
         else
         {

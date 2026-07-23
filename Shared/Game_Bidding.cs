@@ -111,7 +111,7 @@ public partial class Game
         for (var i = 0; i < numberOfCardsToDraw; i++)
         {
             var card = DrawTreacheryCard();
-            if (card != null) CardsOnAuction.PutOnBottom(card);
+            if (card != null) CardsOnAuction?.PutOnBottom(card);
         }
 
         StartBidSequenceAndAuctionType(AuctionType.Normal);
@@ -122,7 +122,7 @@ public partial class Game
     internal void StartBiddingRound()
     {
         BiddingRoundWasStarted = true;
-        SkipPlayersThatCantBid(BidSequence);
+        SkipPlayersThatCantBid(BidSequence!);
         Enter(Phase.Bidding);
         CurrentBid = null;
         Bids.Clear();
@@ -139,7 +139,7 @@ public partial class Game
             Stone(Milestone.Bid);
         }
 
-        BidSequence.NextPlayer();
+        BidSequence!.NextPlayer();
         SkipPlayersThatCantBid(BidSequence);
         Bids.Remove(bid.Initiator);
         Bids.Add(bid.Initiator, bid);
@@ -239,13 +239,13 @@ public partial class Game
 
         var receiverProfit = 0;
 
-        if (bidAllyContributionAmount > 0)
+        if (bidAllyContributionAmount > 0 && initiator.HasAlly)
         {
-            GetPlayer(initiator.Ally).Resources -= bidAllyContributionAmount;
+            initiator.AlliedPlayer.Resources -= bidAllyContributionAmount;
             DecreasePermittedUseOfAllySpice(initiator.Faction, bidAllyContributionAmount);
         }
 
-        if (bidRedContributionAmount > 0) GetPlayer(Faction.Red).Resources -= bidRedContributionAmount;
+        if (bidRedContributionAmount > 0) GetPlayer(Faction.Red)!.Resources -= bidRedContributionAmount;
 
         var receiver = GetPlayer(paymentReceiver);
         var receiverAndAllyAreWhite = initiator.Ally == Faction.White && paymentReceiver == Faction.White;
@@ -258,7 +258,7 @@ public partial class Game
         var redReceivedInsteadMessage = MessagePart.Express();
         if (red != null && totalAmountReceivedByRedInsteadOfWhite > 0)
         {
-            ModifyIncomeBecauseOfLowThresholdOrOccupation(receiver, ref totalAmountReceivedByRedInsteadOfWhite);
+            ModifyIncomeBecauseOfLowThresholdOrOccupation(receiver!, ref totalAmountReceivedByRedInsteadOfWhite);
             red.Resources += totalAmountReceivedByRedInsteadOfWhite;
             redReceivedInsteadMessage = MessagePart.Express(" and ", Faction.Red, " get ", Payment.Of(totalAmountReceivedByRedInsteadOfWhite));
 
@@ -266,7 +266,7 @@ public partial class Game
                 //This should also take into account payments received by an occupier
                 BiddingTriggeredBureaucracy = new TriggeredBureaucracy { PaymentFrom = Faction.White, PaymentTo = Faction.Red };
 
-            SetRecentPayment(receiverProfit, initiator.Faction, receiver.Faction, (GameEvent)bid);
+            SetRecentPayment(receiverProfit, initiator.Faction, receiver!.Faction, (GameEvent)bid);
         }
         
         if (receiver != null && initiator.Faction != paymentReceiver)
@@ -306,7 +306,7 @@ public partial class Game
         if (winner.Is(Faction.Black))
         {
             var extraCardMustBeDecidedAbout = false;
-            Player receiver = null;
+            Player? receiver = null;
 
             var occupierOfBlackHomeworld = OccupierOf(World.Black);
             if (occupierOfBlackHomeworld != null)
@@ -351,11 +351,11 @@ public partial class Game
         }
     }
 
-    internal TreacheryCard DrawTreacheryCard()
+    internal TreacheryCard? DrawTreacheryCard()
     {
-        if (TreacheryDeck.IsEmpty)
+        if (TreacheryDeck?.IsEmpty is true)
         {
-            Log("Shuffled ", TreacheryDiscardPile.Items.Count, " cards from the treachery discard pile into a new deck");
+            Log("Shuffled ", TreacheryDiscardPile!.Items.Count, " cards from the treachery discard pile into a new deck");
 
             foreach (var i in TreacheryDiscardPile.Items)
             {
@@ -368,9 +368,9 @@ public partial class Game
             Stone(Milestone.Shuffled);
         }
 
-        if (TreacheryDeck.Items.Count > 0)
-            return TreacheryDeck.Draw();
-        return null;
+        return TreacheryDeck?.Items.Count > 0 
+            ? TreacheryDeck.Draw() 
+            : null;
     }
 
     internal void FinishBid(Player winner, IBid winningBid, TreacheryCard card, bool mightReplace)
@@ -387,9 +387,9 @@ public partial class Game
         if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreenBiddingPrescience);
 
         var enterReplacingCardJustWon = mightReplace && Version > 150 && 
-                                        ((Version < 159 && Players.Any(p => p.Nexus != Faction.None)) || (Version >= 159 && winner?.Nexus != Faction.None));
+                                        ((Version < 159 && Players.Any(p => p.Nexus != Faction.None)) || (Version >= 159 && winner.Nexus != Faction.None));
 
-        if (mightReplace && winner != null)
+        if (mightReplace)
         {
             if (winner.Ally == Faction.Grey && GreyAllowsReplacingCards && !(Version >= 164 && (CurrentAuctionType is AuctionType.WhiteSilent or AuctionType.WhiteOnceAround)))
             {
@@ -431,7 +431,7 @@ public partial class Game
     {
         WhiteBiddingJustFinished = CurrentAuctionType == AuctionType.WhiteOnceAround || CurrentAuctionType == AuctionType.WhiteSilent;
 
-        if (!CardsOnAuction.IsEmpty)
+        if (CardsOnAuction?.IsEmpty is not true)
         {
             MoveToNextCardOnAuction();
         }
@@ -477,9 +477,9 @@ public partial class Game
 
     internal void PutNextCardOnAuction()
     {
-        if (!WhiteBiddingJustFinished) BidSequence.NextRound();
+        if (!WhiteBiddingJustFinished) BidSequence!.NextRound();
 
-        SkipPlayersThatCantBid(BidSequence);
+        SkipPlayersThatCantBid(BidSequence!);
         WinningBid = null;
         Enter(Phase.Bidding);
     }
@@ -495,7 +495,7 @@ public partial class Game
 
             case AuctionType.BlackMarketOnceAround:
                 BlackMarketAuctionType = AuctionType.BlackMarketOnceAround;
-                BidSequence = new PlayerSequence(this, true, direction, whitePlayer, true);
+                BidSequence = new PlayerSequence(this, true, direction, whitePlayer!, true);
                 break;
 
             case AuctionType.BlackMarketSilent:
@@ -504,7 +504,7 @@ public partial class Game
                 break;
 
             case AuctionType.WhiteOnceAround:
-                BidSequence = new PlayerSequence(this, true, direction, whitePlayer, true);
+                BidSequence = new PlayerSequence(this, true, direction, whitePlayer!, true);
                 break;
 
             case AuctionType.WhiteSilent:
@@ -525,7 +525,7 @@ public partial class Game
         CurrentAuctionType = auctionType;
     }
 
-    internal IBid DetermineHighestBid(Dictionary<Faction, IBid> bids)
+    internal IBid? DetermineHighestBid(Dictionary<Faction, IBid> bids)
     {
         var highestBidValue = bids.Values.Max(b => b.TotalAmount);
         var determineBidWinnerSequence = new PlayerSequence(this, false, 1);
@@ -564,7 +564,7 @@ public partial class Game
 
     #region Information
 
-    public int NumberOfCardsOnRegularAuction => CardNumber + CardsOnAuction.Items.Count - 1;
+    public int NumberOfCardsOnRegularAuction => CardNumber + CardsOnAuction!.Items.Count - 1;
 
     internal IEnumerable<Player> PlayersThatCanBid => Players.Where(p => p.HasRoomForCards);
 
@@ -596,10 +596,8 @@ public partial class Game
         return result;
     }
 
-    public TreacheryCard GetCardSetAsideForBid(Player p)
-    {
-        return CurrentBid != null && CurrentBid.Player == p && CurrentBid.UsingKarmaToRemoveBidLimit ? CurrentBid.KarmaCard : null;
-    }
+    public TreacheryCard? GetCardSetAsideForBid(Player p) 
+        => CurrentBid != null && CurrentBid.Player == p && CurrentBid.UsingKarmaToRemoveBidLimit ? CurrentBid.KarmaCard : null;
 
     #endregion Information
 }

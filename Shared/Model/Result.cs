@@ -13,8 +13,8 @@ public class Result<T>
 {
     public bool Success { get; init; }
     public ErrorType Error { get; init; } = ErrorType.None;
-    public string ErrorDetails { get; init; }
-    public T Contents { get; init; }
+    public string ErrorDetails { get; init; } = string.Empty;
+    public T? Contents { get; init; }
 }
 
 public class VoidResult : Result<VoidContents>

@@ -85,8 +85,9 @@ public class LoserConcluded : GameEvent
         return g.CardsToBeDiscardedByLoserAfterBattle;
     }
 
-    public static bool IsApplicable(Game g, Player p)
+    public static bool IsApplicable(Game g, Player? p)
     {
+        if (p == null) return false;
         return p.Faction == g.BattleLoser && (CardsLoserMayKeep(g).Any() || g.LoserMayTryToAssassinate);
     }
 

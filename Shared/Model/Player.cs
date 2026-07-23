@@ -203,34 +203,37 @@ public class Player(Game game, Faction faction = Faction.None) : ICloneable
         ChangeSpecialForces(location, -nrOfForces);
     }
 
-    public int ForcesIn(Location location)
+    public int ForcesIn(Location? location)
     {
-        if (ForcesInLocations.TryGetValue(location, out var battalion))
+        if (location is not null && ForcesInLocations.TryGetValue(location, out var battalion))
             return battalion.AmountOfForces;
+        
         return 0;
     }
 
-    public int SpecialForcesIn(Location location)
+    public int SpecialForcesIn(Location? location)
     {
-        if (ForcesInLocations.TryGetValue(location, out var battalion))
+        if (location is not null && ForcesInLocations.TryGetValue(location, out var battalion))
             return battalion.AmountOfSpecialForces;
+        
         return 0;
     }
 
-    public int AnyForcesIn(Location location)
+    public int AnyForcesIn(Location? location)
     {
-        if (ForcesInLocations.TryGetValue(location, out var battalion))
+        if (location is not null && ForcesInLocations.TryGetValue(location, out var battalion))
             return battalion.TotalAmountOfForces;
+        
         return 0;
     }
     
-    public int OccupyingForcesIn(Territory t) => t.Locations.Sum(OccupyingForcesIn);
+    public int OccupyingForcesIn(Territory? t) => t is null ? 0 : t.Locations.Sum(OccupyingForcesIn);
 
-    public int ForcesIn(Territory t) => t.Locations.Sum(ForcesIn);
+    public int ForcesIn(Territory? t) => t is null ? 0 : t.Locations.Sum(ForcesIn);
 
-    public int SpecialForcesIn(Territory t) => t.Locations.Sum(SpecialForcesIn);
+    public int SpecialForcesIn(Territory? t) => t is null ? 0 : t.Locations.Sum(SpecialForcesIn);
 
-    public int AnyForcesIn(Territory t) => t.Locations.Sum(AnyForcesIn);
+    public int AnyForcesIn(Territory? t) => t is null ? 0 : t.Locations.Sum(AnyForcesIn);
 
     private void ForcesToReserves(Location location)
     {
@@ -454,14 +457,15 @@ public class Player(Game game, Faction faction = Faction.None) : ICloneable
         return ForcesIn(l) + (Faction == Faction.Blue ? 0 : SpecialForcesIn(l));
     }
 
-    public bool Occupies(Location l)
+    public bool Occupies(Location? l)
     {
-        return OccupyingForcesIn(l) > 0 || Game.Version >= 164 && Ally is Faction.Pink && OccupyingForcesIn(l) > 0 && AlliedPlayer?.OccupyingForcesIn(l) > 0;
+        return l is not null && (OccupyingForcesIn(l) > 0 
+                                 || Game.Version >= 164 && Ally is Faction.Pink && OccupyingForcesIn(l) > 0 && AlliedPlayer?.OccupyingForcesIn(l) > 0);
     }
 
-    public bool Occupies(Territory t)
+    public bool Occupies(Territory? t)
     {
-        return t.Locations.Any(Occupies);
+        return t != null && t.Locations.Any(Occupies);
     }
 
     public IEnumerable<Location> OccupiedLocations => Game.Map.Locations(true).Where(Occupies);

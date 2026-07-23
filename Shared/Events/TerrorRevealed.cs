@@ -172,7 +172,7 @@ public class TerrorRevealed : PassableGameEvent, ILocationEvent
             {
                 case TerrorType.Assassination:
 
-                    var randomLeader = victimPlayer.Leaders.Where(l => Game.IsAlive(l)).RandomOrDefault(Game.Random);
+                    var randomLeader = victimPlayer.Leaders.Where(l => Game.IsAlive(l)).RandomOrDefault(Game.Random!);
                     if (randomLeader != null)
                     {
                         var price = randomLeader.HeroType == HeroType.VariableValue ? 3 : randomLeader.CostToRevive;
@@ -192,10 +192,10 @@ public class TerrorRevealed : PassableGameEvent, ILocationEvent
                     Game.KillAmbassadorIn(territory);
                     Game.AtomicsAftermath = territory;
 
-                    while (Player.HandSizeExceeded) Game.Discard(Player, Player.TreacheryCards.RandomOrDefault(Game.Random));
+                    while (Player.HandSizeExceeded) Game.Discard(Player, Player.TreacheryCards.RandomOrDefault(Game.Random!));
 
                     if (Player.HasAlly)
-                        while (Player.AlliedPlayer.HandSizeExceeded) Game.Discard(Player.AlliedPlayer, Player.AlliedPlayer.TreacheryCards.RandomOrDefault(Game.Random));
+                        while (Player.AlliedPlayer.HandSizeExceeded) Game.Discard(Player.AlliedPlayer, Player.AlliedPlayer.TreacheryCards.RandomOrDefault(Game.Random!));
 
                     Game.Stone(Milestone.MetheorUsed);
                     Log(Initiator, " DETONATE ATOMICS in ", territory);
@@ -228,7 +228,7 @@ public class TerrorRevealed : PassableGameEvent, ILocationEvent
                     Log(Initiator, " sabotage ", victimPlayer.Faction);
 
                     if (victimPlayer.TreacheryCards.Any())
-                        Game.Discard(victimPlayer.TreacheryCards.RandomOrDefault(Game.Random));
+                        Game.Discard(victimPlayer.TreacheryCards.RandomOrDefault(Game.Random!));
                     else
                         Log(victimPlayer.Faction, " have no treachery cards to discard");
 

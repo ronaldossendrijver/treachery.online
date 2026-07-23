@@ -73,16 +73,16 @@ public class AutomationConfigured : GameEvent
             case ItemAction.Delete:
             {
                 // Delete rule
-                var rule = Game.AutomationRules.FirstOrDefault(x => x.AutomationRuleId == AutomationRuleId);
+                var rule = Game.AutomationRules.First(x => x.AutomationRuleId == AutomationRuleId);
                 Game.AutomationRules.Remove(rule);
                 return;
             }
             
             case ItemAction.Update:
             {
-                var rule = Game.AutomationRules.FirstOrDefault(x => x.AutomationRuleId == AutomationRuleId);
+                // var rule = Game.AutomationRules.First(x => x.AutomationRuleId == AutomationRuleId);
                 // Update rule
-                //existingRule
+                // existingRule
                 break;
             }
         }
@@ -108,7 +108,7 @@ public class AutomationConfigured : GameEvent
     public static List<Faction> GetValidBiddingFactions(Game g, Player p) 
         => g.Players.Where(x => x.Faction != p.Faction).Select(x => x.Faction).ToList();
 
-    public Message GetDescription()
+    public Message? GetDescription()
     {
         switch (RuleType)
         {
@@ -125,7 +125,7 @@ public class AutomationConfigured : GameEvent
             case AutomationRuleType.BiddingPassWhenGreenOrGreenAllyPassed:
                 var green = Game.GetPlayer(Faction.Green);
                 return Message.Express("Auto pass if most recent bid by ", Faction.Green,
-                    MessagePart.ExpressIf(green is { HasAlly: true }, green.Ally),
+                    MessagePart.ExpressIf(green is { HasAlly: true }, green?.Ally),
                     " was passed");
 
             case AutomationRuleType.RevivalAutoClaimFreeRevival:

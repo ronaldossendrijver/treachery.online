@@ -55,27 +55,27 @@ public class Retreat : GameEvent
 
     public static IEnumerable<Location> ValidTargets(Game g, Player p)
     {
-        var battalions = p.BattalionsIn(g.CurrentBattle.Territory);
+        var battalions = p.BattalionsIn(g.CurrentBattle!.Territory);
         return PlacementEvent.ValidTargets(g, p, battalions).Where(t => !g.AnyForcesIn(t.Territory) && !t.IsStronghold);
     }
     
     public static int MaxTotalForces(Game g, Player p)
     {
-        var plan = g.CurrentBattle.PlanOf(p);
+        var plan = g.CurrentBattle!.PlanOf(p);
         var opponentPlan = g.CurrentBattle.PlanOfOpponent(p);
         return plan.Hero.ValueInCombatAgainst(opponentPlan.Hero);
     }
 
     public static int MaxForces(Game g, Player p)
     {
-        var plan = g.CurrentBattle.PlanOf(p);
-        return p.ForcesIn(g.CurrentBattle.Territory) - plan.Forces - plan.ForcesAtHalfStrength;
+        var plan = g.CurrentBattle!.PlanOf(p);
+        return p.ForcesIn(g.CurrentBattle!.Territory) - plan.Forces - plan.ForcesAtHalfStrength;
     }
 
     public static int MaxSpecialForces(Game g, Player p)
     {
-        var plan = g.CurrentBattle.PlanOf(p);
-        return p.SpecialForcesIn(g.CurrentBattle.Territory) - plan.SpecialForces - plan.SpecialForcesAtHalfStrength;
+        var plan = g.CurrentBattle!.PlanOf(p);
+        return p.SpecialForcesIn(g.CurrentBattle!.Territory) - plan.SpecialForces - plan.SpecialForcesAtHalfStrength;
     }
 
     #endregion Validation

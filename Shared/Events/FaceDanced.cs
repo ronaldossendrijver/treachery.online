@@ -64,13 +64,13 @@ public class FaceDanced : PlacementEvent
     public static int MaximumNumberOfForces(Game g, Player p)
     {
         var ally = p.AlliedPlayer;
-        if (ally == null || g.BattleWinner == p.Ally || ally.AnyForcesIn(g.CurrentBattle.Territory) == 0)
+        if (ally == null || g.BattleWinner == p.Ally || ally.AnyForcesIn(g.CurrentBattle!.Territory!) == 0)
         {
             var winner = g.GetPlayer(g.BattleWinner);
             var coocupyingPlayer = g.BattleWinner == g.CurrentPinkOrAllyFighter ? winner.AlliedPlayer : null;
 
-            var nrOfForces = winner.AnyForcesIn(g.CurrentBattle.Territory);
-            if (coocupyingPlayer != null) nrOfForces += coocupyingPlayer.AnyForcesIn(g.CurrentBattle.Territory);
+            var nrOfForces = winner.AnyForcesIn(g.CurrentBattle!.Territory!);
+            if (coocupyingPlayer != null) nrOfForces += coocupyingPlayer.AnyForcesIn(g.CurrentBattle!.Territory);
 
             return nrOfForces;
         }
@@ -82,7 +82,7 @@ public class FaceDanced : PlacementEvent
     {
         if (g.BattleWinner == Faction.None || g.CurrentBattle == null) return false;
 
-        if (g.CurrentBattle.Territory.IsHomeworld && !p.IsNative(g.CurrentBattle.Territory)) return false;
+        if (g.CurrentBattle!.Territory!.IsHomeworld && !p.IsNative(g.CurrentBattle!.Territory)) return false;
         
         var winnerHero = g.WinnerHero;
         if (winnerHero != null && g.BattleWinner != null && !g.IsOccupiedByFactionOrTheirAlly(World.Purple, g.BattleWinner.Value)) return p.FaceDancers.Any(t => t.IsFaceDancer(winnerHero) && !p.RevealedFaceDancers.Contains(t));
@@ -97,7 +97,7 @@ public class FaceDanced : PlacementEvent
 
     public static IEnumerable<Location> ValidTargetLocations(Game g)
     {
-        return g.CurrentBattle.Territory.Locations.Where(l => g.Applicable(Rule.BattlesUnderStorm) || l.Sector != g.SectorInStorm);
+        return g.CurrentBattle!.Territory!.Locations.Where(l => g.Applicable(Rule.BattlesUnderStorm) || l.Sector != g.SectorInStorm);
     }
 
     #endregion Validation

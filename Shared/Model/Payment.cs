@@ -17,7 +17,7 @@ public class Payment
 
     public Faction To { get; set; }
 
-    public GameEvent Reason { get; set; }
+    public GameEvent? Reason { get; set; }
 
     public Payment()
     {

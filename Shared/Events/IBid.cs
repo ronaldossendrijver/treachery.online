@@ -20,9 +20,11 @@ public interface IBid
     public Faction Initiator { get; }
     public Player Player { get; }
     public bool Passed { get; }
-
+    
+    [MemberNotNullWhen(true, nameof(KarmaCard))]
     public bool UsingKarmaToRemoveBidLimit { get; }
-    public TreacheryCard KarmaCard { get; }
+    
+    public TreacheryCard? KarmaCard { get; }
 
     public Message GetMessage();
 }

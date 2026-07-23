@@ -398,7 +398,7 @@ public class Skin : IDescriber
             return Describe(Concept.GreatMonster);
         if (c.IsSandTrout)
             return Describe(Concept.BabyMonster);
-        return Describe(c.Location.Territory);
+        return Describe(c.Location!.Territory);
     }
 
     public string Describe(TreacheryCard c)
@@ -1488,6 +1488,7 @@ public class Skin : IDescriber
     public static Skin Load(string data, Skin donor)
     {
         var result = Utilities.Deserialize<Skin>(data);
+        if (result is null) throw new Exception("Invalid skin");
         Fix(result, donor);
         return result;
     }

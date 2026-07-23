@@ -17,48 +17,50 @@ public class Deal
 
     public DealType Type { get; set; }
 
-    public string DealParameter1 { get; set; }
+    public string? DealParameter1 { get; set; }
 
-    public string DealParameter2 { get; set; }
+    public string? DealParameter2 { get; set; }
 
-    public string Text { get; set; }
+    public string? Text { get; set; }
 
     public int Benefit { get; set; }
 
     public Phase End { get; set; }
 
-    public T GetParameter1<T>(Game g)
+    public T? GetParameter1<T>(Game g)
     {
-        return GetParameter1<T>(g, Type, DealParameter1);
+        return DealParameter1 is null 
+            ? default 
+            : GetParameter1<T>(g, Type, DealParameter1);
     }
 
-    public static T GetParameter1<T>(Game g, DealType Type, string Parameter)
+    private static T? GetParameter1<T>(Game g, DealType type, string parameter)
     {
-        return Type switch
+        return type switch
         {
-            DealType.DontShipOrMoveTo => (T)(object)g.Map.TerritoryLookup.Find(int.Parse(Parameter)),
+            DealType.DontShipOrMoveTo => (T?)(object?)g.Map.TerritoryLookup.Find(int.Parse(parameter)),
             _ => default
         };
     }
 
     public Message DealContentsDescription(Game g)
     {
-        return DealContentsDescription(g, Type, Text, Benefit, End, DealParameter1);
+        return DealContentsDescription(g, Type, Text ?? string.Empty, Benefit, End, DealParameter1 ?? string.Empty);
     }
 
-    public static Message DealContentsDescription(Game g, DealType Type, string Text, int benefit, Phase End, string Parameter1)
+    public static Message DealContentsDescription(Game g, DealType type, string text, int benefit, Phase end, string parameter1)
     {
-        if (Text != null && Text.Length > 0)
+        if (text.Length > 0)
             return Message.Express(
                 MessagePart.ExpressIf(benefit > 0, "Receive ", Payment.Of(benefit), " and "),
-                Text,
+                text,
                 " until ",
-                End);
+                end);
         return Message.Express(
             MessagePart.ExpressIf(benefit > 0, "Receive ", Payment.Of(benefit), " and "),
-            Express(Type, GetParameter1<object>(g, Type, Parameter1)),
+            Express(type, GetParameter1<object>(g, type, parameter1)),
             " until ",
-            End);
+            end);
     }
 
     public static Message Express(DealType d, object? parameter = null)

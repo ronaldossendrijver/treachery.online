@@ -97,11 +97,11 @@ public class Voice : GameEvent
         {
             if (p.Nexus == Faction.Blue && NexusPlayed.CanUseSecretAlly(g, p)) return g.CurrentBattle.IsAggressorOrDefender(p);
 
-            if (!g.Prevented(FactionAdvantage.BlueUsingVoice) && !g.IsOccupiedByFactionOrTheirAlly(World.Blue, g.CurrentBattle.OpponentOf(p)))
+            if (!g.Prevented(FactionAdvantage.BlueUsingVoice) && !g.IsOccupiedByFactionOrTheirAlly(World.Blue, g.CurrentBattle!.OpponentOf(p)))
             {
                 if (p.Faction == Faction.Blue)
                     return g.CurrentBattle.IsInvolved(p);
-                if (p.Ally == Faction.Blue && g.BlueAllowsUseOfVoice) return g.CurrentBattle.IsAggressorOrDefender(p);
+                if (p.Ally == Faction.Blue && g.BlueAllowsUseOfVoice) return g.CurrentBattle!.IsAggressorOrDefender(p);
             }
         }
 

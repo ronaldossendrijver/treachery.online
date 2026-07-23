@@ -40,7 +40,7 @@ public class AllianceByAmbassador : PassableGameEvent
 
         if (!Passed)
         {
-            Game.MakeAlliance(Initiator, Game.CurrentAmbassadorActivated.Initiator);
+            Game.MakeAlliance(Initiator, Game.CurrentAmbassadorActivated!.Initiator);
 
             if (Game.CurrentAmbassadorActivated.PinkGiveVidalToAlly)
                 Game.TakeVidal(Player, VidalMoment.EndOfTurn);
@@ -53,7 +53,7 @@ public class AllianceByAmbassador : PassableGameEvent
         }
         else
         {
-            Log(Initiator, " don't ally with ", Game.CurrentAmbassadorActivated.Initiator);
+            Log(Initiator, " don't ally with ", Game.CurrentAmbassadorActivated!.Initiator);
 
             if (Game.CurrentAmbassadorActivated.PinkTakeVidal) Game.TakeVidal(Game.CurrentAmbassadorActivated.Player, VidalMoment.AfterUsedInBattle);
         }

@@ -111,7 +111,7 @@ public class GameStatus
             Phase.Clairvoyance => Status(game,
                 Express("Please answer a question from ", game.LatestClairvoyance?.Initiator, " by ", TreacheryCardType.Clairvoyance, "."),
                 Express("Waiting for an answer to a ", TreacheryCardType.Clairvoyance, " question..."),
-                game.LatestClairvoyance.Target),
+                game.LatestClairvoyance!.Target),
 
             Phase.SearchingDiscarded => Status(
                 "Please take a card from the treachery discard pile.",
@@ -121,7 +121,7 @@ public class GameStatus
             Phase.TradingCards => Status(game,
                 "Please select which card to give to your ally.",
                 "Waiting for a card to be returned...",
-                game.CurrentCardTradeOffer.Player.Ally),
+                game.CurrentCardTradeOffer!.Player.Ally),
 
             Phase.Bureaucracy => Status(
                 "Please decide whether to apply Bureaucracy to the latest payment.",
@@ -224,12 +224,14 @@ public class GameStatus
                 Faction.Yellow),
 
             Phase.BlueIntrudedByYellowRidingMonsterA or Phase.BlueIntrudedByYellowRidingMonsterB => Status(game,
-                Express("Please decide what to do in response to an intrusion of ", game.LastShipmentOrMovement.To.Territory, "; be fighters or advisors?"),
-                Express(Faction.Blue, " are deciding what to do in response to an intrusion of ", game.LastShipmentOrMovement.To.Territory, "..."),
+                Express("Please decide what to do in response to an intrusion of ", game.LastShipmentOrMovement!.To?.Territory, "; be fighters or advisors?"),
+                Express(Faction.Blue, " are deciding what to do in response to an intrusion of ", game.LastShipmentOrMovement.To?.Territory, "..."),
                 Faction.Blue),
 
-            Phase.BlowA or Phase.HarvesterA => Status(Express("Factions may use a ", TreacheryCardType.Harvester, " to double the ", Concept.Resource, " blow in ", game.LatestSpiceCardA.Location.Territory, "...")),
-            Phase.BlowB or Phase.HarvesterB => Status(Express("Factions may use a ", TreacheryCardType.Harvester, " to double the ", Concept.Resource, " blow in ", game.LatestSpiceCardB.Location.Territory, "...")),
+            Phase.BlowA or Phase.HarvesterA => Status(Express(
+                "Factions may use a ", TreacheryCardType.Harvester, " to double the ", Concept.Resource, " blow in ", game.LatestSpiceCardA!.Location!.Territory, "...")),
+            Phase.BlowB or Phase.HarvesterB => Status(Express(
+                "Factions may use a ", TreacheryCardType.Harvester, " to double the ", Concept.Resource, " blow in ", game.LatestSpiceCardB!.Location!.Territory, "...")),
 
             Phase.VoteAllianceA or Phase.VoteAllianceB => Status(
                 "Please vote Yes or No to a Nexus.",
@@ -256,7 +258,7 @@ public class GameStatus
 
             Phase.BlackMarketBidding when game.CurrentAuctionType != AuctionType.BlackMarketSilent => Status(
                 Express("Please bid or pass."),
-                Express(game.BidSequence.CurrentFaction, " are thinking about their bid..."),
+                Express(game.BidSequence!.CurrentFaction, " are thinking about their bid..."),
                 BlackMarketBid.PlayersToBid(game).ToList(), game.LatestEvent()),
 
             Phase.BlackMarketBidding when game.CurrentAuctionType == AuctionType.BlackMarketSilent => Status(
@@ -291,7 +293,7 @@ public class GameStatus
 
             Phase.Bidding when game.CurrentAuctionType != AuctionType.WhiteSilent => Status(
                 Express("Please bid or pass."),
-                Express(game.BidSequence.CurrentFaction, " are thinking about their bid..."),
+                Express(game.BidSequence!.CurrentFaction, " are thinking about their bid..."),
                 Bid.PlayersToBid(game).ToList(), game.LatestEvent()),
 
             Phase.Bidding when game.CurrentAuctionType == AuctionType.WhiteSilent => Status(
@@ -417,21 +419,21 @@ public class GameStatus
                 "Waiting for the host to proceed to the first battle..."),
 
             Phase.ClaimingBattle => Status(
-                Express("You may now decide who will fight in ", game.BattleAboutToStart.Territory),
-                Express(game.HasLowThreshold(Faction.Pink) ? game.BattleAboutToStart.OpponentOf(Faction.Pink).Faction : Faction.Pink, " are deciding who will fight in ", game.BattleAboutToStart.Territory, "..."),
+                Express("You may now decide who will fight in ", game.BattleAboutToStart!.Territory),
+                Express(game.HasLowThreshold(Faction.Pink) ? game.BattleAboutToStart.OpponentOf(Faction.Pink)?.Faction : Faction.Pink, " are deciding who will fight in ", game.BattleAboutToStart.Territory, "..."),
                 game.HasLowThreshold(Faction.Pink) ? game.BattleAboutToStart.OpponentOf(Faction.Pink) : game.GetPlayer(Faction.Pink)),
 
             Phase.Thought => Status(
-                Express(game.CurrentThought.Initiator, " asked you a question and are waiting for your answer."),
-                Express("Waiting for ", game.CurrentBattle.OpponentOf(game.CurrentThought.Initiator).Faction, " to answer a question..."),
-                game.CurrentBattle.OpponentOf(game.CurrentThought.Initiator)),
+                Express(game.CurrentThought!.Initiator, " asked you a question and are waiting for your answer."),
+                Express("Waiting for ", game.CurrentBattle!.OpponentOf(game.CurrentThought.Initiator)?.Faction, " to answer a question..."),
+                game.CurrentBattle!.OpponentOf(game.CurrentThought.Initiator)),
 
             Phase.BattlePhase => DetermineBattleStatus(game, me),
 
             Phase.MeltingRock => Status(
                 Express("Please decide how to use your ", TreacheryCardType.Rockmelter, "."),
                 Express("Waiting for a decision on how they wish to use their ", TreacheryCardType.Rockmelter, "..."),
-                game.AggressorPlan.HasRockMelter ? game.CurrentBattle.Player : game.CurrentBattle.DefendingPlayer),
+                game.AggressorPlan!.HasRockMelter ? game.CurrentBattle!.Player : game.CurrentBattle!.DefendingPlayer),
 
             Phase.CallTraitorOrPass => Status(
                 "You may now call TREACHERY if the enemy leader is a traitor under your command.",
@@ -443,13 +445,13 @@ public class GameStatus
                 "Players may now try to cancel a traitor call..."),
 
             Phase.Retreating => Status(game,
-                Express("Please decide about retreating forces from ", game.CurrentBattle.Territory, "."),
-                Express(game.BattleLoser, " are thinking about retreating forces from ", game.CurrentBattle.Territory, "."),
+                Express("Please decide about retreating forces from ", game.CurrentBattle!.Territory, "."),
+                Express(game.BattleLoser, " are thinking about retreating forces from ", game.CurrentBattle!.Territory, "."),
                 game.BattleLoser),
 
             Phase.AvoidingAudit => Status(
                 Express("Please decide if you wish to avoid being audited."),
-                Express(game.Auditee.Faction, " are thinking about avoiding a scheduled audit..."),
+                Express(game.Auditee!.Faction, " are thinking about avoiding a scheduled audit..."),
                 game.Auditee),
 
             Phase.CaptureDecision => Status(game,
@@ -510,7 +512,7 @@ public class GameStatus
             Phase.None or _ => Status(Express("Unknown phase: " + game.CurrentPhase))
         };
 
-        result.FlashInfo = DetermineFlash(game, me?.Faction ?? Faction.None, isPlayer);
+        result.FlashInfo = DetermineFlash(game, me.Faction, isPlayer);
         result.HighlightedTerritories = DetermineHighlights(game).ToList();
 
         return result;
@@ -527,6 +529,8 @@ public class GameStatus
     private static List<Player> PlayerAndAlly(Game g, Faction f)
     {
         var player = g.GetPlayer(f);
+        if (player is null) return [];
+        
         var result = new List<Player>
         {
             player
@@ -538,7 +542,7 @@ public class GameStatus
     private static MessagePart Ally(Game g, Faction f)
     {
         var player = g.GetPlayer(f);
-        return MessagePart.ExpressIf(player.HasAlly, player.Ally);
+        return MessagePart.ExpressIf(player?.HasAlly is true, player!.Ally);
     }
 
     private static List<Territory> DetermineHighlights(Game game)
@@ -549,8 +553,8 @@ public class GameStatus
 
             Phase.StormLosses => [TakeLosses.LossesToTake(game).Location.Territory],
 
-            Phase.HarvesterA => [game.LatestSpiceCardA.Location.Territory],
-            Phase.HarvesterB => [game.LatestSpiceCardB.Location.Territory],
+            Phase.HarvesterA => [game.LatestSpiceCardA!.Location!.Territory],
+            Phase.HarvesterB => [game.LatestSpiceCardB!.Location!.Territory],
 
             Phase.TerrorTriggeredByBlueAccompaniesNonOrangeShip or
                 Phase.TerrorTriggeredByBlueAccompaniesOrangeShip or
@@ -577,7 +581,7 @@ public class GameStatus
                 Phase.BlueIntrudedByYellowRidingMonsterA or
                 Phase.BlueIntrudedByYellowRidingMonsterB or
                 Phase.BlueAccompaniesOrangeShip or
-                Phase.BlueAccompaniesNonOrangeShip when game.LastShipmentOrMovement != null => [game.LastShipmentOrMovement.To.Territory],
+                Phase.BlueAccompaniesNonOrangeShip when game.LastShipmentOrMovement != null => [game.LastShipmentOrMovement!.To!.Territory],
 
             Phase.BattlePhase or
                 Phase.MeltingRock or
@@ -586,7 +590,7 @@ public class GameStatus
                 Phase.BattleConclusion or
                 Phase.AvoidingAudit or
                 Phase.Auditing or
-                Phase.RevealingFacedancer when game.CurrentBattle != null => [game.CurrentBattle.Territory],
+                Phase.RevealingFacedancer when game.CurrentBattle != null => [game.CurrentBattle!.Territory!],
 
             _ => []
         };
@@ -597,22 +601,22 @@ public class GameStatus
         if (game.CurrentBattle == null)
             return Status(
                 Express("Please choose whom and where to battle."),
-                Express(game.NextPlayerToBattle.Faction, " are deciding whom and where to battle..."),
+                Express(game.NextPlayerToBattle!.Faction, " are deciding whom and where to battle..."),
                 game.NextPlayerToBattle);
 
         var latestBattleEvent = game.LatestEvent(typeof(BattleInitiated));
         var toMakePlan = PlayersThatNeedToMakeABattlePlan(game);
 
-        if (game.CurrentBattle.Aggressor == me.Faction)
+        if (game.CurrentBattle!.Aggressor == me.Faction)
             return Status(
-                Express("You are aggressor against ", game.CurrentBattle.Defender, " in ", game.CurrentBattle.Territory, "! Please confirm your Battle Plan."),
-                Express("You are waiting for ", game.CurrentBattle.Defender, " to defend ", game.CurrentBattle.Territory, "..."), toMakePlan, latestBattleEvent);
-        if (game.CurrentBattle.Defender == me.Faction)
+                Express("You are aggressor against ", game.CurrentBattle!.Defender, " in ", game.CurrentBattle!.Territory, "! Please confirm your Battle Plan."),
+                Express("You are waiting for ", game.CurrentBattle!.Defender, " to defend ", game.CurrentBattle!.Territory, "..."), toMakePlan, latestBattleEvent);
+        if (game.CurrentBattle!.Defender == me.Faction)
             return Status(
-                Express("You must defend against ", game.CurrentBattle.Aggressor, " in ", game.CurrentBattle.Territory, "! Please confirm your Battle Plan."),
-                Express("You are waiting for ", game.CurrentBattle.Aggressor, " to attack ", game.CurrentBattle.Territory, "..."), toMakePlan, latestBattleEvent);
+                Express("You must defend against ", game.CurrentBattle!.Aggressor, " in ", game.CurrentBattle!.Territory, "! Please confirm your Battle Plan."),
+                Express("You are waiting for ", game.CurrentBattle!.Aggressor, " to attack ", game.CurrentBattle!.Territory, "..."), toMakePlan, latestBattleEvent);
         return Status(
-            Express(game.CurrentBattle.Defender, " are defending against ", game.CurrentBattle.Aggressor, " aggression in ", game.CurrentBattle.Territory, "..."), toMakePlan, latestBattleEvent);
+            Express(game.CurrentBattle!.Defender, " are defending against ", game.CurrentBattle!.Aggressor, " aggression in ", game.CurrentBattle!.Territory, "..."), toMakePlan, latestBattleEvent);
     }
 
     private static List<Player> PlayersThatHaveNotActedOrPassed(Game game) 
@@ -621,16 +625,16 @@ public class GameStatus
     private static List<Player> PlayersThatNeedToMakeABattlePlan(Game game)
     {
         var result = new List<Player>();
-        if (game.AggressorPlan == null) result.Add(game.CurrentBattle.AggressivePlayer);
-        if (game.DefenderPlan == null) result.Add(game.CurrentBattle.DefendingPlayer);
+        if (game.AggressorPlan == null) result.Add(game.CurrentBattle!.AggressivePlayer!);
+        if (game.DefenderPlan == null) result.Add(game.CurrentBattle!.DefendingPlayer!);
         return result;
     }
 
     private static List<Player> PlayersThatNeedToCallTraitor(Game game)
     {
         var result = new List<Player>();
-        if (game.AggressorTraitorAction == null) result.Add(game.CurrentBattle.AggressivePlayer);
-        if (game.DefenderTraitorAction == null) result.Add(game.CurrentBattle.DefendingPlayer);
+        if (game.AggressorTraitorAction == null) result.Add(game.CurrentBattle!.AggressivePlayer!);
+        if (game.DefenderTraitorAction == null) result.Add(game.CurrentBattle!.DefendingPlayer!);
         return result;
     }
 
@@ -659,7 +663,7 @@ public class GameStatus
         => new(messageWhenAwaited, messageWhenWaiting, waitingInSequence, timedEvent);
 
     private static GameStatus Status(Game game, string messageWhenAwaited, string messageWhenWaiting, List<Faction> waitingForFactions, GameEvent? timedEvent = null) 
-        => new(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), waitingForFactions.Select(f => game.GetPlayer(f)).ToList(), timedEvent);
+        => new(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), waitingForFactions.Select(f => game.GetPlayer(f)).OfType<Player>().ToList(), timedEvent);
 
     private static GameStatus Status(string messageWhenAwaited, string messageWhenWaiting, Player? waitingForPlayer, GameEvent? timedEvent = null) 
         => new(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), waitingForPlayer, timedEvent);
@@ -755,7 +759,7 @@ public class GameStatus
                 }
                 case Milestone.Karma when latestEvent is Bid:
                 {
-                    if (g.TreacheryDiscardPile.Top != null) 
+                    if (g.TreacheryDiscardPile!.Top != null) 
                         Flash(result, Message.Express("Card was won using ", TreacheryCardType.Karma), g.TreacheryDiscardPile.Top);
                     
                     break;
@@ -772,7 +776,7 @@ public class GameStatus
                 }
                 case Milestone.Resource:
                 {
-                    ResourceCard cardToShow;
+                    ResourceCard? cardToShow;
 
                     if (nrOfSpiceBlows == 2)
                     {
@@ -788,7 +792,8 @@ public class GameStatus
                     }
                     else
                     {
-                        if (g.Applicable(Rule.IncreasedResourceFlow) && (g.CurrentPhase == Phase.AllianceB || g.CurrentPhase == Phase.HarvesterB || g.CurrentPhase == Phase.BlowReport))
+                        if (g.Applicable(Rule.IncreasedResourceFlow) 
+                            && g.CurrentPhase is Phase.AllianceB or Phase.HarvesterB or Phase.BlowReport)
                             cardToShow = g.LatestSpiceCardB;
                         else
                             cardToShow = g.LatestSpiceCardA;
@@ -809,7 +814,7 @@ public class GameStatus
         flashes.Add(new FlashInfo { Message = message, ToShow = toShow});
     }
 
-    private static void Flash(IList<FlashInfo> flashes, GameEvent e)
+    private static void Flash(IList<FlashInfo> flashes, GameEvent? e)
     {
         if (e == null)
             return;
@@ -817,9 +822,9 @@ public class GameStatus
         switch (e)
         {
             case TreacheryCalled t:
-                var victim = e.Game.CurrentBattle.OpponentOf(t.Initiator);
-                var victimPlan = e.Game.CurrentBattle.PlanOf(victim);
-                Flash(flashes, Message.Express(victimPlan.Hero, " is a ", t.Initiator, " traitor!"), victimPlan.Hero);
+                var victim = e.Game.CurrentBattle!.OpponentOf(t.Initiator);
+                var victimPlan = e.Game.CurrentBattle!.PlanOf(victim);
+                Flash(flashes, Message.Express(victimPlan?.Hero, " is a ", t.Initiator, " traitor!"), victimPlan!.Hero);
                 break;
 
             case FaceDanced:
@@ -841,14 +846,16 @@ public class GameStatus
 
     private static void Flash(IList<FlashInfo> flashes, GameEvent e, TreacheryCardType t)
     {
-        if (e.Game.TreacheryDiscardPile.Top?.Type == t || (t == TreacheryCardType.Karma && e.Game.TreacheryDiscardPile.Top?.Type == TreacheryCardType.Useless))
+        if (e.Game.TreacheryDiscardPile!.Top!.Type == t || (t == TreacheryCardType.Karma && e.Game.TreacheryDiscardPile.Top.Type == TreacheryCardType.Useless))
             Flash(flashes, e.GetMessage(), e.Game.TreacheryDiscardPile.Top);
         else
             Flash(flashes, e.GetMessage(), TreacheryCardManager.GetCardsInAndOutsidePlay().First(card => card.Type == t));
     }
 
     private static void Flash(IList<FlashInfo> flashes, GameEvent e, LeaderSkill s) 
-        => Flash(flashes, s == LeaderSkill.Decipherer ? Message.Express(e.Initiator, " use their ", s, " skill") : e?.GetMessage(), s);
+        => Flash(flashes, s == LeaderSkill.Decipherer 
+            ? Message.Express(e.Initiator, " use their ", s, " skill") 
+            : e.GetMessage(), s);
 
     private static void Flash(IList<FlashInfo> flashes, Faction f) 
         => Flash(flashes, Message.Express("You play ", f), f);
@@ -858,6 +865,6 @@ public class GameStatus
 }
 public struct FlashInfo
 {
-    public object ToShow { get; init; }
+    public object? ToShow { get; init; }
     public Message Message { get; init; }
 }

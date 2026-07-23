@@ -55,8 +55,8 @@ public class AllianceOffered : GameEvent
         {
             Game.MakeAlliance(Initiator, Target);
 
-            AllianceOffered invalidOffer;
-            while ((invalidOffer = Game.CurrentAllianceOffers.FirstOrDefault(x => x.By(Initiator) || x.Initiator == Target)) != null) Game.CurrentAllianceOffers.Remove(invalidOffer);
+            while (Game.CurrentAllianceOffers.FirstOrDefault(x => x.By(Initiator) || x.Initiator == Target) is { } invalidOffer) 
+                Game.CurrentAllianceOffers.Remove(invalidOffer);
 
             if (Game.Version > 150)
             {

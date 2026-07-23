@@ -32,7 +32,7 @@ public class ResidualPlayed : GameEvent
 
     public static bool MayPlay(Game g, Player p)
     {
-        return g.CurrentBattle.IsAggressorOrDefender(p) && p.TreacheryCards.Any(c => c.Type == TreacheryCardType.Residual);
+        return g.CurrentBattle!.IsAggressorOrDefender(p) && p.TreacheryCards.Any(c => c.Type == TreacheryCardType.Residual);
     }
 
     #endregion Validation

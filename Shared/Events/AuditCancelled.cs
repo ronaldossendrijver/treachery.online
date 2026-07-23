@@ -59,7 +59,7 @@ public class AuditCancelled : GameEvent
     public static IEnumerable<TreacheryCard> GetCardsThatMayBeAudited(Game g)
     {
         var auditee = g.Auditee;
-        var recentBattlePlan = g.CurrentBattle.PlanOf(auditee);
+        var recentBattlePlan = g.CurrentBattle!.PlanOf(auditee);
         if (recentBattlePlan != null)
             return auditee.TreacheryCards.Where(c => c != recentBattlePlan.Weapon && c != recentBattlePlan.Defense && c != recentBattlePlan.Hero);
         return Array.Empty<TreacheryCard>();

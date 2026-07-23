@@ -47,7 +47,7 @@ public class TreacheryCalled : GameEvent
     public static bool MayCallTreachery(Game g, Player p)
     {
         if (g.AggressorPlan != null && g.DefenderPlan != null)
-            if (!g.CurrentBattle.Territory.IsHomeworld || p.IsNative(g.CurrentBattle.Territory))
+            if (!g.CurrentBattle!.Territory!.IsHomeworld || p.IsNative(g.CurrentBattle.Territory))
             {
                 if (!g.DefenderPlan.Messiah)
                     if ((g.AggressorPlan.Initiator == p.Faction && HasTraitor(g, p, g.DefenderPlan.Hero)) ||

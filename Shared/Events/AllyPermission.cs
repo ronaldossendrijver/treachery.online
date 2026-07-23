@@ -78,7 +78,7 @@ public class AllyPermission : GameEvent
     public int _permittedKarmaCardId;
 
     [JsonIgnore]
-    public TreacheryCard PermittedKarmaCard
+    public TreacheryCard? PermittedKarmaCard
     {
         get => TreacheryCardManager.Lookup.Find(_permittedKarmaCardId);
         set => _permittedKarmaCardId = TreacheryCardManager.GetId(value);
@@ -149,7 +149,7 @@ public class AllyPermission : GameEvent
         }
 
         Game.PermittedUseOfAllySpice[ally] = PermittedResources;
-        Game.PermittedUseOfAllyKarma[ally] = PermittedKarmaCard;
+        if (PermittedKarmaCard != null) Game.PermittedUseOfAllyKarma[ally] = PermittedKarmaCard;
     }
 
     public override Message GetMessage()

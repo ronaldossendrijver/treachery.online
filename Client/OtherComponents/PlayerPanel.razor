@@ -79,7 +79,7 @@
                                 <Image Src=@Client.CurrentSkin.GetImageUrl(v) Blurred="@ShownPlayer.RevealedFaceDancers.Contains(v)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
                             }
                         }
-                        else if (!Client.Game.AssistedNotekeepingEnabled(Player) && ShownPlayer.Traitors.Count == 1)
+                        else if (!Client.Game.AssistedNoteKeepingEnabled(Player) && ShownPlayer.Traitors.Count == 1)
                         {
                             <div>
                                 <Image Src="@Client.CurrentSkin.GetImageUrl(ShownPlayer.Traitors.First())" 

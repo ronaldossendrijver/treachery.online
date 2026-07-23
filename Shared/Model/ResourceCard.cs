@@ -9,21 +9,16 @@
 
 namespace Treachery.Shared;
 
-public class ResourceCard
+public class ResourceCard(int skinId)
 {
-    public bool IsSandTrout { get; set; } = false;
-    public bool IsGreatMaker { get; set; } = false;
+    public bool IsSandTrout { get; set; }
+    public bool IsGreatMaker { get; set; }
 
-    public int SkinId { get; private set; }
+    public int SkinId { get; private set; } = skinId;
 
-    public Location Location { get; set; } = null;
+    public Location? Location { get; set; }
 
-    public Location DiscoveryLocation { get; set; } = null;
-
-    public ResourceCard(int skinId)
-    {
-        SkinId = skinId;
-    }
+    public Location? DiscoveryLocation { get; set; }
 
     public bool IsShaiHulud => Location == null && !IsSandTrout && !IsGreatMaker;
 
@@ -31,12 +26,13 @@ public class ResourceCard
 
     public bool IsDiscovery => DiscoveryLocation != null;
 
-    public Territory Territory => Location?.Territory;
+    public Territory? Territory => Location?.Territory;
 
     public override string ToString()
     {
         if (Message.DefaultDescriber != null)
             return Message.DefaultDescriber.Describe(this) + "*";
-        return base.ToString();
+        
+        return base.ToString() ?? string.Empty;
     }
 }

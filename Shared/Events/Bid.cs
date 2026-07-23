@@ -34,9 +34,9 @@ public class Bid : PassableGameEvent, IBid
     public bool UsesRedSecretAlly { get; set; }
 
     public int _karmaCardId = -1;
-
+    
     [JsonIgnore]
-    public TreacheryCard KarmaCard
+    public TreacheryCard? KarmaCard
     {
         get => TreacheryCardManager.Lookup.Find(_karmaCardId);
         set => _karmaCardId = TreacheryCardManager.GetId(value);
@@ -48,13 +48,14 @@ public class Bid : PassableGameEvent, IBid
     /// <summary>
     /// This indicates Karma was used to remove the bid amount limit
     /// </summary>
+    [MemberNotNullWhen(true, nameof(KarmaCard))]
     [JsonIgnore]
     public bool UsingKarmaToRemoveBidLimit => KarmaCard != null && !KarmaBid;
 
     /// <summary>
     /// This indicates the card is won immediately
     /// </summary>
-    public bool KarmaBid { get; set; } = false;
+    public bool KarmaBid { get; set; }
 
     #endregion
 
@@ -80,10 +81,10 @@ public class Bid : PassableGameEvent, IBid
         if (AllyContributionAmount > ValidMaxAllyAmount(Game, Player)) return Message.Express("your ally won't pay that much");
 
         var red = Game.GetPlayer(Faction.Red);
-        if (RedContributionAmount > 0 && RedContributionAmount > red.Resources) return Message.Express(Faction.Red, " won't pay that much");
+        if (RedContributionAmount > 0 && RedContributionAmount > (red?.Resources ?? 0)) return Message.Express(Faction.Red, " won't pay that much");
 
         if (!UsingKarmaToRemoveBidLimit && Amount > Player.Resources) return Message.Express("You can't pay ", Payment.Of(Amount));
-        if (KarmaCard != null && !Karma.ValidKarmaCards(Game, p).Contains(KarmaCard)) return Message.Express("Invalid ", TreacheryCardType.Karma, " card");
+        if (KarmaCard != null && (p == null || !Karma.ValidKarmaCards(Game, p).Contains(KarmaCard))) return Message.Express("Invalid ", TreacheryCardType.Karma, " card");
 
         if (UsesRedSecretAlly && !MayUseRedSecretAlly(Game, Player)) return Message.Express("You can't use ", Faction.Red, " cunning");
 
@@ -99,37 +100,41 @@ public class Bid : PassableGameEvent, IBid
         return p.Resources;
     }
 
-    public static int ValidMaxAllyAmount(Game g, Player p)
+    public static int ValidMaxAllyAmount(Game g, Player? p)
     {
+        if (p == null) return 0;
         return g.ResourcesYourAllyCanPay(p);
     }
 
     public static IEnumerable<SequenceElement> PlayersToBid(Game g)
     {
+        var sequencePlayers = g.BidSequence?.GetPlayersInSequence() ?? Array.Empty<SequenceElement>();
         return g.CurrentAuctionType switch
         {
-            AuctionType.Normal or AuctionType.WhiteOnceAround => g.BidSequence.GetPlayersInSequence(),
+            AuctionType.Normal or AuctionType.WhiteOnceAround => sequencePlayers,
             AuctionType.WhiteSilent => g.Players.Select(p => new SequenceElement { Player = p, HasTurn = p.HasRoomForCards && !g.Bids.Keys.Contains(p.Faction) }),
             _ => Array.Empty<SequenceElement>()
         };
     }
 
-    public static IEnumerable<TreacheryCard> ValidKarmaCards(Game g, Player p)
+    public static IEnumerable<TreacheryCard> ValidKarmaCards(Game g, Player? p)
     {
+        if (p == null) return Array.Empty<TreacheryCard>();
         if (g.CurrentAuctionType == AuctionType.Normal)
             return Karma.ValidKarmaCards(g, p);
         return Array.Empty<TreacheryCard>();
     }
 
-    public static bool CanKarma(Game g, Player p)
+    public static bool CanKarma(Game g, Player? p)
     {
         return ValidKarmaCards(g, p).Any();
     }
 
-    public static bool MayBePlayed(Game game, Player player)
+    public static bool MayBePlayed(Game game, Player? player)
     {
+        if (player == null) return false;
         return (game.CurrentAuctionType == AuctionType.WhiteSilent && !game.Bids.ContainsKey(player.Faction) && player.HasRoomForCards) ||
-               (game.CurrentAuctionType != AuctionType.WhiteSilent && player == game.BidSequence.CurrentPlayer);
+               (game.CurrentAuctionType != AuctionType.WhiteSilent && player == game.BidSequence?.CurrentPlayer);
     }
 
     public static bool MayUseRedSecretAlly(Game game, Player player)
@@ -150,7 +155,7 @@ public class Bid : PassableGameEvent, IBid
         while (playerToBidWithPassNormalBid != null)
         {
             Game.ExecuteBid(new Bid(Game, playerToBidWithPassNormalBid.Faction) { Passed = true });
-            playerToBidWithPassNormalBid = Game.Players.FirstOrDefault(p => MayBePlayed(Game, p) && Game.IsAutoPassedBid(p.Faction));;
+            playerToBidWithPassNormalBid = Game.Players.FirstOrDefault(p => MayBePlayed(Game, p) && Game.IsAutoPassedBid(p.Faction));
         }
     }
 
@@ -164,10 +169,8 @@ public class Bid : PassableGameEvent, IBid
                 var card = WinWithKarma(this);
                 Game.FinishBid(Player, this, card, true);
             }
-            else if (Game.CurrentBid != null && Game.BidSequence.CurrentFaction == Game.CurrentBid.Initiator)
+            else if (Game.CurrentBid is Bid winningBid && Game.BidSequence?.CurrentFaction == Game.CurrentBid.Initiator)
             {
-                var winningBid = Game.CurrentBid as Bid;
-
                 if (winningBid.UsingKarmaToRemoveBidLimit)
                 {
                     //Karma was used to bid any amount
@@ -177,6 +180,8 @@ public class Bid : PassableGameEvent, IBid
                 }
                 else
                 {
+                    if (Game.CardsOnAuction == null) return;
+
                     var receiver = Faction.Red;
                     var card = Game.WinByHighestBid(
                         winningBid.Player,
@@ -191,13 +196,15 @@ public class Bid : PassableGameEvent, IBid
                     Game.FinishBid(winningBid.Player, winningBid, card, true);
                 }
             }
-            else if (Game.CurrentBid == null && Game.Bids.Count >= Game.PlayersThatCanBid.Count())
+            else if (Game.CurrentBid == null && Game.Bids.Count >= (Game.PlayersThatCanBid.Count()))
             {
                 EveryonePassedBid();
             }
         }
-        else if (Game.BidSequence.CurrentFaction == Initiator)
+        else if (Game.BidSequence?.CurrentFaction == Initiator)
         {
+            if (Game.CardsOnAuction == null || Game.CurrentBid == null) return;
+
             var card = BidWonByOnlyPlayer(this, Faction.Red, Game.CardsOnAuction);
             Game.FinishBid(Game.CurrentBid.Player, this, card, true);
         }
@@ -206,6 +213,8 @@ public class Bid : PassableGameEvent, IBid
     private TreacheryCard WinWithKarma(Bid bid)
     {
         var winner = GetPlayer(bid.Initiator);
+        if (winner == null || bid.KarmaCard == null || Game.CardsOnAuction == null)
+            throw new InvalidOperationException("Cannot resolve karma bid winner or auction deck");
         var karmaCard = bid.KarmaCard;
 
         Game.Discard(karmaCard);
@@ -231,11 +240,14 @@ public class Bid : PassableGameEvent, IBid
         Log("Bid is passed by everyone; bidding ends and remaining cards are returned to the Treachery Deck");
         Game.Stone(Milestone.AuctionWon);
 
+        if (Game.CardsOnAuction == null) return;
+
         while (!Game.CardsOnAuction.IsEmpty)
         {
             if (Game.Version >= 131) Game.CardsOnAuction.Shuffle();
 
-            Game.TreacheryDeck.PutOnTop(Game.CardsOnAuction.Draw());
+            var card = Game.CardsOnAuction.Draw();
+            Game.TreacheryDeck!.PutOnTop(card);
         }
 
         Game.EndBiddingPhase();
@@ -245,6 +257,7 @@ public class Bid : PassableGameEvent, IBid
     {
         Game.CurrentBid = bid;
         var winner = GetPlayer(Game.CurrentBid.Initiator);
+        if (winner == null) throw new InvalidOperationException("Cannot resolve winner for single-player bid");
         var receiverIncomeMessage = MessagePart.Express();
 
         if (!bid.UsesRedSecretAlly)
@@ -269,44 +282,52 @@ public class Bid : PassableGameEvent, IBid
 
     public void HandleWhiteBid()
     {
+        var bidSequenceHasPassedWhite = Game.BidSequence?.HasPassedWhite == true;
+        var whiteHasNoRoom = GetPlayer(Faction.White)?.HasRoomForCards == false;
+
         var isLastBid = Game.Version < 140 ? Game.Players.Count(p => p.HasRoomForCards) == Game.Bids.Count :
             (Game.CurrentAuctionType == AuctionType.WhiteSilent && Game.Players.Count(p => p.HasRoomForCards) == Game.Bids.Count) ||
-            (Game.Version < 151 && ((Game.CurrentAuctionType == AuctionType.WhiteOnceAround && Initiator == Faction.White) || (!GetPlayer(Faction.White).HasRoomForCards && Game.BidSequence.HasPassedWhite))) ||
-            (Game.Version >= 151 && Game.CurrentAuctionType == AuctionType.WhiteOnceAround && (Initiator == Faction.White || (!GetPlayer(Faction.White).HasRoomForCards && Game.BidSequence.HasPassedWhite)));
+            (Game.Version < 151 && ((Game.CurrentAuctionType == AuctionType.WhiteOnceAround && Initiator == Faction.White) || (whiteHasNoRoom && bidSequenceHasPassedWhite))) ||
+            (Game.Version >= 151 && Game.CurrentAuctionType == AuctionType.WhiteOnceAround && (Initiator == Faction.White || (whiteHasNoRoom && bidSequenceHasPassedWhite)));
 
         if (isLastBid)
         {
             if (Game.CurrentAuctionType == AuctionType.WhiteSilent) Log("Bids: ", Game.Bids.Select(b => MessagePart.Express(b.Key, Payment.Of(b.Value.TotalAmount), " ")).ToList());
 
             var highestBid = Game.DetermineHighestBid(Game.Bids);
-            if (highestBid != null && highestBid.TotalAmount > 0)
+            if (highestBid is { TotalAmount: > 0 } winningBid)
             {
-                var card = Game.WinByHighestBid(
-                    highestBid.Player,
-                    highestBid,
-                    highestBid.Amount,
-                    highestBid.AllyContributionAmount,
-                    highestBid.RedContributionAmount,
-                    highestBid.Initiator != Faction.White ? Faction.White : Faction.Red,
-                    Game.CardsOnAuction, false);
+                var cardsOnAuction = Game.CardsOnAuction;
+                if (cardsOnAuction == null) return;
 
-                Game.FinishBid(highestBid.Player, highestBid, card, true);
+                var card = Game.WinByHighestBid(
+                    winningBid.Player,
+                    winningBid,
+                    winningBid.Amount,
+                    winningBid.AllyContributionAmount,
+                    winningBid.RedContributionAmount,
+                    winningBid.Initiator != Faction.White ? Faction.White : Faction.Red,
+                    cardsOnAuction, false);
+
+                Game.FinishBid(winningBid.Player, winningBid, card, true);
             }
             else
             {
                 Log("Card not sold as no faction bid on it");
                 var white = GetPlayer(Faction.White);
-                if (white.HasRoomForCards)
+                if (white?.HasRoomForCards == true)
                 {
                     Game.Enter(Phase.WhiteKeepingUnsoldCard);
                 }
                 else
                 {
-                    var card = Game.CardsOnAuction.Draw();
+                    var cardsOnAuction = Game.CardsOnAuction;
+                    if (cardsOnAuction == null) return;
+                    var card = cardsOnAuction.Draw();
                     Game.RemovedTreacheryCards.Add(card);
                     Game.RegisterWonCardAsKnown(card);
                     Log(card, " was removed from the game");
-                    Game.FinishBid(null, null, card, Game.Version < 152);
+                    Game.FinishBid(null!, null!, card, Game.Version < 152);
                 }
             }
         }
@@ -314,14 +335,11 @@ public class Bid : PassableGameEvent, IBid
 
     public override Message GetMessage()
     {
-        if (!Passed)
-        {
-            if (KarmaBid)
-                return Message.Express(Initiator, " win the bid using ", TreacheryCardType.Karma);
-            return Message.Express(Initiator, " bid");
-        }
-
-        return Message.Express(Initiator, " pass");
+        if (Passed) return Message.Express(Initiator, " pass");
+        
+        return KarmaBid 
+            ? Message.Express(Initiator, " win the bid using ", TreacheryCardType.Karma) 
+            : Message.Express(Initiator, " bid");
     }
 
     #endregion

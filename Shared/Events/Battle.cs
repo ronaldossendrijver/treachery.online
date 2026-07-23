@@ -98,10 +98,10 @@ public class Battle : GameEvent
     public bool HasReinforcements => (Weapon != null && Weapon.Type == TreacheryCardType.Reinforcements) || (Defense != null && Defense.Type == TreacheryCardType.Reinforcements);
 
     [JsonIgnore] 
-    private TreacheryCard OriginalWeapon { get; set; }
+    private TreacheryCard? OriginalWeapon { get; set; }
 
     [JsonIgnore] 
-    private TreacheryCard OriginalDefense { get; set; }
+    private TreacheryCard? OriginalDefense { get; set; }
 
     [JsonIgnore]
     public bool HasRockMelter => Weapon != null && Weapon.IsRockMelter;
@@ -115,14 +115,20 @@ public class Battle : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
+        if (Game.CurrentBattle is null) throw new Exception("Battle event executed when there is no current battle");
+        
         if (Initiator == Game.CurrentBattle.Aggressor)
             Game.AggressorPlan = this;
         else if (Initiator == Game.CurrentBattle.Defender) Game.DefenderPlan = this;
 
-        if (Game.AggressorPlan != null && Game.DefenderPlan != null)
+        if (Game is { AggressorPlan: not null, DefenderPlan: not null })
         {
-            Game.RevealCurrentNoField(DetermineForceSupplier(Game, Game.AggressorPlan.Player), Game.CurrentBattle.Territory);
-            Game.RevealCurrentNoField(DetermineForceSupplier(Game, Game.DefenderPlan.Player), Game.CurrentBattle.Territory);
+            var battleTerritory = Game.CurrentBattle.Territory;
+            if (battleTerritory != null)
+            {
+                Game.RevealCurrentNoField(DetermineForceSupplier(Game, Game.AggressorPlan.Player), battleTerritory);
+                Game.RevealCurrentNoField(DetermineForceSupplier(Game, Game.DefenderPlan.Player), battleTerritory);
+            }
 
             Log(Game.AggressorPlan.GetBattlePlanMessage());
             Log(Game.DefenderPlan.GetBattlePlanMessage());
@@ -138,15 +144,18 @@ public class Battle : GameEvent
 
     private void RegisterKnownCards(Battle battle)
     {
-        Game.RegisterKnown(battle.Weapon);
-        Game.RegisterKnown(battle.Defense);
+        if (battle.Weapon != null) Game.RegisterKnown(battle.Weapon);
+        if (battle.Defense != null) Game.RegisterKnown(battle.Defense);
     }
 
     private void PassPurpleTraitorAction()
     {
-        if (Game.CurrentBattle.Aggressor == Faction.Purple && (GetPlayer(Faction.Purple).Ally != Faction.Black || Game.Prevented(FactionAdvantage.BlackCallTraitorForAlly)))
+        if (Game.CurrentBattle is null) throw new Exception("Battle event executed when there is no current battle");
+        
+        if (Game.CurrentBattle.Aggressor == Faction.Purple && (GetPlayer(Faction.Purple)?.Ally != Faction.Black || Game.Prevented(FactionAdvantage.BlackCallTraitorForAlly)))
             Game.AggressorTraitorAction = new TreacheryCalled(Game, Faction.Purple) { TraitorCalled = false };
-        else if (Game.CurrentBattle.Defender == Faction.Purple && (GetPlayer(Faction.Purple).Ally != Faction.Black || Game.Prevented(FactionAdvantage.BlackCallTraitorForAlly))) Game.DefenderTraitorAction = new TreacheryCalled(Game, Faction.Purple) { TraitorCalled = false };
+        else if (Game.CurrentBattle.Defender == Faction.Purple && (GetPlayer(Faction.Purple)?.Ally != Faction.Black || Game.Prevented(FactionAdvantage.BlackCallTraitorForAlly))) 
+            Game.DefenderTraitorAction = new TreacheryCalled(Game, Faction.Purple) { TraitorCalled = false };
     }
 
     public override Message GetMessage()
@@ -161,7 +170,7 @@ public class Battle : GameEvent
             " Plan → leader: ",
             Hero,
             ", dial: ",
-            Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction),
+            Dial(Game, Game.CurrentBattle!.OpponentOf(Initiator)!.Faction),
             MessagePart.ExpressIf(Game.Applicable(Rule.AdvancedCombat), Payment.Of(Cost(Game))),
             MessagePart.ExpressIf(AllyContributionAmount > 0, " (", Payment.Of(AllyContributionAmount, Player.Ally), ")"),
             ", weapon: ",
@@ -170,7 +179,7 @@ public class Battle : GameEvent
             Defense);
     }
 
-    private void ActivateDynamicWeapons(IHero hero, TreacheryCard opponentWeapon, TreacheryCard opponentDefense)
+    private void ActivateDynamicWeapons(IHero hero, TreacheryCard? opponentWeapon, TreacheryCard? opponentDefense)
     {
         if (Weapon is { Type: TreacheryCardType.MirrorWeapon })
         {
@@ -184,6 +193,7 @@ public class Battle : GameEvent
             if (Defense is { IsUseless: true } &&
                 Game.SkilledAs(hero, LeaderSkill.Diplomat) &&
                 opponentDefense != null && opponentWeapon != null &&
+                Weapon != null &&
                 (opponentWeapon.CounteredBy(opponentDefense, Weapon) ||
                  (opponentWeapon.IsArtillery && opponentDefense.IsShield)))
             {
@@ -203,7 +213,7 @@ public class Battle : GameEvent
         if (IsUsingPortableAntidote(Game, Initiator))
         {
             OriginalDefense = Defense;
-            Defense = Game.TreacheryDiscardPile.Items.FirstOrDefault(c => c.IsPortableAntidote);
+            Defense = Game.TreacheryDiscardPile!.Items.FirstOrDefault(c => c.IsPortableAntidote);
         }
     }
 
@@ -258,20 +268,20 @@ public class Battle : GameEvent
         var poisonToothUsed = !game.PoisonToothCancelled && (agg.HasPoisonTooth || def.HasPoisonTooth);
         var artilleryUsed = agg.HasArtillery || def.HasArtillery;
         var rockMelterUsed = agg.HasRockMelter || def.HasRockMelter;
-        var rockMelterUsedToKill = game.CurrentRockWasMelted != null && game.CurrentRockWasMelted.Kill;
+        var rockMelterUsedToKill = game.CurrentRockWasMelted is { Kill: true };
 
         result.AggHeroKilled = false;
         result.AggHeroCauseOfDeath = TreacheryCardType.None;
 
         DetermineCauseOfDeath(
             agg, def, agg.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, game.IsProtectedByCarthagAdvantage(agg, territory),
-            ref result.AggHeroKilled, ref result.AggHeroCauseOfDeath, ref result.AggSavedByCarthag);
+            out result.AggHeroKilled, out result.AggHeroCauseOfDeath, out result.AggSavedByCarthag);
 
         result.DefHeroKilled = false;
         result.DefHeroCauseOfDeath = TreacheryCardType.None;
         DetermineCauseOfDeath(
             def, agg, def.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, game.IsProtectedByCarthagAdvantage(def, territory),
-            ref result.DefHeroKilled, ref result.DefHeroCauseOfDeath, ref result.DefSavedByCarthag);
+            out result.DefHeroKilled, out result.DefHeroCauseOfDeath, out result.DefSavedByCarthag);
 
         var heroStrengthCountsToTotal = !artilleryUsed && !(game.Version >= 145 && rockMelterUsed && !rockMelterUsedToKill);
 
@@ -282,11 +292,11 @@ public class Battle : GameEvent
         {
             result.AggHeroSkillBonus = DetermineSkillBonus(game, agg, ref result.AggActivatedBonusSkill);
             result.AggBattlePenalty = !result.DefHeroKilled ? DetermineSkillPenalty(game, def, result.Aggressor, ref result.DefActivatedPenaltySkill) : 0;
-            result.AggMessiahContribution = agg.Messiah && agg.Hero != null ? 2 : 0;
+            result.AggMessiahContribution = agg is { Messiah: true, Hero: not null } ? 2 : 0;
 
             result.DefHeroSkillBonus = DetermineSkillBonus(game, def, ref result.DefActivatedBonusSkill);
             result.DefBattlePenalty = !result.AggHeroKilled ? DetermineSkillPenalty(game, agg, result.Defender, ref result.AggActivatedPenaltySkill) : 0;
-            result.DefMessiahContribution = def.Messiah && def.Hero != null ? 2 : 0;
+            result.DefMessiahContribution = def is { Messiah: true, Hero: not null } ? 2 : 0;
         }
         
         var aggHeroContribution = result.AggHeroKilled || (game.Version < 145 && rockMelterUsed) ? 0 : result.AggHeroEffectiveStrength + result.AggHeroSkillBonus + result.AggMessiahContribution - (game.Version < 164 ? result.AggBattlePenalty : 0);
@@ -314,11 +324,15 @@ public class Battle : GameEvent
         }
         else
         {
+            var pink = game.GetPlayer(Faction.Pink);
+            
             result.AggTotal = result.AggUndialedForces;
-            if (result.Aggressor.Faction == game.CurrentPinkOrAllyFighter) result.AggTotal += (int)Math.Ceiling(0.5f * game.GetPlayer(Faction.Pink).AnyForcesIn(territory));
+            if (result.Aggressor.Faction == game.CurrentPinkOrAllyFighter) 
+                result.AggTotal += (int)Math.Ceiling(0.5f * (pink?.AnyForcesIn(territory) ?? 0));
 
             result.DefTotal = result.DefUndialedForces;
-            if (result.Defender.Faction == game.CurrentPinkOrAllyFighter) result.DefTotal += (int)Math.Ceiling(0.5f * game.GetPlayer(Faction.Pink).AnyForcesIn(territory));
+            if (result.Defender.Faction == game.CurrentPinkOrAllyFighter) 
+                result.DefTotal += (int)Math.Ceiling(0.5f * (pink?.AnyForcesIn(territory) ?? 0));
         }
 
         agg.DeactivateDynamicWeapons();
@@ -340,7 +354,7 @@ public class Battle : GameEvent
         return result;
     }
 
-    private static void DetermineCauseOfDeath(Battle playerPlan, Battle opponentPlan, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, bool isProtectedByCarthagAdvantage, ref bool heroDies, ref TreacheryCardType causeOfDeath, ref bool savedByCarthag)
+    private static void DetermineCauseOfDeath(Battle playerPlan, Battle opponentPlan, IHero? theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, bool isProtectedByCarthagAdvantage, out bool heroDies, out TreacheryCardType causeOfDeath, out bool savedByCarthag)
     {
         heroDies = false;
         causeOfDeath = TreacheryCardType.None;
@@ -354,7 +368,7 @@ public class Battle : GameEvent
         DetermineDeathBy(theHero, TreacheryCardType.Projectile, opponentPlan.HasProjectile && !playerPlan.HasProjectileDefense, ref heroDies, ref causeOfDeath);
     }
 
-    private static void DetermineDeathBy(IHero hero, TreacheryCardType byWeapon, bool weaponHasEffect, ref bool heroIsKilled, ref TreacheryCardType causeOfDeath)
+    private static void DetermineDeathBy(IHero? hero, TreacheryCardType byWeapon, bool weaponHasEffect, ref bool heroIsKilled, ref TreacheryCardType causeOfDeath)
     {
         if (!heroIsKilled && hero != null && weaponHasEffect)
         {
@@ -380,35 +394,35 @@ public class Battle : GameEvent
         if (Hero != null && !ValidBattleHeroes(Game, p).Contains(Hero)) return Message.Express("Invalid leader");
         if (Weapon != null && Weapon == Defense) return Message.Express("Can't use the same card as weapon and defense");
         if (Hero == null && (Weapon != null || Defense != null)) return Message.Express("Can't use treachery cards without a leader");
-        if (Hero != null && Hero is Leader && !Game.CanFightIn(Hero, Game.CurrentBattle.Territory)) return Message.Express("Selected leader already fought in another territory");
+        if (Hero is Leader && Game.CurrentBattle!.Territory != null && !Game.CanFightIn(Hero, Game.CurrentBattle.Territory)) return Message.Express("Selected leader already fought in another territory");
         if (Hero == null && Messiah) return Message.Express("Can't use ", Concept.Messiah, " without a leader");
         if (Messiah && !MessiahMayBeUsedInBattle(Game, p)) return Message.Express(Concept.Messiah, " is not available");
-        if (Weapon == null && Defense != null && Defense.Type == TreacheryCardType.WeirdingWay) return Message.Express("You can't use ", TreacheryCardType.WeirdingWay, " as defense without using a weapon");
-        if (Defense == null && Weapon != null && Weapon.Type == TreacheryCardType.Chemistry) return Message.Express("You can't use ", TreacheryCardType.Chemistry, " as weapon without using a defense");
-        if (!ValidWeapons(Game, p, Defense, Hero, Game.CurrentBattle.Territory, true).Contains(Weapon)) return Message.Express("Invalid weapon");
+        if (Weapon == null && Defense is { Type: TreacheryCardType.WeirdingWay }) return Message.Express("You can't use ", TreacheryCardType.WeirdingWay, " as defense without using a weapon");
+        if (Defense == null && Weapon is { Type: TreacheryCardType.Chemistry }) return Message.Express("You can't use ", TreacheryCardType.Chemistry, " as weapon without using a defense");
+        if (!ValidWeapons(Game, p, Defense, Hero, Game.CurrentBattle!.Territory, true).Contains(Weapon)) return Message.Express("Invalid weapon");
         if (!ValidDefenses(Game, p, Weapon, Game.CurrentBattle.Territory, true).Contains(Defense)) return Message.Express("Invalid defense");
         if (Game.IsInFrontOfShield(Hero)) return Message.Express(Hero, " is currently in front of your player shield");
-        if (BankerBonus > 0 && !Game.SkilledAs(Hero, LeaderSkill.Banker)) return Message.Express("Only a leader skilled as ", LeaderSkill.Banker, " can be boosted by ", Concept.Resource);
+        if (Hero != null && BankerBonus > 0 && !Game.SkilledAs(Hero, LeaderSkill.Banker)) return Message.Express("Only a leader skilled as ", LeaderSkill.Banker, " can be boosted by ", Concept.Resource);
         if (BankerBonus > MaxBankerBoost(Game, Player, Hero)) return Message.Express("You cannot boost your leader this much");
         if (cost + BankerBonus > p.Resources + AllyContributionAmount) return Message.Express("You can't pay this ", LeaderSkill.Banker, " bonus");
 
         if (Hero != null &&
             AffectedByVoice(Game, Player, Game.CurrentVoice) &&
-            Game.CurrentVoice.Must &&
-            Game.CurrentVoice.Type != TreacheryCardType.Mercenary &&
-            p.TreacheryCards.Any(c => Voice.IsVoicedBy(Game, true, true, c.Type, Game.CurrentVoice.Type) || Voice.IsVoicedBy(Game, false, true, c.Type, Game.CurrentVoice.Type)) &&
-            (Weapon == null || !Voice.IsVoicedBy(Game, true, true, Weapon.Type, Game.CurrentVoice.Type)) && (Defense == null || !Voice.IsVoicedBy(Game, false, true, Defense.Type, Game.CurrentVoice.Type)))
-            return Message.Express("You must use a ", Game.CurrentVoice.Type);
+            Game.CurrentVoice is { Must: true } currentVoice &&
+            currentVoice.Type != TreacheryCardType.Mercenary &&
+            p.TreacheryCards.Any(c => Voice.IsVoicedBy(Game, true, true, c.Type, currentVoice.Type) || Voice.IsVoicedBy(Game, false, true, c.Type, currentVoice.Type)) &&
+            (Weapon == null || !Voice.IsVoicedBy(Game, true, true, Weapon.Type, currentVoice.Type)) && (Defense == null || !Voice.IsVoicedBy(Game, false, true, Defense.Type, currentVoice.Type)))
+            return Message.Express("You must use a ", currentVoice.Type);
 
         return null;
     }
 
     public static Player DetermineForceSupplier(Game g, Player playerThatFights)
     {
-        return playerThatFights.Is(Faction.Pink) && g.CurrentPinkOrAllyFighter != Faction.None &&
-               !g.Prevented(FactionAdvantage.PinkOccupation)
-            ? playerThatFights.AlliedPlayer
-            : playerThatFights;
+        if (playerThatFights.Is(Faction.Pink) && g.CurrentPinkOrAllyFighter != Faction.None && !g.Prevented(FactionAdvantage.PinkOccupation))
+            return playerThatFights.AlliedPlayer ?? playerThatFights;
+
+        return playerThatFights;
     }
 
     private static float ForceValue(Game g, Faction player, Faction opponent, int forces, int specialForces, int forcesAtHalfStrength, int specialForcesAtHalfStrength)
@@ -466,7 +480,7 @@ public class Battle : GameEvent
         return 1;
     }
 
-    public static float DetermineNormalForceNoSpiceFactor(Faction player)
+    private static float DetermineNormalForceNoSpiceFactor(Faction player)
     {
         if (player == Faction.Grey) return 1;
 
@@ -500,9 +514,10 @@ public class Battle : GameEvent
         return cost - paidByArrakeen;
     }
 
-    public static int CostReduction(Game g, Player p)
+    private static int CostReduction(Game g, Player p)
     {
-        return g.HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles, g.CurrentBattle?.Territory) ? 2 : 0;
+        return g.CurrentBattle?.Territory is not null 
+               && g.HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles, g.CurrentBattle.Territory) ? 2 : 0;
     }
 
     public static int NormalForceCost(Game g, Player p)
@@ -586,22 +601,19 @@ public class Battle : GameEvent
         return result;
     }
 
-    public static bool AffectedByVoice(Game g, Player p, Voice voice)
+    private static bool AffectedByVoice(Game g, Player p, Voice? voice)
     {
-        if (voice != null)
-        {
-            var opponent = g.CurrentBattle?.OpponentOf(p);
-            return opponent != null && (voice.Initiator == opponent.Faction || voice.Initiator == opponent.Ally);
-        }
+        if (voice == null) return false;
+        var opponent = g.CurrentBattle?.OpponentOf(p);
+        return opponent != null && (voice.Initiator == opponent.Faction || voice.Initiator == opponent.Ally);
 
-        return false;
     }
 
     public static IEnumerable<IHero> ValidBattleHeroes(Game g, Player p)
     {
         var affectedByVoice = AffectedByVoice(g, p, g.CurrentVoice);
-        var mustUseCheapHero = affectedByVoice && g.CurrentVoice.Must && g.CurrentVoice.Type == TreacheryCardType.Mercenary;
-        var mayNotUseCheapHero = affectedByVoice && g.CurrentVoice.MayNot && g.CurrentVoice.Type == TreacheryCardType.Mercenary;
+        var mustUseCheapHero = affectedByVoice && g.CurrentVoice is { Must: true, Type: TreacheryCardType.Mercenary };
+        var mayNotUseCheapHero = affectedByVoice && g.CurrentVoice is { MayNot: true, Type: TreacheryCardType.Mercenary };
 
         var result = new List<IHero>();
 
@@ -618,57 +630,54 @@ public class Battle : GameEvent
         return result;
     }
 
-    public static IEnumerable<TreacheryCard> ValidWeapons(Game g, Player p, TreacheryCard selectedDefense, IHero selectedHero, Territory territoryOfBattle, bool includingNone = false)
+    public static IEnumerable<TreacheryCard?> ValidWeapons(Game g, Player p, TreacheryCard? selectedDefense, IHero? selectedHero, Territory? territoryOfBattle, bool includingNone = false)
     {
-        List<TreacheryCard> result = null;
+        List<TreacheryCard?> result = [];
 
         if (!ValidBattleHeroes(g, p).Any())
         {
-            result = new List<TreacheryCard>();
             if (includingNone) result.Add(null);
             return result;
         }
 
         var playableWeapons = CardsPlayableAsWeapon(g, p, selectedDefense, territoryOfBattle,
-            selectedHero != null && g.SkilledAs(selectedHero, LeaderSkill.Planetologist));
+            selectedHero != null && g.SkilledAs(selectedHero, LeaderSkill.Planetologist)).ToArray();
 
         if (AffectedByVoice(g, p, g.CurrentVoice))
         {
-            if (g.CurrentVoice.Must)
+            if (g.CurrentVoice?.Must is true)
             {
                 if (selectedDefense != null && selectedDefense.Type == g.CurrentVoice.Type)
                 {
-                    result = playableWeapons.ToList();
+                    result.AddRange(playableWeapons);
                     if (includingNone) result.Add(null);
                 }
                 else if (playableWeapons.Any(w => Voice.IsVoicedBy(g, true, true, w.Type, g.CurrentVoice.Type)))
                 {
-                    result = playableWeapons.Where(w => Voice.IsVoicedBy(g, true, true, w.Type, g.CurrentVoice.Type)).ToList();
+                    result.AddRange(playableWeapons.Where(w => Voice.IsVoicedBy(g, true, true, w.Type, g.CurrentVoice.Type)));
                 }
             }
-            else if (g.CurrentVoice.MayNot)
+            else if (g.CurrentVoice?.MayNot is true)
             {
-                result = playableWeapons.Where(w => !Voice.IsVoicedBy(g, true, false, w.Type, g.CurrentVoice.Type)).ToList();
+                result.AddRange(playableWeapons.Where(w => !Voice.IsVoicedBy(g, true, false, w.Type, g.CurrentVoice.Type)));
                 if (includingNone) result.Add(null);
             }
         }
-
-        if (result == null)
+        else
         {
-            result = playableWeapons.ToList();
+            result.AddRange(playableWeapons);
             if (includingNone) result.Add(null);
         }
 
         return result;
     }
 
-    public static IEnumerable<TreacheryCard> ValidDefenses(Game g, Player p, TreacheryCard selectedWeapon, Territory territoryOfBattle, bool includingNone = false)
+    public static IEnumerable<TreacheryCard?> ValidDefenses(Game g, Player p, TreacheryCard? selectedWeapon, Territory? territoryOfBattle, bool includingNone = false)
     {
-        List<TreacheryCard> result = null;
+        List<TreacheryCard?> result = [];
 
         if (!ValidBattleHeroes(g, p).Any())
         {
-            result = new List<TreacheryCard>();
             if (includingNone) result.Add(null);
             return result;
         }
@@ -677,29 +686,27 @@ public class Battle : GameEvent
 
         if (AffectedByVoice(g, p, g.CurrentVoice))
         {
-            if (g.CurrentVoice.Must)
+            if (g.CurrentVoice!.Must)
             {
                 if (selectedWeapon != null && selectedWeapon.Type == g.CurrentVoice.Type)
                 {
-                    result = playableDefenses.ToList();
+                    result.AddRange(playableDefenses);
                     if (includingNone) result.Add(null);
                 }
                 else if (playableDefenses.Any(w => Voice.IsVoicedBy(g, false, true, w.Type, g.CurrentVoice.Type)))
                 {
-                    result = playableDefenses.Where(w => Voice.IsVoicedBy(g, false, true, w.Type, g.CurrentVoice.Type)).ToList();
+                    result.AddRange(playableDefenses.Where(w => Voice.IsVoicedBy(g, false, true, w.Type, g.CurrentVoice.Type)));
                 }
             }
             else if (g.CurrentVoice.MayNot)
             {
-                result = playableDefenses.Where(w => !Voice.IsVoicedBy(g, false, false, w.Type, g.CurrentVoice.Type)).ToList();
+                result.AddRange(playableDefenses.Where(w => !Voice.IsVoicedBy(g, false, false, w.Type, g.CurrentVoice.Type)));
                 if (includingNone) result.Add(null);
             }
         }
-
-        if (result == null)
+        else
         {
-
-            result = playableDefenses.ToList();
+            result.AddRange(playableDefenses);
             if (includingNone) result.Add(null);
         }
 
@@ -711,34 +718,39 @@ public class Battle : GameEvent
         return p.TreacheryCards.Where(c => c.Type == TreacheryCardType.Mercenary);
     }
 
-    private static IEnumerable<TreacheryCard> CardsPlayableAsWeapon(Game g, Player p, TreacheryCard withDefense, Territory territoryOfBattle, bool withPlanetologist)
+    private static List<TreacheryCard> CardsPlayableAsWeapon(Game g, Player p, TreacheryCard? withDefense, Territory? territoryOfBattle, bool withPlanetologist)
     {
         var fightingOnOwnHomeworld = territoryOfBattle != null && p.IsNative(territoryOfBattle);
         var forcesToRevealUnderNoField = territoryOfBattle != null && p.Is(Faction.White) && p.SpecialForcesIn(territoryOfBattle) != 0 ? Math.Min(p.ForcesInReserve, g.CurrentNoFieldValue) : 0;
 
-        return p.TreacheryCards.Where(c =>
-            (c.Type != TreacheryCardType.Chemistry && (c.IsWeapon || c.Type == TreacheryCardType.Useless)) ||
-            (c.Type == TreacheryCardType.Chemistry && withDefense != null && withDefense.IsDefense && withDefense.Type != TreacheryCardType.WeirdingWay) ||
-            (withPlanetologist && c.IsGreen) ||
-            (c.Type == TreacheryCardType.Reinforcements && p.ForcesInReserve + p.SpecialForcesInReserve - forcesToRevealUnderNoField >= 3) ||
-            (!fightingOnOwnHomeworld && c.Type == TreacheryCardType.HarassAndWithdraw));
+        return
+        [
+            .. p.TreacheryCards.Where(c =>
+                (c.Type != TreacheryCardType.Chemistry && (c.IsWeapon || c.Type == TreacheryCardType.Useless)) ||
+                (c.Type == TreacheryCardType.Chemistry && withDefense is { IsDefense: true } &&
+                 withDefense.Type != TreacheryCardType.WeirdingWay) ||
+                (withPlanetologist && c.IsGreen) ||
+                (c.Type == TreacheryCardType.Reinforcements &&
+                 p.ForcesInReserve + p.SpecialForcesInReserve - forcesToRevealUnderNoField >= 3) ||
+                (!fightingOnOwnHomeworld && c.Type == TreacheryCardType.HarassAndWithdraw))
+        ];
     }
 
-    public static int MaxBankerBoost(Game g, Player p, IHero hero)
+    public static int MaxBankerBoost(Game g, Player p, IHero? hero)
     {
-        if (g.SkilledAs(hero, LeaderSkill.Banker)) return Math.Min(p.Resources, 3);
-
-        return 0;
+        return hero is not null && g.SkilledAs(hero, LeaderSkill.Banker) 
+            ? Math.Min(p.Resources, 3) 
+            : 0;
     }
 
-    private static IEnumerable<TreacheryCard> CardsPlayableAsDefense(Game g, Player p, TreacheryCard withWeapon, Territory territoryOfBattle)
+    private static IEnumerable<TreacheryCard> CardsPlayableAsDefense(Game g, Player p, TreacheryCard? withWeapon, Territory? territoryOfBattle)
     {
         var fightingOnOwnHomeworld = territoryOfBattle != null && p.IsNative(territoryOfBattle);
         var forcesToRevealUnderNoField = territoryOfBattle != null && p.Is(Faction.White) && p.SpecialForcesIn(territoryOfBattle) != 0 ? Math.Min(p.ForcesInReserve, g.CurrentNoFieldValue) : 0;
 
         return p.TreacheryCards.Where(c =>
             (c.Type != TreacheryCardType.WeirdingWay && (c.IsDefense || c.Type == TreacheryCardType.Useless)) ||
-            (c.Type == TreacheryCardType.WeirdingWay && withWeapon != null && withWeapon.IsWeapon && withWeapon.Type != TreacheryCardType.Chemistry) ||
+            (c.Type == TreacheryCardType.WeirdingWay && withWeapon is { IsWeapon: true } && withWeapon.Type != TreacheryCardType.Chemistry) ||
             (c.Type == TreacheryCardType.Reinforcements && p.ForcesInReserve + p.SpecialForcesInReserve - forcesToRevealUnderNoField >= 3) ||
             (!fightingOnOwnHomeworld && c.Type == TreacheryCardType.HarassAndWithdraw));
     }
@@ -783,23 +795,23 @@ public class Battle : GameEvent
         return DetermineSkillBonus(g, plan.Player, plan.Hero, plan.Weapon, plan.Defense, plan.BankerBonus, ref activatedSkill);
     }
 
-    public static int DetermineSkillBonus(Game g, Player player, IHero hero, TreacheryCard weapon, TreacheryCard defense, int bankerBonus, ref LeaderSkill activatedSkill)
+    public static int DetermineSkillBonus(Game g, Player player, IHero? hero, TreacheryCard? weapon, TreacheryCard? defense, int bankerBonus, ref LeaderSkill activatedSkill)
     {
-        if (g.SkilledAs(hero, LeaderSkill.Thinker))
+        if (hero != null && g.SkilledAs(hero, LeaderSkill.Thinker))
         {
             activatedSkill = LeaderSkill.Thinker;
             return 2;
         }
 
-        if (g.SkilledAs(hero, LeaderSkill.Banker))
+        if (hero != null && g.SkilledAs(hero, LeaderSkill.Banker))
         {
             activatedSkill = LeaderSkill.Banker;
             return bankerBonus;
         }
 
-        if ((weapon != null && weapon.IsUseless) || (defense != null && defense.IsUseless))
+        if (weapon is { IsUseless: true } || defense is { IsUseless: true })
         {
-            if (g.SkilledAs(hero, LeaderSkill.Warmaster))
+            if (hero != null && g.SkilledAs(hero, LeaderSkill.Warmaster))
             {
                 activatedSkill = LeaderSkill.Warmaster;
                 return 3;
@@ -812,9 +824,9 @@ public class Battle : GameEvent
             }
         }
 
-        if (defense != null && defense.IsProjectileDefense)
+        if (defense is { IsProjectileDefense: true })
         {
-            if (g.SkilledAs(hero, LeaderSkill.Adept))
+            if (hero != null && g.SkilledAs(hero, LeaderSkill.Adept))
             {
                 activatedSkill = LeaderSkill.Adept;
                 return 3;
@@ -827,33 +839,31 @@ public class Battle : GameEvent
             }
         }
 
-        if (weapon != null && weapon.IsProjectileWeapon)
+        if (weapon is { IsProjectileWeapon: true })
         {
-            if (g.SkilledAs(hero, LeaderSkill.Swordmaster))
+            if (hero != null && g.SkilledAs(hero, LeaderSkill.Swordmaster))
             {
-
                 activatedSkill = LeaderSkill.Swordmaster;
                 return 3;
             }
 
             if (g.SkilledAs(player, LeaderSkill.Swordmaster))
             {
-
                 activatedSkill = LeaderSkill.Swordmaster;
                 return 1;
             }
         }
 
-        if (weapon != null && weapon.IsGreen)
-            if (g.SkilledAs(hero, LeaderSkill.Planetologist))
+        if (weapon is { IsGreen: true })
+            if (hero != null && g.SkilledAs(hero, LeaderSkill.Planetologist))
             {
                 activatedSkill = LeaderSkill.Planetologist;
                 return 2;
             }
 
-        if ((defense != null && defense.IsPoisonDefense) || (g.CurrentPortableAntidoteUsed != null && g.CurrentPortableAntidoteUsed.Player == player))
+        if (defense is { IsPoisonDefense: true } || (g.CurrentPortableAntidoteUsed != null && g.CurrentPortableAntidoteUsed.Player == player))
         {
-            if (g.SkilledAs(hero, LeaderSkill.KillerMedic))
+            if (hero != null && g.SkilledAs(hero, LeaderSkill.KillerMedic))
             {
                 activatedSkill = LeaderSkill.KillerMedic;
                 return 3;
@@ -869,9 +879,8 @@ public class Battle : GameEvent
 
         if (weapon != null && (weapon.IsPoisonWeapon || weapon.IsPoisonTooth))
         {
-            if (g.SkilledAs(hero, LeaderSkill.MasterOfAssassins))
+            if (hero != null && g.SkilledAs(hero, LeaderSkill.MasterOfAssassins))
             {
-
                 activatedSkill = LeaderSkill.MasterOfAssassins;
                 return 3;
             }
@@ -892,12 +901,12 @@ public class Battle : GameEvent
         return DetermineSkillPenalty(g, plan.Hero, opponent, ref activatedSkill);
     }
 
-    public static int DetermineSkillPenalty(Game g, IHero hero, Player opponent, ref LeaderSkill activatedSkill)
+    public static int DetermineSkillPenalty(Game g, IHero? hero, Player opponent, ref LeaderSkill activatedSkill)
     {
-        if (g.SkilledAs(hero, LeaderSkill.Bureaucrat))
+        if (hero != null && g.SkilledAs(hero, LeaderSkill.Bureaucrat))
         {
             activatedSkill = LeaderSkill.Bureaucrat;
-            return g.Map.Strongholds.Count(sh => opponent.Occupies(sh));
+            return g.Map.Strongholds.Count(opponent.Occupies);
         }
 
         activatedSkill = LeaderSkill.None;

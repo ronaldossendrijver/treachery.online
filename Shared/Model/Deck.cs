@@ -80,7 +80,7 @@ public class Deck<T>
 
     public bool IsEmpty => Items.Count == 0;
 
-    public T Top
+    public T? Top
     {
         get
         {
