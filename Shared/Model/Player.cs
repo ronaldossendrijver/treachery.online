@@ -80,7 +80,7 @@ public class Player(Game game, Faction faction = Faction.None) : ICloneable
     public int SpecialForcesKilled { get; set; }
 
     public int TotalForcesKilledInBattle { get; private set; }
-
+    
     public Faction Ally { get; set; }
 
     public bool SpecialKarmaPowerUsed { get; set; }

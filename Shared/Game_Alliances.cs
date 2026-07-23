@@ -46,8 +46,8 @@ public partial class Game
     {
         var playerA = GetPlayer(a);
         var playerB = GetPlayer(b);
-        playerA.Ally = b;
-        playerB.Ally = a;
+        playerA!.Ally = b;
+        playerB!.Ally = a;
         DiscardNexusCard(playerA);
         DiscardNexusCard(playerB);
         Log(a, " and ", b, " are now allies");
@@ -58,9 +58,9 @@ public partial class Game
             SetPermissions(b, true);
         }
             
-        while (playerA.HandSizeExceeded) Discard(playerA, playerA.TreacheryCards.RandomOrDefault(Random));
+        while (playerA.HandSizeExceeded) Discard(playerA, playerA.TreacheryCards.RandomOrDefault(Random!));
 
-        while (playerB.HandSizeExceeded) Discard(playerB, playerB.TreacheryCards.RandomOrDefault(Random));
+        while (playerB.HandSizeExceeded) Discard(playerB, playerB.TreacheryCards.RandomOrDefault(Random!));
     }
 
     internal void BreakAllAlliances()
@@ -76,8 +76,10 @@ public partial class Game
     internal void BreakAlliance(Faction f)
     {
         var initiator = GetPlayer(f);
-        var currentAlly = GetPlayer(initiator.Ally);
+        var currentAlly = initiator?.AlliedPlayer;
 
+        if (initiator is null || currentAlly is null) return;
+        
         if (Version <= 150)
         {
             if (f == Faction.Orange || initiator.Ally == Faction.Orange) OrangeAllowsShippingDiscount = false;
@@ -147,13 +149,10 @@ public partial class Game
 
     public int ResourcesYourAllyCanPay(Player p)
     {
-        if (PermittedUseOfAllySpice.TryGetValue(p.Faction, out var value))
-        {
-            var ally = GetPlayer(p.Ally);
-            return Math.Min(value, ally.Resources);
-        }
+        if (!PermittedUseOfAllySpice.TryGetValue(p.Faction, out var value)) return 0;
+        var ally = GetPlayer(p.Ally);
+        return ally == null ? 0 : Math.Min(value, ally.Resources);
 
-        return 0;
     }
 
     public int SpiceForBidsRedCanPay(Faction f)
@@ -161,7 +160,7 @@ public partial class Game
         if (!PermittedUseOfRedSpice.TryGetValue(f, out var value)) return 0;
         
         var red = GetPlayer(Faction.Red);
-        return Math.Min(value, red.Resources);
+        return red == null ? 0 : Math.Min(value, red.Resources);
     }
 
     public TreacheryCard? GetPermittedUseOfAllyKarma(Faction f)
@@ -176,9 +175,9 @@ public partial class Game
 
     public int GetPermittedUseOfAllyResources(Faction f)
     {
-        var ally = GetPlayer(f).AlliedPlayer;
+        var ally = GetPlayer(f)?.AlliedPlayer;
 
-        if (!PermittedUseOfAllySpice.TryGetValue(f, out int value) || ally == null)
+        if (!PermittedUseOfAllySpice.TryGetValue(f, out var value) || ally == null)
             return 0;
         return Math.Min(value, ally.Resources);
     }

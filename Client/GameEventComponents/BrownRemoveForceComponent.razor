@@ -37,7 +37,7 @@
 
     protected override string Background => BrownRemoveForce.CardToUse(Player) != null ? Client.CurrentSkin.GetImageUrl(BrownRemoveForce.CardToUse(Player)) : Client.CurrentSkin.GetImageUrl(Nexus.Brown);
 
-    private Location location;
+    private Location? location;
     private Faction target;
     private bool special;
 

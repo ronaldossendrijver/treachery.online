@@ -11,7 +11,7 @@ namespace Treachery.Shared;
 
 public class GameStatus
 {
-    public List<Territory> HighlightedTerritories { get; private set; }
+    public List<Territory> HighlightedTerritories { get; private set; } = [];
 
     public List<SequenceElement> WaitingInSequence { get; } = [];
 
@@ -19,7 +19,7 @@ public class GameStatus
 
     public List<FlashInfo> FlashInfo { get; private set; } = [];
 
-    public GameEvent TimedEvent { get; private set; }
+    public GameEvent? TimedEvent { get; private set; }
 
     public bool WaitingForHost { get; }
     
@@ -27,8 +27,8 @@ public class GameStatus
 
     private Message DescriptionWhenWaiting { get; }
 
-    private GameStatus(Message messageWhenAwaited, Message messageWhenWaiting, Player waitingForPlayer, GameEvent? timedEvent = null) :
-        this(messageWhenAwaited, messageWhenWaiting, [waitingForPlayer], timedEvent)
+    private GameStatus(Message messageWhenAwaited, Message messageWhenWaiting, Player? waitingForPlayer, GameEvent? timedEvent = null) :
+        this(messageWhenAwaited, messageWhenWaiting, waitingForPlayer != null ? [waitingForPlayer] : [], timedEvent)
     {
     }
 
@@ -37,6 +37,14 @@ public class GameStatus
         DescriptionWhenAwaited = messageWhenAwaited;
         DescriptionWhenWaiting = messageWhenWaiting;
         WaitingForPlayers = waitingForPlayers;
+        TimedEvent = timedEvent;
+    }
+
+    private GameStatus(Message messageWhenAwaited, Message messageWhenWaiting, List<SequenceElement> waitingInSequence, GameEvent? timedEvent = null)
+    {
+        DescriptionWhenAwaited = messageWhenAwaited;
+        DescriptionWhenWaiting = messageWhenWaiting;
+        WaitingInSequence.AddRange(waitingInSequence);
         TimedEvent = timedEvent;
     }
 
@@ -101,7 +109,7 @@ public class GameStatus
             /* Non-mainphase-related phases */
 
             Phase.Clairvoyance => Status(game,
-                Express("Please answer a question from ", game.LatestClairvoyance.Initiator, " by ", TreacheryCardType.Clairvoyance, "."),
+                Express("Please answer a question from ", game.LatestClairvoyance?.Initiator, " by ", TreacheryCardType.Clairvoyance, "."),
                 Express("Waiting for an answer to a ", TreacheryCardType.Clairvoyance, " question..."),
                 game.LatestClairvoyance.Target),
 
@@ -249,7 +257,7 @@ public class GameStatus
             Phase.BlackMarketBidding when game.CurrentAuctionType != AuctionType.BlackMarketSilent => Status(
                 Express("Please bid or pass."),
                 Express(game.BidSequence.CurrentFaction, " are thinking about their bid..."),
-                game.BidSequence.CurrentPlayer, game.LatestEvent()),
+                BlackMarketBid.PlayersToBid(game).ToList(), game.LatestEvent()),
 
             Phase.BlackMarketBidding when game.CurrentAuctionType == AuctionType.BlackMarketSilent => Status(
                 "Please bid.",
@@ -284,7 +292,7 @@ public class GameStatus
             Phase.Bidding when game.CurrentAuctionType != AuctionType.WhiteSilent => Status(
                 Express("Please bid or pass."),
                 Express(game.BidSequence.CurrentFaction, " are thinking about their bid..."),
-                game.BidSequence.CurrentPlayer, game.LatestEvent()),
+                Bid.PlayersToBid(game).ToList(), game.LatestEvent()),
 
             Phase.Bidding when game.CurrentAuctionType == AuctionType.WhiteSilent => Status(
                 "Please bid.",
@@ -313,25 +321,25 @@ public class GameStatus
                 Express("You may now start the Ship & Move sequence..."),
                 Express("Waiting for the host to start the Ship & Move sequence...")),
 
-            Phase.NonOrangeShip when game.ShipmentAndMoveSequence.CurrentFaction == Faction.Yellow => Status(game,
+            Phase.NonOrangeShip when game.ShipmentAndMoveSequence!.CurrentFaction == Faction.Yellow => Status(
                 Express("Please decide to rally forces or pass."),
                 Express(Faction.Yellow, " are thinking about rallying forces..."),
-                Faction.Yellow, game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
+                game.ShipmentAndMoveSequence.GetPlayersInSequence().ToList(), game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
 
-            Phase.NonOrangeShip when game.ShipmentAndMoveSequence.CurrentFaction != Faction.Yellow => Status(
+            Phase.NonOrangeShip when game.ShipmentAndMoveSequence!.CurrentFaction != Faction.Yellow => Status(
                 Express("Please decide to ship forces or pass."),
-                Express(game.ShipmentAndMoveSequence.CurrentFaction, " are thinking about shipping forces..."),
-                game.ShipmentAndMoveSequence.CurrentPlayer, game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
+                Express(game.ShipmentAndMoveSequence!.CurrentFaction, " are thinking about shipping forces..."),
+                game.ShipmentAndMoveSequence.GetPlayersInSequence().ToList(), game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
 
-            Phase.OrangeShip when game.OrangeMayDelay => Status(game,
+            Phase.OrangeShip when game.OrangeMayDelay => Status(
                 Express("Please decide to ship now or delay your turn and let other factions go first."),
                 Express(Faction.Orange, " are deciding about taking their turn now..."),
-                Faction.Orange, game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
+                game.ShipmentAndMoveSequence!.GetPlayersInSequence().ToList(), game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
 
-            Phase.OrangeShip when !game.OrangeMayDelay => Status(game,
+            Phase.OrangeShip when !game.OrangeMayDelay => Status(
                 Express("Please decide to ship forces or pass."),
                 Express(Faction.Orange, " are thinking about shipping forces..."),
-                Faction.Orange, game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
+                game.ShipmentAndMoveSequence!.GetPlayersInSequence().ToList(), game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
 
             Phase.BlueAccompaniesNonOrangeShip or Phase.BlueAccompaniesOrangeShip => Status(game,
                 Express("Do you wish to accompany the latest shipment?"),
@@ -394,13 +402,13 @@ public class GameStatus
 
             Phase.NonOrangeMove => Status(
                 Express("Please decide to move forces or pass."),
-                Express(game.ShipmentAndMoveSequence.CurrentFaction, " are thinking about about moving forces."),
-                game.ShipmentAndMoveSequence.CurrentPlayer, game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
+                Express(game.ShipmentAndMoveSequence!.CurrentFaction, " are thinking about about moving forces."),
+                game.ShipmentAndMoveSequence.GetPlayersInSequence().ToList(), game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
 
-            Phase.OrangeMove => Status(game,
+            Phase.OrangeMove => Status(
                 Express("Please decide to move forces or pass."),
                 Express(Faction.Orange, " are thinking about about moving forces."),
-                Faction.Orange, game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
+                game.ShipmentAndMoveSequence!.GetPlayersInSequence().ToList(), game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
 
             /* Battle */
 
@@ -647,13 +655,16 @@ public class GameStatus
     private static GameStatus Status(Message messageWhenAwaited, Message messageWhenWaiting, List<Player> waitingForPlayers, GameEvent? timedEvent = null) 
         => new(messageWhenAwaited, messageWhenWaiting, waitingForPlayers, timedEvent);
 
+    private static GameStatus Status(Message messageWhenAwaited, Message messageWhenWaiting, List<SequenceElement> waitingInSequence, GameEvent? timedEvent = null)
+        => new(messageWhenAwaited, messageWhenWaiting, waitingInSequence, timedEvent);
+
     private static GameStatus Status(Game game, string messageWhenAwaited, string messageWhenWaiting, List<Faction> waitingForFactions, GameEvent? timedEvent = null) 
         => new(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), waitingForFactions.Select(f => game.GetPlayer(f)).ToList(), timedEvent);
 
-    private static GameStatus Status(string messageWhenAwaited, string messageWhenWaiting, Player waitingForPlayer, GameEvent? timedEvent = null) 
+    private static GameStatus Status(string messageWhenAwaited, string messageWhenWaiting, Player? waitingForPlayer, GameEvent? timedEvent = null) 
         => new(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), waitingForPlayer, timedEvent);
 
-    private static GameStatus Status(Message messageWhenAwaited, Message messageWhenWaiting, Player waitingForPlayer, GameEvent? timedEvent = null) 
+    private static GameStatus Status(Message messageWhenAwaited, Message messageWhenWaiting, Player? waitingForPlayer, GameEvent? timedEvent = null) 
         => new(messageWhenAwaited, messageWhenWaiting, waitingForPlayer, timedEvent);
 
     private static GameStatus Status(Game game, string messageWhenAwaited, string messageWhenWaiting, Faction waitingForFaction, GameEvent? timedEvent = null) 
@@ -842,7 +853,7 @@ public class GameStatus
     private static void Flash(IList<FlashInfo> flashes, Faction f) 
         => Flash(flashes, Message.Express("You play ", f), f);
 
-    private static Message Express(params object[] elements) 
+    private static Message Express(params object?[] elements) 
         => Message.Express(elements);
 }
 public struct FlashInfo

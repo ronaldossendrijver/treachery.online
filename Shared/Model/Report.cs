@@ -20,7 +20,7 @@ public class Report(MainPhase about)
         Add(Message.Express(list));
     }
 
-    public void ExpressTo(Faction to, params object[] list)
+    public void ExpressTo(Faction to, params object?[] list)
     {
         Add(Message.ExpressTo(to, list));
     }

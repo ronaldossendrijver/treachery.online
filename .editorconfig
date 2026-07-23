@@ -1,0 +1,5 @@
+[Shared/Events/*.cs]
+dotnet_diagnostic.IDE1006.severity = none
+resharper_inconsistent_naming_highlighting = none
+
+

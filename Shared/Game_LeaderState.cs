@@ -118,8 +118,10 @@ public partial class Game
         return hero != null ? Skill(hero) : null;
     }
 
-    public LeaderSkill Skill(IHero l)
+    public LeaderSkill Skill(IHero? l)
     {
+        if (l is null) return LeaderSkill.None;
+        
         return LeaderState.TryGetValue(l, out var state) 
             ? state.Skill 
             : LeaderSkill.None;
@@ -135,8 +137,9 @@ public partial class Game
         if (LeaderState.TryGetValue(l, out var ls)) ls.InFrontOfShield = value;
     }
 
-    public bool IsInFrontOfShield(IHero l)
+    public bool IsInFrontOfShield(IHero? l)
     {
+        if (l is null) return false;
         return LeaderState.ContainsKey(l) && LeaderState[l].InFrontOfShield;
     }
 

@@ -29,7 +29,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Blue;
 
-    public Location target;
+    public Location? target;
 
     protected override void OnAfterRender(bool firstRender)
     {

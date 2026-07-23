@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class BattleConcluded : GameEvent
@@ -32,9 +30,9 @@ public class BattleConcluded : GameEvent
 
         }
 
-        set
+        init
         {
-            if (value == CaptureDecision.DontCapture || value == CaptureDecision.None)
+            if (value is CaptureDecision.DontCapture or CaptureDecision.None)
             {
                 Capture = false;
             }
@@ -49,7 +47,7 @@ public class BattleConcluded : GameEvent
     public int _traitorToReplaceId = -1;
 
     [JsonIgnore]
-    public IHero TraitorToReplace
+    public IHero? TraitorToReplace
     {
         get => LeaderManager.HeroLookup.Find(_traitorToReplaceId);
         set => _traitorToReplaceId = LeaderManager.HeroLookup.GetId(value);
@@ -58,7 +56,7 @@ public class BattleConcluded : GameEvent
     public int _newTraitorId = -1;
 
     [JsonIgnore]
-    public IHero NewTraitor
+    public IHero? NewTraitor
     {
         get => LeaderManager.HeroLookup.Find(_newTraitorId);
         set => _newTraitorId = LeaderManager.HeroLookup.GetId(value);
@@ -116,12 +114,16 @@ public class BattleConcluded : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
+        if (Game.CurrentBattle is null) return;
+        
         Game.BattleWasConcludedByWinner = true;
 
         if (AddExtraForce && Game.Version >= 161)
         {
             var to = Game.CurrentBattle.Territory.Locations.FirstOrDefault(l => Player.AnyForcesIn(l) > 0);
-            Player.ShipForces(to, 1);
+            if (to != null)
+                Player.ShipForces(to, 1);
+            
             Log(Initiator, " place ", 1, " extra force in ", Game.CurrentBattle.Territory);
         }
 
@@ -129,7 +131,7 @@ public class BattleConcluded : GameEvent
         {
             Log(Initiator, " discard ", c);
             Player.TreacheryCards.Remove(c);
-            Game.TreacheryDiscardPile.PutOnTop(c);
+            Game.TreacheryDiscardPile!.PutOnTop(c);
         }
 
         if (Game.TraitorsDeciphererCanLookAt.Count > 0) Log(Initiator, " look at ", Game.TraitorsDeciphererCanLookAt.Count, " leaders in the traitor deck");
@@ -163,13 +165,15 @@ public class BattleConcluded : GameEvent
 
     private void DecideFateOfCapturedLeader()
     {
-        if (By(Faction.Black) && Game.Applicable(Rule.BlackCapturesOrKillsLeaders) && Game.BlackVictim != null)
-        {
-            if (Game.Version > 125 && Game.Prevented(FactionAdvantage.BlackCaptureLeader))
-                Game.LogPreventionByKarma(FactionAdvantage.BlackCaptureLeader);
-            else
-                CaptureOrAssassinateLeader(Player, Game.CurrentBattle.OpponentOf(Player));
-        }
+        if (Game.CurrentBattle is null) return;
+
+        if (!By(Faction.Black) || !Game.Applicable(Rule.BlackCapturesOrKillsLeaders) ||
+            Game.BlackVictim == null) return;
+        
+        if (Game.Version > 125 && Game.Prevented(FactionAdvantage.BlackCaptureLeader))
+            Game.LogPreventionByKarma(FactionAdvantage.BlackCaptureLeader);
+        else
+            CaptureOrAssassinateLeader(Player, Game.CurrentBattle.OpponentOf(Player));
     }
 
     private void TakeTechToken()

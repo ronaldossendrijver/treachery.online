@@ -19,12 +19,12 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     private const int NudgeBotsDelay = 7000;
     
     //General info
-    public ServerInfo ServerInfo { get; private set; }
+    public ServerInfo ServerInfo { get; private set; } = null!;
     public Skin CurrentSkin { get; set; } = DefaultSkin.Default;
     public bool IsConnected => _connection.State == HubConnectionState.Connected;
     
     //Admin info
-    public AdminInfo AdminInfo { get; private set; }
+    public AdminInfo AdminInfo { get; private set; } = null!;
     
     //Server info
     public bool IsAdmin { get; set; } = false;
@@ -36,20 +36,20 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public Dictionary<int,LoggedInUserInfo> RecentlySeenUsers { get; private set; } = [];
     
     //Logged in player
-    private LoginInfo LoginInfo { get; set; }
-    private string StoredPassword { get; set; }
+    private LoginInfo? LoginInfo { get; set; }
+    private string? StoredPassword { get; set; }
     
     public bool LoggedIn => LoginInfo != null;
-    private string UserToken => LoginInfo?.Token;
+    private string? UserToken => LoginInfo?.Token;
     public int UserId => LoginInfo?.UserId ?? -1;
-    public string UserName => LoginInfo.UserName;
-    public string UserEmail => LoginInfo.Email;
+    public string UserName => LoginInfo!.UserName;
+    public string UserEmail => LoginInfo!.Email;
     
     //Game in progress
-    public Game Game { get; private set; }
-    public string GameName { get; private set; }
+    public Game Game { get; private set; } = null!;
+    public string GameName { get; private set; } = null!;
     public string GameId { get; private set; } = string.Empty;
-    public GameStatus Status { get; private set; }
+    public GameStatus Status { get; private set; } = null!;
     public List<Type> Actions { get; private set; } = []; 
     
     public bool InGame => Game != null;
@@ -72,8 +72,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public int Timer { get; set; } = -1;
     public bool MuteGlobalChat { get; set; } = false;
 
-    public event Action RefreshHandler;
-    public event Action RefreshPopoverHandler;
+    public event Action RefreshHandler = null!;
+    public event Action RefreshPopoverHandler = null!;
 
     private readonly HubConnection _connection;
     private Browser Browser { get; }
@@ -107,7 +107,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
     }
 
-    public async Task Start(string userToken = null, string gameId = null)
+    public async Task Start(string? userToken = null, string? gameId = null)
     {
         await _connection.StartAsync();
         await Connect();
@@ -148,7 +148,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         _connection.On<Dictionary<int, int>>(nameof(HandleAssignSeats), HandleAssignSeats);
     }
 
-    public void Refresh(string source = null)
+    public void Refresh(string? source = null)
     {
         RefreshHandler?.Invoke();  
     } 
@@ -358,10 +358,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         ((InGame && ServerInfo.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 6 && CurrentPhase <= Phase.AwaitingPlayers) ||
          ServerInfo.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 1);
   
-    public event EventHandler<Location> OnLocationSelected;
-    public event EventHandler<Location> OnLocationSelectedWithCtrlOrAlt;
-    public event EventHandler<Location> OnLocationSelectedWithShift;
-    public event EventHandler<Location> OnLocationSelectedWithShiftAndWithCtrlOrAlt;
+    public event EventHandler<Location> OnLocationSelected = null!;
+    public event EventHandler<Location> OnLocationSelectedWithCtrlOrAlt = null!;
+    public event EventHandler<Location> OnLocationSelectedWithShift = null!;
+    public event EventHandler<Location> OnLocationSelectedWithShiftAndWithCtrlOrAlt = null!;
 
     public void LocationClick(LocationEventArgs e)
     {
@@ -462,7 +462,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     //Game Management
 
-    public async Task<string> RequestCreateGame(string name, string password, string stateData = null, string skinData = null)
+    public async Task<string> RequestCreateGame(string name, string password, string? stateData = null, string? skinData = null)
     {
         var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestCreateGame), name, UserToken, password, stateData, skinData);
         if (result.Success)
@@ -566,7 +566,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public async Task<string> RequestKick(int userId) => 
         CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestKick), UserToken, GameId, userId)).Error);
 
-    public async Task<string> RequestLoadGame(string state, string skin = null)
+    public async Task<string> RequestLoadGame(string state, string? skin = null)
     {
         var result = await Invoke(nameof(IGameHub.RequestLoadGame), UserToken, GameId, state, skin);
         return result.Success ? null :

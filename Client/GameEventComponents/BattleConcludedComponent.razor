@@ -137,8 +137,8 @@
     private bool discardDefense;
     private TechToken stolenToken;
     private int replacementAmount;
-    private IHero selectedNewTraitor;
-    private IHero traitorToReplace;
+    private IHero? selectedNewTraitor;
+    private IHero? traitorToReplace;
     private bool addExtraForce;
 
     protected override BattleConcluded ConfirmedResult => new(Game, Faction)

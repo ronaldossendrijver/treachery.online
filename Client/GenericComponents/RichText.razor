@@ -14,28 +14,28 @@
 
 @code {
 
-    private Dictionary<string, object> _attributes;
+    private Dictionary<string, object> _attributes = [];
 
     [Parameter]
-    public object Shown { get; set; }
-    private object _shown;
+    public object? Shown { get; set; }
+    private object? _shown;
 
     [Parameter]
     public string Class { get; set; } = "fw-bold";
 
     [Parameter]
-    public string Style { get; set; }
+    public string? Style { get; set; }
 
     [Parameter]
-    public string Popover { get; set; }
-    private string _popover;
+    public string? Popover { get; set; }
+    private string? _popover;
     private bool _popoverNeedsRefresh = false;
 
     [Parameter]
     public bool PopoverAsTooltip { get; set; } = false;
 
     [Parameter]
-    public Game Game { get; set; }
+    public Game? Game { get; set; }
 
     protected override void OnParametersSet()
     {

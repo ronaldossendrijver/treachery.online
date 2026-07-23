@@ -41,7 +41,9 @@ public class Message
 
     public string ToString(IDescriber describer)
     {
-        return string.Join("", Expression.Elements.Select(describer.Describe));
+        return string.Join("", Expression.Elements.Select(x => x == null 
+            ? string.Empty 
+            : describer.Describe(x)));
     }
 
     public static Message Express(params object?[] list)
@@ -49,7 +51,7 @@ public class Message
         return new Message(new Expression(list));
     }
 
-    public static Message ExpressTo(Faction to, params object[] list)
+    public static Message ExpressTo(Faction to, params object?[] list)
     {
         return new Message(to, new Expression(list));
     }
@@ -79,7 +81,9 @@ public class MessagePart
 
     public string ToString(IDescriber describer)
     {
-        return string.Join("", Expression.Elements.Select(describer.Describe));
+        return string.Join("", Expression.Elements.Select(x => x == null 
+            ? string.Empty 
+            : describer.Describe(x)));
     }
 
     public override string ToString()

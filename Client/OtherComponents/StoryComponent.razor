@@ -217,7 +217,7 @@
     public string Id { get; set; } = "";
 
     [Parameter]
-    public Game Game { get; set; }
+    public Game? Game { get; set; }
 
     private bool IsMilestone(GameEvent evt)
     {

@@ -13,7 +13,7 @@ public abstract partial class GameEventComponent<T> where T : GameEvent, new()
 {
     protected abstract T ConfirmedResult { get; }
 
-    protected virtual T PassedResult { get; }
+    protected virtual T? PassedResult { get; }
 
-    protected virtual T OtherResult { get; }
+    protected virtual T? OtherResult { get; }
 }

@@ -278,12 +278,12 @@
     private const int MaxSaveGameSize = 4194304;
 
     private bool CreateGameHasPassword { get; set; }
-    private string CreateGameName { get; set; }
-    private string CreateGamePassword { get; set; }
-    private object FileInput { get; set; }
+    private string? CreateGameName { get; set; }
+    private string? CreateGamePassword { get; set; }
+    private object? FileInput { get; set; }
     private string CreateError { get; set; } = string.Empty;
     private bool Loading { get; set; }
-    private string LoadedGameData { get; set; }
+    private string? LoadedGameData { get; set; }
     
     private DateTimeOffset ScheduleGameDateTime { get; set; } = DateTimeOffset.Now;
     private Ruleset ScheduleGameRuleset { get; set; } = Ruleset.AllExpansionsAdvancedGame;
@@ -295,12 +295,12 @@
     private string ScheduleError { get; set; } = string.Empty;
     private bool EditUser { get; set; }
     private bool DeleteUser { get; set; }
-    private string UserName { get; set; }
-    private string PlayerName { get; set; }
-    private string Password1 { get; set; }
-    private string Password2 { get; set; }
-    private string Email { get; set; }
-    private string ChangeUserInfoMessage { get; set; }
+    private string? UserName { get; set; }
+    private string? PlayerName { get; set; }
+    private string? Password1 { get; set; }
+    private string? Password2 { get; set; }
+    private string? Email { get; set; }
+    private string? ChangeUserInfoMessage { get; set; }
     
     protected override void OnInitialized()
     {

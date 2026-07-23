@@ -17,7 +17,7 @@
 
     protected Faction Faction => Client.Faction;
 
-    private string _id;
+    private string? _id;
     protected string Id => _id ??= Guid.NewGuid().ToString();
 
     protected override void OnInitialized()

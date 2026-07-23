@@ -281,7 +281,7 @@
     protected override bool IsUrgent => true;
 
     private ShipmentType ShipmentType { get; set; } = ShipmentType.ShipmentNormal;
-    private TreacheryCard KarmaCard { get; set; }
+    private TreacheryCard? KarmaCard { get; set; }
     private int ShipmentForceAmount { get; set; }
     private int ShipmentSpecialForceAmount { get; set; }
     private int ShipmentAllyContributionAmount { get; set; } 
@@ -291,8 +291,8 @@
     private int SmuggledSpecialForceAmount { get; set; }
     private Dictionary<Location, Battalion> ForceOrigins { get; } = new();
 
-    private Location _shipmentFrom;
-    private Location _shipmentTo;
+    private Location? _shipmentFrom;
+    private Location? _shipmentTo;
 
     protected override Shipment ConfirmedResult
     {

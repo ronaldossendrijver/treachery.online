@@ -103,9 +103,9 @@
 
     private TerrorType _type;
     private bool _robberyTakesCard;
-    private TreacheryCard _toGiveInSabotage;
+    private TreacheryCard? _toGiveInSabotage;
     private int _forcesInSneakAttack;
-    private Location _sneakAttackTo;
+    private Location? _sneakAttackTo;
 
     protected override TerrorRevealed ConfirmedResult => new(Game, Faction) { Type = _type, RobberyTakesCard = _robberyTakesCard, CardToGiveInSabotage = _toGiveInSabotage, ForcesInSneakAttack = _forcesInSneakAttack, SneakAttackTo = _sneakAttackTo };
 

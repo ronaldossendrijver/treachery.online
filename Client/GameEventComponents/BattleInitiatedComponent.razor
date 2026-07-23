@@ -27,9 +27,9 @@
 
     protected override bool IsUrgent => true;
 
-    private List<Fight> Battles { get; set; }
+    private List<Fight>? Battles { get; set; }
     private Faction Opponent { get; set; }
-    private Territory Territory { get; set; }
+    private Territory? Territory { get; set; }
 
     protected override void OnParametersSet()
     {

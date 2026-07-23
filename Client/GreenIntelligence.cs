@@ -13,7 +13,7 @@ namespace Treachery.Client;
 
 public class GreenIntelligence
 {
-    public string TrackedSpiceCard { get; set; }
+    public string? TrackedSpiceCard { get; set; }
 
     public Dictionary<Faction, Dictionary<int, int>> TrackedTreacheryCards { get; }
 

@@ -27,7 +27,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Yellow;
 
-    public Territory target;
+    public Territory? target;
 
     protected override YellowSentMonster ConfirmedResult => new(Game, Faction) { Territory = target };
 

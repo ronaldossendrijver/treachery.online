@@ -72,7 +72,7 @@ public partial class Game
     public Deck<DiscoveryToken>? OrangeDiscoveryTokens { get; set; }
     public Dictionary<Location, Discovery> DiscoveriesOnPlanet { get; } = new();
     public Dictionary<Territory, Ambassador> AmbassadorsOnPlanet { get; private set; } = new();
-    public Deck<Faction> NexusCardDeck { get; internal set; }
+    public Deck<Faction>? NexusCardDeck { get; internal set; }
     public List<Faction> NexusDiscardPile { get; } = [];
     private Dictionary<Homeworld, Faction> HomeworldOccupation { get; set; } = new();
     internal Phase PhaseBeforeDiscardingTraitor { get; set; }
@@ -81,7 +81,7 @@ public partial class Game
 
     public List<Faction> FactionsInPlay { get; internal set; } = [];
     public List<TerrorType> UnplacedTerrorTokens { get; internal set; } = [];
-    internal Deck<IHero> TraitorDeck { get; private set; }
+    internal Deck<IHero>? TraitorDeck { get; private set; }
     public Leader? PinkLoyalLeader { get; private set; }
 
     public List<AutomationConfigured> AutomationRules { get; set; } = [];
@@ -587,7 +587,7 @@ public partial class Game
     private void AllowAllPreventedFactionAdvantages(List<FactionAdvantage> exceptions)
     {
         foreach (var adv in Enumerations.GetValuesExceptDefault(FactionAdvantage.None))
-            if (exceptions == null || !exceptions.Contains(adv)) Allow(adv);
+            if (!exceptions.Contains(adv)) Allow(adv);
     }
 
     private void DetermineOccupationAtStartOrEndOfTurn()
@@ -677,26 +677,24 @@ public partial class Game
         RegisterKnown(card);
     }
 
-    internal void Discard(Player player, TreacheryCard card)
+    internal void Discard(Player? player, TreacheryCard? card)
     {
         if (player != null && card != null)
         {
             Log(player.Faction, " discard ", card);
             player.TreacheryCards.Remove(card);
-            TreacheryDiscardPile.PutOnTop(card);
+            TreacheryDiscardPile!.PutOnTop(card);
             RegisterKnown(card);
             RecentlyDiscarded.Add(card, player.Faction);
             Stone(Milestone.Discard);
 
-            if (card.Type == TreacheryCardType.Poison || card.Type == TreacheryCardType.ProjectileAndPoison || card.Type == TreacheryCardType.PoisonTooth)
-            {
-                var pink = GetPlayer(Faction.Pink);
-                if (pink != null && pink.HasHighThreshold())
-                {
-                    Log(Faction.Pink, " get ", Payment.Of(3), " from the discarded ", card);
-                    pink.Resources += 3;
-                }
-            }
+            if (card.Type is not (TreacheryCardType.Poison or TreacheryCardType.ProjectileAndPoison
+                or TreacheryCardType.PoisonTooth)) return;
+            
+            var pink = GetPlayer(Faction.Pink);
+            if (pink == null || !pink.HasHighThreshold()) return;
+            Log(Faction.Pink, " get ", Payment.Of(3), " from the discarded ", card);
+            pink.Resources += 3;
         }
     }
 
@@ -704,7 +702,7 @@ public partial class Game
 
     #region TechnicalSupport
 
-    public static Message TryLoad(GameState state, Participation participation, bool performValidation, bool isHost, out Game result)
+    public static Message? TryLoad(GameState state, Participation participation, bool performValidation, bool isHost, out Game? result)
     {
         try
         {
@@ -732,7 +730,7 @@ public partial class Game
         }
     }
 
-    internal void Log(params object[] expression)
+    internal void Log(params object?[] expression)
     {
         CurrentReport.Express(expression);
     }

@@ -15,11 +15,11 @@ public partial class Game
 
     internal int ResourcesCollectedByYellow { get; set; }
     internal int ResourcesCollectedByBlackFromDesertOrHomeworld { get; set; }
-    public IList<DiscoveryToken> PendingDiscoveries { get; set; }
-    public List<ResourcesToBeDivided> CollectedResourcesToBeDivided { get; } = new();
-    public DivideResources CurrentDivisionProposal { get; internal set; }
-    public Faction OwnerOfFlightDiscovery { get; internal set; }
-    public List<DiscoveredLocation> JustRevealedDiscoveryStrongholds { get; } = new();
+    public List<DiscoveryToken> PendingDiscoveries { get; set; } = [];
+    public List<ResourcesToBeDivided> CollectedResourcesToBeDivided { get; } = [];
+    public DivideResources? CurrentDivisionProposal { get; internal set; }
+    public Faction? OwnerOfFlightDiscovery { get; internal set; }
+    public List<DiscoveredLocation> JustRevealedDiscoveryStrongholds { get; } = [];
 
     #endregion State
 
@@ -34,6 +34,9 @@ public partial class Game
 
     internal void DivideResourcesFromCollection(bool divisionWasAgreed)
     {
+        if (CurrentDivisionProposal is null)
+            return;
+        
         var toBeDivided = DivideResources.GetResourcesToBeDivided(this);
 
         var gainedByFirstFaction = DivideResources.GainedByFirstFaction(toBeDivided, divisionWasAgreed, CurrentDivisionProposal.PortionToFirstPlayer);
@@ -50,9 +53,10 @@ public partial class Game
     private void GainCollectedResources(Faction faction, Territory from, int amount)
     {
         Log(faction, " collect ", Payment.Of(amount), " from ", from);
-        GetPlayer(faction).Resources += amount;
+        var player = GetPlayer(faction);
+        player?.Resources += amount;
         if (faction == Faction.Yellow) ResourcesCollectedByYellow += amount;
-        if (faction == Faction.Black && !from.IsStronghold && !from.IsProtectedFromWorm) ResourcesCollectedByBlackFromDesertOrHomeworld += amount;
+        if (faction == Faction.Black && from is { IsStronghold: false, IsProtectedFromWorm: false }) ResourcesCollectedByBlackFromDesertOrHomeworld += amount;
     }
 
     internal void ModifyIncomeBecauseOfLowThresholdOrOccupation(Player from, ref int receivedAmount)
@@ -188,7 +192,7 @@ public partial class Game
         }
 
         var black = GetPlayer(Faction.Black);
-        if (ResourcesCollectedByBlackFromDesertOrHomeworld != 0 && black.HasHighThreshold())
+        if (ResourcesCollectedByBlackFromDesertOrHomeworld != 0 && black?.HasHighThreshold() == true)
         {
             black.Resources += 2;
             Log(Faction.Black, " get ", Payment.Of(2), " extra as they collected from desert or homeworld");

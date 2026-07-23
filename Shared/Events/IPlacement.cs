@@ -15,5 +15,5 @@ public interface IPlacement
 
     public Dictionary<Location, Battalion> ForceLocations { get; }
 
-    public Location To { get; }
+    public Location? To { get; }
 }

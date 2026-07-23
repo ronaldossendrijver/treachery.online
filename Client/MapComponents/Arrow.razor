@@ -72,10 +72,10 @@
     [Parameter]
     public float StrokeWidth { get; set; } = 0;
 
-    private string ArrowTemplateId;
-    private string ArrowShadowId;
-    private string ArrowGradientId;
-    private ArrowDef[] arrows;
+    private string ArrowTemplateId = string.Empty;
+    private string ArrowShadowId = string.Empty;
+    private string ArrowGradientId = string.Empty;
+    private ArrowDef[] arrows = [];
 
     protected override void OnParametersSet()
     {

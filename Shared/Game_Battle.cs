@@ -70,14 +70,16 @@ public partial class Game
         AssignBattleWheels(CurrentBattle.AggressivePlayer, CurrentBattle.DefendingPlayer);
     }
 
-    private void AssignBattleWheels(params Player[] players)
+    private void AssignBattleWheels(Player? player1, Player? player2)
     {
         HasBattleWheel.Clear();
-        foreach (var p in players) HasBattleWheel.Add(p.Faction);
+        if (player1 != null) HasBattleWheel.Add(player1.Faction);
+        if (player2 != null) HasBattleWheel.Add(player2.Faction);
     }
 
-    private void AnnounceHeroAvailability(Player p)
+    private void AnnounceHeroAvailability(Player? p)
     {
+        if (p is null) return;
         if (!Battle.ValidBattleHeroes(this, p).Any()) Log(p.Faction, " have no leaders available for this battle");
     }
 
@@ -87,8 +89,8 @@ public partial class Game
 
     internal void HandleRevealedBattlePlans()
     {
-        if (CurrentBattle is null || AggressorPlan is null || DefenderPlan is null || AggressorTraitorAction is null || DefenderTraitorAction is null || BattleOutcome is null)
-            throw new NullReferenceException();
+        if (CurrentBattle is null || AggressorPlan is null || DefenderPlan is null || AggressorTraitorAction is null || DefenderTraitorAction is null)
+            return;
         
         ResolveEffectOfOwnedTueksSietch(AggressorPlan);
         ResolveEffectOfOwnedTueksSietch(DefenderPlan);
@@ -112,13 +114,17 @@ public partial class Game
         if (AggressorPlan.Initiator == BattleWinner) ResolveEffectOfOwnedSietchTabr(AggressorPlan, DefenderPlan);
         if (DefenderPlan.Initiator == BattleWinner) ResolveEffectOfOwnedSietchTabr(DefenderPlan, AggressorPlan);
 
-        if (AggressorPlan.Initiator == BattleWinner) ResolveEffectOfOccupiedJacurutu(AggressorPlan, BattleOutcome.DefUndialedForces);
-        if (DefenderPlan.Initiator == BattleWinner) ResolveEffectOfOccupiedJacurutu(DefenderPlan, BattleOutcome.AggUndialedForces);
+        if (BattleOutcome != null)
+        {
+            if (AggressorPlan.Initiator == BattleWinner) ResolveEffectOfOccupiedJacurutu(AggressorPlan, BattleOutcome.DefUndialedForces);
+            if (DefenderPlan.Initiator == BattleWinner) ResolveEffectOfOccupiedJacurutu(DefenderPlan, BattleOutcome.AggUndialedForces);
+        }
 
         if (Version < 116) CaptureLeaderIfApplicable();
 
         FlipBlueAdvisorsWhenAlone();
-        if (Version >= 162) DetermineOccupation(CurrentBattle.Territory);
+        if (Version >= 162 && CurrentBattle.Territory != null) 
+            DetermineOccupation(CurrentBattle.Territory);
             
         if (BattleTriggeredBureaucracy != null)
         {
@@ -132,7 +138,7 @@ public partial class Game
     private void DiscardOneTimeCardsUsedInBattle(TreacheryCalled aggressorCall, TreacheryCalled defenderCall)
     {
         if (AggressorPlan is null || DefenderPlan is null)
-            throw new NullReferenceException();
+            return;
         
         var aggressorKeepsCards = aggressorCall.Succeeded && !defenderCall.Succeeded;
         if (!aggressorKeepsCards) DiscardOneTimeCards(AggressorPlan);
@@ -143,7 +149,7 @@ public partial class Game
 
     private void ResolveBattle(BattleInitiated b, Battle agg, Battle def, TreacheryCalled aggressorTreachery, TreacheryCalled defenderTreachery)
     {
-        BattleOutcome = Battle.DetermineBattleOutcome(agg, def, b.Territory, this);
+        BattleOutcome = Battle.DetermineBattleOutcome(agg, def, b.Territory!, this);
 
         var lasgunShield = !aggressorTreachery.Succeeded && !defenderTreachery.Succeeded && (agg.HasLaser || def.HasLaser) && (agg.HasShield || def.HasShield);
 
@@ -158,13 +164,13 @@ public partial class Game
         }
         else if (lasgunShield)
         {
-            LasgunShieldExplosion(agg, def, agg.Player, def.Player, b.Territory, agg.Hero, def.Hero);
+            LasgunShieldExplosion(agg, def, agg.Player, def.Player, b.Territory!, agg.Hero, def.Hero);
         }
         else
         {
-            SetHeroLocations(agg, b.Territory);
-            SetHeroLocations(def, b.Territory);
-            HandleBattleOutcome(agg, def, b.Territory);
+            SetHeroLocations(agg, b.Territory!);
+            SetHeroLocations(def, b.Territory!);
+            HandleBattleOutcome(agg, def, b.Territory!);
         }
 
         DetermineIfCapturedLeadersMustBeReleased();
@@ -222,10 +228,10 @@ public partial class Game
         var defHeroSurvives = !aggressorTreachery.Succeeded && (defenderTreachery.Succeeded || (!lasgunShield && !outcome.DefHeroKilled));
 
         if (aggHeroSurvives && AggressorPlan.Hero != null)
-            ActivateSmugglerIfApplicable(AggressorPlan.Player, AggressorPlan.Hero, DefenderPlan.Hero, CurrentBattle.Territory);
+            ActivateSmugglerIfApplicable(AggressorPlan.Player, AggressorPlan.Hero, DefenderPlan.Hero, CurrentBattle.Territory!);
 
         if (defHeroSurvives && DefenderPlan.Hero != null)
-            ActivateSmugglerIfApplicable(DefenderPlan.Player, DefenderPlan.Hero, AggressorPlan.Hero, CurrentBattle.Territory);
+            ActivateSmugglerIfApplicable(DefenderPlan.Player, DefenderPlan.Hero, AggressorPlan.Hero, CurrentBattle.Territory!);
     }
 
     private void DiscardOneTimeCards(Battle plan)
@@ -265,7 +271,7 @@ public partial class Game
         if (CurrentBattle is null)
             return;
 
-        var locationWithResources = CurrentBattle.Territory.Locations.FirstOrDefault(l => ResourcesOnPlanet.ContainsKey(l));
+        var locationWithResources = CurrentBattle.Territory!.Locations.FirstOrDefault(l => ResourcesOnPlanet.ContainsKey(l));
 
         if (locationWithResources != null && plan.Hero != null && SkilledAs(plan.Hero, LeaderSkill.Sandmaster) && plan.Player.AnyForcesIn(CurrentBattle.Territory) > 0)
         {
@@ -302,7 +308,7 @@ public partial class Game
 
         if (playerIsSkilled || leaderIsSkilled)
         {
-            var traitor = TraitorDeck.Draw();
+            var traitor = TraitorDeck!.Draw();
             TraitorsDeciphererCanLookAt.Add(traitor);
             plan.Player.KnownNonTraitors.Add(traitor);
 
@@ -318,9 +324,9 @@ public partial class Game
     {
         if (TraitorsDeciphererCanLookAt.Count > 0)
         {
-            foreach (var item in TraitorsDeciphererCanLookAt) TraitorDeck.PutOnTop(item);
+            foreach (var item in TraitorsDeciphererCanLookAt) TraitorDeck!.PutOnTop(item);
 
-            TraitorDeck.Shuffle();
+            TraitorDeck!.Shuffle();
             Stone(Milestone.Shuffled);
             TraitorsDeciphererCanLookAt.Clear();
         }
@@ -331,7 +337,7 @@ public partial class Game
         if (CurrentBattle is null)
             return;
 
-        if (HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CollectResourcesForUseless, CurrentBattle.Territory))
+        if (HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CollectResourcesForUseless, CurrentBattle.Territory!))
         {
             CollectTueksSietchBonus(playerPlan.Player, playerPlan.Weapon);
             CollectTueksSietchBonus(playerPlan.Player, playerPlan.Defense);
@@ -353,7 +359,7 @@ public partial class Game
             return;
 
         if (!HasStrongholdAdvantage(winnerPlan.Initiator, StrongholdAdvantage.CollectResourcesForDial,
-                CurrentBattle.Territory)) return;
+                CurrentBattle.Territory!)) return;
         
         var collected = (int)Math.Floor(opponentPlan.Dial(this, winnerPlan.Initiator));
         if (collected <= 0) 
@@ -421,7 +427,8 @@ public partial class Game
             return;
 
         var black = GetPlayer(Faction.Black);
-
+        if (black == null || !CurrentBattle.IsAggressorOrDefender(Faction.Black)) return;
+        
         //DetermineIfDeadLeaderMustBeReleased
         var deadCaptives = black.Leaders.Where(l => CapturedLeaders.ContainsKey(l) && !IsAlive(l)).ToList();
         foreach (var captive in deadCaptives) ReturnCapturedLeader(black, captive);
@@ -429,11 +436,11 @@ public partial class Game
         //DetermineIfLeaderUsedInBattleMustBeReleased
         if (Version < 179 || !BlackDoNotHaveToReturnUsedCapturedLeader)
         {
-            var usedLeaderInBattle = CurrentBattle.PlanOf(black).Hero;
-            if (usedLeaderInBattle is Leader leader && CapturedLeaders.ContainsKey(leader)) 
+            var usedLeaderInBattle = CurrentBattle.PlanOf(black)?.Hero;
+            if (usedLeaderInBattle is Leader leader && CapturedLeaders.ContainsKey(leader))
                 ReturnCapturedLeader(black, leader);
         }
-        
+
         //DetermineIfCapturedLeadersMustBeReleasedWhenBlackHasNoLeadersLeft
         if (!black.Leaders.Any(l => !CapturedLeaders.ContainsKey(l) && IsAlive(l)))
         {
@@ -447,7 +454,7 @@ public partial class Game
         if (CapturedLeaders.TryGetValue(toReturn, out var value))
         {
             var originalPlayer = GetPlayer(value);
-            originalPlayer.Leaders.Add(toReturn);
+            originalPlayer!.Leaders.Add(toReturn);
             currentOwner.Leaders.Remove(toReturn);
             CapturedLeaders.Remove(toReturn);
 
@@ -464,7 +471,10 @@ public partial class Game
         get
         {
             var brown = GetPlayer(Faction.Brown);
-            return CurrentBattle != null && CurrentBattle.IsAggressorOrDefender(brown) && CurrentBattle.TreacheryOfOpponent(brown).Succeeded;
+            if (brown is null) return false;
+            return CurrentBattle != null && 
+                   CurrentBattle.IsAggressorOrDefender(brown) && 
+                   CurrentBattle.TreacheryOfOpponent(brown)?.Succeeded is true;
         }
     }
 
@@ -542,8 +552,8 @@ public partial class Game
              plan.Defense is not { Type: TreacheryCardType.HarassAndWithdraw })) return;
         
         var forceSupplier = Battle.DetermineForceSupplier(this, plan.Player);
-        var undialedNormalForces = forceSupplier.ForcesIn(CurrentBattle.Territory) - plan.Forces - plan.ForcesAtHalfStrength;
-        var undialedSpecialForces = forceSupplier.SpecialForcesIn(CurrentBattle.Territory) - plan.SpecialForces - plan.SpecialForcesAtHalfStrength;
+        var undialedNormalForces = forceSupplier.ForcesIn(CurrentBattle.Territory!) - plan.Forces - plan.ForcesAtHalfStrength;
+        var undialedSpecialForces = forceSupplier.SpecialForcesIn(CurrentBattle.Territory!) - plan.SpecialForces - plan.SpecialForcesAtHalfStrength;
         forceSupplier.ForcesToReserves(territory, undialedNormalForces, false);
         forceSupplier.ForcesToReserves(territory, undialedSpecialForces, true);
 
@@ -566,8 +576,8 @@ public partial class Game
             BattleOutcome.Loser is not { } loser || BattleOutcome.LoserBattlePlan is not { } loserPlan)
             return;
         
-        ProcessWinnerLosses(CurrentBattle.Territory, winner, winnerPlan, false);
-        ProcessLoserLosses(CurrentBattle.Territory, loser, loserPlan);
+        ProcessWinnerLosses(CurrentBattle.Territory!, winner, winnerPlan, false);
+        ProcessLoserLosses(CurrentBattle.Territory!, loser, loserPlan);
     }
 
     internal bool IsProtectedByCarthagAdvantage(Battle plan, Territory territory)
@@ -595,6 +605,7 @@ public partial class Game
         if (CurrentPinkBattleContribution > 0 && winner.OrAllyIs(Faction.Pink))
         {
             var pink = GetPlayer(Faction.Pink);
+            if (pink is null) return;
             pink.KillForces(territory, CurrentPinkBattleContribution, false, true);
             Log(Faction.Pink, " lose ", CurrentPinkBattleContribution, pink.Force, InOrOn(territory), territory);
         }
@@ -605,6 +616,7 @@ public partial class Game
         if (CurrentPinkBattleContribution > 0 && loser.OrAllyIs(Faction.Pink))
         {
             var pink = GetPlayer(Faction.Pink);
+            if (pink is null) return;
             Log(Faction.Pink, " lose all ", pink.AnyForcesIn(territory), " forces ", InOrOn(territory), territory);
             pink.KillAllForces(territory, true);
         }
@@ -675,7 +687,7 @@ public partial class Game
         var result = 0;
 
         var brown = GetPlayer(Faction.Brown);
-        if (paidBy.Faction != Faction.Brown && (Version < 126 || !traitorWasRevealed))
+        if (brown != null && paidBy.Faction != Faction.Brown && (Version < 126 || !traitorWasRevealed))
         {
             result = (int)Math.Floor(0.5f * costsExcludingPaymentByBrownAlly);
 
@@ -826,7 +838,7 @@ public partial class Game
             if (aggLeader is null || defLeader is null)
                 throw new NullReferenceException();
             
-            TwoTraitorsCalled(agg, def, agg.Player, def.Player, b.Territory, aggLeader, defLeader);
+            TwoTraitorsCalled(agg, def, agg.Player, def.Player, b.Territory!, aggLeader, defLeader);
         }
         else if (AggressorTraitorAction != null)
         {
@@ -835,7 +847,7 @@ public partial class Game
             var loserGambit = AggressorTraitorAction.Succeeded ? def : agg;
             var winnerGambit = AggressorTraitorAction.Succeeded ? agg : def;
             if (winner.Is(Faction.Black)) BlackDoNotHaveToReturnUsedCapturedLeader = true;
-            OneTraitorCalled(b.Territory, winner, loser, loserGambit, winnerGambit);
+            OneTraitorCalled(b.Territory!, winner, loser, loserGambit, winnerGambit);
         }
     }
 
@@ -1002,10 +1014,12 @@ public partial class Game
     private void SelectVictimOfBlackWinner(Battle victimAction)
     {
         var victim = GetPlayer(victimAction.Initiator);
-        var random = Random ?? throw new NullReferenceException("Random is not initialized");
-
-        //Get all living leaders from the opponent that haven't fought in another territory this turn
-        Deck<Leader> availableLeaders = new(victim.Leaders.Where(l => l.HeroType != HeroType.Auditor && LeaderState[l].Alive && CanJoinCurrentBattle(l)), random);
+        if (victim is null) return;
+        
+        // Get all living leaders from the opponent that haven't fought in another territory this turn
+        Deck<Leader> availableLeaders = new(victim.Leaders.Where(l => l.HeroType != HeroType.Auditor 
+                                                                      && LeaderState[l].Alive 
+                                                                      && CanJoinCurrentBattle(l)), Random!);
 
         if (!availableLeaders.IsEmpty)
         {
@@ -1034,7 +1048,7 @@ public partial class Game
         if (defenderPlan.Hero == Vidal && WhenToSetAsideVidal == VidalMoment.AfterUsedInBattle && !(defenderTraitorAction.Succeeded && !aggressorTraitorAction.Succeeded)) SetAsideVidal();
 
         ReturnSkilledLeadersInFrontOfShieldAfterBattle();
-        if (Version >= 162) DetermineOccupation(currentBattle.Territory);
+        if (Version >= 162) DetermineOccupation(currentBattle.Territory!);
         if (!Applicable(Rule.FullPhaseKarma)) AllowPreventedBattleFactionAdvantages();
         if (CurrentJuice is { Type: JuiceType.Aggressor }) CurrentJuice = null;
         CurrentDiplomacy = null;

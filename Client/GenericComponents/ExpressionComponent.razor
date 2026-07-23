@@ -8,87 +8,94 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-@foreach (var part in Expression.Elements)
+@if (Expression is { } expression)
 {
-    switch (part)
+    @foreach (var part in expression.Elements)
     {
-        case null:
-            <span class="fw-bold">none</span>
-            break;
+        switch (part)
+        {
+            case null:
+                <span class="fw-bold">none</span>
+                break;
 
-        case string:
-            <span style=@TextBorder>@part</span>
-            break;
+            case string:
+                <span style=@TextBorder>@part</span>
+                break;
 
-        case IEnumerable e:
-            foreach (var expression in DetermineElements(e))
-            {
-                <ExpressionComponent Expression="@expression" Size=@Size Game=Game TextBorder=@TextBorder/>
-            }
-            break;
+            case IEnumerable e:
+                foreach (var nestedExpression in DetermineElements(e))
+                {
+                    <ExpressionComponent Expression="@nestedExpression" Size=@Size Game=Game TextBorder=@TextBorder/>
+                }
+                break;
 
-        case Message m:
-            <ExpressionComponent Expression=m.Expression Size=@Size Game=Game/>
-            break;
+            case Message m:
+                <ExpressionComponent Expression=m.Expression Size=@Size Game=Game/>
+                break;
 
-        case MessagePart mp:
-            <ExpressionComponent Expression=mp.Expression Size=@Size Game=Game/>
-            break;
+            case MessagePart mp:
+                <ExpressionComponent Expression=mp.Expression Size=@Size Game=Game/>
+                break;
 
-        case int i:
-            <SimpleNumberComponent Size=@Size>@i</SimpleNumberComponent>
-            break;
+            case int i:
+                <SimpleNumberComponent Size=@Size>@i</SimpleNumberComponent>
+                break;
 
-        case float f:
-            <SimpleNumberComponent Size=@Size>@Support.RoundWithHalves(f)</SimpleNumberComponent>
-            break;
+            case float f:
+                <SimpleNumberComponent Size=@Size>@Support.RoundWithHalves(f)</SimpleNumberComponent>
+                break;
 
-        case double d:
-            <SimpleNumberComponent Size=@Size>@Support.RoundWithHalves(d)</SimpleNumberComponent>
-            break;
+            case double d:
+                <SimpleNumberComponent Size=@Size>@Support.RoundWithHalves(d)</SimpleNumberComponent>
+                break;
 
-        case Payment payment:
-            <TextBeforeImage ImageUrl="@Client.CurrentSkin.Harvester_URL" Size=@Size Title="@Client.CurrentSkin.Describe(Concept.Resource)">@payment.Amount</TextBeforeImage>
-            if (payment.By != Faction.None)
-            {
-                <span> by <FactionComponent Faction=payment.By Diameter=@Size/></span>
-            }
-            break;
+            case Payment payment:
+                <TextBeforeImage ImageUrl="@Client.CurrentSkin.Harvester_URL" Size=@Size Title="@Client.CurrentSkin.Describe(Concept.Resource)">@payment.Amount</TextBeforeImage>
+                if (payment.By != Faction.None)
+                {
+                    <span> by <FactionComponent Faction=payment.By Diameter=@Size/></span>
+                }
+                break;
 
-        case Faction faction:
-            <FactionComponent Faction=faction Diameter=@Size HasShadow="false"/>
-            break;
+            case Faction faction:
+                <FactionComponent Faction=faction Diameter=@Size HasShadow="false"/>
+                break;
 
-        case TreacheryCard or ResourceCard or LeaderSkill or TechToken or DiscoveryToken or IHero or TerrorType:
-            <RichText Shown=@part Game=Game Style=@TextBorder/>
-            break;
+            case TreacheryCard or ResourceCard or LeaderSkill or TechToken or DiscoveryToken or IHero or TerrorType when Game is { } game:
+                <RichText Shown=@part Game=game Style=@TextBorder/>
+                break;
 
-        case Concept monster when monster == Concept.Monster:
-            var label = @Client.CurrentSkin.Describe(Concept.Monster);
-            <img src="@Client.CurrentSkin.Monster_URL" alt="@label" width="@Size" height="@Size" title="@label" style="filter: drop-shadow(2px 2px 2px black);"/>
-            break;
+            case TreacheryCard or ResourceCard or LeaderSkill or TechToken or DiscoveryToken or IHero or TerrorType:
+                <span style=@TextBorder>@Client.CurrentSkin.Describe(part)</span>
+                break;
+
+            case Concept monster when monster == Concept.Monster:
+                var label = @Client.CurrentSkin.Describe(Concept.Monster);
+                <img src="@Client.CurrentSkin.Monster_URL" alt="@label" width="@Size" height="@Size" title="@label" style="filter: drop-shadow(2px 2px 2px black);"/>
+                break;
     
-        case FactionForce or FactionSpecialForce or Ambassador:
-            <Image Shown=@part Width=@Size/>
-            break;
+            case FactionForce or FactionSpecialForce or Ambassador:
+                <Image Shown=@part Width=@Size/>
+                break;
 
-        case Location or Territory or AuctionType or BrownEconomicsStatus or TreacheryCardType or StrongholdAdvantage or FactionAdvantage or Ruleset or Rule:
-            <span class="fw-bold" style=@TextBorder>@Client.CurrentSkin.Describe(part)</span>
-            break;
+            case Location or Territory or AuctionType or BrownEconomicsStatus or TreacheryCardType or StrongholdAdvantage or FactionAdvantage or Ruleset or Rule:
+                <span class="fw-bold" style=@TextBorder>@Client.CurrentSkin.Describe(part)</span>
+                break;
 
-        default:
-            <span style=@TextBorder>@Client.CurrentSkin.Describe(part)</span>
-            break;
+            default:
+                <span style=@TextBorder>@Client.CurrentSkin.Describe(part)</span>
+                break;
+        }
     }
 }
 
 @code {
 
     [Parameter]
-    public Game Game { get; set; }
+    public Game? Game { get; set; }
 
     [Parameter]
-    public Expression Expression { get; set; }
+    public Expression? Expression { get; set; }
 
     [Parameter]
     public int Size { get; set; } = 14;

@@ -38,7 +38,7 @@
 
 @code {
 
-    private Location _selectedLocation;
+    private Location? _selectedLocation;
 
     protected override DiscoveryRevealed ConfirmedResult => new(Game, Faction) { Location = _selectedLocation };
 

@@ -29,7 +29,7 @@ public class BattleInitiated : GameEvent
     public int _territoryId;
 
     [JsonIgnore]
-    public Territory Territory
+    public Territory? Territory
     {
         get => Game.Map.TerritoryLookup.Find(_territoryId);
         set => _territoryId = Game.Map.TerritoryLookup.GetId(value);
@@ -55,7 +55,7 @@ public class BattleInitiated : GameEvent
     public Faction Defender => ActualInitiator == Aggressor ? ActualTarget : ActualInitiator;
 
     [JsonIgnore]
-    public Player DefendingPlayer => Game.GetPlayer(Defender);
+    public Player? DefendingPlayer => Game.GetPlayer(Defender);
 
     [JsonIgnore]
     public Faction Aggressor
@@ -63,19 +63,21 @@ public class BattleInitiated : GameEvent
         get
         {
             var target = ActualTarget;
-
-            if (IsAggressorByJuice(Game, target))
-                return target;
-            if (IsInitiatorByJuice(Game, Player, Game.GetPlayer(target)))
-                return target;
-            if (IsTargetByJuice(Game, Player, Game.GetPlayer(target)))
+            var targetPlayer = Game.GetPlayer(target);
+            
+            if (targetPlayer == null)
+                return ActualInitiator;
+            
+            if (IsAggressorByJuice(Game, target) 
+                || IsInitiatorByJuice(Game, Player, targetPlayer)
+                || IsTargetByJuice(Game, Player, targetPlayer))
                 return target;
             return ActualInitiator;
         }
     }
 
     [JsonIgnore]
-    public Player AggressivePlayer => Game.GetPlayer(Aggressor);
+    public Player? AggressivePlayer => Game.GetPlayer(Aggressor);
 
     public static bool IsAggressorByJuice(Game g, Faction f)
     {
@@ -101,7 +103,7 @@ public class BattleInitiated : GameEvent
 
     public bool IsInvolved(Faction f)
     {
-        return Initiator == f || Target == f || Player.Ally == f || Game.GetPlayer(Target).Ally == f;
+        return Initiator == f || Target == f || Player.Ally == f || Game.GetAlly(Target) == f;
     }
 
     public bool IsAggressorOrDefender(Player p)
@@ -114,7 +116,7 @@ public class BattleInitiated : GameEvent
         return Aggressor == f || Defender == f;
     }
 
-    public Player OpponentOf(Player p)
+    public Player? OpponentOf(Player p)
     {
         if (p.Faction == Initiator || p.Ally == Initiator)
             return Game.GetPlayer(ActualTarget);
@@ -124,56 +126,57 @@ public class BattleInitiated : GameEvent
         return null;
     }
 
-    public Player OpponentOf(Faction f)
+    public Player? OpponentOf(Faction f)
     {
-        return OpponentOf(Game.GetPlayer(f));
+        var player = Game.GetPlayer(f);
+        return player is null ? null : OpponentOf(player);
     }
 
-    public Battle PlanOf(Player p)
+    public Battle? PlanOf(Player? p)
     {
         if (p == null) return null;
 
         if (p.Faction == Aggressor)
             return Game.AggressorPlan;
-        if (p.Faction == Defender)
-            return Game.DefenderPlan;
-        return null;
+        return p.Faction == Defender ? Game.DefenderPlan : null;
     }
 
-    public Battle PlanOfOpponent(Player p)
+    public Battle? PlanOfOpponent(Player? p)
     {
-        return PlanOf(OpponentOf(p));
+        return p is null ? null : PlanOf(OpponentOf(p));
     }
 
-    public Battle PlanOfOpponent(Faction f)
+    public Battle? PlanOfOpponent(Faction f)
     {
         return PlanOf(OpponentOf(f));
     }
 
-    public Battle PlanOf(Faction f)
+    public Battle? PlanOf(Faction f)
     {
         if (f == Aggressor)
             return Game.AggressorPlan;
-        if (f == Defender)
-            return Game.DefenderPlan;
-        return null;
+        
+        return f == Defender 
+            ? Game.DefenderPlan 
+            : null;
     }
 
-    public Battle PreviousPlanOf(Faction f)
+    public Battle? PreviousPlanOf(Faction f)
     {
         if (f == Aggressor)
             return Game.PreviousAggressorPlan;
-        if (f == Defender)
-            return Game.PreviousDefenderPlan;
-        return null;
+        
+        return f == Defender 
+            ? Game.PreviousDefenderPlan 
+            : null;
     }
     
-    public TreacheryCalled TreacheryOfOpponent(Player p)
+    public TreacheryCalled? TreacheryOfOpponent(Player p)
     {
         return TreacheryOf(OpponentOf(p));
     }
 
-    public TreacheryCalled TreacheryOf(Player p)
+    public TreacheryCalled? TreacheryOf(Player? p)
     {
         if (p == null) return null;
 
@@ -184,7 +187,7 @@ public class BattleInitiated : GameEvent
         return null;
     }
 
-    public TreacheryCalled TreacheryOf(Faction f)
+    public TreacheryCalled? TreacheryOf(Faction f)
     {
         return TreacheryOf(Game.GetPlayer(f));
     }
@@ -218,12 +221,16 @@ public class BattleInitiated : GameEvent
         Game.BattleAboutToStart = this;
 
         var pink = GetPlayer(Faction.Pink);
-        Game.Enter(pink != null && IsInvolved(Faction.Pink) && pink.Occupies(Territory) && pink.HasAlly && pink.AlliedPlayer.Occupies(Territory), Phase.ClaimingBattle, Game.InitiateBattle);
+        Game.Enter(pink != null && IsInvolved(Faction.Pink) 
+                                && Territory != null
+                                && pink.Occupies(Territory) 
+                                && pink.HasAlly 
+                                && pink.AlliedPlayer.Occupies(Territory), Phase.ClaimingBattle, Game.InitiateBattle);
     }
 
     public override Message GetMessage()
     {
-        return Message.Express(Initiator, " initiate battle against ", Target, Territory.IsHomeworld ? " on " : " in ", Territory);
+        return Message.Express(Initiator, " initiate battle against ", Target, Territory?.IsHomeworld is true ? " on " : " in ", Territory);
     }
 
     #endregion Execution

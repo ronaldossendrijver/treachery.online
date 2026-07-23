@@ -49,16 +49,16 @@
 @code {
 
     [Parameter]
-    public Game Game { get; set; }
+    public Game? Game { get; set; }
 
     [Parameter]
-    public Player Player { get; set; }
+    public Player? Player { get; set; }
 
     [Parameter]
-    public Dictionary<Location, Battalion> Forces { get; set; }
+    public Dictionary<Location, Battalion>? Forces { get; set; }
 
     [Parameter]
-    public IEnumerable<Location> Locations { get; set; }
+    public IEnumerable<Location>? Locations { get; set; }
 
     [Parameter]
     public bool MaySelectFromStorm { get; set; }

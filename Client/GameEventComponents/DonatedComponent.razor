@@ -51,7 +51,7 @@
 
     private Faction target;
     private int resources;
-    private TreacheryCard card;
+    private TreacheryCard? card;
     private bool fromBank;
 
     protected override Donated ConfirmedResult => new(Game, Faction) { Target = target, Resources = resources, Card = card, FromBank = fromBank };

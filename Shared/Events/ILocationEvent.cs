@@ -13,7 +13,7 @@ public interface ILocationEvent
 {
     public Faction Initiator { get; }
 
-    public Location To { get; }
+    public Location? To { get; }
 
     public int TotalAmountOfForcesAddedToLocation { get; }
 

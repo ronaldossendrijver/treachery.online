@@ -28,7 +28,7 @@
 
     protected override Faction IsFactionSpecific => Faction.Yellow;
 
-    private Territory target;
+    private Territory? target;
 
     protected override KarmaMonster ConfirmedResult => new(Game, Faction) { Territory = target };
 

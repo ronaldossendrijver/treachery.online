@@ -72,8 +72,8 @@
 
     private Faction target;
     private ClairvoyanceQuestion question;
-    private object questionParameterA;
-    private object questionParameterB;
+    private object? questionParameterA;
+    private object? questionParameterB;
 
     protected override ClairVoyancePlayed ConfirmedResult => new(Game, Faction) { Target = target, Question = question, Parameter1 = questionParameterA, Parameter2 = questionParameterB };
 

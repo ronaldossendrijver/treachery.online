@@ -31,7 +31,7 @@
 
     protected override string Background => Client.CurrentSkin.GetImageUrl(BrownMovePrevention.CardToUse(Player));
 
-    private Territory territory;
+    private Territory? territory;
 
     protected override void OnAfterRender(bool firstRender)
     {

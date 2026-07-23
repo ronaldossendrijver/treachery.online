@@ -56,7 +56,7 @@
 
     private int amountOfForces;
     private int amountOfSpecialForces;
-    private IHero hero;
+    private IHero? hero;
     private bool assignSkill;
 
     protected override KarmaFreeRevival ConfirmedResult => new(Game, Faction) { AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = hero, AssignSkill = assignSkill };

@@ -633,6 +633,8 @@ public class Tests
 #pragma warning disable CS0162 // Unreachable code detected
     // ReSharper disable HeuristicUnreachableCode
 
+    public const bool SingleThreadTesting = true; 
+
     [TestMethod]
     public void Regression()
     {
@@ -659,7 +661,7 @@ public class Tests
             var gamesTested = 0;
             ParallelOptions po = new()
             {
-                MaxDegreeOfParallelism = Environment.ProcessorCount
+                MaxDegreeOfParallelism = SingleThreadTesting ? 1 : Environment.ProcessorCount
             };
             Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, fileName =>
             {

@@ -84,25 +84,25 @@ else
     
     private ElementReference _focusField;
     
-    private string _username;
-    private string _password;
-    private string LoginMessage { get; set; }
+    private string? _username;
+    private string? _password;
+    private string? LoginMessage { get; set; }
     
-    private string _newUsername;
-    private string _newPlayerName;
-    private string _newPassword;
-    private string _newPasswordConfirm;
-    private string _newEmail;
-    private string NewAccountMessage { get; set; }
+    private string? _newUsername;
+    private string? _newPlayerName;
+    private string? _newPassword;
+    private string? _newPasswordConfirm;
+    private string? _newEmail;
+    private string? NewAccountMessage { get; set; }
     
-    private string _passwordResetUsernameOrEmail;
-    private string PasswordResetMessage { get; set; }
+    private string? _passwordResetUsernameOrEmail;
+    private string? PasswordResetMessage { get; set; }
     
-    private string _resetToken;
-    private string _resetUsername;
-    private string _resetPassword;
-    private string _resetPasswordConfirm;
-    private string ResetPasswordMessage { get; set; }
+    private string? _resetToken;
+    private string? _resetUsername;
+    private string? _resetPassword;
+    private string? _resetPasswordConfirm;
+    private string? ResetPasswordMessage { get; set; }
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

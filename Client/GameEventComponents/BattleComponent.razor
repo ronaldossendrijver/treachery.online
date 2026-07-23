@@ -257,10 +257,10 @@
     private int SpecialForces { get; set; }
     private int Resources { get; set; }
     private int ResourcesFromAlly { get; set; }
-    private IHero Hero { get; set; }
+    private IHero? Hero { get; set; }
     private bool Messiah { get; set; }
-    private TreacheryCard Defense { get; set; }
-    private TreacheryCard Weapon { get; set; }
+    private TreacheryCard? Defense { get; set; }
+    private TreacheryCard? Weapon { get; set; }
     private int BankerBonus { get; set; }
 
     protected override void OnInitialized()

@@ -31,14 +31,14 @@ else
 @code {
 
     [Parameter]
-    public object Shown { get; set; }
+    public object? Shown { get; set; }
 
     [Parameter]
-    public string Src { get; set; }
+    public string? Src { get; set; }
 
     [Parameter]
-    public string Popover { get; set; }
-    private string _popover;
+    public string? Popover { get; set; }
+    private string? _popover;
     private bool _popoverNeedsRefresh;
 
     [Parameter]
@@ -54,7 +54,7 @@ else
     public EventCallback OnClick { get; set; }
 
     [Parameter]
-    public Game Game { get; set; }
+    public Game? Game { get; set; }
     
     [Parameter]
     public bool NoShadow { get; set; }
@@ -78,7 +78,7 @@ else
     public bool Pointer { get; set; }
     
     private ElementReference _element;
-    private string _imgWidth;
+    private string _imgWidth = string.Empty;
 
     protected override void OnParametersSet()
     {

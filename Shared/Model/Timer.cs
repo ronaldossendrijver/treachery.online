@@ -11,22 +11,20 @@ using System;
 
 namespace Treachery.Shared;
 
-public class Timer<T>
+public class Timer<T> where T : notnull
 {
     private readonly Dictionary<T, TimeSpan> _times = new();
 
     public TimeSpan TimeSpent(T timedItem)
     {
-        if (_times.TryGetValue(timedItem, out var ts))
-            return ts;
-        return TimeSpan.Zero;
+        return _times.TryGetValue(timedItem, out var ts) 
+            ? ts 
+            : TimeSpan.Zero;
     }
 
     public void Add(T timedItem, TimeSpan ts)
     {
-        if (_times.ContainsKey(timedItem))
+        if (!_times.TryAdd(timedItem, ts))
             _times[timedItem] += ts;
-        else
-            _times.Add(timedItem, ts);
     }
 }

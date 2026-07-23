@@ -29,7 +29,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Cyan;
 
-    private Location target;
+    private Location? target;
 
     protected override PerformCyanSetup ConfirmedResult => new(Game, Faction) { Target = target };
 

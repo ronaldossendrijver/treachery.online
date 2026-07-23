@@ -40,7 +40,7 @@
 
     private Dictionary<Location, Battalion> forces = new();
 
-    private DiscoveredLocation toLocation;
+    private DiscoveredLocation? toLocation;
 
     protected override DiscoveryEntered ConfirmedResult => new(Game, Faction) { ForceLocations = forces, To = toLocation, Passed = false };
 

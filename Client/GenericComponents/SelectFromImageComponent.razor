@@ -32,10 +32,10 @@
 @code {
 
     [Parameter]
-    public IEnumerable<T> Values { get; set; }
+    public IEnumerable<T>? Values { get; set; }
 
     [Parameter]
-    public T Value { get; set; }
+    public T? Value { get; set; }
 
     [Parameter]
     public EventCallback<T> ValueChanged { get; set; }
@@ -44,7 +44,7 @@
     public EventCallback<T> OnChanged { get; set; }    
     
     [Parameter]
-    public List<T> Selected { get; set; }
+    public List<T>? Selected { get; set; }
 
     [Parameter]
     public int ImageWidth { get; set; } = 60;
@@ -59,7 +59,7 @@
     public bool Required { get; set; } = true;
 
     [Parameter]
-    public RenderFragment Label { get; set; }
+    public RenderFragment? Label { get; set; }
 
     [Parameter]
     public bool Disabled { get; set; }
@@ -68,7 +68,7 @@
     public bool PopupsAsTooltip { get; set; }
 
     [Parameter]
-    public Game Game { get; set; }
+    public Game? Game { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {

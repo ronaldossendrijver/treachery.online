@@ -67,7 +67,7 @@ public partial class Game
             }
             else
             {
-                if (Map.HiddenMobileStronghold.AttachedToLocation.Sector == SectorInStorm)
+                if (Map.HiddenMobileStronghold.AttachedToLocation?.Sector == SectorInStorm)
                 {
                     Log("The storm prevents ", Map.HiddenMobileStronghold, " from moving");
                     DetermineStorm();

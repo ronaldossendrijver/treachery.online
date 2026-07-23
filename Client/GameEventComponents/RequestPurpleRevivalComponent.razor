@@ -25,7 +25,7 @@
     
     protected override Faction IsFactionSpecific => Faction.Purple;
 
-    private IHero hero;
+    private IHero? hero;
 
     protected override RequestPurpleRevival ConfirmedResult => new(Game, Faction) { Hero = hero };
 }

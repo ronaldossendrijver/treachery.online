@@ -28,7 +28,7 @@
 
         @Options
 
-        @foreach (var item in Values) {
+        @foreach (var item in ValuesToShow) {
 
             <option value=@GetId(item) selected=@Equals(item, Value)>@GetLabel(item)</option>
         }
@@ -40,13 +40,13 @@
 @code {
 
     [Parameter]
-    public IEnumerable<T> Values { get; set; }
+    public IEnumerable<T>? Values { get; set; }
 
     [Parameter]
-    public T Value { get; set; }
+    public T? Value { get; set; }
 
     [Parameter]
-    public IEnumerable<string> ValueLabels { get; set; }
+    public IEnumerable<string>? ValueLabels { get; set; }
 
     [Parameter]
     public EventCallback<T> ValueChanged { get; set; }
@@ -55,19 +55,19 @@
     public EventCallback<T> OnChanged { get; set; }
 
     [Parameter]
-    public bool AddEmptyValue { get; set; } = false;
+    public bool AddEmptyValue { get; set; }
 
     [Parameter]
     public string EmptyLabel { get; set; } = "";
 
     [Parameter]
-    public RenderFragment Options { get; set; }
+    public RenderFragment? Options { get; set; }
 
     [Parameter]
-    public bool Disabled { get; set; } = false;
+    public bool Disabled { get; set; }
 
     [Parameter]
-    public RenderFragment Label { get; set; }
+    public RenderFragment? Label { get; set; }
 
     [Parameter]
     public ClickHintButton ButtonHint { get; set; } = ClickHintButton.None;
@@ -78,22 +78,26 @@
     [Parameter]
     public bool Required { get; set; } = true;
 
+    private T[] ValuesToShow { get; set; } = [];
+
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
 
-        if (!Values.Contains(Value))
+        ValuesToShow = Values?.ToArray() ?? [];
+
+        if (!ValuesToShow.Contains(Value))
         {
-            await SetValue(Required ? Values.FirstOrDefault() : default);
+            await SetValue(Required ? ValuesToShow.FirstOrDefault() : default);
         }
     }
 
     private async Task ChangeValue(ChangeEventArgs e)
     {
-        await SetValue(Values.FirstOrDefault(v => GetId(v).Equals(e.Value as string)));
+        await SetValue(ValuesToShow.FirstOrDefault(v => GetId(v).Equals(e.Value as string)));
     }
 
-    private async Task SetValue(T newValue) {
+    private async Task SetValue(T? newValue) {
 
         if (!Equals(Value, newValue))
         {
@@ -110,10 +114,10 @@
             return EmptyLabel;
         }
 
-        if (ValueLabels != null && ValueLabels.Count() == Values.Count())
+        if (ValueLabels != null && ValueLabels.Count() == ValuesToShow.Length)
         {
             var i = 0;
-            foreach (var item in Values)
+            foreach (var item in ValuesToShow)
             {
                 if (value.Equals(item)) return ValueLabels.ElementAt(i);
                 i++;

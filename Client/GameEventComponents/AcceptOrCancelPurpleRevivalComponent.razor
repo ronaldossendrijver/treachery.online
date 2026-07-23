@@ -70,7 +70,7 @@
 
     protected override Faction IsFactionSpecific => Faction.Purple;
 
-    private IHero offerHero;
+    private IHero? offerHero;
     private int price;
 
     protected override AcceptOrCancelPurpleRevival ConfirmedResult => new(Game, Faction) { Cancel = false, Hero = offerHero, Price = price };

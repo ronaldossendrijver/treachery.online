@@ -65,7 +65,7 @@
     public new string Id { get; set; } = "";
 
     [Parameter]
-    public TrackerComponent Tracker { get; set; }
+    public TrackerComponent? Tracker { get; set; }
 
     private async Task Pick(int cardId)
     {

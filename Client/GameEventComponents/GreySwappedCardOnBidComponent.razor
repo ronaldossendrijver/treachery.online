@@ -23,7 +23,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Grey;
 
-    private TreacheryCard card;
+    private TreacheryCard? card;
 
     protected override GreySwappedCardOnBid ConfirmedResult => new(Game, Faction) { Passed = false, Card = card };
 

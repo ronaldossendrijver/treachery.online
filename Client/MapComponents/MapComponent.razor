@@ -94,7 +94,7 @@
     protected static string Round(double x) => Utilities.Round(x);
 
     private static int _nextId;
-    private string _id;
+    private string? _id;
     protected string Id
     {
         get { return _id ??= (_nextId++).ToString(); }

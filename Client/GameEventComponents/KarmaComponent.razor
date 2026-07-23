@@ -27,7 +27,7 @@
 
 @code {
 
-    private TreacheryCard card;
+    private TreacheryCard? card;
     private FactionAdvantage prevented;
 
     protected override Karma ConfirmedResult => new(Game, Faction) { Card = card, Prevented = prevented };

@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
@@ -29,7 +27,7 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
 
     public Ambassador BlueSelectedAmbassador { get; set; }
 
-    public string _brownCardIds;
+    public string _brownCardIds = string.Empty;
 
     [JsonIgnore]
     public IEnumerable<TreacheryCard> BrownCards
@@ -47,14 +45,14 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
     public int _yellowOrOrangeToId;
 
     [JsonIgnore]
-    public Location YellowOrOrangeTo
+    public Location? YellowOrOrangeTo
     {
         get => Game.Map.LocationLookup.Find(_yellowOrOrangeToId);
         set => _yellowOrOrangeToId = Game.Map.LocationLookup.GetId(value);
     }
 
     [JsonIgnore]
-    public Location To => YellowOrOrangeTo;
+    public Location? To => YellowOrOrangeTo;
 
     public string _yellowForceLocations = "";
 
@@ -68,7 +66,7 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
     public int _greyCardId;
 
     [JsonIgnore]
-    public TreacheryCard GreyCard
+    public TreacheryCard? GreyCard
     {
         get => TreacheryCardManager.Get(_greyCardId);
         set => _greyCardId = TreacheryCardManager.GetId(value);
@@ -81,7 +79,7 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
     public int _purpleHeroId = -1;
 
     [JsonIgnore]
-    public IHero PurpleHero
+    public IHero? PurpleHero
     {
         get => LeaderManager.HeroLookup.Find(_purpleHeroId);
         set => _purpleHeroId = LeaderManager.HeroLookup.GetId(value);
@@ -90,13 +88,13 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
     public bool PurpleAssignSkill { get; set; }
 
     [JsonIgnore]
-    public int TotalAmountOfForcesAddedToLocation => YellowForceLocations != null ? YellowForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
+    public int TotalAmountOfForcesAddedToLocation => YellowForceLocations.Values.Sum(b => b.TotalAmountOfForces);
 
     [JsonIgnore]
-    public int ForcesAddedToLocation => YellowForceLocations != null ? YellowForceLocations.Values.Sum(b => b.AmountOfForces) : 0;
+    public int ForcesAddedToLocation => YellowForceLocations.Values.Sum(b => b.AmountOfForces);
 
     [JsonIgnore]
-    public int SpecialForcesAddedToLocation => YellowForceLocations != null ? YellowForceLocations.Values.Sum(b => b.AmountOfSpecialForces) : 0;
+    public int SpecialForcesAddedToLocation => YellowForceLocations.Values.Sum(b => b.AmountOfSpecialForces);
 
     [JsonIgnore]
     public Dictionary<Location, Battalion> ForceLocations => YellowForceLocations;
@@ -168,29 +166,35 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
         return null;
     }
 
-    public static Territory GetTerritory(Game g)
+    public static Territory? GetTerritory(Game g)
     {
         return g.LastAmbassadorTrigger?.Territory;
     }
 
     public static Faction GetVictim(Game g)
     {
-        return g.LastAmbassadorTrigger != null ? g.LastAmbassadorTrigger.Initiator : Faction.None;
+        return g.LastAmbassadorTrigger?.Initiator ?? Faction.None;
     }
 
-    public static Player GetVictimPlayer(Game g)
+    public static Player? GetVictimPlayer(Game g)
     {
-        return g.LastAmbassadorTrigger != null ? g.GetPlayer(GetVictim(g)) : null;
+        var victim = GetVictim(g);
+        return victim != Faction.None ? g.GetPlayer(victim) : null;
     }
 
     public static Ambassador GetAmbassador(Game g)
     {
-        return g.LastAmbassadorTrigger != null ? g.AmbassadorIn(GetTerritory(g)) : Ambassador.None;
+        var territory = GetTerritory(g);
+        
+        return g.LastAmbassadorTrigger != null && territory != null
+            ? g.AmbassadorIn(territory) 
+            : Ambassador.None;
     }
 
     public static bool AllianceCanBeOffered(Game g, Player p)
     {
-        return !p.HasAlly && !g.GetPlayer(GetVictim(g)).HasAlly;
+        var victimPlayer = GetVictimPlayer(g);
+        return !p.HasAlly && victimPlayer is { HasAlly: false };
     }
     
     public static bool VidalCanBeOfferedToNewAlly(Game g, Player p)
@@ -200,12 +204,13 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
 
     public static bool VidalCanBeTaken(Game g, Player p)
     {
-        return (g.Version < 167 || !p.Has(g.Vidal)) && g.VidalIsAlive && !g.VidalIsCapturedOrGhola && g.OccupierOf(World.Pink) == null;
+        return (g.Version < 167 || 
+                g.Vidal != null && !p.Has(g.Vidal)) && g is { VidalIsAlive: true, VidalIsCapturedOrGhola: false } && g.OccupierOf(World.Pink) == null;
     }
 
     public static IEnumerable<Ambassador> GetValidBlueAmbassadors(Game g)
     {
-        return g.UnassignedAmbassadors.Items;
+        return g.UnassignedAmbassadors!.Items;
     }
 
     public static IEnumerable<TreacheryCard> GetValidBrownCards(Player p)
@@ -238,7 +243,7 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
     {
         return g.Map.Locations(g.Applicable(Rule.Homeworlds)).Where(l =>
             l.Sector != g.SectorInStorm &&
-            (l != g.Map.HiddenMobileStronghold || p.Is(Faction.Grey)) &&
+            (!ReferenceEquals(l, g.Map.HiddenMobileStronghold) || p.Is(Faction.Grey)) &&
             !g.ContainsConflictingAlly(p, l) &&
             Shipment.IsEitherValidHomeworldOrNoHomeworld(g, p, l, false) &&
             Shipment.IsEitherValidDiscoveryOrNoDiscovery(l) &&

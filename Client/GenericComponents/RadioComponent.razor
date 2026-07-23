@@ -17,7 +17,7 @@
 @foreach (var item in _shown.Values)
 {
     <div class="form-check mb-0">
-        <input class="form-check-input" style="cursor:pointer" type="radio" id="@Id-@item.Id" value=@item.Id @onclick=@(e => ChangeValue(item.Value)) checked=@Equals(item.Value, Value)>
+        <input class="form-check-input" style="cursor:pointer" type="radio" id="@Id-@item.Id" value=@item.Id @onclick=@(_ => ChangeValue(item.Value)) checked=@Equals(item.Value, Value)>
         <label class="form-check-label" style="cursor:pointer" for="@Id-@item.Id">@item.Label</label>
     </div>
 }
@@ -25,54 +25,59 @@
 @code {
 
     [Parameter]
-    public IEnumerable<T> Values { get; set; }
+    public IEnumerable<T>? Values { get; set; }
 
     [Parameter]
-    public T Value { get; set; }
+    public T? Value { get; set; }
 
-    private Dictionary<string, ValueToShow> _shown { get; set; }
+    private Dictionary<string, ValueToShow> _shown = [];
 
     [Parameter]
-    public IEnumerable<string> ValueLabels { get; set; } = null;
+    public IEnumerable<string>? ValueLabels { get; set; }
 
     [Parameter]
     public string EmptyLabel { get; set; } = "";
 
     [Parameter]
-    public bool Disabled { get; set; } = false;
+    public bool Disabled { get; set; }
 
     [Parameter]
     public EventCallback<T> ValueChanged { get; set; }
 
     [Parameter]
-    public RenderFragment Label { get; set; }
+    public RenderFragment? Label { get; set; }
 
     [Parameter]
     public bool Required { get; set; } = true;
+
+    private T[] ValuesToShow { get; set; } = [];
 
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
 
-        if (!Values.Contains(Value))
+        ValuesToShow = Values?.ToArray() ?? [];
+
+        if (!ValuesToShow.Contains(Value))
         {
-            await SetValue(Required ? Values.FirstOrDefault() : default);
+            await SetValue(Required ? ValuesToShow.FirstOrDefault() : default);
         }
 
-        if (ValueLabels == null || ValueLabels.Count() != Values.Count())
+        var valueLabels = ValueLabels?.ToArray();
+        if (valueLabels == null || valueLabels.Length != ValuesToShow.Length)
         {
-            ValueLabels = Values.Select(v => v != null ? Client.CurrentSkin.Describe(v) : EmptyLabel);
+            valueLabels = ValuesToShow.Select(v => v != null ? Client.CurrentSkin.Describe(v) : EmptyLabel).ToArray();
         }
 
-        _shown = Values.Zip(ValueLabels, (v, l) => new ValueToShow { Value = v, Id = GetId(v), Label = l }).ToDictionary(triple => triple.Id, triple => triple);
+        _shown = ValuesToShow.Zip(valueLabels, (v, l) => new ValueToShow { Value = v, Id = GetId(v), Label = l }).ToDictionary(triple => triple.Id, triple => triple);
     }
 
-    private async Task ChangeValue(T value)
+    private async Task ChangeValue(T? value)
     {
         await SetValue(value);
     }
 
-    private async Task SetValue(T newValue)
+    private async Task SetValue(T? newValue)
     {
         if (!Equals(Value, newValue))
         {
@@ -83,7 +88,7 @@
 
     private struct ValueToShow
     {
-        internal T Value;
+        internal T? Value;
         internal string Id;
         internal string Label;
     }

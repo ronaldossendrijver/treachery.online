@@ -215,13 +215,13 @@
     private bool _pinkOfferAlliance;
     private bool _pinkTakeVidal;
     private bool _pinkGiveVidal;
-    private Territory _yellowFromTerritory;
-    private Location _yellowOrOrangeToLocation;
+    private Territory? _yellowFromTerritory;
+    private Location? _yellowOrOrangeToLocation;
     private Dictionary<Location, Battalion> _yellowForces = new();
-    private TreacheryCard _greyCard;
+    private TreacheryCard? _greyCard;
     private int _orangeForceAmount;
     private int _purpleAmountOfForces;
-    private IHero _purpleHero;
+    private IHero? _purpleHero;
     private bool _purpleAssignSkill;
 
     protected override void OnAfterRender(bool firstRender)

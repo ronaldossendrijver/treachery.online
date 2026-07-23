@@ -15,7 +15,7 @@ public partial class Game
     {
         List<Type> result = [];
 
-        if (player != null && (CurrentPhase == Phase.SelectingFactions || player.Faction != Faction.None)) 
+        if (CurrentPhase == Phase.SelectingFactions || player.Faction != Faction.None) 
                 AddPlayerActions(player, isHost, result);
 
         if (isHost) AddHostActions(result);
@@ -270,7 +270,7 @@ public partial class Game
                 if (faction == Faction.Blue) result.Add(typeof(BlueAccompanies));
                 break;
             case Phase.NonOrangeShip:
-                if (player == ShipmentAndMoveSequence.CurrentPlayer)
+                if (player == ShipmentAndMoveSequence?.CurrentPlayer)
                 {
                     result.Add(typeof(Shipment));
                     if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan)) result.Add(typeof(Caravan));
@@ -288,7 +288,7 @@ public partial class Game
                 }
                 break;
             case Phase.NonOrangeMove:
-                if (player == ShipmentAndMoveSequence.CurrentPlayer)
+                if (player == ShipmentAndMoveSequence?.CurrentPlayer)
                 {
                     if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan)) result.Add(typeof(Caravan));
                     result.Add(typeof(Move));
@@ -370,7 +370,7 @@ public partial class Game
             case Phase.ClaimingBattle:
                 if (HasLowThreshold(Faction.Pink))
                 {
-                    if (BattleAboutToStart.OpponentOf(Faction.Pink).Is(faction)) result.Add(typeof(BattleClaimed));
+                    if (BattleAboutToStart?.OpponentOf(Faction.Pink)?.Is(faction) is true) result.Add(typeof(BattleClaimed));
                 }
                 else
                 {
@@ -380,11 +380,20 @@ public partial class Game
 
             case Phase.CallTraitorOrPass:
 
-                if (AggressorPlan != null && DefenderPlan != null &&
+                if (CurrentBattle != null && AggressorPlan != null && DefenderPlan != null &&
                     ((AggressorTraitorAction == null && faction == CurrentBattle.Aggressor) ||
-                     (AggressorTraitorAction == null && faction == Faction.Black && GetPlayer(AggressorPlan.Initiator).Ally == Faction.Black && player.Traitors.Contains(DefenderPlan.Hero)) ||
-                     (DefenderTraitorAction == null && faction == CurrentBattle.Defender) ||
-                     (DefenderTraitorAction == null && faction == Faction.Black && GetPlayer(DefenderPlan.Initiator).Ally == Faction.Black && player.Traitors.Contains(AggressorPlan.Hero))))
+                     (AggressorTraitorAction == null 
+                      && faction == Faction.Black 
+                      && GetPlayer(AggressorPlan.Initiator)?.Ally == Faction.Black 
+                      && DefenderPlan.Hero != null 
+                      && player.Traitors.Contains(DefenderPlan.Hero)) ||
+                     (DefenderTraitorAction == null 
+                      && faction == CurrentBattle.Defender) ||
+                     (DefenderTraitorAction == null 
+                      && faction == Faction.Black 
+                      && GetPlayer(DefenderPlan.Initiator)?.Ally == Faction.Black 
+                      && AggressorPlan.Hero != null 
+                      && player.Traitors.Contains(AggressorPlan.Hero))))
                     result.Add(typeof(TreacheryCalled));
 
                 if (AggressorPlan != null && faction == AggressorPlan.Initiator && AggressorPlan.Weapon is { Type: TreacheryCardType.PoisonTooth } && !PoisonToothCancelled) result.Add(typeof(PoisonToothCancelled));
@@ -465,15 +474,15 @@ public partial class Game
                 break;
 
             case Phase.TradingCards:
-                if (faction == CurrentCardTradeOffer.Target) result.Add(typeof(CardTraded));
+                if (faction == CurrentCardTradeOffer?.Target) result.Add(typeof(CardTraded));
                 break;
 
             case Phase.Clairvoyance:
-                if (faction == LatestClairvoyance.Target) result.Add(typeof(ClairVoyanceAnswered));
+                if (faction == LatestClairvoyance?.Target) result.Add(typeof(ClairVoyanceAnswered));
                 break;
 
             case Phase.Thought:
-                if (player == CurrentBattle.OpponentOf(CurrentThought.Initiator)) result.Add(typeof(ThoughtAnswered));
+                if (player == CurrentBattle?.OpponentOf(CurrentThought!.Initiator)) result.Add(typeof(ThoughtAnswered));
                 break;
 
             case Phase.SearchingDiscarded:
@@ -538,9 +547,9 @@ public partial class Game
             if (CurrentMainPhase == MainPhase.Contemplate && BrownRemoveForce.CanBePlayedBy(this, player)) result.Add(typeof(BrownRemoveForce));
 
             if (
-                ((faction == Faction.Brown && player.Ally != Faction.None) || player.Ally == Faction.Brown) &&
+                ((faction == Faction.Brown && player.HasAlly) || player.Ally == Faction.Brown) &&
                 ConsiderAsEndOfPhase &&
-                player.AlliedPlayer.TreacheryCards.Count > 0 &&
+                player.AlliedPlayer!.TreacheryCards.Count > 0 &&
                 player.TreacheryCards.Count > 0 &&
                 LastTurnCardWasTraded < CurrentTurn)
                 result.Add(typeof(CardTraded));
@@ -603,7 +612,7 @@ public partial class Game
             if (faction == Faction.Grey &&
                 ((!KarmaPrevented(faction) && !player.SpecialKarmaPowerUsed && player.HasKarma(this)) || KarmaHmsMovesLeft == 1) &&
                 CurrentMainPhase == MainPhase.ShipmentAndMove &&
-                player == ShipmentAndMoveSequence.CurrentPlayer &&
+                player == ShipmentAndMoveSequence!.CurrentPlayer &&
                 player.AnyForcesIn(Map.HiddenMobileStronghold) > 0 &&
                 Applicable(Rule.AdvancedKarama))
                 result.Add(typeof(KarmaHmsMovement));
@@ -643,7 +652,7 @@ public partial class Game
                 CurrentPhase != Phase.BlackMarketBidding &&
                 CurrentPhase != Phase.Bidding &&
                 !hasFinalizedBattlePlanWaitingToBeResolved &&
-                player.Ally != Faction.None &&
+                player.HasAlly &&
                 WhiteGaveCard.ValidCards(player).Any() &&
                 player.AlliedPlayer.HasRoomForCards)
                 result.Add(typeof(WhiteGaveCard));

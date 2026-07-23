@@ -19,9 +19,9 @@
     public float Size { get; set; } = 20;
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment? ChildContent { get; set; }
 
-    private string Radius { get; set; } 
+    private string Radius { get; set; } = string.Empty;
 
     protected override void OnParametersSet()
     {

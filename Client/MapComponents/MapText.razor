@@ -31,13 +31,13 @@ else
 @code {
 
     [Parameter]
-    public string ToShow { get; set; }
+    public string? ToShow { get; set; }
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
-    public string Font { get; set; }
+    public string? Font { get; set; }
 
     [Parameter]
     public string FontColor { get; set; } = "white";
@@ -55,14 +55,14 @@ else
     public float MaxWidth { get; set; } = 0;
 
     [Parameter]
-    public string Popover { get; set; }
-    private string _popover = null;
+    public string? Popover { get; set; }
+    private string? _popover;
     private bool _popoverNeedsUpdate = false;
 
     [Parameter]
     public bool PopoverAsTooltip { get; set; }
 
-    private string style;
+    private string style = string.Empty;
 
     protected override async Task OnParametersSetAsync()
     {

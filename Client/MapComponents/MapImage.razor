@@ -32,7 +32,7 @@ else
 @code {
 
     [Parameter]
-    public string Src { get; set; }
+    public string? Src { get; set; }
 
     [Parameter]
     public float ShadowX { get; set; }
@@ -50,16 +50,16 @@ else
     public string Filter { get; set; } = "";
 
     [Parameter]
-    public string Animation { get; set; }
+    public string? Animation { get; set; }
 
     [Parameter]
-    public string BackgroundCircleColor { get; set; }
+    public string? BackgroundCircleColor { get; set; }
 
     [Parameter]
     public double BackgroundCircleDiameter { get; set; }
 
     [Parameter]
-    public string BackgroundRectangleColor { get; set; }
+    public string? BackgroundRectangleColor { get; set; }
 
     [Parameter]
     public EventCallback<MouseEventArgs> OnClick { get; set; }
@@ -71,8 +71,8 @@ else
     public EventCallback<MouseEventArgs> OnMouseExited { get; set; }
 
     [Parameter]
-    public string Popover { get; set; }
-    private string _popover = null;
+    public string? Popover { get; set; }
+    private string? _popover;
     private bool _popoverNeedsRefresh = false;
 
     [Parameter]
@@ -80,7 +80,7 @@ else
 
     private string Alt => PopoverAsTooltip ? Popover : string.Empty;
 
-    private Dictionary<string, object> _attributes;
+    private Dictionary<string, object> _attributes = [];
 
     protected override void OnParametersSet()
     {

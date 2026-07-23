@@ -19,12 +19,12 @@ public partial class Game
     public List<Faction> FactionsThatRevivedSpecialForcesThisTurn { get; } = [];
     public Dictionary<Faction, int> LeaderRevivalsThisTurn { get; } = [];
     internal bool PurpleStartedRevivalWithLowThreshold { get; set; }
-    public RecruitsPlayed CurrentRecruitsPlayed { get; set; }
+    public RecruitsPlayed? CurrentRecruitsPlayed { get; set; }
     public Faction[] FactionsWithIncreasedRevivalLimits { get; internal set; } = [];
     public List<RequestPurpleRevival> CurrentRevivalRequests { get; } = [];
     public Dictionary<IHero, int> EarlyRevivalsOffers { get; } = new();
-    public BrownFreeRevivalPrevention CurrentFreeRevivalPrevention { get; internal set; }
-    internal KarmaRevivalPrevention CurrentKarmaRevivalPrevention { get; set; }
+    public BrownFreeRevivalPrevention? CurrentFreeRevivalPrevention { get; internal set; }
+    internal KarmaRevivalPrevention? CurrentKarmaRevivalPrevention { get; set; }
     public int AmbassadorsPlacedThisTurn { get; internal set; }
     
 
@@ -38,7 +38,7 @@ public partial class Game
             PhaseBeforeSkillAssignment = CurrentPhase;
 
         player.MostRecentlyRevivedLeader = leader;
-        SkillDeck.Shuffle();
+        SkillDeck!.Shuffle();
         Stone(Milestone.Shuffled);
         player.SkillsToChooseFrom.Add(SkillDeck.Draw());
         player.SkillsToChooseFrom.Add(SkillDeck.Draw());
@@ -169,12 +169,16 @@ public partial class Game
         if (player.Faction != Faction.Purple) RevivalTechTokenIncome = true;
 
         var purple = GetPlayer(Faction.Purple);
+        var purpleReceivesIncome = false;
         
-        var purpleReceivesIncome = purple != null && !PurpleStartedRevivalWithLowThreshold && !Prevented(FactionAdvantage.PurpleReceiveRevive);
-
-        if (purpleReceivesIncome)
+        if (purple != null)
         {
-            purple.Resources += 1;
+            purpleReceivesIncome = !PurpleStartedRevivalWithLowThreshold && !Prevented(FactionAdvantage.PurpleReceiveRevive);
+
+            if (purpleReceivesIncome)
+            {
+                purple.Resources += 1;
+            }
         }
         
         FreeRevivalsThisTurn[player.Faction] = FreeRevivalsThisTurn.GetValueOrDefault(player.Faction, 0) + freeRevivedNormalForces + freeRevivedSpecialForces;

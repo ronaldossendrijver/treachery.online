@@ -17,8 +17,8 @@ public partial class Game
     public List<FactionTradeOffered> CurrentTradeOffers { get; } = [];
     internal Phase PhaseBeforeSkillAssignment { get; private set; }
     public Faction NextFactionToPerformCustomSetup => Players.Select(p => p.Faction).FirstOrDefault(f => !HasActedOrPassed.Contains(f));
-    public Deck<TreacheryCard> StartingTreacheryCards { get; private set; }
-    private TreacheryCard ExtraStartingCardForBlack { get; set; }
+    public Deck<TreacheryCard>? StartingTreacheryCards { get; private set; }
+    private TreacheryCard? ExtraStartingCardForBlack { get; set; }
 
     #endregion State
 
@@ -136,7 +136,7 @@ public partial class Game
     {
         var black = GetPlayer(Faction.Black);
         if (black is null) return;
-        for (var i = 1; i <= 4; i++) black.Traitors.Add(TraitorDeck.Draw());
+        for (var i = 1; i <= 4; i++) black.Traitors.Add(TraitorDeck!.Draw());
     }
 
     internal void EnterSelectTraitors()
@@ -155,7 +155,7 @@ public partial class Game
         var purple = GetPlayer(Faction.Purple);
         if (purple != null)
         {
-            TraitorDeck.Shuffle();
+            TraitorDeck!.Shuffle();
             for (var i = 0; i < 3; i++)
             {
                 var leader = TraitorDeck.Draw();
@@ -346,11 +346,11 @@ public partial class Game
     {
         foreach (var p in Players.Where(p => p.Faction != Faction.Grey))
         {
-            var card = StartingTreacheryCards.Draw();
+            var card = StartingTreacheryCards!.Draw();
             p.TreacheryCards.Add(card);
             LogTo(p.Faction, "Your starting treachery card is: ", card);
 
-            if (p.Is(Faction.Black))
+            if (p.Is(Faction.Black) && ExtraStartingCardForBlack != null)
             {
                 p.TreacheryCards.Add(ExtraStartingCardForBlack);
                 LogTo(Faction.Black, "Your extra card is: ", ExtraStartingCardForBlack);

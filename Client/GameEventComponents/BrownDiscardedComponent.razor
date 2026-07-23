@@ -25,7 +25,7 @@
 
     protected override Faction IsFactionSpecific => Faction.Brown;
 
-    private TreacheryCard card;
+    private TreacheryCard? card;
 
     protected override BrownDiscarded ConfirmedResult => new(Game, Faction) { Card = card };
 }

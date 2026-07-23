@@ -31,8 +31,8 @@
     protected override bool IsUrgent => false;
     protected override Faction IsFactionSpecific => Faction.Brown;
 
-    private TreacheryCard card;
-    private TreacheryCard returnCard;
+    private TreacheryCard? card;
+    private TreacheryCard? returnCard;
 
     protected override CardTraded ConfirmedResult => new(Game, Faction) { Target = Player.Ally, Card = card, RequestedCard = returnCard };
 }

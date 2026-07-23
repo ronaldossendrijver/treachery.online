@@ -54,19 +54,19 @@
     public string Width { get; set; } = "";
 
     [Parameter]
-    public string BackgroundStyle { get; set; }
+    public string? BackgroundStyle { get; set; }
 
     [Parameter]
-    public string HeaderStyle { get; set; }
+    public string? HeaderStyle { get; set; }
 
     [Parameter]
-    public string BodyStyle { get; set; }
+    public string? BodyStyle { get; set; }
 
     [Parameter]
-    public RenderFragment Header { get; set; }
+    public RenderFragment? Header { get; set; }
 
     [Parameter]
-    public RenderFragment Body { get; set; }
+    public RenderFragment? Body { get; set; }
 
     [Parameter]
     public bool Collapsible { get; set; } = true;
@@ -88,14 +88,14 @@
     private bool _collapsedInternal;
 
     [Parameter]
-    public Type CollapsedType { get; set; }
+    public Type? CollapsedType { get; set; }
 
     [Parameter]
-    public GameEvent TimedEvent { get; set; }
+    public GameEvent? TimedEvent { get; set; }
 
     private string Border => IsUrgent ? "border-white" : "";
 
-    private ErrorBoundary _errorBoundary;
+    private ErrorBoundary? _errorBoundary;
 
     protected override void OnAfterRender(bool firstRender)
     {

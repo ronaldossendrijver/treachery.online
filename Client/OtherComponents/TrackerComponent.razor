@@ -330,14 +330,14 @@
 
     public class CardInfo
     {
-        public Player Player;
+        public Player? Player;
         public int CardNumber;
         public int CardId;
     }
 
-    private IList<IHero> AllTraitors { get; set; }
+    private IList<IHero>? AllTraitors { get; set; }
 
-    private IList<ResourceCard> AllSpiceCards { get; set; }
+    private IList<ResourceCard>? AllSpiceCards { get; set; }
 
     private ResourceCard SpiceCard(string name)
     {

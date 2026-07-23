@@ -28,7 +28,7 @@
     protected override bool IsUrgent => true;
 
     private LeaderSkill skill;
-    private IHero leader;
+    private IHero? leader;
 
     protected override SkillAssigned ConfirmedResult => new(Game, Faction) { Passed = false, Leader = leader as Leader, Skill = skill };
 

@@ -53,16 +53,17 @@ public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlace
     public static Dictionary<Location, Battalion> ParseForceLocations(Game g, Faction f, string forceLocations)
     {
         var result = new Dictionary<Location, Battalion>();
-        if (forceLocations != null && forceLocations.Length > 0)
-            foreach (var locationAmountPair in forceLocations.Split(','))
-            {
-                var locationAndAmounts = locationAmountPair.Split(':');
-                var location = g.Map.LocationLookup.Find(Convert.ToInt32(locationAndAmounts[0]));
-                var amounts = locationAndAmounts[1].Split('|');
-                var amountOfNormalForces = Convert.ToInt32(amounts[0]);
-                var amountOfNormalSpecialForces = Convert.ToInt32(amounts[1]);
-                result.Add(location, new Battalion(f, amountOfNormalForces, amountOfNormalSpecialForces, location));
-            }
+        if (forceLocations.Length <= 0) return result;
+        foreach (var locationAmountPair in forceLocations.Split(','))
+        {
+            var locationAndAmounts = locationAmountPair.Split(':');
+            var location = g.Map.LocationLookup.Find(Convert.ToInt32(locationAndAmounts[0]));
+            if (location is null) continue;
+            var amounts = locationAndAmounts[1].Split('|');
+            var amountOfNormalForces = Convert.ToInt32(amounts[0]);
+            var amountOfNormalSpecialForces = Convert.ToInt32(amounts[1]);
+            result.Add(location, new Battalion(f, amountOfNormalForces, amountOfNormalSpecialForces, location));
+        }
 
         return result;
     }

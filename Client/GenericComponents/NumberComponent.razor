@@ -40,13 +40,13 @@
     public float Value { get; set; }
 
     [Parameter]
-    public string SymbolSrc { get; set; }
+    public string? SymbolSrc { get; set; }
 
     [Parameter]
-    public string SymbolBackgroundFillColor { get; set; }
+    public string? SymbolBackgroundFillColor { get; set; }
 
     [Parameter]
-    public string SymbolBackgroundBorderColor { get; set; }
+    public string? SymbolBackgroundBorderColor { get; set; }
 
     [Parameter]
     public string NumberColor { get; set; } = "black";
@@ -61,13 +61,13 @@
     public NumberAlignment NumberAlignment { get; set; } = NumberAlignment.Center;
 
     [Parameter]
-    public string NumberBackgroundFillColor { get; set; }
+    public string? NumberBackgroundFillColor { get; set; }
 
     [Parameter]
-    public string NumberBackgroundBorderColor { get; set; }
+    public string? NumberBackgroundBorderColor { get; set; }
 
     [Parameter]
-    public string BehindNumberSrc { get; set; }
+    public string? BehindNumberSrc { get; set; }
 
     [Parameter]
     public int Size { get; set; } = 36;

@@ -71,6 +71,8 @@ public partial class Game
 
     internal void PerformMoveFromLocations(Player initiator, Dictionary<Location, Battalion> forceLocations, ILocationEvent evt, bool asAdvisors, bool byCaravan)
     {
+        if (evt.To == null) return;
+        
         LastShipmentOrMovement = evt;
         var wasOccupiedBeforeMove = IsOccupied(evt.To.Territory);
         var dist = DetermineMaximumMoveDistance(initiator, forceLocations.Values);

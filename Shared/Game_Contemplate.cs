@@ -28,7 +28,7 @@ public partial class Game
         foreach (var player in Players) player.TransferableResources = 0;
 
         MainPhaseStart(MainPhase.Contemplate, Version >= 103);
-        AllowAllPreventedFactionAdvantages(null);
+        AllowAllPreventedFactionAdvantages([]);
         HandleEconomics();
         if (Version >= 108) AddBribesToPlayerResources();
         CyanHasPerformedTerror = false;
@@ -78,7 +78,7 @@ public partial class Game
         if (BlackTraitorWasCancelled)
         {
             BlackTraitorWasCancelled = false;
-            GetPlayer(Faction.Black).Traitors.Add(TraitorDeck.Draw());
+            GetPlayer(Faction.Black)?.Traitors.Add(TraitorDeck!.Draw());
             Log(Faction.Black, " drew a new traitor after having been betrayed");
         }
 

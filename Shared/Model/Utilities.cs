@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.Json.Nodes;
+﻿using System.Text.Json.Nodes;
 using System.Globalization;
     
 namespace Treachery.Shared;
@@ -9,17 +8,21 @@ public static class Utilities
     public static List<T> CloneList<T>(List<T> toClone) where T : ICloneable
         => toClone.Select(item => (T)item.Clone()).ToList();
 
-    public static Dictionary<TX, TY> CloneObjectDictionary<TX, TY>(Dictionary<TX, TY> toClone) where TY : ICloneable
+    public static Dictionary<TX, TY> CloneObjectDictionary<TX, TY>(Dictionary<TX, TY> toClone) 
+        where TX : notnull 
+        where TY : ICloneable
         => toClone.ToDictionary(item => item.Key, item => (TY)item.Value.Clone());
 
-    public static Dictionary<TX, TY> CloneEnumDictionary<TX, TY>(Dictionary<TX, TY> toClone) where TY : struct, Enum
+    public static Dictionary<TX, TY> CloneEnumDictionary<TX, TY>(Dictionary<TX, TY> toClone) 
+        where TX: notnull
+        where TY : struct, Enum
         => toClone.ToDictionary(item => item.Key, item => item.Value);
 
     private static readonly JsonSerializerOptions Options = new() { IncludeFields = true };
 
     private const string NewtonsoftIndicator = "Treachery.Shared.GameState";
 
-    public static T Deserialize<T>(string serializedValue)
+    public static T? Deserialize<T>(string serializedValue)
     {
         if (serializedValue.Length < 128 || !serializedValue[..128].Contains(NewtonsoftIndicator))
             return JsonSerializer.Deserialize<T>(serializedValue, Options);
@@ -32,8 +35,10 @@ public static class Utilities
     private static string ConvertNewtonsoftJsonToPlainJson(string value)
     {
         var jsonNode = JsonNode.Parse(value);
+        if (jsonNode is null) return string.Empty;
+        
         ReplaceTypeMetadataAndNestedArrays(jsonNode);
-        return jsonNode?.ToJsonString(new JsonSerializerOptions {WriteIndented = false}) ?? string.Empty;
+        return jsonNode.ToJsonString(new JsonSerializerOptions {WriteIndented = false});
     }
 
     private static void ReplaceTypeMetadataAndNestedArrays(JsonNode node)
@@ -56,7 +61,7 @@ public static class Utilities
             if (obj.Count == 1 && obj.ContainsKey("$values") && obj["$values"] is JsonArray valuesArray)
             {
                 var newArray = new JsonArray();
-                foreach (var item in valuesArray)
+                foreach (var item in valuesArray.OfType<JsonNode>())
                 {
                     var clone = item.DeepClone();
                     ReplaceTypeMetadataAndNestedArrays(clone);
@@ -66,9 +71,13 @@ public static class Utilities
             }
             else
             {
-                foreach (var key in ((IDictionary<string, JsonNode>)obj).Keys)
+                foreach (var key in ((IDictionary<string, JsonNode?>)obj).Keys)
                 {
-                    ReplaceTypeMetadataAndNestedArrays(obj[key]);
+                    var childNode = obj[key];
+                    if (childNode is not null)
+                    {
+                        ReplaceTypeMetadataAndNestedArrays(childNode);
+                    }
                 }                
             }
         }
@@ -76,12 +85,15 @@ public static class Utilities
         {
             foreach (var item in array)
             {
-                ReplaceTypeMetadataAndNestedArrays(item);
+                if (item is not null)
+                {
+                    ReplaceTypeMetadataAndNestedArrays(item);
+                }
             }
         }
     }
 
-    private static Type DetermineGameEvent(string fullTypeName)
+    private static Type? DetermineGameEvent(string fullTypeName)
     {
         var foundType = Type.GetType(fullTypeName);
         return foundType is { IsAbstract: false, IsInterface: false } && foundType.IsSubclassOf(typeof(GameEvent)) ? foundType : null;

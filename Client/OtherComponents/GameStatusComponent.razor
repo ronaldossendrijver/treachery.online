@@ -146,7 +146,7 @@
     private bool TimeLimitSet { get; set; }
     private int TimeLimit { get; set; } = 20;
 
-    private ErrorBoundary _errorBoundary;
+    private ErrorBoundary? _errorBoundary;
 
     protected override async Task OnInitializedAsync()
     {

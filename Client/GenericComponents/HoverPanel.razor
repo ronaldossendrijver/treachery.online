@@ -7,7 +7,7 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-<div style="@Style" @onmouseover="@(e => {_shown = true;})" @onmouseout="@(e => {_shown = Pinned;})">
+<div style="@Style" @onmouseover="@(_ => {_shown = true;})" @onmouseout="@(_ => {_shown = Pinned;})">
 
     @ChildContent
 
@@ -20,7 +20,7 @@
 @code {
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
     public float Width { get; set; } = 200;
@@ -67,7 +67,7 @@
     };
 
     private Dimensions _dims = new() { Width = 640, Height = 480 };
-    private bool _shown = false;
+    private bool _shown;
 
     private string Style
     {

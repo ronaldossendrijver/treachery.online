@@ -163,32 +163,32 @@ public class Skin : IDescriber
     public int PLAYERNAME_FONT_BORDERWIDTH;
 
     //Skill names
-    public string SKILL_FONT;
-    public string SKILL_FONTCOLOR;
-    public string SKILL_FONT_BORDERCOLOR;
+    public string SKILL_FONT = string.Empty;
+    public string SKILL_FONTCOLOR = string.Empty;
+    public string SKILL_FONT_BORDERCOLOR = string.Empty;
     public int SKILL_FONT_BORDERWIDTH;
 
     //Player positions
-    public string TABLEPOSITION_BACKGROUNDCOLOR;
+    public string TABLEPOSITION_BACKGROUNDCOLOR = string.Empty;
 
     //Turns
-    public string TURN_FONT;
-    public string TURN_FONT_COLOR;
-    public string TURN_FONT_BORDERCOLOR;
+    public string TURN_FONT = string.Empty;
+    public string TURN_FONT_COLOR = string.Empty;
+    public string TURN_FONT_BORDERCOLOR = string.Empty;
     public int TURN_FONT_BORDERWIDTH;
 
     //Wheel
-    public string WHEEL_FONT;
-    public string WHEEL_FONTCOLOR;
-    public string WHEEL_FONT_AGGRESSOR_BORDERCOLOR;
-    public string WHEEL_FONT_DEFENDER_BORDERCOLOR;
+    public string WHEEL_FONT = string.Empty;
+    public string WHEEL_FONTCOLOR = string.Empty;
+    public string WHEEL_FONT_AGGRESSOR_BORDERCOLOR = string.Empty;
+    public string WHEEL_FONT_DEFENDER_BORDERCOLOR = string.Empty;
     public int WHEEL_FONT_BORDERWIDTH;
 
     //Shadows
-    public string SHADOW;
+    public string SHADOW = string.Empty;
 
     //General
-    public string FACTION_INFORMATIONCARDSTYLE;
+    public string FACTION_INFORMATIONCARDSTYLE = string.Empty;
     
     // ReSharper restore InconsistentNaming
 
@@ -1629,11 +1629,11 @@ public class Skin : IDescriber
         FixValue(ref toFix.FACTION_INFORMATIONCARDSTYLE, donor.FACTION_INFORMATIONCARDSTYLE);
     }
 
-    private static Dictionary<TKey, TValue> FixDictionary<TKey, TValue>(Dictionary<TKey, TValue> toFix, Dictionary<TKey, TValue> donor)
+    private static Dictionary<TKey, TValue> FixDictionary<TKey, TValue>(Dictionary<TKey, TValue> toFix, Dictionary<TKey, TValue> donor) where TKey : notnull
     {
-        if (toFix == null || donor.Keys.Any(k => !toFix.ContainsKey(k)))
-            return donor;
-        return toFix;
+        return donor.Keys.Any(k => !toFix.ContainsKey(k)) 
+            ? donor 
+            : toFix;
     }
 
     private static void FixValue<T>(ref T toFix, T donor)
