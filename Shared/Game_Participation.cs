@@ -37,7 +37,7 @@ public partial class Game
         ? player.IsBot ? "Bot" : Participation.PlayerNames.GetValueOrDefault(UserIdInSeat(player.Seat), "?")
         : LegacyNames.GetValueOrDefault(player, string.Empty);
     
-    public Player? GetPlayerByUserId(int userId) => GetPlayerBySeat(SeatOf(userId));
+    public Player? GetPlayerByUserId(int? userId) => userId is null ? null : GetPlayerBySeat(SeatOf(userId.Value));
 
     public Player? GetPlayerByName(string name) => Players.FirstOrDefault(p => GetPlayerName(p) == name);
 
@@ -84,9 +84,9 @@ public partial class Game
 
     public bool IsPlayer(int userId) => Participation.SeatedPlayers.ContainsKey(userId);
     
-    public bool IsHost(int userId) => Participation.Hosts.Contains(userId);
+    public bool IsHost(int? userId) => userId is not null && Participation.Hosts.Contains(userId.Value);
     
-    public bool IsObserver(int userId) => Participation.Observers.Contains(userId);
+    public bool IsObserver(int? userId) => userId is not null && Participation.Observers.Contains(userId.Value);
     
     public bool IsParticipant(int userId) => Participation.PlayerNames.ContainsKey(userId);
 

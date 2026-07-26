@@ -11,11 +11,11 @@
 
 @code {
 
-    protected Game Game => Client.Game;
+    protected Game Game => Client.Game!;
 
-    protected Player Player => Client.Player;
+    protected Player Player => Client.Player!;
 
-    protected Faction Faction => Client.Faction;
+    protected Faction Faction => Client.Faction!.Value;
 
     private string? _id;
     protected string Id => _id ??= Guid.NewGuid().ToString();
@@ -154,7 +154,7 @@
         return Client.CurrentSkin.Format("Use {0}?", t);
     }
 
-    protected string GetId(object value)
+    protected string GetId(object? value)
     {
         if (value == null)
             return string.Empty;

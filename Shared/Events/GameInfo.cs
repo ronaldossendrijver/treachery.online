@@ -9,17 +9,14 @@
 
 // ReSharper disable MemberCanBePrivate.Global
 
-using System;
-using System.Text.Json.Serialization;
-
 namespace Treachery.Shared;
 
 public class GameInfo
 {
     public int CreatorId { get; init; }
-    public string GameId { get; init; }
+    public string GameId { get; init; } = string.Empty;
     public bool HasPassword { get; init; }
-    public string Name { get; init; }
+    public string Name { get; init; } = string.Empty;
     public int MaxPlayers { get; init; }
     public int MaxTurns { get; init; }
     public MainPhase MainPhase { get; init; }
@@ -27,10 +24,10 @@ public class GameInfo
     public int Turn { get; init; }
     public int NrOfBots { get; init; }
     public int NrOfPlayers { get; init; }
-    public Faction[] FactionsInPlay { get; init; }
+    public Faction[] FactionsInPlay { get; init; } = [];
     public Ruleset Ruleset { get; init; }
     public DateTimeOffset? LastActivity { get; init; }
-    public Dictionary<int, int> SeatedPlayers { get; set; }
+    public Dictionary<int, int> SeatedPlayers { get; set; } = [];
     public AvailableSeatInfo[] AvailableSeats { get; init; } = [];
     
     [JsonIgnore] 

@@ -36,7 +36,7 @@ public interface IGameHub
     Task<Result<ServerStatus>> RequestHeartbeat(string userToken, GameListScope scope);
     Task<VoidResult> RequestAssignSeats(string userToken, string gameId, Dictionary<int, int> assignment);
     Task<Result<ServerStatus>> RequestScheduleGame(string userToken,  
-        DateTimeOffset dateTime, Ruleset? ruleset, int? numberOfPlayers, int? maximumTurns, 
+        DateTimeOffset dateTime, Ruleset? ruleset, int numberOfPlayers, int maximumTurns, 
         List<Faction> allowedFactionsInPlay, bool asyncPlay);
     Task<Result<ServerStatus>> RequestCancelGame(string userToken, string scheduledGameId);
     Task<Result<ServerStatus>> RequestSubscribeGame(string userToken, string scheduledGameId, SubscriptionType subscription);

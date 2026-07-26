@@ -27,7 +27,7 @@ public class GameState
     public static GameState Load(string data)
     {
         var fixedStateData = FixGameStateString(data);
-        return Utilities.Deserialize<GameState>(fixedStateData);
+        return Utilities.Deserialize<GameState>(fixedStateData) ?? throw new  InvalidOperationException("Cannot load game state");
     }
 
     public static string GetStateAsString(Game g)

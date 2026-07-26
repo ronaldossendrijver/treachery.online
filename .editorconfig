@@ -1,5 +1,8 @@
+# Disable "namespace does not correspond to file location" across the solution
+[*.cs]
+dotnet_diagnostic.IDE0130.severity = none
+resharper_check_namespace_highlighting = none
+
 [Shared/Events/*.cs]
 dotnet_diagnostic.IDE1006.severity = none
 resharper_inconsistent_naming_highlighting = none
-
-

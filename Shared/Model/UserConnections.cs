@@ -42,6 +42,6 @@ public class ConnectionInfo
 {
     public DateTimeOffset Created { get; } = DateTimeOffset.Now;
 
-    public string ConnectionId { get; init; }
+    public string ConnectionId { get; init; } = string.Empty;
 }
 

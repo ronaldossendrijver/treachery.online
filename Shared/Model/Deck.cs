@@ -49,7 +49,7 @@ public class Deck<T>
         {
             var result = Top;
             Items.RemoveAt(0);
-            return result;
+            return result!;
         }
 
         throw new InvalidOperationException("Cannot draw from an empty deck");

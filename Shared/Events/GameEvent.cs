@@ -177,10 +177,9 @@ public abstract class GameEvent
     public DateTimeOffset Time { get; set; }
 
     [JsonIgnore]
-    public Game Game { get; private set; }
+    public Game Game { get; private set; } = null!;
 
-    [JsonIgnore]
-    public Player Player { get; private set; }
+    [JsonIgnore] public Player Player { get; private set; } = null!;
 
     #endregion Properties
 
@@ -204,9 +203,10 @@ public abstract class GameEvent
 
     public void Initialize(Game game, Faction initiator)
     {
+        var player = game.GetPlayer(initiator) ?? throw new ArgumentException($"No player found for {initiator}");
         Game = game;
         Initiator = initiator;
-        Player = game.GetPlayer(initiator);
+        Player = player;
     }
 
     public void Initialize(Game game)
@@ -264,17 +264,22 @@ public abstract class GameEvent
 
     #region Support
 
-    public static List<T> IdStringToObjects<T>(string ids, IFetcher<T> lookup)
+    protected static List<T> IdStringToObjects<T>(string ids, IFetcher<T> lookup)
     {
         var result = new List<T>();
 
-        if (ids != null && ids.Length > 0)
-            foreach (var id in ids.Split(IdStringSeparator)) result.Add(lookup.Find(Convert.ToInt32(id)));
+        if (ids.Length > 0)
+            foreach (var id in ids.Split(IdStringSeparator))
+            {
+                var obj = lookup.Find(Convert.ToInt32(id));
+                if (obj != null) result.Add(obj);
+            }
+                
 
         return result;
     }
 
-    public static string ObjectsToIdString<T>(IEnumerable<T> objs, IFetcher<T> lookup)
+    protected static string ObjectsToIdString<T>(IEnumerable<T> objs, IFetcher<T> lookup)
     {
         return string.Join(IdStringSeparator, objs.Select(pj => Convert.ToString(lookup.GetId(pj))));
     }

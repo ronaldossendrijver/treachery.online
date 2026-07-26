@@ -27,6 +27,7 @@ public class Homeworld : Location
 
     public int BattleBonusAndLasgunShieldLimitAtLowThreshold { get; private set; }
 
+    [System.Diagnostics.CodeAnalysis.SetsRequiredMembers]
     public Homeworld(World world, Faction faction, Territory t, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int treshold, int battleBonusAtHighThreshold, int battleBonusAtLowThreshold, int resourceAmount, int id) : base(id)
     {
         World = world;

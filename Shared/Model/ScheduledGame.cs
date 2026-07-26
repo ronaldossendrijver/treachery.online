@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Treachery.Shared;
+﻿namespace Treachery.Shared;
 
 public class ScheduledGame
 {
@@ -12,9 +10,9 @@ public class ScheduledGame
     
     public string CreatorPlayerName { get; init; } = string.Empty;
     
-    public int? NumberOfPlayers { get; init; } = 6;
+    public int NumberOfPlayers { get; init; } = 6;
     
-    public int? MaximumTurns { get; init; } = 10;
+    public int MaximumTurns { get; init; } = 10;
 
     public Ruleset? Ruleset { get; init; }
     

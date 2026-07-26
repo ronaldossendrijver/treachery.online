@@ -788,7 +788,7 @@ public partial class Game
 
     internal bool CheckIntrusion(ILocationEvent e)
     {
-        CheckBlueIntrusion(e, e.Initiator, e.To.Territory);
+        CheckBlueIntrusion(e, e.Initiator, e.To!.Territory);
         CheckAmbassadorTriggered(e);
         CheckTerrorTriggered(e);
         return Intrusions.Count > 0;
@@ -824,7 +824,7 @@ public partial class Game
             (Version < 160 || e.Initiator != Faction.Blue || e.ForcesAddedToLocation > 0) &&
             e.Initiator != Faction.Pink &&
             e.Initiator != pinkPlayer.Ally &&
-            AmbassadorIn(e.To.Territory) != Ambassador.None &&
+            AmbassadorIn(e.To!.Territory) != Ambassador.None &&
             AmbassadorIn(e.To.Territory) != AmbassadorOf(e.Initiator))
             QueueIntrusion(e, IntrusionType.Ambassador);
     }
@@ -837,7 +837,7 @@ public partial class Game
             e.Initiator != Faction.Cyan &&
             e.Initiator != cyanPlayer.Ally &&
             !IsOccupiedByFactionOrTheirAlly(World.Cyan, e.Initiator) &&
-            TerrorIn(e.To.Territory).Any())
+            TerrorIn(e.To!.Territory).Any())
             QueueIntrusion(e, IntrusionType.Terror);
     }
 

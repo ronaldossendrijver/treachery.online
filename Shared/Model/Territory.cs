@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class Territory : IIdentifiable, ICloneable
@@ -66,15 +64,16 @@ public class Territory : IIdentifiable, ICloneable
         }
     }
 
-    public Location ResourceBlowLocation => Locations.FirstOrDefault(l => l.SpiceBlowAmount > 0);
+    public Location? ResourceBlowLocation => Locations.FirstOrDefault(l => l.SpiceBlowAmount > 0);
 
-    public Location DiscoveryTokenLocation => Locations.FirstOrDefault(l => l.DiscoveryTokenType != DiscoveryTokenType.None);
+    public Location? DiscoveryTokenLocation => Locations.FirstOrDefault(l => l.DiscoveryTokenType != DiscoveryTokenType.None);
 
     public override string ToString()
     {
         if (Message.DefaultDescriber != null)
             return Message.DefaultDescriber.Describe(this) + "*";
-        return base.ToString();
+        
+        return base.ToString() ?? "?";
     }
 
     public object Clone()

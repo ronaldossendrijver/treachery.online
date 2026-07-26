@@ -1,8 +1,4 @@
-﻿using System.Net.Mail;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-
-namespace Treachery.Server;
+﻿namespace Treachery.Server;
 
 public partial class GameHub
 {
@@ -93,7 +89,7 @@ public partial class GameHub
         await using var db = GetDbContext();
       
         var user = await db.Users.FirstOrDefaultAsync(x =>
-            x.Name != null && x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()) && x.HashedPassword == hashedPassword);
+            x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()) && x.HashedPassword == hashedPassword);
         
         if (user == null)
             return Error<LoginInfo>(ErrorType.InvalidUserNameOrPassword);
@@ -111,8 +107,8 @@ public partial class GameHub
         await using var db = GetDbContext();
 
         var users = db.Users.Where(x =>
-                x.Email != null && x.Email.Trim().ToLower().Equals(usernameOrEmail.Trim().ToLower()) ||
-                x.Name != null && x.Name.Trim().ToLower().Equals(usernameOrEmail.Trim().ToLower()))
+                x.Email.Trim().ToLower().Equals(usernameOrEmail.Trim().ToLower()) ||
+                x.Name.Trim().ToLower().Equals(usernameOrEmail.Trim().ToLower()))
             .ToList();
         
         if (users.Count == 0)
@@ -120,7 +116,7 @@ public partial class GameHub
 
         var mail = users[0].Email;
         
-        if (mail == null)
+        if (string.IsNullOrEmpty(mail))
             return Error(ErrorType.UnknownUsernameOrEmailAddress);
 
         if (users.Any(u => (DateTimeOffset.Now - u.PasswordResetTokenCreated).TotalMinutes < 5))
@@ -163,7 +159,7 @@ public partial class GameHub
         await using var db = GetDbContext();
 
         var user = await db.Users.FirstOrDefaultAsync(x =>
-            x.Name != null && x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()));
+            x.Name.Trim().ToLower().Equals(userName.Trim().ToLower()));
         
         if (user == null)
             return Error<LoginInfo>(ErrorType.UnknownUserName);

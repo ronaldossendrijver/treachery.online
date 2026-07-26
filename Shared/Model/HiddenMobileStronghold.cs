@@ -11,6 +11,7 @@ namespace Treachery.Shared;
 
 public class HiddenMobileStronghold : AttachedLocation
 {
+    [SetsRequiredMembers]
     public HiddenMobileStronghold(Territory t, int id) : base(id)
     {
         Territory = t;

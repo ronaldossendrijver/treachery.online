@@ -13,6 +13,7 @@ public class DiscoveredLocation : AttachedLocation
 {
     public DiscoveryToken Discovery { get; private set; }
 
+    [System.Diagnostics.CodeAnalysis.SetsRequiredMembers]
     public DiscoveredLocation(Territory t, int id, DiscoveryToken discovery) : base(id)
     {
         Territory = t;

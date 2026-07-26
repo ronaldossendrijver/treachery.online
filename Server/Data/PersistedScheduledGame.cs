@@ -17,19 +17,19 @@ public class PersistedScheduledGame
 {
     public int Id { get; init; }
 
-    [MaxLength(36)]
-    public string? GameId { get; init; }
+    [MaxLength(36)] 
+    public string GameId { get; init; } = string.Empty;
     
     public int CreatorUserId { get; init; }
     
     [MaxLength(128)]
-    public string? CreatorPlayerName { get; init; }
+    public string CreatorPlayerName { get; init; } = string.Empty;
     
     public DateTimeOffset DateTime { get; init; }
     
-    public int? NumberOfPlayers { get; init; }
+    public int NumberOfPlayers { get; init; }
     
-    public int? MaximumTurns { get; init; }
+    public int MaximumTurns { get; init; }
 
     public Ruleset? Ruleset { get; init; }
     
@@ -37,5 +37,5 @@ public class PersistedScheduledGame
 
     public List<Faction> AllowedFactionsInPlay { get; init; } = [];
 
-    public string? SubscribedUsers { get; init; }
+    public string SubscribedUsers { get; init; } = string.Empty;
 }

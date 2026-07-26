@@ -23,7 +23,7 @@
 
         <div class="d-flex flex-row-reverse mt-1">
 
-            <button class="btn btn-primary btn-sm" @onclick="e => Send()">Send</button>
+            <button class="btn btn-primary btn-sm" @onclick="_ => Send()">Send</button>
 
             @if (ShowGameChat)
             {
@@ -55,13 +55,13 @@
         {
             var color = m switch
             {
-                GameChatMessage gcm => Client.CurrentSkin.GetFactionColor(gcm.GetFaction(gcm.SourceUserId, Client.Game)),
+                GameChatMessage gcm => Client.CurrentSkin.GetFactionColor(gcm.GetFaction(gcm.SourceUserId, Client!.Game!)),
                 GlobalChatMessage => "grey",
                 _ => "grey"
             };
 
             <div class='text-break p-1 mt-1 small' style="background-color:@color;user-select: text;">
-                <ExpressionComponent Game="@Game" Expression="@m.GetBodyIncludingPlayerInfo(Client.UserId, Client.RecentlySeenUsers, Client.Game, !Client.InGame).Expression" Size="20"/>
+                <ExpressionComponent Game="@Game" Expression="@m.GetBodyIncludingPlayerInfo(Client!.UserId!.Value, Client.RecentlySeenUsers, Client!.Game!, !Client.InGame).Expression" Size="20"/>
             </div>
         }
 
@@ -118,20 +118,22 @@
 
     private async Task SendMessage(string msg, string target)
     {
+        if (Client?.UserId is null || string.IsNullOrEmpty(msg) || string.IsNullOrEmpty(target)) return;
+        
         if (target == LabelGlobalChat)
         {
             await Client.SendGlobalChatMessage(new GlobalChatMessage
             {
-                SourceUserId = Client.UserId,
+                SourceUserId = Client.UserId.Value,
                 Body = msg
             });
         }
         else {
 
-            var targetUserId = target is LabelGlobalChat or LabelAllPlayersInGame ? -1 : Client.Game.GetUserIdByName(target);
+            var targetUserId = target is LabelGlobalChat or LabelAllPlayersInGame ? -1 : Client.Game!.GetUserIdByName(target);
             await Client.SendChatMessage(new GameChatMessage
             {
-                SourceUserId = Client.UserId,
+                SourceUserId = Client.UserId.Value,
                 TargetUserId = targetUserId,
                 Body = msg
             });
@@ -144,7 +146,7 @@
     {
         get
         {
-            if (Game.CurrentPhase < Phase.SelectingFactions)
+            if (Game.CurrentPhase < Phase.SelectingFactions || Client?.Game is null || _selectedPlayerName is null)
                 return "white";
 
             var p = Client.Game.GetPlayerByName(_selectedPlayerName);

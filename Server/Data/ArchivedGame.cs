@@ -7,6 +7,8 @@
 //  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 // */
 
+// ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
+
 using System.ComponentModel.DataAnnotations;
 
 namespace Treachery.Server;
@@ -16,13 +18,11 @@ public class ArchivedGame
     public int Id { get; init; }
     
     [MaxLength(128)]
-    public string? GameName { get; set; }
+    public string GameName { get; set; } = string.Empty;
     
     public int CreatorUserId { get; init; }
     
-    // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
-    public string? GameState { get; init; }
+    public string GameState { get; init; } = string.Empty;
     
-    // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
-    public string? GameParticipation { get; init; }
+    public string GameParticipation { get; init; } = string.Empty;
 }
