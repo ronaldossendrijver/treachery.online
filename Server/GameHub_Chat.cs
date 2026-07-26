@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using Treachery.Shared;
-
-namespace Treachery.Server;
+﻿namespace Treachery.Server;
 
 public partial class GameHub
 {

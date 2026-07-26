@@ -207,7 +207,7 @@ public partial class GameHub
 
         if (game.Game.CurrentMainPhase is MainPhase.Ended && !game.StatisticsSent && game.Game.NumberOfBots < 0.5f * game.Game.NumberOfSeatedPlayers)
         {
-            await SendMailAndStatistics(game);
+            await SendEndOfGameMail(game);
             game.StatisticsSent = true;
         }
 
@@ -388,7 +388,7 @@ public partial class GameHub
         return bot;
     }
     
-    private static int DetermineBotDelay(MainPhase phase, GameEvent e, int speed)
+    private static int DetermineBotDelay(MainPhase phase, GameEvent? e, int speed)
     {
         if (speed == 0) return 0;
         
@@ -405,12 +405,6 @@ public partial class GameHub
             return 9600 / speed;
         
         return 4800 / speed;
-    }
-
-    private async Task SendMailAndStatistics(ManagedGame game)
-    {
-        await SendEndOfGameMail(game);
-        await SendGameStatistics(game.Game);
     }
 }
 

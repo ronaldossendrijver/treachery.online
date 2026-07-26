@@ -14,11 +14,11 @@ public interface IGameService
 
     //Logged in?
     public bool LoggedIn { get; }
-    public int UserId { get; }
-    public string UserName { get; }
-    public string UserEmail { get; }
-    public string PlayerName { get; }
-    public UserStatus UserStatus { get; }
+    public int? UserId { get; }
+    public string? UserName { get; }
+    public string? UserEmail { get; }
+    public string? PlayerName { get; }
+    public UserStatus? UserStatus { get; }
     
     //Server info
     public ServerInfo ServerInfo { get; }
@@ -31,10 +31,10 @@ public interface IGameService
     public Dictionary<int,LoggedInUserInfo> RecentlySeenUsers { get; }
 
     //Game info
-    public Game Game { get; }
-    public string GameName { get; }
-    public string GameId { get; }
-    public GameStatus Status { get; }
+    public Game? Game { get; }
+    public string? GameName { get; }
+    public string? GameId { get; }
+    public GameStatus? Status { get; }
     public bool InGame { get; }
     public bool PlayersNeedSeating { get; }
     public bool IsObserver { get; }
@@ -54,9 +54,9 @@ public interface IGameService
     public void Refresh(string? source = null);
     public Task Start(string? userToken = null, string? gameId = null);
     public Task ExitGame();
-    public Player Player { get; }
+    public Player? Player { get; }
 
-    public Faction Faction { get; }
+    public Faction? Faction { get; }
     
     public LinkedList<ChatMessage> Messages { get; }
 
@@ -70,7 +70,7 @@ public interface IGameService
     
     public bool IsAdmin { get; set; }
 
-    public Phase CurrentPhase { get; }
+    public Phase? CurrentPhase { get; }
     public Skin CurrentSkin { get; set; }
 
     public event EventHandler<Location> OnLocationSelected;

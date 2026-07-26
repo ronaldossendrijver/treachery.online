@@ -8,7 +8,7 @@ public partial class GameHub
         
         var result = new ServerInfo
         {
-            AdminName = Configuration["GameAdminUsername"],
+            AdminName = Configuration["GameAdminUsername"] ?? "admin",
             ScheduledMaintenance = MaintenanceDate,
         };
 

@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using System.Text;
+﻿using System.Text;
 
 namespace Treachery.Server;
 
@@ -13,21 +12,17 @@ public partial class GameHub
         if (RunningGamesByGameId.Values.Count(g => g.CreatorUserId == user.Id) >= MaximumNumberOfGamesPerPlayer)
             return Error<GameInitInfo>(ErrorType.TooManyGames);
 
-        Game game;
+        var game = new Game();
         var loadGame = !string.IsNullOrEmpty(stateData);
         if (loadGame)
         {
             var state = GameState.Load(stateData);
             var errorMessage = Game.TryLoad(state, new Participation(), false, false, out var loadedGame);
 
-            if (errorMessage == null)
+            if (errorMessage == null && loadedGame != null)
                 game = loadedGame;
             else
-                return Error<GameInitInfo>(ErrorType.InvalidGameEvent, errorMessage.ToString());
-        }
-        else
-        {
-            game = new Game();
+                return Error<GameInitInfo>(ErrorType.InvalidGameEvent, errorMessage?.ToString() ?? "Unknown error");
         }
 
         var gameId = Guid.NewGuid().ToString();
@@ -57,14 +52,14 @@ public partial class GameHub
         return Success(new GameInitInfo
         {
             GameId = gameId, 
-            GameState = stateData ?? GameState.GetStateAsString(game), 
+            GameState = stateData, 
             GameName = managedGame.Name,
             Participation = game.Participation
         });
     }
 
     public async Task<Result<ServerStatus>> RequestScheduleGame(string userToken, DateTimeOffset dateTime, Ruleset? ruleset,
-        int? numberOfPlayers, int? maximumTurns, List<Faction> allowedFactionsInPlay, bool asyncPlay)
+        int numberOfPlayers, int maximumTurns, List<Faction> allowedFactionsInPlay, bool asyncPlay)
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<ServerStatus>(ErrorType.UserNotFound);
@@ -125,8 +120,8 @@ public partial class GameHub
         var state = GameState.Load(stateData);
         var errorMessage = Game.TryLoad(state, game.Game.Participation, false, false, out var loadedGame);
 
-        if (errorMessage != null)
-            return Error(ErrorType.InvalidGameEvent, errorMessage.ToString());
+        if (errorMessage != null || loadedGame is null)
+            return Error(ErrorType.InvalidGameEvent, errorMessage?.ToString() ?? "Unknown error");
 
         if (loadedGame.Seed != game.Game.Seed)
             loadedGame.ResetSeats();
@@ -692,24 +687,6 @@ public partial class GameHub
 
         await SendMail(mailMessage);
     }
-    
-    private static async Task SendGameStatistics(Game game)
-    {
-        try
-        {
-            var statistics = GameStatistics.GetStatistics(game);
-            var httpClient = new HttpClient();
-            var data = GetStatisticsAsString(statistics);
-            var json = new StringContent(data, Encoding.UTF8, "application/json");
-            await httpClient.PostAsync("https://dune.games/.netlify/functions/plays-add", json);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Error sending statistics: {0}", e.Message);
-        }
-    }
-
-    private static string GetStatisticsAsString(GameStatistics g) => Utilities.Serialize(g);
     
     private static GameInfo ExtractGameInfo(ManagedGame managedGame) => new()
     {
