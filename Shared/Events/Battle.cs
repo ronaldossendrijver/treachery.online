@@ -391,7 +391,8 @@ public class Battle : GameEvent
         if (AllyContributionAmount > MaxAllyResources(Game, p, Forces, SpecialForces)) return Message.Express("Your ally won't pay that much");
         if (cost > p.Resources + AllyContributionAmount) return Message.Express("You can't pay ", Payment.Of(cost), " to fight with ", Forces + SpecialForces, " forces at full strength");
         if (Hero == null && ValidBattleHeroes(Game, p).Any() && !Game.Applicable(Rule.BattleWithoutLeader)) return Message.Express("You must select a leader");
-        if (Hero != null && !ValidBattleHeroes(Game, p).Contains(Hero)) return Message.Express("Invalid leader");
+        if (Hero != null && !ValidBattleHeroes(Game, p).Contains(Hero)) 
+            return Message.Express("Invalid leader");
         if (Weapon != null && Weapon == Defense) return Message.Express("Can't use the same card as weapon and defense");
         if (Hero == null && (Weapon != null || Defense != null)) return Message.Express("Can't use treachery cards without a leader");
         if (Hero is Leader && Game.CurrentBattle!.Territory != null && !Game.CanFightIn(Hero, Game.CurrentBattle.Territory)) return Message.Express("Selected leader already fought in another territory");
@@ -399,7 +400,8 @@ public class Battle : GameEvent
         if (Messiah && !MessiahMayBeUsedInBattle(Game, p)) return Message.Express(Concept.Messiah, " is not available");
         if (Weapon == null && Defense is { Type: TreacheryCardType.WeirdingWay }) return Message.Express("You can't use ", TreacheryCardType.WeirdingWay, " as defense without using a weapon");
         if (Defense == null && Weapon is { Type: TreacheryCardType.Chemistry }) return Message.Express("You can't use ", TreacheryCardType.Chemistry, " as weapon without using a defense");
-        if (!ValidWeapons(Game, p, Defense, Hero, Game.CurrentBattle!.Territory, true).Contains(Weapon)) return Message.Express("Invalid weapon");
+        if (!ValidWeapons(Game, p, Defense, Hero, Game.CurrentBattle!.Territory, true).Contains(Weapon)) 
+            return Message.Express("Invalid weapon");
         if (!ValidDefenses(Game, p, Weapon, Game.CurrentBattle.Territory, true).Contains(Defense)) return Message.Express("Invalid defense");
         if (Game.IsInFrontOfShield(Hero)) return Message.Express(Hero, " is currently in front of your player shield");
         if (Hero != null && BankerBonus > 0 && !Game.SkilledAs(Hero, LeaderSkill.Banker)) return Message.Express("Only a leader skilled as ", LeaderSkill.Banker, " can be boosted by ", Concept.Resource);
@@ -643,27 +645,33 @@ public class Battle : GameEvent
         var playableWeapons = CardsPlayableAsWeapon(g, p, selectedDefense, territoryOfBattle,
             selectedHero != null && g.SkilledAs(selectedHero, LeaderSkill.Planetologist)).ToArray();
 
+        var resolvedByVoiceRule = false;
+
         if (AffectedByVoice(g, p, g.CurrentVoice))
         {
-            if (g.CurrentVoice?.Must is true)
+            if (g.CurrentVoice is { Must: true } currentVoiceMust)
             {
-                if (selectedDefense != null && selectedDefense.Type == g.CurrentVoice.Type)
+                if (selectedDefense != null && selectedDefense.Type == currentVoiceMust.Type)
                 {
                     result.AddRange(playableWeapons);
                     if (includingNone) result.Add(null);
+                    resolvedByVoiceRule = true;
                 }
-                else if (playableWeapons.Any(w => Voice.IsVoicedBy(g, true, true, w.Type, g.CurrentVoice.Type)))
+                else if (playableWeapons.Any(w => Voice.IsVoicedBy(g, true, true, w.Type, currentVoiceMust.Type)))
                 {
-                    result.AddRange(playableWeapons.Where(w => Voice.IsVoicedBy(g, true, true, w.Type, g.CurrentVoice.Type)));
+                    result.AddRange(playableWeapons.Where(w => Voice.IsVoicedBy(g, true, true, w.Type, currentVoiceMust.Type)));
+                    resolvedByVoiceRule = true;
                 }
             }
-            else if (g.CurrentVoice?.MayNot is true)
+            else if (g.CurrentVoice is { MayNot: true } currentVoiceMayNot)
             {
-                result.AddRange(playableWeapons.Where(w => !Voice.IsVoicedBy(g, true, false, w.Type, g.CurrentVoice.Type)));
+                result.AddRange(playableWeapons.Where(w => !Voice.IsVoicedBy(g, true, false, w.Type, currentVoiceMayNot.Type)));
                 if (includingNone) result.Add(null);
+                resolvedByVoiceRule = true;
             }
         }
-        else
+
+        if (!resolvedByVoiceRule)
         {
             result.AddRange(playableWeapons);
             if (includingNone) result.Add(null);
@@ -684,27 +692,33 @@ public class Battle : GameEvent
 
         var playableDefenses = CardsPlayableAsDefense(g, p, selectedWeapon, territoryOfBattle).ToArray();
 
+        var resolvedByVoiceRule = false;
+
         if (AffectedByVoice(g, p, g.CurrentVoice))
         {
-            if (g.CurrentVoice!.Must)
+            if (g.CurrentVoice is { Must: true } currentVoiceMust)
             {
-                if (selectedWeapon != null && selectedWeapon.Type == g.CurrentVoice.Type)
+                if (selectedWeapon != null && selectedWeapon.Type == currentVoiceMust.Type)
                 {
                     result.AddRange(playableDefenses);
                     if (includingNone) result.Add(null);
+                    resolvedByVoiceRule = true;
                 }
-                else if (playableDefenses.Any(w => Voice.IsVoicedBy(g, false, true, w.Type, g.CurrentVoice.Type)))
+                else if (playableDefenses.Any(w => Voice.IsVoicedBy(g, false, true, w.Type, currentVoiceMust.Type)))
                 {
-                    result.AddRange(playableDefenses.Where(w => Voice.IsVoicedBy(g, false, true, w.Type, g.CurrentVoice.Type)));
+                    result.AddRange(playableDefenses.Where(w => Voice.IsVoicedBy(g, false, true, w.Type, currentVoiceMust.Type)));
+                    resolvedByVoiceRule = true;
                 }
             }
-            else if (g.CurrentVoice.MayNot)
+            else if (g.CurrentVoice is { MayNot: true } currentVoiceMayNot)
             {
-                result.AddRange(playableDefenses.Where(w => !Voice.IsVoicedBy(g, false, false, w.Type, g.CurrentVoice.Type)));
+                result.AddRange(playableDefenses.Where(w => !Voice.IsVoicedBy(g, false, false, w.Type, currentVoiceMayNot.Type)));
                 if (includingNone) result.Add(null);
+                resolvedByVoiceRule = true;
             }
         }
-        else
+
+        if (!resolvedByVoiceRule)
         {
             result.AddRange(playableDefenses);
             if (includingNone) result.Add(null);

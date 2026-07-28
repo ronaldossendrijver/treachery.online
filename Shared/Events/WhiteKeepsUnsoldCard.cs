@@ -49,7 +49,7 @@ public class WhiteKeepsUnsoldCard : PassableGameEvent
         else
         {
             Game.RemovedTreacheryCards.Add(card);
-            Game.FinishBid(null, null, card, Game.Version < 152);
+            Game.FinishBid(null, null, card, false);
         }
     }
 

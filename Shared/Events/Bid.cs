@@ -327,7 +327,7 @@ public class Bid : PassableGameEvent, IBid
                     Game.RemovedTreacheryCards.Add(card);
                     Game.RegisterWonCardAsKnown(card);
                     Log(card, " was removed from the game");
-                    Game.FinishBid(null!, null!, card, Game.Version < 152);
+                    Game.FinishBid(null, null, card, false);
                 }
             }
         }

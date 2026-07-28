@@ -636,7 +636,7 @@ public class Tests
 #pragma warning disable CS0162 // Unreachable code detected
     // ReSharper disable HeuristicUnreachableCode
 
-    private const bool SingleThreadTesting = true; 
+    private const bool ParallelTesting = false; 
 
     [TestMethod]
     public void Regression()
@@ -660,19 +660,31 @@ public class Tests
         try
         {
             Console.WriteLine("Re-playing all savegame files in {0}...", Directory.GetCurrentDirectory());
-
+            
             var gamesTested = 0;
-            ParallelOptions po = new()
-            {
-                MaxDegreeOfParallelism = SingleThreadTesting ? 1 : Environment.ProcessorCount
-            };
-            Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, fileName =>
-            {
-                gamesTested++;
-                var testcaseFileName = fileName + ".testcase";
 
-                ReplayGame(fileName, testcaseFileName, statistics, trainingData, centralStyleStatistics);
-            });
+            if (ParallelTesting)
+            {
+                ParallelOptions po = new()
+                {
+                    MaxDegreeOfParallelism = Environment.ProcessorCount
+                };
+                Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, fileName =>
+                {
+                    gamesTested++;
+                    var testcaseFileName = fileName + ".testcase";
+                    ReplayGame(fileName, testcaseFileName, statistics, trainingData, centralStyleStatistics);
+                });
+            }
+            else
+            {
+                foreach (var fileName in Directory.EnumerateFiles(".", "savegame*.json"))
+                {
+                    gamesTested++;
+                    var testcaseFileName = fileName + ".testcase";
+                    ReplayGame(fileName, testcaseFileName, statistics, trainingData, centralStyleStatistics);
+                }
+            }
 
             Assert.AreNotEqual(0, gamesTested);
         }
