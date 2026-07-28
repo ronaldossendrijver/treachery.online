@@ -50,7 +50,7 @@ public class Tests
     private readonly List<string> _writtenCases = [];
     
     // ReSharper disable UnusedMember.Local
-    private void WriteSaveGameIfApplicable(Game g, Player playerWithAction, string c)
+    private void WriteSaveGameIfApplicable(Game g, Player? playerWithAction, string c)
     {
         lock (_writtenCases)
         {
@@ -62,18 +62,20 @@ public class Tests
     }
     // ReSharper restore UnusedMember.Local
 
-    private ObjectCounter<int> _cardCount;
-    private ObjectCounter<int> _leaderCount;
+    private ObjectCounter<int> _cardCount = new();
+    private ObjectCounter<int> _leaderCount = new();
     
     private string TestIllegalCases(Game g, GameEvent e)
     {
+        if (e is PortableAntidoteUsed pau && g.CurrentBattle!.PlanOf(pau.Initiator)!.Defense != null) return "Portable antidote used when defense already present - " + g.History.Count;
+        
         if (!g.Applicable(Rule.AdvisorsDontConflictWithAlly) && e is BattleConcluded)
         {
             var battleLoser = g.GetPlayer(g.BattleLoser);
             if (battleLoser != null)
             {
                 var allyOfBattleLoser = battleLoser.AlliedPlayer;
-                if (battleLoser.AnyForcesIn(g.CurrentBattle.Territory) > 0 || 
+                if (battleLoser.AnyForcesIn(g.CurrentBattle!.Territory) > 0 || 
                     (allyOfBattleLoser != null && (!battleLoser.Is(Faction.Pink) || !allyOfBattleLoser.Is(Faction.Blue)) && allyOfBattleLoser.OccupyingForcesIn(g.CurrentBattle.Territory) > 0)) return "Loser of battle still has forces in the territory - " + g.History.Count;
             }
         }
@@ -106,7 +108,7 @@ public class Tests
                 return "More than 8 revivals by " + e.Initiator;
 
             if (totalForceRevivals > 4 && (g.Version > 169 || e.Initiator is not Faction.Grey) && !g.IsPlaying(Faction.Purple) && 
-                g.CurrentRecruitsPlayed == null && e.Initiator is not Faction.Brown && !g.HasLowThreshold(e.Initiator) && g.GetPlayer(r.Initiator).Ally is not Faction.Red && !r.UsesRedSecretAlly && (e.Initiator is not Faction.Grey || r.AmountOfSpecialForces == 0 || g.HasLowThreshold(e.Initiator))) 
+                g.CurrentRecruitsPlayed == null && e.Initiator is not Faction.Brown && !g.HasLowThreshold(e.Initiator) && g.GetPlayer(r.Initiator)!.Ally is not Faction.Red && !r.UsesRedSecretAlly && (e.Initiator is not Faction.Grey || r.AmountOfSpecialForces == 0 || g.HasLowThreshold(e.Initiator))) 
                 return "More than 4 revivals by " + e.Initiator;
 
             if (g.Version is < 180 or >= 185 && e.Initiator is not Faction.Purple && e.Initiator is not Faction.Brown && e is Revival { Hero: not null } && g.LeaderRevivalsThisTurn.GetValueOrDefault(e.Initiator, 0) > 1)
@@ -140,9 +142,9 @@ public class Tests
             var previousNumberOfCardsInPlay = _cardCount.CountOf(g.Seed);
             var currentNumberOfCards =
                 g.Players.Sum(p => p.TreacheryCards.Count)
-                + g.TreacheryDeck.Items.Count
-                + g.TreacheryDiscardPile.Items.Count
-                + (g.WhiteCache?.Count ?? 0)
+                + g.TreacheryDeck!.Items.Count
+                + g.TreacheryDiscardPile!.Items.Count
+                + g.WhiteCache.Count
                 + (g.CardsOnAuction != null ? g.CardsOnAuction.Items.Count : 0)
                 + (g.Players.Any(p => g.GetCardSetAsideForBid(p) != null) ? 1 : 0)
                 + g.RemovedTreacheryCards.Count;
@@ -176,13 +178,13 @@ public class Tests
 
         if (g.TreacheryDeck != null)
         {
-            var allCards = g.TreacheryDeck.Items.Concat(g.TreacheryDiscardPile.Items).Concat(g.Players.SelectMany(x => x.TreacheryCards)).ToArray();
+            var allCards = g.TreacheryDeck.Items.Concat(g.TreacheryDiscardPile!.Items).Concat(g.Players.SelectMany(x => x.TreacheryCards)).ToArray();
             if (allCards.Any(item => allCards.Count(c => c.Equals(item)) > 1)) return "Duplicate card in Treachery Card Deck" + " after " + e.GetType().Name + " - " + g.History.Count;
         }
 
         if (g.ResourceCardDeck != null)
         {
-            var allCards = g.ResourceCardDeck.Items.Concat(g.ResourceCardDiscardPileA.Items).Concat(g.ResourceCardDiscardPileB.Items).ToArray();
+            var allCards = g.ResourceCardDeck.Items.Concat(g.ResourceCardDiscardPileA!.Items).Concat(g.ResourceCardDiscardPileB!.Items).ToArray();
             if (allCards.Any(item => allCards.Count(c => c == item) > 1)) return "Duplicate card in Spice Deck" + " after " + e.GetType().Name + " - " + g.History.Count;
         }
 
@@ -207,7 +209,7 @@ public class Tests
         }
 
         var pinkPlayer = g.GetPlayer(Faction.Pink);
-        if (g.Version > 170 && g.CurrentMainPhase is not MainPhase.ShipmentAndMove)
+        if (g is { Version: > 170, CurrentMainPhase: not MainPhase.ShipmentAndMove })
         {
             foreach (var s in g.Map.Strongholds)
             {
@@ -232,7 +234,7 @@ public class Tests
         var pink = g.GetPlayer(Faction.Pink);
         if (pink != null)
         {
-            var actualAmount = g.AmbassadorsOnPlanet.Count(kvp => kvp.Value != Ambassador.Blue) + g.UnassignedAmbassadors.Items.Count(a => a != Ambassador.Blue) + g.AmbassadorsSetAside.Count(a => a != Ambassador.Blue) + pink.Ambassadors.Count(a => a != Ambassador.Blue);
+            var actualAmount = g.AmbassadorsOnPlanet.Count(kvp => kvp.Value != Ambassador.Blue) + g.UnassignedAmbassadors!.Items.Count(a => a != Ambassador.Blue) + g.AmbassadorsSetAside.Count(a => a != Ambassador.Blue) + pink.Ambassadors.Count(a => a != Ambassador.Blue);
             var expectedAmount = EstablishPlayers.AvailableFactions().Count(f => f != Faction.Blue) - 1;
 
             if (actualAmount != expectedAmount)
@@ -385,7 +387,7 @@ public class Tests
                 PlayGameAndRecordResults(nrOfPlayers, nrOfTurns, rulesAsArray, winCounter, statistics, timeout);
             });
 
-        foreach (var f in winCounter.Counted.OrderByDescending(f => winCounter.CountOf(f))) Console.WriteLine(DefaultSkin.Default.Format("{0}: {1} ({2}%)", f, winCounter.CountOf(f), 100f * winCounter.CountOf(f) / nrOfGames));
+        foreach (var f in winCounter.Counted.OrderByDescending(winCounter.CountOf)) Console.WriteLine(DefaultSkin.Default.Format("{0}: {1} ({2}%)", f, winCounter.CountOf(f), 100f * winCounter.CountOf(f) / nrOfGames));
 
         statistics.Output(DefaultSkin.Default);
     }
@@ -420,7 +422,7 @@ public class Tests
             PlayGameAndRecordResults(nrOfPlayers, nrOfTurns, rulesAsArray, winCounter, statistics, timeout);
         }
 
-        foreach (var f in winCounter.Counted.OrderByDescending(f => winCounter.CountOf(f))) Console.WriteLine(DefaultSkin.Default.Format("{0}: {1} ({2}%)", f, winCounter.CountOf(f), 100f * winCounter.CountOf(f) / nrOfGames));
+        foreach (var f in winCounter.Counted.OrderByDescending(winCounter.CountOf)) Console.WriteLine(DefaultSkin.Default.Format("{0}: {1} ({2}%)", f, winCounter.CountOf(f), 100f * winCounter.CountOf(f) / nrOfGames));
 
         statistics.Output(DefaultSkin.Default);
     }
@@ -438,18 +440,18 @@ public class Tests
             game.Players.Sum(p => p.ForcesKilled + p.SpecialForcesKilled),
             DefaultSkin.Default.Join(game.Players.SelectMany(p => p.TreacheryCards)),
             game.Players.Sum(p => p.Resources),
-            DefaultSkin.Default.Join(game.TreacheryDiscardPile.Items));
+            DefaultSkin.Default.Join(game.TreacheryDiscardPile!.Items));
 
         foreach (var winner in game.Winners) winCounter.Count(winner.Faction);
     }
 
     private readonly List<Game> _failedGames = [];
     private Game LetBotsPlay(Rule[] rules, int nrOfPlayers, int nrOfTurns, 
-        Dictionary<Faction, BotParameters> parameters, bool performTests, 
-        Statistics statistics, int timeout, Faction mustPlay = Faction.None)
+        Dictionary<Faction, BotParameters>? parameters, bool performTests, 
+        Statistics? statistics, int timeout, Faction mustPlay = Faction.None)
     {
-        BattleOutcome previousBattleOutcome = null;
-        IBid previousWinningBid = null;
+        BattleOutcome? previousBattleOutcome = null;
+        IBid? previousWinningBid = null;
 
         var game = new Game();
         var timer = new TimedTest(game, timeout);
@@ -509,7 +511,8 @@ public class Tests
                     SaveSpecialCases(game, evt);
                 }
 
-                GatherStatistics(statistics, game, ref previousBattleOutcome, ref previousWinningBid);
+                if (statistics != null)
+                    GatherStatistics(statistics, game, ref previousBattleOutcome, ref previousWinningBid);
             }
         }
         catch
@@ -540,14 +543,14 @@ public class Tests
         establishPlayers.Execute(false, true);
     }
 
-    private void HandleElapsedTestTime(object sender, ElapsedEventArgs e)
+    private void HandleElapsedTestTime(object? sender, ElapsedEventArgs e)
     {
-        var game = sender as Game;
-        File.WriteAllText("timeout" + game?.Seed + ".json", GameState.GetStateAsString(game));
+        if (sender is not Game game) return;
+        File.WriteAllText("timeout" + game.Seed + ".json", GameState.GetStateAsString(game));
         _failedGames.Add(game);
     }
 
-    private static GameEvent PerformBotEvent(Game game, Dictionary<Faction, IBot> botForPlayers, bool performTests)
+    private static GameEvent? PerformBotEvent(Game game, Dictionary<Faction, IBot> botForPlayers, bool performTests)
     {
         var botEvents = new Dictionary<Player, List<Type>>();
         foreach (var bot in game.Players) 
@@ -633,7 +636,7 @@ public class Tests
 #pragma warning disable CS0162 // Unreachable code detected
     // ReSharper disable HeuristicUnreachableCode
 
-    public const bool SingleThreadTesting = true; 
+    private const bool SingleThreadTesting = true; 
 
     [TestMethod]
     public void Regression()
@@ -705,7 +708,9 @@ public class Tests
         var game = new Game(state.Version, new Participation());
 
         fs = File.OpenText(testcaseFileName);
-        var tc = Utilities.Deserialize<Testcase>(fs.ReadToEnd());
+        var testCase = Utilities.Deserialize<Testcase>(fs.ReadToEnd());
+        if (testCase is null) throw new Exception("Testcase file " + testcaseFileName + " could not be deserialized");
+        
         fs.Close();
 
         var valueId = 0;
@@ -723,10 +728,10 @@ public class Tests
             Assert.IsNull(result, fileName + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + result);
 
             var actualValues = DetermineTestvalues(game);
-            if (!tc.Testvalues[valueId].Equals(actualValues)) 
+            if (!testCase.Testvalues[valueId].Equals(actualValues)) 
                 File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
             
-            Assert.AreEqual(tc.Testvalues[valueId], actualValues, fileName + ", " + previousPhase + " - " + game.CurrentPhase + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + Testvalues.Difference);
+            Assert.AreEqual(testCase.Testvalues[valueId], actualValues, fileName + ", " + previousPhase + " - " + game.CurrentPhase + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + Testvalues.Difference);
 
             var strangeCase = TestIllegalCases(game, evt);
             if (strangeCase != "") File.WriteAllText("illegalCase_" + game.EventCount + "_" + strangeCase + ".json", GameState.GetStateAsString(game));
@@ -758,7 +763,7 @@ public class Tests
     // ReSharper restore HeuristicUnreachableCode
 #pragma warning restore CS0162 // Unreachable code detected
 
-    private static void GatherStatistics(Statistics statistics, Game game, ref BattleOutcome previousBattleOutcome, ref IBid previousWinningBid)
+    private static void GatherStatistics(Statistics statistics, Game game, ref BattleOutcome? previousBattleOutcome, ref IBid? previousWinningBid)
     {
         lock (statistics)
         {
@@ -796,16 +801,16 @@ public class Tests
             else if ((latest is BattleInitiated && game.CurrentBattle != null) || latest is BattleClaimed)
             {
                 statistics.Battles++;
-                statistics.BattlingFactions.Count(game.CurrentBattle.Aggressor);
+                statistics.BattlingFactions.Count(game.CurrentBattle!.Aggressor);
                 statistics.BattlingFactions.Count(game.CurrentBattle.Defender);
             }
             else if (latest is TreacheryCalled { Succeeded: true } treacheryCalled)
             {
-                statistics.TraitoredLeaders.Count(DefaultSkin.Default.Describe(game.CurrentBattle.PlanOfOpponent(treacheryCalled.Player).Hero));
+                statistics.TraitoredLeaders.Count(DefaultSkin.Default.Describe(game.CurrentBattle!.PlanOfOpponent(treacheryCalled.Player)!.Hero));
             }
             else if (latest is FaceDanced { Passed: false })
             {
-                statistics.FacedancedLeaders.Count(DefaultSkin.Default.Describe(game.WinnerHero));
+                statistics.FacedancedLeaders.Count(DefaultSkin.Default.Describe(game.WinnerHero!));
             }
             else if (latest is ClairVoyancePlayed cp)
             {
@@ -819,7 +824,7 @@ public class Tests
             {
                 statistics.Karamas.Count(karma.Prevented);
             }
-            else if (game.Applicable(Rule.AdvancedCombat) && latest is Battle && game.AggressorPlan != null && game.DefenderPlan != null)
+            else if (game.Applicable(Rule.AdvancedCombat) && latest is Battle && game is { AggressorPlan: not null, DefenderPlan: not null })
             {
                 if (!game.AggressorPlan.Player.IsBot)
                 {
@@ -858,8 +863,8 @@ public class Tests
 
                 statistics.BattleWinningFactions.Count(outcome.Winner?.Faction ?? Faction.None);
                 statistics.BattleLosingFactions.Count(outcome.Loser?.Faction ?? Faction.None);
-                statistics.BattleWinningLeaders.Count(DefaultSkin.Default.Describe(outcome.WinnerBattlePlan.Hero));
-                statistics.BattleLosingLeaders.Count(DefaultSkin.Default.Describe(outcome.LoserBattlePlan.Hero));
+                statistics.BattleWinningLeaders.Count(DefaultSkin.Default.Describe(outcome.WinnerBattlePlan!.Hero));
+                statistics.BattleLosingLeaders.Count(DefaultSkin.Default.Describe(outcome.LoserBattlePlan!.Hero));
 
                 if (outcome.LoserHeroKilled) statistics.BattleKilledLeaders.Count(DefaultSkin.Default.Describe(outcome.LoserBattlePlan.Hero));
                 if (outcome.WinnerHeroKilled) statistics.BattleKilledLeaders.Count(DefaultSkin.Default.Describe(outcome.WinnerBattlePlan.Hero));
@@ -942,6 +947,7 @@ public class Tests
         File.WriteAllText("skin.json", skinData);
 
         var skinToTest = Utilities.Deserialize<Skin>(File.ReadAllText("skin.json"));
+        if (skinToTest is null) throw new Exception("Skin could not be deserialized");
         Assert.AreEqual(oldName, skinToTest.Describe(leader));
     }
 
@@ -959,7 +965,7 @@ public class Tests
             return;
 
         var gameEventType = typeof(GameEvent);
-        foreach (var type in assembly.GetTypes().Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(gameEventType)))
+        foreach (var type in assembly.GetTypes().Where(myType => myType is { IsClass: true, IsAbstract: false } && myType.IsSubclassOf(gameEventType)))
         {
             var serializerAtt = gameEventType.GetCustomAttributes<JsonDerivedTypeAttribute>().FirstOrDefault(att => att.DerivedType == type);
             Assert.IsNotNull(serializerAtt,

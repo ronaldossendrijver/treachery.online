@@ -77,7 +77,7 @@
                                 }
                             </td>
                             <td>
-                                @if (!av.YouAreIn(Client.UserId))
+                                @if (!av.YouAreIn(Client.UserId!.Value))
                                 {
                                     if (av.HasPassword)
                                     {
@@ -105,7 +105,7 @@
                                 }
                                 else
                                 {
-                                    <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" Title="Resume game" MarginClass="m-1">▶</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId!.Value)))" Title="Resume game" MarginClass="m-1">▶</CommandButton>
                                 }
                                 <div class="text-danger">@JoinErrors[av.GameId]</div>
                             </td>
@@ -220,13 +220,13 @@
                                 }
                             </td>
                             <td>
-                                @if (!av.YouAreIn(Client.UserId))
+                                @if (!av.YouAreIn(Client.UserId!.Value))
                                 {
                                     <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, Passwords[av.GameId]))" Title="Observe game" MarginClass="m-1">👁</CommandButton>
                                 }
                                 else
                                 {
-                                    <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" Title="Resume game" MarginClass="m-1">▶</CommandButton>
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId!.Value)))" Title="Resume game" MarginClass="m-1">▶</CommandButton>
                                 }
                                 <div class="text-danger">@JoinErrors[av.GameId]</div>
                             </td>
@@ -241,8 +241,8 @@
 
 @code {
 
-    private Dictionary<string, string> JoinErrors { get; } = [];
-    private Dictionary<string, string> Passwords { get; } = [];
+    private Dictionary<string, string> JoinErrors { get; } = new();
+    private Dictionary<string, string> Passwords { get; } = new();
 
     protected override void OnAfterRender(bool firstRender)
     {

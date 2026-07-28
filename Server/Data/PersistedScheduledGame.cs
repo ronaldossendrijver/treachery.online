@@ -31,7 +31,7 @@ public class PersistedScheduledGame
     
     public int MaximumTurns { get; init; }
 
-    public Ruleset Ruleset { get; init; }
+    public Ruleset? Ruleset { get; init; }
     
     public bool AsyncPlay { get; init; }
 

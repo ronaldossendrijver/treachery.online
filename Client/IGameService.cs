@@ -102,7 +102,7 @@ public interface IGameService
     void RequestReseat();
     Task<string> RequestLeaveGame();
     Task<string> RequestKick(int userId);
-    Task<string> RequestScheduleGame(DateTimeOffset dateTime, Ruleset? ruleset, int? numberOfPlayers, int? maximumTurns,
+    Task<string> RequestScheduleGame(DateTimeOffset dateTime, Ruleset? ruleset, int numberOfPlayers, int maximumTurns,
         List<Faction> allowedFactionsInPlay, bool asyncPlay);
     Task<string> RequestCancelGame(string scheduledGameId);
     Task<string> RequestSubscribeGame(string scheduledGameId, SubscriptionType subscription);
@@ -117,7 +117,7 @@ public interface IGameService
     
     //Game Events
     Task<string> SetTimer(int value);
-    Task<string> RequestGameEvent<T>(T e) where T : GameEvent;
+    Task<string?> RequestGameEvent<T>(T e) where T : GameEvent;
     
     //Chat
     Task SendChatMessage(GameChatMessage e);

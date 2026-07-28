@@ -84,7 +84,7 @@ public partial class Game
 
     public bool IsPlayer(int userId) => Participation.SeatedPlayers.ContainsKey(userId);
     
-    public bool IsHost(int? userId) => userId is not null && Participation.Hosts.Contains(userId);
+    public bool IsHost(int? userId) => userId is not null && Participation.Hosts.Contains(userId.Value);
     
     public bool IsObserver(int? userId) => userId is not null && Participation.Observers.Contains(userId.Value);
     

@@ -100,7 +100,7 @@
     <div class="text-danger align-bottom">@ActionResult</div>
     @if (!Client.IsHost || Game.CurrentPhase > Phase.AwaitingPlayers)
     {
-        <CommandButton Small Class="btn-danger" MarginClass="mt-2" OnClick="@(_ => Remove(Client.UserId, false))">Leave game</CommandButton>
+        <CommandButton Small Class="btn-danger" MarginClass="mt-2" OnClick="@(_ => Leave())">Leave game</CommandButton>
     }
     @if (Client.IsHost && Client.InGame && Game.CurrentPhase >= Phase.TradingFactions)
     {
@@ -145,6 +145,14 @@
     private async Task OpenSeat(int seatId)
     {
         ActionResult = await Client.RequestOpenOrCloseSeat(seatId);
+    }
+    
+    private async Task Leave()
+    {
+        if (Client.UserId != null)
+        {
+            await Remove(Client.UserId.Value, false);
+        }
     }
     
     private void Reseat()

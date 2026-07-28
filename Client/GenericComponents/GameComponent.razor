@@ -11,14 +11,13 @@
 
 @code {
 
-    protected Game Game => Client.Game;
+    protected Game Game => Client.Game!;
 
-    protected Player Player => Client.Player;
+    protected Player Player => Client.Player!;
 
-    protected Faction Faction => Client.Faction;
+    protected Faction Faction => Client.Faction!.Value;
 
-    private string? _id;
-    protected string Id => _id ??= Guid.NewGuid().ToString();
+    protected string Id => field ??= Guid.NewGuid().ToString();
 
     protected override void OnInitialized()
     {
@@ -139,7 +138,7 @@
         return items.Select(i => i != null ? Name(i) : labelIfNull);
     }
 
-    protected string Name(object o)
+    protected string Name(object? o)
     {
         return Client.CurrentSkin.Describe(o);
     }
@@ -154,7 +153,7 @@
         return Client.CurrentSkin.Format("Use {0}?", t);
     }
 
-    protected string GetId(object value)
+    protected string GetId(object? value)
     {
         if (value == null)
             return string.Empty;

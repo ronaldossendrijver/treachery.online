@@ -88,7 +88,7 @@
         {
             await Client.SendGlobalChatMessage(new GlobalChatMessage
             {
-                SourceUserId = Client.UserId,
+                SourceUserId = Client.UserId!.Value,
                 Body = msg
             });
         }
@@ -97,7 +97,7 @@
             var targetUserId = target is LabelGlobalChat or LabelAllPlayersInGame ? -1 : Client.Game.GetUserIdByName(target);
             await Client.SendChatMessage(new GameChatMessage
             {
-                SourceUserId = Client.UserId,
+                SourceUserId = Client.UserId!.Value,
                 TargetUserId = targetUserId,
                 Body = msg
             });

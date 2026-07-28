@@ -9,8 +9,10 @@
 
 @inherits GameComponent
 
+@if (Client.UserStatus is null) return;
+
 <div class="btn-group">
-    <button type="button" class="btn @BtnTypeFromStatus(Client.UserStatus) dropdown-toggle btn-sm" data-bs-toggle="dropdown" aria-expanded="false" disabled="@_busy">
+    <button type="button" class="btn @BtnTypeFromStatus(Client.UserStatus.Value) dropdown-toggle btn-sm" data-bs-toggle="dropdown" aria-expanded="false" disabled="@_busy">
         @Name(Client.UserStatus)
     </button>
     <ul class="dropdown-menu">
