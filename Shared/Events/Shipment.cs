@@ -447,7 +447,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
 
         var receivedPaymentMessage = MessagePart.Express();
         var totalCost = 0;
-
+        
         if (!Passed)
         {
             var ownerOfKarma = KarmaCard != null ? Game.OwnerOf(KarmaCard) : null;

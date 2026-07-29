@@ -118,9 +118,9 @@
 
             foreach (var p in Game.Players) {
 
-                var timeBidding = Game.TimeSpent(p, MainPhase.Bidding);
-                var timeShipping = Game.TimeSpent(p, MainPhase.ShipmentAndMove);
-                var timeBattling = Game.TimeSpent(p, MainPhase.Battle);
+                var timeBidding = Game.TimeSpent(p.Faction, MainPhase.Bidding);
+                var timeShipping = Game.TimeSpent(p.Faction, MainPhase.ShipmentAndMove);
+                var timeBattling = Game.TimeSpent(p.Faction, MainPhase.Battle);
                 var timeTotal = timeBidding + timeShipping + timeBattling;
 
                 result += Client.CurrentSkin.Format("<tr class='table-dark'><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>",

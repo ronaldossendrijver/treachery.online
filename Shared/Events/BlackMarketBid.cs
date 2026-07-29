@@ -43,6 +43,9 @@ public class BlackMarketBid : PassableGameEvent, IBid
     [JsonIgnore]
     public TreacheryCard? KarmaCard => null;
 
+    [JsonIgnore]
+    public bool KarmaBid => false;
+
     #endregion Properties
 
     #region Execution

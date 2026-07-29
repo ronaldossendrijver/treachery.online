@@ -1064,7 +1064,7 @@ public partial class Game
     {
         foreach (var location in territory.Locations) DetermineOccupation(location);
     }
-
+    
     internal void DetermineOccupation(Location location)
     {
         if (location is Homeworld hw)
@@ -1088,11 +1088,11 @@ public partial class Game
 
                 CheckIfShipmentPermissionsShouldBeRevoked();
 
-                if (hw.World == World.Pink && previousOccupier != null) CheckIfOccupierTakesVidal(previousOccupier);
+                if (hw.World == World.Pink) CheckIfOccupierTakesVidal(previousOccupier);
             }
         }
     }
-
+    
     private void ReturnSkilledLeadersInFrontOfShieldAfterBattle()
     {
         if (CurrentBattle is null)

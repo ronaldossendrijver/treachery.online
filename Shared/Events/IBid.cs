@@ -27,4 +27,6 @@ public interface IBid
     public TreacheryCard? KarmaCard { get; }
 
     public Message GetMessage();
+    
+    public bool KarmaBid { get; }
 }

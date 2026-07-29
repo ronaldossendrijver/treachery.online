@@ -52,7 +52,7 @@ public partial class Game
     public int NextStormMoves { get; internal set; } = -1;
     public bool ShieldWallDestroyed { get; internal set; }
     public Dictionary<Location, int> ResourcesOnPlanet { get; } = new();
-    private Dictionary<Player, Timer<MainPhase>> Timers { get; } = new();
+    private Dictionary<Faction, Timer<MainPhase>> Timers { get; } = new();
 
     public Dictionary<TreacheryCard, Faction> RecentlyDiscarded { get; } = new();
     internal Phase PhaseBeforeDiscarding { get; private set; }
@@ -230,10 +230,10 @@ public partial class Game
             var elapsedTime = e.Time.Subtract(previousEvent.Time);
             if (!(elapsedTime.TotalHours < 1)) return;
                 
-            if (!Timers.TryGetValue(e.Player, out var timer))
+            if (!Timers.TryGetValue(e.Initiator, out var timer))
             {
                 timer = new Timer<MainPhase>();
-                Timers.Add(e.Player, timer);
+                Timers.Add(e.Initiator, timer);
             }
 
             timer.Add(CurrentMainPhase, elapsedTime);
@@ -242,9 +242,9 @@ public partial class Game
 
     public TimeSpan Duration => History.Count > 0 ? History[^1].Time.Subtract(History[0].Time) : TimeSpan.Zero;
 
-    public TimeSpan TimeSpent(Player player, MainPhase phase)
+    public TimeSpan TimeSpent(Faction faction, MainPhase phase)
     {
-        if (Timers.TryGetValue(player, out var timer))
+        if (Timers.TryGetValue(faction, out var timer))
             return timer.TimeSpent(phase);
         return TimeSpan.Zero;
     }
@@ -628,12 +628,13 @@ public partial class Game
             Enter(Phase.Discarding);
         }
     }
-
+    
+    
     private void CheckIfOccupierTakesVidal(Player? previousOccupierOfPinkHomeworld)
     {
         if (Vidal is null)
             return;
-        
+       
         var occupierOfPinkHomeworld = OccupierOf(World.Pink);
         if (occupierOfPinkHomeworld != null)
         {

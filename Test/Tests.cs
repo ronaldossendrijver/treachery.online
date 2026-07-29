@@ -392,41 +392,6 @@ public class Tests
         statistics.Output(DefaultSkin.Default);
     }
     
-    //[TestMethod]
-    public void TestBotsSingleThread()
-    {
-        var statistics = new Statistics();
-
-        Message.DefaultDescriber = DefaultSkin.Default;
-
-        _cardCount = new ObjectCounter<int>();
-        _leaderCount = new ObjectCounter<int>();
-
-        const int nrOfGames = 64;
-        const int nrOfTurns = 10;
-        const int nrOfPlayers = 6;
-        const int timeout = 10;
-
-        Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
-
-        //Expansion, advanced game, all expansions, all factions:
-        var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
-        rules.Add(Rule.FillWithBots);
-        rules.Add(Rule.AssistedNotekeeping);
-
-        var rulesAsArray = rules.ToArray();
-        var winCounter = new ObjectCounter<Faction>();
-
-        for (var i = 0; i < nrOfGames; i++)
-        {
-            PlayGameAndRecordResults(nrOfPlayers, nrOfTurns, rulesAsArray, winCounter, statistics, timeout);
-        }
-
-        foreach (var f in winCounter.Counted.OrderByDescending(winCounter.CountOf)) Console.WriteLine(DefaultSkin.Default.Format("{0}: {1} ({2}%)", f, winCounter.CountOf(f), 100f * winCounter.CountOf(f) / nrOfGames));
-
-        statistics.Output(DefaultSkin.Default);
-    }
-
     private void PlayGameAndRecordResults(int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> winCounter, Statistics statistics, int timeout)
     {
         var game = LetBotsPlay(rulesAsArray, nrOfPlayers, nrOfTurns, null, true, statistics, timeout);
@@ -708,6 +673,16 @@ public class Tests
 
             File.AppendAllText("CentralStyleStatistics.json", "]\r\n}");
         }
+    }
+    
+    [TestMethod]
+    public void SingleCase()
+    {
+        var savegame = "savegame20250801.0124.json";
+        var statistics = new Statistics();
+        var trainingData = new TrainingData();
+        var centralStyleStatistics = new ConcurrentBag<string>();
+        ReplayGame(".\\" + savegame, ".\\" + savegame + ".testcase", statistics, trainingData, centralStyleStatistics);
     }
     
     private void ReplayGame(string fileName, string testcaseFileName, Statistics statistics, TrainingData trainingData, ConcurrentBag<string> centralStyleStatistics)

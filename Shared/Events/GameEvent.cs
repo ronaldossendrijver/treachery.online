@@ -203,10 +203,14 @@ public abstract class GameEvent
 
     public void Initialize(Game game, Faction initiator)
     {
-        var player = game.GetPlayer(initiator) ?? throw new ArgumentException($"No player found for {initiator}");
         Game = game;
         Initiator = initiator;
-        Player = player;
+        
+        var player = game.GetPlayer(initiator);
+        if (player != null)
+        {
+            Player = player;    
+        }
     }
 
     public void Initialize(Game game)
@@ -264,11 +268,11 @@ public abstract class GameEvent
 
     #region Support
 
-    protected static List<T> IdStringToObjects<T>(string ids, IFetcher<T> lookup)
+    protected static List<T> IdStringToObjects<T>(string? ids, IFetcher<T> lookup)
     {
         var result = new List<T>();
 
-        if (ids.Length > 0)
+        if (!string.IsNullOrEmpty(ids))
             foreach (var id in ids.Split(IdStringSeparator))
             {
                 var obj = lookup.Find(Convert.ToInt32(id));

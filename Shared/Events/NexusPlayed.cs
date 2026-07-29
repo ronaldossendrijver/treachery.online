@@ -440,18 +440,17 @@ public class NexusPlayed : GameEvent, ILocationEvent
                 {
                     Game.PlayNexusCard(Player, "force ", Faction.White, " to discard the card they just won, refunding payment");
                     Game.Discard(white, Game.CardJustWon);
-                    if (Game.Version >= 174 && Game.WinningBid is Bid winningBid && !winningBid.KarmaBid &&
-                        winningBid.Initiator == Faction.White)
+                    if (Game is { Version: >= 174, WinningBid: { KarmaBid: false, Initiator: Faction.White } })
                     {
-                        white.Resources += winningBid.Amount;
+                        white.Resources += Game.WinningBid.Amount;
                         var whiteAlly = white.AlliedPlayer;
-                        if (whiteAlly != null && winningBid.AllyContributionAmount > 0)
+                        if (whiteAlly != null && Game.WinningBid.AllyContributionAmount > 0)
                         {
-                            whiteAlly.Resources += winningBid.AllyContributionAmount;
+                            whiteAlly.Resources += Game.WinningBid.AllyContributionAmount;
                         }
-                        if (whiteAlly != null && winningBid.RedContributionAmount > 0)
+                        if (whiteAlly != null && Game.WinningBid.RedContributionAmount > 0)
                         {
-                            whiteAlly.Resources += winningBid.RedContributionAmount;
+                            whiteAlly.Resources += Game.WinningBid.RedContributionAmount;
                         }
                     }
                 }
