@@ -153,14 +153,6 @@
         ActionResult = await Client.RequestOpenOrCloseSeat(seatId);
     }
     
-    private async Task Leave()
-    {
-        if (Client.UserId != null)
-        {
-            await Remove(Client.UserId.Value, false);
-        }
-    }
-    
     private void Reseat()
     {
         Client.RequestReseat();
