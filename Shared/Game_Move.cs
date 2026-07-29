@@ -85,7 +85,7 @@ public partial class Game
             foreach (var fl in forceLocations.Where(fl => fl.Key.Territory == fromTerritory))
                 if (Version <= 150 || fl.Value.TotalAmountOfForces > 0)
                 {
-                    PerformMoveFromLocation(initiator, fl.Key, fl.Value, evt.To, ref totalNumberOfForces, ref totalNumberOfSpecialForces);
+                    PerformMoveFromLocation(initiator, fl.Key, fl.Value, evt.To, ref totalNumberOfForces, ref totalNumberOfSpecialForces, false);
                     CheckSandmaster(initiator, evt.To, dist, fl);
                 }
 
@@ -126,7 +126,8 @@ public partial class Game
         }
     }
 
-    internal void PerformMoveFromLocation(Player initiator, Location from, Battalion battalion, Location to, ref int totalNumberOfForces, ref int totalNumberOfSpecialForces)
+    internal void PerformMoveFromLocation(Player initiator, Location from, Battalion battalion, 
+        Location to, ref int totalNumberOfForces, ref int totalNumberOfSpecialForces, bool ignoreStorm)
     {
         var mustMoveThroughStorm = MustMoveThroughStorm(initiator, from, to, battalion);
         if (IsInStorm(to) || mustMoveThroughStorm)

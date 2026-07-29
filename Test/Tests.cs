@@ -362,7 +362,7 @@ public class Tests
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
 
-        const int nrOfGames = 16*64;
+        const int nrOfGames = 256*64;
         const int nrOfTurns = 10;
         const int nrOfPlayers = 6;
         const int timeout = 10;
@@ -601,7 +601,7 @@ public class Tests
 #pragma warning disable CS0162 // Unreachable code detected
     // ReSharper disable HeuristicUnreachableCode
 
-    private const bool ParallelTesting = false; 
+    private const bool ParallelTesting = true; 
 
     [TestMethod]
     public void Regression()
@@ -675,7 +675,7 @@ public class Tests
         }
     }
     
-    [TestMethod]
+    //[TestMethod]
     public void SingleCase()
     {
         var savegame = "savegame20250801.0124.json";

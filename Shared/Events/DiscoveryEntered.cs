@@ -61,7 +61,7 @@ public class DiscoveryEntered : PlacementEvent
                 var totalNumberOfSpecialForces = 0;
 
                 foreach (var fl in ForceLocations.Where(fl => fl.Key.Territory == fromTerritory))
-                    if (fl.Value.TotalAmountOfForces > 0) Game.PerformMoveFromLocation(Player, fl.Key, fl.Value, To, ref totalNumberOfForces, ref totalNumberOfSpecialForces);
+                    if (fl.Value.TotalAmountOfForces > 0) Game.PerformMoveFromLocation(Player, fl.Key, fl.Value, To, ref totalNumberOfForces, ref totalNumberOfSpecialForces, true);
 
                 if (totalNumberOfForces > 0 || totalNumberOfSpecialForces > 0)
                 {
