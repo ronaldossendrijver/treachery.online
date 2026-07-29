@@ -17,8 +17,7 @@
 
     protected Faction Faction => Client.Faction!.Value;
 
-    private string? _id;
-    protected string Id => _id ??= Guid.NewGuid().ToString();
+    protected string Id => field ??= Guid.NewGuid().ToString();
 
     protected override void OnInitialized()
     {
@@ -139,7 +138,7 @@
         return items.Select(i => i != null ? Name(i) : labelIfNull);
     }
 
-    protected string Name(object o)
+    protected string Name(object? o)
     {
         return Client.CurrentSkin.Describe(o);
     }

@@ -503,7 +503,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             : result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : CurrentSkin.Describe(result.Error);
     }
     
-    public async Task<string> RequestScheduleGame(DateTimeOffset dateTime, Ruleset? ruleset, int? numberOfPlayers, int? maximumTurns, List<Faction> allowedFactions, bool asyncPlay)
+    public async Task<string> RequestScheduleGame(DateTimeOffset dateTime, Ruleset? ruleset, int numberOfPlayers, int maximumTurns, List<Faction> allowedFactions, bool asyncPlay)
     {
         var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestScheduleGame), UserToken, dateTime, ruleset, numberOfPlayers, maximumTurns, allowedFactions, asyncPlay);
         return UpdateServerStatusOnSuccess(result);

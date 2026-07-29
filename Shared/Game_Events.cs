@@ -11,12 +11,14 @@ namespace Treachery.Shared;
 
 public partial class Game
 {
-    public List<Type> GetApplicableEvents(Player player, bool isHost)
+    public List<Type> GetApplicableEvents(Player? player, bool isHost)
     {
         List<Type> result = [];
 
-        if (CurrentPhase == Phase.SelectingFactions || player.Faction != Faction.None) 
-                AddPlayerActions(player, isHost, result);
+        if (CurrentPhase == Phase.SelectingFactions && (player is null || player.Faction is Faction.None)) 
+            result.Add(typeof(FactionSelected));
+        else if (player != null && player.Faction != Faction.None) 
+            AddPlayerActions(player, isHost, result);
 
         if (isHost) AddHostActions(result);
 

@@ -327,7 +327,7 @@ public class Skin : IDescriber
         return GetLabel(TerritoryName_STR, t.SkinId);
     }
 
-    public string Describe(IHero hero)
+    public string Describe(IHero? hero)
     {
         return hero switch
         {

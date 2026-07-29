@@ -69,9 +69,9 @@
                                     @av.LastActivity?.DateTime.ToLocalTime().ToString("dd-MM HH:mm")
                                 </td>
                                 <td class="w-25" style="text-align: right;">
-                                    @if (av.YouAreIn(Client.UserId))
+                                    @if (av.YouAreIn(Client.UserId!.Value))
                                     {
-                                        <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId)))" MarginClass="m-1" Title="Resume game">▶</CommandButton>
+                                        <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId!.Value)))" MarginClass="m-1" Title="Resume game">▶</CommandButton>
                                     }
                                     <CommandButton Small OnClick="@(_ => Delete(av))" MarginClass="m-1" Title="Delete game">🗑️</CommandButton>
                                 </td>
@@ -335,7 +335,9 @@
 
     private async Task CreateNewGame()
     {
-        CreateError = await Client.RequestCreateGame(CreateGameName, CreateGameHasPassword ? CreateGamePassword : null);
+        CreateError = await Client.RequestCreateGame(
+            CreateGameName ?? string.Empty, 
+            CreateGameHasPassword ? CreateGamePassword ?? string.Empty : string.Empty);
     }
     
     private async Task LoadAndCreateGame()
@@ -348,6 +350,8 @@
 
     private async Task LoadGameOpenFile()
     {
+        if (FileInput is null) return;
+        
         try
         {
             LoadedGameData = await Browser.LoadFile(FileInput);
@@ -361,7 +365,9 @@
                 else
                 {
                     var skinData = Client.CurrentSkin == DefaultSkin.Default ? null : Client.CurrentSkin.SkinToString();
-                    CreateError = await Client.RequestCreateGame(CreateGameName, CreateGamePassword, LoadedGameData, skinData);    
+                    CreateError = await Client.RequestCreateGame(
+                        CreateGameName ?? string.Empty, 
+                        CreateGamePassword ?? string.Empty, LoadedGameData, skinData);    
                 }
             }
         }
@@ -376,7 +382,7 @@
     
     private async Task Delete(GameInfo av)
     {
-        CreateError = await Client.RequestCloseGame(av.GameId) ?? string.Empty;
+        CreateError = await Client.RequestCloseGame(av.GameId);
         StateHasChanged();
     }
 
@@ -404,7 +410,11 @@
     {
         if (ValidateUpdatedUserInfo())
         {
-            await Client.RequestUpdateUserInfo(string.IsNullOrEmpty(Password1) ? null : Support.GetHash(Password1), Email, PlayerName);
+            await Client.RequestUpdateUserInfo(
+                string.IsNullOrEmpty(Password1) ? string.Empty : Support.GetHash(Password1), 
+                Email ?? string.Empty, 
+                PlayerName ?? string.Empty);
+            
             GetUserInfoFromClient();
             EditUser = false;
         }
@@ -412,7 +422,7 @@
     
     private async Task DeleteUserInfo()
     {
-            await Client.AdminDeleteUser(Client.UserId);
+            await Client.AdminDeleteUser(Client.UserId!.Value);
             DeleteUser = false;
             Client.Logout();
     }
@@ -421,7 +431,7 @@
     {
         if (!string.IsNullOrEmpty(Password1) && Password1.Length < 6) ChangeUserInfoMessage = "Password must be at least 6 characters";
         else if (!string.IsNullOrEmpty(Password1) && !Password1.Equals(Password2)) ChangeUserInfoMessage = "Passwords do not not match";
-        else if (!Email.Contains('@') || !Email.Contains('.')) ChangeUserInfoMessage = "Enter a valid e-mail address";
+        else if (Email?.Contains('@') is not true || Email?.Contains('.') is not true) ChangeUserInfoMessage = "Enter a valid e-mail address";
         else ChangeUserInfoMessage = null;
 
         return ChangeUserInfoMessage == null;

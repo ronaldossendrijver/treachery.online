@@ -1076,9 +1076,9 @@ public partial class ClassicBot
         var opponent = Game.CurrentBattle.OpponentOf(Player);
         var opponentPlan = Game.CurrentBattle.PlanOf(opponent);
         var myPlan = Game.CurrentBattle.PlanOf(Player);
-        var defense = Player.TreacheryCards.FirstOrDefault(c => c.IsPortableAntidote);
+        var portableAntidote = Player.TreacheryCards.FirstOrDefault(c => c.IsPortableAntidote);
 
-        if (opponentPlan.Weapon != null && opponentPlan.Weapon.CounteredBy(defense, myPlan.Weapon)) return new PortableAntidoteUsed(Game, Faction);
+        if (myPlan.Defense is null && opponentPlan.Weapon != null && opponentPlan.Weapon.CounteredBy(portableAntidote, myPlan.Weapon)) return new PortableAntidoteUsed(Game, Faction);
 
         return null;
     }

@@ -23,7 +23,7 @@
 
         <div class="d-flex flex-row-reverse mt-1">
 
-            <button class="btn btn-primary btn-sm" @onclick="_ => Send()">Send</button>
+            <button class="btn btn-primary btn-sm" @onclick="@(_ => Send())">Send</button>
 
             @if (ShowGameChat)
             {
@@ -55,13 +55,12 @@
         {
             var color = m switch
             {
-                GameChatMessage gcm => Client.CurrentSkin.GetFactionColor(gcm.GetFaction(gcm.SourceUserId, Client!.Game!)),
-                GlobalChatMessage => "grey",
+                GameChatMessage gcm => Client.CurrentSkin.GetFactionColor(gcm.GetFaction(gcm.SourceUserId, Game)),
                 _ => "grey"
             };
 
             <div class='text-break p-1 mt-1 small' style="background-color:@color;user-select: text;">
-                <ExpressionComponent Game="@Game" Expression="@m.GetBodyIncludingPlayerInfo(Client!.UserId!.Value, Client.RecentlySeenUsers, Client!.Game!, !Client.InGame).Expression" Size="20"/>
+                <ExpressionComponent Game="@Game" Expression="@m.GetBodyIncludingPlayerInfo(Client.UserId!.Value, Client.RecentlySeenUsers, Game, !Client.InGame).Expression" Size="20"/>
             </div>
         }
 
@@ -112,8 +111,11 @@
 
     private async Task Send()
     {
-        await SendMessage(_message, _selectedPlayerName);
-        _message = "";
+        if (_message != null && _selectedPlayerName != null)
+        {
+            await SendMessage(_message, _selectedPlayerName);
+            _message = "";
+        }
     }
 
     private async Task SendMessage(string msg, string target)
@@ -124,16 +126,16 @@
         {
             await Client.SendGlobalChatMessage(new GlobalChatMessage
             {
-                SourceUserId = Client.UserId.Value,
+                SourceUserId = Client.UserId!.Value,
                 Body = msg
             });
         }
         else {
 
-            var targetUserId = target is LabelGlobalChat or LabelAllPlayersInGame ? -1 : Client.Game!.GetUserIdByName(target);
+            var targetUserId = target is LabelGlobalChat or LabelAllPlayersInGame ? -1 : Game.GetUserIdByName(target);
             await Client.SendChatMessage(new GameChatMessage
             {
-                SourceUserId = Client.UserId.Value,
+                SourceUserId = Client.UserId!.Value,
                 TargetUserId = targetUserId,
                 Body = msg
             });
@@ -146,10 +148,10 @@
     {
         get
         {
-            if (Game.CurrentPhase < Phase.SelectingFactions || Client?.Game is null || _selectedPlayerName is null)
+            if (Game.CurrentPhase < Phase.SelectingFactions || _selectedPlayerName is null)
                 return "white";
 
-            var p = Client.Game.GetPlayerByName(_selectedPlayerName);
+            var p = Game.GetPlayerByName(_selectedPlayerName);
             return p != null ? Client.CurrentSkin.GetFactionColor(p.Faction) : "red";
         }
     }

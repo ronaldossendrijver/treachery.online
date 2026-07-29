@@ -373,7 +373,7 @@ public partial class Game
             : null;
     }
 
-    internal void FinishBid(Player winner, IBid winningBid, TreacheryCard card, bool mightReplace)
+    internal void FinishBid(Player? winner, IBid? winningBid, TreacheryCard card, bool mightReplace)
     {
         CardJustWon = card;
         WinningBid = winningBid;
@@ -386,7 +386,7 @@ public partial class Game
 
         if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreenBiddingPrescience);
 
-        var enterReplacingCardJustWon = mightReplace && Version > 150 && 
+        var enterReplacingCardJustWon = mightReplace && Version > 150 &&  
                                         ((Version < 159 && Players.Any(p => p.Nexus != Faction.None)) || (Version >= 159 && winner.Nexus != Faction.None));
 
         if (mightReplace)
