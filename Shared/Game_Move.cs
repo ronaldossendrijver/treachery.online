@@ -130,7 +130,7 @@ public partial class Game
         Location to, ref int totalNumberOfForces, ref int totalNumberOfSpecialForces, bool ignoreStorm)
     {
         var mustMoveThroughStorm = MustMoveThroughStorm(initiator, from, to, battalion);
-        if (IsInStorm(to) || mustMoveThroughStorm)
+        if (!ignoreStorm && (IsInStorm(to) || mustMoveThroughStorm))
         {
             int killCount;
             if (initiator.Is(Faction.Yellow) && !Prevented(FactionAdvantage.YellowProtectedFromStorm) && Applicable(Rule.YellowStormLosses))
