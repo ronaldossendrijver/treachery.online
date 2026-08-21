@@ -29,7 +29,7 @@ public class DiscoveryRevealed : PassableGameEvent
     public int _locationId;
 
     [JsonIgnore]
-    public Location Location
+    public Location? Location
     {
         get => Game.Map.LocationLookup.Find(_locationId);
         set => _locationId = Game.Map.LocationLookup.GetId(value);
@@ -64,7 +64,7 @@ public class DiscoveryRevealed : PassableGameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        var discovery = Game.DiscoveriesOnPlanet[Location];
+        var discovery = Game.DiscoveriesOnPlanet[Location!];
         Game.PendingDiscoveries.Remove(discovery.Token);
 
         if (!Passed)
@@ -88,7 +88,7 @@ public class DiscoveryRevealed : PassableGameEvent
 
                 case DiscoveryToken.CardStash:
                     var card = Game.DrawTreacheryCard();
-                    Player.TreacheryCards.Add(card);
+                    Player.TreacheryCards.Add(card!);
                     Log(Initiator, " draw a treachery card");
                     if (Player.HandSizeExceeded) Game.LetFactionsDiscardSurplusCards();
                     break;
@@ -108,9 +108,9 @@ public class DiscoveryRevealed : PassableGameEvent
 
     public override Message GetMessage()
     {
-        if (Passed)
-            return Message.Express(Initiator, " don't reveal a discovery");
-        return Message.Express(Initiator, " reveal a discovery in ", Location.Territory);
+        return Passed 
+            ? Message.Express(Initiator, " don't reveal a discovery") 
+            : Message.Express(Initiator, " reveal a discovery in ", Location!.Territory);
     }
 
     #endregion Execution

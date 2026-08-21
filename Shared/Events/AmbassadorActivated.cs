@@ -166,7 +166,7 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
         return null;
     }
 
-    public static Territory? GetTerritory(Game g)
+    private static Territory? GetTerritory(Game g)
     {
         return g.LastAmbassadorTrigger?.Territory;
     }
@@ -282,12 +282,12 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
         var victim = GetVictim(Game);
         Game.DequeueIntrusion(IntrusionType.Ambassador);
 
-        if (!Passed)
+        if (!Passed && territory != null)
         {
             Game.AmbassadorsOnPlanet.Remove(territory);
             Game.Stone(Milestone.AmbassadorActivated);
 
-            var pink = GetPlayer(Faction.Pink);
+            var pink = GetPlayer(Faction.Pink)!;
 
             if (ambassadorFaction == Ambassador.Blue)
             {
@@ -307,7 +307,7 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
 
             HandleAmbassador(ambassadorFaction, victim);
 
-            if (!pink.Ambassadors.Union(Game.AmbassadorsOnPlanet.Values).Any(f => f != Ambassador.Pink))
+            if (pink.Ambassadors.Union(Game.AmbassadorsOnPlanet.Values).All(f => f == Ambassador.Pink))
             {
                 Game.AssignRandomAmbassadors(pink);
                 Log(Faction.Pink, " draw 5 random Ambassadors");
@@ -330,7 +330,7 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
         {
             case Ambassador.Green:
 
-                if (victimPlayer.TreacheryCards.Any())
+                if (victimPlayer!.TreacheryCards.Any())
                 {
                     Log(Initiator, " see all treachery cards owned by ", victim);
                     LogTo(Initiator, victim, " own: ", victimPlayer.TreacheryCards);
@@ -368,7 +368,7 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
                 }
                 else 
                 {
-                    if (Game.CurrentAmbassadorActivated.PinkTakeVidal)
+                    if (Game.CurrentAmbassadorActivated!.PinkTakeVidal)
                     {
                         Game.TakeVidal(Player, Game.Version >= 167 ? VidalMoment.Never : VidalMoment.AfterUsedInBattle);
                     }
@@ -401,7 +401,10 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
                 else
                     Log(Initiator, " see the ", victim, " traitor");
 
-                var toSelectFrom = victim == Faction.Purple ? victimPlayer.FaceDancers.Where(t => !victimPlayer.RevealedFaceDancers.Contains(t)) : victimPlayer.Traitors;
+                var toSelectFrom = victim == Faction.Purple 
+                    ? victimPlayer!.FaceDancers.Where(t => !victimPlayer.RevealedFaceDancers.Contains(t)) 
+                    : victimPlayer!.Traitors;
+                
                 var revealed = toSelectFrom.RandomOrDefault(Game.Random!);
                 LogTo(Initiator, victim, " reveal ", revealed);
                 LogTo(victim, Initiator, " get to see ", revealed);
@@ -412,7 +415,9 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
 
                 Game.Discard(Player, GreyCard);
                 Log(Initiator, " draw a new card");
-                Player.TreacheryCards.Add(Game.DrawTreacheryCard());
+                var drawn = Game.DrawTreacheryCard();
+                if (drawn != null)
+                    Player.TreacheryCards.Add(drawn);
                 Game.DetermineNextShipmentAndMoveSubPhase();
                 break;
 
@@ -420,14 +425,17 @@ public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
 
                 Log(Initiator, " buy a card for ", Payment.Of(3));
                 Player.Resources -= 3;
-                Player.TreacheryCards.Add(Game.DrawTreacheryCard());
+                var drawnCard = Game.DrawTreacheryCard();
+                if (drawnCard != null)
+                    Player.TreacheryCards.Add(drawnCard);
                 Game.DetermineNextShipmentAndMoveSubPhase();
                 break;
 
             case Ambassador.Orange:
 
                 Log(Initiator, " send ", OrangeForceAmount, Player.Force, " to ", YellowOrOrangeTo);
-                Player.ShipForces(YellowOrOrangeTo, OrangeForceAmount);
+                if (YellowOrOrangeTo != null)
+                    Player.ShipForces(YellowOrOrangeTo, OrangeForceAmount);
                 Game.LastShipmentOrMovement = this;
                 Game.CheckIntrusion(this);
                 Game.DetermineNextShipmentAndMoveSubPhase();

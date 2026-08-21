@@ -29,7 +29,7 @@ public class Discarded : GameEvent
     public int _cardId;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
         set => _cardId = TreacheryCardManager.GetId(value);

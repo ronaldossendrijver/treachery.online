@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class Donated : GameEvent
@@ -36,7 +34,7 @@ public class Donated : GameEvent
     public int _cardId = -1;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Lookup.Find(_cardId);
         set => _cardId = TreacheryCardManager.Lookup.GetId(value);
@@ -58,7 +56,7 @@ public class Donated : GameEvent
         if (!FromBank && (Game.EconomicsStatus == BrownEconomicsStatus.Double || Game.EconomicsStatus == BrownEconomicsStatus.DoubleFlipped)) Message.Express("No bribes can be made during Double Inflation");
 
         var targetPlayer = Game.GetPlayer(Target);
-        if (Card != null && !targetPlayer.HasRoomForCards) return Message.Express("Target faction's hand is full");
+        if (Card != null && !targetPlayer!.HasRoomForCards) return Message.Express("Target faction's hand is full");
 
         return null;
     }
@@ -93,7 +91,7 @@ public class Donated : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        var target = GetPlayer(Target);
+        var target = GetPlayer(Target)!;
 
         if (!FromBank)
         {

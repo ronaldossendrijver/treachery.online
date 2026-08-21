@@ -7,7 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 
 namespace Treachery.Shared;
 
@@ -40,7 +39,7 @@ public class AuditCancelled : GameEvent
         return null;
     }
 
-    public int Cost()
+    private int Cost()
     {
         return Cost(Game);
     }
@@ -52,17 +51,18 @@ public class AuditCancelled : GameEvent
 
     public static int GetNumberOfCardsThatMayBeAudited(Game g)
     {
-        var auditor = LeaderManager.GetLeaders(Faction.Brown).First(l => l.HeroType == HeroType.Auditor);
         return Math.Min(g.AuditorSurvivedBattle ? 2 : 1, GetCardsThatMayBeAudited(g).Count());
     }
 
     public static IEnumerable<TreacheryCard> GetCardsThatMayBeAudited(Game g)
     {
         var auditee = g.Auditee;
+        if (auditee is null) return [];
+        
         var recentBattlePlan = g.CurrentBattle!.PlanOf(auditee);
         if (recentBattlePlan != null)
             return auditee.TreacheryCards.Where(c => c != recentBattlePlan.Weapon && c != recentBattlePlan.Defense && c != recentBattlePlan.Hero);
-        return Array.Empty<TreacheryCard>();
+        return [];
     }
 
     #endregion Validation
@@ -79,7 +79,8 @@ public class AuditCancelled : GameEvent
         if (Cancelled)
         {
             Player.Resources -= Cost();
-            GetPlayer(Faction.Brown).Resources += Cost();
+            var brown = GetPlayer(Faction.Brown);
+            brown?.Resources += Cost();
         }
 
         if (!Cancelled)

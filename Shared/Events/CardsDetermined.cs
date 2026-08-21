@@ -26,7 +26,7 @@ public class CardsDetermined : GameEvent
 
     #region Properties
 
-    public string _treacheryCardIds;
+    public string _treacheryCardIds = string.Empty;
 
     [JsonIgnore]
     public IEnumerable<TreacheryCard> TreacheryCards
@@ -35,7 +35,7 @@ public class CardsDetermined : GameEvent
         set => _treacheryCardIds = ObjectsToIdString(value, TreacheryCardManager.Lookup);
     }
 
-    public string _whiteCardIds;
+    public string _whiteCardIds = string.Empty;
 
     [JsonIgnore]
     public IEnumerable<TreacheryCard> WhiteCards
@@ -61,7 +61,7 @@ public class CardsDetermined : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        Game.TreacheryDeck = new Deck<TreacheryCard>(TreacheryCards, Game.Random);
+        Game.TreacheryDeck = new Deck<TreacheryCard>(TreacheryCards, Game.Random!);
         Game.TreacheryDeck.Shuffle();
         Game.Stone(Milestone.Shuffled);
         Game.WhiteCache = [..WhiteCards];

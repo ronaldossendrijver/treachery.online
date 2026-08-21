@@ -35,12 +35,12 @@ public class DiscoveryEntered : PlacementEvent
 
     public static IEnumerable<DiscoveredLocation> ValidTargets(Game g, Player p)
     {
-        return g.JustRevealedDiscoveryStrongholds.Where(ds => p.AnyForcesIn(ds.AttachedToLocation.Territory) > 0);
+        return g.JustRevealedDiscoveryStrongholds.Where(ds => p.AnyForcesIn(ds.AttachedToLocation!.Territory) > 0);
     }
 
     public static IEnumerable<Location> ValidSources(Player p, DiscoveredLocation ds)
     {
-        return ds.AttachedToLocation.Territory.Locations.Where(l => p.AnyForcesIn(l) > 0);
+        return ds.AttachedToLocation!.Territory.Locations.Where(l => p.AnyForcesIn(l) > 0);
     }
 
     #endregion Validation
@@ -49,7 +49,9 @@ public class DiscoveryEntered : PlacementEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        Game.JustRevealedDiscoveryStrongholds.Remove(To as DiscoveredLocation);
+        if (To is not DiscoveredLocation discoveredLocation) return;
+        
+        Game.JustRevealedDiscoveryStrongholds.Remove(discoveredLocation);
         Game.Stone(Milestone.Move);
 
         Log();

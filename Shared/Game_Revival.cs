@@ -32,9 +32,9 @@ public partial class Game
 
     #region Revival
 
-    internal void PrepareSkillAssignmentToRevivedLeader(Player player, Leader leader)
+    internal void PrepareSkillAssignmentToRevivedLeader(Player player, Leader? leader)
     {
-        if (CurrentPhase != Phase.AssigningSkill) 
+        if (CurrentPhase != Phase.AssigningSkill && leader != null) 
             PhaseBeforeSkillAssignment = CurrentPhase;
 
         player.MostRecentlyRevivedLeader = leader;

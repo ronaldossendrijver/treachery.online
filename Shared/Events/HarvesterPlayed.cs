@@ -38,7 +38,8 @@ public class HarvesterPlayed : GameEvent
     {
         Game.Discard(Player, TreacheryCardType.Harvester);
         var lastResourceCard = Game.CurrentPhase == Phase.HarvesterA ? Game.LatestSpiceCardA : Game.LatestSpiceCardB;
-        if (Game.ResourcesOnPlanet.TryGetValue(lastResourceCard.Location, out var currentAmountOfSpice)) Game.ChangeResourcesOnPlanet(lastResourceCard.Location, currentAmountOfSpice);
+        if (Game.ResourcesOnPlanet.TryGetValue(lastResourceCard!.Location!, out var currentAmountOfSpice)) 
+            Game.ChangeResourcesOnPlanet(lastResourceCard.Location!, currentAmountOfSpice);
 
         Log();
         Game.MoveToNextPhaseAfterResourceBlow();

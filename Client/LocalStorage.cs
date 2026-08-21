@@ -31,9 +31,9 @@ public class LocalStorage
         await _jsRuntime.InvokeVoidAsync("localStorage.setItem", key, value);
     }
 
-    public async Task<T> GetAsync<T>(string key)
+    public async Task<T?> GetAsync<T>(string key)
     {
-        var val = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", key);
+        var val = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", key);
 
         if (val == null) return default!;
 

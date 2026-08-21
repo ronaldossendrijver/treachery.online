@@ -672,8 +672,10 @@ public partial class Game
         Discard(player, card);
     }
 
-    internal void Discard(TreacheryCard card)
+    internal void Discard(TreacheryCard? card)
     {
+        if (card is null) return;
+        
         var player = Players.SingleOrDefault(p => p.Has(card));
         Discard(player, card);
         RegisterKnown(card);

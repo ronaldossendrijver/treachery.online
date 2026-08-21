@@ -29,11 +29,11 @@ public class DealAccepted : GameEvent
 
     public DealType Type { get; set; }
 
-    public string DealParameter1 { get; set; }
+    public string? DealParameter1 { get; set; }
 
-    public string DealParameter2 { get; set; }
+    public string? DealParameter2 { get; set; }
 
-    public string Text { get; set; }
+    public string? Text { get; set; }
 
     public Phase End { get; set; }
 
@@ -48,11 +48,12 @@ public class DealAccepted : GameEvent
     public override Message? Validate()
     {
         if (!MayDeal(Game, Player, Price)) return Message.Express("You currently have an outstanding bid");
-        if (Game.Version >= 142 && !MayDeal(Game, Game.GetPlayer(BoundFaction), Benefit)) return Message.Express(BoundFaction, " currently have an outstanding bid");
-        if (Price > Player.Resources) return Message.Express("You can't pay that much");
 
         var boundPlayer = Game.GetPlayer(BoundFaction);
-        if (Benefit > boundPlayer.Resources) return Message.Express("Offer is not valid (anymore)");
+        if (boundPlayer != null && Game.Version >= 142 && !MayDeal(Game, boundPlayer, Benefit)) return Message.Express(BoundFaction, " currently have an outstanding bid");
+        if (Price > Player.Resources) return Message.Express("You can't pay that much");
+
+        if (boundPlayer != null && Benefit > boundPlayer.Resources) return Message.Express("Offer is not valid (anymore)");
 
         if ((Price > 0 || (Game.Version >= 142 && Benefit > 0)) && Game.Applicable(Rule.DisableResourceTransfers)) return Message.Express(Concept.Resource, " transfers are disabled by house rule");
         if (!Game.DealOffers.Any(offer => offer.IsAcceptedBy(this))) return Message.Express("Offer is not valid (anymore)");
@@ -112,16 +113,17 @@ public class DealAccepted : GameEvent
             };
 
             Game.StartDeal(newDeal);
+            var offerInitiator = GetPlayer(offer.Initiator);
 
-            if (Price > 0)
+            if (offerInitiator != null && Price > 0)
             {
-                Game.ExchangeResourcesInBribe(Player, GetPlayer(offer.Initiator), Price);
+                Game.ExchangeResourcesInBribe(Player, offerInitiator, Price);
                 Game.Stone(Milestone.Bribe);
             }
 
-            if (Benefit > 0)
+            if (offerInitiator != null && Benefit > 0)
             {
-                Game.ExchangeResourcesInBribe(GetPlayer(offer.Initiator), Player, Benefit);
+                Game.ExchangeResourcesInBribe(offerInitiator, Player, Benefit);
                 Game.Stone(Milestone.Bribe);
             }
 
@@ -156,14 +158,14 @@ public class DealAccepted : GameEvent
         return Message.Express(Initiator, " accept a deal by ", BoundFaction);
     }
 
-    public Message GetDealDescription()
+    private Message GetDealDescription()
     {
         return Deal.DealContentsDescription(Game, Type, Text, Benefit, End, DealParameter1);
     }
 
     public Message GetDealContents()
     {
-        return Text != null && Text.Length > 0 ? Message.Express(Text) : Message.Express(Type);
+        return Text is { Length: > 0 } ? Message.Express(Text) : Message.Express(Type);
     }
 
     #endregion Execution

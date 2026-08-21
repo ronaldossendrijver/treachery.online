@@ -29,7 +29,7 @@ public class GreySelectedStartingCard : GameEvent
     public int _cardId;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
         set => _cardId = TreacheryCardManager.GetId(value);
@@ -50,8 +50,8 @@ public class GreySelectedStartingCard : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        GetPlayer(Initiator).TreacheryCards.Add(Card);
-        Game.StartingTreacheryCards.Items.Remove(Card);
+        GetPlayer(Initiator)!.TreacheryCards.Add(Card!);
+        Game.StartingTreacheryCards!.Items.Remove(Card!);
         Log();
         Game.StartingTreacheryCards.Shuffle();
         Game.Stone(Milestone.Shuffled);

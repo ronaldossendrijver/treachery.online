@@ -29,7 +29,7 @@ public class DiscardedSearched : GameEvent
     public int _cardId;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
         set => _cardId = TreacheryCardManager.GetId(value);
@@ -48,7 +48,7 @@ public class DiscardedSearched : GameEvent
 
     public static IEnumerable<TreacheryCard> ValidCards(Game g)
     {
-        return g.TreacheryDiscardPile.Items;
+        return g.TreacheryDiscardPile!.Items;
     }
 
     public static bool CanBePlayed(Player p)
@@ -64,10 +64,10 @@ public class DiscardedSearched : GameEvent
     {
         Log();
 
-        foreach (var p in Game.Players) Game.UnregisterKnown(p, Game.TreacheryDiscardPile.Items);
+        foreach (var p in Game.Players) Game.UnregisterKnown(p, Game.TreacheryDiscardPile!.Items);
 
-        Game.TreacheryDiscardPile.Items.Remove(Card);
-        Player.TreacheryCards.Add(Card);
+        Game.TreacheryDiscardPile!.Items.Remove(Card!);
+        Player.TreacheryCards.Add(Card!);
         Game.TreacheryDiscardPile.Shuffle();
         Game.Discard(Player, TreacheryCardType.SearchDiscarded);
         Game.Enter(Game.PhaseBeforeSearchingDiscarded);

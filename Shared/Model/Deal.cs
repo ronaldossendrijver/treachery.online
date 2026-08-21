@@ -48,9 +48,9 @@ public class Deal
         return DealContentsDescription(g, Type, Text ?? string.Empty, Benefit, End, DealParameter1 ?? string.Empty);
     }
 
-    public static Message DealContentsDescription(Game g, DealType type, string text, int benefit, Phase end, string parameter1)
+    public static Message DealContentsDescription(Game g, DealType type, string? text, int benefit, Phase end, string? parameter1)
     {
-        if (text.Length > 0)
+        if (!string.IsNullOrWhiteSpace(text))
             return Message.Express(
                 MessagePart.ExpressIf(benefit > 0, "Receive ", Payment.Of(benefit), " and "),
                 text,
@@ -58,7 +58,7 @@ public class Deal
                 end);
         return Message.Express(
             MessagePart.ExpressIf(benefit > 0, "Receive ", Payment.Of(benefit), " and "),
-            Express(type, GetParameter1<object>(g, type, parameter1)),
+            Express(type, GetParameter1<object>(g, type, parameter1 ?? "?")),
             " until ",
             end);
     }

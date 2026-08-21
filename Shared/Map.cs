@@ -81,10 +81,10 @@ public class Map
 
     public Location TheGreatFlat { get; private set; } = null!;
 
-    public DiscoveredLocation? GetDiscoveryStronghold(DiscoveryToken discovery)
+    public DiscoveredLocation GetDiscoveryStronghold(DiscoveryToken discovery)
     {
         return Locations(false).FirstOrDefault(l => l is DiscoveredLocation ds && ds.Discovery == discovery) as
-            DiscoveredLocation;
+            DiscoveredLocation ?? throw new Exception($"Discovery stronghold for {discovery} not found");
     }
 
     public DiscoveredLocation Shrine { get; private set; } = null!;

@@ -71,7 +71,6 @@ namespace Treachery.Shared;
 [JsonDerivedType(typeof(FactionTradeOffered),nameof(FactionTradeOffered))]
 [JsonDerivedType(typeof(FlightDiscoveryUsed),nameof(FlightDiscoveryUsed))]
 [JsonDerivedType(typeof(FlightUsed),nameof(FlightUsed))]
-[JsonDerivedType(typeof(GameAdmission),nameof(GameAdmission))]
 [JsonDerivedType(typeof(GreyRemovedCardFromAuction),nameof(GreyRemovedCardFromAuction))]
 [JsonDerivedType(typeof(GreySelectedStartingCard),nameof(GreySelectedStartingCard))]
 [JsonDerivedType(typeof(GreySwappedCardOnBid),nameof(GreySwappedCardOnBid))]

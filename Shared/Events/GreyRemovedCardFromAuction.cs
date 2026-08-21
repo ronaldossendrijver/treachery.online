@@ -31,7 +31,7 @@ public class GreyRemovedCardFromAuction : GameEvent
     public int _cardId;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
         set => _cardId = TreacheryCardManager.GetId(value);
@@ -52,15 +52,15 @@ public class GreyRemovedCardFromAuction : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        Game.CardsOnAuction.Items.Remove(Card);
+        Game.CardsOnAuction!.Items.Remove(Card!);
 
         if (PutOnTop)
-            Game.TreacheryDeck.PutOnTop(Card);
+            Game.TreacheryDeck!.PutOnTop(Card!);
         else
-            Game.TreacheryDeck.PutOnBottom(Card);
+            Game.TreacheryDeck!.PutOnBottom(Card!);
 
-        Game.RegisterKnown(Faction.Grey, Card);
-        Game.CardsOnAuction.Shuffle();
+        Game.RegisterKnown(Faction.Grey, Card!);
+        Game.CardsOnAuction!.Shuffle();
         Game.Stone(Milestone.Shuffled);
         Log();
 

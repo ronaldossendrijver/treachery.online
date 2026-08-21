@@ -6,62 +6,71 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
+
 @inherits GameComponent
+
+@if (Client?.Game is null || Info is null) return;
 
 <CardPickerComponent Tracker="this" Id="picker" />
 
 <div class="card mb-2" style="animation:fadeIn 1s;">
 
-    <div class="card-header" @onclick="@(e => _collapsed = !_collapsed)" style="cursor:pointer">
+    <div class="card-header" @onclick="@(_ => _collapsed = !_collapsed)" style="cursor:pointer">
         Card Tracker
         <InfoComponent Contents="@InfoMessage" />
         <CollapseButton Collapsed="@_collapsed" />
     </div>
 
-    @if (!_collapsed) {
-        <div @ref=@element class="card-body">
+    @if (!_collapsed)
+    {
+        <div @ref=@_element class="card-body">
 
             <div class="mb-1">
 
                 @foreach (var p in Players)
                 {
-                    <button class="btn @ButtonStyle(p) p-1" @onclick="e => Toggle(p)" data-bs-toggle="tooltip" title="@Client.CurrentSkin.Describe(p.Faction)">
-                        <img class="img-fluid" width="29" height="29" src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" />
+                    <button class="btn @ButtonStyle(p) p-1" @onclick="@(_ => Toggle(p))" data-bs-toggle="tooltip" title="@Client.CurrentSkin.Describe(p.Faction)">
+                        <img class="img-fluid" width="29" height="29" src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" alt="@Name(p.Faction)"/>
                     </button>
                 }
 
-                <button class="btn @ButtonStyle(Client.Game.TreacheryDiscardPile) p-1" @onclick="e => Toggle(Client.Game.TreacheryDiscardPile)" data-bs-toggle="tooltip" title="Discarded Treachery Cards">
-                    <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" />
-                </button>
+                @if (Client.Game.TreacheryDiscardPile != null)
+                {
+                    <button class="btn @ButtonStyle(Client.Game.TreacheryDiscardPile) p-1" @onclick="@(_ => Toggle(Client.Game.TreacheryDiscardPile))" data-bs-toggle="tooltip" title="Discarded Treachery Cards">
+                        <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" alt=""/>
+                    </button>
+                }
 
-                <button class="btn @ButtonStyle(Client.Game.ResourceCardDeck) p-1" @onclick="e => Toggle(Client.Game.ResourceCardDeck)" data-bs-toggle="tooltip" title="Discarded Spice Cards">
-                    <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Client.CurrentSkin.CardBack_ResourceCard_URL" />
-                </button>
+                @if (Client.Game.ResourceCardDeck != null)
+                {
+                    <button class="btn @ButtonStyle(Client.Game.ResourceCardDeck!) p-1" @onclick="_ => Toggle(Client.Game.ResourceCardDeck!)" data-bs-toggle="tooltip" title="Discarded Spice Cards">
+                        <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Client.CurrentSkin.CardBack_ResourceCard_URL" alt=""/>
+                    </button>
+                }
+
 
             </div>
 
-            @if (Shown is Player)
+            @if (Shown is Player shown)
             {
-                var p = (Player)Shown;
-
                 <div>Treachery cards</div>
                 <div class="row row-cols-4 m-0">
 
-                    @for (var i = 0; i < p.MaximumNumberOfCards; i++)
+                    @for (var i = 0; i < shown.MaximumNumberOfCards; i++)
                     {
                         var selIndex = i;
-                        var cardId = Info.TrackedTreacheryCards[p.Faction][selIndex];
+                        var cardId = Info.TrackedTreacheryCards[shown.Faction][selIndex];
 
-                        <a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#picker" @onmousedown="@(_ => InitiatePick(p.Faction, selIndex))" title=@DeterminePopup(Info.TrackedTreacheryCards[p.Faction][selIndex])>
+                        <a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#picker" @onmousedown="@(_ => InitiatePick(shown.Faction, selIndex))" title=@DeterminePopup(Info.TrackedTreacheryCards[shown.Faction][selIndex])>
                             @if (cardId == TreacheryCard.None)
                             {
                                 <svg class="img-fluid w-100" viewBox="0 0 268 372" xmlns="http://www.w3.org/2000/svg">
-                                    <rect width="268" height="372" rx="20" style="fill:rgb(64,64,64);stroke-width:3;stroke:rgb(200,200,200)" />
+                                    <rect width="268" height="372" rx="20" style="fill:rgb(64,64,64);stroke-width:3;stroke:rgb(200,200,200)"/>
                                 </svg>
                             }
                             else if (cardId == TreacheryCard.Unknown)
                             {
-                                <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" class="img-fluid" />
+                                <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" class="img-fluid" alt=""/>
                             }
                             else
                             {
@@ -73,31 +82,31 @@
 
                 </div>
 
-                @if (p.Faction == Faction.Green)
+                @if (shown.Faction == Faction.Green)
                 {
                     <div>Traitors discarded at start</div>
                     <PickFromImageComponent Value=@GetDiscardedTraitor(0) T=IHero OnChanged=@(hero => SetDiscardedTraitor(0, hero)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors"/>
                     <PickFromImageComponent Value=@GetDiscardedTraitor(1) T=IHero OnChanged=@(hero => SetDiscardedTraitor(1, hero)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors"/>
                     <PickFromImageComponent Value=@GetDiscardedTraitor(2) T=IHero OnChanged=@(hero => SetDiscardedTraitor(2, hero)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors"/>
                 }
-                else if (p.Faction != Faction.Purple)
+                else if (shown.Faction != Faction.Purple)
                 {
-                    <div>Revealed @(p.NumberOfTraitors > 1 ? "Traitors" : "Traitor")</div>
-                    @for (var i = 0; i < p.NumberOfTraitors; i++)
+                    <div>Revealed @(shown.NumberOfTraitors > 1 ? "Traitors" : "Traitor")</div>
+                    @for (var i = 0; i < shown.NumberOfTraitors; i++)
                     {
                         var selIndex = i;
-                        var faction = p.Faction;
+                        var faction = shown.Faction;
                         <PickFromImageComponent Value=@GetSelectedTraitor(faction, selIndex) T=IHero OnChanged=@(hero => SetSelectedTraitor(faction, selIndex, hero)) Title="Select Revealed Traitor" Required=false ImageWidth=60 Values="AllTraitors"/>
                     }
                 }
                 else
                 {
                     <div>Revealed Face Dancers</div>
-                    @for (var i = 0; i < p.NumberOfFaceDancers; i++)
+                    @for (var i = 0; i < shown.NumberOfFaceDancers; i++)
                     {
                         var selIndex = i;
-                        var faction = p.Faction;
-                        <PickFromImageComponent Value=@GetSelectedTraitor(faction, selIndex) T=IHero OnChanged=@(hero => SetSelectedTraitor(faction, selIndex, hero)) Title="Select Revealed Face Dancer" Required=false ImageWidth=60 Values="AllTraitors" />
+                        var faction = shown.Faction;
+                        <PickFromImageComponent Value=@GetSelectedTraitor(faction, selIndex) T=IHero OnChanged=@(hero => SetSelectedTraitor(faction, selIndex, hero)) Title="Select Revealed Face Dancer" Required=false ImageWidth=60 Values="AllTraitors"/>
                     }
                 }
             }
@@ -112,7 +121,7 @@
 
                             <p class="mb-0">
                                 <RichText Shown=@c Class="badge bg-primary rounded-pill"/>
-                                <button class="btn-close btn-sm" @onclick="@(e => SetNotDiscarded(c))"/>
+                                <button class="btn-close btn-sm" @onclick="@(_ => SetNotDiscarded(c))"></button>
                             </p>
 
                         </li>
@@ -131,19 +140,28 @@
             else if (Shown == Client.Game.ResourceCardDeck)
             {
                 <div>Top @Client.CurrentSkin.Describe(Concept.Resource) Card</div>
-                <PickFromImageComponent Value=SpiceCard(Info.TrackedSpiceCard) T=ResourceCard OnChanged=@(card => Info.TrackedSpiceCard = Client.CurrentSkin.Describe(card)) Title="Select Card" Required=false ImageWidth=60 Values="AllSpiceCards"/>
+                <PickFromImageComponent Value=@SpiceCard(Info.TrackedSpiceCard) 
+                                        T=ResourceCard 
+                                        OnChanged=@(card => Info.TrackedSpiceCard = Client.CurrentSkin.Describe(card)) 
+                                        Title="Select Card" 
+                                        Required=false 
+                                        ImageWidth=60 
+                                        Values="AllSpiceCards"/>
 
                 if (Client.Game.Applicable(Rule.IncreasedResourceFlow))
                 {
-                    @if (Client.Game.ResourceCardDiscardPileA.Items.Any() || Client.Game.ResourceCardDiscardPileA.Items.Any())
+                    if (Client.Game.ResourceCardDiscardPileA?.Items.Any() is true)
                     {
                         <div class="small"><strong>Discard pile A:</strong> @Client.CurrentSkin.Join(Client.Game.ResourceCardDiscardPileA.Items)</div>
+                    }
+                    if (Client.Game.ResourceCardDiscardPileB?.Items.Any() is true)
+                    {
                         <div class="small"><strong>Discard pile B:</strong> @Client.CurrentSkin.Join(Client.Game.ResourceCardDiscardPileB.Items)</div>
                     }
                 }
                 else
                 {
-                    @if (Client.Game.ResourceCardDiscardPileA.Items.Any())
+                    if (Client.Game.ResourceCardDiscardPileA?.Items.Any() is true)
                     {
                         <div class="small"><strong>Discarded:</strong> @Client.CurrentSkin.Join(Client.Game.ResourceCardDiscardPileA.Items)</div>
                     }
@@ -158,11 +176,11 @@
 
 @code {
 
-    private object Shown = null;
-    private int trackedGameId = -1;
-    private GreenIntelligence Info = null;
-    private bool popoversNeedUpdate = true;
-    protected ElementReference element;
+    private object? Shown { get; set; }
+    private int _trackedGameId = -1;
+    private GreenIntelligence? Info { get; set; }
+    private bool _popoversNeedUpdate = true;
+    private ElementReference _element;
     private bool _collapsed = true;
 
     protected override async Task OnInitializedAsync()
@@ -178,91 +196,91 @@
             Support.Log(e);
         }
 
-        AllTraitors = Client.Game.TraitorsInPlay.OrderBy(l => Name(l)).ToList();
-        AllSpiceCards = Game.ResourceCardDeck.Items.OrderBy(rc => Name(rc)).ToList();
+        AllTraitors = [.. Client.Game!.TraitorsInPlay.OrderBy(Name)];
+        AllSpiceCards = [.. Game.ResourceCardDeck!.Items.OrderBy(Name)];
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (trackedGameId != Client.Game.Seed)
+        if (_trackedGameId != Client.Game!.Seed)
         {
             await Load();
-            trackedGameId = Client.Game.Seed;
+            _trackedGameId = Client.Game.Seed;
         }
         else
         {
             await Save();
         }
 
-        if (popoversNeedUpdate)
+        if (_popoversNeedUpdate)
         {
-            popoversNeedUpdate = false;
-            await Browser.RefreshPopovers(element);
+            _popoversNeedUpdate = false;
+            await Browser.RefreshPopovers(_element);
         }
     }
 
-    private IHero GetSelectedTraitor(Faction f, int nr)
+    private IHero? GetSelectedTraitor(Faction f, int nr)
     {
-        return LeaderManager.HeroLookup.Find(Info.GetSelectedTraitor(f, nr));
+        return LeaderManager.HeroLookup.Find(Info!.GetSelectedTraitor(f, nr));
     }
 
     private void SetSelectedTraitor(Faction f, int nr, IHero hero)
     {
         if (Shown is Player p && f == p.Faction)
         {
-            Info.ChangeSelectedTraitor(f, nr, hero?.Id);
+            Info!.ChangeSelectedTraitor(f, nr, hero.Id);
         }
     }
 
-    private IHero GetDiscardedTraitor(int nr)
+    private IHero? GetDiscardedTraitor(int nr)
     {
-        return LeaderManager.HeroLookup.Find(Info.GetDiscardedTraitor(nr));
+        return LeaderManager.HeroLookup.Find(Info!.GetDiscardedTraitor(nr));
     }
 
     private void SetDiscardedTraitor(int nr, IHero hero)
     {
-        Info.ChangeDiscardedTraitor(nr, hero?.Id);
+        Info!.ChangeDiscardedTraitor(nr, hero.Id);
     }
 
-    Faction currentlyPickedFaction = Faction.None;
-    int currentlyPickedCardId;
+    Faction _currentlyPickedFaction = Faction.None;
+    int _currentlyPickedCardId;
 
     private void SetCurrent(Faction f, int i)
     {
-        currentlyPickedFaction = f;
-        currentlyPickedCardId = i;
+        _currentlyPickedFaction = f;
+        _currentlyPickedCardId = i;
     }
 
     private void InitiatePick(Faction f, int i)
     {
         SetCurrent(f, i);
-        _ = Browser.RemovePopovers(element);
+        _ = Browser.RemovePopovers(_element);
     }
 
     public int CurrentCard
     {
         get
         {
-            if (currentlyPickedFaction != Faction.None)
+            if (_currentlyPickedFaction != Faction.None)
             {
-                return Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId];
+                return Info!.TrackedTreacheryCards[_currentlyPickedFaction][_currentlyPickedCardId];
             }
 
             return TreacheryCard.None;
         }
     }
 
-    public void Pick(int cardID)
+    public void Pick(int cardId)
     {
         try
         {
-            Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId] = cardID;
-            popoversNeedUpdate = true;
+            Info!.TrackedTreacheryCards[_currentlyPickedFaction][_currentlyPickedCardId] = cardId;
+            _popoversNeedUpdate = true;
             StateHasChanged();
         }
         catch (Exception)
         {
-
+            // ignored
         }
     }
 
@@ -270,36 +288,37 @@
     {
         try
         {
-            if (Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId] != TreacheryCard.None && Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId] != TreacheryCard.Unknown)
+            if (Info!.TrackedTreacheryCards[_currentlyPickedFaction][_currentlyPickedCardId] != TreacheryCard.None
+                && Info.TrackedTreacheryCards[_currentlyPickedFaction][_currentlyPickedCardId] != TreacheryCard.Unknown)
             {
-                Info.Discard(currentlyPickedFaction, currentlyPickedCardId);
-                popoversNeedUpdate = true;
+                Info.Discard(_currentlyPickedFaction, _currentlyPickedCardId);
+                _popoversNeedUpdate = true;
                 StateHasChanged();
             }
         }
         catch (Exception)
         {
-
+            // ignored
         }
     }
 
-    public IEnumerable<TreacheryCard> CardsToPick => Info.AvailableDistinctCards(currentlyPickedFaction, currentlyPickedCardId);
+    public IEnumerable<TreacheryCard> CardsToPick => Info!.AvailableDistinctCards(_currentlyPickedFaction, _currentlyPickedCardId);
 
     private void SetNotDiscarded(TreacheryCard c)
     {
-        Info.SetNotDiscarded(c);
-        popoversNeedUpdate = true;
+        Info!.SetNotDiscarded(c);
+        _popoversNeedUpdate = true;
         StateHasChanged();
     }
 
-    public string DeterminePopup(int cardID)
+    private static string DeterminePopup(int cardId)
     {
-        if (cardID == -1)
+        if (cardId == -1)
         {
             return "Unknown";
         }
 
-        if (cardID == -2)
+        if (cardId == -2)
         {
             return "None";
         }
@@ -307,23 +326,17 @@
         return "";
     }
 
-    private string DetermineImageSrc(int cardID)
-    {
-        var card = TreacheryCardManager.Lookup.Find(cardID);
-        return Client.CurrentSkin.GetImageUrl(card);
-    }
-
     private async Task Save()
     {
-        await Browser.SaveSetting(string.Format("treachery.online;currentgame;{0};trackerdata", Client.Game.Seed), Info.ToString());
+        await Browser.SaveSetting($"treachery.online;currentgame;{Client.Game!.Seed};trackerdata", Info!.ToString());
     }
 
     private async Task Load()
     {
-        var trackerdata = await Browser.LoadSetting<string>(string.Format("treachery.online;currentgame;{0};trackerdata", Client.Game.Seed));
-        if (trackerdata != null && trackerdata != "")
+        var trackerData = await Browser.LoadSetting<string>($"treachery.online;currentgame;{Client.Game!.Seed};trackerdata");
+        if (!string.IsNullOrEmpty(trackerData))
         {
-            Info = GreenIntelligence.Parse(Client, trackerdata);
+            Info = GreenIntelligence.Parse(Client, trackerData);
             StateHasChanged();
         }
     }
@@ -339,27 +352,20 @@
 
     private IList<ResourceCard>? AllSpiceCards { get; set; }
 
-    private ResourceCard SpiceCard(string name)
+    private ResourceCard? SpiceCard(string? name)
     {
-        return AllSpiceCards.FirstOrDefault(c => Client.CurrentSkin.Describe(c) == name);
+        return name is null ? null : AllSpiceCards!.FirstOrDefault(c => Client.CurrentSkin.Describe(c) == name);
     }
 
-    private IEnumerable<Player> Players => Client.Game.Players.OrderBy(p => Name(p.Faction));
+    private IEnumerable<Player> Players => Client.Game!.Players.OrderBy(p => Name(p.Faction));
 
     private string InfoMessage => Client.CurrentSkin.Format("Welcome to the {0} Tracker! Use it to take note of (discarded) traitors, the top spice card and treachery cards.<br>When a (possibly unknown) card is won, click on an empty card placeholder and select it.<br>To indicate that a card was discarded, click it and then select the 'trash can' which will move the card to the Discarded section. When an unknown card becomes known and discarded, select it first, then discard it.<br>When the discard pile is shuffled into a new draw pile, click 'reshuffle' to clear the Discarded section.<br>If you sent a card to the Discarded section by mistake, click on the X next to it.", Faction.Green);
 
     private void Toggle(object toShow)
     {
-        if (toShow == Shown)
-        {
-            Shown = null;
-        }
-        else
-        {
-            Shown = toShow;
-        }
+        Shown = toShow == Shown ? null : toShow;
 
-        popoversNeedUpdate = true;
+        _popoversNeedUpdate = true;
     }
 
     private string ButtonStyle(object o)

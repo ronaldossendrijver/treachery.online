@@ -40,7 +40,7 @@ public class BlueFlip : GameEvent
 
     public static Territory GetTerritory(Game g)
     {
-        return g.LastBlueIntrusion.Territory;
+        return g.LastBlueIntrusion!.Territory;
     }
 
     #endregion Validation
@@ -51,7 +51,7 @@ public class BlueFlip : GameEvent
     {
         Log(GetDynamicMessage());
 
-        Player.FlipForces(Game.LastShipmentOrMovement.To.Territory, AsAdvisors);
+        Player.FlipForces(Game.LastShipmentOrMovement!.To!.Territory, AsAdvisors);
 
         if (Game.Version >= 102) Game.FlipBlueAdvisorsWhenAlone();
 

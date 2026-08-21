@@ -33,7 +33,7 @@ public class BrownRemoveForce : GameEvent
     public int _locationId;
 
     [JsonIgnore]
-    public Location Location
+    public Location? Location
     {
         get => Game.Map.LocationLookup.Find(_locationId);
         set => _locationId = Game.Map.LocationLookup.GetId(value);
@@ -45,7 +45,7 @@ public class BrownRemoveForce : GameEvent
 
     public override Message? Validate()
     {
-        if (!ValidLocations(Game).Contains(Location)) return Message.Express("Invalid location");
+        if (Location is null || !ValidLocations(Game).Contains(Location)) return Message.Express("Invalid location");
         if (!ValidFactions(Game, Player, Location).Contains(Target)) return Message.Express("Invalid faction");
         if (!ValidSpecialForceChoices(Game, Location, Target).Contains(SpecialForce)) return Message.Express("Invalid type of forces");
 
@@ -57,14 +57,14 @@ public class BrownRemoveForce : GameEvent
         return g.ForcesOnPlanetExcludingEmptyLocations().Keys.Where(l => !g.IsInStorm(l)).Distinct();
     }
 
-    public static IEnumerable<Faction> ValidFactions(Game g, Player p, Location l)
+    public static IEnumerable<Faction> ValidFactions(Game g, Player p, Location? l)
     {
         if (l != null)
             return g.Players.Where(p => p.AnyForcesIn(l) > 0).Select(p => p.Faction);
         return g.PlayersOtherThan(p);
     }
 
-    public static IEnumerable<bool> ValidSpecialForceChoices(Game g, Location l, Faction f)
+    public static IEnumerable<bool> ValidSpecialForceChoices(Game g, Location? l, Faction f)
     {
         var result = new List<bool>();
         var playerToCheck = g.GetPlayer(f);
@@ -89,7 +89,7 @@ public class BrownRemoveForce : GameEvent
         return p.Faction == Faction.Brown && ((!g.Prevented(FactionAdvantage.BrownDiscarding) && CardToUse(p) != null) || (NexusPlayed.CanUseCunning(p) && p.TreacheryCards.Any()));
     }
 
-    public static TreacheryCard CardToUse(Player p)
+    public static TreacheryCard? CardToUse(Player p)
     {
         return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CardTripToGamont);
     }
@@ -116,9 +116,9 @@ public class BrownRemoveForce : GameEvent
         var target = GetPlayer(Target);
 
         if (SpecialForce)
-            target.SpecialForcesToReserves(Location, 1);
+            target!.SpecialForcesToReserves(Location!, 1);
         else
-            target.ForcesToReserves(Location, 1);
+            target!.ForcesToReserves(Location!, 1);
 
         Game.FlipBlueAdvisorsWhenAlone();
         Game.Stone(Milestone.SpecialUselessPlayed);
@@ -127,7 +127,7 @@ public class BrownRemoveForce : GameEvent
     public override Message GetMessage()
     {
         var targetPlayer = Game.GetPlayer(Target);
-        return Message.Express(Initiator, " remove ", 1, SpecialForce ? targetPlayer.SpecialForce : targetPlayer.Force, " from ", Location);
+        return Message.Express(Initiator, " remove ", 1, SpecialForce ? targetPlayer!.SpecialForce : targetPlayer!.Force, " from ", Location);
     }
 
     #endregion Execution

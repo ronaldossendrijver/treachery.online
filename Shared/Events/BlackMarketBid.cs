@@ -52,7 +52,7 @@ public class BlackMarketBid : PassableGameEvent, IBid
 
     protected override void ExecuteConcreteEvent()
     {
-        Game.BidSequence.NextPlayer();
+        Game.BidSequence!.NextPlayer();
         Game.SkipPlayersThatCantBid(Game.BidSequence);
         Game.Stone(Milestone.Bid);
         Game.Bids.Remove(Initiator);
@@ -80,7 +80,7 @@ public class BlackMarketBid : PassableGameEvent, IBid
         {
             var winningBid = Game.CurrentBid;
 
-            if (winningBid != null && Game.BidSequence.CurrentFaction == winningBid.Initiator)
+            if (winningBid != null && Game.BidSequence!.CurrentFaction == winningBid.Initiator)
             {
                 if (Game.CardsOnAuction == null) return;
 
@@ -110,7 +110,7 @@ public class BlackMarketBid : PassableGameEvent, IBid
     {
         var isLastBid = Game.Version < 140 ? Game.Players.Count(p => p.HasRoomForCards) == Game.Bids.Count :
             (Game.CurrentAuctionType == AuctionType.BlackMarketSilent && Game.Players.Count(p => p.HasRoomForCards) == Game.Bids.Count) ||
-            (Game.CurrentAuctionType == AuctionType.BlackMarketOnceAround && Initiator == Faction.White) || (GetPlayer(Faction.White)?.HasRoomForCards == false && Game.BidSequence.HasPassedWhite);
+            (Game.CurrentAuctionType == AuctionType.BlackMarketOnceAround && Initiator == Faction.White) || (GetPlayer(Faction.White)?.HasRoomForCards == false && Game.BidSequence!.HasPassedWhite);
 
         if (isLastBid)
         {
@@ -150,47 +150,47 @@ public class BlackMarketBid : PassableGameEvent, IBid
         Game.CardSoldOnBlackMarket = card;
         Game.CurrentBid = null;
         Game.FactionThatMayReplaceBoughtCard = Faction.None;
-        
+
         Game.Bids.Clear();
         Game.LatestBidByGreenOrGreenAllyWasPassed = false;
 
-        var enterReplacingCardJustWon = winner != null && Game.Version > 150 && 
-            ((Game.Version < 164 && Game.Players.Any(p => p.Nexus != Faction.None)) || (Game.Version >= 164 && winner.Nexus != Faction.None));
+        var enterReplacingCardJustWon = Game.Version > 150 &&
+                                        ((Game.Version < 164 && Game.Players.Any(p => p.Nexus != Faction.None)) ||
+                                         (Game.Version >= 164 && winner.Nexus != Faction.None));
 
-        if (winner != null)
+
+        if (winner.Ally == Faction.Grey && Game.GreyAllowsReplacingCards)
         {
-            if (winner.Ally == Faction.Grey && Game.GreyAllowsReplacingCards)
-            {
-                if (!Game.Prevented(FactionAdvantage.GreyAllyDiscardingCard))
-                {
-                    Game.FactionThatMayReplaceBoughtCard = winner.Faction;
-                    enterReplacingCardJustWon = true;
-                }
-                else
-                {
-                    if (!Game.Applicable(Rule.FullPhaseKarma)) Game.Allow(FactionAdvantage.GreyAllyDiscardingCard);
-
-                    if (Game.NexusAllowsReplacingBoughtCards(winner))
-                    {
-                        Game.FactionThatMayReplaceBoughtCard = winner.Faction;
-                        enterReplacingCardJustWon = true;
-                        Game.ReplacingBoughtCardUsingNexus = true;
-                    }
-                }
-            }
-            else if (Game.NexusAllowsReplacingBoughtCards(winner))
+            if (!Game.Prevented(FactionAdvantage.GreyAllyDiscardingCard))
             {
                 Game.FactionThatMayReplaceBoughtCard = winner.Faction;
                 enterReplacingCardJustWon = true;
-                Game.ReplacingBoughtCardUsingNexus = true;
             }
+            else
+            {
+                if (!Game.Applicable(Rule.FullPhaseKarma)) Game.Allow(FactionAdvantage.GreyAllyDiscardingCard);
+
+                if (Game.NexusAllowsReplacingBoughtCards(winner))
+                {
+                    Game.FactionThatMayReplaceBoughtCard = winner.Faction;
+                    enterReplacingCardJustWon = true;
+                    Game.ReplacingBoughtCardUsingNexus = true;
+                }
+            }
+        }
+        else if (Game.NexusAllowsReplacingBoughtCards(winner))
+        {
+            Game.FactionThatMayReplaceBoughtCard = winner.Faction;
+            enterReplacingCardJustWon = true;
+            Game.ReplacingBoughtCardUsingNexus = true;
         }
 
         Game.Enter(enterReplacingCardJustWon, Phase.ReplacingCardJustWon, Game.EnterWhiteBidding);
 
         if (Game.BiddingTriggeredBureaucracy != null)
         {
-            Game.ApplyBureaucracy(Game.BiddingTriggeredBureaucracy.PaymentFrom, Game.BiddingTriggeredBureaucracy.PaymentTo);
+            Game.ApplyBureaucracy(Game.BiddingTriggeredBureaucracy.PaymentFrom,
+                Game.BiddingTriggeredBureaucracy.PaymentTo);
             Game.BiddingTriggeredBureaucracy = null;
         }
     }
@@ -219,7 +219,10 @@ public class BlackMarketBid : PassableGameEvent, IBid
         var red = Game.GetPlayer(Faction.Red);
         if (RedContributionAmount > 0 && RedContributionAmount > (red?.Resources ?? 0)) return Message.Express(Faction.Red, " won't pay that much");
 
-        if (Game.Version >= 155 && Game.CurrentAuctionType == AuctionType.BlackMarketSilent && TotalAmount > Player.Resources) return Message.Express("In a Silent auction, you can't bid more than you have");
+        if (Game.Version >= 155)
+        {
+            if (Game.CurrentAuctionType == AuctionType.BlackMarketSilent && TotalAmount > Player.Resources) return Message.Express("In a Silent auction, you can't bid more than you have");
+        }
 
         return null;
     }

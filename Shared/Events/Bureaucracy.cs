@@ -41,7 +41,7 @@ public class Bureaucracy : PassableGameEvent
         {
             Game.Stone(Milestone.Bureaucracy);
             Game.BureaucratWasUsedThisPhase = true;
-            Game.GetPlayer(Game.TargetOfBureaucracy).Resources -= 2;
+            Game.GetPlayer(Game.TargetOfBureaucracy)!.Resources -= 2;
             Game.WasVictimOfBureaucracy = Game.TargetOfBureaucracy;
         }
         Game.Enter(Game.PhaseBeforeBureaucratWasActivated);

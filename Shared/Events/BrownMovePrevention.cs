@@ -29,7 +29,7 @@ public class BrownMovePrevention : GameEvent
     public int _territoryId;
 
     [JsonIgnore]
-    public Territory Territory
+    public Territory? Territory
     {
         get => Game.Map.TerritoryLookup.Find(_territoryId);
         set => _territoryId = Game.Map.TerritoryLookup.GetId(value);
@@ -55,7 +55,7 @@ public class BrownMovePrevention : GameEvent
         return p.Faction == Faction.Brown && ValidTerritories(p).Any() && ((!g.Prevented(FactionAdvantage.BrownDiscarding) && CardToUse(p) != null) || (NexusPlayed.CanUseCunning(p) && p.TreacheryCards.Any()));
     }
 
-    public static TreacheryCard CardToUse(Player p)
+    public static TreacheryCard? CardToUse(Player p)
     {
         return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CardBaliset);
     }
@@ -79,7 +79,7 @@ public class BrownMovePrevention : GameEvent
             Game.Discard(CardToUse(Player));
         }
 
-        Game.CurrentBlockedTerritories.Add(Territory);
+        Game.CurrentBlockedTerritories.Add(Territory!);
         Game.Stone(Milestone.SpecialUselessPlayed);
     }
 

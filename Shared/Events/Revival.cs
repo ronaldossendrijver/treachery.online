@@ -40,19 +40,19 @@ public class Revival : GameEvent, ILocationEvent
     public int _locationId = -1;
 
     [JsonIgnore]
-    public Location Location
+    public Location? Location
     {
         get => Game.Map.LocationLookup.Find(_locationId);
         set => _locationId = Game.Map.LocationLookup.GetId(value);
     }
 
     [JsonIgnore]
-    public Location To => Location;
+    public Location? To => Location;
 
     public int _heroId;
 
     [JsonIgnore]
-    public IHero Hero
+    public IHero? Hero
     {
         get => LeaderManager.HeroLookup.Find(_heroId);
         set => _heroId = LeaderManager.HeroLookup.GetId(value);
@@ -130,13 +130,13 @@ public class Revival : GameEvent, ILocationEvent
         return (int)Math.Ceiling(forces * GetPricePerForce(g, red) + specialForces * GetPricePerSpecialForce(g, red, ally));
     }
 
-    public static RevivalCost DetermineCost(Game g, Player initiator, IHero hero, int amountOfForces, int amountOfSpecialForces, int extraForcesPaidByRed, int extraSpecialForcesPaidByRed, bool usesRedSecretAlly)
+    public static RevivalCost DetermineCost(Game g, Player initiator, IHero? hero, int amountOfForces, int amountOfSpecialForces, int extraForcesPaidByRed, int extraSpecialForcesPaidByRed, bool usesRedSecretAlly)
     {
         var result = new RevivalCost();
 
         if (g.Version >= 124)
         {
-            result.CostForEmperor = initiator.Ally == Faction.Red ? DetermineCostOfForcesForRed(g, initiator.AlliedPlayer, initiator.Faction, extraForcesPaidByRed, extraSpecialForcesPaidByRed) : 0;
+            result.CostForEmperor = initiator.Ally == Faction.Red ? DetermineCostOfForcesForRed(g, initiator.AlliedPlayer!, initiator.Faction, extraForcesPaidByRed, extraSpecialForcesPaidByRed) : 0;
             result.CostForForceRevivalForPlayer = GetPriceOfForceRevival(g, initiator, amountOfForces, amountOfSpecialForces, usesRedSecretAlly, out var nrOfPaidSpecialForces, out var numberOfForcesRevivedForFree);
             result.IncludesCostsForSpecialForces = nrOfPaidSpecialForces > 0;
             result.NumberOfForcesRevivedForFree = numberOfForcesRevivedForFree;
@@ -264,7 +264,7 @@ public class Revival : GameEvent, ILocationEvent
             if (auditor != null && !g.IsAlive(auditor) && !result.Contains(auditor)) result.Add(auditor);
         }
 
-        if (p.Faction == Faction.Pink)
+        if (p.Faction == Faction.Pink && g.Vidal != null)
             if (!g.IsAlive(g.Vidal) && !result.Contains(g.Vidal)) result.Add(g.Vidal);
 
         return result;
@@ -324,9 +324,13 @@ public class Revival : GameEvent, ILocationEvent
         }
     }
 
-    public static bool MayAssignSkill(Game g, Player p, IHero h)
+    public static bool MayAssignSkill(Game g, Player p, IHero? h)
     {
-        var capturedLeadersToConsider = g.IsPlaying(Faction.Black) ? g.GetPlayer(Faction.Black).Leaders.Where(l => l.Faction == p.Faction) : [];
+        if (h is null) return false;
+        
+        var black = g.GetPlayer(Faction.Black);
+        
+        var capturedLeadersToConsider = black != null ? black.Leaders.Where(l => l.Faction == p.Faction) : [];
 
         return
             h is Leader &&
@@ -346,7 +350,7 @@ public class Revival : GameEvent, ILocationEvent
     }
 
 
-    public static int GetPriceOfHeroRevival(Game g, Player initiator, IHero hero)
+    public static int GetPriceOfHeroRevival(Game g, Player initiator, IHero? hero)
     {
         var purpleDiscountPrevented = g.Prevented(FactionAdvantage.PurpleRevivalDiscount);
 
@@ -401,7 +405,7 @@ public class Revival : GameEvent, ILocationEvent
     {
         if (p.Ally != Faction.Red) return 0;
 
-        var red = g.GetPlayer(Faction.Red);
+        var red = g.GetPlayer(Faction.Red)!;
 
         var potentialMaximum = p.Ally == Faction.Red && (g.Version < 113 || !g.Prevented(FactionAdvantage.RedLetAllyReviveExtraForces)) ? g.RedWillPayForExtraRevival : 0;
 
@@ -464,7 +468,7 @@ public class Revival : GameEvent, ILocationEvent
         if (cost.CostForEmperor > 0)
         {
             var emperor = GetPlayer(Faction.Red);
-            emperor.Resources -= cost.CostForEmperor;
+            emperor!.Resources -= cost.CostForEmperor;
         }
         Player.Resources -= cost.TotalCostForPlayer;
 
@@ -527,24 +531,25 @@ public class Revival : GameEvent, ILocationEvent
         if (Hero != null)
         {
             Game.LeaderRevivalsThisTurn[Initiator] = Game.LeaderRevivalsThisTurn.GetValueOrDefault(Initiator, 0) + 1;
+            var leader = Hero as Leader;
             
-            if (Initiator != Hero.Faction && Hero is Leader leader)
+            if (Initiator != Hero.Faction && leader != null)
             {
                 asGhola = true;
                 Game.Revive(Player, leader);
             }
-            else if (purple != null && purple.Leaders.Contains(Hero) && Game.IsAlive(Hero))
+            else if (purple != null && purple.Leaders.Contains(Hero) && Game.IsAlive(Hero) && leader != null)
             {
                 //Transfer of ghola
-                purple.Leaders.Remove(Hero as Leader);
-                Player.Leaders.Add(Hero as Leader);
+                purple.Leaders.Remove(leader);
+                Player.Leaders.Add(leader);
             }
             else
             {
                 Game.Revive(Player, Hero);
             }
 
-            if (AssignSkill) Game.PrepareSkillAssignmentToRevivedLeader(Player, Hero as Leader);
+            if (AssignSkill) Game.PrepareSkillAssignmentToRevivedLeader(Player, leader);
 
             Game.EarlyRevivalsOffers.Remove(Hero);
         }

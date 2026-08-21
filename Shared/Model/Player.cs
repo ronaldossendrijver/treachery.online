@@ -545,9 +545,9 @@ public class Player(Game game, Faction faction = Faction.None) : ICloneable
     [MemberNotNullWhen(true, nameof(AlliedPlayer))]
     public bool HasAlly => Ally != Faction.None;
 
-    public bool Has(TreacheryCard card)
+    public bool Has(TreacheryCard? card)
     {
-        return TreacheryCards.Contains(card);
+        return card != null && TreacheryCards.Contains(card);
     }
 
     public bool Has(TreacheryCardType cardType)

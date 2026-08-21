@@ -33,10 +33,10 @@ public class DivideResourcesAccepted : PassableGameEvent
     public static bool IsApplicable(Game g, Player p)
     {
         return g.CurrentPhase == Phase.AcceptingResourceDivision &&
-               GetResourcesToBeDivided(g).OtherFaction == p.Faction;
+               GetResourcesToBeDivided(g)?.OtherFaction == p.Faction;
     }
 
-    public static ResourcesToBeDivided GetResourcesToBeDivided(Game g)
+    private static ResourcesToBeDivided? GetResourcesToBeDivided(Game g)
     {
         return g.CollectedResourcesToBeDivided.FirstOrDefault();
     }

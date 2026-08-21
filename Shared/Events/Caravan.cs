@@ -21,7 +21,7 @@ public class Caravan : PlacementEvent
 
     public bool AsAdvisors { get; set; }
 
-    public override Message? Validate()
+    public override Message Validate()
     {
         return ValidateMove(AsAdvisors);
     }
@@ -31,13 +31,11 @@ public class Caravan : PlacementEvent
         Game.RecentMoves.Add(this);
 
         Game.StormLossesToTake.Clear();
-        var initiator = GetPlayer(Initiator);
-        var card = initiator.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Caravan);
+      
+        Game.Discard(Player, TreacheryCardType.Caravan);
+        Game.PerformMoveFromLocations(Player, ForceLocations, this, Initiator != Faction.Blue || AsAdvisors, true);
 
-        Game.Discard(initiator, TreacheryCardType.Caravan);
-        Game.PerformMoveFromLocations(initiator, ForceLocations, this, Initiator != Faction.Blue || AsAdvisors, true);
-
-        if (Game.ContainsConflictingAlly(initiator, To)) Game.ChosenDestinationsWithAllies.Add(To.Territory);
+        if (Game.ContainsConflictingAlly(Player, To)) Game.ChosenDestinationsWithAllies.Add(To.Territory);
 
         Game.CurrentFlightUsed = null;
         Game.CurrentFlightDiscoveryUsed = null;

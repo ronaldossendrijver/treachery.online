@@ -8,7 +8,7 @@
 *@
 @implements IDisposable;
 
-<span @ref="@element" @attributes="_attributes" class="@Class" style="@SpanStyle">
+<span @ref="@_element" @attributes="_attributes" class="@Class" style="@SpanStyle">
     @Client.CurrentSkin.Describe(Shown)
 </span>
 
@@ -23,16 +23,15 @@
     [Parameter]
     public string Class { get; set; } = "fw-bold";
 
-    [Parameter]
-    public string? Style { get; set; }
+    [Parameter] public string Style { get; set; } = string.Empty;
 
     [Parameter]
     public string? Popover { get; set; }
     private string? _popover;
-    private bool _popoverNeedsRefresh = false;
+    private bool _popoverNeedsRefresh;
 
     [Parameter]
-    public bool PopoverAsTooltip { get; set; } = false;
+    public bool PopoverAsTooltip { get; set; }
 
     [Parameter]
     public Game? Game { get; set; }
@@ -63,7 +62,7 @@
 
             if (PopoverAsTooltip) 
             {
-                _attributes.Add("title", Popover);
+                _attributes.Add("title", Popover ?? string.Empty);
             }
             else
             {
@@ -73,7 +72,7 @@
                 _attributes.Add("data-bs-animation", "false");
                 _attributes.Add("data-bs-delay", "100");
                 _attributes.Add("data-container", "body");
-                _attributes.Add("data-bs-content", Popover);
+                _attributes.Add("data-bs-content", Popover ?? string.Empty);
                 _popoverNeedsRefresh = true;
             }
         }
@@ -83,22 +82,22 @@
     {
         if (firstRender && Popover != null && !PopoverAsTooltip)
         {
-            await Browser.EnablePopover(element);
+            await Browser.EnablePopover(_element);
         }
         else if (_popoverNeedsRefresh)
         {
             _popoverNeedsRefresh = false;
-            await Browser.RefreshPopover(element);
+            await Browser.RefreshPopover(_element);
         }
     }
 
-    private ElementReference element;
+    private ElementReference _element;
 
     public void Dispose()
     {
         if (Popover != null && !PopoverAsTooltip)
         {
-            _ = Browser.RemovePopover(element);
+            _ = Browser.RemovePopover(_element);
         }
     }
 
@@ -122,7 +121,7 @@
         };
     }
 
-    private bool ShownHasRichPopover => Shown is TreacheryCard || Shown is ResourceCard || Shown is IHero || Shown is LeaderSkill || Shown is TechToken || Shown is StrongholdAdvantage;
+    private bool ShownHasRichPopover => Shown is TreacheryCard or ResourceCard or IHero or LeaderSkill or TechToken or StrongholdAdvantage;
 
     private string SpanStyle => Popover != null ? "cursor:pointer;" + Style : Style;
 }

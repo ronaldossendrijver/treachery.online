@@ -97,9 +97,9 @@ public partial class Game
         return p.Leaders.Any(l => Skill(l) == skill && IsInFrontOfShield(l));
     }
 
-    public bool IsSkilled(IHero l)
+    public bool IsSkilled(IHero? l)
     {
-        return Skill(l) != LeaderSkill.None;
+        return l != null && Skill(l) != LeaderSkill.None;
     }
 
     public Player? PlayerSkilledAs(LeaderSkill skill)

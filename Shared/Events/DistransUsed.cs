@@ -31,7 +31,7 @@ public class DistransUsed : GameEvent
     public int _cardId = -1;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Lookup.Find(_cardId);
         set => _cardId = TreacheryCardManager.Lookup.GetId(value);

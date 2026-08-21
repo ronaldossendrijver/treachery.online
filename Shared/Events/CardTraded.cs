@@ -31,7 +31,7 @@ public class CardTraded : GameEvent
     public int _cardId;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
         set => _cardId = TreacheryCardManager.GetId(value);
@@ -40,7 +40,7 @@ public class CardTraded : GameEvent
     public int _requestedCardId;
 
     [JsonIgnore]
-    public TreacheryCard RequestedCard
+    public TreacheryCard? RequestedCard
     {
         get => TreacheryCardManager.Get(_requestedCardId);
         set => _requestedCardId = TreacheryCardManager.GetId(value);
@@ -53,13 +53,13 @@ public class CardTraded : GameEvent
     public override Message? Validate()
     {
         if (!ValidCards(Player).Contains(Card)) return Message.Express("Invalid card");
-        if (!Player.AlliedPlayer.TreacheryCards.Any()) Message.Express("Your ally does not have cards to trade");
+        if (!Player.AlliedPlayer!.TreacheryCards.Any()) Message.Express("Your ally does not have cards to trade");
 
         var targetPlayer = Game.GetPlayer(Target);
         if (targetPlayer == null) return Message.Express("Invalid target player");
 
         if (RequestedCard != null && !Game.IsBot(Player.AlliedPlayer)) return Message.Express("You can only select a card from a Bot ally");
-        if (RequestedCard != null && !ValidCards(Game.GetPlayer(Target)).Contains(RequestedCard)) return Message.Express("Invalid requested card");
+        if (RequestedCard != null && !ValidCards(targetPlayer).Contains(RequestedCard)) return Message.Express("Invalid requested card");
 
         return null;
     }
@@ -94,10 +94,10 @@ public class CardTraded : GameEvent
                     Game.UnregisterKnown(p, Player.TreacheryCards);
                 }
 
-            otherPlayer.TreacheryCards.Add(Card);
-            Player.TreacheryCards.Remove(Card);
-            Player.TreacheryCards.Add(Game.CurrentCardTradeOffer.Card);
-            otherPlayer.TreacheryCards.Remove(Game.CurrentCardTradeOffer.Card);
+            otherPlayer.TreacheryCards.Add(Card!);
+            Player.TreacheryCards.Remove(Card!);
+            Player.TreacheryCards.Add(Game.CurrentCardTradeOffer.Card!);
+            otherPlayer.TreacheryCards.Remove(Game.CurrentCardTradeOffer.Card!);
             Game.CurrentCardTradeOffer = null;
             Game.Stone(Milestone.CardTraded);
             Game.LastTurnCardWasTraded = Game.CurrentTurn;

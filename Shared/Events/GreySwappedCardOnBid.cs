@@ -29,7 +29,7 @@ public class GreySwappedCardOnBid : PassableGameEvent
     public int _cardId;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
         set => _cardId = TreacheryCardManager.GetId(value);
@@ -50,11 +50,11 @@ public class GreySwappedCardOnBid : PassableGameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        if (!Passed)
+        if (!Passed && Card != null)
         {
             Game.GreySwappedCardOnBid = true;
             Player.TreacheryCards.Remove(Card);
-            Player.TreacheryCards.Add(Game.CardsOnAuction.Draw());
+            Player.TreacheryCards.Add(Game.CardsOnAuction!.Draw());
 
             foreach (var p in Game.Players.Where(p => !Game.HasBiddingPrescience(p))) Game.UnregisterKnown(p, Player.TreacheryCards);
 

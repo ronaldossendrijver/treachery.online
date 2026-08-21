@@ -100,6 +100,6 @@ public class TreacheryCard(int id, int skinId, TreacheryCardType type, Rule[] ru
         if (Message.DefaultDescriber != null)
             return Message.DefaultDescriber.Describe(this) + "*";
         
-        return base.ToString();
+        return base.ToString() ?? string.Empty;
     }
 }

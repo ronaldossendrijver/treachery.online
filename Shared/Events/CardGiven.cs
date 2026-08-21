@@ -43,7 +43,7 @@ public class CardGiven : PassableGameEvent
     {
         Log();
 
-        if (!Passed)
+        if (!Passed && Game.CardThatMustBeKeptOrGivenToAlly is not null && Player.AlliedPlayer is not null)
         {
             Player.TreacheryCards.Remove(Game.CardThatMustBeKeptOrGivenToAlly);
             Player.AlliedPlayer.TreacheryCards.Add(Game.CardThatMustBeKeptOrGivenToAlly);

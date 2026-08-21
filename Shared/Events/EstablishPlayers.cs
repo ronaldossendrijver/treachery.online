@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class EstablishPlayers : GameEvent
@@ -26,8 +24,8 @@ public class EstablishPlayers : GameEvent
     #endregion Construction
 
     #region Properties
-    
-    public GameSettings Settings { get; set; }
+
+    public GameSettings Settings { get; set; } = new();
 
     public int Seed { get; set; }
 
@@ -37,19 +35,10 @@ public class EstablishPlayers : GameEvent
     [Obsolete]
     public int MaximumTurns { get; set; } = 10;
 
-    [Obsolete]
-    public Rule[] ApplicableRules { get; set; }
+    [Obsolete] 
+    public Rule[] ApplicableRules { get; set; } = [];
 
-    public string _gameName = "";
-
-    [JsonIgnore]
-    public string GameName
-    {
-        get => _gameName == null || _gameName == "" ? Players.FirstOrDefault() : _gameName;
-        set => _gameName = value;
-    }
-
-    public string _players = "";
+    public string _players = string.Empty;
 
     [JsonIgnore]
     public IEnumerable<string> Players
@@ -170,7 +159,7 @@ public class EstablishPlayers : GameEvent
 
     #region Execution
 
-    public override Message Execute(bool performValidation, bool isHost)
+    public override Message? Execute(bool performValidation, bool isHost)
     {
         if (performValidation)
         {
@@ -303,7 +292,7 @@ public class EstablishPlayers : GameEvent
 
     private void CreateNexusDeck()
     {
-        Game.NexusCardDeck = new Deck<Faction>(AvailableFactions(), Game.Random);
+        Game.NexusCardDeck = new Deck<Faction>(AvailableFactions(), Game.Random!);
         Game.NexusCardDeck.Shuffle();
     }
 
@@ -315,7 +304,7 @@ public class EstablishPlayers : GameEvent
 
     private Deck<ResourceCard> CreateAndShuffleResourceCardDeck()
     {
-        var result = new Deck<ResourceCard>(Game.Random);
+        var result = new Deck<ResourceCard>(Game.Random!);
         foreach (var c in Map.GetResourceCardsInPlay(Game)) result.PutOnTop(c);
 
         Game.Stone(Milestone.Shuffled);
@@ -360,8 +349,8 @@ public class EstablishPlayers : GameEvent
 
     private void CreateDiscoveryTokens()
     {
-        Game.YellowDiscoveryTokens = new Deck<DiscoveryToken>(Game.Random);
-        Game.OrangeDiscoveryTokens = new Deck<DiscoveryToken>(Game.Random);
+        Game.YellowDiscoveryTokens = new Deck<DiscoveryToken>(Game.Random!);
+        Game.OrangeDiscoveryTokens = new Deck<DiscoveryToken>(Game.Random!);
 
         if (Game.Applicable(Rule.DiscoveryTokens))
         {
@@ -387,14 +376,13 @@ public class EstablishPlayers : GameEvent
             {
                 while (Game.Players.Count < Game.Settings.NumberOfPlayers)
                 {
-                    var player = new Player(Game, Faction.None);
+                    var player = new Player(Game);
                     Game.Players.Add(player);
                 }
             }
             else
             {
-                var available = new Deck<Faction>(Game.Settings.AllowedFactionsInPlay.Where(f => !Game.IsPlaying(f)),
-                    Game.Random);
+                var available = new Deck<Faction>(Game.Settings.AllowedFactionsInPlay.Where(f => !Game.IsPlaying(f)), Game.Random!);
                 available.Shuffle();
 
                 while (Game.Players.Count < Game.Settings.NumberOfPlayers)

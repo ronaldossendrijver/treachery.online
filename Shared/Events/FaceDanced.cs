@@ -56,7 +56,7 @@ public class FaceDanced : PlacementEvent
         if (Game.Version >= 157 && amountOfPlacedForces > maximumForces) return Message.Express("Place ", maximumForces, " or less forces");
 
         var amountOfForces = ForcesFromReserve + ForceLocations.Values.Sum(b => b.TotalAmountOfForces);
-        if (Game.Version >= 157 && amountOfForces != amountOfPlacedForces) return Message.Express("The amount of forces you selected from the planet and from reserves (", amountOfForces, ") should equal the amount you wish to put in ", Game.CurrentBattle.Territory, " (", amountOfPlacedForces, ")");
+        if (Game.Version >= 157 && amountOfForces != amountOfPlacedForces) return Message.Express("The amount of forces you selected from the planet and from reserves (", amountOfForces, ") should equal the amount you wish to put in ", Game.CurrentBattle!.Territory, " (", amountOfPlacedForces, ")");
 
         return null;
     }
@@ -66,7 +66,7 @@ public class FaceDanced : PlacementEvent
         var ally = p.AlliedPlayer;
         if (ally == null || g.BattleWinner == p.Ally || ally.AnyForcesIn(g.CurrentBattle!.Territory!) == 0)
         {
-            var winner = g.GetPlayer(g.BattleWinner);
+            var winner = g.GetPlayer(g.BattleWinner)!;
             var coocupyingPlayer = g.BattleWinner == g.CurrentPinkOrAllyFighter ? winner.AlliedPlayer : null;
 
             var nrOfForces = winner.AnyForcesIn(g.CurrentBattle!.Territory!);
@@ -108,7 +108,7 @@ public class FaceDanced : PlacementEvent
     {
         if (Game.Version > 150 || (Game.Version <= 150 && FaceDancerCalled))
         {
-            var facedancer = Player.FaceDancers.First(f => Game.WinnerHero.IsFaceDancer(f));
+            var facedancer = Player.FaceDancers.First(f => Game.WinnerHero!.IsFaceDancer(f));
 
             if (Game.Version <= 150)
             {
@@ -141,15 +141,15 @@ public class FaceDanced : PlacementEvent
         if (Game.CurrentBattle == null) return;
         
         var winner = GetPlayer(Game.BattleWinner);
-        var nrOfRemovedForces = winner.AnyForcesIn(Game.CurrentBattle.Territory);
+        var nrOfRemovedForces = winner!.AnyForcesIn(Game.CurrentBattle.Territory);
 
         var coOccupyingPlayer = Game.BattleWinner == Game.CurrentPinkOrAllyFighter ? winner.AlliedPlayer : null;
         if (coOccupyingPlayer != null) nrOfRemovedForces += coOccupyingPlayer.AnyForcesIn(Game.CurrentBattle.Territory);
 
         if (nrOfRemovedForces > 0)
         {
-            winner.ForcesToReserves(Game.CurrentBattle.Territory);
-            coOccupyingPlayer?.ForcesToReserves(Game.CurrentBattle.Territory);
+            winner.ForcesToReserves(Game.CurrentBattle.Territory!);
+            coOccupyingPlayer?.ForcesToReserves(Game.CurrentBattle.Territory!);
 
             Player.AddForcesToReserves(-ForcesFromReserve);
             foreach (var fl in ForceLocations)
@@ -177,7 +177,7 @@ public class FaceDanced : PlacementEvent
 
     private void ReplaceFacedancers()
     {
-        Game.TraitorDeck.Items.AddRange(Player.FaceDancers);
+        Game.TraitorDeck!.Items.AddRange(Player.FaceDancers);
         Player.FaceDancers.Clear();
         Player.RevealedFaceDancers.Clear();
         Game.TraitorDeck.Shuffle();

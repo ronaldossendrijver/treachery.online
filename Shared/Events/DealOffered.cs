@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class DealOffered : GameEvent
@@ -27,15 +25,15 @@ public class DealOffered : GameEvent
 
     #region Properties
 
-    public Faction[] To { get; set; } = Array.Empty<Faction>();
+    public Faction[] To { get; set; } = [];
 
     public DealType Type { get; set; }
 
-    public string DealParameter1 { get; set; }
+    public string? DealParameter1 { get; set; }
 
-    public string DealParameter2 { get; set; }
+    public string? DealParameter2 { get; set; }
 
-    public string Text { get; set; }
+    public string? Text { get; set; }
 
     public Phase EndPhase { get; set; }
 
@@ -140,7 +138,7 @@ public class DealOffered : GameEvent
         if (Cancel)
         {
             var sameOffer = Game.DealOffers.FirstOrDefault(o => o.Same(this));
-            Game.DealOffers.Remove(sameOffer);
+            if (sameOffer != null) Game.DealOffers.Remove(sameOffer);
         }
         else
         {
@@ -150,9 +148,9 @@ public class DealOffered : GameEvent
 
     public override Message GetMessage()
     {
-        if (!Cancel)
-            return Message.Express(Initiator, " offer ", MessagePart.ExpressIf(To != null && To.Any(), To, " "), "for ", Payment.Of(Price), ": ", Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1));
-        return Message.Express(Initiator, " withdraw a deal offer");
+        return !Cancel 
+            ? Message.Express(Initiator, " offer ", MessagePart.ExpressIf(To.Length != 0, To, " "), "for ", Payment.Of(Price), ": ", Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1)) 
+            : Message.Express(Initiator, " withdraw a deal offer");
     }
 
     public override Message GetShortMessage()

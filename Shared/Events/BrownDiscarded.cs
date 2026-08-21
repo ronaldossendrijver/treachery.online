@@ -29,10 +29,10 @@ public class BrownDiscarded : GameEvent
     public int _cardId;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
-        set => _cardId = TreacheryCardManager.GetId(value);
+        init => _cardId = TreacheryCardManager.GetId(value);
     }
 
     #endregion Properties
@@ -41,9 +41,9 @@ public class BrownDiscarded : GameEvent
 
     public override Message? Validate()
     {
-        if (!ValidCards(Player).Contains(Card)) return Message.Express("Invalid card");
-
-        return null;
+        return !ValidCards(Player).Contains(Card) 
+            ? Message.Express("Invalid card") 
+            : null;
     }
 
     public static IEnumerable<TreacheryCard> ValidCards(Player p)
@@ -59,6 +59,9 @@ public class BrownDiscarded : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
+        if (Card == null)
+            throw new InvalidOperationException("Card is null");
+        
         Game.Discard(Card);
         Log();
 
@@ -72,9 +75,9 @@ public class BrownDiscarded : GameEvent
 
     public override Message GetMessage()
     {
-        if (Card.Type == TreacheryCardType.Useless)
-            return Message.Express(Initiator, " get ", Payment.Of(2), " by discarding a ", TreacheryCardType.Useless, " card");
-        return Message.Express(Initiator, " get ", Payment.Of(3), " by discarding a duplicate ", Card);
+        return Card?.Type is TreacheryCardType.Useless 
+            ? Message.Express(Initiator, " get ", Payment.Of(2), " by discarding a ", TreacheryCardType.Useless, " card") 
+            : Message.Express(Initiator, " get ", Payment.Of(3), " by discarding a duplicate ", Card);
     }
 
     #endregion Execution

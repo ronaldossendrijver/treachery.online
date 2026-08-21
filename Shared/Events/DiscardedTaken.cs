@@ -29,7 +29,7 @@ public class DiscardedTaken : GameEvent
     public int _cardId;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
         set => _cardId = TreacheryCardManager.GetId(value);
@@ -48,7 +48,7 @@ public class DiscardedTaken : GameEvent
 
     public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
     {
-        return g.RecentlyDiscarded.Where(kvp => kvp.Value != p.Faction && g.TreacheryDiscardPile.Items.Contains(kvp.Key)).Select(kvp => kvp.Key);
+        return g.RecentlyDiscarded.Where(kvp => kvp.Value != p.Faction && g.TreacheryDiscardPile!.Items.Contains(kvp.Key)).Select(kvp => kvp.Key);
     }
 
     public static bool CanBePlayed(Game g, Player p)

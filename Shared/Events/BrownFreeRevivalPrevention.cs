@@ -41,7 +41,7 @@ public class BrownFreeRevivalPrevention : GameEvent
         return p.Faction == Faction.Brown && ((!g.Prevented(FactionAdvantage.BrownDiscarding) && CardToUse(p) != null) || (NexusPlayed.CanUseCunning(p) && p.TreacheryCards.Any()));
     }
 
-    public static TreacheryCard CardToUse(Player p)
+    public static TreacheryCard? CardToUse(Player p)
     {
         return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CardLalala);
     }

@@ -7,7 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Globalization;
 
 namespace Treachery.Shared;
@@ -37,15 +36,17 @@ public class ClairVoyancePlayed : GameEvent
         return Parameter1 is TreacheryCardType t && t == type;
     }
 
-    public string QuestionParameter1 { get; set; }
+    public string? QuestionParameter1 { get; set; }
 
     [JsonIgnore]
-    public object Parameter1
+    public object? Parameter1
     {
         get
         {
             return Question switch
             {
+                _ when QuestionParameter1 is null => null,
+                
                 ClairvoyanceQuestion.CardTypeInBattle or
                     ClairvoyanceQuestion.CardTypeAsDefenseInBattle or
                     ClairvoyanceQuestion.CardTypeAsWeaponInBattle or
@@ -79,16 +80,16 @@ public class ClairVoyancePlayed : GameEvent
         }
     }
 
-    public string QuestionParameter2 { get; set; }
+    public string? QuestionParameter2 { get; set; }
 
     [JsonIgnore]
-    public object Parameter2
+    public object? Parameter2
     {
         get
         {
             return Question switch
             {
-                ClairvoyanceQuestion.Prediction => int.Parse(QuestionParameter2),
+                ClairvoyanceQuestion.Prediction when !string.IsNullOrEmpty(QuestionParameter2) => int.Parse(QuestionParameter2),
                 _ => null
             };
         }
@@ -209,11 +210,11 @@ public class ClairVoyancePlayed : GameEvent
         }
     }
 
-    private TreacheryCard Card
+    private TreacheryCard? Card
     {
         get
         {
-            TreacheryCard result = null;
+            TreacheryCard? result = null;
 
             if (Player.Occupies(Game.Map.Shrine))
                 result = Karma.ValidKarmaCards(Game, Player).FirstOrDefault(c => c.Type == TreacheryCardType.Useless);

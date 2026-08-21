@@ -107,6 +107,8 @@
             try
             {
                 var loadedSettings = Utilities.Deserialize<EstablishPlayersSettings>(loadedSettingsAsString);
+
+                if (loadedSettings == null) return;
                 
                 if (loadedSettings.Settings != null)
                     Settings = loadedSettings.Settings;
@@ -136,7 +138,8 @@
     
     private async Task Cancel()
     {
-        await Client.RequestCloseGame(Client.GameId);
+        if (Client.GameId != null)
+            await Client.RequestCloseGame(Client.GameId);
     }
 
     private async Task UpdateSettings()
@@ -144,8 +147,9 @@
         if (_disposed)
             return;
 
-        await Client.RequestUpdateSettings(Client.GameId, Settings);
-        _ = Task.Delay(3600).ContinueWith(_ => UpdateSettings());
+        if (Client.GameId != null)
+            await Client.RequestUpdateSettings(Client.GameId, Settings);
+            _ = Task.Delay(3600).ContinueWith(_ => UpdateSettings());
     }
 
     private async Task StoreSettings()
@@ -190,7 +194,6 @@
     protected override EstablishPlayers ConfirmedResult =>
         new(Game, Faction.None)
         {
-            GameName = Client.PlayerName,
             Settings = Settings,
             Seed = new Random().Next()
         };

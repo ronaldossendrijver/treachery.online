@@ -14,12 +14,12 @@ namespace Treachery.Shared;
 public class UserInfo
 {
     public int Id { get; init; }
+
+    public string Username { get; init; } = string.Empty;
     
-    public string Username { get; init; }
-    
-    public string Email { get; init; }
+    public string Email { get; init; } = string.Empty;
     
     public DateTimeOffset LastLogin { get; init; }
     
-    public string PlayerName { get; set; }
+    public string PlayerName { get; set; } = string.Empty;
 }

@@ -65,11 +65,11 @@ public class ClairVoyanceAnswered : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        Game.LatestClairvoyanceQnA = new ClairVoyanceQandA(Game.LatestClairvoyance, this);
+        Game.LatestClairvoyanceQnA = new ClairVoyanceQandA(Game.LatestClairvoyance!, this);
 
         Log();
 
-        if (Game.LatestClairvoyance.Question == ClairvoyanceQuestion.WillAttackX && IsNo)
+        if (Game.LatestClairvoyance!.Question == ClairvoyanceQuestion.WillAttackX && IsNo)
         {
             var deal = new Deal
             {
@@ -84,29 +84,27 @@ public class ClairVoyanceAnswered : GameEvent
         }
         else if (Game.LatestClairvoyance.Question == ClairvoyanceQuestion.LeaderAsTraitor)
         {
-            var hero = Game.LatestClairvoyance.Parameter1 as IHero;
-
-            if (IsYes)
-            {
-                if (!Player.ToldTraitors.Contains(hero)) Player.ToldTraitors.Add(hero);
-            }
-            else if (IsNo)
-            {
-                if (!Player.ToldNonTraitors.Contains(hero)) Player.ToldNonTraitors.Add(hero);
-            }
+            if (Game.LatestClairvoyance.Parameter1 is IHero hero)
+                if (IsYes)
+                {
+                    Player.ToldTraitors.Add(hero);
+                }
+                else if (IsNo)
+                {
+                    Player.ToldNonTraitors.Add(hero);
+                }
         }
         else if (Game.LatestClairvoyance.Question == ClairvoyanceQuestion.LeaderAsFacedancer)
         {
-            var hero = Game.LatestClairvoyance.Parameter1 as IHero;
-
-            if (Answer == ClairVoyanceAnswer.Yes)
-            {
-                if (!Player.ToldFaceDancers.Contains(hero)) Player.ToldFaceDancers.Add(hero);
-            }
-            else if (Answer == ClairVoyanceAnswer.No)
-            {
-                if (!Player.ToldNonFaceDancers.Contains(hero)) Player.ToldNonFaceDancers.Add(hero);
-            }
+            if (Game.LatestClairvoyance.Parameter1 is IHero hero)
+                if (IsYes)
+                {
+                    Player.ToldFaceDancers.Add(hero);
+                }
+                else if (IsNo)
+                {
+                    Player.ToldNonFaceDancers.Add(hero);
+                }
         }
 
         Game.Enter(Game.PhasePausedByClairvoyance, false);

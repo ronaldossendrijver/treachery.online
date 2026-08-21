@@ -23,7 +23,9 @@ public class FaceDancerReplaced : PassableGameEvent
     }
 
     [JsonIgnore]
-    public IHero SelectedDancer { get => LeaderManager.HeroLookup.Find(dancerId);
+    public IHero? SelectedDancer
+    {
+        get => LeaderManager.HeroLookup.Find(dancerId);
         set => dancerId = LeaderManager.HeroLookup.GetId(value);
     }
 
@@ -32,6 +34,7 @@ public class FaceDancerReplaced : PassableGameEvent
         if (!Passed)
         {
             var p = Player;
+            if (SelectedDancer is null) return Message.Express("Select a leader");
             if (p.RevealedFaceDancers.Contains(SelectedDancer)) return Message.Express("You can't replace a revealed Face Dancer");
             if (!p.FaceDancers.Contains(SelectedDancer)) return Message.Express("Invalid Face Dancer");
         }
@@ -41,16 +44,16 @@ public class FaceDancerReplaced : PassableGameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        if (!Passed)
+        if (!Passed && SelectedDancer is not null)
         {
-            var player = GetPlayer(Initiator);
+            var player = Player;
             player.FaceDancers.Remove(SelectedDancer);
-            Game.TraitorDeck.PutOnTop(SelectedDancer);
+            Game.TraitorDeck!.PutOnTop(SelectedDancer);
             Game.TraitorDeck.Shuffle();
             Game.Stone(Milestone.Shuffled);
             var leader = Game.TraitorDeck.Draw();
             player.FaceDancers.Add(leader);
-            if (!player.KnownNonTraitors.Contains(leader)) player.KnownNonTraitors.Add(leader);
+            player.KnownNonTraitors.Add(leader);
         }
 
         Log();

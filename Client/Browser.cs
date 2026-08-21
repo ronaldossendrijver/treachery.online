@@ -140,7 +140,7 @@ public class Browser(IJSRuntime jsRuntime)
         await Storage.SetStringAsync(name, value);
     }
 
-    public async Task<T> LoadSetting<T>(string name)
+    public async Task<T?> LoadSetting<T>(string name)
     {
         return await Storage.GetAsync<T>(name);
     }
@@ -165,7 +165,7 @@ public class Browser(IJSRuntime jsRuntime)
         await JsInvoke("Print", elementName);
     }
 
-    private async Task<T> JsInvoke<T>(string method, params object[] args)
+    private async Task<T?> JsInvoke<T>(string method, params object[] args)
     {
         try
         {
@@ -178,7 +178,7 @@ public class Browser(IJSRuntime jsRuntime)
         }
     }
 
-    private async Task JsInvoke(string method, params object[] args)
+    private async Task JsInvoke(string method, params object?[] args)
     {
         try
         {

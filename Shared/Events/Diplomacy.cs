@@ -29,7 +29,7 @@ public class Diplomacy : GameEvent
     public int _cardId;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
         set => _cardId = TreacheryCardManager.GetId(value);
@@ -47,9 +47,9 @@ public class Diplomacy : GameEvent
     public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
     {
         var result = new List<TreacheryCard>();
-        var plan = g.CurrentBattle!.PlanOf(p);
-        if (plan.Weapon != null && plan.Weapon.IsUseless && (g.Version < 179 || plan.Defense == null)) result.Add(plan.Weapon);
-        if (plan.Defense != null && plan.Defense.IsUseless) result.Add(plan.Defense);
+        var plan = g.CurrentBattle!.PlanOf(p)!;
+        if (plan.Weapon is { IsUseless: true } && (g.Version < 179 || plan.Defense == null)) result.Add(plan.Weapon);
+        if (plan.Defense is { IsUseless: true }) result.Add(plan.Defense);
         return result;
     }
 
@@ -58,11 +58,11 @@ public class Diplomacy : GameEvent
         if (g.SkilledAs(p, LeaderSkill.Diplomat) && g.CurrentDiplomacy == null)
         {
             var plan = g.CurrentBattle!.PlanOf(p);
+            var planOfOpponent = g.CurrentBattle!.PlanOfOpponent(p)!;
             return
                 plan != null &&
-                (plan.Defense == null || !plan.Defense.IsDefense) &&
-                g.CurrentBattle!.PlanOfOpponent(p).Defense != null &&
-                g.CurrentBattle!.PlanOfOpponent(p).Defense.IsDefense &&
+                plan.Defense is not { IsDefense: true } &&
+                planOfOpponent.Defense is { IsDefense: true } &&
                 ValidCards(g, p).Any();
         }
 
