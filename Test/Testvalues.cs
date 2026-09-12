@@ -120,7 +120,7 @@ public class TestvaluesPerPlayer
     public int specialforceskilled;
     public int nroftechtokens;
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not TestvaluesPerPlayer) return false;
 
