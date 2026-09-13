@@ -938,6 +938,16 @@ public class Tests
         Assert.AreEqual(oldName, skinToTest.Describe(leader));
     }
 
+    [DataTestMethod]
+    [DataRow(Faction.White, 3, 1)]
+    [DataRow(Faction.White, -1, 0)]
+    [DataRow(Faction.Black, 3, 0)]
+    [DataRow(Faction.Black, 5, 0)]
+    public void NoFieldShipmentOnlyAddsSpecialForceForRichese(Faction faction, int noFieldValue, int expected)
+    {
+        Assert.AreEqual(expected, Shipment.DefaultNoFieldSpecialForceAmount(faction, noFieldValue));
+    }
+
     private static void SaveObject(object toSave, string filename)
     {
         var skinData = Utilities.Serialize(toSave);
