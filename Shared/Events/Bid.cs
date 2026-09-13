@@ -25,13 +25,13 @@ public class Bid : PassableGameEvent, IBid
 
     #region Properties
 
-    public int Amount { get; set; }
+    public int Amount { get; init; }
 
-    public int AllyContributionAmount { get; set; }
+    public int AllyContributionAmount { get; init; }
 
-    public int RedContributionAmount { get; set; }
+    public int RedContributionAmount { get; init; }
 
-    public bool UsesRedSecretAlly { get; set; }
+    public bool UsesRedSecretAlly { get; init; }
 
     public int _karmaCardId = -1;
     
@@ -55,7 +55,7 @@ public class Bid : PassableGameEvent, IBid
     /// <summary>
     /// This indicates the card is won immediately
     /// </summary>
-    public bool KarmaBid { get; set; }
+    public bool KarmaBid { get; init; }
 
     #endregion
 
@@ -288,7 +288,7 @@ public class Bid : PassableGameEvent, IBid
         var isLastBid = Game.Version < 140 ? Game.Players.Count(p => p.HasRoomForCards) == Game.Bids.Count :
             (Game.CurrentAuctionType == AuctionType.WhiteSilent && Game.Players.Count(p => p.HasRoomForCards) == Game.Bids.Count) ||
             (Game.Version < 151 && ((Game.CurrentAuctionType == AuctionType.WhiteOnceAround && Initiator == Faction.White) || (whiteHasNoRoom && bidSequenceHasPassedWhite))) ||
-            (Game.Version >= 151 && Game.CurrentAuctionType == AuctionType.WhiteOnceAround && (Initiator == Faction.White || (whiteHasNoRoom && bidSequenceHasPassedWhite)));
+            (Game is { Version: >= 151, CurrentAuctionType: AuctionType.WhiteOnceAround } && (Initiator == Faction.White || (whiteHasNoRoom && bidSequenceHasPassedWhite)));
 
         if (isLastBid)
         {

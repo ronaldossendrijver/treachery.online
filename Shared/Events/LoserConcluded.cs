@@ -185,7 +185,7 @@ public class LoserConcluded : GameEvent
             var reward = AssassinationReward(Game, winner, assassinated);
             if (reward == null)
             {
-                Log(Initiator, " reveal ", assassinated, " as their target of assassination, but cannot kill them or collect spice because they are not an available leader...");
+                Log(Initiator, " reveal ", assassinated, " as their assassination target, but don't collect spice as this leader is in the tanks.");
             }
             else
             {
