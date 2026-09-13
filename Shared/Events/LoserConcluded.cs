@@ -80,6 +80,12 @@ public class LoserConcluded : GameEvent
             !p.RevealedTraitors.Contains(l)) as Leader;
     }
 
+    public static int? AssassinationReward(Game game, Player winner, Leader target)
+    {
+        if (!game.IsAlive(target) || !winner.Leaders.Contains(target)) return null;
+        return target.HeroType == HeroType.VariableValue ? 3 : target.CostToRevive;
+    }
+
     public static IEnumerable<TreacheryCard> CardsLoserMayKeep(Game g)
     {
         return g.CardsToBeDiscardedByLoserAfterBattle;
@@ -176,15 +182,15 @@ public class LoserConcluded : GameEvent
             Game.Assassinated.Add(assassinated);
             Player.RevealedTraitors.Add(assassinated);
 
-            if (!Game.IsAlive(assassinated) || !winner.Leaders.Contains(assassinated))
+            var reward = AssassinationReward(Game, winner, assassinated);
+            if (reward == null)
             {
-                Log(Initiator, " reveal ", assassinated, " as their target of assassination...");
+                Log(Initiator, " reveal ", assassinated, " as their target of assassination, but cannot kill them or collect spice because they are not an available leader...");
             }
             else
             {
-                var price = assassinated.HeroType == HeroType.VariableValue ? 3 : assassinated.CostToRevive;
-                Log(Initiator, " get ", Payment.Of(price), " by ASSASSINATING ", assassinated, "!");
-                Player.Resources += assassinated.CostToRevive;
+                Log(Initiator, " get ", Payment.Of(reward.Value), " by ASSASSINATING ", assassinated, "!");
+                Player.Resources += reward.Value;
                 Game.KillHero(assassinated);
             }
         }
