@@ -28,12 +28,22 @@
         @if (LoserConcluded.CanAssassinate(Game, Player)) {
 
             var assassinated = LoserConcluded.TargetOfAssassination(Game, Player);
+            var winner = Game.GetPlayer(Game.BattleWinner);
+            var reward = winner == null ? null : LoserConcluded.AssassinationReward(Game, winner, assassinated);
 
             <RadioComponent @bind-Value=_assassinate 
                 Values=@(new[] {true, false}) 
                 ValueLabels="@(new[] {"Yes","No"})">
                 <Label>
                     <div>Execute an assassination mission by revealing <Image Shown=@assassinated Popover=@Client.CurrentSkin.GetPopup(assassinated, Game) Class="img-float" Width="50"/> as your traitor?</div>
+                    @if (reward == null)
+                    {
+                        <div>This leader is already in the Tanks or otherwise unavailable, so you will not collect spice.</div>
+                    }
+                    else
+                    {
+                        <div>You will collect @Payment.Of(reward.Value).</div>
+                    }
                 </Label>
             </RadioComponent>
         }
