@@ -298,6 +298,9 @@ public class Shipment : PassableGameEvent, ILocationEvent
         return specialForces ? Math.Min(p.SpecialForcesInReserve, noFieldMax) : Math.Min(p.ForcesInReserve, noFieldMax);
     }
 
+    public static int DefaultNoFieldSpecialForceAmount(Faction faction, int noFieldValue) =>
+        faction == Faction.White && noFieldValue >= 0 ? 1 : 0;
+
     public static int ValidMaxSecretAllyShipmentForces(Player p, bool specialForces)
     {
         return specialForces ? Math.Min(p.SpecialForcesInReserve, 5) : Math.Min(p.ForcesInReserve, 5);

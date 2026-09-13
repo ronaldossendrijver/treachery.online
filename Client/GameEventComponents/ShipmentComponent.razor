@@ -158,7 +158,7 @@
                 }
                 else
                 {
-                    ShipmentSpecialForceAmount = NoFieldValue < 0 ? 0 : 1;
+                    ShipmentSpecialForceAmount = Shipment.DefaultNoFieldSpecialForceAmount(Faction, NoFieldValue);
                 }
 
                 @if (selectNormalForceSources || selectSpecialForceSources)
