@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Treachery.Shared;
 
 public class ManagedGame
 {
+    private readonly SemaphoreSlim _eventSemaphore = new(1, 1);
+
     public DateTimeOffset CreationDate { get; init; }
     
     public DateTimeOffset LastActivity { get; set; }
@@ -27,4 +31,17 @@ public class ManagedGame
     public DateTimeOffset LastAsyncPlayMessageSent { get; set; }
 
     public Dictionary<Faction, IBot> Bots { get; } = [];
+
+    public async Task<T> ProcessEventAsync<T>(Func<Task<T>> processEvent)
+    {
+        await _eventSemaphore.WaitAsync();
+        try
+        {
+            return await processEvent();
+        }
+        finally
+        {
+            _eventSemaphore.Release();
+        }
+    }
 }

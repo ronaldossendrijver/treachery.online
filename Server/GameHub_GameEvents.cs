@@ -187,37 +187,38 @@ public partial class GameHub
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
             return error!;
         
-        e.Initialize(game!.Game);
-        e.Time = DateTimeOffset.Now;
-        
         return await ValidateAndExecute(e, game, game.Game.IsHost(user!.Id));
     }
 
     private async Task<VoidResult> ValidateAndExecute<TEvent>(TEvent e, ManagedGame game, bool isHost)
         where TEvent : GameEvent
     {
-        var validationResult = e.Execute(true, isHost);
-        e.Time = DateTimeOffset.Now;
-        
-        if (validationResult != null)
+        return await game.ProcessEventAsync(async () =>
         {
-            Log("Invalid bot decision: " + validationResult);
-            return Error(ErrorType.InvalidGameEvent, validationResult.ToString());
-        }
+            e.Initialize(game.Game);
+            var validationResult = e.Execute(true, isHost);
+            e.Time = DateTimeOffset.Now;
 
-        if (game.Game.CurrentMainPhase is MainPhase.Ended && !game.StatisticsSent && game.Game.NumberOfBots < 0.5f * game.Game.NumberOfSeatedPlayers)
-        {
-            await SendEndOfGameMail(game);
-            game.StatisticsSent = true;
-        }
+            if (validationResult != null)
+            {
+                Log("Invalid bot decision: " + validationResult);
+                return Error(ErrorType.InvalidGameEvent, validationResult.ToString());
+            }
 
-        game.LastActivity = DateTimeOffset.Now;
-        
-        await Clients.Group(game.GameId).HandleGameEvent(e, game.Game.History.Count);
-        await SendAsyncPlayMessagesIfApplicable(game.GameId);
-        await PersistGameIfNeeded(game);
-        ScheduleBotEvent(game);
-        return Success();
+            if (game.Game.CurrentMainPhase is MainPhase.Ended && !game.StatisticsSent && game.Game.NumberOfBots < 0.5f * game.Game.NumberOfSeatedPlayers)
+            {
+                await SendEndOfGameMail(game);
+                game.StatisticsSent = true;
+            }
+
+            game.LastActivity = DateTimeOffset.Now;
+
+            await Clients.Group(game.GameId).HandleGameEvent(e, game.Game.History.Count);
+            await SendAsyncPlayMessagesIfApplicable(game.GameId);
+            await PersistGameIfNeeded(game);
+            ScheduleBotEvent(game);
+            return Success();
+        });
     }
 
     private async Task SendAsyncPlayMessagesIfApplicable(string gameId)
@@ -407,4 +408,3 @@ public partial class GameHub
         return 4800 / speed;
     }
 }
-
