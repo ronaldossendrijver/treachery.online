@@ -25,85 +25,90 @@ public class Shipment : PassableGameEvent, ILocationEvent
 
     #region Properties
 
-    public ShipmentType ShipmentType { get; set; }
+    public ShipmentType ShipmentType { get; init; }
 
+    [JsonInclude]
     public int _toId;
 
     // Normally, this is the destination of shipment. However, in case of shipment back to reserves, this is the source location.
     [JsonIgnore]
-    public Location To
+    public Location? To
     {
         get => Game.Map.LocationLookup.Find(_toId);
         init => _toId = Game.Map.LocationLookup.GetId(value);
     }
 
     [JsonIgnore] 
-    public Location SourceLocationForShipmentToReserves => To;
+    private Location? SourceLocationForShipmentToReserves => To;
 
+    [JsonInclude]
     public int _fromId;
 
     // For site to site shipments, this is the source location. In case of shipment to reserves, this is the target homeworld (if more than 1 homeworld exists).
     [JsonIgnore]
-    public Location From
+    public Location? From
     {
         get => Game.Map.LocationLookup.Find(_fromId);
         init => _fromId = Game.Map.LocationLookup.GetId(value);
     }
     
-    [JsonIgnore] public Homeworld TargetWorldForShipmentToReserves => From as Homeworld;
+    [JsonIgnore]
+    private Homeworld? TargetWorldForShipmentToReserves => From as Homeworld;
 
-    public int ForceAmount { get; set; }
+    public int ForceAmount { get; init; }
 
-    public int SpecialForceAmount { get; set; }
+    public int SpecialForceAmount { get; init; }
 
-    public int SmuggledAmount { get; set; }
+    public int SmuggledAmount { get; init; }
 
-    public int SmuggledSpecialAmount { get; set; }
+    public int SmuggledSpecialAmount { get; init; }
 
     //This is needed for compatibility with pre-exp2 game versions where _noFieldValue is 0 by default.
+    [JsonInclude]
     public int _noFieldValue;
 
     [JsonIgnore]
     public int NoFieldValue
     {
         get => _noFieldValue - 1;
-        set => _noFieldValue = value + 1;
+        init => _noFieldValue = value + 1;
     }
 
     //This is needed for compatibility with pre-exp2 game versions where _cunningNoFieldValue is 0 by default.
-    public int _cunningNoFieldValue;
+    [JsonInclude]
+    private int _cunningNoFieldValue;
 
     [JsonIgnore]
     public int CunningNoFieldValue
     {
         get => _cunningNoFieldValue - 1;
-        set => _cunningNoFieldValue = value + 1;
+        init => _cunningNoFieldValue = value + 1;
     }
 
-    public int AllyContributionAmount { get; set; }
+    public int AllyContributionAmount { get; init; }
 
+    [JsonInclude]
     public int _karmaCardId;
 
     [JsonIgnore]
-    public TreacheryCard KarmaCard
+    public TreacheryCard? KarmaCard
     {
         get => TreacheryCardManager.Lookup.Find(_karmaCardId);
         set => _karmaCardId = TreacheryCardManager.GetId(value);
     }
 
-    [JsonIgnore]
-    public bool IsUsingKarma => KarmaCard != null;
+    [JsonIgnore] 
+    private bool IsUsingKarma => KarmaCard != null;
 
     [JsonIgnore]
-    public bool IsBackToReserves => ShipmentType is ShipmentType.ShipmentBack 
-                                    || ShipmentType is ShipmentType.Unknown && ForceAmount + SpecialForceAmount < 0;
+    private bool IsBackToReserves => ShipmentType is ShipmentType.ShipmentBack 
+                                     || ShipmentType is ShipmentType.Unknown && ForceAmount + SpecialForceAmount < 0;
     
     [JsonIgnore]
     private bool IsSiteToSite => ShipmentType is ShipmentType.ShipmentSiteToSite 
                                  || ShipmentType is ShipmentType.Unknown && From != null;
     
-    [JsonIgnore]
-    public bool IsNoField => NoFieldValue >= 0;
+    [JsonIgnore] private bool IsNoField => NoFieldValue >= 0;
 
     [JsonIgnore]
     public int TotalAmountOfForcesAddedToLocation => ForcesAddedToLocation + SpecialForcesAddedToLocation;
@@ -114,8 +119,9 @@ public class Shipment : PassableGameEvent, ILocationEvent
     [JsonIgnore]
     public int SpecialForcesAddedToLocation => UseWhiteSecretAlly ? 0 : SpecialForceAmount + SmuggledSpecialAmount;
 
-    public bool UseWhiteSecretAlly { get; set; }
+    public bool UseWhiteSecretAlly { get; init; }
     
+    [JsonInclude]
     public string _forceLocations = "";
 
     [JsonIgnore]
@@ -135,8 +141,11 @@ public class Shipment : PassableGameEvent, ILocationEvent
 
     public int DetermineCostToInitiator(Game g)
     {
+        if (To is null) return 0;
+        
         if (g.Version <= 106)
             return DetermineCost(Game, Player, ForceAmount, SpecialForceAmount, To, IsUsingKarma, IsBackToReserves, false, IsNoField, false) - AllyContributionAmount;
+        
         return DetermineCost(Game, Player, this) - AllyContributionAmount;
     }
     
@@ -153,6 +162,9 @@ public class Shipment : PassableGameEvent, ILocationEvent
             {
                 var locationAndAmounts = locationAmountPair.Split(':');
                 var location = g.Map.LocationLookup.Find(Convert.ToInt32(locationAndAmounts[0]));
+
+                if (location == null) continue;
+                
                 var amounts = locationAndAmounts[1].Split('|');
                 var amountOfNormalForces = Convert.ToInt32(amounts[0]);
                 var amountOfNormalSpecialForces = Convert.ToInt32(amounts[1]);
@@ -176,7 +188,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
 
         if (IsBackToReserves && !MayShipToReserves(Game, p)) return Message.Express("You can't ship back to reserves");
         if (IsBackToReserves && !ValidSourceLocations(Game, p).Contains(SourceLocationForShipmentToReserves)) return Message.Express("You can't ship back to reserves from there");
-        if (Game.Version >= 178 && IsBackToReserves && !p.HomeWorlds.Contains(TargetWorldForShipmentToReserves)) return Message.Express("You can't ship back to that home world");
+        if (Game.Version >= 178 && IsBackToReserves && TargetWorldForShipmentToReserves != null && !p.HomeWorlds.Contains(TargetWorldForShipmentToReserves)) return Message.Express("You can't ship back to that home world");
         
         if (IsSiteToSite && !MayShipCrossPlanet(Game, p)) return Message.Express("You can't ship site-to-site");
         if (IsSiteToSite && !ValidSourceLocations(Game, p).Contains(From)) return Message.Express("You can't ship site-to-site from there");
@@ -254,7 +266,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
             .Where(l => g.IsNotFull(p, l) && (Equals(l, g.Map.TheGreatFlat) || l.Id == g.Map.TheGreaterFlat.Id || Equals(l, g.Map.FuneralPlain) || l.Territory == g.Map.BightOfTheCliff || Equals(l, g.Map.SietchTabr) ||
                 l.Territory == g.Map.PlasticBasin || l.Territory == g.Map.RockOutcroppings || l.Territory == g.Map.BrokenLand || l.Territory == g.Map.Tsimpo || l.Territory == g.Map.HaggaBasin ||
                 l.Id == g.Map.PolarSink.Id || l.Territory == g.Map.WindPass || l.Territory == g.Map.WindPassNorth || l.Territory == g.Map.CielagoWest || l.Territory == g.Map.FalseWallWest || l.Territory == g.Map.HabbanyaErg ||
-                (l is DiscoveredLocation { Visible: true } dsPastyMesa && dsPastyMesa.AttachedToLocation.Territory == g.Map.PastyMesa) || (l is DiscoveredLocation { Visible: true } dsFalseWallWest && dsFalseWallWest.AttachedToLocation.Territory == g.Map.FalseWallWest)))
+                (l is DiscoveredLocation { Visible: true } dsPastyMesa && dsPastyMesa.AttachedToLocation?.Territory == g.Map.PastyMesa) || (l is DiscoveredLocation { Visible: true } dsFalseWallWest && dsFalseWallWest.AttachedToLocation?.Territory == g.Map.FalseWallWest)))
             .ToList();
     }
 
@@ -306,13 +318,13 @@ public class Shipment : PassableGameEvent, ILocationEvent
         return specialForces ? Math.Min(p.SpecialForcesInReserve, 5) : Math.Min(p.ForcesInReserve, 5);
     }
 
-    public static int ValidMaxShipmentBackForces(Player p, bool specialForces, Location source)
+    public static int ValidMaxShipmentBackForces(Player p, bool specialForces, Location? source)
     {
         if (source == null) return 0;
         return specialForces ? p.SpecialForcesIn(source) : p.ForcesIn(source);
     }
 
-    public static int ValidMaxShipmentSiteToSiteForces(Player p, bool specialForces, Location source)
+    public static int ValidMaxShipmentSiteToSiteForces(Player p, bool specialForces, Location? source)
     {
         if (source == null) return 0;
 
@@ -390,13 +402,13 @@ public class Shipment : PassableGameEvent, ILocationEvent
     private static IEnumerable<TreacheryCard> ValidOwnKarmaCards(Game g, Player p) 
         => Karma.ValidKarmaCards(g, p);
 
-    private static TreacheryCard ValidAllyKarmaCard(Game g, Player p) 
+    private static TreacheryCard? ValidAllyKarmaCard(Game g, Player p) 
         => g.GetPermittedUseOfAllyKarma(p.Faction);
 
     public static bool CanKarma(Game g, Player p) 
         => ValidKarmaCards(g, p).Any();
 
-    public static bool MaySmuggle(Game g, Player p, Location l) 
+    public static bool MaySmuggle(Game g, Player p, Location? l) 
         => l != null && !g.AnyForcesIn(l.Territory) && p.Faction != Faction.Yellow && g.SkilledAs(p, LeaderSkill.Smuggler);
 
     public static bool MayUseNoField(Game g, Player p) =>
@@ -456,17 +468,19 @@ public class Shipment : PassableGameEvent, ILocationEvent
             var ownerOfKarma = KarmaCard != null ? Game.OwnerOf(KarmaCard) : null;
             totalCost = PayForShipment();
 
-            if (IsNoField)
+            if (IsNoField && To != null)
             {
+                var white = GetPlayer(Faction.White)!;
+                
                 if (CunningNoFieldValue >= 0)
                 {
-                    Game.RevealCurrentNoField(GetPlayer(Faction.White));
-                    Player.ShipSpecialForces(To, 1);
+                    Game.RevealCurrentNoField(white);
+                    white.ShipSpecialForces(To, 1);
                     Game.CurrentNoFieldValue = CunningNoFieldValue;
                     Game.PlayNexusCard(Player, "Cunning", "ship and reveal a second ", FactionSpecialForce.White);
                 }
 
-                Game.RevealCurrentNoField(GetPlayer(Faction.White));
+                Game.RevealCurrentNoField(white);
                 Game.CurrentNoFieldValue = NoFieldValue;
 
                 if (Initiator != Faction.White)
@@ -477,25 +491,34 @@ public class Shipment : PassableGameEvent, ILocationEvent
                 }
             }
 
-            if (Game.ContainsConflictingAlly(Player, To)) Game.ChosenDestinationsWithAllies.Add(To.Territory);
+            if (To != null && Game.ContainsConflictingAlly(Player, To)) 
+                Game.ChosenDestinationsWithAllies.Add(To.Territory);
 
             Game.LastShipmentOrMovement = this;
-            var mustBeAdvisors = (Player.Is(Faction.Blue) && Player.SpecialForcesIn(To) > 0) || (Game.Version >= 148 && Player.SpecialForcesIn(To.Territory) > 0);
+            var mustBeAdvisors = (Player.Is(Faction.Blue) && Player.SpecialForcesIn(To) > 0) || (Game.Version >= 148 && To != null && Player.SpecialForcesIn(To.Territory) > 0);
 
             if (IsSiteToSite)
                 PerformSiteToSiteShipment();
             else if (IsBackToReserves)
-                Player.ShipForces(SourceLocationForShipmentToReserves, TargetWorldForShipmentToReserves ?? Player.HomeWorlds[0], ForceAmount);
-            else if (IsNoField && Initiator == Faction.White)
+            {
+                if (SourceLocationForShipmentToReserves != null)
+                    Player.ShipForces(SourceLocationForShipmentToReserves, TargetWorldForShipmentToReserves ?? Player.HomeWorlds[0], ForceAmount);
+            }
+            else if (IsNoField && Initiator == Faction.White && To != null)
+            {
                 PerformNormalShipment(Player, To, ForceAmount + SmuggledAmount, 1);
-            else
+            }
+            else if (To != null)
+            {
                 PerformNormalShipment(Player, To, ForceAmount + SmuggledAmount, SpecialForceAmount + SmuggledSpecialAmount);
+            }
 
             if (UseWhiteSecretAlly) Game.PlayNexusCard(Player, "ship from reserves as if shipping ", 1);
 
             if (!By(Faction.Yellow)) Game.Stone(Milestone.Shipment);
 
-            Player.FlipForces(To, mustBeAdvisors);
+            if (To != null)
+                Player.FlipForces(To, mustBeAdvisors);
 
             if (!IsBackToReserves) Game.CheckIntrusion(this);
 
@@ -578,6 +601,8 @@ public class Shipment : PassableGameEvent, ILocationEvent
 
     private void PerformSiteToSiteShipment()
     {
+        if (From is null || To is null) return;
+        
         Player.MoveForces(From, To, ForceAmount);
         Player.MoveSpecialForces(From, To, SpecialForceAmount);
     }
@@ -643,7 +668,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
             : Message.Express(Initiator, " ship to ", To);
     }
 
-    private Message GetVerboseMessage(int cost, MessagePart orangeIncome, Player ownerOfKarma)
+    private Message GetVerboseMessage(int cost, MessagePart orangeIncome, Player? ownerOfKarma)
     {
         if (Passed) return Message.Express(Initiator, " pass shipment");
 
@@ -671,7 +696,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
             MessagePart.ExpressIf(AllyContributionAmount > 0, " (", Payment.Of(AllyContributionAmount, Player.Ally), ")"));
     }
 
-    private MessagePart KaramaMessage(Player ownerOfKarma)
+    private MessagePart KaramaMessage(Player? ownerOfKarma)
     {
         return MessagePart.ExpressIf(KarmaCard != null,
             " using ",

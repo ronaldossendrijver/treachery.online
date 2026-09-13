@@ -1065,31 +1065,30 @@ public partial class Game
         foreach (var location in territory.Locations) DetermineOccupation(location);
     }
     
-    internal void DetermineOccupation(Location location)
+    internal void DetermineOccupation(Location? location)
     {
-        if (location is Homeworld hw)
+        if (location is not Homeworld hw) return;
+        
+        var previousOccupier = OccupierOf(hw.World);
+        var solePlayerOnPlanet = BattalionsIn(hw).Count() == 1 ? GetPlayer(BattalionsIn(hw).First().Faction) : null;
+
+        if (solePlayerOnPlanet != null)
         {
-            var previousOccupier = OccupierOf(hw.World);
-            var solePlayerOnPlanet = BattalionsIn(hw).Count() == 1 ? GetPlayer(BattalionsIn(hw).First().Faction) : null;
+            HomeworldOccupation.Remove(hw);
 
-            if (solePlayerOnPlanet != null)
+            if (!solePlayerOnPlanet.IsNative(hw))
             {
-                HomeworldOccupation.Remove(hw);
-
-                if (!solePlayerOnPlanet.IsNative(hw))
-                {
-                    HomeworldOccupation.Add(hw, solePlayerOnPlanet.Faction);
-                    Log(solePlayerOnPlanet.Faction, " now occupy ", hw);
-                }
-                else if (previousOccupier != null)
-                {
-                    Log(previousOccupier.Faction, " no longer occupy ", hw);
-                }
-
-                CheckIfShipmentPermissionsShouldBeRevoked();
-
-                if (hw.World == World.Pink) CheckIfOccupierTakesVidal(previousOccupier);
+                HomeworldOccupation.Add(hw, solePlayerOnPlanet.Faction);
+                Log(solePlayerOnPlanet.Faction, " now occupy ", hw);
             }
+            else if (previousOccupier != null)
+            {
+                Log(previousOccupier.Faction, " no longer occupy ", hw);
+            }
+
+            CheckIfShipmentPermissionsShouldBeRevoked();
+
+            if (hw.World == World.Pink) CheckIfOccupierTakesVidal(previousOccupier);
         }
     }
     

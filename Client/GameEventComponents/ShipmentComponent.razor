@@ -85,7 +85,7 @@
             </SelectComponent>
         </div>
 
-        @if (ShipmentType is not ShipmentType.ShipmentBack && Game.ContainsConflictingAlly(Player, _shipmentTo))
+        @if (ShipmentType is not ShipmentType.ShipmentBack && _shipmentTo != null && Game.ContainsConflictingAlly(Player, _shipmentTo))
         {
             <div class="text-danger bg-dark">Note: if you place forces there, all of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
         }
@@ -187,6 +187,7 @@
         }
         
         @if (
+            _shipmentTo != null &&
             ShipmentType is ShipmentType.ShipmentNormal or ShipmentType.ShipmentWhiteSecretAlly && 
             (ShipmentForceAmount > 0 || ShipmentSpecialForceAmount > 0) && 
             Shipment.MaySmuggle(Game, Player, _shipmentTo))
