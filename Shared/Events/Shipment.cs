@@ -85,7 +85,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
         init => _cunningNoFieldValue = value + 1;
     }
 
-    public int AllyContributionAmount { get; init; }
+    public int AllyContributionAmount { get; set; }
 
     [JsonInclude]
     public int _karmaCardId;
