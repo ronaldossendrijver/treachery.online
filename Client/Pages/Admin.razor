@@ -96,12 +96,43 @@ else
             <div class="card mb-2">
                 <div class="card-header">Running games</div>
                 <div class="card-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col-sm-12 col-md-4">
+                            <label class="form-label" for="gameUsernameFilter">Username</label>
+                            <input id="gameUsernameFilter" class="form-control form-control-sm" @bind="@GameUsernameFilter" @bind:event="oninput"/>
+                        </div>
+                        <div class="col-sm-12 col-md-4">
+                            <label class="form-label" for="gameTimeFromFilter">Game time from</label>
+                            <input id="gameTimeFromFilter" type="datetime-local" class="form-control form-control-sm"
+                                   @bind="@GameTimeFrom" @bind:format="yyyy-MM-ddTHH:mm"/>
+                        </div>
+                        <div class="col-sm-12 col-md-4">
+                            <label class="form-label" for="gameTimeToFilter">Game time to</label>
+                            <input id="gameTimeToFilter" type="datetime-local" class="form-control form-control-sm"
+                                   @bind="@GameTimeTo" @bind:format="yyyy-MM-ddTHH:mm"/>
+                        </div>
+                    </div>
                     <table class="table table-sm">
+                        <thead>
+                        <tr class="small table-dark">
+                            <th>Created</th>
+                            <th>Username</th>
+                            <th>Last activity</th>
+                            <th>Game</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
                         <tbody>
-                        @foreach (var av in Client.ActiveGames.OrderByDescending(av => av.LastActivity))
+                        @foreach (var av in FilteredGames)
                         {
                             var fontColorStyle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20 ? "color:grey" : "color:white";
                             <tr class="small table-dark">
+                                <td style="@fontColorStyle">
+                                    @av.CreationDate.LocalDateTime
+                                </td>
+                                <td style="@fontColorStyle">
+                                    @av.CreatorUsername
+                                </td>
                                 <td style="@fontColorStyle">
                                     @av.LastActivity
                                 </td>
@@ -109,6 +140,10 @@ else
                                     @av.Name
                                 </td>
                                 <td>
+                                    <button class="btn btn-primary btn-sm me-1" title="Download savegame"
+                                            aria-label="Download savegame" @onclick="@(_ => Download(av))">
+                                        <span class="oi oi-data-transfer-download" aria-hidden="true"></span>
+                                    </button>
                                     <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Close(av))">Close</button>
                                 </td>
                             </tr>
@@ -159,7 +194,17 @@ else
 @code {
 
     private DateTimeOffset MaintenanceDate { get; set; }
+    private string GameUsernameFilter { get; set; } = string.Empty;
+    private DateTime? GameTimeFrom { get; set; }
+    private DateTime? GameTimeTo { get; set; }
     private List<string> Messages { get; } = [];
+
+    private IEnumerable<GameInfo> FilteredGames => Client.ActiveGames
+        .Where(game => string.IsNullOrWhiteSpace(GameUsernameFilter)
+                       || game.CreatorUsername.Contains(GameUsernameFilter, StringComparison.OrdinalIgnoreCase))
+        .Where(game => GameTimeFrom == null || game.CreationDate.LocalDateTime >= GameTimeFrom)
+        .Where(game => GameTimeTo == null || game.CreationDate.LocalDateTime <= GameTimeTo)
+        .OrderByDescending(game => game.LastActivity);
 
     protected override async Task OnInitializedAsync()
     {
@@ -203,6 +248,12 @@ else
     private async Task Close(GameInfo av)
     {
         Messages.Add(await Client.AdminCloseGame(av.GameId));
+        StateHasChanged();
+    }
+
+    private async Task Download(GameInfo av)
+    {
+        Messages.Add(await Client.AdminDownloadGame(av.GameId));
         StateHasChanged();
     }
     

@@ -692,6 +692,8 @@ public partial class GameHub
     {
         GameId = managedGame.GameId,
         CreatorId = managedGame.CreatorUserId,
+        CreatorUsername = UsersById.TryGetValue(managedGame.CreatorUserId, out var creator) ? creator.Name : "?",
+        CreationDate = managedGame.CreationDate,
         FactionsInPlay = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? 
             managedGame.Game.Settings.AllowedFactionsInPlay.ToArray() : 
             managedGame.Game.Players.Where(p => p.Faction != Faction.None).Select(p => p.Faction).ToArray(),

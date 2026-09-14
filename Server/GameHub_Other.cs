@@ -411,6 +411,18 @@ public partial class GameHub
         
         return Success("Game removed");
     }
+
+    public async Task<Result<string>> AdminDownloadGame(string userToken, string gameId)
+    {
+        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
+            return Error<string>(ErrorType.InvalidUserNameOrPassword);
+
+        if (!RunningGamesByGameId.TryGetValue(gameId, out var game))
+            return Error<string>(ErrorType.GameNotFound);
+
+        await Task.CompletedTask;
+        return Success(GameState.GetStateAsString(game.Game));
+    }
     
     public async Task<Result<string>> AdminCancelGame(string userToken, string scheduledGameId)
     {
