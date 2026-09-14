@@ -767,8 +767,9 @@ public partial class ClassicBot
 
     protected virtual FaceDancerReplaced DetermineFaceDancerReplaced()
     {
-        var replaceable = Player.FaceDancers.Where(f => !Player.RevealedFaceDancers.Contains(f)).OrderBy(f => f.Value).ToArray();
-        var toReplace = replaceable.FirstOrDefault(f => Player.Leaders.Contains(f) || (Ally != Faction.None && AlliedPlayer!.Leaders.Contains(f)));
+        var replaceable = FaceDancerReplaced.ValidFaceDancers(Player).OrderBy(f => f.Value).ToArray();
+        var alliedLeaders = AlliedPlayer?.Leaders;
+        var toReplace = replaceable.FirstOrDefault(f => Player.Leaders.Contains(f) || alliedLeaders?.Contains(f) == true);
         toReplace ??= replaceable.FirstOrDefault(f => f is Leader && !Game.IsAlive(f));
 
         if (toReplace != null)
