@@ -744,6 +744,16 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         var result = await Invoke<string>(nameof(IGameHub.AdminCloseGame), UserToken, gameId);
         return result is { Success: true, Contents: not null } ? result.Contents : CurrentSkin.Describe(result.Error);
     }
+
+    public async Task<string> AdminDownloadGame(string gameId)
+    {
+        var result = await Invoke<string>(nameof(IGameHub.AdminDownloadGame), UserToken, gameId);
+        if (result is not { Success: true, Contents: not null })
+            return CurrentSkin.Describe(result.Error);
+
+        await Browser.Save($"savegame-{gameId}.json", result.Contents);
+        return "Savegame downloaded";
+    }
     
     public async Task<string> AdminCancelGame(string scheduledGameId)
     {

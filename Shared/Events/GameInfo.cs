@@ -14,6 +14,8 @@ namespace Treachery.Shared;
 public class GameInfo
 {
     public int CreatorId { get; init; }
+    public string CreatorUsername { get; init; } = string.Empty;
+    public DateTimeOffset CreationDate { get; init; }
     public string GameId { get; init; } = string.Empty;
     public bool HasPassword { get; init; }
     public string Name { get; init; } = string.Empty;
