@@ -258,6 +258,11 @@ public class Karma : GameEvent
         if (Prevented is FactionAdvantage.BlueUsingVoice) Game.CurrentVoice = null;
 
         if (Prevented is FactionAdvantage.GreenBattlePlanPrescience) Game.CurrentPrescience = null;
+
+        if (Player.Is(Faction.Grey) &&
+            Game.CurrentPhase == Phase.GreySwappingCard &&
+            Player.TreacheryCards.Count == 0)
+            Game.ContinueAfterGreyCardSwapDecision();
         
         if (Prevented is FactionAdvantage.YellowRidesMonster && Game.CurrentPhase is Phase.YellowRidingMonsterA or Phase.YellowRidingMonsterB)
         {
