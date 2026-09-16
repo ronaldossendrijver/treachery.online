@@ -103,7 +103,7 @@ public class Revival : GameEvent, ILocationEvent
             if (AmountOfForces + AmountOfSpecialForces > limit + emperorRevivals) Message.Express("You can't revive that many");
         }
         
-        if (Initiator is not Faction.Purple && Game.LeaderRevivalsThisTurn.GetValueOrDefault(Initiator, 0) > 0) return Message.Express("You cannot revive more leaders this turn");
+        if (Game.Version >= 187 && Initiator is not Faction.Purple && Game.LeaderRevivalsThisTurn.GetValueOrDefault(Initiator, 0) > 0) return Message.Express("You cannot revive more leaders this turn");
 
         var costOfRevival = DetermineCost(Game, p, Hero, AmountOfForces, AmountOfSpecialForces, ExtraForcesPaidByRed, ExtraSpecialForcesPaidByRed, UsesRedSecretAlly);
         if (costOfRevival.TotalCostForPlayer > p.Resources) return Message.Express("You can't pay that many");

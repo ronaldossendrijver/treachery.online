@@ -72,7 +72,7 @@ public class LoserConcluded : GameEvent
         return g.LoserMayTryToAssassinate && TargetOfAssassination(g, p) != null;
     }
 
-    public static Leader TargetOfAssassination(Game g, Player p)
+    public static Leader? TargetOfAssassination(Game g, Player p)
     {
         return p.Traitors.FirstOrDefault(l =>
             l is Leader && l != g.WinnerHero &&
@@ -83,7 +83,9 @@ public class LoserConcluded : GameEvent
     public static int? AssassinationReward(Game game, Player winner, Leader target)
     {
         if (!game.IsAlive(target) || !winner.Leaders.Contains(target)) return null;
-        return target.HeroType == HeroType.VariableValue ? 3 : target.CostToRevive;
+        return game.Version < 187 
+            ? target.CostToRevive 
+            : target.HeroType == HeroType.VariableValue ? 3 : target.CostToRevive;
     }
 
     public static IEnumerable<TreacheryCard> CardsLoserMayKeep(Game g)
