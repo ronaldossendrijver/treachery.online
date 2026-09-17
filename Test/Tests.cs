@@ -606,6 +606,13 @@ public class Tests
     [TestMethod]
     public void Regression()
     {
+        var savegameFiles = Directory.EnumerateFiles(".", "savegame*.json").ToArray();
+        if (savegameFiles.Length == 0)
+        {
+            Assert.Inconclusive(
+                $"No savegames found in {Directory.GetCurrentDirectory()}.");
+        }
+
         var statistics = new Statistics();
         var trainingData = new TrainingData();
         var centralStyleStatistics = new ConcurrentBag<string>();
@@ -634,7 +641,7 @@ public class Tests
                 {
                     MaxDegreeOfParallelism = Environment.ProcessorCount
                 };
-                Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, fileName =>
+                Parallel.ForEach(savegameFiles, po, fileName =>
                 {
                     gamesTested++;
                     var testcaseFileName = fileName + ".testcase";
@@ -643,7 +650,7 @@ public class Tests
             }
             else
             {
-                foreach (var fileName in Directory.EnumerateFiles(".", "savegame*.json"))
+                foreach (var fileName in savegameFiles)
                 {
                     gamesTested++;
                     var testcaseFileName = fileName + ".testcase";
