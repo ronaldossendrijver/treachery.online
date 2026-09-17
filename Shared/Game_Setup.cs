@@ -201,18 +201,21 @@ public partial class Game
         {
             foreach (var p in Players) SetupPlayerSpiceAndForcesOnPlanet(p);
 
-            Action methodAfterSettingUp;
-            if (TreacheryCardsBeforeTraitors)
-                methodAfterSettingUp = EnterStormPhase;
-            else
-                methodAfterSettingUp = DealStartingTreacheryCards;
-
-            Enter(
-                IsPlaying(Faction.Yellow), Phase.YellowSettingUp,
-                IsPlaying(Faction.Blue) && PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this), Phase.BlueSettingUp,
-                IsPlaying(Faction.Cyan), Phase.CyanSettingUp,
-                methodAfterSettingUp);
+            Enter(IsPlaying(Faction.Yellow), Phase.YellowSettingUp, ContinueSetupAfterYellow);
         }
+    }
+
+    internal void ContinueSetupAfterYellow()
+    {
+        Action methodAfterSettingUp = TreacheryCardsBeforeTraitors
+            ? EnterStormPhase
+            : DealStartingTreacheryCards;
+
+        Enter(
+            IsPlaying(Faction.Blue) && PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this), Phase.BlueSettingUp,
+            Version >= 187 && IsPlaying(Faction.Pink), Phase.PinkSettingUp,
+            IsPlaying(Faction.Cyan), Phase.CyanSettingUp,
+            methodAfterSettingUp);
     }
 
     private void SetupPlayerHomeworld(Player p)
@@ -301,7 +304,7 @@ public partial class Game
 
             case Faction.Pink:
                 p.Resources = 12;
-                p.AddForces(Map.ImperialBasin.MiddleLocation, 6, true);
+                if (Version < 187) p.AddForces(Map.ImperialBasin.MiddleLocation, 6, true);
                 break;
 
             case Faction.Cyan:

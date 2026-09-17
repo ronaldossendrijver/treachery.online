@@ -43,6 +43,7 @@ public partial class GameHub
     public async Task<VoidResult> RequestBluePrediction(string userToken, string gameId, BluePrediction e) => await ProcessGameEvent(userToken, gameId, e);
     public async Task<VoidResult> RequestCharityClaimed(string userToken, string gameId, CharityClaimed e) => await ProcessGameEvent(userToken, gameId, e);
     public async Task<VoidResult> RequestPerformBluePlacement(string userToken, string gameId, PerformBluePlacement e) => await ProcessGameEvent(userToken, gameId, e);
+    public async Task<VoidResult> RequestEcazInitialPlacement(string userToken, string gameId, EcazInitialPlacement e) => await ProcessGameEvent(userToken, gameId, e);
     public async Task<VoidResult> RequestTraitorsSelected(string userToken, string gameId, TraitorsSelected e) => await ProcessGameEvent(userToken, gameId, e);
     public async Task<VoidResult> RequestStormSpellPlayed(string userToken, string gameId, StormSpellPlayed e) => await ProcessGameEvent(userToken, gameId, e);
     public async Task<VoidResult> RequestTestingStationUsed(string userToken, string gameId, TestingStationUsed e) => await ProcessGameEvent(userToken, gameId, e);

@@ -52,10 +52,7 @@ public class PerformYellowSetup : PlacementEvent
 
         Log();
 
-        Game.Enter(
-            IsPlaying(Faction.Blue) && PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(Game), Phase.BlueSettingUp,
-            IsPlaying(Faction.Cyan), Phase.CyanSettingUp,
-            Game.TreacheryCardsBeforeTraitors, Game.EnterStormPhase, Game.DealStartingTreacheryCards);
+        Game.ContinueSetupAfterYellow();
     }
 
     public override Message GetMessage()

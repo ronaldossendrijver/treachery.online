@@ -175,6 +175,8 @@ public enum Phase
 
     BlueSettingUp = 90000,
 
+    PinkSettingUp = 90500,
+
     CyanSettingUp = 91000,
 
     BeginningOfStorm = 93000,

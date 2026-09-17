@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
@@ -7,24 +7,17 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 namespace Treachery.Shared;
 
-public class PerformBluePlacement : GameEvent
+public class EcazInitialPlacement : GameEvent
 {
-    #region Construction
-
-    public PerformBluePlacement(Game game, Faction initiator) : base(game, initiator)
+    public EcazInitialPlacement(Game game, Faction initiator) : base(game, initiator)
     {
     }
 
-    public PerformBluePlacement()
+    public EcazInitialPlacement()
     {
     }
-
-    #endregion Construction
-
-    #region Properties
 
     public int _targetId;
 
@@ -35,10 +28,6 @@ public class PerformBluePlacement : GameEvent
         set => _targetId = Game.Map.LocationLookup.GetId(value);
     }
 
-    #endregion Properties
-
-    #region Validation
-
     public override Message? Validate()
     {
         if (!ValidLocations(Game).Contains(Target)) return Message.Express("Invalid location");
@@ -46,42 +35,22 @@ public class PerformBluePlacement : GameEvent
         return null;
     }
 
-    public static bool BlueMayPlaceFirstForceInAnyTerritory(Game g)
+    public static IEnumerable<Location> ValidLocations(Game game)
     {
-        return g.Applicable(Rule.BlueFirstForceInAnyTerritory) || (g.Version >= 144 && g.Applicable(Rule.BlueAdvisors));
+        return game.Map.ImperialBasin.Locations;
     }
-
-    public static IEnumerable<Location> ValidLocations(Game g)
-    {
-        {
-            if (BlueMayPlaceFirstForceInAnyTerritory(g))
-                return g.Map.Locations(false).Where(l => l != g.Map.HiddenMobileStronghold);
-            return new[] { g.Map.PolarSink };
-        }
-    }
-
-    #endregion Validation
-
-    #region Execution
 
     protected override void ExecuteConcreteEvent()
     {
-        if ((Game.Version <= 154 && Game.IsOccupied(Target)) || (Game.Version > 154 && Game.IsOccupied(Target.Territory)))
-            Player.ShipAdvisors(Target, 1);
-        else
-            Player.ShipForces(Target, 1);
-
+        Player.ShipForces(Target, 6);
         Log();
         Game.Enter(
-            Game.Version >= 187 && IsPlaying(Faction.Pink), Phase.PinkSettingUp,
             IsPlaying(Faction.Cyan), Phase.CyanSettingUp,
             Game.TreacheryCardsBeforeTraitors, Game.EnterStormPhase, Game.DealStartingTreacheryCards);
     }
 
     public override Message GetMessage()
     {
-        return Message.Express(Initiator, " position themselves in ", Target);
+        return Message.Express(Initiator, " have selected their starting sector in ", Game.Map.ImperialBasin);
     }
-
-    #endregion Execution
 }

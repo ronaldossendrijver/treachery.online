@@ -652,6 +652,15 @@ public partial class ClassicBot
 
     #endregion Blue
 
+    #region Pink
+
+    private EcazInitialPlacement DetermineEcazInitialPlacement()
+    {
+        return new EcazInitialPlacement(Game, Faction) { Target = Game.Map.ImperialBasin.MiddleLocation };
+    }
+
+    #endregion Pink
+
     #region Green
 
     protected virtual Prescience? DeterminePrescience()

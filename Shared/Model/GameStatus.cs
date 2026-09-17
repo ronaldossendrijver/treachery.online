@@ -177,6 +177,11 @@ public class GameStatus
                 Express(Faction.Blue, " are selecting their starting force position..."),
                 Faction.Blue),
 
+            Phase.PinkSettingUp => Status(game,
+                Express("Please select your starting force position."),
+                Express(Faction.Pink, " are selecting their starting force position..."),
+                Faction.Pink),
+
             Phase.CyanSettingUp => Status(game,
                 Express("Please select your starting force position."),
                 Express(Faction.Cyan, " are selecting their starting force position..."),
