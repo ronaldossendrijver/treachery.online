@@ -75,6 +75,7 @@ public class Deal
             DealType.ShareResourceDeckPrescience => Message.Express("Share prescience of the top ", Concept.Resource, "card"),
             DealType.ShareStormPrescience => Message.Express("Share storm prescience"),
             DealType.ForfeitBattle => Message.Express("Forfeit this battle (no weapons and defenses, lowest leader, zero dial)"),
+            DealType.TellDiscardedTraitors => Message.Express("Tell which traitors were discarded"),
             _ => Message.Express("unknown deal type")
         };
     }

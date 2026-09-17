@@ -159,7 +159,7 @@
 
         }
 
-        <ButtonRowComponent Confirm="ConfirmAndSetUnedited" ConfirmText="Confirm Changes" ConfirmError="@Validation" Disabled="@(!Dirty)"/>
+        <ButtonRowComponent Confirm="ConfirmAndSetUnedited" ConfirmText="Confirm Changes" ConfirmError="@Validation" Disabled="@(!edited)"/>
 
     </Body>
 
@@ -258,63 +258,6 @@
         edited = true;
     }
 
-    private bool Dirty
-    {
-        get
-        {
-            if (spice != Game.GetPermittedUseOfAllyResources(Player.Ally)) return true;
-            if (karmaCard != Game.GetPermittedUseOfAllyKarma(Player.Ally)) return true;
-
-            switch (Faction)
-            {
-                case Faction.Purple:
-                    if (purpleAllyMyReviveAsPurple != Game.PurpleAllowsRevivalDiscount) return true;
-                    break;
-
-                case Faction.Grey:
-                    if (greyAllyMayReplace != Game.GreyAllowsReplacingCards) return true;
-                    break;
-
-                case Faction.Orange:
-                    if (guildAllyMayShipAsGuild != Game.OrangeAllowsShippingDiscount) return true;
-                    break;
-
-                case Faction.Red:
-                    if (emperorWillPayForExtraRevival != Game.RedWillPayForExtraRevival) return true;
-                    break;
-
-                case Faction.Yellow:
-                    if (fremenWillProtectFromShaiHulud != Game.YellowWillProtectFromMonster) return true;
-                    if (fremenAllowsThreeFreeRevivals != Game.YellowAllowsThreeFreeRevivals) return true;
-                    if (fremenShareStormPrescience != Game.YellowSharesPrescience) return true;
-                    if (fremenRefundsDial != Game.YellowRefundsBattleDial) return true;
-                    break;
-
-                case Faction.Green:
-                    if (greenSharePrescience != Game.GreenSharesPrescience) return true;
-                    break;
-
-                case Faction.Blue:
-                    if (blueAllyMayUseVoice != Game.BlueAllowsUseOfVoice) return true;
-                    break;
-
-                case Faction.White:
-                    if (whiteAllyMayUseNoField != Game.WhiteAllowsUseOfNoField) return true;
-                    break;
-
-                case Faction.Cyan:
-                    if (cyanAllyMayKeepCards != Game.CyanAllowsKeepingCards) return true;
-                    break;
-
-                case Faction.Pink:
-                    if (pinkAllyMayUseAmbassadors != Game.PinkSharesAmbassadors) return true;
-                    break;
-            }
-
-            return false;
-        }
-    }
-
     protected override AllyPermission ConfirmedResult =>
 
         new(Game, Faction)
@@ -348,4 +291,3 @@
             Game.GetPermittedUseOfAllyResources(Player.Ally),
             Faction == Faction.Red ? "Payments for bids flow back to you." : "");
 }
-

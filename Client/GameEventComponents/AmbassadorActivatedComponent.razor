@@ -88,6 +88,8 @@
 
                     if (validSources.Any())
                     {
+                        _yellowFromTerritory ??= validSources.First();
+
                         <div class="mt-1 mb-1">
                             <SelectComponent T=Territory OnChanged="StateHasChanged" ButtonHint="ClickHintButton.Lmb" ModifierHint="ClickHintModifier.Ctrl" @bind-Value="_yellowFromTerritory" Values="validSources">
                                 <Label>From</Label>

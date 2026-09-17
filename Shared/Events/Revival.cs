@@ -207,7 +207,8 @@ public class Revival : GameEvent, ILocationEvent
 
         if (p.Faction != Faction.Purple)
         {
-            if (g.LeaderRevivalsThisTurn.ContainsKey(p.Faction))
+            if (g.Version >= 187 &&
+                g.LeaderRevivalsThisTurn.ContainsKey(p.Faction))
                 return [];
 
             result.AddRange(NormallyRevivableHeroes(g, p));
