@@ -484,6 +484,14 @@ public partial class Game
         Enter(Phase.Bidding);
     }
 
+    internal void ContinueAfterGreyCardSwapDecision()
+    {
+        if (!BiddingRoundWasStarted)
+            StartBiddingRound();
+        else
+            Enter(IsPlaying(Faction.Green), Phase.WaitingForNextBiddingRound, PutNextCardOnAuction);
+    }
+
     internal void StartBidSequenceAndAuctionType(AuctionType auctionType, Player? whitePlayer = null, int direction = 1)
     {
         switch (auctionType)

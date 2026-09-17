@@ -64,10 +64,7 @@ public class GreySwappedCardOnBid : PassableGameEvent
             Log();
         }
 
-        if (!Game.BiddingRoundWasStarted)
-            Game.StartBiddingRound();
-        else
-            Game.Enter(IsPlaying(Faction.Green), Phase.WaitingForNextBiddingRound, Game.PutNextCardOnAuction);
+        Game.ContinueAfterGreyCardSwapDecision();
     }
 
     public override Message GetMessage()
