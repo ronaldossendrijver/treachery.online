@@ -88,6 +88,21 @@
     protected Location? toLocation;
     protected Dictionary<Location, Battalion> forces = new();
     protected bool asAdvisors;
+    private Game? selectionGame;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (ReferenceEquals(selectionGame, Game))
+            return;
+
+        selectionGame = Game;
+        fromTerritory = null;
+        toLocation = null;
+        forces.Clear();
+        asAdvisors = false;
+    }
 
     protected override void OnAfterRender(bool firstRender)
     {
