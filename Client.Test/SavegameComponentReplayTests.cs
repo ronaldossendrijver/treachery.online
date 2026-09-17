@@ -251,9 +251,11 @@ public sealed class SavegameComponentReplayTests
             ? Directory.GetFiles(savegameDirectory, "savegame*.json")
             : [];
 
-        Assert.IsNotEmpty(
-            files,
-            $"No savegames found in {savegameDirectory}. Copy the corpus there before running Savegame tests.");
+        if (files.Length == 0)
+        {
+            Assert.Inconclusive(
+                $"No savegames found in {savegameDirectory}. Copy the corpus there before running Savegame tests.");
+        }
 
         var limitText = Environment.GetEnvironmentVariable("TREACHERY_SAVEGAME_LIMIT");
         if (!int.TryParse(limitText, out var limit) || limit <= 0)
