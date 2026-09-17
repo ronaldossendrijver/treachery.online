@@ -337,7 +337,7 @@ public partial class Game
             or Rule.BattleWithoutLeader or Rule.CapturedLeadersAreTraitorsToOwnFaction
             or Rule.DisableEndOfGameReport or Rule.DisableOrangeSpecialVictory or Rule.DisableResourceTransfers
             or Rule.DisableNovaFlipping or Rule.YellowAllyGetsDialedResourcesRefunded
-            or Rule.BreakAlliancesOnAlliancePhase => RuleGroup.House,
+            or Rule.BreakAlliancesOnAlliancePhase or Rule.GreyMaySelectBlackExtraStartingCard => RuleGroup.House,
         Rule.BotsCannotAlly => RuleGroup.Bots,
         Rule.TechTokens or Rule.CheapHeroTraitor or Rule.ExpansionTreacheryCards or Rule.SandTrout => RuleGroup
             .ExpansionIxAndBtBasic,
@@ -381,7 +381,7 @@ public partial class Game
                 or Rule.BattleWithoutLeader or Rule.CapturedLeadersAreTraitorsToOwnFaction
                 or Rule.DisableEndOfGameReport or Rule.DisableOrangeSpecialVictory or Rule.DisableResourceTransfers
                 or Rule.YellowAllyGetsDialedResourcesRefunded or Rule.DisableNovaFlipping
-                or Rule.BreakAlliancesOnAlliancePhase => 0,
+                or Rule.BreakAlliancesOnAlliancePhase or Rule.GreyMaySelectBlackExtraStartingCard => 0,
             Rule.FillWithBots or Rule.BotsCannotAlly => 0,
             Rule.TechTokens or Rule.CheapHeroTraitor or Rule.ExpansionTreacheryCards or Rule.SandTrout => 1,
             Rule.GreySwappingCardOnBid or Rule.PurpleGholas => 1,

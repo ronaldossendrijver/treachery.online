@@ -636,6 +636,7 @@ public enum Rule
     YellowAllyGetsDialedResourcesRefunded = 118,
     DisableNovaFlipping = 119,
     BreakAlliancesOnAlliancePhase = 120,
+    GreyMaySelectBlackExtraStartingCard = 121,
 
     ExtraKaramaCards = 999,
 
