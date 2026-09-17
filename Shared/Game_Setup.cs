@@ -336,7 +336,13 @@ public partial class Game
         {
             StartingTreacheryCards.Items.Add(TreacheryDeck!.Draw());
 
-            if (p.Is(Faction.Black)) ExtraStartingCardForBlack = TreacheryDeck.Draw();
+            if (p.Is(Faction.Black))
+            {
+                if (Applicable(Rule.GreyMaySelectBlackExtraStartingCard) && IsPlaying(Faction.Grey))
+                    StartingTreacheryCards.Items.Add(TreacheryDeck.Draw());
+                else
+                    ExtraStartingCardForBlack = TreacheryDeck.Draw();
+            }
         }
 
         Enter(IsPlaying(Faction.Grey), Phase.GreySelectingCard, DealRemainingStartingTreacheryCardsToNonGrey);
@@ -354,6 +360,12 @@ public partial class Game
             {
                 p.TreacheryCards.Add(ExtraStartingCardForBlack);
                 LogTo(Faction.Black, "Your extra card is: ", ExtraStartingCardForBlack);
+            }
+            else if (p.Is(Faction.Black) && Applicable(Rule.GreyMaySelectBlackExtraStartingCard))
+            {
+                var extraCard = StartingTreacheryCards.Draw();
+                p.TreacheryCards.Add(extraCard);
+                LogTo(Faction.Black, "Your extra card is: ", extraCard);
             }
         }
 
