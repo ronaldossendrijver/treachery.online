@@ -105,8 +105,9 @@ public class DealOffered : GameEvent
     {
         var result = new List<DealType>
         {
-
-            DealType.None
+            DealType.None,
+            DealType.ForfeitBattle,
+            DealType.TellDiscardedTraitors
         };
 
         switch (p.Faction)

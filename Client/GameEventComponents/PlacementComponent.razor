@@ -21,6 +21,8 @@
 
         @if (ValidSources.Any())
         {
+            fromTerritory ??= ValidSources.First();
+
             @if (Game.CurrentPlanetology != null && Game.CurrentPlanetology.MoveFromTwoTerritories && Game.CurrentPlanetology.Initiator == Faction)
             {
                 <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="forces" Locations="Game.LocationsWithAnyForcesNotInStorm(Player)" AlwaysShowLocation="true" AllowMultipleTerritories="true" InitializeToMaximum="true"/>
@@ -38,7 +40,7 @@
                 <Label>To</Label>
             </SelectComponent>
 
-            @if (Game.ContainsConflictingAlly(Player, toLocation))
+            @if (toLocation != null && Game.ContainsConflictingAlly(Player, toLocation))
             {
                 <div class="text-danger bg-dark">Note: if you place forces there, all of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
             }

@@ -80,6 +80,9 @@
     private bool _disposed;
     private bool _initializing = true;
 
+    [Parameter]
+    public Func<int> SeedFactory { get; set; } = () => new Random().Next();
+
     private Ruleset _ruleset;
     private Ruleset Ruleset
     {
@@ -195,7 +198,7 @@
         new(Game, Faction.None)
         {
             Settings = Settings,
-            Seed = new Random().Next()
+            Seed = SeedFactory()
         };
 
     public class EstablishPlayersSettings
