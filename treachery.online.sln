@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.31911.260
@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Treachery.Shared", "Shared\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Treachery.Server", "Server\Treachery.Server.csproj", "{3C02497F-F24B-4A12-9DC2-FDC1DE4A5FDD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Treachery.Test", "Test\Treachery.Test.csproj", "{1B9AB1C3-0DE1-4A78-8E05-5F17F335CE4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Treachery.Shared.Test", "Test\Treachery.Shared.Test.csproj", "{1B9AB1C3-0DE1-4A78-8E05-5F17F335CE4D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Treachery.Client", "Client\Treachery.Client.csproj", "{D6557A57-D384-4CD7-82CE-EFB385924510}"
 EndProject

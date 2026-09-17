@@ -7,32 +7,31 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Treachery.Shared;
-using Treachery.Shared.Model;
 
 namespace Treachery.Shared.Test;
 
 [TestClass]
-public class RevivalTests
+public class MapTests
 {
     [TestMethod]
-    public void NonPurplePlayerCannotReviveMultipleLeadersInOneTurn()
+    public void ScanForMapErrors()
     {
-        var game = new Game();
-        var player = new Player(game, Faction.Black)
-        {
-            Resources = 100
-        };
-        game.Players.Add(player);
-        game.LeaderRevivalsThisTurn[player.Faction] = 1;
+        var map = new Map();
+        var issueFound = false;
 
-        var revival = new Revival(game, player.Faction)
+        foreach (var l in map.Locations(false))
         {
-            Hero = LeaderManager.Leaders.First(leader => leader.Faction == player.Faction)
-        };
+            var asymNeighbour = l.Neighbours.FirstOrDefault(neighbour => !neighbour.Neighbours.Contains(l));
+            if (asymNeighbour != null)
+            {
+                issueFound = true;
+                Console.WriteLine($"Asymmetrical: {DefaultSkin.Default.Describe(l)}[{l.Id}] <-> {DefaultSkin.Default.Describe(asymNeighbour)}[{asymNeighbour.Id}]");
+            }
+        }
 
-        Assert.IsNotNull(revival.Validate());
+        Assert.IsFalse(issueFound, "Asymmetrical neighbour relationship detected");
     }
 }

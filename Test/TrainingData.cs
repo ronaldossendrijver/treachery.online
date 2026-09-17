@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Treachery.Shared;
 using Treachery.Shared.Model;
 
-namespace Treachery.Test;
+namespace Treachery.Shared.Test;
 
 public class TrainingData : IDisposable, IAsyncDisposable
 {

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Treachery.Shared;
 
-namespace Treachery.Test;
+namespace Treachery.Shared.Test;
 
 [TestClass]
 public class ManagedGameTests

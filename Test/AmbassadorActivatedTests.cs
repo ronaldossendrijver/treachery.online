@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Treachery.Shared;
 using Treachery.Shared.Model;
 
-namespace Treachery.Test;
+namespace Treachery.Shared.Test;
 
 [TestClass]
 public class AmbassadorActivatedTests

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
@@ -12,20 +12,16 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
-using System.Text.Json.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Treachery.Bots;
-using Treachery.Shared;
 using Treachery.Shared.Model;
 
 [assembly: Parallelize(Scope = ExecutionScope.MethodLevel)]
-namespace Treachery.Test;
+namespace Treachery.Shared.Test;
 
-[TestClass]
-public class Tests
+public abstract class GameSimulationTestBase
 {
     private const bool GatherStatisticsDuringRegressionTest = false;
     private const bool GatherTrainingDataDuringRegressionTest = false;
@@ -352,8 +348,7 @@ public class Tests
         forcesOnPlanet = countForcesOnPlanet;
     }
 
-    [TestMethod]
-    public void TestBots()
+    protected void RunBotTests()
     {
         var statistics = new Statistics();
 
@@ -603,8 +598,7 @@ public class Tests
 
     private const bool ParallelTesting = true; 
 
-    [TestMethod]
-    public void Regression()
+    protected void RunRegressionTests()
     {
         var savegameFiles = Directory.EnumerateFiles(".", "savegame*.json").ToArray();
         if (savegameFiles.Length == 0)
@@ -932,74 +926,11 @@ public class Tests
         return result;
     }
 
-    [TestMethod]
-    public void SaveAndLoadSkin()
-    {
-        var leader = LeaderManager.LeaderLookup.Find(1008);
-        var oldName = DefaultSkin.Default.Describe(leader);
-        var skinData = Utilities.Serialize(DefaultSkin.Default);
-        File.WriteAllText("skin.json", skinData);
-
-        var skinToTest = Utilities.Deserialize<Skin>(File.ReadAllText("skin.json"));
-        if (skinToTest is null) throw new Exception("Skin could not be deserialized");
-        Assert.AreEqual(oldName, skinToTest.Describe(leader));
-    }
-
-    [DataTestMethod]
-    [DataRow(Faction.White, 3, 1)]
-    [DataRow(Faction.White, -1, 0)]
-    [DataRow(Faction.Black, 3, 0)]
-    [DataRow(Faction.Black, 5, 0)]
-    public void NoFieldShipmentOnlyAddsSpecialForceForRichese(Faction faction, int noFieldValue, int expected)
-    {
-        Assert.AreEqual(expected, Shipment.DefaultNoFieldSpecialForceAmount(faction, noFieldValue));
-    }
-
     private static void SaveObject(object toSave, string filename)
     {
         var skinData = Utilities.Serialize(toSave);
         File.WriteAllText(filename, skinData);
     }
 
-    [TestMethod]
-    public void ScanForUndecoratedGetOnlyProperties()
-    {
-        var assembly = Assembly.GetAssembly(typeof(GameEvent));
-        if (assembly == null)
-            return;
-
-        var gameEventType = typeof(GameEvent);
-        foreach (var type in assembly.GetTypes().Where(myType => myType is { IsClass: true, IsAbstract: false } && myType.IsSubclassOf(gameEventType)))
-        {
-            var serializerAtt = gameEventType.GetCustomAttributes<JsonDerivedTypeAttribute>().FirstOrDefault(att => att.DerivedType == type);
-            Assert.IsNotNull(serializerAtt,
-                $"JsonDerivedType attribute missing for {type}");
-
-            foreach (var prop in type.GetProperties().Where(x => !x.CanWrite))
-            {
-                var att = prop.GetCustomAttribute(typeof(JsonIgnoreAttribute));
-                Assert.IsNotNull(att,
-                    $"Get-only property {prop} of class {type} does not have the JsonIgnore attribute");
-            }
-        }
-    }
-    
-    [TestMethod]
-    public void ScanForMapErrors()
-    {
-        var map = new Map();
-        var issueFound = false;
-
-        foreach (var l in map.Locations(false))
-        {
-            var asymNeighbour = l.Neighbours.FirstOrDefault(neighbour => !neighbour.Neighbours.Contains(l));
-            if (asymNeighbour != null)
-            {
-                issueFound = true;
-                Console.WriteLine($"Asymmetrical: {DefaultSkin.Default.Describe(l)}[{l.Id}] <-> {DefaultSkin.Default.Describe(asymNeighbour)}[{asymNeighbour.Id}]");
-            }
-        }
-
-        Assert.IsFalse(issueFound, "Asymmetrical neighbour relationship detected");
-    }
 }
+

@@ -14,7 +14,7 @@ using Treachery.Client;
 using Treachery.Client.GameEventComponents;
 using Treachery.Shared;
 
-namespace Treachery.Test;
+namespace Treachery.Shared.Test;
 
 [TestClass]
 public class PlacementComponentTests

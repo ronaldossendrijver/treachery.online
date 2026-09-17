@@ -10,6 +10,8 @@
     <AssemblyVersion>184</AssemblyVersion>
 
     <Nullable>enable</Nullable>
+
+    <RootNamespace>Treachery.Test</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
@@ -7,11 +7,16 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Treachery.Shared.Test;
 
-public class Testcase
+[TestClass]
+public class RegressionTests : GameSimulationTestBase
 {
-    public List<Testvalues> Testvalues = new();
+    [TestMethod]
+    public void Regression()
+    {
+        RunRegressionTests();
+    }
 }

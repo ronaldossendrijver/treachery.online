@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
@@ -7,11 +7,25 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Collections.Generic;
+using System;
+using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Treachery.Shared.Test;
 
-public class Testcase
+[TestClass]
+public class SkinSerializationTests
 {
-    public List<Testvalues> Testvalues = new();
+    [TestMethod]
+    public void SaveAndLoadSkin()
+    {
+        var leader = LeaderManager.LeaderLookup.Find(1008);
+        var oldName = DefaultSkin.Default.Describe(leader);
+        var skinData = Utilities.Serialize(DefaultSkin.Default);
+        File.WriteAllText("skin.json", skinData);
+
+        var skinToTest = Utilities.Deserialize<Skin>(File.ReadAllText("skin.json"));
+        if (skinToTest is null) throw new Exception("Skin could not be deserialized");
+        Assert.AreEqual(oldName, skinToTest.Describe(leader));
+    }
 }

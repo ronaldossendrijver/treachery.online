@@ -22,8 +22,8 @@
             }
             
             <div>Early revival requests:</div>
-            <SelectFromImageComponent Game=Game Required=true @bind-Value=@offerHero Values=@Game.CurrentRevivalRequests.Select(req => req.Hero) ImageWidth="80"/>
-            <SelectResourcesComponent @bind-Value="price" Min=0 Max=50 Label="Price" />
+            <SelectFromImageComponent Game=Game Required=true @bind-Value=@_offerHero Values=@Game.CurrentRevivalRequests.Select(req => req.Hero) ImageWidth="80"/>
+            <SelectResourcesComponent @bind-Value="_price" Min=0 Max=50 Label="Price" />
             <ButtonRowComponent Alignment="" Pass="Pass" PassText="Deny all" Confirm="Confirm" ConfirmText=@OfferLabel Other=Other OtherText=@DenyLabel ConfirmError=@Validation />
         }
 
@@ -52,7 +52,7 @@
                                 }
                             </td>
                             <td>
-                                <button class="btn btn-primary btn-sm" @onclick="e => Cancel(kvp.Key)">Cancel</button>
+                                <button class="btn btn-primary btn-sm" @onclick="_ => Cancel(kvp.Key)">Cancel</button>
                             </td>
                         </tr>
                     }
@@ -70,14 +70,14 @@
 
     protected override Faction IsFactionSpecific => Faction.Purple;
 
-    private IHero? offerHero;
-    private int price;
+    private IHero? _offerHero;
+    private int _price;
 
-    protected override AcceptOrCancelPurpleRevival ConfirmedResult => new(Game, Faction) { Cancel = false, Hero = offerHero, Price = price };
+    protected override AcceptOrCancelPurpleRevival ConfirmedResult => new(Game, Faction) { Cancel = false, Hero = _offerHero, Price = _price };
 
     protected override AcceptOrCancelPurpleRevival PassedResult => new(Game, Faction) { Cancel = false, Hero = null };
 
-    protected override AcceptOrCancelPurpleRevival OtherResult => new(Game, Faction) { Cancel = false, Hero = offerHero, Price = int.MaxValue };
+    protected override AcceptOrCancelPurpleRevival OtherResult => new(Game, Faction) { Cancel = false, Hero = _offerHero, Price = int.MaxValue };
 
     private async Task Cancel(IHero hero)
     {
@@ -86,7 +86,7 @@
 
     private IEnumerable<IHero> CurrentRevivalOfferValues => Game.EarlyRevivalsOffers.Select(kvp => kvp.Key);
 
-    private string OfferLabel => Client.CurrentSkin.Format("Offer {0} for {1}", offerHero, price); 
+    private string OfferLabel => Client.CurrentSkin.Format("Offer {0} for {1}", _offerHero, _price); 
 
-    private string DenyLabel => Client.CurrentSkin.Format("Deny revival of {0}", offerHero); 
+    private string DenyLabel => Client.CurrentSkin.Format("Deny revival of {0}", _offerHero); 
 }
