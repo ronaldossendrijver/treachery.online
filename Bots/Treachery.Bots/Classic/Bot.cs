@@ -182,6 +182,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
             Do(DeterminePerformCyanSetup, ref action, events) ||
 
             //Pink
+            Do(DetermineEcazInitialPlacement, ref action, events) ||
             Do(DetermineAmbassadorPlaced, ref action, events) ||
             Do(DetermineAmbassadorActivated, ref action, events) ||
 

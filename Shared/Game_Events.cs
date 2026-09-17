@@ -124,6 +124,9 @@ public partial class Game
             case Phase.BlueSettingUp:
                 if (faction == Faction.Blue) result.Add(typeof(PerformBluePlacement));
                 break;
+            case Phase.PinkSettingUp:
+                if (faction == Faction.Pink) result.Add(typeof(EcazInitialPlacement));
+                break;
             case Phase.CyanSettingUp:
                 if (faction == Faction.Cyan) result.Add(typeof(PerformCyanSetup));
                 break;

@@ -62,6 +62,7 @@ namespace Treachery.Shared;
 [JsonDerivedType(typeof(DivideResourcesAccepted),nameof(DivideResourcesAccepted))]
 [JsonDerivedType(typeof(Donated),nameof(Donated))]
 [JsonDerivedType(typeof(EndPhase),nameof(EndPhase))]
+[JsonDerivedType(typeof(EcazInitialPlacement),nameof(EcazInitialPlacement))]
 [JsonDerivedType(typeof(EstablishPlayers),nameof(EstablishPlayers))]
 [JsonDerivedType(typeof(ExtortionPrevented),nameof(ExtortionPrevented))]
 [JsonDerivedType(typeof(FaceDanced),nameof(FaceDanced))]

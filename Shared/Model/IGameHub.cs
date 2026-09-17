@@ -55,6 +55,7 @@ public interface IGameHub
     Task<VoidResult> RequestBluePrediction(string userToken, string gameId, BluePrediction e);
     Task<VoidResult> RequestCharityClaimed(string userToken, string gameId, CharityClaimed e);
     Task<VoidResult> RequestPerformBluePlacement(string userToken, string gameId, PerformBluePlacement e);
+    Task<VoidResult> RequestEcazInitialPlacement(string userToken, string gameId, EcazInitialPlacement e);
     Task<VoidResult> RequestTraitorsSelected(string userToken, string gameId, TraitorsSelected e);
     Task<VoidResult> RequestStormSpellPlayed(string userToken, string gameId, StormSpellPlayed e);
     Task<VoidResult> RequestTestingStationUsed(string userToken, string gameId, TestingStationUsed e);
