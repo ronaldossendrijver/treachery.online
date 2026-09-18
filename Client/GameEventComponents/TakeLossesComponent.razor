@@ -9,7 +9,9 @@
 @inherits GameEventComponent<TakeLosses>
 
 @{
-    var lossesToTake = TakeLosses.LossesToTake(Game)!;
+    var lossesToTake = TakeLosses.LossesToTake(Game);
+    if (lossesToTake == null) return;
+    
     var forceFaction = lossesToTake.IsBattleLoss ? lossesToTake.ForceOwner : Faction;
     var maximumForcesThatCanRemain = Math.Min(lossesToTake.ForcesToRemain, TakeLosses.ValidMaxForceAmount(Game, Player) - _forceAmount);
     var maximumSpecialForcesThatCanRemain = Math.Min(lossesToTake.ForcesToRemain, TakeLosses.ValidMaxSpecialForceAmount(Game, Player) - _specialForceAmount);
@@ -61,7 +63,7 @@
 
         if (lossesToTake is { IsBattleLoss: true, ForcesToRemain: > 0 })
         {
-            <div>Choose exactly <strong>@(lossesToTake.ForcesToRemain)</strong> to remain in the territory. The other returns to reserves.</div>
+            <div>Choose exactly <strong>@(lossesToTake.ForcesToRemain)</strong> force to remain in the territory. The other returns to reserves.</div>
 
             @if (maximumForcesThatCanRemain > 0)
             {

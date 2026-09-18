@@ -27,15 +27,15 @@ public class TakeLosses : GameEvent
 
     #region Properties
 
-    public int ForceAmount { get; set; }
+    public int ForceAmount { get; init; }
 
-    public int SpecialForceAmount { get; set; }
+    public int SpecialForceAmount { get; init; }
 
-    public int ForceAmountToRemain { get; set; }
+    public int ForceAmountToRemain { get; init; }
 
-    public int SpecialForceAmountToRemain { get; set; }
+    public int SpecialForceAmountToRemain { get; init; }
 
-    public bool UseUselessCard { get; set; }
+    public bool UseUselessCard { get; init; }
 
     #endregion Properties
 
@@ -44,6 +44,8 @@ public class TakeLosses : GameEvent
     public override Message? Validate()
     {
         var losses = LossesToTake(Game);
+        if (losses == null) return Message.Express("No losses to take");
+        
         if (UseUselessCard && (losses.IsBattleLoss || !CanPreventLosses(Game, Player))) return Message.Express("You can't use a card to prevent force losses");
         if (UseUselessCard) return null;
         if (ForceAmount < 0 || SpecialForceAmount < 0) return Message.Express("Invalid amount of forces");
@@ -119,16 +121,17 @@ public class TakeLosses : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        var player = GetPlayer(Initiator);
         var losses = LossesToTake(Game);
+        if (losses == null) return;
+        
         var mustDiscard = false;
 
         if (UseUselessCard)
         {
             var card = ValidUselessCardToPreventLosses(Game, Player);
-            if (card == null && NexusPlayed.CanUseCunning(player))
+            if (card == null && NexusPlayed.CanUseCunning(Player))
             {
-                Game.PlayNexusCard(player, "Cunning", " prevent losing forces in ", losses.Location);
+                Game.PlayNexusCard(Player, "Cunning", " prevent losing forces in ", losses.Location);
                 mustDiscard = true;
             }
             else
@@ -148,7 +151,7 @@ public class TakeLosses : GameEvent
         }
         else
         {
-            player.KillForces(losses.Location, ForceAmount, SpecialForceAmount, false);
+            Player.KillForces(losses.Location, ForceAmount, SpecialForceAmount, false);
             Game.LossesToTake.RemoveAt(0);
             Log();
         }
@@ -178,7 +181,7 @@ public class TakeLosses : GameEvent
 
     private void TakeBattleLosses(LossToTake losses)
     {
-        var forceOwner = GetPlayer(losses.ForceOwner);
+        var forceOwner = Player;
         var territory = losses.Location.Territory;
         var savedForces = losses.MaximumForceAmount - ForceAmount;
         var savedSpecialForces = losses.MaximumSpecialForceAmount - SpecialForceAmount;
@@ -204,13 +207,11 @@ public class TakeLosses : GameEvent
 
     public override Message GetMessage()
     {
-        var losses = LossesToTake(Game);
-        var p = losses.IsBattleLoss ? GetPlayer(losses.ForceOwner) : Player;
         return Message.Express(
-            losses.IsBattleLoss ? "Battle losses: " : "The storm kills ",
-            MessagePart.ExpressIf(ForceAmount > 0, ForceAmount, p.Force),
+            MessagePart.ExpressIf(ForceAmount > 0, ForceAmount, " ", Player.Force),
             MessagePart.ExpressIf(ForceAmount > 0 && SpecialForceAmount > 0, " and "),
-            MessagePart.ExpressIf(SpecialForceAmount > 0, SpecialForceAmount, p.SpecialForce));
+            MessagePart.ExpressIf(SpecialForceAmount > 0, SpecialForceAmount, " ", Player.SpecialForce),
+            " are killed");
     }
 
     #endregion Execution
