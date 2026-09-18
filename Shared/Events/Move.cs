@@ -44,7 +44,7 @@ public class Move : PlacementEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        Game.StormLossesToTake.Clear();
+        Game.LossesToTake.Clear();
 
         Game.CurrentPlayerMayPerformExtraMove = Game.CurrentFlightUsed != null && Game.CurrentFlightUsed.Initiator == Initiator && Game.CurrentFlightUsed.ExtraMove;
 

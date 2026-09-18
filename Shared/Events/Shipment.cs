@@ -456,7 +456,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
     {
         Game.BeginningOfShipmentAndMovePhase = false;
         Game.CurrentBlockedTerritories.Clear();
-        Game.StormLossesToTake.Clear();
+        Game.LossesToTake.Clear();
         Game.ChosenDestinationsWithAllies.Clear();
         Game.BlueMayAccompany = false;
 
@@ -645,7 +645,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
             if (!Game.Prevented(FactionAdvantage.YellowProtectedFromStorm) && Game.Applicable(Rule.YellowStormLosses))
             {
                 killCount = 0;
-                Game.StormLossesToTake.Add(new LossToTake { Location = to, Amount = TakeLosses.HalfOf(forceAmount, specialForceAmount), Faction = Faction.Yellow });
+                Game.LossesToTake.Add(new LossToTake { Location = to, Amount = TakeLosses.HalfOf(forceAmount, specialForceAmount), Faction = Faction.Yellow });
             }
             else
             {

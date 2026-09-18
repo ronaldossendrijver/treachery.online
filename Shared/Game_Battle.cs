@@ -122,9 +122,12 @@ public partial class Game
 
         if (Version < 116) CaptureLeaderIfApplicable();
 
-        FlipBlueAdvisorsWhenAlone();
-        if (Version >= 162 && CurrentBattle.Territory != null) 
-            DetermineOccupation(CurrentBattle.Territory);
+        if (CurrentPhase != Phase.StormLosses)
+        {
+            FlipBlueAdvisorsWhenAlone();
+            if (Version >= 162 && CurrentBattle.Territory != null)
+                DetermineOccupation(CurrentBattle.Territory);
+        }
             
         if (BattleTriggeredBureaucracy != null)
         {
@@ -132,7 +135,7 @@ public partial class Game
             BattleTriggeredBureaucracy = null;
         }
 
-        if (CurrentPhase != Phase.Retreating) DetermineHowToProceedAfterRevealingBattlePlans();
+        if (CurrentPhase is not (Phase.Retreating or Phase.StormLosses)) DetermineHowToProceedAfterRevealingBattlePlans();
     }
 
     private void DiscardOneTimeCardsUsedInBattle(TreacheryCalled aggressorCall, TreacheryCalled defenderCall)
@@ -751,6 +754,21 @@ public partial class Game
 
         if (specialForcesToSaveInTerritory + forcesToSaveInTerritory + specialForcesToSaveToReserves + forcesToSaveToReserves > 0)
         {
+            if (Version >= 187 && forcesToLose > 0 && specialForcesToLose > 0 &&
+                forcesToLose + specialForcesToLose > forcesToSaveInTerritory + specialForcesToSaveInTerritory + forcesToSaveToReserves + specialForcesToSaveToReserves)
+            {
+                QueueGraduateLosses(
+                    territory,
+                    winner.Faction,
+                    forceSupplier,
+                    forcesToLose,
+                    specialForcesToLose,
+                    forcesToSaveInTerritory + specialForcesToSaveInTerritory,
+                    forcesToSaveToReserves + specialForcesToSaveToReserves,
+                    false);
+                return;
+            }
+
             if (specialForcesToSaveToReserves > 0) forceSupplier.ForcesToReserves(territory, specialForcesToSaveToReserves, true);
 
             if (forcesToSaveToReserves > 0) forceSupplier.ForcesToReserves(territory, forcesToSaveToReserves, false);
@@ -779,7 +797,39 @@ public partial class Game
         }
     }
 
-        
+    internal void QueueGraduateLosses(
+        Territory territory,
+        Faction chooser,
+        Player forceOwner,
+        int forces,
+        int specialForces,
+        int forcesToRemain,
+        int forcesToReserves,
+        bool continueBattleConclusion)
+    {
+        LossesToTake.Add(new LossToTake
+        {
+            Faction = chooser,
+            ForceOwner = forceOwner.Faction,
+            Location = territory.Locations.First(),
+            Amount = forces + specialForces - forcesToRemain - forcesToReserves,
+            MaximumForceAmount = forces,
+            MaximumSpecialForceAmount = specialForces,
+            ForcesToRemain = forcesToRemain,
+            ForcesToReserves = forcesToReserves,
+            IsBattleLoss = true,
+            ContinueBattleConclusion = continueBattleConclusion
+        });
+        Enter(Phase.StormLosses);
+    }
+
+    internal void ContinueAfterBattleLosses()
+    {
+        FlipBlueAdvisorsWhenAlone();
+        if (Version >= 162 && CurrentBattle?.Territory != null)
+            DetermineOccupation(CurrentBattle.Territory);
+        DetermineHowToProceedAfterRevealingBattlePlans();
+    }
 
     private bool MaySubstituteForceLosses(Player p)
     {
@@ -1058,6 +1108,13 @@ public partial class Game
         FinishDeciphererIfApplicable();
         if (NextPlayerToBattle == null) MainPhaseEnd();
         Enter(Phase.BattleReport);
+    }
+
+    internal void CompleteBattleConclusion()
+    {
+        var loser = GetPlayer(BattleLoser);
+        if (!LoserConcluded.IsApplicable(this, loser))
+            Enter(!IsPlaying(Faction.Purple) || BattleWinner == Faction.Purple, FinishBattle, Version <= 150, Phase.Facedancing, Phase.RevealingFacedancer);
     }
 
     private void DetermineOccupation(Territory territory)

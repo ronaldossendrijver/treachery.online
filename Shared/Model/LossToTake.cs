@@ -12,6 +12,13 @@ namespace Treachery.Shared;
 public class LossToTake
 {
     public Faction Faction;
-    public Location Location;
+    public Faction ForceOwner;
+    public required Location Location;
     public int Amount;
+    public int MaximumForceAmount;
+    public int MaximumSpecialForceAmount;
+    public int ForcesToRemain;
+    public int ForcesToReserves;
+    public bool IsBattleLoss;
+    public bool ContinueBattleConclusion;
 }

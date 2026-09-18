@@ -104,8 +104,7 @@ public class Retreat : GameEvent
 
         Log();
         Game.HandleLosses();
-        Game.FlipBlueAdvisorsWhenAlone();
-        Game.DetermineHowToProceedAfterRevealingBattlePlans();
+        if (Game.CurrentPhase != Phase.StormLosses) Game.ContinueAfterBattleLosses();
     }
 
     public override Message GetMessage()

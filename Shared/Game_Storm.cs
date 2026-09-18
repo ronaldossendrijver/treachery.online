@@ -18,7 +18,7 @@ public partial class Game
     internal List<int> Dials { get; } = [];
     public bool CurrentTestingStationUsed { get; internal set; }
     internal Phase PhaseBeforeStormLoss { get; private set; }
-    public List<LossToTake> StormLossesToTake { get; } = [];
+    public List<LossToTake> LossesToTake { get; } = [];
 
     #endregion State
 
@@ -29,7 +29,7 @@ public partial class Game
         CurrentTurn++;
         MainPhaseStart(MainPhase.Storm, CurrentTurn > 1);
         FactionsThatRevivedSpecialForcesThisTurn.Clear();
-        StormLossesToTake.Clear();
+        LossesToTake.Clear();
         CurrentTestingStationUsed = false;
 
         if (CurrentTurn == 1)
@@ -151,7 +151,7 @@ public partial class Game
             {
                 if (!Prevented(FactionAdvantage.YellowProtectedFromStorm))
                 {
-                    StormLossesToTake.Add(new LossToTake { Location = l.Key, Amount = TakeLosses.HalfOf(battalion.AmountOfForces, battalion.AmountOfSpecialForces), Faction = battalion.Faction });
+                    LossesToTake.Add(new LossToTake { Location = l.Key, Amount = TakeLosses.HalfOf(battalion.AmountOfForces, battalion.AmountOfSpecialForces), Faction = battalion.Faction });
                 }
                 else
                 {
@@ -162,7 +162,7 @@ public partial class Game
             }
             else if (battalion.Is(Faction.Brown) && (!Prevented(FactionAdvantage.BrownDiscarding) || Applicable(Rule.NexusCards)))
             {
-                StormLossesToTake.Add(new LossToTake { Location = l.Key, Amount = battalion.TotalAmountOfForces, Faction = battalion.Faction });
+                LossesToTake.Add(new LossToTake { Location = l.Key, Amount = battalion.TotalAmountOfForces, Faction = battalion.Faction });
             }
             else
             {
@@ -202,7 +202,7 @@ public partial class Game
 
         MainPhaseEnd();
 
-        if (StormLossesToTake.Count > 0)
+        if (LossesToTake.Count > 0)
         {
             PhaseBeforeStormLoss = Phase.BlowA;
             Enter(Phase.StormLosses);

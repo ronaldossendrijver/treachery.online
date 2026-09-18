@@ -8,39 +8,98 @@
 *@
 @inherits GameEventComponent<TakeLosses>
 
+@{
+    var lossesToTake = TakeLosses.LossesToTake(Game)!;
+    var forceFaction = lossesToTake.IsBattleLoss ? lossesToTake.ForceOwner : Faction;
+    var maximumForcesThatCanRemain = Math.Min(lossesToTake.ForcesToRemain, TakeLosses.ValidMaxForceAmount(Game, Player) - _forceAmount);
+    var maximumSpecialForcesThatCanRemain = Math.Min(lossesToTake.ForcesToRemain, TakeLosses.ValidMaxSpecialForceAmount(Game, Player) - _specialForceAmount);
+}
+
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Please choose how to distribute a storm loss total of at least <strong>@TakeLosses.LossesToTake(Game).Amount</strong> over your forces in <strong>@Name(TakeLosses.LossesToTake(Game).Location)</strong></Header>
+    <Header>
+        @if (lossesToTake.IsBattleLoss)
+        {
+            <span><Image Shown="@LeaderSkill.Graduate" Width="30" /> saves some of your forces</span>
+        }
+        else
+        {
+            <span>You lost forces to the storm</span>
+        }
+    </Header>
     <Body>
-
-        @if (TakeLosses.ValidMaxForceAmount(Game, Player) > 0)
+    @{
+        if (lossesToTake.IsBattleLoss)
         {
-            <SelectForcesComponent @bind-Value="forceAmount" Min="0" Max="TakeLosses.ValidMaxForceAmount(Game, Player)" Faction="Faction" Special="false" />
+            <div>Choose exactly <strong>@lossesToTake.Amount</strong> force to be killed in battle.</div>
         }
         else
         {
-            forceAmount = 0;
+            <div>Please choose how to distribute a storm loss total of at least <strong>@lossesToTake.Amount</strong> over your forces in <strong>@Name(lossesToTake.Location)</strong></div>
         }
 
-        @if (TakeLosses.ValidMaxSpecialForceAmount(Game, Player) > 0)
+        if (TakeLosses.ValidMaxForceAmount(Game, Player) > 0)
         {
-            <SelectForcesComponent @bind-Value="specialForceAmount" Min="0" Max="TakeLosses.ValidMaxSpecialForceAmount(Game, Player)" Faction="Faction" Special="true" />
-        }
-        else {
-
-            specialForceAmount = 0;
-        }
-
-        <p>Total losses: <SimpleNumberComponent>@(forceAmount + specialForceAmount)</SimpleNumberComponent></p>
-
-            @if (Faction == Faction.Brown && TakeLosses.CanPreventLosses(Game, Player))
-        {
-            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Losses" ConfirmError=@Validation Other="Other" OtherText="@(UseUselessLabel)" />
+            <SelectForcesComponent @bind-Value="_forceAmount" Min="0" Max="TakeLosses.ValidMaxForceAmount(Game, Player)" Faction="@forceFaction" Special="false"/>
         }
         else
         {
-            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Losses" ConfirmError=@Validation />
+            _forceAmount = 0;
         }
+
+        if (TakeLosses.ValidMaxSpecialForceAmount(Game, Player) > 0)
+        {
+            <SelectForcesComponent @bind-Value="_specialForceAmount" Min="0" Max="TakeLosses.ValidMaxSpecialForceAmount(Game, Player)" Faction="@forceFaction" Special="true"/>
+        }
+        else
+        {
+
+            _specialForceAmount = 0;
+        }
+
+        <p>Total losses: <SimpleNumberComponent>@(_forceAmount + _specialForceAmount)</SimpleNumberComponent></p>
+
+        if (lossesToTake is { IsBattleLoss: true, ForcesToRemain: > 0 })
+        {
+            <div>Choose exactly <strong>@(lossesToTake.ForcesToRemain)</strong> to remain in the territory. The other returns to reserves.</div>
+
+            @if (maximumForcesThatCanRemain > 0)
+            {
+                <SelectForcesComponent @bind-Value="_forceAmountToRemain" Min="0" Max="maximumForcesThatCanRemain" Faction="@forceFaction" Special="false"/>
+            }
+            else
+            {
+                _forceAmountToRemain = 0;
+            }
+
+            @if (maximumSpecialForcesThatCanRemain > 0)
+            {
+                <SelectForcesComponent @bind-Value="_specialForceAmountToRemain" Min="0" Max="maximumSpecialForcesThatCanRemain" Faction="@forceFaction" Special="true"/>
+            }
+            else
+            {
+                _specialForceAmountToRemain = 0;
+            }
+
+            <p>Total forces that remain: <SimpleNumberComponent>@(_forceAmountToRemain + _specialForceAmountToRemain)</SimpleNumberComponent></p>
+        }
+        else
+        {
+            _forceAmountToRemain = 0;
+            _specialForceAmountToRemain = 0;
+        }
+
+        if (!lossesToTake.IsBattleLoss && Faction == Faction.Brown && TakeLosses.CanPreventLosses(Game, Player))
+        {
+            var useUselessLabel = Client.CurrentSkin.Format("Use {0} to prevent losses", TakeLosses.ValidUselessCardToPreventLosses(Game, Player));
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError=@Validation Other="Other" OtherText="@(useUselessLabel)"/>
+        }
+        else
+        {
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError=@Validation/>
+        }
+    }
+    
 
     </Body>
 
@@ -50,12 +109,19 @@
 
     protected override bool IsUrgent => true;
 
-    private int forceAmount;
-    private int specialForceAmount;
+    private int _forceAmount;
+    private int _specialForceAmount;
+    private int _forceAmountToRemain;
+    private int _specialForceAmountToRemain;
 
-    protected override TakeLosses ConfirmedResult => new(Game, Faction) { ForceAmount = forceAmount, SpecialForceAmount = specialForceAmount, UseUselessCard = false };
+    protected override TakeLosses ConfirmedResult => new(Game, Faction)
+    {
+        ForceAmount = _forceAmount,
+        SpecialForceAmount = _specialForceAmount,
+        ForceAmountToRemain = _forceAmountToRemain,
+        SpecialForceAmountToRemain = _specialForceAmountToRemain,
+        UseUselessCard = false
+    };
 
-    protected override TakeLosses OtherResult => new(Game, Faction) { ForceAmount = forceAmount, SpecialForceAmount = specialForceAmount, UseUselessCard = true };
-
-    private string UseUselessLabel => Client.CurrentSkin.Format("Use {0} to prevent losses", TakeLosses.ValidUselessCardToPreventLosses(Game, Player));
+    protected override TakeLosses OtherResult => new(Game, Faction) { ForceAmount = _forceAmount, SpecialForceAmount = _specialForceAmount, UseUselessCard = true };
 }

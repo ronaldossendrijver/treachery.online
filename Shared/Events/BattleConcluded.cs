@@ -143,8 +143,7 @@ public class BattleConcluded : GameEvent
         TakeTechToken();
         ProcessGreyForceLossesAndSubstitutions();
 
-        var loser = GetPlayer(Game.BattleLoser);
-        if (!LoserConcluded.IsApplicable(Game, loser)) Game.Enter(!Game.IsPlaying(Faction.Purple) || Game.BattleWinner == Faction.Purple, Game.FinishBattle, Game.Version <= 150, Phase.Facedancing, Phase.RevealingFacedancer);
+        if (Game.CurrentPhase != Phase.StormLosses) Game.CompleteBattleConclusion();
     }
 
     private void DeciphererReplacesTraitors()
@@ -239,6 +238,21 @@ public class BattleConcluded : GameEvent
 
             if (specialForcesToSaveInTerritory + forcesToSaveInTerritory + specialForcesToSaveToReserves + forcesToSaveToReserves > 0)
             {
+                if (Game.Version >= 187 && forcesToLose > 0 && specialForcesToLose > 0 &&
+                    forcesToLose + specialForcesToLose > forcesToSaveInTerritory + specialForcesToSaveInTerritory + forcesToSaveToReserves + specialForcesToSaveToReserves)
+                {
+                    Game.QueueGraduateLosses(
+                        territory,
+                        Player.Faction,
+                        forceSupplierOfWinner,
+                        forcesToLose,
+                        specialForcesToLose,
+                        forcesToSaveInTerritory + specialForcesToSaveInTerritory,
+                        forcesToSaveToReserves + specialForcesToSaveToReserves,
+                        true);
+                    return;
+                }
+
                 if (specialForcesToSaveToReserves > 0) forceSupplierOfWinner.ForcesToReserves(territory, specialForcesToSaveToReserves, true);
 
                 if (forcesToSaveToReserves > 0) forceSupplierOfWinner.ForcesToReserves(territory, forcesToSaveToReserves, false);

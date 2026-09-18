@@ -173,10 +173,20 @@ public partial class ClassicBot
 
     private TakeLosses DetermineTakeLosses()
     {
-        var normalForces = Math.Min(TakeLosses.LossesToTake(Game).Amount, TakeLosses.ValidMaxForceAmount(Game, Player));
-        var specialForces = TakeLosses.LossesToTake(Game).Amount - normalForces;
-        var useUseless = TakeLosses.CanPreventLosses(Game, Player);
-        return new TakeLosses(Game, Faction) { ForceAmount = normalForces, SpecialForceAmount = specialForces, UseUselessCard = useUseless };
+        var losses = TakeLosses.LossesToTake(Game);
+        var normalForces = Math.Min(losses.Amount, TakeLosses.ValidMaxForceAmount(Game, Player));
+        var specialForces = losses.Amount - normalForces;
+        var normalForcesToRemain = Math.Min(losses.ForcesToRemain, TakeLosses.ValidMaxForceAmount(Game, Player) - normalForces);
+        var specialForcesToRemain = losses.ForcesToRemain - normalForcesToRemain;
+        var useUseless = !losses.IsBattleLoss && TakeLosses.CanPreventLosses(Game, Player);
+        return new TakeLosses(Game, Faction)
+        {
+            ForceAmount = normalForces,
+            SpecialForceAmount = specialForces,
+            ForceAmountToRemain = normalForcesToRemain,
+            SpecialForceAmountToRemain = specialForcesToRemain,
+            UseUselessCard = useUseless
+        };
     }
 
     private PerformYellowSetup DeterminePerformYellowSetup()

@@ -138,7 +138,7 @@ public partial class Game
                 killCount = 0;
                 initiator.MoveForces(from, to, battalion.AmountOfForces);
                 initiator.MoveSpecialForces(from, to, battalion.AmountOfSpecialForces);
-                StormLossesToTake.Add(new LossToTake { Location = to, Amount = TakeLosses.HalfOf(battalion.AmountOfForces, battalion.AmountOfSpecialForces), Faction = battalion.Faction });
+                LossesToTake.Add(new LossToTake { Location = to, Amount = TakeLosses.HalfOf(battalion.AmountOfForces, battalion.AmountOfSpecialForces), Faction = battalion.Faction });
             }
             else
             {
@@ -248,7 +248,7 @@ public partial class Game
             }
         }
 
-        if (StormLossesToTake.Count > 0)
+        if (LossesToTake.Count > 0)
         {
             PhaseBeforeStormLoss = CurrentPhase;
             Enter(Phase.StormLosses);
@@ -296,7 +296,7 @@ public partial class Game
         if (PlacementEvent.ValidMovementSources(this, player).Any())
             return;
 
-        StormLossesToTake.Clear();
+        LossesToTake.Clear();
         HasActedOrPassed.Add(player.Faction);
 
         if (CurrentPhase is Phase.NonOrangeMove)
