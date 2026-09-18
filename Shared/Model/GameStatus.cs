@@ -207,9 +207,11 @@ public class GameStatus
             Phase.MetheorAndStormSpell => Status(Express("Factions may now use ", TreacheryCardType.Metheor, " or ", TreacheryCardType.StormSpell, "...")),
 
             Phase.StormLosses => Status(game,
-                Express("Please decide which forces were killed by the storm in ", TakeLosses.LossesToTake(game).Location, "."),
-                Express(TakeLosses.LossesToTake(game).Faction, " are deciding which forces were killed by the storm in ", TakeLosses.LossesToTake(game).Location, "..."),
-                game.StormLossesToTake[0].Faction),
+                TakeLosses.LossesToTake(game).IsBattleLoss
+                    ? Express("Please decide which forces were killed in battle.")
+                    : Express("Please decide which forces were killed by the storm in ", TakeLosses.LossesToTake(game).Location, "."),
+                Express(TakeLosses.LossesToTake(game).Faction, " are deciding which forces were killed..."),
+                game.LossesToTake[0].Faction),
 
             /* Spice Blow */
 

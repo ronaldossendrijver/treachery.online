@@ -30,7 +30,7 @@ public class Caravan : PlacementEvent
     {
         Game.RecentMoves.Add(this);
 
-        Game.StormLossesToTake.Clear();
+        Game.LossesToTake.Clear();
       
         Game.Discard(Player, TreacheryCardType.Caravan);
         Game.PerformMoveFromLocations(Player, ForceLocations, this, Initiator != Faction.Blue || AsAdvisors, true);

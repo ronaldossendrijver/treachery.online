@@ -196,7 +196,7 @@ public class Skin : IDescriber
 
     #region Descriptions
 
-    public string Format(string m, params object[] list)
+    public string Format(string m, params object?[] list)
     {
         try
         {
@@ -304,7 +304,7 @@ public class Skin : IDescriber
         };
     }
 
-    private object[] Describe(object[] objects)
+    private object?[] Describe(object?[] objects)
     {
         var result = new object[objects.Length];
         for (var i = 0; i < objects.Length; i++) result[i] = Describe(objects[i]);
