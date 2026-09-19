@@ -372,7 +372,9 @@ public partial class ClassicBot
             else if (VacantAndValid(Game.Map.ShieldWall.Locations.Last())) target = Game.Map.ShieldWall.Locations.Last();
         }
 
-        target ??= ValidShipmentLocations(false).Where(l => l.IsStronghold).FirstOrDefault(VacantAndValid);
+        target ??= ValidShipmentLocations(false)
+            .Where(l => l.IsStronghold && (LastTurn || !Game.IsInStorm(l)))
+            .FirstOrDefault(VacantAndValid);
 
         if (target != null)
         {
