@@ -815,9 +815,15 @@ public partial class ClassicBot
 
         if (mostEffectiveWeapon != null) return 0.5f;
 
-        enemyCanDefendPoisonTooth = knownEnemyDefenses.Any(c => c.IsNonAntidotePoisonDefense);
+        enemyCanDefendPoisonTooth = CanDefendPoisonTooth(opponentPlan, knownEnemyDefenses);
 
         return 0f;
+    }
+
+    internal static bool CanDefendPoisonTooth(Battle? opponentPlan, IEnumerable<TreacheryCard> knownEnemyDefenses)
+    {
+        return opponentPlan?.Defense is { IsNonAntidotePoisonDefense: true } ||
+               knownEnemyDefenses.Any(c => c.IsNonAntidotePoisonDefense);
     }
 
     private bool IsAllowedWithClairvoyance(ClairVoyanceQandA? clairvoyance, TreacheryCard? toUse, bool asWeapon)
