@@ -139,6 +139,22 @@ public partial class ClassicBot
         return DetermineBattlePlanIfNotWaitingForPrescience(false);
     }
 
+    private PoisonToothCancelled? DeterminePoisonToothCancelled()
+    {
+        var myPlan = Game.CurrentBattle?.PlanOf(Player);
+        var opponentPlan = Game.CurrentBattle?.PlanOfOpponent(Player);
+
+        return ShouldCancelPoisonTooth(myPlan, opponentPlan)
+            ? new PoisonToothCancelled(Game, Faction)
+            : null;
+    }
+
+    internal static bool ShouldCancelPoisonTooth(Battle? myPlan, Battle? opponentPlan)
+    {
+        return myPlan?.HasPoisonTooth == true &&
+               opponentPlan?.Defense is { IsNonAntidotePoisonDefense: true };
+    }
+
     private Battle? DetermineBattlePlanIfNotWaitingForPrescience(bool includeLeaderInFrontOfShield)
     {
         var opponent = Game.CurrentBattle.OpponentOf(Player);

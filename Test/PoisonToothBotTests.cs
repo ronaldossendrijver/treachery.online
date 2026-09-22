@@ -24,4 +24,15 @@ public class PoisonToothBotTests
 
         Assert.IsTrue(ClassicBot.CanDefendPoisonTooth(opponentPlan, []));
     }
+
+    [TestMethod]
+    public void PoisonToothIsCancelledWhenOpponentSubmittedChemistry()
+    {
+        var poisonTooth = TreacheryCardManager.Items.Single(card => card.Type == TreacheryCardType.PoisonTooth);
+        var chemistry = TreacheryCardManager.Items.Single(card => card.Type == TreacheryCardType.Chemistry);
+        var myPlan = new Battle { Weapon = poisonTooth };
+        var opponentPlan = new Battle { Defense = chemistry };
+
+        Assert.IsTrue(ClassicBot.ShouldCancelPoisonTooth(myPlan, opponentPlan));
+    }
 }
