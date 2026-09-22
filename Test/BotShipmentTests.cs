@@ -22,7 +22,7 @@ namespace Treachery.Shared.Test;
 public class BotShipmentTests
 {
     [TestMethod]
-    public void FremenDoNotShipToVacantStrongholdInCurrentStorm()
+    public void FremenShipAnEvenNumberToVacantStrongholdInCurrentStorm()
     {
         var state = GameState.Load(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "TestData", "issue-6.json")));
         state.Events = state.Events.Take(state.Events.Count() - 2);
@@ -31,13 +31,17 @@ public class BotShipmentTests
 
         Assert.IsNull(loadError);
         Assert.IsNotNull(game);
+        var loadedGame = game;
 
-        var fremen = game.GetPlayer(Faction.Yellow);
-        var bot = new ClassicBot(game, fremen, BotParameters.GetDefaultParameters(Faction.Yellow));
+        var fremen = loadedGame.GetPlayer(Faction.Yellow);
+        Assert.IsNotNull(fremen);
+        var bot = new ClassicBot(loadedGame, fremen, BotParameters.GetDefaultParameters(Faction.Yellow));
         var action = bot.DetermineLowPriorityInPhaseAction(new List<Type> { typeof(Shipment) });
 
         Assert.IsInstanceOfType<Shipment>(action);
         var shipment = (Shipment)action;
-        Assert.IsTrue(shipment.Passed || !game.IsInStorm(shipment.To));
+        Assert.AreSame(loadedGame.Map.SietchTabr, shipment.To);
+        Assert.IsFalse(shipment.Passed);
+        Assert.AreEqual(2, shipment.ForceAmount + shipment.SpecialForceAmount + shipment.SmuggledAmount + shipment.SmuggledSpecialAmount);
     }
 }
