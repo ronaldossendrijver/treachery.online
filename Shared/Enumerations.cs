@@ -677,6 +677,8 @@ public enum RuleGroup
 public enum TreacheryCardType
 {
     None = 0,
+    Weapon = 1,
+    Defense = 2,
     Laser = 10,
 
     ProjectileDefense = 19,

@@ -147,6 +147,18 @@ public class ClairVoyancePlayed : GameEvent
         };
     }
 
+    public static IEnumerable<TreacheryCardType> ValidCardTypes(Game g, ClairvoyanceQuestion question)
+    {
+        if (question == ClairvoyanceQuestion.HasCardTypeInHand)
+        {
+            yield return TreacheryCardType.Weapon;
+            yield return TreacheryCardType.Defense;
+        }
+
+        foreach (var type in Voice.ValidTypes(g))
+            yield return type;
+    }
+
     public static Message Express(ClairvoyanceQuestion q, object? parameter1 = null, object? parameter2 = null)
     {
         var p1 = parameter1 ?? "...";
@@ -175,6 +187,8 @@ public class ClairVoyancePlayed : GameEvent
             return true;
         switch (inScopeOfQuestion)
         {
+            case TreacheryCardType.Weapon: return TreacheryCardManager.Items.Any(c => c.Type == cardType && c.IsWeapon);
+            case TreacheryCardType.Defense: return TreacheryCardManager.Items.Any(c => c.Type == cardType && c.IsDefense);
             case TreacheryCardType.PoisonDefense: return cardType == TreacheryCardType.Antidote || (!asWeapon && cardType == TreacheryCardType.Chemistry) || cardType == TreacheryCardType.ShieldAndAntidote;
             case TreacheryCardType.Poison: return cardType == TreacheryCardType.PoisonTooth || cardType == TreacheryCardType.ProjectileAndPoison;
             case TreacheryCardType.Shield: return cardType == TreacheryCardType.ShieldAndAntidote;

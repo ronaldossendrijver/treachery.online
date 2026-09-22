@@ -24,7 +24,7 @@
         @switch (question)
         {
             case ClairvoyanceQuestion.CardTypeInBattle or ClairvoyanceQuestion.CardTypeAsWeaponInBattle or ClairvoyanceQuestion.CardTypeAsDefenseInBattle or ClairvoyanceQuestion.HasCardTypeInHand:
-                <SelectComponent @bind-Value="questionParameterA" Values="Voice.ValidTypes(Game).Cast<object>()">
+                <SelectComponent @bind-Value="questionParameterA" Values="ClairVoyancePlayed.ValidCardTypes(Game, question).Cast<object>()">
                     <Label>Card Type</Label>
                 </SelectComponent>
                 break;

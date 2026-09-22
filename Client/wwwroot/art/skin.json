@@ -852,6 +852,8 @@
   },
   "TreacheryCardType_STR": {
     "None": "None",
+    "Weapon": "Weapon",
+    "Defense": "Defense",
     "Laser": "Lasegun",
     "ProjectileDefense": "Projectile Defense",
     "Projectile": "Projectile Weapon",
