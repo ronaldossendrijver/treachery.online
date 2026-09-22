@@ -568,14 +568,6 @@ public partial class ClassicBot
             }
         }
 
-        if (Game.CurrentPhase == Phase.Bidding && !Player.HasRoomForCards)
-        {
-            var bestLeaderToAskAbout = Player.Leaders.Where(l => Game.IsAlive(l) && !SafeOrKnownTraitorLeaders.Contains(l)).HighestOrDefault(l => l.Value);
-            var bestPlayerToAsk = Opponents.Where(o => !o.ToldNonTraitors.Contains(bestLeaderToAskAbout)).HighestOrDefault(p => p.Traitors.Count - p.RevealedTraitors.Count);
-
-            if (bestLeaderToAskAbout != null && bestPlayerToAsk != null) return new ClairVoyancePlayed(Game, Faction) { Target = bestPlayerToAsk.Faction, Question = ClairvoyanceQuestion.LeaderAsTraitor, Parameter1 = bestLeaderToAskAbout.Id };
-        }
-
         return null;
     }
 
