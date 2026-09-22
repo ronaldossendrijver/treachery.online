@@ -123,25 +123,28 @@ public partial class GameHub
         if (errorMessage != null || loadedGame is null)
             return Error(ErrorType.InvalidGameEvent, errorMessage?.ToString() ?? "Unknown error");
 
-        if (loadedGame.Seed != game.Game.Seed)
-            loadedGame.ResetSeats();
-        
-        game.Game = loadedGame;
-        await Clients.Group(gameId).HandleLoadGame(new GameInitInfo
+        return await game.ProcessEventAsync(async () =>
         {
-            GameId = gameId, 
-            GameState = stateData, 
-            GameName = game.Name,
-            Participation = game.Game.Participation
-        });
+            if (loadedGame.Seed != game.Game.Seed)
+                loadedGame.ResetSeats();
 
-        if (!string.IsNullOrEmpty(skin))
-            await Clients.Group(gameId).HandleSetSkin(skin);
+            game.Game = loadedGame;
+            await Clients.Group(gameId).HandleLoadGame(new GameInitInfo
+            {
+                GameId = gameId,
+                GameState = stateData,
+                GameName = game.Name,
+                Participation = game.Game.Participation
+            });
+
+            if (!string.IsNullOrEmpty(skin))
+                await Clients.Group(gameId).HandleSetSkin(skin);
         
-        await PersistGameIfNeeded(game);
+            await PersistGameIfNeeded(game);
 
-        ScheduleBotEvent(game);
-        return Success();
+            ScheduleBotEvent(game);
+            return Success();
+        });
     }
 
     public async Task<VoidResult> RequestAssignSeats(string userToken, string gameId, Dictionary<int, int> assignment)
@@ -468,13 +471,16 @@ public partial class GameHub
         if (!game!.Game.IsHost(user!.Id))
             return Error(ErrorType.NoHost);
 
-        game.Game = game.Game.Undo(untilEventNr);
-        await Clients.Group(gameId).HandleUndo(untilEventNr);
+        return await game.ProcessEventAsync(async () =>
+        {
+            game.Game = game.Game.Undo(untilEventNr);
+            await Clients.Group(gameId).HandleUndo(untilEventNr);
 
-        game.LastActivity = DateTimeOffset.Now;
-        await PersistGameIfNeeded(game);
-        ScheduleBotEvent(game);
-        return Success();
+            game.LastActivity = DateTimeOffset.Now;
+            await PersistGameIfNeeded(game);
+            ScheduleBotEvent(game);
+            return Success();
+        });
     }
 
     public async Task<VoidResult> RequestRestoreRecentlyUndone(string userToken, string gameId)
@@ -485,13 +491,16 @@ public partial class GameHub
         if (!game!.Game.IsHost(user!.Id))
             return Error(ErrorType.NoHost);
 
-        game.Game = game.Game.RestoreRecentlyUndone();
-        await Clients.Group(gameId).HandleRestoreRecentlyUndone();
+        return await game.ProcessEventAsync(async () =>
+        {
+            game.Game = game.Game.RestoreRecentlyUndone();
+            await Clients.Group(gameId).HandleRestoreRecentlyUndone();
 
-        game.LastActivity = DateTimeOffset.Now;
-        await PersistGameIfNeeded(game);
-        ScheduleBotEvent(game);
-        return Success();
+            game.LastActivity = DateTimeOffset.Now;
+            await PersistGameIfNeeded(game);
+            ScheduleBotEvent(game);
+            return Success();
+        });
     }
 
     public async Task<VoidResult> RequestDismissRecentlyUndone(string userToken, string gameId)
@@ -502,13 +511,16 @@ public partial class GameHub
         if (!game!.Game.IsHost(user!.Id))
             return Error(ErrorType.NoHost);
 
-        game.Game = game.Game.DismissRecentlyUndone();
-        await Clients.Group(gameId).HandleDismissRecentlyUndone();
+        return await game.ProcessEventAsync(async () =>
+        {
+            game.Game = game.Game.DismissRecentlyUndone();
+            await Clients.Group(gameId).HandleDismissRecentlyUndone();
 
-        game.LastActivity = DateTimeOffset.Now;
-        await PersistGameIfNeeded(game);
-        ScheduleBotEvent(game);
-        return Success();
+            game.LastActivity = DateTimeOffset.Now;
+            await PersistGameIfNeeded(game);
+            ScheduleBotEvent(game);
+            return Success();
+        });
     }
 
     public async Task<VoidResult> RequestSetBotSpeed(string userToken, string gameId, int speed)
