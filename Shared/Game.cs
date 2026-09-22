@@ -37,7 +37,7 @@ public partial class Game
     public List<GameEvent> RecentlyUndoneEvents { get; } = [];
     private Game? PreviousGameState { get; set; }
     public int CurrentTurn { get; private set; }
-    public MainPhase CurrentMainPhase { get; internal set; } = MainPhase.Started;
+    public MainPhase CurrentMainPhase { get; set; } = MainPhase.Started;
     public MainPhaseMoment CurrentMoment { get; private set; } = MainPhaseMoment.None;
     public Phase CurrentPhase { get; private set; } = Phase.None;
     public List<Faction> HasActedOrPassed { get; } = [];

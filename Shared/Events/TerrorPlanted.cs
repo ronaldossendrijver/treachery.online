@@ -31,7 +31,7 @@ public class TerrorPlanted : PassableGameEvent
     public int _territoryId;
 
     [JsonIgnore]
-    public Territory Stronghold
+    public Territory? Stronghold
     {
         get => Game.Map.TerritoryLookup.Find(_territoryId);
         set => _territoryId = Game.Map.TerritoryLookup.GetId(value);
@@ -47,7 +47,7 @@ public class TerrorPlanted : PassableGameEvent
         
         if (Stronghold == null)
         {
-            if (!MayRemoveTokens(Game, Player)) return Message.Express("You can't remove a token now");
+            if (Game.Version >= 187 && !MayRemoveTokens(Game, Player)) return Message.Express("You can't remove a token now");
             if (!Game.TerrorOnPlanet.ContainsKey(Type)) return Message.Express("You can't remove a token that is not on the board");
         }
         else

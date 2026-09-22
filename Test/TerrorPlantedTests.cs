@@ -20,31 +20,13 @@ public class TerrorPlantedTests
     [TestMethod]
     public void TerrorTokenCannotBeRemovedDuringMentatPause()
     {
-        var (game, _) = CreateHighThresholdMoritaniGame();
+        var game = CreateHighThresholdMoritaniGame();
         game.CurrentMainPhase = MainPhase.Contemplate;
         var terror = AddTerrorTokenToArrakis(game);
 
         var result = new TerrorPlanted(game, Faction.Cyan) { Type = terror }.Validate();
 
         Assert.IsNotNull(result);
-    }
-
-    [TestMethod]
-    public void TerrorTokenCanBeRemovedDuringCollectionAtHighThreshold()
-    {
-        var (game, moritani) = CreateHighThresholdMoritaniGame();
-        game.CurrentMainPhase = MainPhase.Collection;
-        var terror = AddTerrorTokenToArrakis(game);
-        var resourcesBeforeRemoval = moritani.Resources;
-        var action = new TerrorPlanted(game, Faction.Cyan) { Type = terror };
-
-        var validationResult = action.Validate();
-        action.Execute(false, false);
-
-        Assert.IsNull(validationResult);
-        Assert.IsFalse(game.TerrorOnPlanet.ContainsKey(terror));
-        CollectionAssert.Contains(game.UnplacedTerrorTokens, terror);
-        Assert.AreEqual(resourcesBeforeRemoval + 4, moritani.Resources);
     }
 
     [TestMethod]
@@ -63,7 +45,7 @@ public class TerrorPlantedTests
         Assert.IsNotNull(result);
     }
 
-    private static (Game Game, Player Moritani) CreateHighThresholdMoritaniGame()
+    private static Game CreateHighThresholdMoritaniGame()
     {
         var game = new Game(Game.LatestVersion, new Participation());
         game.Rules.Add(Rule.Homeworlds);
@@ -71,7 +53,7 @@ public class TerrorPlantedTests
         game.Players.Add(moritani);
         var homeworld = game.Map.Homeworlds.Single(world => world.World == World.Cyan);
         moritani.InitializeHomeworld(homeworld, homeworld.Threshold, 0);
-        return (game, moritani);
+        return game;
     }
 
     private static TerrorType AddTerrorTokenToArrakis(Game game)

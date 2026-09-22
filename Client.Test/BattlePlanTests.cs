@@ -21,7 +21,7 @@ public sealed class BattlePlanTests
         var battle = new BattleInitiated(game, Faction.Green)
         {
             Target = Faction.Red,
-            Territory = game.Map.Arrakeen
+            Territory = game.Map.Arrakeen.Territory
         };
         Assert.IsNull(battle.Execute(false, true));
 
