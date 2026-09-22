@@ -362,7 +362,7 @@ public partial class ClassicBot
         {
             target = Game.Map.Arrakeen;
         }
-        else if (VacantAndValid(Game.Map.SietchTabr) && (LastTurn || !Game.IsInStorm(Game.Map.SietchTabr)))
+        else if (VacantAndValid(Game.Map.SietchTabr))
         {
             target = Game.Map.SietchTabr;
         }
@@ -380,9 +380,30 @@ public partial class ClassicBot
             if (DetermineShortageForShipment(dialNeeded, false, target, null, 
                     Player.ForcesInReserve, Player.SpecialForcesInReserve, 
                     out var nrOfForces, out var nrOfSpecialForces, out var noFieldValue, out var cunningNoFieldValue, 
-                    minResourcesToKeep, maxUnsupportedForces, true) <= 2) DoShipment(ShipmentDecision.VacantStronghold, 
-                nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, target, true, true);
+                    minResourcesToKeep, maxUnsupportedForces, true) <= 2 &&
+                MakeStormShipmentSurvivable(target, ref nrOfForces, ref nrOfSpecialForces))
+                DoShipment(ShipmentDecision.VacantStronghold, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, target, true, true);
         }
+    }
+
+    private bool MakeStormShipmentSurvivable(Location target, ref int forces, ref int specialForces)
+    {
+        if (!Game.IsInStorm(target)) return true;
+        if (Faction != Faction.Yellow ||
+            !Game.Applicable(Rule.YellowStormLosses) ||
+            Game.Prevented(FactionAdvantage.YellowProtectedFromStorm))
+            return false;
+
+        if ((forces + specialForces) % 2 == 0) return true;
+
+        if (forces < Player.ForcesInReserve)
+            forces++;
+        else if (specialForces < Player.SpecialForcesInReserve)
+            specialForces++;
+        else
+            return false;
+
+        return true;
     }
 
     protected virtual void DetermineShipment_AttackEmptyHomeworld(int minResourcesToKeep, int maxUnsupportedForces)

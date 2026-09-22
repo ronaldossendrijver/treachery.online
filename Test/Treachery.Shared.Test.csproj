@@ -26,4 +26,8 @@
     <ProjectReference Include="..\Shared\Treachery.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestData\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
