@@ -71,6 +71,8 @@ public static class DefaultSkin
         TreacheryCardType_STR = new Dictionary<TreacheryCardType, string>
         {
             [TreacheryCardType.None] = "None",
+            [TreacheryCardType.Weapon] = "Weapon",
+            [TreacheryCardType.Defense] = "Defense",
             [TreacheryCardType.Laser] = "Lasegun",
             [TreacheryCardType.ProjectileDefense] = "Projectile Defense",
             [TreacheryCardType.Projectile] = "Projectile Weapon",

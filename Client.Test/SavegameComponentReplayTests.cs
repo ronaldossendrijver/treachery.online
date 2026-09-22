@@ -99,7 +99,7 @@ public sealed class SavegameComponentReplayTests
                    ClairvoyanceQuestion.CardTypeAsWeaponInBattle or
                    ClairvoyanceQuestion.HasCardTypeInHand)
                || clairvoyance.Parameter1 is TreacheryCardType cardType &&
-               Voice.ValidTypes(clairvoyance.Game).Contains(cardType);
+               ClairVoyancePlayed.ValidCardTypes(clairvoyance.Game, clairvoyance.Question).Contains(cardType);
     }
 
     private static void ReproduceComponentEvent(

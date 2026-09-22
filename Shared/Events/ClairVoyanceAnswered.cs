@@ -45,18 +45,7 @@ public class ClairVoyanceAnswered : GameEvent
 
     public static bool IsQuestionedBy(bool asWeapon, TreacheryCardType cardType, TreacheryCardType asked)
     {
-        if (cardType == asked)
-            return true;
-        switch (asked)
-        {
-            case TreacheryCardType.PoisonDefense: return cardType == TreacheryCardType.Antidote || (!asWeapon && cardType == TreacheryCardType.Chemistry) || cardType == TreacheryCardType.ShieldAndAntidote;
-            case TreacheryCardType.Poison: return cardType == TreacheryCardType.PoisonTooth || cardType == TreacheryCardType.ProjectileAndPoison;
-            case TreacheryCardType.Shield: return cardType == TreacheryCardType.ShieldAndAntidote;
-            case TreacheryCardType.ProjectileDefense: return cardType == TreacheryCardType.Shield || cardType == TreacheryCardType.ShieldAndAntidote;
-            case TreacheryCardType.Projectile: return (asWeapon && cardType == TreacheryCardType.WeirdingWay) || cardType == TreacheryCardType.ProjectileAndPoison;
-        }
-
-        return false;
+        return ClairVoyancePlayed.IsInScopeOf(asWeapon, cardType, asked);
     }
 
     #endregion Validation
