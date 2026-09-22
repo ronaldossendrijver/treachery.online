@@ -71,6 +71,39 @@ public class ManagedGameTests
         Assert.IsTrue(result);
     }
 
+    [TestMethod]
+    public async Task ProcessEventAsyncPreventsGameReplacementDuringEvent()
+    {
+        var originalGame = new Game();
+        var replacementGame = new Game();
+        var managedGame = new ManagedGame { Game = originalGame };
+        using var eventEntered = new ManualResetEventSlim();
+        using var releaseEvent = new ManualResetEventSlim();
+
+        var eventTask = managedGame.ProcessEventAsync(async () =>
+        {
+            eventEntered.Set();
+            await Task.Run(releaseEvent.Wait);
+            Assert.AreSame(originalGame, managedGame.Game);
+            return true;
+        });
+        Assert.IsTrue(eventEntered.Wait(1000));
+
+        var replacementTask = managedGame.ProcessEventAsync(() =>
+        {
+            managedGame.Game = replacementGame;
+            return Task.FromResult(true);
+        });
+
+        await Task.Delay(100);
+        Assert.AreSame(originalGame, managedGame.Game);
+
+        releaseEvent.Set();
+        await Task.WhenAll(eventTask, replacementTask);
+
+        Assert.AreSame(replacementGame, managedGame.Game);
+    }
+
     private static class InterlockedExtensions
     {
         public static void Max(ref int location, int value)
