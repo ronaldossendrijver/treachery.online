@@ -112,6 +112,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
             Do(DetermineBattleInitiated, ref action, events) ||
             Do(DetermineClairvoyance, ref action, events) ||
             Do(DetermineBattle, ref action, events) ||
+            Do(DeterminePoisonToothCancelled, ref action, events) ||
             Do(DetermineTreacheryCalled, ref action, events) ||
             Do(DetermineBattleConcluded, ref action, events) ||
             Do(DetermineMulliganPerformed, ref action, events) ||
