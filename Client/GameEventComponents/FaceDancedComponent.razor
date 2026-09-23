@@ -85,9 +85,9 @@ else {
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Purple;
 
-    private Dictionary<Location, Battalion> forces = new();
-    private Dictionary<Location, Battalion> targetForces = new();
-    private int forcesFromReserve;
+    internal Dictionary<Location, Battalion> forces = new();
+    internal Dictionary<Location, Battalion> targetForces = new();
+    internal int forcesFromReserve;
 
     protected override FaceDanced ConfirmedResult => Game.Version > 150 ?
         new FaceDanced(Game, Faction) { ForceLocations = forces, ForcesFromReserve = forcesFromReserve, TargetForceLocations = targetForces } :

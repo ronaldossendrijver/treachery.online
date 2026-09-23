@@ -212,19 +212,19 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Pink;
 
-    private Ambassador _actualAmbassador;
-    private List<TreacheryCard> _brownCards = new();
-    private bool _pinkOfferAlliance;
-    private bool _pinkTakeVidal;
-    private bool _pinkGiveVidal;
-    private Territory? _yellowFromTerritory;
-    private Location? _yellowOrOrangeToLocation;
-    private Dictionary<Location, Battalion> _yellowForces = new();
-    private TreacheryCard? _greyCard;
-    private int _orangeForceAmount;
-    private int _purpleAmountOfForces;
-    private IHero? _purpleHero;
-    private bool _purpleAssignSkill;
+    internal Ambassador _actualAmbassador;
+    internal List<TreacheryCard> _brownCards = new();
+    internal bool _pinkOfferAlliance;
+    internal bool _pinkTakeVidal;
+    internal bool _pinkGiveVidal;
+    internal Territory? _yellowFromTerritory;
+    internal Location? _yellowOrOrangeToLocation;
+    internal Dictionary<Location, Battalion> _yellowForces = new();
+    internal TreacheryCard? _greyCard;
+    internal int _orangeForceAmount;
+    internal int _purpleAmountOfForces;
+    internal IHero? _purpleHero;
+    internal bool _purpleAssignSkill;
 
     protected override void OnAfterRender(bool firstRender)
     {

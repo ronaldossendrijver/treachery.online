@@ -41,7 +41,7 @@
 
     private Player? currentPlayer;
     private int resources;
-    private Dictionary<Location, Battalion> forces = new();
+    internal Dictionary<Location, Battalion> forces = new();
 
     protected override PerformSetup ConfirmedResult => new(Game, Faction) { Passed = false, Resources = resources, ForceLocations = forces };
 

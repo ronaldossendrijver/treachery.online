@@ -20,6 +20,10 @@
     <ProjectReference Include="..\Shared\Treachery.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Treachery.Test" />
+  </ItemGroup>
+
   <PropertyGroup>
     <BlazorWebAssemblyLoadAllGlobalizationData>false</BlazorWebAssemblyLoadAllGlobalizationData>
     <InvariantGlobalization>true</InvariantGlobalization>

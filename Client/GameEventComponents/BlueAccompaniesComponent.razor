@@ -37,8 +37,8 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Blue;
 
-    private Location? target;
-    private bool addExtraAdvisor;
+    internal Location? target;
+    internal bool addExtraAdvisor;
 
     protected override void OnAfterRender(bool firstRender)
     {

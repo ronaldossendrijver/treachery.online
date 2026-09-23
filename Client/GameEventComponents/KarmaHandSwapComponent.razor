@@ -25,7 +25,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Black;
 
-    private List<TreacheryCard> selectedCards = new();
+    internal List<TreacheryCard> selectedCards = new();
 
     protected override KarmaHandSwap ConfirmedResult => new(Game, Faction) { ReturnedCards = selectedCards };
 }

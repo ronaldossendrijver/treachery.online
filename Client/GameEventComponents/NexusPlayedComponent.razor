@@ -236,22 +236,22 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Pink;
 
-    private PrescienceAspect greenPrescienceAspect;
+    internal PrescienceAspect greenPrescienceAspect;
 
-    private int purpleAmountOfForces;
-    private int purpleAmountOfSpecialForces;
-    private IHero? purpleHero;
-    private bool purpleAssignSkill;
-    private int purpleAmountOfSpecialForcesToLocation;
+    internal int purpleAmountOfForces;
+    internal int purpleAmountOfSpecialForces;
+    internal IHero? purpleHero;
+    internal bool purpleAssignSkill;
+    internal int purpleAmountOfSpecialForcesToLocation;
 
-    private TreacheryCard? brownCard;
+    internal TreacheryCard? brownCard;
 
-    private Territory? pinkTerritory;
-    private Faction pinkFaction;
+    internal Territory? pinkTerritory;
+    internal Faction pinkFaction;
 
-    private Territory? cyanTerritory;
+    internal Territory? cyanTerritory;
 
-    private Location? purpleOrYellowLocation;
+    internal Location? purpleOrYellowLocation;
 
     protected override void OnInitialized()
     {

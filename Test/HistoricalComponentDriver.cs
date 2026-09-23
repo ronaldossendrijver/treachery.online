@@ -1,10 +1,7 @@
 using System.Globalization;
 using System.Reflection;
-using Bunit;
 using Microsoft.AspNetCore.Components;
-using Treachery.Client.GameEventComponents;
-using Treachery.Client.GenericComponents;
-using Treachery.Shared;
+
 
 namespace Treachery.Test;
 
@@ -141,380 +138,345 @@ internal static class HistoricalComponentDriver
 
     private static void ApplyHistoricalValues(IComponent component, GameEvent historicalEvent)
     {
-        if (historicalEvent is Shipment shipment)
+        switch (historicalEvent)
         {
-            if (shipment.Passed)
+            case Shipment { Passed: true }:
+                return;
+
+            case Shipment shipment:
             {
+                var c = Expect<ShipmentComponent>(component);
+                c.ShipmentType = shipment.ShipmentType;
+                c.ShipmentForceAmount = Math.Abs(shipment.ForceAmount);
+                c.ShipmentSpecialForceAmount = Math.Abs(shipment.SpecialForceAmount);
+                c.ShipmentAllyContributionAmount = shipment.AllyContributionAmount;
+                c.SmuggledForceAmount = shipment.SmuggledAmount;
+                c.SmuggledSpecialForceAmount = shipment.SmuggledSpecialAmount;
+                c.NoFieldValue = shipment.NoFieldValue;
+                c.CunningNoFieldValue = shipment.CunningNoFieldValue;
+                c.KarmaCard = shipment.KarmaCard;
+                c._shipmentFrom = shipment.From;
+                c._shipmentTo = shipment.To;
+                c.ForceOrigins.Clear();
+                foreach (var (location, battalion) in shipment.ForceLocations)
+                {
+                    c.ForceOrigins[location] = battalion;
+                }
                 return;
             }
 
-            SetMember(component, "ShipmentType", shipment.ShipmentType);
-            SetMember(component, "ShipmentForceAmount", Math.Abs(shipment.ForceAmount));
-            SetMember(component, "ShipmentSpecialForceAmount", Math.Abs(shipment.SpecialForceAmount));
-            SetMember(component, "ShipmentAllyContributionAmount", shipment.AllyContributionAmount);
-            SetMember(component, "SmuggledForceAmount", shipment.SmuggledAmount);
-            SetMember(component, "SmuggledSpecialForceAmount", shipment.SmuggledSpecialAmount);
-            SetMember(component, "NoFieldValue", shipment.NoFieldValue);
-            SetMember(component, "CunningNoFieldValue", shipment.CunningNoFieldValue);
-            SetMember(component, "KarmaCard", shipment.KarmaCard);
-            SetMember(component, "_shipmentFrom", shipment.From);
-            SetMember(component, "_shipmentTo", shipment.To);
-            if (GetMemberValue<Dictionary<Location, Battalion>>(
-                    component,
-                    "ForceOrigins") is { } forceOrigins)
+            case Move move:
+                ApplyPlacementValues(Expect<PlacementComponent<Move>>(component), move, move.AsAdvisors);
+                return;
+
+            case Caravan caravan:
+                ApplyPlacementValues(Expect<PlacementComponent<Caravan>>(component), caravan, caravan.AsAdvisors);
+                return;
+
+            case Battle battle:
             {
-                forceOrigins.Clear();
-                foreach (var (location, battalion) in shipment.ForceLocations)
-                {
-                    forceOrigins[location] = battalion;
-                }
+                var c = Expect<BattleComponent>(component);
+                c.Forces = battle.Forces + battle.ForcesAtHalfStrength;
+                c.SpecialForces = battle.SpecialForces + battle.SpecialForcesAtHalfStrength;
+                c.Resources = battle.Cost(battle.Game);
+                c.ResourcesFromAlly = battle.AllyContributionAmount;
+                c.Hero = battle.Hero;
+                c.Messiah = battle.Messiah;
+                c.Defense = battle.Defense;
+                c.Weapon = battle.Weapon;
+                c.BankerBonus = battle.BankerBonus;
+                return;
             }
-            return;
-        }
 
-        if (historicalEvent is Move move)
-        {
-            ApplyPlacementValues(component, move, move.AsAdvisors);
-            return;
-        }
-
-        if (historicalEvent is Caravan caravan)
-        {
-            ApplyPlacementValues(component, caravan, caravan.AsAdvisors);
-            return;
-        }
-
-        if (historicalEvent is Battle battle)
-        {
-            SetMember(component, "Forces", battle.Forces + battle.ForcesAtHalfStrength);
-            SetMember(component, "SpecialForces",
-                battle.SpecialForces + battle.SpecialForcesAtHalfStrength);
-            SetMember(component, "Resources", battle.Cost(battle.Game));
-            SetMember(component, "ResourcesFromAlly", battle.AllyContributionAmount);
-            SetMember(component, "Hero", battle.Hero);
-            SetMember(component, "Messiah", battle.Messiah);
-            SetMember(component, "Defense", battle.Defense);
-            SetMember(component, "Weapon", battle.Weapon);
-            SetMember(component, "BankerBonus", battle.BankerBonus);
-            return;
-        }
-
-        if (historicalEvent is BattleConcluded battleConcluded)
-        {
-            SetMember(component, "captureDecision", battleConcluded.DecisionToCapture);
-            SetMember(component, "replacementAmount",
-                battleConcluded.SpecialForceLossesReplaced);
-            SetMember(component, "stolenToken", battleConcluded.StolenToken);
-            SetMember(component, "selectedNewTraitor", battleConcluded.NewTraitor);
-            SetMember(component, "traitorToReplace", battleConcluded.TraitorToReplace);
-            SetMember(component, "addExtraForce", battleConcluded.AddExtraForce);
-            var cards = battleConcluded.DiscardedCards.ToHashSet();
-            SetMember(component, "discardMercenary",
-                GetMemberValue<TreacheryCard>(component, "DiscardableMercenaryAfterBattle") is { } mercenary &&
-                cards.Contains(mercenary));
-            SetMember(component, "discardWeapon",
-                GetMemberValue<TreacheryCard>(component, "DiscardableWeaponAfterBattle") is { } weapon &&
-                cards.Contains(weapon));
-            SetMember(component, "discardDefense",
-                GetMemberValue<TreacheryCard>(component, "DiscardableDefenseAfterBattle") is { } defense &&
-                cards.Contains(defense));
-            return;
-        }
-
-        if (historicalEvent is DealOffered deal)
-        {
-            SetMember(component, "to", deal.To.ToList());
-            SetMember(component, "price", deal.Price);
-            SetMember(component, "benefit", deal.Benefit);
-            SetMember(component, "type", deal.Type);
-            SetMember(component, "text", deal.Text);
-            SetMember(component, "until", deal.EndPhase);
-            return;
-        }
-
-        if (historicalEvent is Donated donated)
-        {
-            SetMember(component, "target", donated.Target);
-            SetMember(component, "resources", donated.Resources);
-            SetMember(component, "card", donated.Card);
-            SetMember(component, "fromBank", donated.FromBank);
-            return;
-        }
-
-        if (historicalEvent is Revival revival)
-        {
-            SetMember(component, "amountOfForces", revival.AmountOfForces);
-            SetMember(component, "amountOfSpecialForces", revival.AmountOfSpecialForces);
-            SetMember(component, "forcesPaidByRed", revival.ExtraForcesPaidByRed);
-            SetMember(component, "specialForcesPaidByRed",
-                revival.ExtraSpecialForcesPaidByRed);
-            SetMember(component, "hero", revival.Hero);
-            SetMember(component, "assignSkill", revival.AssignSkill);
-            SetMember(component, "useRedSecretAlly", revival.UsesRedSecretAlly);
-            SetMember(component, "amountOfForcesToLocation",
-                revival.NumberOfForcesInLocation);
-            SetMember(component, "amountOfSpecialForcesToLocation",
-                revival.NumberOfSpecialForcesInLocation);
-            SetMember(component, "location", revival.Location);
-            return;
-        }
-
-        if (historicalEvent is BattleInitiated battleInitiated)
-        {
-            SetMember(component, "Opponent", battleInitiated.Target);
-            SetMember(component, "Territory", battleInitiated.Territory);
-            return;
-        }
-
-        if (historicalEvent is RaiseDeadPlayed raiseDead)
-        {
-            SetMember(component, "amountOfForces", raiseDead.AmountOfForces);
-            SetMember(component, "amountOfSpecialForces",
-                raiseDead.AmountOfSpecialForces);
-            SetMember(component, "hero", raiseDead.Hero);
-            SetMember(component, "assignSkill", raiseDead.AssignSkill);
-            SetMember(component, "amountOfSpecialForcesToLocation",
-                raiseDead.NumberOfSpecialForcesInLocation);
-            SetMember(component, "location", raiseDead.Location);
-            return;
-        }
-
-        if (historicalEvent is ClairVoyancePlayed clairvoyance)
-        {
-            SetMember(component, "target", clairvoyance.Target);
-            SetMember(component, "question", clairvoyance.Question);
-            object? parameterA = clairvoyance.Question switch
+            case BattleConcluded battleConcluded:
             {
-                ClairvoyanceQuestion.LeaderAsFacedancer or
-                    ClairvoyanceQuestion.LeaderAsTraitor or
-                    ClairvoyanceQuestion.LeaderInBattle or
-                    ClairvoyanceQuestion.WillAttackX
-                    when int.TryParse(clairvoyance.QuestionParameter1, out var id) => id,
-                _ => clairvoyance.Parameter1
-            };
-            SetMember(component, "questionParameterA", parameterA);
-            SetMember(component, "questionParameterB",
-                int.TryParse(clairvoyance.QuestionParameter2, NumberStyles.Integer,
-                    CultureInfo.InvariantCulture, out var parameterB)
-                    ? parameterB
-                    : clairvoyance.Parameter2);
-            return;
-        }
+                var c = Expect<BattleConcludedComponent>(component);
+                c.captureDecision = battleConcluded.DecisionToCapture;
+                c.replacementAmount = battleConcluded.SpecialForceLossesReplaced;
+                c.stolenToken = battleConcluded.StolenToken;
+                c.selectedNewTraitor = battleConcluded.NewTraitor;
+                c.traitorToReplace = battleConcluded.TraitorToReplace;
+                c.addExtraForce = battleConcluded.AddExtraForce;
+                var cards = battleConcluded.DiscardedCards.ToHashSet();
+                c.discardMercenary = c.DiscardableMercenaryAfterBattle is { } mercenary && cards.Contains(mercenary);
+                c.discardWeapon = c.DiscardableWeaponAfterBattle is { } weapon && cards.Contains(weapon);
+                c.discardDefense = c.DiscardableDefenseAfterBattle is { } defense && cards.Contains(defense);
+                return;
+            }
 
-        if (historicalEvent is FaceDanced faceDanced)
-        {
-            SetMember(component, "forces", faceDanced.ForceLocations);
-            SetMember(component, "targetForces", faceDanced.TargetForceLocations);
-            SetMember(component, "forcesFromReserve",
-                faceDanced.ForcesFromReserve);
-            return;
-        }
+            case DealOffered deal:
+            {
+                var c = Expect<DealOfferedComponent>(component);
+                c.to = deal.To.ToList();
+                c.price = deal.Price;
+                c.benefit = deal.Benefit;
+                c.type = deal.Type;
+                c.text = deal.Text;
+                c.until = deal.EndPhase;
+                return;
+            }
 
-        if (historicalEvent is SetIncreasedRevivalLimits revivalLimits)
-        {
-            SetMember(component, "factions", revivalLimits.Factions.ToList());
-            return;
-        }
+            case Donated donated:
+            {
+                var c = Expect<DonatedComponent>(component);
+                c.target = donated.Target;
+                c.resources = donated.Resources;
+                c.card = donated.Card;
+                c.fromBank = donated.FromBank;
+                return;
+            }
 
-        if (historicalEvent is AcceptOrCancelPurpleRevival purpleRevival)
-        {
-            SetMember(component, "offerHero", purpleRevival.Hero);
-            SetMember(component, "price", purpleRevival.Price);
-            return;
-        }
+            case Revival revival:
+            {
+                var c = Expect<RevivalComponent>(component);
+                c.amountOfForces = revival.AmountOfForces;
+                c.amountOfSpecialForces = revival.AmountOfSpecialForces;
+                c.forcesPaidByRed = revival.ExtraForcesPaidByRed;
+                c.specialForcesPaidByRed = revival.ExtraSpecialForcesPaidByRed;
+                c.hero = revival.Hero;
+                c.assignSkill = revival.AssignSkill;
+                c.useRedSecretAlly = revival.UsesRedSecretAlly;
+                c.amountOfForcesToLocation = revival.NumberOfForcesInLocation;
+                c.amountOfSpecialForcesToLocation = revival.NumberOfSpecialForcesInLocation;
+                c.location = revival.Location;
+                return;
+            }
 
-        if (historicalEvent is AutomationConfigured automation)
-        {
-            SetMember(component, "NewRuleType", automation.RuleType);
-            SetMember(component, "NewRuleBidAmount",
-                automation.BiddingAboveAmount);
-            SetMember(component, "NewRuleBidFaction",
-                automation.BiddingWinningFaction);
-            return;
-        }
+            case BattleInitiated battleInitiated:
+            {
+                var c = Expect<BattleInitiatedComponent>(component);
+                c.Opponent = battleInitiated.Target;
+                c.Territory = battleInitiated.Territory;
+                return;
+            }
 
-        if (historicalEvent is SetShipmentPermission shipmentPermission)
-        {
-            SetMember(component, "targets",
-                shipmentPermission.Factions.ToList());
-            SetMember(component, "_crossPermission",
-                shipmentPermission.Permission.HasFlag(ShipmentPermission.Cross));
-            SetMember(component, "_homeworldPermission",
-                shipmentPermission.Permission.HasFlag(ShipmentPermission.ToHomeworld));
-            SetMember(component, "_discountPermission",
-                shipmentPermission.Permission.HasFlag(ShipmentPermission.OrangeRate));
-            return;
-        }
+            case RaiseDeadPlayed raiseDead:
+            {
+                var c = Expect<RaiseDeadComponent>(component);
+                c.amountOfForces = raiseDead.AmountOfForces;
+                c.amountOfSpecialForces = raiseDead.AmountOfSpecialForces;
+                c.hero = raiseDead.Hero;
+                c.assignSkill = raiseDead.AssignSkill;
+                c.amountOfSpecialForcesToLocation = raiseDead.NumberOfSpecialForcesInLocation;
+                c.location = raiseDead.Location;
+                return;
+            }
 
-        if (historicalEvent is NexusPlayed nexus)
-        {
-            SetMember(component, "greenPrescienceAspect",
-                nexus.GreenPrescienceAspect);
-            SetMember(component, "purpleAmountOfForces", nexus.PurpleForces);
-            SetMember(component, "purpleAmountOfSpecialForces",
-                nexus.PurpleSpecialForces);
-            SetMember(component, "purpleHero", nexus.PurpleHero);
-            SetMember(component, "purpleAssignSkill", nexus.PurpleAssignSkill);
-            SetMember(component, "purpleAmountOfSpecialForcesToLocation",
-                nexus.PurpleNumberOfSpecialForcesInLocation);
-            SetMember(component, "brownCard", nexus.BrownCard);
-            SetMember(component, "pinkTerritory", nexus.PinkTerritory);
-            SetMember(component, "pinkFaction", nexus.PinkFaction);
-            SetMember(component, "cyanTerritory", nexus.CyanTerritory);
-            SetMember(component, "purpleOrYellowLocation", nexus.PurpleLocation);
-            return;
-        }
+            case ClairVoyancePlayed clairvoyance:
+            {
+                var c = Expect<ClairVoyancePlayedComponent>(component);
+                c.target = clairvoyance.Target;
+                c.question = clairvoyance.Question;
+                c.questionParameterA = clairvoyance.Question switch
+                {
+                    ClairvoyanceQuestion.LeaderAsFacedancer or
+                        ClairvoyanceQuestion.LeaderAsTraitor or
+                        ClairvoyanceQuestion.LeaderInBattle or
+                        ClairvoyanceQuestion.WillAttackX
+                        when int.TryParse(clairvoyance.QuestionParameter1, out var id) => id,
+                    _ => clairvoyance.Parameter1
+                };
+                c.questionParameterB =
+                    int.TryParse(clairvoyance.QuestionParameter2, NumberStyles.Integer,
+                        CultureInfo.InvariantCulture, out var parameterB)
+                        ? parameterB
+                        : clairvoyance.Parameter2;
+                return;
+            }
 
-        if (historicalEvent is KarmaHandSwap handSwap)
-        {
-            SetMember(component, "selectedCards",
-                handSwap.ReturnedCards.ToList());
-            return;
-        }
+            case FaceDanced faceDanced:
+            {
+                var c = Expect<FaceDancedComponent>(component);
+                c.forces = faceDanced.ForceLocations;
+                c.targetForces = faceDanced.TargetForceLocations;
+                c.forcesFromReserve = faceDanced.ForcesFromReserve;
+                return;
+            }
 
-        if (historicalEvent is WhiteSpecifiesAuction auction)
-        {
-            SetMember(component, "card", auction.Card);
-            SetMember(component, "auctionType", auction.AuctionType);
-            SetMember(component, "direction", auction.Direction);
-            return;
-        }
+            case SetIncreasedRevivalLimits revivalLimits:
+                Expect<SetIncreasedRevivalLimitsComponent>(component).factions = revivalLimits.Factions.ToList();
+                return;
 
-        if (historicalEvent is WhiteAnnouncesBlackMarket blackMarket)
-        {
-            SetMember(component, "card", blackMarket.Card);
-            SetMember(component, "auctionType", blackMarket.AuctionType);
-            SetMember(component, "direction", blackMarket.Direction);
-            return;
-        }
+            case AcceptOrCancelPurpleRevival purpleRevival:
+            {
+                var c = Expect<AcceptOrCancelPurpleRevivalComponent>(component);
+                c._offerHero = purpleRevival.Hero;
+                c._price = purpleRevival.Price;
+                return;
+            }
 
-        if (historicalEvent is YellowSentMonster sentMonster)
-        {
-            SetMember(component, "target", sentMonster.Territory);
-            return;
-        }
+            case AutomationConfigured automation:
+            {
+                var c = Expect<AutomationConfiguredComponent>(component);
+                c.NewRuleType = automation.RuleType;
+                c.NewRuleBidAmount = automation.BiddingAboveAmount;
+                c.NewRuleBidFaction = automation.BiddingWinningFaction;
+                return;
+            }
 
-        if (historicalEvent is KarmaMonster karmaMonster)
-        {
-            SetMember(component, "target", karmaMonster.Territory);
-            return;
-        }
+            case SetShipmentPermission shipmentPermission:
+            {
+                var c = Expect<SetShipmentPermissionComponent>(component);
+                c.targets = shipmentPermission.Factions.ToList();
+                c._crossPermission = shipmentPermission.Permission.HasFlag(ShipmentPermission.Cross);
+                c._homeworldPermission = shipmentPermission.Permission.HasFlag(ShipmentPermission.ToHomeworld);
+                c._discountPermission = shipmentPermission.Permission.HasFlag(ShipmentPermission.OrangeRate);
+                return;
+            }
 
-        if (historicalEvent is TraitorDiscarded traitorDiscarded)
-        {
-            SetMember(component, "hero", traitorDiscarded.Traitor);
-            return;
-        }
+            case NexusPlayed nexus:
+            {
+                var c = Expect<NexusPlayedComponent>(component);
+                c.greenPrescienceAspect = nexus.GreenPrescienceAspect;
+                c.purpleAmountOfForces = nexus.PurpleForces;
+                c.purpleAmountOfSpecialForces = nexus.PurpleSpecialForces;
+                c.purpleHero = nexus.PurpleHero;
+                c.purpleAssignSkill = nexus.PurpleAssignSkill;
+                c.purpleAmountOfSpecialForcesToLocation = nexus.PurpleNumberOfSpecialForcesInLocation;
+                c.brownCard = nexus.BrownCard;
+                c.pinkTerritory = nexus.PinkTerritory;
+                c.pinkFaction = nexus.PinkFaction;
+                c.cyanTerritory = nexus.CyanTerritory;
+                c.purpleOrYellowLocation = nexus.PurpleLocation;
+                return;
+            }
 
-        if (historicalEvent is BlueBattleAnnouncement battleAnnouncement)
-        {
-            SetMember(component, "target", battleAnnouncement.Territory);
-            return;
-        }
+            case KarmaHandSwap handSwap:
+                Expect<KarmaHandSwapComponent>(component).selectedCards = handSwap.ReturnedCards.ToList();
+                return;
 
-        if (historicalEvent is BlueAccompanies accompanies)
-        {
-            SetMember(component, "target", accompanies.Location);
-            SetMember(component, "addExtraAdvisor", accompanies.ExtraAdvisor);
-            return;
-        }
+            case WhiteSpecifiesAuction auction:
+            {
+                var c = Expect<WhiteSpecifiesAuctionComponent>(component);
+                c.card = auction.Card;
+                c.auctionType = auction.AuctionType;
+                c.direction = auction.Direction;
+                return;
+            }
 
-        if (historicalEvent is LoserConcluded loser)
-        {
-            SetMember(component, "_cardToKeep", loser.KeptCard);
-            SetMember(component, "_assassinate", loser.Assassinate);
-            SetMember(component, "_karmaDecision",
-                loser.KarmaForcedKeptCardDecision);
-            SetMember(component, "_cardsToForceKeepOrDiscard",
-                loser.ForcedKeptOrDiscardedCards.ToList());
-            return;
-        }
+            case WhiteAnnouncesBlackMarket blackMarket:
+            {
+                var c = Expect<WhiteAnnouncesBlackMarketComponent>(component);
+                c.card = blackMarket.Card;
+                c.auctionType = blackMarket.AuctionType;
+                c.direction = blackMarket.Direction;
+                return;
+            }
 
-        if (historicalEvent is Retreat retreat)
-        {
-            SetMember(component, "target", retreat.Location);
-            SetMember(component, "forces", retreat.Forces);
-            SetMember(component, "specialForces", retreat.SpecialForces);
-            return;
-        }
+            case YellowSentMonster sentMonster:
+                Expect<YellowSentMonsterComponent>(component).target = sentMonster.Territory;
+                return;
 
-        if (historicalEvent is CardTraded cardTrade)
-        {
-            SetMember(component, "card", cardTrade.Card);
-            SetMember(component, "returnCard", cardTrade.RequestedCard);
-            return;
-        }
+            case KarmaMonster karmaMonster:
+                Expect<KarmaMonsterComponent>(component).target = karmaMonster.Territory;
+                return;
 
-        if (historicalEvent is AllyPermission allyPermission)
-        {
-            SetMember(component, "spice", allyPermission.PermittedResources);
-            SetMember(component, "karmaCard", allyPermission.PermittedKarmaCard);
-            SetMember(component, "emperorWillPayForExtraRevival",
-                allyPermission.RedWillPayForExtraRevival);
-            SetMember(component, "fremenWillProtectFromShaiHulud",
-                allyPermission.YellowWillProtectFromMonster);
-            SetMember(component, "fremenAllowsThreeFreeRevivals",
-                allyPermission.YellowAllowsThreeFreeRevivals);
-            SetMember(component, "fremenShareStormPrescience",
-                allyPermission.YellowSharesPrescience);
-            SetMember(component, "fremenRefundsDial",
-                allyPermission.YellowRefundsBattleDial);
-            SetMember(component, "greenSharePrescience",
-                allyPermission.GreenSharesPrescience);
-            SetMember(component, "blueAllyMayUseVoice",
-                allyPermission.BlueAllowsUseOfVoice);
-            SetMember(component, "whiteAllyMayUseNoField",
-                allyPermission.WhiteAllowsUseOfNoField);
-            SetMember(component, "guildAllyMayShipAsGuild",
-                allyPermission.OrangeAllowsShippingDiscount);
-            SetMember(component, "purpleAllyMyReviveAsPurple",
-                allyPermission.PurpleAllowsRevivalDiscount);
-            SetMember(component, "greyAllyMayReplace",
-                allyPermission.GreyAllowsReplacingCards);
-            SetMember(component, "cyanAllyMayKeepCards",
-                allyPermission.CyanAllowsKeepingCards);
-            SetMember(component, "pinkAllyMayUseAmbassadors",
-                allyPermission.PinkSharesAmbassadors);
-            SetMember(component, "edited", true);
-            return;
-        }
+            case TraitorDiscarded traitorDiscarded:
+                Expect<TraitorDiscardedComponent>(component).hero = traitorDiscarded.Traitor;
+                return;
 
-        if (historicalEvent is AmbassadorActivated ambassadorActivated)
-        {
-            SetMember(component, "_actualAmbassador",
-                AmbassadorActivated.GetAmbassador(ambassadorActivated.Game) == Ambassador.Blue
+            case BlueBattleAnnouncement battleAnnouncement:
+                Expect<BlueBattleAnnouncementComponent>(component).target = battleAnnouncement.Territory;
+                return;
+
+            case BlueAccompanies accompanies:
+            {
+                var c = Expect<BlueAccompaniesComponent>(component);
+                c.target = accompanies.Location;
+                c.addExtraAdvisor = accompanies.ExtraAdvisor;
+                return;
+            }
+
+            case LoserConcluded loser:
+            {
+                var c = Expect<LoserConcludedComponent>(component);
+                c._cardToKeep = loser.KeptCard;
+                c._assassinate = loser.Assassinate;
+                c._karmaDecision = loser.KarmaForcedKeptCardDecision;
+                c._cardsToForceKeepOrDiscard = loser.ForcedKeptOrDiscardedCards.ToList();
+                return;
+            }
+
+            case Retreat retreat:
+            {
+                var c = Expect<RetreatComponent>(component);
+                c.target = retreat.Location;
+                c.forces = retreat.Forces;
+                c.specialForces = retreat.SpecialForces;
+                return;
+            }
+
+            case CardTraded cardTrade:
+            {
+                var c = Expect<CardTradedComponent>(component);
+                c.card = cardTrade.Card;
+                c.returnCard = cardTrade.RequestedCard;
+                return;
+            }
+
+            case AllyPermission allyPermission:
+            {
+                var c = Expect<AllyPermissionComponent>(component);
+                c._spice = allyPermission.PermittedResources;
+                c._karmaCard = allyPermission.PermittedKarmaCard;
+                c._emperorWillPayForExtraRevival = allyPermission.RedWillPayForExtraRevival;
+                c._fremenWillProtectFromShaiHulud = allyPermission.YellowWillProtectFromMonster;
+                c._fremenAllowsThreeFreeRevivals = allyPermission.YellowAllowsThreeFreeRevivals;
+                c._fremenShareStormPrescience = allyPermission.YellowSharesPrescience;
+                c._fremenRefundsDial = allyPermission.YellowRefundsBattleDial;
+                c._greenSharePrescience = allyPermission.GreenSharesPrescience;
+                c._blueAllyMayUseVoice = allyPermission.BlueAllowsUseOfVoice;
+                c._whiteAllyMayUseNoField = allyPermission.WhiteAllowsUseOfNoField;
+                c._guildAllyMayShipAsGuild = allyPermission.OrangeAllowsShippingDiscount;
+                c._purpleAllyMyReviveAsPurple = allyPermission.PurpleAllowsRevivalDiscount;
+                c._greyAllyMayReplace = allyPermission.GreyAllowsReplacingCards;
+                c._cyanAllyMayKeepCards = allyPermission.CyanAllowsKeepingCards;
+                c._pinkAllyMayUseAmbassadors = allyPermission.PinkSharesAmbassadors;
+                c._edited = true;
+                return;
+            }
+
+            case AmbassadorActivated ambassadorActivated:
+            {
+                var c = Expect<AmbassadorActivatedComponent>(component);
+                var ambassador = AmbassadorActivated.GetAmbassador(ambassadorActivated.Game);
+                c._actualAmbassador = ambassador == Ambassador.Blue
                     ? ambassadorActivated.BlueSelectedAmbassador
-                    : AmbassadorActivated.GetAmbassador(ambassadorActivated.Game));
-            SetMember(component, "_brownCards",
-                ambassadorActivated.BrownCards.ToList());
-            SetMember(component, "_pinkOfferAlliance",
-                ambassadorActivated.PinkOfferAlliance);
-            SetMember(component, "_pinkGiveVidal",
-                ambassadorActivated.PinkGiveVidalToAlly);
-            SetMember(component, "_pinkTakeVidal",
-                ambassadorActivated.PinkTakeVidal);
-            SetMember(component, "_yellowFromTerritory",
-                ambassadorActivated.YellowForceLocations.Keys
-                    .FirstOrDefault()?.Territory);
-            SetMember(component, "_yellowOrOrangeToLocation",
-                ambassadorActivated.YellowOrOrangeTo);
-            SetMember(component, "_yellowForces",
-                ambassadorActivated.YellowForceLocations);
-            SetMember(component, "_greyCard", ambassadorActivated.GreyCard);
-            SetMember(component, "_orangeForceAmount",
-                ambassadorActivated.OrangeForceAmount);
-            SetMember(component, "_purpleAmountOfForces",
-                ambassadorActivated.PurpleAmountOfForces);
-            SetMember(component, "_purpleHero", ambassadorActivated.PurpleHero);
-            SetMember(component, "_purpleAssignSkill",
-                ambassadorActivated.PurpleAssignSkill);
-            return;
+                    : ambassador;
+                c._brownCards = ambassadorActivated.BrownCards.ToList();
+                c._pinkOfferAlliance = ambassadorActivated.PinkOfferAlliance;
+                c._pinkGiveVidal = ambassadorActivated.PinkGiveVidalToAlly;
+                c._pinkTakeVidal = ambassadorActivated.PinkTakeVidal;
+                c._yellowFromTerritory = ambassadorActivated.YellowForceLocations.Keys.FirstOrDefault()?.Territory;
+                c._yellowOrOrangeToLocation = ambassadorActivated.YellowOrOrangeTo;
+                c._yellowForces = ambassadorActivated.YellowForceLocations;
+                c._greyCard = ambassadorActivated.GreyCard;
+                c._orangeForceAmount = ambassadorActivated.OrangeForceAmount;
+                c._purpleAmountOfForces = ambassadorActivated.PurpleAmountOfForces;
+                c._purpleHero = ambassadorActivated.PurpleHero;
+                c._purpleAssignSkill = ambassadorActivated.PurpleAssignSkill;
+                return;
+            }
+
+            case PlacementEvent placement:
+                switch (component)
+                {
+                    case PlacementComponent<YellowRidesMonster> c:
+                        c.forces = placement.ForceLocations;
+                        break;
+                    case DiscoveryEnteredComponent c:
+                        c.forces = placement.ForceLocations;
+                        break;
+                    case PerformSetupComponent c:
+                        c.forces = placement.ForceLocations;
+                        break;
+                    case PerformYellowSetupComponent c:
+                        c.forces = placement.ForceLocations;
+                        break;
+                }
+                break;
         }
 
-        if (historicalEvent is PlacementEvent placement)
-        {
-            SetMember(component, "forces", placement.ForceLocations);
-        }
 
         foreach (var source in ReadableMembers(historicalEvent.GetType()))
         {
@@ -545,39 +507,20 @@ internal static class HistoricalComponentDriver
         }
     }
 
-    private static void SetMember(IComponent component, string name, object? value)
-    {
-        var member = WritableMembers(component.GetType())
-            .FirstOrDefault(candidate => candidate.Name == name);
-        member?.SetValue(component, value);
-    }
+    private static TComponent Expect<TComponent>(IComponent component) where TComponent : class =>
+        component as TComponent
+        ?? throw new InvalidOperationException(
+            $"Expected a {typeof(TComponent).Name}, but {component.GetType().Name} was rendered.");
 
-    private static void ApplyPlacementValues(
-        IComponent component,
+    private static void ApplyPlacementValues<TEvent>(
+        PlacementComponent<TEvent> component,
         PlacementEvent placement,
-        bool asAdvisors)
+        bool asAdvisors) where TEvent : PlacementEvent, new()
     {
-        var forceLocations = placement.ForceLocations;
-        SetMember(component, "forces", forceLocations);
-        SetMember(component, "fromTerritory",
-            forceLocations.Keys.FirstOrDefault()?.Territory);
-        SetMember(component, "toLocation", placement.To);
-        SetMember(component, "asAdvisors", asAdvisors);
-    }
-
-    private static T? GetMemberValue<T>(IComponent component, string name) where T : class
-    {
-        const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
-        for (var current = component.GetType(); current != null; current = current.BaseType)
-        {
-            var property = current.GetProperty(name, flags | BindingFlags.DeclaredOnly);
-            if (property?.GetValue(component) is T value)
-            {
-                return value;
-            }
-        }
-
-        return null;
+        component.forces = placement.ForceLocations;
+        component.fromTerritory = placement.ForceLocations.Keys.FirstOrDefault()?.Territory;
+        component.toLocation = placement.To;
+        component.asAdvisors = asAdvisors;
     }
 
     private static void RefreshComponent(

@@ -281,19 +281,19 @@
 
     protected override bool IsUrgent => true;
 
-    private ShipmentType ShipmentType { get; set; } = ShipmentType.ShipmentNormal;
-    private TreacheryCard? KarmaCard { get; set; }
-    private int ShipmentForceAmount { get; set; }
-    private int ShipmentSpecialForceAmount { get; set; }
-    private int ShipmentAllyContributionAmount { get; set; } 
-    private int NoFieldValue { get; set; } = -1;
-    private int CunningNoFieldValue { get; set; }= -1;
-    private int SmuggledForceAmount { get; set; }
-    private int SmuggledSpecialForceAmount { get; set; }
-    private Dictionary<Location, Battalion> ForceOrigins { get; } = new();
+    internal ShipmentType ShipmentType { get; set; } = ShipmentType.ShipmentNormal;
+    internal TreacheryCard? KarmaCard { get; set; }
+    internal int ShipmentForceAmount { get; set; }
+    internal int ShipmentSpecialForceAmount { get; set; }
+    internal int ShipmentAllyContributionAmount { get; set; } 
+    internal int NoFieldValue { get; set; } = -1;
+    internal int CunningNoFieldValue { get; set; }= -1;
+    internal int SmuggledForceAmount { get; set; }
+    internal int SmuggledSpecialForceAmount { get; set; }
+    internal Dictionary<Location, Battalion> ForceOrigins { get; } = new();
 
-    private Location? _shipmentFrom;
-    private Location? _shipmentTo;
+    internal Location? _shipmentFrom;
+    internal Location? _shipmentTo;
 
     protected override Shipment ConfirmedResult
     {

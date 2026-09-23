@@ -83,11 +83,11 @@
 
 @code {
 
-    private TreacheryCard? _cardToKeep;
+    internal TreacheryCard? _cardToKeep;
 
-    private bool _assassinate;
+    internal bool _assassinate;
 
-    private int _karmaDecision = LoserConcluded.KARMA_NO;
+    internal int _karmaDecision = LoserConcluded.KARMA_NO;
 
     protected override LoserConcluded ConfirmedResult => new(Game, Faction) { KeptCard = _cardToKeep, Assassinate = _assassinate, KarmaForcedKeptCardDecision = _karmaDecision, ForcedKeptOrDiscardedCards = _cardsToForceKeepOrDiscard };
 
@@ -95,5 +95,5 @@
 
     private IEnumerable<string> DecisionValueLabels => new[] { "No", "Force keeping...", "Force discarding..." };
 
-    private List<TreacheryCard> _cardsToForceKeepOrDiscard = new();
+    internal List<TreacheryCard> _cardsToForceKeepOrDiscard = new();
 }

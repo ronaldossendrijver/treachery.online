@@ -37,7 +37,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Yellow;
 
-    private Dictionary<Location, Battalion> forces = new();
+    internal Dictionary<Location, Battalion> forces = new();
 
     protected override PerformYellowSetup ConfirmedResult => new(Game, Faction) { ForceLocations = forces };
 

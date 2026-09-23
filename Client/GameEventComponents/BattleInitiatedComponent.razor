@@ -28,8 +28,8 @@
     protected override bool IsUrgent => true;
 
     private List<Fight>? Battles { get; set; }
-    private Faction Opponent { get; set; }
-    private Territory? Territory { get; set; }
+    internal Faction Opponent { get; set; }
+    internal Territory? Territory { get; set; }
 
     protected override void OnParametersSet()
     {

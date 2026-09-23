@@ -49,10 +49,10 @@
 
 @code {
 
-    private Faction target;
-    private int resources;
-    private TreacheryCard? card;
-    private bool fromBank;
+    internal Faction target;
+    internal int resources;
+    internal TreacheryCard? card;
+    internal bool fromBank;
 
     protected override Donated ConfirmedResult => new(Game, Faction) { Target = target, Resources = resources, Card = card, FromBank = fromBank };
 

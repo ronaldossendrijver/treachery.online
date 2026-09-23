@@ -70,8 +70,8 @@
 
     protected override Faction IsFactionSpecific => Faction.Purple;
 
-    private IHero? _offerHero;
-    private int _price;
+    internal IHero? _offerHero;
+    internal int _price;
 
     protected override AcceptOrCancelPurpleRevival ConfirmedResult => new(Game, Faction) { Cancel = false, Hero = _offerHero, Price = _price };
 

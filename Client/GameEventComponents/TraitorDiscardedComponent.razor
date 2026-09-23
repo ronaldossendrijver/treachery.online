@@ -25,7 +25,7 @@
 
     protected override bool IsUrgent => true;
 
-    private IHero? hero;
+    internal IHero? hero;
 
     protected override TraitorDiscarded ConfirmedResult => new(Game, Faction) { Traitor = hero };
 }

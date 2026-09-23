@@ -86,10 +86,10 @@
 
 @code {
 
-    protected Territory? fromTerritory;
-    protected Location? toLocation;
-    protected Dictionary<Location, Battalion> forces = new();
-    protected bool asAdvisors;
+    protected internal Territory? fromTerritory;
+    protected internal Location? toLocation;
+    protected internal Dictionary<Location, Battalion> forces = new();
+    protected internal bool asAdvisors;
     private Game? selectionGame;
 
     protected override void OnParametersSet()

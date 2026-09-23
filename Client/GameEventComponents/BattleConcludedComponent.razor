@@ -131,15 +131,15 @@
 
     protected override bool IsUrgent => true;
 
-    private CaptureDecision captureDecision = CaptureDecision.Kill;
-    private bool discardMercenary;
-    private bool discardWeapon;
-    private bool discardDefense;
-    private TechToken stolenToken;
-    private int replacementAmount;
-    private IHero? selectedNewTraitor;
-    private IHero? traitorToReplace;
-    private bool addExtraForce;
+    internal CaptureDecision captureDecision = CaptureDecision.Kill;
+    internal bool discardMercenary;
+    internal bool discardWeapon;
+    internal bool discardDefense;
+    internal TechToken stolenToken;
+    internal int replacementAmount;
+    internal IHero? selectedNewTraitor;
+    internal IHero? traitorToReplace;
+    internal bool addExtraForce;
 
     protected override BattleConcluded ConfirmedResult => new(Game, Faction)
     {
@@ -167,7 +167,7 @@
         StateHasChanged();
     }
 
-    private TreacheryCard DiscardableMercenaryAfterBattle
+    internal TreacheryCard DiscardableMercenaryAfterBattle
     {
         get
         {
@@ -181,7 +181,7 @@
         }
     }
 
-    private TreacheryCard DiscardableWeaponAfterBattle
+    internal TreacheryCard DiscardableWeaponAfterBattle
     {
         get
         {
@@ -195,7 +195,7 @@
         }
     }
 
-    private TreacheryCard DiscardableDefenseAfterBattle
+    internal TreacheryCard DiscardableDefenseAfterBattle
     {
         get
         {

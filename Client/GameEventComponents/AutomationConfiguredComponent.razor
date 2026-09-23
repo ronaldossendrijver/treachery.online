@@ -62,9 +62,9 @@
 
     private IEnumerable<AutomationConfigured> CurrentAutomation => Game.AutomationRules.Where(x => x.Initiator == Faction);
 
-    private AutomationRuleType NewRuleType { get; set; }
-    private int NewRuleBidAmount { get; set; }
-    private Faction NewRuleBidFaction { get; set; }
+    internal AutomationRuleType NewRuleType { get; set; }
+    internal int NewRuleBidAmount { get; set; }
+    internal Faction NewRuleBidFaction { get; set; }
     
     protected override AutomationConfigured ConfirmedResult 
         => new(Game, Faction) { RuleType = NewRuleType, BiddingAboveAmount = NewRuleBidAmount, BiddingWinningFaction = NewRuleBidFaction, Action = ItemAction.Create };

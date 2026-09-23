@@ -31,17 +31,12 @@ public sealed class SavegameComponentReplayTests
         Console.WriteLine("Re-playing all savegame files in {0}...", Directory.GetCurrentDirectory());
         
         var files = GetSavegameFiles();
-        var version = files.Select(file => GameState.Load(File.ReadAllText(file)).Version)
-            .Distinct()
-            .OrderDescending()
-            .Take(2)
-            .LastOrDefault();
 
         var testedEvents = 0;
         foreach (var file in files)
         {
             var state = GameState.Load(File.ReadAllText(file));
-            if (state.Version != version)
+            if (state.Version < Game.LatestVersion - 1)
             {
                 continue;
             }
