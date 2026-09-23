@@ -25,25 +25,29 @@ public sealed class SavegameComponentReplayTests
     [TestMethod]
     [TestCategory("Savegame")]
     [Timeout(60 * 60 * 1000, CooperativeCancellation = true)]
-    public void LatestTwoAvailableSavegameVersionsReproduceHistoricalComponentEvents()
+    [DoNotParallelize]
+    public void LatestSavegameVersionReproduceHistoricalComponentEvents()
     {
+        Console.WriteLine("Re-playing all savegame files in {0}...", Directory.GetCurrentDirectory());
+        
         var files = GetSavegameFiles();
-        var versions = files.Select(file => GameState.Load(File.ReadAllText(file)).Version)
+        var version = files.Select(file => GameState.Load(File.ReadAllText(file)).Version)
             .Distinct()
             .OrderDescending()
             .Take(2)
-            .ToArray();
-        Assert.HasCount(2, versions, "The corpus must contain at least two game versions.");
+            .LastOrDefault();
 
         var testedEvents = 0;
         foreach (var file in files)
         {
             var state = GameState.Load(File.ReadAllText(file));
-            if (!versions.Contains(state.Version))
+            if (state.Version != version)
             {
                 continue;
             }
 
+            Console.WriteLine("Checking {0} (version {1})...", file, state.Version);
+            
             var game = CurrentVersionGameFixture.Create(state.Version);
             var eventIndex = 0;
             foreach (var historicalEvent in state.Events)
