@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using Treachery.Shared;
 
-namespace Treachery.Client.Test;
+namespace Treachery.Test;
 
 [TestClass]
 public class ClairVoyanceTests

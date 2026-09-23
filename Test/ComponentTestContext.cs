@@ -1,9 +1,4 @@
-using Bunit;
-using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
-using Treachery.Shared;
-
-namespace Treachery.Client.Test;
+namespace Treachery.Test;
 
 internal sealed class ComponentTestContext : IDisposable
 {

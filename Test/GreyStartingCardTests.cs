@@ -1,11 +1,4 @@
-using Bunit;
-using Treachery.Bots;
-using Treachery.Client.GameEventComponents;
-using Treachery.Client.GenericComponents;
-using Treachery.Shared;
-using Treachery.Shared.Model;
-
-namespace Treachery.Client.Test;
+namespace Treachery.Test;
 
 [TestClass]
 [DoNotParallelize]

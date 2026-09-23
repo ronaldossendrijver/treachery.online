@@ -1,9 +1,4 @@
-using Bunit;
-using Treachery.Client.MapComponents;
-using Treachery.Shared;
-using Treachery.Shared.Model;
-
-namespace Treachery.Client.Test;
+namespace Treachery.Test;
 
 [TestClass]
 [DoNotParallelize]

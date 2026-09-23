@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Treachery.Shared;
 
-namespace Treachery.Shared.Test;
+namespace Treachery.Test;
 
 public class Testvalues
 {

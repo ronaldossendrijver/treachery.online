@@ -9,7 +9,7 @@
 
 using System.Collections.Generic;
 
-namespace Treachery.Shared.Test;
+namespace Treachery.Test;
 
 public class Testcase
 {

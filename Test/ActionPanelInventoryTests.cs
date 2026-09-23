@@ -1,7 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Treachery.Shared;
 
-namespace Treachery.Client.Test;
+namespace Treachery.Test;
 
 [TestClass]
 public sealed partial class ActionPanelInventoryTests

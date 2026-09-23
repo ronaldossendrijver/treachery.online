@@ -10,7 +10,7 @@
 using System.Collections.Generic;
 using Treachery.Shared;
 
-namespace Treachery.Shared.Test;
+namespace Treachery.Test;
 
 public class GameInfo
 {

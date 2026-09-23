@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
 using Treachery.Shared;
 
-namespace Treachery.Client.Test;
+namespace Treachery.Test;
 
 internal static class HistoricalGameEventComparer
 {

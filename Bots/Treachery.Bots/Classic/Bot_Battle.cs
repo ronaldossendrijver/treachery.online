@@ -836,7 +836,7 @@ public partial class ClassicBot
         return 0f;
     }
 
-    internal static bool CanDefendPoisonTooth(Battle? opponentPlan, IEnumerable<TreacheryCard> knownEnemyDefenses)
+    public static bool CanDefendPoisonTooth(Battle? opponentPlan, IEnumerable<TreacheryCard> knownEnemyDefenses)
     {
         return opponentPlan?.Defense is { IsNonAntidotePoisonDefense: true } ||
                knownEnemyDefenses.Any(c => c.IsNonAntidotePoisonDefense);

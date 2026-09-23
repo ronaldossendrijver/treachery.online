@@ -12,7 +12,7 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Treachery.Shared.Test;
+namespace Treachery.Test;
 
 [TestClass]
 public class GameEventSerializationTests

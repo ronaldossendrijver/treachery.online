@@ -9,12 +9,13 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Treachery.Shared.Test;
+namespace Treachery.Test;
 
 [TestClass]
 public class RegressionTests : GameSimulationTestBase
 {
     [TestMethod]
+    [DoNotParallelize]
     public void Regression()
     {
         RunRegressionTests();

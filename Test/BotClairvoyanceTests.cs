@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Treachery.Bots;
 using Treachery.Shared.Model;
 
-namespace Treachery.Shared.Test;
+namespace Treachery.Test;
 
 [TestClass]
 public class BotClairvoyanceTests

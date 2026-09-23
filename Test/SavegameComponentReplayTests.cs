@@ -1,3 +1,5 @@
+using System.IO;
+using System.Reflection;
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -5,7 +7,7 @@ using NSubstitute;
 using Treachery.Client.GenericComponents;
 using Treachery.Shared;
 
-namespace Treachery.Client.Test;
+namespace Treachery.Test;
 
 [TestClass]
 [DoNotParallelize]
@@ -246,15 +248,12 @@ public sealed class SavegameComponentReplayTests
 
     private static string[] GetSavegameFiles()
     {
-        var savegameDirectory = Path.Combine(FindRepositoryRoot(), "Client.Test", "Savegames");
-        var files = Directory.Exists(savegameDirectory)
-            ? Directory.GetFiles(savegameDirectory, "savegame*.json")
-            : [];
+        var files = Directory.EnumerateFiles(".", "savegame*.json").ToArray();
 
         if (files.Length == 0)
         {
             Assert.Inconclusive(
-                $"No savegames found in {savegameDirectory}. Copy the corpus there before running Savegame tests.");
+                "No savegames found in test directory. Copy the corpus there before running Savegame tests.");
         }
 
         var limitText = Environment.GetEnvironmentVariable("TREACHERY_SAVEGAME_LIMIT");

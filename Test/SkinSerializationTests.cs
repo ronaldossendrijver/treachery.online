@@ -11,7 +11,7 @@ using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Treachery.Shared.Test;
+namespace Treachery.Test;
 
 [TestClass]
 public class SkinSerializationTests

@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Treachery.Shared;
 
-namespace Treachery.Shared.Test;
+namespace Treachery.Test;
 
 public class Statistics
 {

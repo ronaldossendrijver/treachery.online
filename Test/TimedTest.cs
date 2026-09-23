@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Timers;
 
-namespace Treachery.Shared.Test;
+namespace Treachery.Test;
 
 internal class TimedTest : IDisposable
 {

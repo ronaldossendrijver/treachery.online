@@ -1,6 +1,6 @@
 using Treachery.Shared;
 
-namespace Treachery.Client.Test;
+namespace Treachery.Test;
 
 public sealed class ValidTestEvent : GameEvent
 {

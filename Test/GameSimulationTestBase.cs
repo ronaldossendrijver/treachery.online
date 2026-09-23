@@ -19,7 +19,7 @@ using Treachery.Bots;
 using Treachery.Shared.Model;
 
 [assembly: Parallelize(Scope = ExecutionScope.MethodLevel)]
-namespace Treachery.Shared.Test;
+namespace Treachery.Test;
 
 public abstract class GameSimulationTestBase
 {

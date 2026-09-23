@@ -14,7 +14,7 @@ using Treachery.Bots;
 using Treachery.Shared;
 using Treachery.Shared.Model;
 
-namespace Treachery.Shared.Test;
+namespace Treachery.Test;
 
 [TestClass]
 public class FaceDancerReplacedTests

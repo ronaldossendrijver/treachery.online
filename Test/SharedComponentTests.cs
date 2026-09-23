@@ -5,7 +5,7 @@ using Treachery.Client.GameEventComponents;
 using Treachery.Client.GenericComponents;
 using Treachery.Shared;
 
-namespace Treachery.Client.Test;
+namespace Treachery.Test;
 
 [TestClass]
 [DoNotParallelize]

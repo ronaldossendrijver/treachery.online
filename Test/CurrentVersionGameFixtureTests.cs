@@ -1,6 +1,6 @@
 using Treachery.Shared;
 
-namespace Treachery.Client.Test;
+namespace Treachery.Test;
 
 [TestClass]
 public sealed class CurrentVersionGameFixtureTests

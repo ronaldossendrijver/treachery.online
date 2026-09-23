@@ -3,7 +3,7 @@ using NSubstitute;
 using Treachery.Client.GameEventComponents;
 using Treachery.Shared;
 
-namespace Treachery.Client.Test;
+namespace Treachery.Test;
 
 [TestClass]
 [DoNotParallelize]
