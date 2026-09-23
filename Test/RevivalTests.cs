@@ -35,4 +35,44 @@ public class RevivalTests
 
         Assert.IsNotNull(revival.Validate());
     }
+
+    [TestMethod]
+    public void PurpleCannotReviveLivingGholaAgain()
+    {
+        var game = new Game();
+        game.Rules.Add(Rule.PurpleGholas);
+
+        var purple = new Player(game, Faction.Purple)
+        {
+            Resources = 100
+        };
+        purple.AssignLeaders(game);
+
+        var yellow = new Player(game, Faction.Yellow);
+        yellow.AssignLeaders(game);
+
+        game.Players.Add(purple);
+        game.Players.Add(yellow);
+
+        game.LeaderState[purple.Leaders.First()].Kill(game);
+        var otheym = yellow.Leaders.Single(leader => leader.Id == 1018);
+        game.LeaderState[otheym].Kill(game);
+
+        var firstRevival = new Revival(game, Faction.Purple)
+        {
+            Hero = otheym
+        };
+
+        Assert.IsNull(firstRevival.Validate());
+        firstRevival.Execute(false, true);
+
+        var repeatedRevival = new Revival(game, Faction.Purple)
+        {
+            Hero = otheym
+        };
+
+        Assert.IsTrue(game.IsAlive(otheym));
+        Assert.Contains(otheym, purple.Leaders);
+        Assert.IsNotNull(repeatedRevival.Validate());
+    }
 }
