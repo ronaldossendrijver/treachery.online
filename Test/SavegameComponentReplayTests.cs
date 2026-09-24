@@ -1,5 +1,6 @@
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -33,12 +34,16 @@ public sealed class SavegameComponentReplayTests
         var files = GetSavegameFiles();
 
         var testedEvents = 0;
-        foreach (var file in files)
+        ParallelOptions po = new()
+        {
+            MaxDegreeOfParallelism = Environment.ProcessorCount
+        };
+        Parallel.ForEach(files, po, file =>
         {
             var state = GameState.Load(File.ReadAllText(file));
-            if (state.Version < Game.LatestVersion - 1)
+            if (state.Version < Game.LatestVersion - 3)
             {
-                continue;
+                return;
             }
 
             Console.WriteLine("Checking {0} (version {1})...", file, state.Version);
@@ -57,7 +62,7 @@ public sealed class SavegameComponentReplayTests
                 if (HasConfirmableGameEventComponent(historicalEvent))
                 {
                     ReproduceComponentEvent(game, historicalEvent, context);
-                    testedEvents++;
+                    Interlocked.Increment(ref testedEvents);
                 }
 
                 var executionError = historicalEvent.Execute(false, true);
@@ -66,7 +71,7 @@ public sealed class SavegameComponentReplayTests
                     $"{context}: historical event could not be replayed: {executionError?.ToString(DefaultSkin.Default)}");
                 eventIndex++;
             }
-        }
+        });
 
         Assert.IsGreaterThan(0, testedEvents);
     }
