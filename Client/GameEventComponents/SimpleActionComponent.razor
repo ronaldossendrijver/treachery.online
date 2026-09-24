@@ -104,30 +104,16 @@
         dismissed = true;
     }
 
-    private static Dictionary<Type, bool> AutoConfirmSettings = new();
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<Type, bool> AutoConfirmSettings = new();
 
     private void SaveAutoConfirmSetting(bool value)
     {
-        var type = typeof(GameEventType);
-
-        if (AutoConfirmSettings.ContainsKey(type))
-        {
-            AutoConfirmSettings.Remove(type);
-        }
-
-        AutoConfirmSettings.Add(type, autoConfirm);
+        AutoConfirmSettings[typeof(GameEventType)] = autoConfirm;
     }
 
     private bool GetAutoConfirmSetting()
     {
-        var type = typeof(GameEventType);
-
-        if (AutoConfirmSettings.ContainsKey(type))
-        {
-            return AutoConfirmSettings[type];
-        }
-
-        return false;
+        return AutoConfirmSettings.TryGetValue(typeof(GameEventType), out var value) && value;
     }
 }
 

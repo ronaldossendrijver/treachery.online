@@ -67,7 +67,7 @@ public static class ExtensionMethods
         }
     }
 
-    private static readonly Random Random = new();
+    private static Random Random => Random.Shared;
     extension<T>(IEnumerable<T>? source)
     {
         public T? RandomOrDefault()

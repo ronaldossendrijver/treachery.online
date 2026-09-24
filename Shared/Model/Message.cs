@@ -13,9 +13,9 @@ public class Message
 {
     public static IDescriber? DefaultDescriber = null;
 
-    private static int Counter { get; set; }
+    private static int _counter;
 
-    public int Nr { get; } = Counter++;
+    public int Nr { get; } = System.Threading.Interlocked.Increment(ref _counter) - 1;
 
     public Faction Target { get; set; }
 

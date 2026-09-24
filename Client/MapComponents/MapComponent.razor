@@ -97,7 +97,7 @@
     private string? _id;
     protected string Id
     {
-        get { return _id ??= (_nextId++).ToString(); }
+        get { return _id ??= (System.Threading.Interlocked.Increment(ref _nextId) - 1).ToString(); }
     }
 
     protected PointD PlayerTokenPosition(Game game, int positionAtTable)

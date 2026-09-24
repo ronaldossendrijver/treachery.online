@@ -45,7 +45,7 @@
 
 @code {
 
-    private static readonly Dictionary<Type, bool> SavedCollapsedStateValues = new();
+    private static readonly ConcurrentDictionary<Type, bool> SavedCollapsedStateValues = new();
 
     [Parameter]
     public bool IsUrgent { get; set; }
@@ -133,8 +133,7 @@
 
         if (CollapsedType != null)
         {
-            SavedCollapsedStateValues.Remove(CollapsedType);
-            SavedCollapsedStateValues.Add(CollapsedType, CollapsedInternal);
+            SavedCollapsedStateValues[CollapsedType] = CollapsedInternal;
         }
     }
 }

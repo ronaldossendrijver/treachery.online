@@ -31,7 +31,7 @@ public class LeaderState : ICloneable
         }
 
         DeathCounter++;
-        TimeOfDeath = moment++;
+        TimeOfDeath = System.Threading.Interlocked.Increment(ref moment) - 1;
     }
 
     public void Assassinate(Game g)

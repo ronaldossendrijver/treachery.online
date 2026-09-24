@@ -30,15 +30,8 @@
         _redrawCycleStarted = false;
     }
 
-    protected async Task Request<T>(T e) where T : GameEvent
-    {
-        var result = await Client.RequestGameEvent(e);
-        if (result != null)
-        {
-            Console.WriteLine(result);            
-        }
-    }
-
+    protected async Task Request<T>(T e) where T : GameEvent => await Client.RequestGameEvent(e);
+    
     private bool _redrawCycleStarted;
     protected void StartRedrawCycle(int interval)
     {
