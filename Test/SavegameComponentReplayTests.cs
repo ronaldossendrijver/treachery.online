@@ -52,23 +52,39 @@ public sealed class SavegameComponentReplayTests
             var eventIndex = 0;
             foreach (var historicalEvent in state.Events)
             {
-                historicalEvent.Initialize(game);
-                var context = $"{Path.GetFileName(file)}, event {eventIndex}, {historicalEvent.GetType().Name}";
-                var historicalValidation = historicalEvent.Validate();
-                Assert.IsNull(
-                    historicalValidation,
-                    $"{context}: the historical event is not valid in its reconstructed pre-event state: {historicalValidation?.ToString(DefaultSkin.Default)}");
-
-                if (HasConfirmableGameEventComponent(historicalEvent))
+                try
                 {
-                    ReproduceComponentEvent(game, historicalEvent, context);
-                    Interlocked.Increment(ref testedEvents);
+                    historicalEvent.Initialize(game);
+                    var context = $"{Path.GetFileName(file)}, event {eventIndex}, {historicalEvent.GetType().Name}";
+                    var historicalValidation = historicalEvent.Validate();
+                    Assert.IsNull(
+                        historicalValidation,
+                        $"{context}: the historical event is not valid in its reconstructed pre-event state: {historicalValidation?.ToString(DefaultSkin.Default)}");
+
+                    if (HasConfirmableGameEventComponent(historicalEvent))
+                    {
+                        ReproduceComponentEvent(game, historicalEvent, context);
+                        Interlocked.Increment(ref testedEvents);
+                    }
+
+                    var executionError = historicalEvent.Execute(false, true);
+                    Assert.IsNull(
+                        executionError,
+                        $"{context}: historical event could not be replayed: {executionError?.ToString(DefaultSkin.Default)}");
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(
+                        "Exception while replaying {0}, event {1} ({2}), faction {3}: {4}",
+                        Path.GetFileName(file),
+                        eventIndex,
+                        historicalEvent.GetType().Name,
+                        historicalEvent.Initiator,
+                        exception.Message.Split('\n', 2)[0].TrimEnd());
+                    Console.WriteLine(exception.StackTrace);
+                    throw;
                 }
 
-                var executionError = historicalEvent.Execute(false, true);
-                Assert.IsNull(
-                    executionError,
-                    $"{context}: historical event could not be replayed: {executionError?.ToString(DefaultSkin.Default)}");
                 eventIndex++;
             }
         });
