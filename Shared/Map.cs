@@ -1855,8 +1855,9 @@ public class Map
         return null;
     }
 
-    public static List<Location> FindNeighboursForHmsMovement(Location start, int distance, bool ignoreStorm, int sectorInStorm)
+    public static List<Location> FindNeighboursForHmsMovement(Location? start, int distance, bool ignoreStorm, int sectorInStorm)
     {
+        if (start == null) return [];
         List<Location> neighbours = [];
         FindNeighboursForHmsMovement(neighbours, start, null, 0, distance, ignoreStorm, sectorInStorm);
         neighbours.Remove(start);

@@ -28,13 +28,13 @@ public class KarmaHmsMovement : GameEvent
 
     public bool Passed;
 
-    public int _targetId;
+    private readonly int _targetId;
 
     [JsonIgnore]
-    public Location Target
+    public Location? Target
     {
         get => Game.Map.LocationLookup.Find(_targetId);
-        set => _targetId = Game.Map.LocationLookup.GetId(value);
+        init => _targetId = Game.Map.LocationLookup.GetId(value);
     }
 
     #endregion Properties
@@ -69,6 +69,9 @@ public class KarmaHmsMovement : GameEvent
         }
 
         var currentLocation = Game.Map.HiddenMobileStronghold.AttachedToLocation;
+        
+        if (currentLocation == null || Target == null) throw new InvalidEventException();
+        
         Game.CollectSpiceFrom(Initiator, currentLocation, collectionRate);
 
         if (!Passed)

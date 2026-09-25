@@ -26,13 +26,13 @@ public class DiscardedTaken : GameEvent
 
     #region Properties
 
-    public int _cardId;
+    private readonly int _cardId;
 
     [JsonIgnore]
     public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
-        set => _cardId = TreacheryCardManager.GetId(value);
+        init => _cardId = TreacheryCardManager.GetId(value);
     }
 
     #endregion Properties
@@ -63,8 +63,9 @@ public class DiscardedTaken : GameEvent
     protected override void ExecuteConcreteEvent()
     {
         Log();
+        if (Card == null) throw new InvalidEventException();
         Game.RecentlyDiscarded.Remove(Card);
-        Game.TreacheryDiscardPile.Items.Remove(Card);
+        Game.TreacheryDiscardPile!.Items.Remove(Card);
         Player.TreacheryCards.Add(Card);
         Game.Discard(Player, TreacheryCardType.TakeDiscarded);
         Game.Stone(Milestone.CardWonSwapped);

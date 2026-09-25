@@ -47,7 +47,7 @@ public class ExtortionPrevented : GameEvent
 
         if (Game.Version >= 164)
         {
-            GetPlayer(Faction.Cyan).Resources += 3;            
+            GetPlayer(Faction.Cyan)!.Resources += 3;            
         }
     }
 

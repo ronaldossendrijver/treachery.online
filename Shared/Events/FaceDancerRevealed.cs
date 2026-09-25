@@ -42,7 +42,8 @@ public class FaceDancerRevealed : PassableGameEvent
     {
         if (!Passed)
         {
-            var facedancer = Player.FaceDancers.FirstOrDefault(f => Game.WinnerHero.IsFaceDancer(f));
+            var winnerHero = Game.WinnerHero ?? throw new InvalidEventException();
+            var facedancer = Player.FaceDancers.FirstOrDefault(f => winnerHero.IsFaceDancer(f));
             Log(Initiator, " reveal ", facedancer, " as one of their Face Dancers!");
 
             Game.Stone(Milestone.FaceDanced);
@@ -59,6 +60,7 @@ public class FaceDancerRevealed : PassableGameEvent
     {
         if (!Passed)
             return Message.Express(Initiator, " reveal a face dancer!");
+        
         return Message.Express(Initiator, " don't reveal a face dancer");
     }
 

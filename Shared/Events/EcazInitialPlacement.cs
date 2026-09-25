@@ -22,7 +22,7 @@ public class EcazInitialPlacement : GameEvent
     public int _targetId;
 
     [JsonIgnore]
-    public Location Target
+    public Location? Target
     {
         get => Game.Map.LocationLookup.Find(_targetId);
         set => _targetId = Game.Map.LocationLookup.GetId(value);
@@ -42,6 +42,8 @@ public class EcazInitialPlacement : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
+        if (Target == null) throw new InvalidEventException();
+        
         Player.ShipForces(Target, 6);
         Log();
         Game.Enter(
@@ -54,3 +56,5 @@ public class EcazInitialPlacement : GameEvent
         return Message.Express(Initiator, " have selected their starting sector in ", Game.Map.ImperialBasin);
     }
 }
+
+public class InvalidEventException : Exception;

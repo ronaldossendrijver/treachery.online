@@ -27,7 +27,7 @@ public class Startup
             {
                 options.EnableDetailedErrors = true;
                 options.MaximumReceiveMessageSize = 4194304;
-            }).AddJsonProtocol(jsonOptions => jsonOptions.PayloadSerializerOptions.IncludeFields = true);
+            }).AddJsonProtocol(jsonOptions => GameEventJsonTypeInfoResolver.Configure(jsonOptions.PayloadSerializerOptions));
         services.AddDbContext<TreacheryContext>();
     }
 

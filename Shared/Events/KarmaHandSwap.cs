@@ -26,13 +26,13 @@ public class KarmaHandSwap : GameEvent
 
     #region Properties
 
-    public string _cardIds;
+    private readonly string _cardIds = string.Empty;
 
     [JsonIgnore]
     public IEnumerable<TreacheryCard> ReturnedCards
     {
         get => IdStringToObjects(_cardIds, TreacheryCardManager.Lookup);
-        set => _cardIds = ObjectsToIdString(value, TreacheryCardManager.Lookup);
+        init => _cardIds = ObjectsToIdString(value, TreacheryCardManager.Lookup);
     }
 
     #endregion Properties
@@ -53,6 +53,7 @@ public class KarmaHandSwap : GameEvent
     protected override void ExecuteConcreteEvent()
     {
         var victim = GetPlayer(Game.KarmaHandSwapTarget);
+        if (victim == null) throw new InvalidEventException();
 
         foreach (var p in Game.Players.Where(p => p != Player && p != victim))
         {

@@ -26,15 +26,15 @@ public class DistransUsed : GameEvent
 
     #region Properties
 
-    public Faction Target { get; set; }
+    public Faction Target { get; init; }
 
-    public int _cardId = -1;
+    private readonly int _cardId = -1;
 
     [JsonIgnore]
     public TreacheryCard? Card
     {
         get => TreacheryCardManager.Lookup.Find(_cardId);
-        set => _cardId = TreacheryCardManager.Lookup.GetId(value);
+        init => _cardId = TreacheryCardManager.Lookup.GetId(value);
     }
 
     #endregion Properties
@@ -71,6 +71,7 @@ public class DistransUsed : GameEvent
     protected override void ExecuteConcreteEvent()
     {
         var target = GetPlayer(Target);
+        if (Card == null || target == null) throw new InvalidEventException();
 
         var targetHadRoomForCards = target.HasRoomForCards;
 
@@ -80,7 +81,7 @@ public class DistransUsed : GameEvent
         Game.RegisterKnown(Player, Card);
         target.TreacheryCards.Add(Card);
 
-        if (Player.TreacheryCards.Any())
+        if (Player.TreacheryCards.Count != 0)
             foreach (var p in Game.Players.Where(p => !p.Is(Initiator) && p != target))
             {
                 Game.UnregisterKnown(p, Player.TreacheryCards);

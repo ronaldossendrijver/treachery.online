@@ -90,7 +90,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         Browser = browser;
         
         _connection = new HubConnectionBuilder()
-            .AddJsonProtocol(jsonOptions => jsonOptions.PayloadSerializerOptions.IncludeFields = true)
+            .AddJsonProtocol(jsonOptions => GameEventJsonTypeInfoResolver.Configure(jsonOptions.PayloadSerializerOptions))
             .WithUrl(navigationManager.ToAbsoluteUri("/gameHub"))
             .WithAutomaticReconnect(new RetryPolicy())
             .Build();

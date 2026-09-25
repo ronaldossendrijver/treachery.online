@@ -26,22 +26,22 @@ public class KarmaBrownDiscard : GameEvent
 
     #region Properties
     
-    public int _cardToUse;
+    private readonly int _cardToUse;
 
     [JsonIgnore]
-    public TreacheryCard CardToUse
+    public TreacheryCard? CardToUse
     {
         get => TreacheryCardManager.Lookup.Find(_cardToUse);
-        set => _cardToUse = TreacheryCardManager.Lookup.GetId(value);
+        init => _cardToUse = TreacheryCardManager.Lookup.GetId(value);
     }
 
-    public string _cardIds;
+    private readonly string _cardIds = string.Empty;
 
     [JsonIgnore]
     public IEnumerable<TreacheryCard> Cards
     {
         get => IdStringToObjects(_cardIds, TreacheryCardManager.Lookup);
-        set => _cardIds = ObjectsToIdString(value, TreacheryCardManager.Lookup);
+        init => _cardIds = ObjectsToIdString(value, TreacheryCardManager.Lookup);
     }
 
     #endregion Properties

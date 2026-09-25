@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class KarmaFreeRevival : GameEvent
@@ -27,13 +25,13 @@ public class KarmaFreeRevival : GameEvent
 
     #region Properties
 
-    public int _heroId;
+    private readonly int _heroId;
 
     [JsonIgnore]
-    public IHero Hero
+    public IHero? Hero
     {
         get => LeaderManager.HeroLookup.Find(_heroId);
-        set => _heroId = LeaderManager.HeroLookup.GetId(value);
+        init => _heroId = LeaderManager.HeroLookup.GetId(value);
     }
 
     public int AmountOfForces { get; set; }

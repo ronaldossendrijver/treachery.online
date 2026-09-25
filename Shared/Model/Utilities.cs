@@ -18,7 +18,7 @@ public static class Utilities
         where TY : struct, Enum
         => toClone.ToDictionary(item => item.Key, item => item.Value);
 
-    private static readonly JsonSerializerOptions Options = new() { IncludeFields = true };
+    private static readonly JsonSerializerOptions Options = GameEventJsonTypeInfoResolver.Configure(new JsonSerializerOptions());
 
     private const string NewtonsoftIndicator = "Treachery.Shared.GameState";
 

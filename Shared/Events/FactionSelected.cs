@@ -25,11 +25,11 @@ public class FactionSelected : GameEvent
 
     #region Properties
 
-    public string InitiatorPlayerName { get; set; }
+    public string InitiatorPlayerName { get; init; } = string.Empty;
     
-    public int Seat { get; set; }
+    public int Seat { get; init; }
 
-    public Faction Faction { get; set; }
+    public Faction Faction { get; init; }
 
     #endregion Properties
 

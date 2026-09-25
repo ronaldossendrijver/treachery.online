@@ -25,7 +25,7 @@ public class DivideResources : PassableGameEvent
 
     #region Properties
 
-    public int PortionToFirstPlayer { get; set; }
+    public int PortionToFirstPlayer { get; init; }
 
     #endregion Properties
 
@@ -37,20 +37,22 @@ public class DivideResources : PassableGameEvent
 
         var toBeDivided = GetResourcesToBeDivided(Game);
         if (toBeDivided == null) return Message.Express("No collections to be divided");
-        if (PortionToFirstPlayer > GetResourcesToBeDivided(Game).Amount) return Message.Express("Too much assigned to ", toBeDivided.FirstFaction);
+        if (PortionToFirstPlayer > toBeDivided.Amount) return Message.Express("Too much assigned to ", toBeDivided.FirstFaction);
 
         return null;
     }
 
-    public static ResourcesToBeDivided GetResourcesToBeDivided(Game g)
+    public static ResourcesToBeDivided? GetResourcesToBeDivided(Game g)
     {
         return g.CollectedResourcesToBeDivided.FirstOrDefault();
     }
 
     public static bool IsApplicable(Game g, Player p)
     {
-        return g.CurrentPhase == Phase.DividingCollectedResources &&
-               GetResourcesToBeDivided(g).FirstFaction == p.Faction;
+        var toBeDivided = GetResourcesToBeDivided(g);
+        if (toBeDivided == null) return false;
+        
+        return g.CurrentPhase == Phase.DividingCollectedResources && toBeDivided.FirstFaction == p.Faction;
     }
 
     public static int GainedByOtherFaction(ResourcesToBeDivided tbd, bool agreed, int portionToFirstPlayer)
@@ -74,11 +76,12 @@ public class DivideResources : PassableGameEvent
         if (Passed)
         {
             Game.DivideResourcesFromCollection(false);
-            Game.Enter(Game.CollectedResourcesToBeDivided.Any(), Phase.DividingCollectedResources, Game.EndCollectionMainPhase);
+            Game.Enter(Game.CollectedResourcesToBeDivided.Count != 0, Phase.DividingCollectedResources, Game.EndCollectionMainPhase);
         }
         else
         {
             var toBeDivided = GetResourcesToBeDivided(Game);
+            if (toBeDivided == null) throw new InvalidEventException();
             var gainedByOtherFaction = GainedByOtherFaction(toBeDivided, true, PortionToFirstPlayer);
             Log(Initiator, " propose that they take ", Payment.Of(PortionToFirstPlayer), " and ", toBeDivided.OtherFaction, " take ", Payment.Of(gainedByOtherFaction));
             Game.Enter(Phase.AcceptingResourceDivision);

@@ -26,15 +26,15 @@ public class Karma : GameEvent
 
     #region Properties
 
-    public FactionAdvantage Prevented { get; set; }
+    public FactionAdvantage Prevented { get; init; }
 
-    public int _cardId;
+    private readonly int _cardId;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
-        set => _cardId = TreacheryCardManager.GetId(value);
+        init => _cardId = TreacheryCardManager.GetId(value);
     }
 
     #endregion Properties
@@ -291,7 +291,7 @@ public class Karma : GameEvent
         return Message.Express(
             Initiator,
             " play ",
-            MessagePart.ExpressIf(Card.Type != TreacheryCardType.Karma, Card, " as "),
+            MessagePart.ExpressIf(Card?.Type != TreacheryCardType.Karma, Card, " as "),
             " a ",
             TreacheryCardType.Karma,
             " card");
