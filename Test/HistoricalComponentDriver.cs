@@ -211,7 +211,7 @@ internal static class HistoricalComponentDriver
                 c.price = deal.Price;
                 c.benefit = deal.Benefit;
                 c.type = deal.Type;
-                c.text = deal.Text;
+                c.text = deal.Text ?? string.Empty;
                 c.until = deal.EndPhase;
                 return;
             }

@@ -9,19 +9,13 @@
 
 namespace Treachery.Shared;
 
-public class Intrusion
+public class Intrusion(ILocationEvent triggeringEvent, IntrusionType type)
 {
-    public ILocationEvent TriggeringEvent { get; set; }
+    private ILocationEvent TriggeringEvent { get; set; } = triggeringEvent;
 
-    public IntrusionType Type { get; set; }
+    public IntrusionType Type { get; set; } = type;
 
-    public Territory Territory => TriggeringEvent.To.Territory;
+    public Territory Territory => TriggeringEvent.To!.Territory;
 
     public Faction Initiator => TriggeringEvent.Initiator;
-
-    public Intrusion(ILocationEvent triggeringEvent, IntrusionType type)
-    {
-        TriggeringEvent = triggeringEvent;
-        Type = type;
-    }
 }

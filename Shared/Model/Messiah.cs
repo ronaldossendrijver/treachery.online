@@ -47,6 +47,7 @@ public class Messiah : IHero
     {
         if (Message.DefaultDescriber != null)
             return Message.DefaultDescriber.Describe(this) + "*";
-        return base.ToString();
+        
+        return base.ToString() ?? string.Empty;
     }
 }

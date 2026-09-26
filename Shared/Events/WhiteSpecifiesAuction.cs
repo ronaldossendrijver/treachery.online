@@ -80,7 +80,7 @@ public class WhiteSpecifiesAuction : GameEvent
         if (!Game.WhiteOccupierSpecifiedCard)
         {
             Game.WhiteAuctionShouldStillHappen = false;
-            Game.CardsOnAuction.PutOnTop(Card);
+            Game.CardsOnAuction!.PutOnTop(Card);
             Game.WhiteCache.Remove(Card);
             Game.RegisterKnown(Card);
 

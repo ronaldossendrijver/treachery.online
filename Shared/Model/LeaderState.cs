@@ -1,17 +1,15 @@
-﻿using System;
-
-namespace Treachery.Shared;
+﻿namespace Treachery.Shared;
 
 public class LeaderState : ICloneable
 {
-    private static int moment;
+    private static int _moment;
 
     public Territory? CurrentTerritory { get; set; }
 
     //even = alive, odd = dead
     public int DeathCounter { get; set; }
 
-    public int TimeOfDeath { get; set; }
+    public int TimeOfDeath { get; private set; }
 
     public LeaderSkill Skill { get; set; }
 
@@ -25,13 +23,13 @@ public class LeaderState : ICloneable
     {
         if (Skill != LeaderSkill.None)
         {
-            g.SkillDeck.PutOnTop(Skill);
+            g.SkillDeck!.PutOnTop(Skill);
             Skill = LeaderSkill.None;
             InFrontOfShield = false;
         }
 
         DeathCounter++;
-        TimeOfDeath = System.Threading.Interlocked.Increment(ref moment) - 1;
+        TimeOfDeath = System.Threading.Interlocked.Increment(ref _moment) - 1;
     }
 
     public void Assassinate(Game g)

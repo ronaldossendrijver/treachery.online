@@ -429,9 +429,11 @@ public partial class Game
         return t == Map.ShieldWall && Applicable(Rule.Ssw) && NumberOfMonsters >= 4;
     }
 
-    public IEnumerable<TerrorType> TerrorIn(Territory t)
+    public IEnumerable<TerrorType> TerrorIn(Territory? t)
     {
-        return TerrorOnPlanet.Where(kvp => kvp.Value == t).Select(kvp => kvp.Key);
+        return t == null 
+            ? [] 
+            : TerrorOnPlanet.Where(kvp => kvp.Value == t).Select(kvp => kvp.Key);
     }
 
     #endregion Information

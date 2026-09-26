@@ -35,9 +35,12 @@ public partial class Game
     internal void DivideResourcesFromCollection(bool divisionWasAgreed)
     {
         if (CurrentDivisionProposal is null)
-            return;
+            throw new InvalidEventException();
         
         var toBeDivided = DivideResources.GetResourcesToBeDivided(this);
+        
+        if (toBeDivided is null)
+            throw new InvalidEventException();
 
         var gainedByFirstFaction = DivideResources.GainedByFirstFaction(toBeDivided, divisionWasAgreed, CurrentDivisionProposal.PortionToFirstPlayer);
         var gainedByOtherFaction = DivideResources.GainedByOtherFaction(toBeDivided, divisionWasAgreed, CurrentDivisionProposal.PortionToFirstPlayer);

@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class TerrorRevealed : PassableGameEvent, ILocationEvent
@@ -27,34 +25,34 @@ public class TerrorRevealed : PassableGameEvent, ILocationEvent
 
     #region Properties
 
-    public bool AllianceOffered { get; set; }
+    public bool AllianceOffered { get; init; }
 
-    public TerrorType Type { get; set; }
+    public TerrorType Type { get; init; }
 
-    public int ForcesInSneakAttack { get; set; }
+    public int ForcesInSneakAttack { get; init; }
 
-    public int _sneakAttackTo;
+    private readonly int _sneakAttackTo;
 
     [JsonIgnore]
-    public Location SneakAttackTo
+    public Location? SneakAttackTo
     {
         get => Game.Map.LocationLookup.Find(_sneakAttackTo);
-        set => _sneakAttackTo = Game.Map.LocationLookup.GetId(value);
+        init => _sneakAttackTo = Game.Map.LocationLookup.GetId(value);
     }
 
-    public bool RobberyTakesCard { get; set; }
+    public bool RobberyTakesCard { get; init; }
 
-    public int _cardToGiveInSabotageId;
+    private readonly int _cardToGiveInSabotageId;
 
     [JsonIgnore]
-    public TreacheryCard CardToGiveInSabotage
+    public TreacheryCard? CardToGiveInSabotage
     {
         get => TreacheryCardManager.Get(_cardToGiveInSabotageId);
-        set => _cardToGiveInSabotageId = TreacheryCardManager.GetId(value);
+        init => _cardToGiveInSabotageId = TreacheryCardManager.GetId(value);
     }
 
     [JsonIgnore]
-    public Location To => SneakAttackTo;
+    public Location? To => SneakAttackTo;
 
     [JsonIgnore]
     public int TotalAmountOfForcesAddedToLocation => ForcesInSneakAttack;
@@ -93,24 +91,24 @@ public class TerrorRevealed : PassableGameEvent, ILocationEvent
     public static bool MayOfferAlliance(Game g)
     {
         var victim = g.GetPlayer(GetVictim(g));
-        var cyan = g.GetPlayer(Faction.Cyan);
+        var cyan = g.GetPlayer(Faction.Cyan)!;
 
-        return !g.AllianceByTerrorWasOffered && !g.Prevented(FactionAdvantage.CyanEnemyOfEnemy) && !victim.Is(Faction.Pink) && !cyan.HaveForcesOnEachOthersHomeWorlds(victim);
+        return !g.AllianceByTerrorWasOffered && !g.Prevented(FactionAdvantage.CyanEnemyOfEnemy) && victim != null && !victim.Is(Faction.Pink) && !cyan.HaveForcesOnEachOthersHomeWorlds(victim);
     }
 
-    public static Territory GetTerritory(Game g)
+    public static Territory? GetTerritory(Game g)
     {
         return g.LastTerrorTrigger?.Territory;
     }
 
     public static Faction GetVictim(Game g)
     {
-        return g.LastTerrorTrigger != null ? g.LastTerrorTrigger.Initiator : Faction.None;
+        return g.LastTerrorTrigger?.Initiator ?? Faction.None;
     }
 
     public static IEnumerable<TerrorType> GetTypes(Game g)
     {
-        return g.LastTerrorTrigger != null ? g.TerrorIn(GetTerritory(g)) : Array.Empty<TerrorType>();
+        return g.LastTerrorTrigger != null ? g.TerrorIn(GetTerritory(g)) : [];
     }
 
     public static int MaxAmountOfForcesInSneakAttack(Player p)
@@ -120,7 +118,8 @@ public class TerrorRevealed : PassableGameEvent, ILocationEvent
 
     public static IEnumerable<Location> ValidSneakAttackTargets(Game g, Player p)
     {
-        return GetTerritory(g).Locations.Where(l => OpenDespiteAllyAndStormAndOccupancy(g, p, l));
+        var territory = GetTerritory(g); 
+        return territory != null ? territory.Locations.Where(l => OpenDespiteAllyAndStormAndOccupancy(g, p, l)) : [];
     }
 
     private static bool OpenDespiteAllyAndStormAndOccupancy(Game g, Player p, Location l)
@@ -172,6 +171,8 @@ public class TerrorRevealed : PassableGameEvent, ILocationEvent
             {
                 case TerrorType.Assassination:
 
+                    if (victimPlayer is null) throw new InvalidEventException();
+                    
                     var randomLeader = victimPlayer.Leaders.Where(l => Game.IsAlive(l)).RandomOrDefault(Game.Random!);
                     if (randomLeader != null)
                     {
@@ -187,6 +188,8 @@ public class TerrorRevealed : PassableGameEvent, ILocationEvent
                     break;
 
                 case TerrorType.Atomics:
+                    
+                    if (territory is null) throw new InvalidEventException();
 
                     Game.KillAllForcesIn(territory, false);
                     Game.KillAmbassadorIn(territory);
@@ -211,11 +214,16 @@ public class TerrorRevealed : PassableGameEvent, ILocationEvent
 
                     if (RobberyTakesCard)
                     {
-                        Player.TreacheryCards.Add(Game.DrawTreacheryCard());
-                        Log(Initiator, " draw a Treachery Card");
+                        var drawn = Game.DrawTreacheryCard();
+                        if (drawn != null)
+                        {
+                            Player.TreacheryCards.Add(drawn);
+                            Log(Initiator, " draw a Treachery Card");
+                        }
                     }
                     else
                     {
+                        if (victimPlayer is null) throw new InvalidEventException();
                         var amountStolen = (int)Math.Ceiling(0.5f * victimPlayer.Resources);
                         Player.Resources += amountStolen;
                         victimPlayer.Resources -= amountStolen;
@@ -225,6 +233,8 @@ public class TerrorRevealed : PassableGameEvent, ILocationEvent
 
                 case TerrorType.Sabotage:
 
+                    if (victimPlayer is null) throw new InvalidEventException();
+                    
                     Log(Initiator, " sabotage ", victimPlayer.Faction);
 
                     if (victimPlayer.TreacheryCards.Any())

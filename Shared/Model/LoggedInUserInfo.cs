@@ -7,15 +7,13 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class LoggedInUserInfo
 {
     public int Id { get; init; }
-    
-    public string Name { get; init; }
+
+    public string Name { get; init; } = string.Empty;
     
     public UserStatus Status { get; init; }
     

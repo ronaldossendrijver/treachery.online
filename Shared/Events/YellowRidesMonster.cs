@@ -25,9 +25,9 @@ public class YellowRidesMonster : PlacementEvent
 
     #region Properties
 
-    public int ForcesFromReserves { get; set; }
+    public int ForcesFromReserves { get; init; }
 
-    public int SpecialForcesFromReserves { get; set; }
+    public int SpecialForcesFromReserves { get; init; }
 
     [JsonIgnore]
     public override int TotalAmountOfForcesAddedToLocation => base.TotalAmountOfForcesAddedToLocation + ForcesFromReserves + SpecialForcesFromReserves;
@@ -61,7 +61,7 @@ public class YellowRidesMonster : PlacementEvent
         return ToRide(g) != null;
     }
 
-    public static MonsterAppearence ToRide(Game g)
+    public static MonsterAppearence? ToRide(Game g)
     {
         var yellow = g.GetPlayer(Faction.Yellow);
         if (yellow != null)
@@ -79,7 +79,7 @@ public class YellowRidesMonster : PlacementEvent
             var mayRideFromStorm = g.Applicable(Rule.YellowMayMoveIntoStorm);
 
             if (NexusPlayed.CanUseCunning(yellow) && yellow.AnyForcesIn(territory) == 0)
-                return yellow.ForcesOnPlanet.Keys.Where(l => !l.IsProtectedFromStorm && !l.IsStronghold && (mayRideFromStorm || !g.IsInStorm(l)));
+                return yellow.ForcesOnPlanet.Keys.Where(l => l is { IsProtectedFromStorm: false, IsStronghold: false } && (mayRideFromStorm || !g.IsInStorm(l)));
             if (!g.Prevented(FactionAdvantage.YellowRidesMonster))
                 return territory.Locations.Where(l => (mayRideFromStorm || !g.IsInStorm(l)) && yellow.AnyForcesIn(l) > 0);
             return [];
@@ -94,7 +94,7 @@ public class YellowRidesMonster : PlacementEvent
         if (yellow != null)
         {
             var toRide = ToRide(g);
-            if (!toRide.IsGreatMonster) return LocationsWithForcesThatCanRide(g, yellow, toRide.Territory);
+            if (toRide is { IsGreatMonster: false }) return LocationsWithForcesThatCanRide(g, yellow, toRide.Territory);
         }
 
         return [];
@@ -102,8 +102,8 @@ public class YellowRidesMonster : PlacementEvent
 
     public static int MaxForcesFromReserves(Game g, Player p, bool special)
     {
-        var rideFrom = ToRide(g);
-        if (rideFrom != null && ToRide(g).IsGreatMonster) return special ? p.SpecialForcesInReserve : p.ForcesInReserve;
+        var toRide = ToRide(g);
+        if (toRide is { IsGreatMonster: true }) return special ? p.SpecialForcesInReserve : p.ForcesInReserve;
 
         return 0;
     }
@@ -119,11 +119,6 @@ public class YellowRidesMonster : PlacementEvent
             (!p.HasAlly || Equals(l, g.Map.PolarSink) || !p.AlliedPlayer.Occupies(l)));
     }
     
-    private static bool IsEitherValidDiscoveryOrNoDiscovery(Location l)
-    {
-        return l is not DiscoveredLocation ds || ds.Visible;
-    }
-
     #endregion Validation
 
     #region Execution
@@ -134,23 +129,25 @@ public class YellowRidesMonster : PlacementEvent
 
         if (Game.Version <= 150)
             Game.Monsters.RemoveAt(0);
-        else
+        else if (toRide != null)
             Game.Monsters.Remove(toRide);
 
         if (!Passed)
         {
-            if (ForceLocations.Keys.Any(l => l.Territory != toRide.Territory)) Game.PlayNexusCard(Player, "cunning", "to ride from any territory on the planet");
+            if (To == null) throw new InvalidEventException();
+            
+            if (toRide != null && ForceLocations.Keys.Any(l => l.Territory != toRide.Territory)) 
+                Game.PlayNexusCard(Player, "cunning", "to ride from any territory on the planet");
 
-            var initiator = GetPlayer(Initiator);
+            var initiator = Player;
             Game.LastShipmentOrMovement = this;
-            foreach (var fl in ForceLocations)
+            foreach (var (from, value) in ForceLocations)
             {
-                var from = fl.Key;
-                initiator.MoveForces(from, To, fl.Value.AmountOfForces);
-                initiator.MoveSpecialForces(from, To, fl.Value.AmountOfSpecialForces);
+                initiator.MoveForces(from, To, value.AmountOfForces);
+                initiator.MoveSpecialForces(from, To, value.AmountOfSpecialForces);
                 Log(
-                    MessagePart.ExpressIf(fl.Value.AmountOfForces > 0, fl.Value.AmountOfForces, initiator.Force),
-                    MessagePart.ExpressIf(fl.Value.AmountOfSpecialForces > 0, fl.Value.AmountOfSpecialForces, initiator.SpecialForce),
+                    MessagePart.ExpressIf(value.AmountOfForces > 0, value.AmountOfForces, initiator.Force),
+                    MessagePart.ExpressIf(value.AmountOfSpecialForces > 0, value.AmountOfSpecialForces, initiator.SpecialForce),
                     " ride from ",
                     from,
                     " to ",

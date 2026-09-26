@@ -166,7 +166,7 @@ public partial class Game
                 if (player.Has(TreacheryCardType.Harvester)) result.Add(typeof(HarvesterPlayed));
                 break;
             case Phase.StormLosses:
-                if (faction == TakeLosses.LossesToTake(this).Faction) result.Add(typeof(TakeLosses));
+                if (faction == TakeLosses.LossesToTake(this)?.Faction) result.Add(typeof(TakeLosses));
                 break;
             case Phase.YellowSendingMonsterA:
             case Phase.YellowSendingMonsterB:
