@@ -26,13 +26,13 @@ public class RedDiscarded : GameEvent
 
     #region Properties
 
-    public int _cardId;
+    private readonly int _cardId;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
-        set => _cardId = TreacheryCardManager.GetId(value);
+        init => _cardId = TreacheryCardManager.GetId(value);
     }
 
     #endregion Properties

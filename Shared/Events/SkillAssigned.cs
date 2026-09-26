@@ -28,13 +28,13 @@ public class SkillAssigned : PassableGameEvent
 
     public LeaderSkill Skill;
 
-    public int _leaderId;
+    private readonly int _leaderId;
 
     [JsonIgnore]
-    public Leader Leader
+    public Leader? Leader
     {
         get => LeaderManager.LeaderLookup.Find(_leaderId);
-        set => _leaderId = LeaderManager.LeaderLookup.GetId(value);
+        init => _leaderId = LeaderManager.LeaderLookup.GetId(value);
     }
 
     #endregion Properties
@@ -59,7 +59,10 @@ public class SkillAssigned : PassableGameEvent
     {
         if (g.CurrentPhase == Phase.AssigningInitialSkills)
             return p.Leaders.Where(l => l.HeroType != HeroType.Auditor);
-        return new[] { p.MostRecentlyRevivedLeader };
+        
+        return p.MostRecentlyRevivedLeader != null 
+            ? [p.MostRecentlyRevivedLeader] 
+            : [];
     }
 
     #endregion Validation
@@ -68,11 +71,13 @@ public class SkillAssigned : PassableGameEvent
     
     protected override void ExecuteConcreteEvent()
     {
+        if (Leader == null) throw new InvalidEventException();
+        
         Log();
         Game.SetSkill(Leader, Skill);
         Player.SkillsToChooseFrom.Remove(Skill);
         Game.SetInFrontOfShield(Leader, true);
-        Game.SkillDeck.PutOnTop(Player.SkillsToChooseFrom);
+        Game.SkillDeck!.PutOnTop(Player.SkillsToChooseFrom);
         Player.SkillsToChooseFrom.Clear();
 
         if (!PlayersMustChooseLeaderSkills(Game))

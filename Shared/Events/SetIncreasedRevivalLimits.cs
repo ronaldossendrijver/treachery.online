@@ -25,7 +25,7 @@ public class SetIncreasedRevivalLimits : GameEvent
 
     #region Properties
 
-    public Faction[] Factions { get; set; }
+    public Faction[] Factions { get; init; } = [];
 
     #endregion Properties
 

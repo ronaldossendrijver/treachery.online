@@ -27,13 +27,13 @@ public class RequestPurpleRevival : GameEvent
 
     #region Properties
 
-    public int _heroId;
+    private readonly int _heroId;
 
     [JsonIgnore]
-    public IHero Hero
+    public IHero? Hero
     {
         get => LeaderManager.HeroLookup.Find(_heroId);
-        set => _heroId = LeaderManager.HeroLookup.GetId(value);
+        init => _heroId = LeaderManager.HeroLookup.GetId(value);
     }
 
     #endregion Properties

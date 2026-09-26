@@ -52,20 +52,18 @@ public class PerformBluePlacement : GameEvent
     }
 
     public static IEnumerable<Location> ValidLocations(Game g)
-    {
-        {
-            if (BlueMayPlaceFirstForceInAnyTerritory(g))
-                return g.Map.Locations(false).Where(l => l != g.Map.HiddenMobileStronghold);
-            return new[] { g.Map.PolarSink };
-        }
-    }
-
+        => BlueMayPlaceFirstForceInAnyTerritory(g) 
+            ? g.Map.Locations(false).Where(l => !Equals(l, g.Map.HiddenMobileStronghold)) 
+            : [g.Map.PolarSink];
+    
     #endregion Validation
 
     #region Execution
 
     protected override void ExecuteConcreteEvent()
     {
+        if (Target == null) throw new InvalidEventException();
+        
         if ((Game.Version <= 154 && Game.IsOccupied(Target)) || (Game.Version > 154 && Game.IsOccupied(Target.Territory)))
             Player.ShipAdvisors(Target, 1);
         else

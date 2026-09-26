@@ -25,7 +25,7 @@ public class JuicePlayed : GameEvent
 
     #region Properties
 
-    public JuiceType Type { get; set; }
+    public JuiceType Type { get; init; }
 
     #endregion Properties
 
@@ -44,7 +44,7 @@ public class JuicePlayed : GameEvent
 
         if ((g.CurrentMainPhase == MainPhase.Bidding && !g.Bids.Any()) ||
             g.CurrentPhase == Phase.BeginningOfShipAndMove ||
-            (g.CurrentMainPhase == MainPhase.Battle && g.CurrentBattle == null) ||
+            g is { CurrentMainPhase: MainPhase.Battle, CurrentBattle: null } ||
             g.CurrentPhase == Phase.Contemplate)
             result.Add(JuiceType.GoFirst);
 
@@ -83,13 +83,13 @@ public class JuicePlayed : GameEvent
         Game.CurrentJuice = this;
         Game.Discard(Player, TreacheryCardType.Juice);
 
-        if ((Type == JuiceType.GoFirst || Type == JuiceType.GoLast) && Game.Version <= 117)
+        if (Type is JuiceType.GoFirst or JuiceType.GoLast && Game.Version <= 117)
         {
             switch (Game.CurrentMainPhase)
             {
-                case MainPhase.Bidding: Game.BidSequence.CheckCurrentPlayer(); break;
-                case MainPhase.ShipmentAndMove: Game.ShipmentAndMoveSequence.CheckCurrentPlayer(); break;
-                case MainPhase.Battle: Game.BattleSequence.CheckCurrentPlayer(); break;
+                case MainPhase.Bidding: Game.BidSequence!.CheckCurrentPlayer(); break;
+                case MainPhase.ShipmentAndMove: Game.ShipmentAndMoveSequence!.CheckCurrentPlayer(); break;
+                case MainPhase.Battle: Game.BattleSequence!.CheckCurrentPlayer(); break;
             }
         }
         else if (Game.CurrentBattle != null && Type == JuiceType.Aggressor && Game.CurrentBattle.AggressivePlayer != aggressorBeforeJuiceIsPlayed)

@@ -25,7 +25,7 @@ public class PerformSetup : PlacementEvent
 
     #region Properties
 
-    public int Resources { get; set; }
+    public int Resources { get; init; }
 
     #endregion Properties
 
@@ -33,8 +33,9 @@ public class PerformSetup : PlacementEvent
 
     public override Message? Validate()
     {
-        var faction = Game.NextFactionToPerformCustomSetup;
-        var p = Game.GetPlayer(faction);
+        var p = Game.GetPlayer( Game.NextFactionToPerformCustomSetup);
+        if (p == null) return Message.Express("Invalid player");
+        
         var numberOfSpecialForces = ForceLocations.Values.Sum(b => b.AmountOfSpecialForces);
         if (numberOfSpecialForces > p.SpecialForcesInReserve) return Message.Express("Too many ", p.SpecialForce);
 
@@ -52,12 +53,12 @@ public class PerformSetup : PlacementEvent
     {
         var faction = Game.NextFactionToPerformCustomSetup;
         var player = GetPlayer(faction);
+        if (player == null) throw new InvalidEventException();
 
-        foreach (var fl in ForceLocations)
+        foreach (var (location, value) in ForceLocations)
         {
-            var location = fl.Key;
-            player.ShipForces(location, fl.Value.AmountOfForces);
-            player.ShipSpecialForces(location, fl.Value.AmountOfSpecialForces);
+            player.ShipForces(location, value.AmountOfForces);
+            player.ShipSpecialForces(location, value.AmountOfSpecialForces);
         }
 
         player.Resources = Resources;

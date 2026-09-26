@@ -25,9 +25,9 @@ public class SetShipmentPermission : GameEvent
 
     #region Properties
 
-    public Faction[] Factions { get; set; }
+    public Faction[] Factions { get; init; } = [];
 
-    public ShipmentPermission Permission { get; set; }
+    public ShipmentPermission Permission { get; init; }
 
     #endregion Properties
 

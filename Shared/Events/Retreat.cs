@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class Retreat : GameEvent
@@ -27,17 +25,17 @@ public class Retreat : GameEvent
 
     #region Properties
 
-    public int Forces { get; set; }
+    public int Forces { get; init; }
 
-    public int SpecialForces { get; set; }
+    public int SpecialForces { get; init; }
 
-    public int _targetId;
+    private readonly int _targetId;
 
     [JsonIgnore]
-    public Location Location
+    public Location? Location
     {
         get => Game.Map.LocationLookup.Find(_targetId);
-        set => _targetId = Game.Map.LocationLookup.GetId(value);
+        init => _targetId = Game.Map.LocationLookup.GetId(value);
     }
 
     #endregion Properties
@@ -55,26 +53,28 @@ public class Retreat : GameEvent
 
     public static IEnumerable<Location> ValidTargets(Game g, Player p)
     {
+        if (g.CurrentBattle?.Territory == null) return [];
+        
         var battalions = p.BattalionsIn(g.CurrentBattle!.Territory);
         return PlacementEvent.ValidTargets(g, p, battalions).Where(t => !g.AnyForcesIn(t.Territory) && !t.IsStronghold);
     }
     
     public static int MaxTotalForces(Game g, Player p)
     {
-        var plan = g.CurrentBattle!.PlanOf(p);
-        var opponentPlan = g.CurrentBattle.PlanOfOpponent(p);
-        return plan.Hero.ValueInCombatAgainst(opponentPlan.Hero);
+        var playerHero = g.CurrentBattle!.PlanOf(p)!.Hero!;
+        var opponentHero = g.CurrentBattle.PlanOfOpponent(p)?.Hero;
+        return playerHero.ValueInCombatAgainst(opponentHero);
     }
 
     public static int MaxForces(Game g, Player p)
     {
-        var plan = g.CurrentBattle!.PlanOf(p);
+        var plan = g.CurrentBattle!.PlanOf(p)!;
         return p.ForcesIn(g.CurrentBattle!.Territory) - plan.Forces - plan.ForcesAtHalfStrength;
     }
 
     public static int MaxSpecialForces(Game g, Player p)
     {
-        var plan = g.CurrentBattle!.PlanOf(p);
+        var plan = g.CurrentBattle!.PlanOf(p)!;
         return p.SpecialForcesIn(g.CurrentBattle!.Territory) - plan.SpecialForces - plan.SpecialForcesAtHalfStrength;
     }
 
@@ -84,8 +84,10 @@ public class Retreat : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
+        if (Location == null) throw new InvalidEventException();
+        
         var forcesToMove = Forces;
-        foreach (var l in Game.CurrentBattle.Territory.Locations.Where(l => Player.ForcesIn(l) > 0).ToArray())
+        foreach (var l in Game.CurrentBattle!.Territory!.Locations.Where(l => Player.ForcesIn(l) > 0).ToArray())
         {
             if (forcesToMove == 0) break;
             var toMoveFromHere = Math.Min(forcesToMove, Player.ForcesIn(l));
