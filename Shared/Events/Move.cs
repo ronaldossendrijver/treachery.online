@@ -31,7 +31,7 @@ public class Move : PlacementEvent
 
     #region Validation
 
-    public override Message? Validate()
+    public override Message Validate()
     {
         if (!Passed && Game.InOrangeCunningShipment) return Message.Express("You cannot move after Cunning shipment");
 
@@ -48,13 +48,13 @@ public class Move : PlacementEvent
 
         Game.CurrentPlayerMayPerformExtraMove = Game.CurrentFlightUsed != null && Game.CurrentFlightUsed.Initiator == Initiator && Game.CurrentFlightUsed.ExtraMove;
 
-        if (!Game.CurrentPlayerMayPerformExtraMove && !Game.InOrangeCunningShipment)
+        if (Game is { CurrentPlayerMayPerformExtraMove: false, InOrangeCunningShipment: false })
         {
             Game.HasActedOrPassed.Add(Initiator);
 
             if (Game.CurrentPhase == Phase.NonOrangeMove)
             {
-                Game.ShipmentAndMoveSequence.NextPlayer();
+                Game.ShipmentAndMoveSequence!.NextPlayer();
 
                 if (Game.ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && Game.OrangeMayShipOutOfTurnOrder) Game.ShipmentAndMoveSequence.NextPlayer();
             }

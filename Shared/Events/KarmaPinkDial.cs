@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class KarmaPinkDial : GameEvent
@@ -41,8 +39,8 @@ public class KarmaPinkDial : GameEvent
         Game.Discard(Player, Karma.ValidKarmaCards(Game, Player).FirstOrDefault());
         Player.SpecialKarmaPowerUsed = true;
         Game.Stone(Milestone.Karma);
-        var myLeader = Game.CurrentBattle.PlanOf(Initiator).Hero;
-        var opponentLeader = Game.CurrentBattle.PlanOfOpponent(Player).Hero;
+        var myLeader = Game.CurrentBattle!.PlanOf(Initiator)!.Hero;
+        var opponentLeader = Game.CurrentBattle!.PlanOfOpponent(Player)!.Hero;
 
         if (myLeader != null && opponentLeader != null) Game.PinkKarmaBonus = Math.Abs(myLeader.Value - opponentLeader.ValueInCombatAgainst(myLeader));
 

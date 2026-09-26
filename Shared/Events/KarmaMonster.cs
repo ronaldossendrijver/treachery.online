@@ -26,13 +26,13 @@ public class KarmaMonster : GameEvent
 
     #region Properties
 
-    public int _territoryId;
+    private readonly int _territoryId;
 
     [JsonIgnore]
-    public Territory Territory
+    public Territory? Territory
     {
         get => Game.Map.TerritoryLookup.Find(_territoryId);
-        set => _territoryId = Game.Map.TerritoryLookup.GetId(value);
+        init => _territoryId = Game.Map.TerritoryLookup.GetId(value);
     }
 
     #endregion Properties

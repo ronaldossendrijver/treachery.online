@@ -45,7 +45,7 @@ public class MulliganPerformed : PassableGameEvent
     {
         if (!Passed)
         {
-            Game.TraitorDeck.Items.AddRange(Player.Traitors);
+            Game.TraitorDeck!.Items.AddRange(Player.Traitors);
             Player.Traitors.Clear();
             Game.TraitorDeck.Shuffle();
             Game.Stone(Milestone.Shuffled);
@@ -64,7 +64,7 @@ public class MulliganPerformed : PassableGameEvent
     private void DealNonBlackTraitorCards()
     {
         for (var i = 1; i <= 4; i++)
-            foreach (var p in Game.Players.Where(p => p.Faction != Faction.Black && p.Faction != Faction.Purple)) p.Traitors.Add(Game.TraitorDeck.Draw());
+            foreach (var p in Game.Players.Where(p => p.Faction != Faction.Black && p.Faction != Faction.Purple)) p.Traitors.Add(Game.TraitorDeck!.Draw());
     }
 
     public override Message GetMessage()

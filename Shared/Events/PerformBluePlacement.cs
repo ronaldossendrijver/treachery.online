@@ -26,13 +26,13 @@ public class PerformBluePlacement : GameEvent
 
     #region Properties
 
-    public int _targetId;
+    private readonly int _targetId;
 
     [JsonIgnore]
-    public Location Target
+    public Location? Target
     {
         get => Game.Map.LocationLookup.Find(_targetId);
-        set => _targetId = Game.Map.LocationLookup.GetId(value);
+        init => _targetId = Game.Map.LocationLookup.GetId(value);
     }
 
     #endregion Properties

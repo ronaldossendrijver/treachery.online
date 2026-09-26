@@ -855,8 +855,10 @@ public partial class Game
         return occupier != null && (occupier.Is(f) || occupier.Ally == f);
     }
 
-    public bool ContainsConflictingAlly(Player initiator, Location to)
+    public bool ContainsConflictingAlly(Player initiator, Location? to)
     {
+        if (to == null) return false;
+        
         if (!initiator.HasAlly || Map.PolarSink.Equals(to) || initiator.Faction == Faction.Pink || initiator.Ally == Faction.Pink) return false;
 
         var ally = initiator.AlliedPlayer;

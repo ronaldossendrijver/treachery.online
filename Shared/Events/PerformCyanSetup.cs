@@ -26,13 +26,13 @@ public class PerformCyanSetup : GameEvent
 
     #region Properties
 
-    public int _targetId;
+    private readonly int _targetId;
 
     [JsonIgnore]
-    public Location Target
+    public Location? Target
     {
         get => Game.Map.LocationLookup.Find(_targetId);
-        set => _targetId = Game.Map.LocationLookup.GetId(value);
+        init => _targetId = Game.Map.LocationLookup.GetId(value);
     }
 
     #endregion Properties
@@ -48,7 +48,7 @@ public class PerformCyanSetup : GameEvent
 
     public static IEnumerable<Location> ValidLocations(Game g)
     {
-        return g.Map.Locations(false).Where(l => l != g.Map.HiddenMobileStronghold && !g.AnyForcesIn(l.Territory));
+        return g.Map.Locations(false).Where(l => !Equals(l, g.Map.HiddenMobileStronghold) && !g.AnyForcesIn(l.Territory));
     }
 
     #endregion Validation
@@ -57,6 +57,7 @@ public class PerformCyanSetup : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
+        if (Target == null) throw new InvalidEventException();
         Player.ShipForces(Target, 6);
         Log();
         Game.Enter(Game.TreacheryCardsBeforeTraitors, Game.EnterStormPhase, Game.DealStartingTreacheryCards);

@@ -63,7 +63,7 @@ public class NexusCardDrawn : PassableGameEvent
     {
         Game.DiscardNexusCard(Player);
 
-        if (Game.NexusCardDeck.IsEmpty)
+        if (Game.NexusCardDeck!.IsEmpty)
         {
             Game.NexusCardDeck.Items.AddRange(Game.NexusDiscardPile);
             Game.NexusDiscardPile.Clear();

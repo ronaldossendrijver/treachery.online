@@ -25,7 +25,7 @@ public class Prescience : GameEvent
 
     #region Properties
 
-    public PrescienceAspect Aspect { get; set; }
+    public PrescienceAspect Aspect { get; init; }
 
     #endregion Properties
 
@@ -38,15 +38,17 @@ public class Prescience : GameEvent
 
     public static IEnumerable<PrescienceAspect> ValidAspects(Game g, Player p)
     {
-        var opponent = g.CurrentBattle!.OpponentOf(p);
-        if (opponent.HasNoFieldIn(g.CurrentBattle!.Territory))
-            return new[] { PrescienceAspect.Leader, PrescienceAspect.Weapon, PrescienceAspect.Defense };
-        return new[] { PrescienceAspect.Dial, PrescienceAspect.Leader, PrescienceAspect.Weapon, PrescienceAspect.Defense };
+        var opponent = g.CurrentBattle?.OpponentOf(p);
+        
+        if (opponent != null && g.CurrentBattle!.Territory != null && opponent.HasNoFieldIn(g.CurrentBattle!.Territory))
+            return [PrescienceAspect.Leader, PrescienceAspect.Weapon, PrescienceAspect.Defense];
+        
+        return [PrescienceAspect.Dial, PrescienceAspect.Leader, PrescienceAspect.Weapon, PrescienceAspect.Defense];
     }
 
     public static bool MayUsePrescience(Game g, Player p)
     {
-        if (g.CurrentBattle != null && g.CurrentPrescience == null && !g.Prevented(FactionAdvantage.GreenBattlePlanPrescience))
+        if (g is { CurrentBattle: not null, CurrentPrescience: null } && !g.Prevented(FactionAdvantage.GreenBattlePlanPrescience))
         {
             if (p.Faction == Faction.Green)
                 return g.CurrentBattle.IsInvolved(p);

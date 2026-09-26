@@ -73,7 +73,7 @@ public class FactionTradeOffered : GameEvent
             {
                 Log(Initiator, " and ", match.Initiator, " traded factions");
                 var target = GetPlayer(Target);
-                (target.Faction, Player.Faction) = (Player.Faction, target.Faction);
+                (target!.Faction, Player.Faction) = (Player.Faction, target.Faction);
                 RemoveInvalidTradeOffers();
             }
             else

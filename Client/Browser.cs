@@ -61,7 +61,7 @@ public class Browser(IJSRuntime jsRuntime)
         await JsInvoke<object>("saveFile", filename, data);
     }
 
-    public async Task<string> LoadFile(object fileDialogRef)
+    public async Task<string?> LoadFile(object fileDialogRef)
     {
         return await JsInvoke<string>("readFile", fileDialogRef);
     }
@@ -81,19 +81,9 @@ public class Browser(IJSRuntime jsRuntime)
         await JsInvoke("SetPlanetMapScale");
     }
 
-    public async Task<Dimensions> GetWindowDimensions()
+    public async Task<Dimensions?> GetWindowDimensions()
     {
         return await JsInvoke<Dimensions>("GetWindowDimensions");
-    }
-
-    public async Task<Dimensions> GetScreenDimensions()
-    {
-        return await JsInvoke<Dimensions>("GetScreenDimensions");
-    }
-
-    public async Task<Dimensions> GetImageDimensions(string imgUrl)
-    {
-        return await JsInvoke<Dimensions>("GetImageDimensions", imgUrl);
     }
 
     public async Task PlaySound(string sound, float volume = 100f, bool loop = false)

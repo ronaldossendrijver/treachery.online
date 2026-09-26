@@ -25,7 +25,7 @@ public class RedBidSupport : GameEvent
 
     #region Properties
 
-    public Dictionary<Faction, int> Amounts { get; set; }
+    public Dictionary<Faction, int> Amounts { get; init; } = [];
 
     #endregion Properties
 

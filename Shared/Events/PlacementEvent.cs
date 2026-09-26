@@ -27,22 +27,22 @@ public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlace
 
     #region Properties
 
-    public int _toId;
+    private readonly int _toId;
 
     [JsonIgnore]
-    public Location To
+    public Location? To
     {
         get => Game.Map.LocationLookup.Find(_toId);
-        set => _toId = Game.Map.LocationLookup.GetId(value);
+        init => _toId = Game.Map.LocationLookup.GetId(value);
     }
 
-    public string _forceLocations = "";
+    private readonly string _forceLocations = string.Empty;
 
     [JsonIgnore]
     public Dictionary<Location, Battalion> ForceLocations
     {
         get => ParseForceLocations(Game, Player.Faction, _forceLocations);
-        set => _forceLocations = ForceLocationsString(Game, value);
+        init => _forceLocations = ForceLocationsString(Game, value);
     }
 
     public static string ForceLocationsString(Game g, Dictionary<Location, Battalion> forceLocations)
@@ -72,10 +72,10 @@ public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlace
     public virtual int TotalAmountOfForcesAddedToLocation => ForcesAddedToLocation + SpecialForcesAddedToLocation;
 
     [JsonIgnore]
-    public int ForcesAddedToLocation => ForceLocations != null ? ForceLocations.Values.Sum(b => b.AmountOfForces) : 0;
+    public int ForcesAddedToLocation => ForceLocations.Count > 0 ? ForceLocations.Values.Sum(b => b.AmountOfForces) : 0;
 
     [JsonIgnore]
-    public int SpecialForcesAddedToLocation => ForceLocations != null ? ForceLocations.Values.Sum(b => b.AmountOfSpecialForces) : 0;
+    public int SpecialForcesAddedToLocation => ForceLocations.Count > 0 ? ForceLocations.Values.Sum(b => b.AmountOfSpecialForces) : 0;
 
     #endregion Properties
 
@@ -150,21 +150,18 @@ public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlace
 
     public static IEnumerable<Location> ValidTargets(Game g, Player p, Dictionary<Location, Battalion> forces)
     {
-        IEnumerable<Location> result = null;
+        List<Location> result = [];
 
         foreach (var fl in forces.Where(b => b.Value.AmountOfForces + b.Value.AmountOfSpecialForces > 0))
         {
             var target = ValidMoveToTargets(g, p, fl.Key, forces.Select(f => f.Value));
 
-            if (result == null)
-                result = target;
-            else
-                result = result.Intersect(target);
+            result = result.Count == 0 
+                ? [.. target]
+                : [.. result.Intersect(target)];
         }
 
-        if (result != null)
-            return result;
-        return Array.Empty<Location>();
+        return result;
     }
 
     private static IEnumerable<Location> ValidMoveToTargets(Game g, Player p, Location from, IEnumerable<Battalion> moved)

@@ -26,13 +26,13 @@ public class KarmaWhiteBuy : GameEvent
 
     #region Properties
 
-    public int _cardId;
+    private readonly int _cardId;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
-        set => _cardId = TreacheryCardManager.GetId(value);
+        init => _cardId = TreacheryCardManager.GetId(value);
     }
 
     #endregion Properties
@@ -42,7 +42,7 @@ public class KarmaWhiteBuy : GameEvent
     public override Message? Validate()
     {
         if (Player.Resources < 3) return Message.Express("You can't pay ", Payment.Of(3));
-        if (!Game.WhiteCache.Contains(Card)) return Message.Express("Invalid card");
+        if (Card == null || !Game.WhiteCache.Contains(Card)) return Message.Express("Invalid card");
 
         return null;
     }
@@ -53,6 +53,8 @@ public class KarmaWhiteBuy : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
+        if (Card == null) throw new InvalidEventException();
+        
         Game.Discard(Player, Karma.ValidKarmaCards(Game, Player).FirstOrDefault());
         Log();
         Player.TreacheryCards.Add(Card);

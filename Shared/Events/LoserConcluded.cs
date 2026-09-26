@@ -30,25 +30,26 @@ public class LoserConcluded : GameEvent
     public const int KARMA_KEEP = 1;
     public const int KARMA_DISCARD = 2;
 
-    public int KarmaForcedKeptCardDecision { get; set; }
+    public int KarmaForcedKeptCardDecision { get; init; }
 
-    public string _forcedKeptOrDiscardedCardIds;
+    private readonly string _forcedKeptOrDiscardedCardIds = string.Empty;
+    
     [JsonIgnore]
     public IEnumerable<TreacheryCard> ForcedKeptOrDiscardedCards
     {
         get => IdStringToObjects(_forcedKeptOrDiscardedCardIds, TreacheryCardManager.Lookup);
-        set => _forcedKeptOrDiscardedCardIds = ObjectsToIdString(value, TreacheryCardManager.Lookup);
+        init => _forcedKeptOrDiscardedCardIds = ObjectsToIdString(value, TreacheryCardManager.Lookup);
     }
 
-    public bool Assassinate { get; set; }
+    public bool Assassinate { get; init; }
 
-    public int _keptCardId;
+    private readonly int _keptCardId;
 
     [JsonIgnore]
-    public TreacheryCard KeptCard
+    public TreacheryCard? KeptCard
     {
         get => TreacheryCardManager.Get(_keptCardId);
-        set => _keptCardId = TreacheryCardManager.GetId(value);
+        init => _keptCardId = TreacheryCardManager.GetId(value);
     }
 
     #endregion Properties
@@ -80,9 +81,9 @@ public class LoserConcluded : GameEvent
             !p.RevealedTraitors.Contains(l)) as Leader;
     }
 
-    public static int? AssassinationReward(Game game, Player winner, Leader target)
+    public static int? AssassinationReward(Game game, Player? winner, Leader target)
     {
-        if (!game.IsAlive(target) || !winner.Leaders.Contains(target)) return null;
+        if (!game.IsAlive(target) || winner == null || !winner.Leaders.Contains(target)) return null;
         return game.Version < 187 
             ? target.CostToRevive 
             : target.HeroType == HeroType.VariableValue ? 3 : target.CostToRevive;
@@ -115,9 +116,10 @@ public class LoserConcluded : GameEvent
         if (game.CurrentBattle == null || game.BattleWinner == null)
             return [];
         
-        var result = new List<TreacheryCard>();
         var winnerPlan = game.CurrentBattle.PlanOf(game.BattleWinner.Value);
-
+        if (winnerPlan == null) return [];
+        
+        var result = new List<TreacheryCard>();
         if (winnerPlan.Weapon != null) result.Add(winnerPlan.Weapon);
         if (winnerPlan.Defense != null) result.Add(winnerPlan.Defense);
         if (winnerPlan.Hero is TreacheryCard cheapHero) result.Add(cheapHero);
@@ -151,8 +153,8 @@ public class LoserConcluded : GameEvent
         Log();
 
         var winner = GetPlayer(Game.BattleWinner);
-
-        if (KarmaForcedKeptCardDecision == KARMA_DISCARD || KarmaForcedKeptCardDecision == KARMA_KEEP)
+        
+        if (winner != null && (KarmaForcedKeptCardDecision == KARMA_DISCARD || KarmaForcedKeptCardDecision == KARMA_KEEP))
         {
             Game.BattleWinnerMayChooseToDiscard = false;
             Game.Discard(Player, TreacheryCardType.Karma);
@@ -167,7 +169,7 @@ public class LoserConcluded : GameEvent
                 else if (KarmaForcedKeptCardDecision == KARMA_KEEP)
                 {
                     Log("Using ", TreacheryCardType.Karma, ", ", Initiator, " force ", winner.Faction, " to keep ", c);
-                    if (Game.TreacheryDiscardPile.Items.Contains(c))
+                    if (Game.TreacheryDiscardPile!.Items.Contains(c))
                     {
                         Game.TreacheryDiscardPile.Items.Remove(c);
                         winner.TreacheryCards.Add(c);
@@ -180,6 +182,7 @@ public class LoserConcluded : GameEvent
             Game.Stone(Milestone.Assassination);
 
             var assassinated = TargetOfAssassination(Game, Player);
+            if (assassinated == null) throw new InvalidEventException();
 
             Game.Assassinated.Add(assassinated);
             Player.RevealedTraitors.Add(assassinated);

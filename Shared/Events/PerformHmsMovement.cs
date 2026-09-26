@@ -26,13 +26,13 @@ public class PerformHmsMovement : PassableGameEvent
 
     #region Properties
 
-    public int _targetId;
+    private readonly int _targetId;
 
     [JsonIgnore]
-    public Location Target
+    public Location? Target
     {
         get => Game.Map.LocationLookup.Find(_targetId);
-        set => _targetId = Game.Map.LocationLookup.GetId(value);
+        init => _targetId = Game.Map.LocationLookup.GetId(value);
     }
 
     #endregion Properties
@@ -62,9 +62,12 @@ public class PerformHmsMovement : PassableGameEvent
         Log();
 
         var currentLocation = Game.Map.HiddenMobileStronghold.AttachedToLocation;
+        
+        if (currentLocation == null) throw new InvalidEventException();
+            
         Game.CollectSpiceFrom(Initiator, currentLocation, collectionRate);
 
-        if (!Passed)
+        if (!Passed && Target != null)
         {
             Game.Map.HiddenMobileStronghold.PointAt(Game, Target);
             Game.CollectSpiceFrom(Initiator, Target, collectionRate);

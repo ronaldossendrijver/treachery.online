@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public class RaiseDeadPlayed : GameEvent, ILocationEvent
@@ -27,34 +25,34 @@ public class RaiseDeadPlayed : GameEvent, ILocationEvent
 
     #region Properties
 
-    public int AmountOfForces { get; set; } = 0;
+    public int AmountOfForces { get; init; }
 
-    public int AmountOfSpecialForces { get; set; } = 0;
+    public int AmountOfSpecialForces { get; init; }
 
-    public bool AssignSkill { get; set; } = false;
+    public bool AssignSkill { get; init; }
 
-    public int _heroId;
+    private readonly int _heroId;
 
     [JsonIgnore]
-    public IHero Hero
+    public IHero? Hero
     {
         get => LeaderManager.HeroLookup.Find(_heroId);
-        set => _heroId = LeaderManager.HeroLookup.GetId(value);
+        init => _heroId = LeaderManager.HeroLookup.GetId(value);
     }
 
-    public int NumberOfSpecialForcesInLocation { get; set; }
+    public int NumberOfSpecialForcesInLocation { get; init; }
 
-    public int _locationId = -1;
+    private readonly int _locationId = -1;
 
     [JsonIgnore]
-    public Location Location
+    public Location? Location
     {
         get => Game.Map.LocationLookup.Find(_locationId);
-        set => _locationId = Game.Map.LocationLookup.GetId(value);
+        init => _locationId = Game.Map.LocationLookup.GetId(value);
     }
 
     [JsonIgnore]
-    public Location To => Location;
+    public Location? To => Location;
 
     [JsonIgnore]
     public int TotalAmountOfForcesAddedToLocation => NumberOfSpecialForcesInLocation;
@@ -124,8 +122,8 @@ public class RaiseDeadPlayed : GameEvent, ILocationEvent
 
         if (Hero != null)
         {
-            if (Initiator != Hero.Faction && Hero is Leader)
-                Game.Revive(Player, Hero as Leader);
+            if (Initiator != Hero.Faction && Hero is Leader l)
+                Game.Revive(Player, l);
             else
                 Game.Revive(Player, Hero);
 
