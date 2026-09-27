@@ -39,8 +39,9 @@ public class ReplacedCardWon : PassableGameEvent
         if (!Passed)
         {
             Game.Discard(Game.CardJustWon);
-            var initiator = GetPlayer(Initiator);
+            var initiator = Player;
             var newCard = Game.DrawTreacheryCard();
+            if (newCard == null) return;
             initiator.TreacheryCards.Add(newCard);
             Game.Stone(Milestone.CardWonSwapped);
 

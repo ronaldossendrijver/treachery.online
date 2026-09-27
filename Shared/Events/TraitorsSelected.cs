@@ -26,13 +26,13 @@ public class TraitorsSelected : GameEvent
 
     #region Properties
 
-    public int _traitorId;
+    private readonly int _traitorId;
 
     [JsonIgnore]
-    public IHero SelectedTraitor
+    public IHero? SelectedTraitor
     {
         get => LeaderManager.HeroLookup.Find(_traitorId);
-        set => _traitorId = LeaderManager.HeroLookup.GetId(value);
+        init => _traitorId = LeaderManager.HeroLookup.GetId(value);
     }
 
     #endregion Properties
@@ -41,7 +41,7 @@ public class TraitorsSelected : GameEvent
 
     public override Message? Validate()
     {
-        if (!Player.Traitors.Contains(SelectedTraitor)) return Message.Express("Invalid traitor");
+        if (SelectedTraitor is null || !Player.Traitors.Contains(SelectedTraitor)) return Message.Express("Invalid traitor");
         return null;
     }
 
@@ -51,11 +51,12 @@ public class TraitorsSelected : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
+        if (SelectedTraitor is null) throw new InvalidEventException();
         var toRemove = Player.Traitors.Where(l => !l.Equals(SelectedTraitor)).ToList();
 
         foreach (var l in toRemove)
         {
-            Game.TraitorDeck.Items.Add(l);
+            Game.TraitorDeck!.Items.Add(l);
             Player.Traitors.Remove(l);
             Player.DiscardedTraitors.Add(l);
             Player.KnownNonTraitors.Add(l);

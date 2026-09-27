@@ -15,14 +15,14 @@ public partial class ClassicBot
 {
     protected virtual AllianceByTerror DetermineAllianceByTerror()
     {
-        var cyan = Game.GetPlayer(Faction.Cyan);
+        var cyan = Game.GetPlayer(Faction.Cyan)!;
         var accept = !Player.HasAlly || PlayerStanding(cyan) > 0.75f * PlayerStanding(AlliedPlayer!);
         return new AllianceByTerror(Game, Faction) { Passed = !accept };
     }
 
     protected virtual AllianceByAmbassador DetermineAllianceByAmbassador()
     {
-        var pink = Game.GetPlayer(Faction.Pink);
+        var pink = Game.GetPlayer(Faction.Pink)!;
         var accept = !Player.HasAlly || PlayerStanding(pink) > 0.75f * PlayerStanding(AlliedPlayer!);
         return new AllianceByAmbassador(Game, Faction) { Passed = !accept };
     }
@@ -51,7 +51,7 @@ public partial class ClassicBot
             Game.Applicable(Rule.BotsCannotAlly) ||
             (nrOfUnalliedHumans != 0 && nrOfUnalliedHumans >= nrOfUnAlliedBots - 1) ||
             Game.CurrentAllianceOffers.Any(o =>
-                o.Initiator == Faction && Game.GetPlayer(o.Target).Ally == Faction.None)) return null;
+                o.Initiator == Faction && !Game.GetPlayer(o.Target)!.HasAlly)) return null;
         {
             var mostInterestingOpponentBotWithoutAlly = Game.Players
                 .Where(p => p != Player && Game.IsBot(p) && !p.HasAlly && AllianceOffered.ValidTargets(Game, Player).Contains(p.Faction))
@@ -223,10 +223,11 @@ public partial class ClassicBot
 
     protected virtual CardTraded? DetermineCardTraded()
     {
-        if (Game.CurrentCardTradeOffer == null) return null;
+        var offer = Game.CurrentCardTradeOffer;
+        if (offer == null) return null;
 
-        return Game.CurrentCardTradeOffer.RequestedCard != null 
-            ? new CardTraded(Game, Faction) { Target = Game.CurrentCardTradeOffer.Initiator, Card = Game.CurrentCardTradeOffer.RequestedCard, RequestedCard = null } 
-            : new CardTraded(Game, Faction) { Target = Game.CurrentCardTradeOffer.Initiator, Card = Player.TreacheryCards.OrderBy(c => CardQuality(c, Player)).FirstOrDefault(), RequestedCard = null };
+        return offer.RequestedCard != null 
+            ? new CardTraded(Game, Faction) { Target = offer.Initiator, Card = offer.RequestedCard, RequestedCard = null } 
+            : new CardTraded(Game, Faction) { Target = offer.Initiator, Card = Player.TreacheryCards.OrderBy(c => CardQuality(c, Player)).FirstOrDefault(), RequestedCard = null };
     }
 }

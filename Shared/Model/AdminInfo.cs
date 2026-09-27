@@ -11,11 +11,11 @@ namespace Treachery.Shared;
 
 public class AdminInfo
 {
-    public List<UserInfo> Users { get; set; }
+    public List<UserInfo> Users { get; init; } = [];
     
-    public int UsersByUserTokenCount { get; set; }
+    public int UsersByUserTokenCount { get; init; }
     
-    public int ConnectionInfoByUserIdCount { get; set; }
+    public int ConnectionInfoByUserIdCount { get; init; }
     
-    public int GamesByGameIdCount { get; set; }
+    public int GamesByGameIdCount { get; init; }
 }

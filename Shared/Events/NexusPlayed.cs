@@ -25,7 +25,7 @@ public class NexusPlayed : GameEvent, ILocationEvent
 
     #region Properties
 
-    public Faction Faction { get; set; }
+    public Faction Faction { get; init; }
 
     public PrescienceAspect GreenPrescienceAspect { get; set; }
 
@@ -33,7 +33,7 @@ public class NexusPlayed : GameEvent, ILocationEvent
 
     public int PurpleSpecialForces { get; set; }
 
-    public int _purpleHeroId = -1;
+    private int _purpleHeroId = -1;
 
     [JsonIgnore]
     public IHero? PurpleHero
@@ -42,9 +42,9 @@ public class NexusPlayed : GameEvent, ILocationEvent
         set => _purpleHeroId = LeaderManager.HeroLookup.GetId(value);
     }
 
-    public bool PurpleAssignSkill { get; set; } = false;
+    public bool PurpleAssignSkill { get; set; }
 
-    public int _brownCardId;
+    private int _brownCardId;
 
     [JsonIgnore]
     public TreacheryCard? BrownCard
@@ -53,7 +53,7 @@ public class NexusPlayed : GameEvent, ILocationEvent
         set => _brownCardId = TreacheryCardManager.GetId(value);
     }
 
-    public int _pinkTerritoryId;
+    private int _pinkTerritoryId;
 
     [JsonIgnore]
     public Territory? PinkTerritory
@@ -64,7 +64,7 @@ public class NexusPlayed : GameEvent, ILocationEvent
 
     public Faction PinkFaction { get; set; }
 
-    public int _cyanTerritoryId;
+    private int _cyanTerritoryId;
 
     [JsonIgnore]
     public Territory? CyanTerritory
@@ -75,7 +75,7 @@ public class NexusPlayed : GameEvent, ILocationEvent
 
     public int PurpleNumberOfSpecialForcesInLocation { get; set; }
 
-    public int _purpleLocationId = -1;
+    private int _purpleLocationId = -1;
 
     [JsonIgnore]
     public Location? PurpleLocation
@@ -98,13 +98,13 @@ public class NexusPlayed : GameEvent, ILocationEvent
 
 
     [JsonIgnore]
-    public bool IsCunning => Initiator == Faction;
+    private bool IsCunning => Initiator == Faction;
 
     [JsonIgnore]
-    public bool IsSecretAlly => !Game.IsPlaying(Faction);
+    private bool IsSecretAlly => !Game.IsPlaying(Faction);
 
     [JsonIgnore]
-    public bool IsBetrayal => !(IsCunning || IsSecretAlly);
+    internal bool IsBetrayal => !(IsCunning || IsSecretAlly);
 
     #endregion Properties
 
@@ -193,7 +193,7 @@ public class NexusPlayed : GameEvent, ILocationEvent
         var secretAlly = CanUseSecretAlly(g, p);
         var betrayal = CanUseBetrayal(g, p);
 
-        var gameIsInBattle = g.CurrentPhase == Phase.BattlePhase && g.CurrentBattle != null;
+        var gameIsInBattle = g is { CurrentPhase: Phase.BattlePhase, CurrentBattle: not null };
         var isCurrentlyFormulatingBattlePlan = gameIsInBattle && g.CurrentBattle!.IsAggressorOrDefender(p) && (g.DefenderPlan == null || g.AggressorPlan == null);
 
         return p.Nexus switch
@@ -212,13 +212,13 @@ public class NexusPlayed : GameEvent, ILocationEvent
             Faction.Red when cunning => isCurrentlyFormulatingBattlePlan,
 
             Faction.Orange when betrayal => g.CurrentMainPhase == MainPhase.ShipmentAndMove && g.HasRecentPaymentFor(typeof(Shipment)),
-            Faction.Orange when cunning => g.CurrentPhase == Phase.OrangeMove && !g.InOrangeCunningShipment,
+            Faction.Orange when cunning => g is { CurrentPhase: Phase.OrangeMove, InOrangeCunningShipment: false },
             Faction.Orange when secretAlly => g.CurrentPhase == Phase.NonOrangeShip,
 
             Faction.Blue when betrayal => gameIsInBattle && g.CurrentBattle!.IsInvolved(Faction.Blue),
             Faction.Blue when cunning => g.CurrentMainPhase == MainPhase.ShipmentAndMove,
 
-            Faction.Grey when betrayal => g.CurrentMainPhase == MainPhase.Bidding && g.CurrentPhase < Phase.BiddingReport,
+            Faction.Grey when betrayal => g is { CurrentMainPhase: MainPhase.Bidding, CurrentPhase: < Phase.BiddingReport },
             Faction.Grey when cunning => isCurrentlyFormulatingBattlePlan,
 
             Faction.Purple when betrayal => g.CurrentPhase == Phase.Facedancing,
@@ -226,7 +226,7 @@ public class NexusPlayed : GameEvent, ILocationEvent
             Faction.Purple when secretAlly => g.CurrentPhase == Phase.Resurrection,
 
             Faction.Brown when betrayal => true,
-            Faction.Brown when secretAlly => (g.CurrentMainPhase == MainPhase.Collection && ValidBrownCards(p).Any()) || (g.CurrentPhase == Phase.BattleConclusion && g.CurrentBattle != null && p.Faction == g.BattleWinner),
+            Faction.Brown when secretAlly => (g.CurrentMainPhase == MainPhase.Collection && ValidBrownCards(p).Any()) || (g is { CurrentPhase: Phase.BattleConclusion, CurrentBattle: not null } && p.Faction == g.BattleWinner),
 
             Faction.White when betrayal && g.CurrentMainPhase is MainPhase.Bidding => 
                     g.Version >= 164 ? 
@@ -234,7 +234,7 @@ public class NexusPlayed : GameEvent, ILocationEvent
                     (g.WhiteBiddingJustFinished || g.CardSoldOnBlackMarket != null) 
                     && (g.HasQuiteRecentPaymentTo(Faction.White) || (g.CardJustWon != null && g.GetPlayer(Faction.White)?.Has(g.CardJustWon) == true)) :
 
-                    g.WhiteBiddingJustFinished && g.CardJustWon != null,
+                    g is { WhiteBiddingJustFinished: true, CardJustWon: not null },
 
             Faction.Pink when betrayal => g.CurrentMainPhase < MainPhase.ShipmentAndMove && ValidPinkTerritories(g).Any(),
             Faction.Pink when cunning || secretAlly => true,
@@ -276,9 +276,11 @@ public class NexusPlayed : GameEvent, ILocationEvent
     {
         var pink = g.GetPlayer(Faction.Pink);
 
-        if (pink != null && pink.HasAlly) return g.Map.Territories(false).Where(t => pink.AnyForcesIn(t) > 0 && pink.AlliedPlayer.AnyForcesIn(t) > 0);
+        if (pink is { HasAlly: true }) 
+            return g.Map.Territories(false).Where(t => pink.AnyForcesIn(t) > 0 
+                                                       && pink.AlliedPlayer.AnyForcesIn(t) > 0);
 
-        return Array.Empty<Territory>();
+        return [];
     }
 
     public static IEnumerable<Faction> ValidPinkFactions(Game g)
@@ -297,7 +299,7 @@ public class NexusPlayed : GameEvent, ILocationEvent
                Revival.ValidRevivedForceLocations(game, player).Any();
     }
 
-    public int DeterminePurpleCost()
+    private int DeterminePurpleCost()
     {
         return DeterminePurpleCost(PurpleForces, PurpleSpecialForces);
     }
@@ -323,9 +325,6 @@ public class NexusPlayed : GameEvent, ILocationEvent
 
     private void HandleBetrayal()
     {
-        var actor = Player;
-        if (actor == null) return;
-
         switch (Faction)
         {
             case Faction.Green:
@@ -339,7 +338,7 @@ public class NexusPlayed : GameEvent, ILocationEvent
                 var traitorDeck = Game.TraitorDeck;
                 if (currentBattle == null || traitorDeck == null) break;
                 var black = GetPlayer(Faction.Black);
-                var traitor = currentBattle.PlanOfOpponent(Faction.Black).Hero;
+                var traitor = currentBattle.PlanOfOpponent(Faction.Black)?.Hero;
                 if (black != null && traitor != null)
                 {
                     black.Traitors.Remove(traitor);
@@ -406,7 +405,7 @@ public class NexusPlayed : GameEvent, ILocationEvent
                 Game.PlayNexusCard(Player);
                 if (Game.CurrentPhase < Phase.GreySelectingCard)
                     Game.Prevent(Initiator, FactionAdvantage.GreySelectingCardsOnAuction);
-                else if (Game.CurrentPhase > Phase.GreySelectingCard && Game.CurrentPhase < Phase.BiddingReport) Game.Prevent(Initiator, FactionAdvantage.GreySwappingCard);
+                else if (Game.CurrentPhase is > Phase.GreySelectingCard and < Phase.BiddingReport) Game.Prevent(Initiator, FactionAdvantage.GreySwappingCard);
                 break;
 
             case Faction.Purple:
@@ -482,7 +481,6 @@ public class NexusPlayed : GameEvent, ILocationEvent
     private void HandleCunning()
     {
         var actor = Player;
-        if (actor == null) return;
 
         switch (Faction)
         {
@@ -541,14 +539,15 @@ public class NexusPlayed : GameEvent, ILocationEvent
                 break;
 
             case Faction.Pink:
-                if (Game.Vidal != null && !Game.IsAlive(Game.Vidal))
+                var vidal = Game.Vidal!;
+                if (!Game.IsAlive(vidal))
                 {
-                    Game.Revive(Player, Game.Vidal);
+                    Game.Revive(Player, vidal);
 
-                    if (PurpleAssignSkill) Game.PrepareSkillAssignmentToRevivedLeader(Player, Game.Vidal);
+                    if (PurpleAssignSkill) Game.PrepareSkillAssignmentToRevivedLeader(Player, vidal);
                 }
                 Game.TakeVidal(Player, VidalMoment.EndOfTurn);
-                Game.PlayNexusCard(Player, "take ", Game.Vidal, " this turn");
+                Game.PlayNexusCard(Player, "take ", vidal, " this turn");
                 break;
         }
     }
@@ -556,7 +555,6 @@ public class NexusPlayed : GameEvent, ILocationEvent
     private void HandleSecretAlly()
     {
         var actor = Player;
-        if (actor == null) return;
 
         switch (Faction)
         {

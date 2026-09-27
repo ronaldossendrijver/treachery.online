@@ -65,7 +65,7 @@ public class ResourcesTransferred : GameEvent
         Log();
         Player.Resources -= Resources;
         Player.TransferableResources -= Resources;
-        Player.AlliedPlayer.Resources += Resources;
+        Player.AlliedPlayer!.Resources += Resources;
     }
 
     public override Message GetMessage()

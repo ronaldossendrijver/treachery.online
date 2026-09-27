@@ -30,7 +30,7 @@ public class SwitchedSkilledLeader : GameEvent
         return null;
     }
 
-    public static Leader SwitchableLeader(Game game, Player player)
+    public static Leader? SwitchableLeader(Game game, Player player)
     {
         return player.Leaders.FirstOrDefault(l =>
             game.IsSkilled(l) && !game.CapturedLeaders.ContainsKey(l) &&
@@ -39,10 +39,9 @@ public class SwitchedSkilledLeader : GameEvent
 
     public static bool CanBePlayed(Game game, Player player)
     {
-        return game.CurrentPhase == Phase.BattlePhase 
-               && game.CurrentBattle != null 
-               && game.CurrentBattle.IsAggressorOrDefender(player) 
-               && game.CurrentBattle.PlanOf(player) == null 
+        return game is { CurrentPhase: Phase.BattlePhase, CurrentBattle: not null }
+               && game.CurrentBattle.IsAggressorOrDefender(player)
+               && game.CurrentBattle.PlanOf(player) == null
                && SwitchableLeader(game, player) != null;
     }
 
@@ -53,6 +52,7 @@ public class SwitchedSkilledLeader : GameEvent
     protected override void ExecuteConcreteEvent()
     {
         var leader = SwitchableLeader(Game, Player);
+        if (leader == null) throw new InvalidEventException();
         Game.SetInFrontOfShield(leader, !Game.IsInFrontOfShield(leader));
         Log(Initiator, " place ", Game.Skill(leader), " ", leader, Game.IsInFrontOfShield(leader) ? " in front of" : " behind", " their shield");
     }

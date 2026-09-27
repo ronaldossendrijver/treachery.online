@@ -2,8 +2,8 @@
 
 public class GameInitInfo
 {
-    public string GameId { get; init; }
-    public string GameState { get; init; }
-    public string GameName { get; init; }
-    public Participation Participation { get; init; }
+    public string GameId { get; init; } = string.Empty;
+    public string GameState { get; init; } = string.Empty;
+    public string GameName { get; init; } = string.Empty;
+    public Participation Participation { get; init; } = new();
 }

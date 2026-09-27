@@ -14,7 +14,7 @@ public abstract class ChatMessage
    
     public int SourceUserId { get; init; }
 
-    public string Body { get; init; }
+    public string Body { get; init; } = string.Empty;
 
     public abstract Message GetBodyIncludingPlayerInfo(int receivingUserId, Dictionary<int,LoggedInUserInfo> users, Game game, bool contextIsGlobal);
 }

@@ -212,10 +212,10 @@ public class GameStatus
             Phase.MetheorAndStormSpell => Status(Express("Factions may now use ", TreacheryCardType.Metheor, " or ", TreacheryCardType.StormSpell, "...")),
 
             Phase.StormLosses => Status(game,
-                TakeLosses.LossesToTake(game).IsBattleLoss
+                TakeLosses.LossesToTake(game)!.IsBattleLoss
                     ? Express("Please decide which forces were killed in battle.")
-                    : Express("Please decide which forces were killed by the storm in ", TakeLosses.LossesToTake(game).Location, "."),
-                Express(TakeLosses.LossesToTake(game).Faction, " are deciding which forces were killed..."),
+                    : Express("Please decide which forces were killed by the storm in ", TakeLosses.LossesToTake(game)!.Location, "."),
+                Express(TakeLosses.LossesToTake(game)!.Faction, " are deciding which forces were killed..."),
                 game.LossesToTake[0].Faction),
 
             /* Spice Blow */
@@ -558,7 +558,7 @@ public class GameStatus
         {
             Phase.YellowSettingUp => [game.Map.SietchTabr.Territory, game.Map.FalseWallSouth, game.Map.FalseWallWest],
 
-            Phase.StormLosses => [TakeLosses.LossesToTake(game).Location.Territory],
+            Phase.StormLosses => [TakeLosses.LossesToTake(game)!.Location.Territory],
 
             Phase.HarvesterA => [game.LatestSpiceCardA!.Location!.Territory],
             Phase.HarvesterB => [game.LatestSpiceCardB!.Location!.Territory],

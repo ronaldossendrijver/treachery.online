@@ -25,13 +25,13 @@ public class Move : PlacementEvent
 
     #region Properties
 
-    public bool AsAdvisors { get; set; }
+    public bool AsAdvisors { get; init; }
 
     #endregion Properties
 
     #region Validation
 
-    public override Message Validate()
+    public override Message? Validate()
     {
         if (!Passed && Game.InOrangeCunningShipment) return Message.Express("You cannot move after Cunning shipment");
 
@@ -70,7 +70,7 @@ public class Move : PlacementEvent
         {
             Game.RecentMoves.Add(this);
 
-            if (Game.ContainsConflictingAlly(Player, To)) Game.ChosenDestinationsWithAllies.Add(To.Territory);
+            if (To != null && Game.ContainsConflictingAlly(Player, To)) Game.ChosenDestinationsWithAllies.Add(To.Territory);
 
             Game.PerformMoveFromLocations(Player, ForceLocations, this, Initiator != Faction.Blue || AsAdvisors, false);
             Game.CheckIntrusion(this);

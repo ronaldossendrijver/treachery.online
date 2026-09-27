@@ -25,7 +25,7 @@ public class ResourcesAudited : GameEvent
 
     #region Properties
 
-    public Faction Target { get; set; }
+    public Faction Target { get; init; }
 
     #endregion Properties
 
@@ -54,9 +54,11 @@ public class ResourcesAudited : GameEvent
     {
         Game.ResourceAuditedFactions.Add(Target);
         var target = GetPlayer(Target);
+        if (target == null) throw new InvalidEventException();
 
         Log();
-        LogTo(Initiator, Target, " own ", Payment.Of(target.Resources), ", ", target.TreacheryCards.Count(tc => tc.IsWeapon), " weapons and ", target.TreacheryCards.Count(tc => tc.IsDefense), " defenses");
+        LogTo(Initiator, Target, " own ", Payment.Of(target.Resources), ", ", 
+            target.TreacheryCards.Count(tc => tc.IsWeapon), " weapons and ", target.TreacheryCards.Count(tc => tc.IsDefense), " defenses");
     }
 
     public override Message GetMessage()

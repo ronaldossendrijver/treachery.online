@@ -26,13 +26,13 @@ public class YellowSentMonster : GameEvent
 
     #region Properties
 
-    public int _territoryId;
+    private readonly int _territoryId;
 
     [JsonIgnore]
-    public Territory Territory
+    public Territory? Territory
     {
         get => Game.Map.TerritoryLookup.Find(_territoryId);
-        set => _territoryId = Game.Map.TerritoryLookup.GetId(value);
+        init => _territoryId = Game.Map.TerritoryLookup.GetId(value);
     }
 
     #endregion Properties
@@ -59,6 +59,7 @@ public class YellowSentMonster : GameEvent
     protected override void ExecuteConcreteEvent()
     {
         Log();
+        if (Territory == null) throw new InvalidEventException();
         var monster = new MonsterAppearence(Territory, false);
         Game.Monsters.Add(monster);
         Game.PerformMonster(monster);

@@ -25,17 +25,17 @@ public class AcceptOrCancelPurpleRevival : GameEvent
 
     #region Properties
 
-    public bool Cancel { get; set; }
+    public bool Cancel { get; init; }
 
-    public int Price { get; set; }
+    public int Price { get; init; }
 
-    public int _heroId;
+    private readonly int _heroId;
 
     [JsonIgnore]
     public IHero? Hero
     {
         get => LeaderManager.HeroLookup.Find(_heroId);
-        set => _heroId = LeaderManager.HeroLookup.GetId(value);
+        init => _heroId = LeaderManager.HeroLookup.GetId(value);
     }
 
     [JsonIgnore]
@@ -60,7 +60,9 @@ public class AcceptOrCancelPurpleRevival : GameEvent
 
         if (Hero == null)
         {
-            foreach (var r in Game.CurrentRevivalRequests) Game.EarlyRevivalsOffers.Add(r.Hero, int.MaxValue);
+            foreach (var r in Game.CurrentRevivalRequests) 
+                if (r.Hero is not null)
+                    Game.EarlyRevivalsOffers.Add(r.Hero, int.MaxValue);
 
             Game.CurrentRevivalRequests.Clear();
         }

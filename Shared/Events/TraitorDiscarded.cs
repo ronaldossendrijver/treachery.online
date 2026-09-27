@@ -26,13 +26,13 @@ public class TraitorDiscarded : GameEvent
 
     #region Properties
 
-    public int _traitorId;
+    private readonly int _traitorId;
 
     [JsonIgnore]
-    public IHero Traitor
+    public IHero? Traitor
     {
         get => LeaderManager.HeroLookup.Find(_traitorId);
-        set => _traitorId = LeaderManager.HeroLookup.GetId(value);
+        init => _traitorId = LeaderManager.HeroLookup.GetId(value);
     }
 
     #endregion Properties
@@ -57,8 +57,10 @@ public class TraitorDiscarded : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
+        if (Traitor is null) throw new InvalidEventException();
+        
         Log();
-        Game.TraitorDeck.Items.Add(Traitor);
+        Game.TraitorDeck!.Items.Add(Traitor);
         Player.Traitors.Remove(Traitor);
         Game.NumberOfTraitorsToDiscard--;
 

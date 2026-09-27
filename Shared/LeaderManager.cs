@@ -12,7 +12,7 @@ namespace Treachery.Shared;
 public static class LeaderManager
 {
     public const int FirstId = 1000;
-    public static List<Leader> Leaders { get; private set; }
+    public static List<Leader> Leaders { get; private set; } = [];
     public static Messiah Messiah { get; } = new() { Id = FirstId, SkinId = 1098 };
     public static LeaderFetcher LeaderLookup { get; private set; } = new();
     public static HeroFetcher HeroLookup { get; private set; } = new();

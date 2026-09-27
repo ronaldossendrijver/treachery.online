@@ -5,13 +5,13 @@ namespace Treachery.Shared;
 
 public class ScheduledGameInfo
 {
-    public string ScheduledGameId { get; init; }
+    public string ScheduledGameId { get; init; } = string.Empty;
     
     public DateTimeOffset DateTime { get; init; }
  
     public int CreatorUserId { get; init; }
     
-    public string CreatorName { get; init; }
+    public string CreatorName { get; init; } = string.Empty;
     
     public int? NumberOfPlayers { get; init; } = 6;
     

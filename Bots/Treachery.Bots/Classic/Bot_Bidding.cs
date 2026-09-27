@@ -21,11 +21,13 @@ public partial class ClassicBot
 
         var currentBid = Game.CurrentBid?.TotalAmount ?? 0;
         var currentBidIsFromAlly = Game.CurrentBid != null && Game.CurrentBid.Initiator == Ally;
-        var isKnownCard = Game.HasBiddingPrescience(Player) || (Player.HasAlly && Game.HasBiddingPrescience(AlliedPlayer)) || Game.KnownCards(Player).Contains(Game.CardsOnAuction.Top);
+        var cardsOnAuction = Require(Game.CardsOnAuction);
+        var auctionCard = Require(cardsOnAuction.Top);
+        var isKnownCard = Game.HasBiddingPrescience(Player) || (Player.HasAlly && Game.HasBiddingPrescience(Require(AlliedPlayer))) || Game.KnownCards(Player).Contains(auctionCard);
 
-        var thisCardIsUseless = isKnownCard && !MayUseUselessAsKarma && Game.CardsOnAuction.Top.Type == TreacheryCardType.Useless;
-        var thisCardIsCrappy = isKnownCard && !WannaHave(Game.CardsOnAuction.Top);
-        var thisCardIsPerfect = isKnownCard && CardQuality(Game.CardsOnAuction.Top, Player) == 5;
+        var thisCardIsUseless = isKnownCard && !MayUseUselessAsKarma && auctionCard.Type == TreacheryCardType.Useless;
+        var thisCardIsCrappy = isKnownCard && !WannaHave(auctionCard);
+        var thisCardIsPerfect = isKnownCard && CardQuality(auctionCard, Player) == 5;
 
         var resourcesToKeep = thisCardIsPerfect ? Param.Bidding_ResourcesToKeepWhenCardIsPerfect : Param.Bidding_ResourcesToKeepWhenCardIsntPerfect;
         var resourcesAvailable = Math.Max(0, Resources - resourcesToKeep) + ResourcesFromAlly + ResourcesFromRed;

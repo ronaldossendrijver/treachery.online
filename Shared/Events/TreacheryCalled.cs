@@ -26,7 +26,7 @@ public class TreacheryCalled : GameEvent
 
     #region Properties
 
-    public bool TraitorCalled { get; set; }
+    public bool TraitorCalled { get; init; }
 
     [JsonIgnore]
     public bool Succeeded => TraitorCalled && (Initiator != Faction.Black || !Game.BlackTraitorWasCancelled);
@@ -46,7 +46,7 @@ public class TreacheryCalled : GameEvent
 
     public static bool MayCallTreachery(Game g, Player p)
     {
-        if (g.AggressorPlan != null && g.DefenderPlan != null)
+        if (g is { AggressorPlan: not null, DefenderPlan: not null })
             if (!g.CurrentBattle!.Territory!.IsHomeworld || p.IsNative(g.CurrentBattle.Territory))
             {
                 if (!g.DefenderPlan.Messiah)
@@ -63,9 +63,10 @@ public class TreacheryCalled : GameEvent
         return false;
     }
 
-    private static bool HasTraitor(Game g, Player p, IHero h)
+    private static bool HasTraitor(Game g, Player p, IHero? h)
     {
-        return p.Traitors.Any(t => t.IsTraitor(h)) || (h != null && g.Applicable(Rule.CapturedLeadersAreTraitorsToOwnFaction) && h.Faction == p.Faction);
+        return p.Traitors.Any(t => h != null && t.IsTraitor(h)) 
+               || (h != null && g.Applicable(Rule.CapturedLeadersAreTraitorsToOwnFaction) && h.Faction == p.Faction);
     }
 
     #endregion Validation
@@ -74,33 +75,33 @@ public class TreacheryCalled : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        if (Game.AggressorPlan.By(Initiator) || (By(Faction.Black) && Game.AreAllies(Game.AggressorPlan.Initiator, Faction.Black)))
+        if (Game.AggressorPlan!.By(Initiator) || (By(Faction.Black) && Game.AreAllies(Game.AggressorPlan.Initiator, Faction.Black)))
         {
             Game.AggressorTraitorAction = this;
             if (TraitorCalled)
             {
                 Log();
                 Game.Stone(Milestone.TreacheryCalled);
-                Player.RevealedTraitors.Add(Game.DefenderPlan.Hero);
+                Player.RevealedTraitors.Add(Game.DefenderPlan!.Hero!);
             }
         }
 
-        if (Game.DefenderPlan.By(Initiator) || (By(Faction.Black) && Game.AreAllies(Game.DefenderPlan.Initiator, Faction.Black)))
+        if (Game.DefenderPlan!.By(Initiator) || (By(Faction.Black) && Game.AreAllies(Game.DefenderPlan.Initiator, Faction.Black)))
         {
             Game.DefenderTraitorAction = this;
             if (TraitorCalled)
             {
                 Log();
                 Game.Stone(Milestone.TreacheryCalled);
-                Player.RevealedTraitors.Add(Game.AggressorPlan.Hero);
+                Player.RevealedTraitors.Add(Game.AggressorPlan!.Hero!);
             }
         }
 
-        if (Game.AggressorTraitorAction != null && Game.DefenderTraitorAction != null)
+        if (Game is { AggressorTraitorAction: not null, DefenderTraitorAction: not null })
         {
-            var treachery = Game.CurrentBattle.TreacheryOf(Faction.Black);
+            var treachery = Game.CurrentBattle!.TreacheryOf(Faction.Black);
 
-            if (Game.Applicable(Rule.NexusCards) && treachery != null && treachery.Initiator == Faction.Black && treachery.TraitorCalled)
+            if (Game.Applicable(Rule.NexusCards) && treachery is { Initiator: Faction.Black, TraitorCalled: true })
                 Game.Enter(Phase.CancellingTraitor);
             else
                 Game.HandleRevealedBattlePlans();

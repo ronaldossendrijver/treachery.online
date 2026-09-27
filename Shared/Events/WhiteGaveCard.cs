@@ -26,13 +26,13 @@ public class WhiteGaveCard : GameEvent
 
     #region Properties
 
-    public int _cardId = -1;
+    private readonly int _cardId = -1;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Lookup.Find(_cardId);
-        set => _cardId = TreacheryCardManager.Lookup.GetId(value);
+        init => _cardId = TreacheryCardManager.Lookup.GetId(value);
     }
 
     #endregion Properties
@@ -56,6 +56,7 @@ public class WhiteGaveCard : GameEvent
     protected override void ExecuteConcreteEvent()
     {
         var target = Player.AlliedPlayer;
+        if (target is null || Card is null) throw new InvalidEventException();
 
         Player.TreacheryCards.Remove(Card);
         Game.RegisterKnown(Player, Card);

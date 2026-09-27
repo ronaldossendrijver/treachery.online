@@ -26,13 +26,13 @@ public class Voice : GameEvent
 
     #region Properties
 
-    public bool Must { get; set; }
+    public bool Must { get; init; }
 
     [JsonIgnore]
     public bool MayNot => !Must;
 
 
-    public TreacheryCardType Type { get; set; }
+    public TreacheryCardType Type { get; init; }
 
     #endregion Properties
 
@@ -91,13 +91,14 @@ public class Voice : GameEvent
 
     public static bool MayUseVoice(Game g, Player p)
     {
-        var disableWhenPrescienceIsUsed = g.Version >= 108 && g.Version < 178 && g.CurrentPrescience != null;
+        var disableWhenPrescienceIsUsed = g.Version >= 108 && g is { Version: < 178, CurrentPrescience: not null };
 
         if (!disableWhenPrescienceIsUsed && g.CurrentVoice == null && g.CurrentBattle != null && g.CurrentBattle.IsInvolved(p))
         {
             if (p.Nexus == Faction.Blue && NexusPlayed.CanUseSecretAlly(g, p)) return g.CurrentBattle.IsAggressorOrDefender(p);
 
-            if (!g.Prevented(FactionAdvantage.BlueUsingVoice) && !g.IsOccupiedByFactionOrTheirAlly(World.Blue, g.CurrentBattle!.OpponentOf(p)))
+            if (!g.Prevented(FactionAdvantage.BlueUsingVoice) 
+                && !g.IsOccupiedByFactionOrTheirAlly(World.Blue, g.CurrentBattle!.OpponentOf(p)!))
             {
                 if (p.Faction == Faction.Blue)
                     return g.CurrentBattle.IsInvolved(p);

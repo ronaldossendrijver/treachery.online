@@ -1,4 +1,7 @@
-﻿/*
+﻿﻿#nullable disable
+#pragma warning disable CS8632
+
+/*
  * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
@@ -29,7 +32,7 @@ public partial class ClassicBot
 
     private bool WinWasPredictedByMeThisTurn(Faction opponentFaction)
     {
-        var ally = Game.GetPlayer(opponentFaction).Ally;
+        var ally = Require(Game.GetPlayer(opponentFaction)).Ally;
         return Faction == Faction.Blue && Game.CurrentTurn == Player.PredictedTurn 
                                        && (opponentFaction == Player.PredictedFaction || ally == Player.PredictedFaction);
     }
@@ -53,7 +56,7 @@ public partial class ClassicBot
 
     private bool IsWinning(Faction f)
     {
-        return Game.MeetsNormalVictoryCondition(Game.GetPlayer(f), true);
+        return Game.MeetsNormalVictoryCondition(Require(Game.GetPlayer(f)), true);
     }
 
     private Prescience? MyPrescience => Game.CurrentPrescience != null && (Game.CurrentPrescience.Initiator == Faction || Game.CurrentPrescience.Initiator == Ally) ? Game.CurrentPrescience : null;
@@ -304,7 +307,7 @@ public partial class ClassicBot
     private bool ProbablySafeFromMonster(Territory t) 
         => Game.CurrentTurn == Game.MaximumTurns 
            || Game.ProtectedFromMonster(Player) 
-           || t != Game.LatestSpiceCardA.Location.Territory 
+           || t != Require(Game.LatestSpiceCardA).Location.Territory 
            || Game.SandTroutOccured 
            || !Game.HasResourceDeckPrescience(Player) 
            || Game.ResourceCardDeck.Top is { IsShaiHulud: false };

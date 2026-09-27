@@ -66,7 +66,7 @@ public partial class ClassicBot
             DecidedShipment = new Shipment(Game, Faction) { Passed = true };
         }
 
-        return DecidedShipment;
+        return Require(DecidedShipment);
     }
 
     private bool WillLeaveMyHomeDefenseless(int shippedAmountOfForces, int shippedAmountOfSpecialForces)
@@ -889,7 +889,7 @@ public partial class ClassicBot
             : 0;
 
     private static float DeterminePenalty(Player? opponent)
-        => opponent is { IsBot: true } && (!opponent.HasAlly || opponent.AlliedPlayer.IsBot)
+        => opponent is { IsBot: true } && (!opponent.HasAlly || Require(opponent.AlliedPlayer).IsBot)
             ? BotParameters.PenaltyForAttackingBots
             : 0;
 

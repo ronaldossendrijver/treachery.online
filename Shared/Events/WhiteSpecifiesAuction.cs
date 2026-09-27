@@ -28,15 +28,15 @@ public class WhiteSpecifiesAuction : GameEvent
 
     public AuctionType AuctionType { get; set; }
 
-    public int Direction { get; set; }
+    public int Direction { get; init; }
 
-    public int _cardId;
+    private readonly int _cardId;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
-        set => _cardId = TreacheryCardManager.GetId(value);
+        init => _cardId = TreacheryCardManager.GetId(value);
     }
 
     #endregion Properties
@@ -80,6 +80,7 @@ public class WhiteSpecifiesAuction : GameEvent
         if (!Game.WhiteOccupierSpecifiedCard)
         {
             Game.WhiteAuctionShouldStillHappen = false;
+            if (Card is null) throw new InvalidEventException();
             Game.CardsOnAuction!.PutOnTop(Card);
             Game.WhiteCache.Remove(Card);
             Game.RegisterKnown(Card);
@@ -102,10 +103,9 @@ public class WhiteSpecifiesAuction : GameEvent
             var directionText = "";
             if (AuctionType == AuctionType.WhiteOnceAround)
             {
-                if (Direction == 1)
-                    directionText = " (counter-clockwise)";
-                else
-                    directionText = " (clockwise)";
+                directionText = Direction == 1 
+                    ? " (counter-clockwise)" 
+                    : " (clockwise)";
             }
 
             Log(Initiator, " put select a ", AuctionType, " auction", directionText);

@@ -26,18 +26,18 @@ public class WhiteAnnouncesBlackMarket : PassableGameEvent
 
     #region Properties
 
-    public int _cardId;
+    private readonly int _cardId;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
-        set => _cardId = TreacheryCardManager.GetId(value);
+        init => _cardId = TreacheryCardManager.GetId(value);
     }
 
-    public AuctionType AuctionType { get; set; }
+    public AuctionType AuctionType { get; init; }
 
-    public int Direction { get; set; }
+    public int Direction { get; init; }
 
     #endregion Properties
 
@@ -69,8 +69,9 @@ public class WhiteAnnouncesBlackMarket : PassableGameEvent
         if (!Passed)
         {
             Game.Enter(Phase.BlackMarketBidding);
+            if (Card is null) throw new InvalidEventException();
             Player.TreacheryCards.Remove(Card);
-            Game.CardsOnAuction.PutOnTop(Card);
+            Game.CardsOnAuction!.PutOnTop(Card);
             Game.RegisterKnown(Initiator, Card);
             Game.Bids.Clear();
             Game.CurrentBid = null;
@@ -87,14 +88,14 @@ public class WhiteAnnouncesBlackMarket : PassableGameEvent
         var directionText = "";
         if (AuctionType == AuctionType.BlackMarketOnceAround)
         {
-            if (Direction == 1)
-                directionText = " (counter-clockwise)";
-            else
-                directionText = " (clockwise)";
+            directionText = Direction == 1 
+                ? " (counter-clockwise)" 
+                : " (clockwise)";
         }
 
         if (!Passed)
             return Message.Express(Initiator, " put a card on the black market by ", AuctionType, " auction", directionText);
+        
         return Message.Express(Initiator, " don't put a card on the black market");
     }
 

@@ -62,6 +62,7 @@ public class MetheorPlayed : GameEvent
     protected override void ExecuteConcreteEvent()
     {
         var card = Player.Card(TreacheryCardType.Metheor);
+        if (card == null) throw new InvalidEventException();
 
         Game.Stone(Milestone.MetheorUsed);
         Game.ShieldWallDestroyed = true;

@@ -39,7 +39,7 @@ public partial class Game
         
         var toBeDivided = DivideResources.GetResourcesToBeDivided(this);
         
-        if (toBeDivided is null)
+        if (toBeDivided?.Territory is null)
             throw new InvalidEventException();
 
         var gainedByFirstFaction = DivideResources.GainedByFirstFaction(toBeDivided, divisionWasAgreed, CurrentDivisionProposal.PortionToFirstPlayer);

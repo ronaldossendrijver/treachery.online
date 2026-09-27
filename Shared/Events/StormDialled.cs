@@ -25,7 +25,7 @@ public class StormDialled : GameEvent
 
     #region Properties
 
-    public int Amount { get; set; }
+    public int Amount { get; init; }
 
     #endregion Properties
 
@@ -123,7 +123,7 @@ public class StormDialled : GameEvent
             techTokensToBeDealt.Add(TechToken.Ships);
         }
 
-        var remainingTechTokens = new Deck<TechToken>(techTokensToBeDealt, Game.Random);
+        var remainingTechTokens = new Deck<TechToken>(techTokensToBeDealt, Game.Random!);
         remainingTechTokens.Shuffle();
         Game.Stone(Milestone.Shuffled);
 

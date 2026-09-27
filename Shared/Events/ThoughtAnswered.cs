@@ -26,13 +26,13 @@ public class ThoughtAnswered : GameEvent
 
     #region Properties
 
-    public int _cardId;
+    private readonly int _cardId;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
-        set => _cardId = TreacheryCardManager.GetId(value);
+        init => _cardId = TreacheryCardManager.GetId(value);
     }
 
     #endregion Properties
@@ -50,8 +50,11 @@ public class ThoughtAnswered : GameEvent
 
     public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
     {
+        if (g.CurrentThought?.Card == null) return [];
+        
         if (p.Has(g.CurrentThought.Card))
-            return new[] { g.CurrentThought.Card };
+            return [g.CurrentThought.Card];
+        
         return p.TreacheryCards;
     }
 
@@ -61,6 +64,8 @@ public class ThoughtAnswered : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
+        if (Game.CurrentThought?.Card == null) throw new InvalidEventException();
+        
         if (Card == null)
         {
             Log(Initiator, " don't own any cards");

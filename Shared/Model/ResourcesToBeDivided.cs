@@ -14,5 +14,5 @@ public class ResourcesToBeDivided
     public int Amount;
     public Faction FirstFaction;
     public Faction OtherFaction;
-    public Territory Territory;
+    public Territory? Territory;
 }

@@ -21,7 +21,7 @@ public partial class Game
     public Dictionary<Faction, IBid> Bids { get; } = new();
     public TreacheryCard? CardJustWon { get; internal set; }
     public IBid? WinningBid { get; internal set; }
-    internal bool BiddingRoundWasStarted { get; private set; }
+    private bool BiddingRoundWasStarted { get; set; }
     internal bool RegularBiddingIsDone { get; set; }
     public TreacheryCard? CardThatMustBeKeptOrGivenToAlly { get; internal set; }
     internal int NumberOfCardsOnAuction { get; set; }
@@ -387,9 +387,9 @@ public partial class Game
         if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreenBiddingPrescience);
 
         var enterReplacingCardJustWon = mightReplace && Version > 150 &&  
-                                        ((Version < 159 && Players.Any(p => p.Nexus != Faction.None)) || (Version >= 159 && winner.Nexus != Faction.None));
+                                        ((Version < 159 && Players.Any(p => p.Nexus != Faction.None)) || (Version >= 159 && winner != null && winner.Nexus != Faction.None));
 
-        if (mightReplace)
+        if (mightReplace && winner != null)
         {
             if (winner.Ally == Faction.Grey && GreyAllowsReplacingCards && !(Version >= 164 && (CurrentAuctionType is AuctionType.WhiteSilent or AuctionType.WhiteOnceAround)))
             {

@@ -37,7 +37,7 @@ public class WhiteKeepsUnsoldCard : PassableGameEvent
     protected override void ExecuteConcreteEvent()
     {
         Log();
-        var card = Game.CardsOnAuction.Draw();
+        var card = Game.CardsOnAuction!.Draw();
         Game.RegisterWonCardAsKnown(card);
 
         if (!Passed)

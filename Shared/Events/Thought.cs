@@ -29,7 +29,7 @@ public class Thought : GameEvent
     public int _cardId;
 
     [JsonIgnore]
-    public TreacheryCard Card
+    public TreacheryCard? Card
     {
         get => TreacheryCardManager.Get(_cardId);
         set => _cardId = TreacheryCardManager.GetId(value);
@@ -63,7 +63,7 @@ public class Thought : GameEvent
     protected override void ExecuteConcreteEvent()
     {
         Game.CurrentThought = this;
-        var opponent = Game.CurrentBattle.OpponentOf(Initiator).Faction;
+        var opponent = Game.CurrentBattle!.OpponentOf(Initiator)!.Faction;
         Log(Initiator, " use their ", LeaderSkill.Thinker, " skill to ask ", opponent, " if they have a ", Card);
         Game.Stone(Milestone.Prescience);
         Game.Enter(Phase.Thought);
@@ -75,6 +75,4 @@ public class Thought : GameEvent
     }
 
     #endregion Execution
-
-
 }

@@ -7,8 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace Treachery.Shared;
 
 public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlacement
@@ -81,7 +79,7 @@ public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlace
 
     #region Validation
 
-    protected Message ValidateMove(bool asAdvisors)
+    protected Message? ValidateMove(bool asAdvisors)
     {
         if (Passed) return null;
 
@@ -115,7 +113,7 @@ public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlace
             }
         }
 
-        var canMoveFromTwoTerritories = Game.CurrentPlanetology != null && Game.CurrentPlanetology.MoveFromTwoTerritories && Game.CurrentPlanetology.Initiator == Initiator;
+        var canMoveFromTwoTerritories = Game.CurrentPlanetology is { MoveFromTwoTerritories: true } && Game.CurrentPlanetology.Initiator == Initiator;
         var numberOfSelectedTerritories = ForceLocations.Where(kvp => kvp.Value.TotalAmountOfForces > 0).Select(fl => fl.Key.Territory).Distinct().Count();
         if (numberOfSelectedTerritories > 1 && !canMoveFromTwoTerritories) return Message.Express("You can't move from two territories at the same time");
         if (numberOfSelectedTerritories > 2) return Message.Express("You can't move from more than two territories at the same time");

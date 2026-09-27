@@ -7,16 +7,8 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Timers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Treachery.Bots;
-using Treachery.Shared.Model;
 
 [assembly: Parallelize(Scope = ExecutionScope.MethodLevel)]
 namespace Treachery.Test;
@@ -25,7 +17,6 @@ public abstract class GameSimulationTestBase
 {
     private const bool GatherStatisticsDuringRegressionTest = false;
     private const bool GatherTrainingDataDuringRegressionTest = false;
-    private const bool GatherCentralStyleStatistics = false;
 
     // ReSharper disable UnusedParameter.Local
     private void SaveSpecialCases(Game g, GameEvent e)
@@ -609,12 +600,6 @@ public abstract class GameSimulationTestBase
 
         var statistics = new Statistics();
         var trainingData = new TrainingData();
-        var centralStyleStatistics = new ConcurrentBag<string>();
-
-        if (GatherCentralStyleStatistics)
-        {
-            File.WriteAllText("CentralStyleStatistics.json", "{\r\n  \"entries\": [");            
-        }
 
         Message.DefaultDescriber = DefaultSkin.Default;
 
@@ -639,7 +624,7 @@ public abstract class GameSimulationTestBase
                 {
                     gamesTested++;
                     var testcaseFileName = fileName + ".testcase";
-                    ReplayGame(fileName, testcaseFileName, statistics, trainingData, centralStyleStatistics);
+                    ReplayGame(fileName, testcaseFileName, statistics, trainingData);
                 });
             }
             else
@@ -648,7 +633,7 @@ public abstract class GameSimulationTestBase
                 {
                     gamesTested++;
                     var testcaseFileName = fileName + ".testcase";
-                    ReplayGame(fileName, testcaseFileName, statistics, trainingData, centralStyleStatistics);
+                    ReplayGame(fileName, testcaseFileName, statistics, trainingData);
                 }
             }
 
@@ -664,16 +649,6 @@ public abstract class GameSimulationTestBase
         {
             statistics.Output(DefaultSkin.Default);    
         }
-
-        if (GatherCentralStyleStatistics)
-        {
-            foreach (var item in centralStyleStatistics)
-            {
-                File.AppendAllText("CentralStyleStatistics.json", item);
-            }
-
-            File.AppendAllText("CentralStyleStatistics.json", "]\r\n}");
-        }
     }
     
     //[TestMethod]
@@ -682,11 +657,10 @@ public abstract class GameSimulationTestBase
         var savegame = "savegame20250801.0124.json";
         var statistics = new Statistics();
         var trainingData = new TrainingData();
-        var centralStyleStatistics = new ConcurrentBag<string>();
-        ReplayGame(".\\" + savegame, ".\\" + savegame + ".testcase", statistics, trainingData, centralStyleStatistics);
+        ReplayGame(".\\" + savegame, ".\\" + savegame + ".testcase", statistics, trainingData);
     }
     
-    private void ReplayGame(string fileName, string testcaseFileName, Statistics statistics, TrainingData trainingData, ConcurrentBag<string> centralStyleStatistics)
+    private void ReplayGame(string fileName, string testcaseFileName, Statistics statistics, TrainingData trainingData)
     {
         var fs = File.OpenText(fileName);
         var stateData = fs.ReadToEnd();
@@ -738,13 +712,6 @@ public abstract class GameSimulationTestBase
                 IBid previousWinningBid = null;
                 GatherStatistics(statistics, game, ref previousBattleOutcome, ref previousWinningBid);
             }
-        }
-
-        if (GatherCentralStyleStatistics)
-        {
-            var centralStyleStats = GameStatistics.GetStatistics(game);
-            var data = Utilities.Serialize(centralStyleStats);
-            centralStyleStatistics.Add(data);
         }
     }
     
