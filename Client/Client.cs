@@ -49,14 +49,15 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public string? UserEmail => LoginInfo?.Email;
     
     //Game in progress
-    [MemberNotNullWhen(true, nameof(Game), nameof(GameId))]
-    public bool InGame => Game != null;
     public Game? Game { get; private set; }
     public string? GameName { get; private set; }
     public string? GameId { get; private set; }
     public GameStatus? Status { get; private set; }
     public List<Type> Actions { get; private set; } = []; 
     private bool ReseatRequested { get; set; }
+
+    [MemberNotNullWhen(true, nameof(Game), nameof(GameId))]
+    public bool InGame => Game != null;
 
     public bool PlayersNeedSeating
         => InGame && (ReseatRequested || Game.CurrentPhase >= Phase.TradingFactions &&
@@ -261,7 +262,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         {
             //This is not the expected event. Request game state from the server.
             var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestGameState), UserToken, GameId);
-            resultMessage = result.Success && result.Contents != null 
+            resultMessage = result is { Success: true, Contents: not null } 
                 ? await LoadGame(result.Contents) 
                 : Message.Express("Connection error");
         }
@@ -475,7 +476,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return null;
     }
     
-    public async Task<string> RequestSetUserStatus(UserStatus status)
+    public async Task<string?> RequestSetUserStatus(UserStatus status)
     {
         if (!LoggedIn) return "Not logged in";
         var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestSetUserStatus), UserToken, status);
@@ -489,7 +490,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         if (!LoggedIn) return "Not logged in";
         
         var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestCreateGame), name, UserToken, password, stateData, skinData);
-        if (result.Success && result.Contents is not null)
+        if (result is { Success: true, Contents: not null })
         {
             var loadMessage = await LoadGame(result.Contents);
             if (loadMessage != null)
@@ -503,37 +504,39 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             : result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : CurrentSkin.Describe(result.Error);
     }
     
-    public async Task<string> RequestScheduleGame(DateTimeOffset dateTime, Ruleset? ruleset, int numberOfPlayers, int maximumTurns, List<Faction> allowedFactions, bool asyncPlay)
+    public async Task<string?> RequestScheduleGame(DateTimeOffset dateTime, Ruleset? ruleset, int numberOfPlayers, int maximumTurns, List<Faction> allowedFactions, bool asyncPlay)
     {
         var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestScheduleGame), UserToken, dateTime, ruleset, numberOfPlayers, maximumTurns, allowedFactions, asyncPlay);
         return UpdateServerStatusOnSuccess(result);
     }
     
-    public async Task<string> RequestCancelGame(string scheduledGameId)
+    public async Task<string?> RequestCancelGame(string scheduledGameId)
     {
         var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestCancelGame), UserToken, scheduledGameId);
         return UpdateServerStatusOnSuccess(result);
     }
 
-    public async Task<string> RequestCloseGame(string gameId)
+    public async Task<string?> RequestCloseGame(string gameId)
     {
         var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestCloseGame), UserToken, gameId);
         return UpdateServerStatusOnSuccess(result);
     }
 
-    private string UpdateServerStatusOnSuccess(Result<ServerStatus> result)
+    private string? UpdateServerStatusOnSuccess(Result<ServerStatus> result)
     {
         if (!result.Success || result.Contents is null) 
             return CurrentSkin.Describe(result.Error);
         
         HandleUpdatedServerStatus(result.Contents);
-        return string.Empty;
+        return null;
     }
 
-    public async Task<string> RequestUpdateSettings(string gameId, GameSettings settings)
+    public async Task<string?> RequestUpdateSettings(string gameId, GameSettings settings)
     {
+        if (UserToken is null) return CurrentSkin.Describe(ErrorType.UserTokenNotFound);
+        
         var result = await Invoke(nameof(IGameHub.RequestUpdateSettings), UserToken, gameId, settings);
-        return result.Success ? string.Empty : CurrentSkin.Describe(result.Error);
+        return result.Success ? null : CurrentSkin.Describe(result.Error);
     }
 
     public async Task<string?> RequestJoinGame(string gameId, string password, int seat)
@@ -550,7 +553,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return null;
     }
     
-    public async Task<string> RequestSubscribeGame(string scheduledGameId, SubscriptionType subscription)
+    public async Task<string?> RequestSubscribeGame(string scheduledGameId, SubscriptionType subscription)
     {
         var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestSubscribeGame), UserToken, scheduledGameId, subscription);
         return UpdateServerStatusOnSuccess(result);
@@ -570,7 +573,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return null;
     }
 
-    public async Task<string> RequestSetOrUnsetHost(int userId)
+    public async Task<string?> RequestSetOrUnsetHost(int userId)
     {
         if (!LoggedIn) return "Not logged in";
         if (!InGame) return "Not in game";
@@ -578,7 +581,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestSetOrUnsetHost), UserToken, GameId, userId)).Error);
     }
 
-    public async Task<string> RequestOpenOrCloseSeat(int seat)
+    public async Task<string?> RequestOpenOrCloseSeat(int seat)
     {
         if (!LoggedIn) return "Not logged in";
         if (!InGame) return "Not in game";
@@ -592,13 +595,13 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         Refresh(nameof(RequestReseat));
     } 
     
-    public async Task<string> RequestLeaveGame()
+    public async Task<string?> RequestLeaveGame()
     {
         var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestLeaveGame), UserToken, GameId);
         return UpdateServerStatusOnSuccess(result);
     }
 
-    public async Task<string> RequestKick(int userId)
+    public async Task<string?> RequestKick(int userId)
     {
         if (!LoggedIn) return "Not logged in";
         if (!InGame) return "Not in game";
@@ -617,7 +620,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             : result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : CurrentSkin.Describe(result.Error);
     }
 
-    public async Task<string> RequestAssignSeats(Dictionary<int, int> assignment)
+    public async Task<string?> RequestAssignSeats(Dictionary<int, int> assignment)
     {
         if (!LoggedIn) return "Not logged in";
         if (!InGame) return "Not in game";
@@ -635,7 +638,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return result.Success ? null : CurrentSkin.Describe(result.Error);
     }
         
-    public async Task<string> RequestUndo(int untilEventNr)
+    public async Task<string?> RequestUndo(int untilEventNr)
     {
         if (!LoggedIn) return "Not logged in";
         if (!InGame) return "Not in game";
@@ -643,7 +646,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestUndo), UserToken, GameId, untilEventNr)).Error);
     }
 
-    public async Task<string> RequestRestoreRecentlyUndone()
+    public async Task<string?> RequestRestoreRecentlyUndone()
     {
         if (!LoggedIn) return "Not logged in";
         if (!InGame) return "Not in game";
@@ -651,7 +654,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestRestoreRecentlyUndone), UserToken, GameId)).Error);
     }
 
-    public async Task<string> RequestDismissRecentlyUndone()
+    public async Task<string?> RequestDismissRecentlyUndone()
     {
         if (!LoggedIn) return "Not logged in";
         if (!InGame) return "Not in game";
@@ -659,7 +662,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return CurrentSkin.Describe((await Invoke(nameof(IGameHub.RequestDismissRecentlyUndone), UserToken, GameId)).Error);
     }
 
-    public async Task<string> SetTimer(int value)
+    public async Task<string?> SetTimer(int value)
     {
         if (!LoggedIn) return "Not logged in";
         if (!InGame) return "Not in game";
@@ -685,7 +688,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     {
         if (!InGame) return;
         
-        if (gameEvent is EstablishPlayers establishPlayers && establishPlayers.Settings.AutoOpenEmptySeats)
+        if (gameEvent is EstablishPlayers { Settings.AutoOpenEmptySeats: true })
         {
             foreach (var p in Game.Players.Where(p => !Game.Participation.SeatedPlayers.ContainsValue(p.Seat)).ToArray())
             {
@@ -694,7 +697,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
     }
 
-    public async Task<string> RequestSetBotSpeed(int speed)
+    public async Task<string?> RequestSetBotSpeed(int speed)
     {
         if (!LoggedIn) return "Not logged in";
         if (!InGame) return "Not in game";
@@ -887,21 +890,19 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     }
 
     private bool _itAlreadyWasMyTurn;
+
     private async Task TurnAlert()
     {
-        if (Status is null) return;
-        
+        if (Status is null || Player is null || Game is null) return;
+
         if (_itAlreadyWasMyTurn)
         {
             _itAlreadyWasMyTurn = !Status.WaitingForOthers(Player, IsHost);
         }
-        else
+        else if (!Status.WaitingForOthers(Player, IsHost) && Game.CurrentMainPhase != MainPhase.Battle)
         {
-            if (!Status.WaitingForOthers(Player, IsHost) && Game.CurrentMainPhase != MainPhase.Battle)
-            {
-                _itAlreadyWasMyTurn = true;
-                await Browser.PlaySound(CurrentSkin.Sound_YourTurn_URL, CurrentEffectVolume);
-            }
+            _itAlreadyWasMyTurn = true;
+            await Browser.PlaySound(CurrentSkin.Sound_YourTurn_URL, CurrentEffectVolume);
         }
     }
 
@@ -935,7 +936,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
     }
 
-    private async Task<Result<VoidContents>> Invoke(string hubMethod, params object[] args) =>
+    private async Task<Result<VoidContents>> Invoke(string hubMethod, params object?[] args) =>
         await Invoke<VoidContents>(hubMethod, args);
  
     private async Task<Result<T>> Invoke<T>(string hubMethod, params object?[] args)
@@ -953,7 +954,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             _ => throw new ArgumentException("Too many arguments")
         };
         
-        if (!result.Success && result.Error is ErrorType.UserNotFound && StoredPassword != null && UserName != null)
+        if (result is { Success: false, Error: ErrorType.UserNotFound } && StoredPassword != null && UserName != null)
         {
             if ((await RequestLogin(UserName, StoredPassword)).Success)
             {

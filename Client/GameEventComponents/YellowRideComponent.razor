@@ -18,7 +18,7 @@
             _forcesFromReserves = 0;
             _specialForcesFromReserves = 0;
             
-            <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces=@forces Locations=@YellowRidesMonster.ValidSources(Game) />
+            <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces=@Forces Locations=@YellowRidesMonster.ValidSources(Game) />
         }
         else
         {
@@ -46,10 +46,10 @@
                 }
             }
 
-            forces = new();
+            Forces = new();
         }
         
-        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="toLocation" Values="ValidTargets">
+        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="ToLocation" Values="ValidTargets">
             <Label>To</Label>
         </SelectComponent>
 
@@ -67,7 +67,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Yellow;
 
-    protected override YellowRidesMonster ConfirmedResult => new(Game, Faction) { ForceLocations = forces, To = toLocation, ForcesFromReserves = _forcesFromReserves, SpecialForcesFromReserves = _specialForcesFromReserves, Passed = false };
+    protected override YellowRidesMonster ConfirmedResult => new(Game, Faction) { ForceLocations = Forces, To = ToLocation, ForcesFromReserves = _forcesFromReserves, SpecialForcesFromReserves = _specialForcesFromReserves, Passed = false };
 
     protected override YellowRidesMonster PassedResult => new(Game, Faction) { Passed = true };
 

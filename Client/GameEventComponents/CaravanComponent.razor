@@ -16,7 +16,7 @@
 
     protected override bool IsUrgent => true;
 
-    protected override Caravan ConfirmedResult => new(Game, Faction) { ForceLocations = forces, To = toLocation, AsAdvisors = asAdvisors, Passed = false };
+    protected override Caravan ConfirmedResult => new(Game, Faction) { ForceLocations = Forces, To = ToLocation, AsAdvisors = AsAdvisors, Passed = false };
 
     protected override bool InformAboutCaravan => false;
 

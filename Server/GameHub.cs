@@ -66,7 +66,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     
     private static Result<TResult> Success<TResult>(TResult contents) => new() { Success = true, Contents = contents };
 
-    private static bool AreValid<TResult>(string? userToken, string? gameId, out LoggedInUser? user, out ManagedGame? game, out Result<TResult>? error)
+    private static bool AreValid<TResult>(string? userToken, string? gameId, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out LoggedInUser? user, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out ManagedGame? game, out Result<TResult>? error)
     {
         user = null;
         game = null;
@@ -96,7 +96,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
         return false;
     }
     
-    private static bool AreValid(string? userToken, string? gameId, out LoggedInUser? user, out ManagedGame? game, out VoidResult? error)
+    private static bool AreValid(string? userToken, string? gameId, [NotNullWhen(true)] out LoggedInUser? user, [NotNullWhen(true)] out ManagedGame? game, out VoidResult error)
     {
         user = null;
         game = null;

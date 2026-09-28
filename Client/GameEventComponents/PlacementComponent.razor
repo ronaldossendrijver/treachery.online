@@ -6,8 +6,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-@inherits GameEventComponent<PlacementEventType>
-@typeparam PlacementEventType
+
+@inherits GameEventComponent<TPlacementEventType>
+
+@typeparam TPlacementEventType
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
@@ -21,48 +23,48 @@
 
         @if (ValidSources.Any())
         {
-            fromTerritory ??= ValidSources.First();
+            FromTerritory ??= ValidSources.First();
 
-            @if (Game.CurrentPlanetology != null && Game.CurrentPlanetology.MoveFromTwoTerritories && Game.CurrentPlanetology.Initiator == Faction)
+            @if (Game.CurrentPlanetology is { MoveFromTwoTerritories: true } && Game.CurrentPlanetology.Initiator == Faction)
             {
-                <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="forces" Locations="Game.LocationsWithAnyForcesNotInStorm(Player)" AlwaysShowLocation="true" AllowMultipleTerritories="true" InitializeToMaximum="true"/>
+                <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="Forces" Locations="Game.LocationsWithAnyForcesNotInStorm(Player)" AlwaysShowLocation="true" AllowMultipleTerritories="true" InitializeToMaximum="true"/>
             }
             else
             {
-                <SelectComponent T=Territory OnChanged="StateHasChanged" ButtonHint="ClickHintButton.Lmb" ModifierHint="ClickHintModifier.Ctrl" @bind-Value="fromTerritory" Values="ValidSources">
+                <SelectComponent T=Territory OnChanged="StateHasChanged" ButtonHint="ClickHintButton.Lmb" ModifierHint="ClickHintModifier.Ctrl" @bind-Value="FromTerritory" Values="ValidSources">
                     <Label>From</Label>
                 </SelectComponent>
 
-                <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="forces" Locations="Player.LocationsWithAnyForcesInTerritory(fromTerritory).Where(l => !Game.IsInStorm(l))" InitializeToMaximum="true"/>
+                <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="Forces" Locations="Player.LocationsWithAnyForcesInTerritory(FromTerritory).Where(l => !Game.IsInStorm(l))" InitializeToMaximum="true"/>
             }
 
-            <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="toLocation" Values="ValidTargets">
+            <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="ToLocation" Values="ValidTargets">
                 <Label>To</Label>
             </SelectComponent>
 
-            @if (toLocation != null && Game.ContainsConflictingAlly(Player, toLocation))
+            @if (ToLocation != null && Game.ContainsConflictingAlly(Player, ToLocation))
             {
                 <div class="text-danger bg-dark">Note: if you place forces there, all of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
             }
 
-            @if (Faction == Faction.Blue && toLocation != null)
+            @if (Faction == Faction.Blue && ToLocation != null)
             {
-                var mayMoveAsAdvisors = PlacementEvent.MayMoveAsAdvisors(Game, Player, toLocation.Territory, Player.SpecialForcesIn(fromTerritory) > 0);
+                var mayMoveAsAdvisors = PlacementEvent.MayMoveAsAdvisors(Game, Player, ToLocation.Territory, Player.SpecialForcesIn(FromTerritory) > 0);
 
-                if (mayMoveAsAdvisors && PlacementEvent.MayMoveAsBlueFighters(Player, toLocation.Territory))
+                if (mayMoveAsAdvisors && PlacementEvent.MayMoveAsBlueFighters(Player, ToLocation.Territory))
                 {
-                    <RadioComponent @bind-Value="asAdvisors" Values="new[] { false, true }" ValueLabels="@(new[] {"Fighters", "Advisors"})">
+                    <RadioComponent @bind-Value="AsAdvisors" Values="@([false, true])" ValueLabels="@(["Fighters", "Advisors"])">
                         <Label>Become fighters or advisors?</Label>
                     </RadioComponent>
                 }
                 else
                 {
-                    asAdvisors = mayMoveAsAdvisors;
+                    AsAdvisors = mayMoveAsAdvisors;
                 }
             }
             else
             {
-                asAdvisors = false;
+                AsAdvisors = false;
             }
 
 
@@ -86,24 +88,24 @@
 
 @code {
 
-    protected internal Territory? fromTerritory;
-    protected internal Location? toLocation;
-    protected internal Dictionary<Location, Battalion> forces = new();
-    protected internal bool asAdvisors;
-    private Game? selectionGame;
+    protected internal Territory? FromTerritory;
+    protected internal Location? ToLocation;
+    protected internal Dictionary<Location, Battalion> Forces = new();
+    protected internal bool AsAdvisors;
+    private Game? _selectionGame;
 
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
 
-        if (ReferenceEquals(selectionGame, Game))
+        if (ReferenceEquals(_selectionGame, Game))
             return;
 
-        selectionGame = Game;
-        fromTerritory = null;
-        toLocation = null;
-        forces.Clear();
-        asAdvisors = false;
+        _selectionGame = Game;
+        FromTerritory = null;
+        ToLocation = null;
+        Forces.Clear();
+        AsAdvisors = false;
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -124,7 +126,7 @@
 
     protected void AsAdvisorsOnChange(ChangeEventArgs args)
     {
-        asAdvisors = Convert.ToBoolean(args.Value);
+        AsAdvisors = Convert.ToBoolean(args.Value);
         StateHasChanged();
     }
 
@@ -134,22 +136,22 @@
     {
         get
         {
-            if (forces.Sum(kvp => kvp.Value.TotalAmountOfForces) > 0)
+            if (Forces.Sum(kvp => kvp.Value.TotalAmountOfForces) > 0)
             {
-                return PlacementEvent.ValidTargets(Game, Player, forces).OrderByDescending(l => l.IsStronghold).ThenBy(l => Client.CurrentSkin.Describe(l));
+                return PlacementEvent.ValidTargets(Game, Player, Forces).OrderByDescending(l => l.IsStronghold).ThenBy(l => Client.CurrentSkin.Describe(l));
             }
 
             return Array.Empty<Location>();
         }
     }
 
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
-        SetIfValid(ref toLocation, ValidTargets, l);
+        SetIfValid(ref ToLocation, ValidTargets, l);
     }
 
-    private void HandleLocationSelectedWithModifier(object sender, Location l)
+    private void HandleLocationSelectedWithModifier(object? sender, Location l)
     {
-        SetIfValid(ref fromTerritory, ValidSources, l.Territory);
+        SetIfValid(ref FromTerritory, ValidSources, l.Territory);
     }
 }

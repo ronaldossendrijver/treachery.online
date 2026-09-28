@@ -8,11 +8,11 @@ public partial class GameHub
     public async Task<VoidResult> RequestEstablishPlayers(string userToken, string gameId, EstablishPlayers e)
     {
         if (!AreValid(userToken, gameId, out _, out var game, out var error))
-            return error!;
+            return error;
         
         await ProcessGameEvent(userToken, gameId, e);
 
-        var participation = game!.Game.Participation;
+        var participation = game.Game.Participation;
 
         var userIds = participation.SeatedPlayers.Keys.ToList();
         var participantIndex = 0;
@@ -174,9 +174,9 @@ public partial class GameHub
     public async Task<VoidResult> SetTimer(string userToken, string gameId, int value)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
-            return error!;
+            return error;
 
-        if (!game!.Game.IsHost(user!.Id))
+        if (!game.Game.IsHost(user.Id))
             return Error(ErrorType.NoHost);
         
         await Clients.Group(gameId).HandleSetTimer(value);
@@ -186,9 +186,9 @@ public partial class GameHub
     private async Task<VoidResult> ProcessGameEvent<TEvent>(string userToken, string gameId, TEvent e) where TEvent : GameEvent
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
-            return error!;
+            return error;
         
-        return await ValidateAndExecute(e, game, game.Game.IsHost(user!.Id));
+        return await ValidateAndExecute(e, game, game.Game.IsHost(user.Id));
     }
 
     private async Task<VoidResult> ValidateAndExecute<TEvent>(TEvent e, ManagedGame game, bool isHost)

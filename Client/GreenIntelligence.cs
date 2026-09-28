@@ -27,10 +27,16 @@ public class GreenIntelligence
     public GreenIntelligence(IGameService client)
     {
         _client = client;
-        var whiteCards = client.Game.IsPlaying(Faction.White) ? TreacheryCardManager.GetWhiteCards().ToArray() : [];
-        _cardsInPlay = TreacheryCardManager.GetCardsInPlay(client.Game).Union(whiteCards).ToArray();
+        var game = client.Game!;
+        
+        var whiteCards = game.IsPlaying(Faction.White) 
+            ? TreacheryCardManager.GetWhiteCards().ToArray() 
+            : [];
+        
+        _cardsInPlay = [.. TreacheryCardManager.GetCardsInPlay(game).Union(whiteCards)];
+        
         TrackedTreacheryCards = new Dictionary<Faction, Dictionary<int, int>>();
-        foreach (var p in client.Game.Players)
+        foreach (var p in game.Players)
         {
             var cardsOfPlayer = new Dictionary<int, int>();
             for (var i = 0; i < p.MaximumNumberOfCards; i++) cardsOfPlayer.Add(i, DefaultSelectedCard(p.Faction, i));
@@ -45,9 +51,13 @@ public class GreenIntelligence
         return TreacheryCard.None;
     }
 
-    public IEnumerable<TreacheryCard> DiscardedCards => _discardedCards.Select(id => TreacheryCardManager.Lookup.Find(id));
+    public IEnumerable<TreacheryCard> DiscardedCards => _discardedCards
+        .Select(id => TreacheryCardManager.Lookup.Find(id))
+        .OfType<TreacheryCard>();
 
-    public IEnumerable<TreacheryCard> RemovedCards => _removedCards.Select(id => TreacheryCardManager.Lookup.Find(id));
+    public IEnumerable<TreacheryCard> RemovedCards => _removedCards
+        .Select(id => TreacheryCardManager.Lookup.Find(id))
+        .OfType<TreacheryCard>();
 
     public IEnumerable<TreacheryCard> AvailableDistinctCards(Faction f, int cardNumber)
     {
@@ -83,7 +93,7 @@ public class GreenIntelligence
     public void ChangeSelectedTraitor(Faction f, int cardNumber, int? leaderId)
     {
         var key = new Tuple<Faction, int>(f, cardNumber);
-        if (_trackedTraitors.ContainsKey(key)) _trackedTraitors.Remove(key);
+        _trackedTraitors.Remove(key);
 
         if (leaderId != null) _trackedTraitors.Add(key, (int)leaderId);
     }
@@ -95,7 +105,7 @@ public class GreenIntelligence
 
     public void ChangeDiscardedTraitor(int nr, int? leaderId)
     {
-        if (_trackedDiscardedTraitors.ContainsKey(nr)) _trackedDiscardedTraitors.Remove(nr);
+        _trackedDiscardedTraitors.Remove(nr);
 
         if (leaderId != null) _trackedDiscardedTraitors.Add(nr, (int)leaderId);
     }
@@ -103,6 +113,9 @@ public class GreenIntelligence
     public void Discard(Faction f, int cardNumber)
     {
         var current = TreacheryCardManager.Lookup.Find(TrackedTreacheryCards[f][cardNumber]);
+
+        if (current is null) return;
+        
         TrackedTreacheryCards[f][cardNumber] = TreacheryCard.None;
 
         if (current.Type == TreacheryCardType.Metheor)
@@ -124,7 +137,7 @@ public class GreenIntelligence
         _discardedCards.Clear();
     }
 
-    private static void Write(ref string target, object item)
+    private static void Write(ref string target, object? item)
     {
         if (item == null)
             target += ';';

@@ -8,14 +8,14 @@
 *@
 @inherits MapComponent
 
-@if (Client.Game.CurrentPhase >= Phase.MetheorAndStormSpell)
+@if (Game.CurrentPhase >= Phase.MetheorAndStormSpell)
 {
     var y = 1.75f * Client.CurrentSkin.FORCETOKEN_RADIUS;
     var x = 1.5f * Client.CurrentSkin.FORCETOKEN_RADIUS;
     var leaderDiameter = 3.2f * Client.CurrentSkin.FORCETOKEN_RADIUS;
     var leaderPctHeight = .25f * leaderDiameter * Client.CurrentSkin.BattleWheelHeroHeight / Client.CurrentSkin.BattleWheelHeroWidth;
     
-    foreach (var p in Client.Game.Players)
+    foreach (var p in Game.Players)
     {
         if (p.ForcesKilled > 0 || p.SpecialForcesKilled > 0)
         {
@@ -34,8 +34,8 @@
         }
 
         var corpses = p.Leaders
-            .Where(l => !Client.Game.IsAlive(l))
-            .Select(l => new Tuple<Leader, LeaderState>(l, Client.Game.LeaderState[l]))
+            .Where(l => !Game.IsAlive(l))
+            .Select(l => new Tuple<Leader, LeaderState>(l, Game.LeaderState[l]))
             .OrderBy(l => l.Item2.TimeOfDeath).Select(l => l.Item1)
             .ToArray();
 
@@ -48,7 +48,7 @@
             {
                 var l = new PointD(x, y - dy);
 
-                if (Client.Game.LeaderState[leader].IsFaceDownDead)
+                if (Game.LeaderState[leader].IsFaceDownDead)
                 {
                     <MapImage X="@(l.X + displaceX)" Y="@(l.Y)" Diameter="@(leaderDiameter)"
                            Src="@Client.CurrentSkin.GetFactionFaceDownImageUrl(p.Faction)"
@@ -67,7 +67,7 @@
             y += Spacing * leaderDiameter;
         }
 
-        if (p.Faction == Faction.Green && !Client.Game.MessiahIsAlive)
+        if (p.Faction == Faction.Green && !Game.MessiahIsAlive)
         {
             <MapImage X="@(x)" Y="@(y)" Diameter="@(0.5f * leaderDiameter)"
                    Src="@Client.CurrentSkin.Messiah_URL"
@@ -76,21 +76,21 @@
             y += Spacing * leaderDiameter;
         }
 
-        NextColumnIfNecessary(ref y, ref x, Spacing);
+        NextColumnIfNecessary(ref y, ref x);
     }
 }
 
 @code 
 {
     const float Spacing = 0.85f;
-    private Situation _situation = new();
+    private readonly Situation _situation = new();
     
     protected override bool ShouldRender()
     {
         return Client.InGame && _situation.RequiresUpdate(Client);
     }
 
-    private void NextColumnIfNecessary(ref float y, ref float x, float spacing)
+    private void NextColumnIfNecessary(ref float y, ref float x)
     {
         if (!(y > 15 * Client.CurrentSkin.FORCETOKEN_RADIUS - 0.8f * x)) 
             return;

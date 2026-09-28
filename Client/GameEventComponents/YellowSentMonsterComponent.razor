@@ -7,16 +7,15 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 @inherits GameEventComponent<YellowSentMonster>
-@implements IDisposable
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Select where to make @Client.CurrentSkin.Describe(Concept.Monster) appear</Header>
     <Body>
 
-        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="target" Values="YellowSentMonster.ValidTargets(Game).OrderBy(t => Name(t))"/>
+        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="Target" Values="YellowSentMonster.ValidTargets(Game).OrderBy(Name)"/>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Appear in {0}", target)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Appear in {0}", Target)" ConfirmError="@Validation" />
 
     </Body>
 
@@ -27,9 +26,9 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Yellow;
 
-    public Territory? target;
+    public Territory? Target;
 
-    protected override YellowSentMonster ConfirmedResult => new(Game, Faction) { Territory = target };
+    protected override YellowSentMonster ConfirmedResult => new(Game, Faction) { Territory = Target };
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -45,8 +44,8 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
-        SetIfValid(ref target, YellowSentMonster.ValidTargets(Game), l.Territory);
+        SetIfValid(ref Target, YellowSentMonster.ValidTargets(Game), l.Territory);
     }
 }

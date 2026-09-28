@@ -48,7 +48,7 @@
 
     protected override AmbassadorPlaced ConfirmedResult => new(Game, Faction) { Ambassador = _ambassador, Stronghold = _stronghold };
 
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
         SetIfValid(ref _stronghold, AmbassadorPlaced.ValidStrongholds(Game, Player), l.Territory);
     }

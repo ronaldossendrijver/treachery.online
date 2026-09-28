@@ -1,6 +1,6 @@
 ﻿namespace Treachery.Client.GameEventComponents;
 
-public abstract partial class PlacementComponent<PlacementEventType> where PlacementEventType : PlacementEvent, new()
+public abstract partial class PlacementComponent<TPlacementEventType> where TPlacementEventType : PlacementEvent, new()
 {
     protected abstract bool InformAboutCaravan { get; }
 

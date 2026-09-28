@@ -59,10 +59,10 @@
             dialBonusX += 2 * Client.CurrentSkin.RESOURCETOKEN_RADIUS;
         }
 
-        var homeworldBonus = Plan.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(Game.CurrentBattle.Territory);
+        var homeworldBonus = Plan.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(Game.CurrentBattle.Territory!);
         if (homeworldBonus != 0) 
         {
-            var homeworld = (Homeworld)Game.CurrentBattle.Territory.Locations.First();
+            var homeworld = (Homeworld)Game.CurrentBattle.Territory!.Locations.First();
 
             <MapImage X=@(dialBonusX - Client.CurrentSkin.PlayerTokenRadius) 
                       Y=@(forceY - Client.CurrentSkin.PlayerTokenRadius)
@@ -111,7 +111,7 @@
                      Align="@TextAlignment.Center" />
         }
 
-        if (Game.HasStrongholdAdvantage(Plan.Initiator, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory))
+        if (Game.HasStrongholdAdvantage(Plan.Initiator, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory!))
         {
             <MapImage X="@(forceX + 8f * Client.CurrentSkin.RESOURCETOKEN_RADIUS)" Y="@(forceY)" Width=@(0.4f * Client.CurrentSkin.BattleWheelCardWidth) Height="@(0.4f * Client.CurrentSkin.BattleWheelCardHeight)"
                    Src="@Client.CurrentSkin.GetImageUrl(StrongholdAdvantage.FreeResourcesForBattles)"
@@ -273,7 +273,7 @@
         }
     }
 
-    if (ShowEntirePlan || (Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Weapon) || Game.CurrentNexusPrescience is { GreenPrescienceAspect: PrescienceAspect.Weapon })
+    if (ShowEntirePlan || Game.CurrentPrescience is { Aspect: PrescienceAspect.Weapon } || Game.CurrentNexusPrescience is { GreenPrescienceAspect: PrescienceAspect.Weapon })
     {
         if (Plan.Weapon != null && (ShowEntirePlan || Plan.Weapon.IsWeapon))
         {

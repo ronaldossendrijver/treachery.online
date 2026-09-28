@@ -6,6 +6,9 @@
 //  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
 //  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 // */
+
+using System.Diagnostics.CodeAnalysis;
+
 namespace Treachery.Client;
 
 public interface IGameService
@@ -21,7 +24,7 @@ public interface IGameService
     public UserStatus? UserStatus { get; }
     
     //Server info
-    public ServerInfo ServerInfo { get; }
+    public ServerInfo? ServerInfo { get; }
     public AdminInfo AdminInfo { get; }
     public GameInfo[] OwnGames { get; }
     public GameInfo[] ActiveGames { get; }
@@ -31,11 +34,12 @@ public interface IGameService
     public Dictionary<int,LoggedInUserInfo> RecentlySeenUsers { get; }
 
     //Game info
+    [MemberNotNullWhen(true, nameof(Game), nameof(GameId))]
+    public bool InGame => Game != null;
     public Game? Game { get; }
     public string? GameName { get; }
     public string? GameId { get; }
     public GameStatus? Status { get; }
-    public bool InGame { get; }
     public bool PlayersNeedSeating { get; }
     public bool IsObserver { get; }
     
@@ -87,36 +91,36 @@ public interface IGameService
     void Logout();
     Task<VoidResult> RequestPasswordReset(string usernameOrEmail);
     Task<Result<LoginInfo>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword);
-    Task<string> RequestUpdateUserInfo(string hashedPassword, string email, string playerName);
-    Task<string> RequestSetUserStatus(UserStatus status);
+    Task<string?> RequestUpdateUserInfo(string hashedPassword, string email, string playerName);
+    Task<string?> RequestSetUserStatus(UserStatus status);
     
     //Game Management
     
-    Task<string> RequestCreateGame(string name, string password, string? stateData = null, string? skinData = null);
-    Task<string> RequestCloseGame(string gameId);
-    Task<string> RequestUpdateSettings(string gameId, GameSettings settings);
-    Task<string> RequestJoinGame(string gameId, string password, int seat);
-    Task<string> RequestObserveGame(string gameId, string password);
-    Task<string> RequestSetOrUnsetHost(int userId);
-    Task<string> RequestOpenOrCloseSeat(int seat);
+    Task<string?> RequestCreateGame(string name, string password, string? stateData = null, string? skinData = null);
+    Task<string?> RequestCloseGame(string gameId);
+    Task<string?> RequestUpdateSettings(string gameId, GameSettings settings);
+    Task<string?> RequestJoinGame(string gameId, string password, int seat);
+    Task<string?> RequestObserveGame(string gameId, string password);
+    Task<string?> RequestSetOrUnsetHost(int userId);
+    Task<string?> RequestOpenOrCloseSeat(int seat);
     void RequestReseat();
-    Task<string> RequestLeaveGame();
-    Task<string> RequestKick(int userId);
-    Task<string> RequestScheduleGame(DateTimeOffset dateTime, Ruleset? ruleset, int numberOfPlayers, int maximumTurns,
+    Task<string?> RequestLeaveGame();
+    Task<string?> RequestKick(int userId);
+    Task<string?> RequestScheduleGame(DateTimeOffset dateTime, Ruleset? ruleset, int numberOfPlayers, int maximumTurns,
         List<Faction> allowedFactionsInPlay, bool asyncPlay);
-    Task<string> RequestCancelGame(string scheduledGameId);
-    Task<string> RequestSubscribeGame(string scheduledGameId, SubscriptionType subscription);
+    Task<string?> RequestCancelGame(string scheduledGameId);
+    Task<string?> RequestSubscribeGame(string scheduledGameId, SubscriptionType subscription);
     
-    Task<string> RequestLoadGame(string state, string? skin = null);
-    Task<string> RequestAssignSeats(Dictionary<int, int> seatedPlayers);
-    Task<string> RequestSetSkin(string skin);
-    Task<string> RequestUndo(int untilEventNr);
-    Task<string> RequestRestoreRecentlyUndone();
-    Task<string> RequestDismissRecentlyUndone();
-    Task<string> RequestSetBotSpeed(int speed);
+    Task<string?> RequestLoadGame(string state, string? skin = null);
+    Task<string?> RequestAssignSeats(Dictionary<int, int> seatedPlayers);
+    Task<string?> RequestSetSkin(string skin);
+    Task<string?> RequestUndo(int untilEventNr);
+    Task<string?> RequestRestoreRecentlyUndone();
+    Task<string?> RequestDismissRecentlyUndone();
+    Task<string?> RequestSetBotSpeed(int speed);
     
     //Game Events
-    Task<string> SetTimer(int value);
+    Task<string?> SetTimer(int value);
     Task<string?> RequestGameEvent<T>(T e) where T : GameEvent;
     
     //Chat

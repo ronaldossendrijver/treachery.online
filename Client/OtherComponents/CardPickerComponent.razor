@@ -6,6 +6,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
+
 @inherits GameComponent
 
 <ModalComponent Id="@Id" Title="Pick a card">
@@ -37,17 +38,17 @@
         }
 
         @{
-            var green = Client.Game.GetPlayer(Faction.Green);
-            var lastWonCardName = Client.Game.CardJustWon != null && Client.Game.KnownCards(green).Contains(Client.Game.CardJustWon) ? Name(Client.Game.CardJustWon) : "";
+            var green = Game.GetPlayer(Faction.Green)!;
+            var lastWonCardName = Game.CardJustWon != null && Game.KnownCards(green).Contains(Game.CardJustWon) ? Name(Game.CardJustWon) : "";
 
             @foreach (var v in Tracker.CardsToPick)
             {
                 var cardName = Name(v);
                 var isCardJustWon = lastWonCardName == cardName;
                 var border = isCardJustWon? "border-success" : "border-0";
-                var cardbg = isCardJustWon? "bg-light" : "";
+                var cardBackground = isCardJustWon? "bg-light" : "";
 
-                <div class="card p-1 m-0 @border @cardbg">
+                <div class="card p-1 m-0 @border @cardBackground">
                     <div class="card-img-top">
                         <Image Class="card-img" Shown=@v OnClick="@(_ => Pick(v.Id))" Pointer/>
                     </div>
@@ -64,8 +65,8 @@
     [Parameter]
     public new string Id { get; set; } = "";
 
-    [Parameter]
-    public TrackerComponent? Tracker { get; set; }
+    [Parameter, EditorRequired]
+    public required TrackerComponent Tracker { get; set; }
 
     private async Task Pick(int cardId)
     {

@@ -8,7 +8,7 @@
 *@
 @inherits MapComponent
 
-@if (Game.CurrentMainPhase == MainPhase.Battle && Game.CurrentPhase != Phase.BattleReport)
+@if (Game.CurrentMainPhase == MainPhase.Battle && Game.CurrentPhase != Phase.BattleReport && Game.CurrentBattle != null)
 {
     var maySeeAggressorBattlePlan = Game.AggressorPlan != null && (Game.AggressorPlan.Initiator == Client.Faction || (Game.GreenKarma && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.AggressorPlan.Player));
     var maySeeDefenderBattlePlan = Game.DefenderPlan != null && (Game.DefenderPlan.Initiator == Client.Faction || (Game.GreenKarma && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.DefenderPlan.Player));

@@ -112,9 +112,9 @@ public partial class GameHub
     public async Task<VoidResult> RequestLoadGame(string userToken, string gameId, string stateData, string skin)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
-            return error!;
+            return error;
         
-        if (!game!.Game.IsHost(user!.Id))
+        if (!game!.Game.IsHost(user.Id))
             return Error(ErrorType.NoHost);
         
         var state = GameState.Load(stateData);
@@ -150,9 +150,9 @@ public partial class GameHub
     public async Task<VoidResult> RequestAssignSeats(string userToken, string gameId, Dictionary<int, int> assignment)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
-            return error!;
+            return error;
 
-        if (!game!.Game.IsHost(user!.Id))
+        if (!game!.Game.IsHost(user.Id))
             return Error(ErrorType.NoHost);
 
         game.Game.Participation.SeatedPlayers = assignment;
@@ -169,7 +169,7 @@ public partial class GameHub
         if (!AreValid<GameInitInfo>(userToken, gameId, out var user, out var game, out var error))
             return error!;
         
-        if (!game!.Game.IsPlayer(user!.Id))
+        if (!game.Game.IsPlayer(user.Id))
         {
             if (!string.IsNullOrEmpty(game.HashedPassword) && !game.HashedPassword.Equals(hashedPassword))
                 return Error<GameInitInfo>(ErrorType.IncorrectGamePassword);
@@ -243,9 +243,9 @@ public partial class GameHub
     public async Task<VoidResult> RequestOpenOrCloseSeat(string userToken, string gameId, int seat)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
-            return error!;
+            return error;
         
-        if (!game!.Game.IsHost(user!.Id))
+        if (!game.Game.IsHost(user.Id))
             return Error(ErrorType.NoHost);
 
         game.Game.OpenOrCloseSeat(seat);

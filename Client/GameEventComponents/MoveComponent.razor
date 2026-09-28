@@ -16,7 +16,7 @@
 
     protected override bool IsUrgent => true;
 
-    protected override Move ConfirmedResult => new(Game, Faction) { ForceLocations = forces, To = toLocation, AsAdvisors = asAdvisors, Passed = false };
+    protected override Move ConfirmedResult => new(Game, Faction) { ForceLocations = Forces, To = ToLocation, AsAdvisors = AsAdvisors, Passed = false };
 
     protected override Move PassedResult => new(Game, Faction) { Passed = true };
 

@@ -14,7 +14,7 @@
 
         <BackgroundImage X="0" Y="0" Width="@Client.CurrentSkin.MapDimensions.X" Height="@Client.CurrentSkin.MapDimensions.Y" Src="@Client.CurrentSkin.Map_URL"/>
 
-        @if (Client.Game.CurrentPhase > Phase.AwaitingPlayers)
+        @if (Game.CurrentPhase > Phase.AwaitingPlayers)
         {
             <div style="width:100%; height:100%;">
 
@@ -39,7 +39,7 @@
 
 </div>
 
-<div id="planetmap-filler" style="display:block" />
+<div id="planetmap-filler" style="display:block"></div>
 
 @code {
 

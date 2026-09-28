@@ -364,7 +364,7 @@ internal static class HistoricalComponentDriver
             }
 
             case YellowSentMonster sentMonster:
-                Expect<YellowSentMonsterComponent>(component).target = sentMonster.Territory;
+                Expect<YellowSentMonsterComponent>(component).Target = sentMonster.Territory;
                 return;
 
             case KarmaMonster karmaMonster:
@@ -462,7 +462,7 @@ internal static class HistoricalComponentDriver
                 switch (component)
                 {
                     case PlacementComponent<YellowRidesMonster> c:
-                        c.forces = placement.ForceLocations;
+                        c.Forces = placement.ForceLocations;
                         break;
                     case DiscoveryEnteredComponent c:
                         c.forces = placement.ForceLocations;
@@ -517,10 +517,10 @@ internal static class HistoricalComponentDriver
         PlacementEvent placement,
         bool asAdvisors) where TEvent : PlacementEvent, new()
     {
-        component.forces = placement.ForceLocations;
-        component.fromTerritory = placement.ForceLocations.Keys.FirstOrDefault()?.Territory;
-        component.toLocation = placement.To;
-        component.asAdvisors = asAdvisors;
+        component.Forces = placement.ForceLocations;
+        component.FromTerritory = placement.ForceLocations.Keys.FirstOrDefault()?.Territory;
+        component.ToLocation = placement.To;
+        component.AsAdvisors = asAdvisors;
     }
 
     private static void RefreshComponent(

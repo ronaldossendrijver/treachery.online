@@ -19,3 +19,4 @@ global using System.Threading.Tasks;
 global using Microsoft.AspNetCore.SignalR;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.Configuration;
+global using System.Diagnostics.CodeAnalysis;

@@ -20,5 +20,5 @@
 
     private string LeaderUrl => Client.CurrentSkin.GetImageUrl(ToShow);
 
-    private string Popover => ShowPopover ? Client.CurrentSkin.GetPopup(ToShow, Game) : null;
+    private string? Popover => ShowPopover ? Client.CurrentSkin.GetPopup(ToShow, Game) : null;
 }
