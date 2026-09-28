@@ -50,7 +50,7 @@
                         @foreach (var av in myGames)
                         {
                             var fontColorStyle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20 ? "color:grey" : "color:white";
-                            var factions = av.FactionsInPlay ?? [];
+                            var factions = av.FactionsInPlay;
 
                             <tr class="small table-dark">
                                 <td class="w-25">
@@ -281,7 +281,7 @@
     private string? CreateGameName { get; set; }
     private string? CreateGamePassword { get; set; }
     private object? FileInput { get; set; }
-    private string CreateError { get; set; } = string.Empty;
+    private string? CreateError { get; set; }
     private bool Loading { get; set; }
     private string? LoadedGameData { get; set; }
     
@@ -292,10 +292,9 @@
     private List<Faction> ScheduleGameAllowedFactionsInPlay { get; set; } = [];
     private bool ScheduleGameAsyncPlay { get; set; }
     
-    private string ScheduleError { get; set; } = string.Empty;
+    private string? ScheduleError { get; set; }
     private bool EditUser { get; set; }
     private bool DeleteUser { get; set; }
-    private string? UserName { get; set; }
     private string? PlayerName { get; set; }
     private string? Password1 { get; set; }
     private string? Password2 { get; set; }
@@ -323,7 +322,7 @@
     
     private async Task ScheduleGame()
     {
-        await Client.RequestScheduleGame(ScheduleGameDateTime, ScheduleGameRuleset, ScheduleGameNumberOfPlayers, ScheduleGameMaximumTurns, ScheduleGameAllowedFactionsInPlay, ScheduleGameAsyncPlay);
+        ScheduleError = await Client.RequestScheduleGame(ScheduleGameDateTime, ScheduleGameRuleset, ScheduleGameNumberOfPlayers, ScheduleGameMaximumTurns, ScheduleGameAllowedFactionsInPlay, ScheduleGameAsyncPlay);
         ScheduleGameDateTime = DateTimeOffset.Now;
         ScheduleGameRuleset = Ruleset.AllExpansionsAdvancedGame;
         ScheduleGameNumberOfPlayers = 6;
@@ -399,7 +398,6 @@
 
     private void GetUserInfoFromClient()
     {
-        UserName = Client.UserName;
         PlayerName = Client.PlayerName;
         Email = Client.UserEmail;
         Password1 = string.Empty;

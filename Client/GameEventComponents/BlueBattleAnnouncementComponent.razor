@@ -40,7 +40,7 @@
 
     protected override BlueBattleAnnouncement ConfirmedResult => new(Game, Faction) { Territory = target };
 
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
         SetIfValid(ref target, BlueBattleAnnouncement.ValidTerritories(Game, Player), l.Territory);
     }

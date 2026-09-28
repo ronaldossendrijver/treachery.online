@@ -8,13 +8,13 @@ public class Situation
 
     public bool RequiresUpdate(IGameService service)
     {
+        if (service.Game == null) return false;
+        
         var latestEvent = service.Game.LatestEvent();
 
         var result = _skin == null || 
-                     service.CurrentSkin == null || 
                      _skin != service.CurrentSkin || 
                      _game == null || 
-                     service.Game == null || 
                      _game != service.Game;
 
         if (!result)

@@ -191,16 +191,16 @@ internal static class HistoricalComponentDriver
             case BattleConcluded battleConcluded:
             {
                 var c = Expect<BattleConcludedComponent>(component);
-                c.captureDecision = battleConcluded.DecisionToCapture;
-                c.replacementAmount = battleConcluded.SpecialForceLossesReplaced;
-                c.stolenToken = battleConcluded.StolenToken;
-                c.selectedNewTraitor = battleConcluded.NewTraitor;
-                c.traitorToReplace = battleConcluded.TraitorToReplace;
-                c.addExtraForce = battleConcluded.AddExtraForce;
+                c.CaptureDecision = battleConcluded.DecisionToCapture;
+                c.ReplacementAmount = battleConcluded.SpecialForceLossesReplaced;
+                c.StolenToken = battleConcluded.StolenToken;
+                c.SelectedNewTraitor = battleConcluded.NewTraitor;
+                c.TraitorToReplace = battleConcluded.TraitorToReplace;
+                c.AddExtraForce = battleConcluded.AddExtraForce;
                 var cards = battleConcluded.DiscardedCards.ToHashSet();
-                c.discardMercenary = c.DiscardableMercenaryAfterBattle is { } mercenary && cards.Contains(mercenary);
-                c.discardWeapon = c.DiscardableWeaponAfterBattle is { } weapon && cards.Contains(weapon);
-                c.discardDefense = c.DiscardableDefenseAfterBattle is { } defense && cards.Contains(defense);
+                c.DiscardMercenary = c.DiscardableMercenaryAfterBattle is { } mercenary && cards.Contains(mercenary);
+                c.DiscardWeapon = c.DiscardableWeaponAfterBattle is { } weapon && cards.Contains(weapon);
+                c.DiscardDefense = c.DiscardableDefenseAfterBattle is { } defense && cards.Contains(defense);
                 return;
             }
 

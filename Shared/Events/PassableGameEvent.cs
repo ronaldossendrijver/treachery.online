@@ -11,15 +11,13 @@ namespace Treachery.Shared;
 
 public abstract class PassableGameEvent : GameEvent
 {
-
-    public PassableGameEvent(Game game, Faction initiator) : base(game, initiator)
+    protected PassableGameEvent(Game game, Faction initiator) : base(game, initiator)
     {
     }
 
-    public PassableGameEvent()
+    protected PassableGameEvent()
     {
     }
 
     public bool Passed { get; set; }
-
 }

@@ -42,7 +42,7 @@
                                 <CommandButton OnClick="@(_ => Cancel(rule))" Small>🗙</CommandButton>
                             </td>
                             <td>
-                                <ExpressionComponent Expression="@rule.GetDescription().Expression" Size="18"/>
+                                <ExpressionComponent Expression="@rule.GetDescription()?.Expression" Size="18"/>
                             </td>
                         </tr>
                     }

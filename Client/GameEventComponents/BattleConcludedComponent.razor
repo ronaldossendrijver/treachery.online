@@ -22,11 +22,11 @@
             if (maxReplacementForces > 0)
             {
                 <label>How many <Image Shown="@forceSupplier.SpecialForce" Width="20"/> losses should be exchanged with <Image Shown="@forceSupplier.Force" Width="20"/>?</label>
-                <SelectForcesComponent @bind-Value="@replacementAmount" Min="0" Max="maxReplacementForces" Faction="@forceSupplier.Faction" Special="true" />
+                <SelectForcesComponent @bind-Value="@ReplacementAmount" Min="0" Max="maxReplacementForces" Faction="@forceSupplier.Faction" Special="true" />
             }
             else
             {
-                replacementAmount = 0;
+                ReplacementAmount = 0;
             }
                        
             if (BattleConcluded.MayChooseToDiscardCards(Game)) {
@@ -41,17 +41,17 @@
 
                     if (discardableMercenary != null)
                     {
-                        <CheckboxComponent @bind-Value="discardMercenary">@Client.CurrentSkin.Describe(discardableMercenary)</CheckboxComponent>
+                        <CheckboxComponent @bind-Value="DiscardMercenary">@Client.CurrentSkin.Describe(discardableMercenary)</CheckboxComponent>
                     }
 
                     if (discardableWeapon != null)
                     {
-                        <CheckboxComponent @bind-Value="discardWeapon">@Client.CurrentSkin.Describe(discardableWeapon)</CheckboxComponent>
+                        <CheckboxComponent @bind-Value="DiscardWeapon">@Client.CurrentSkin.Describe(discardableWeapon)</CheckboxComponent>
                     }
 
                     if (discardableDefense != null)
                     {
-                        <CheckboxComponent @bind-Value="discardDefense">@Client.CurrentSkin.Describe(discardableDefense)</CheckboxComponent>
+                        <CheckboxComponent @bind-Value="DiscardDefense">@Client.CurrentSkin.Describe(discardableDefense)</CheckboxComponent>
                     }
                 }
             }
@@ -59,14 +59,14 @@
             if (BattleConcluded.MayCaptureOrKill(Game, Player))
             {
                 <div>Our troops captured <Image Shown=@Game.BlackVictim Popover=@Client.CurrentSkin.GetPopup(Game.BlackVictim, Game) Class="img-float" Width="50"/></div>
-                <RadioComponent @bind-Value="captureDecision" Values="@BattleConcluded.ValidCaptureDecisions(Game)">
+                <RadioComponent @bind-Value="CaptureDecision" Values="@BattleConcluded.ValidCaptureDecisions(Game)">
                         <Label>What are your orders, keep or kill?</Label>
                  </RadioComponent>
             }
 
-            if (Loser.TechTokens.Count > 0)
+            if (Loser is { TechTokens.Count: > 0 })
             {
-                <SelectFromImageComponent @bind-Value="stolenToken" Values="Loser.TechTokens" Required=true>
+                <SelectFromImageComponent @bind-Value="StolenToken" Values="Loser.TechTokens" Required=true>
 
                     <Label>
                         @if (Loser.TechTokens.Count == 1) 
@@ -83,12 +83,12 @@
             }
             else {
                 
-                stolenToken = TechToken.None;
+                StolenToken = TechToken.None;
             }
 
             if (Game.TraitorsDeciphererCanLookAt.Any())
             {
-                <SelectFromImageComponent Game="Game" @bind-Value="selectedNewTraitor" Values="Game.TraitorsDeciphererCanLookAt" Required="false" ImageWidth="80">
+                <SelectFromImageComponent Game="Game" @bind-Value="SelectedNewTraitor" Values="Game.TraitorsDeciphererCanLookAt" Required="false" ImageWidth="80">
                     <Label>@Client.CurrentSkin.Describe(LeaderSkill.Decipherer) shows you the following leaders from the traitor deck:</Label>
                 </SelectFromImageComponent>
 
@@ -96,28 +96,28 @@
                 {
                     var toReplace = Faction == Faction.Purple ? "facedancers" : "traitors";
 
-                    <SelectFromImageComponent Game="Game" @bind-Value="traitorToReplace" Values="BattleConcluded.ValidTraitorsToReplace(Player)" Required="false" ImageWidth="80">
+                    <SelectFromImageComponent Game="Game" @bind-Value="TraitorToReplace" Values="BattleConcluded.ValidTraitorsToReplace(Player)" Required="false" ImageWidth="80">
                         <Label>If you wish, you may select one of the above leaders to reveal and replace one of your current @toReplace:</Label>
                     </SelectFromImageComponent>
                 }
                 else
                 {
-                    traitorToReplace = null;
+                    TraitorToReplace = null;
                 }
             }
             else
             {
-                selectedNewTraitor = null;
-                traitorToReplace = null;
+                SelectedNewTraitor = null;
+                TraitorToReplace = null;
             }
 
             if (BattleConcluded.MayAddExtraForce(Game, Player))
             {
-                <CheckboxComponent @bind-Value="addExtraForce">Do you wish to add one force from reserves in @Name(Game.CurrentBattle.Territory)?</CheckboxComponent>
+                <CheckboxComponent @bind-Value="AddExtraForce">Do you wish to add one force from reserves in @Name(Game.CurrentBattle!.Territory)?</CheckboxComponent>
             }
             else
             {
-                addExtraForce = false;
+                AddExtraForce = false;
             }
         }
 
@@ -131,48 +131,42 @@
 
     protected override bool IsUrgent => true;
 
-    internal CaptureDecision captureDecision = CaptureDecision.Kill;
-    internal bool discardMercenary;
-    internal bool discardWeapon;
-    internal bool discardDefense;
-    internal TechToken stolenToken;
-    internal int replacementAmount;
-    internal IHero? selectedNewTraitor;
-    internal IHero? traitorToReplace;
-    internal bool addExtraForce;
+    internal CaptureDecision CaptureDecision = CaptureDecision.Kill;
+    internal bool DiscardMercenary;
+    internal bool DiscardWeapon;
+    internal bool DiscardDefense;
+    internal TechToken StolenToken;
+    internal int ReplacementAmount;
+    internal IHero? SelectedNewTraitor;
+    internal IHero? TraitorToReplace;
+    internal bool AddExtraForce;
 
     protected override BattleConcluded ConfirmedResult => new(Game, Faction)
     {
         DiscardedCards = DetermineSelectedCards(),
-        StolenToken = stolenToken,
-        SpecialForceLossesReplaced = replacementAmount,
-        DecisionToCapture = captureDecision,
-        TraitorToReplace = traitorToReplace,
-        NewTraitor = selectedNewTraitor,
-        AddExtraForce = addExtraForce
+        StolenToken = StolenToken,
+        SpecialForceLossesReplaced = ReplacementAmount,
+        DecisionToCapture = CaptureDecision,
+        TraitorToReplace = TraitorToReplace,
+        NewTraitor = SelectedNewTraitor,
+        AddExtraForce = AddExtraForce
     };
 
     private IEnumerable<TreacheryCard> DetermineSelectedCards()
     {
         var result = new List<TreacheryCard>();
-        if (discardMercenary) result.Add(DiscardableMercenaryAfterBattle);
-        if (discardWeapon) result.Add(DiscardableWeaponAfterBattle);
-        if (discardDefense) result.Add(DiscardableDefenseAfterBattle);
+        if (DiscardMercenary && DiscardableMercenaryAfterBattle != null) result.Add(DiscardableMercenaryAfterBattle);
+        if (DiscardWeapon && DiscardableWeaponAfterBattle != null) result.Add(DiscardableWeaponAfterBattle);
+        if (DiscardDefense && DiscardableDefenseAfterBattle != null) result.Add(DiscardableDefenseAfterBattle);
         return result;
     }
 
-    private void CaptureDecisionOnChange(ChangeEventArgs args)
-    {
-        captureDecision = Enum.Parse<CaptureDecision>((string)args.Value);
-        StateHasChanged();
-    }
-
-    internal TreacheryCard DiscardableMercenaryAfterBattle
+    internal TreacheryCard? DiscardableMercenaryAfterBattle
     {
         get
         {
             var action = MyBattleAction;
-            if (action != null && action.Hero is TreacheryCard && Game.BattleWinner == Faction && Player.TreacheryCards.Contains(action.Hero))
+            if (action is { Hero: TreacheryCard } && Game.BattleWinner == Faction && Player.TreacheryCards.Contains(action.Hero))
             {
                 return action.Hero as TreacheryCard;
             }
@@ -181,12 +175,12 @@
         }
     }
 
-    internal TreacheryCard DiscardableWeaponAfterBattle
+    internal TreacheryCard? DiscardableWeaponAfterBattle
     {
         get
         {
             var action = MyBattleAction;
-            if (action != null && Game.BattleWinner == Faction && Player.TreacheryCards.Contains(action.Weapon))
+            if (action is { Weapon: not null } && Game.BattleWinner == Faction && Player.TreacheryCards.Contains(action.Weapon))
             {
                 return action.Weapon;
             }
@@ -195,12 +189,12 @@
         }
     }
 
-    internal TreacheryCard DiscardableDefenseAfterBattle
+    internal TreacheryCard? DiscardableDefenseAfterBattle
     {
         get
         {
             var action = MyBattleAction;
-            if (action != null && Game.BattleWinner == Faction && Player.TreacheryCards.Contains(action.Defense))
+            if (action is { Defense: not null } && Game.BattleWinner == Faction && Player.TreacheryCards.Contains(action.Defense))
             {
                 return action.Defense;
             }
@@ -209,7 +203,7 @@
         }
     }
 
-    private Battle MyBattleAction
+    private Battle? MyBattleAction
     {
         get
         {
@@ -222,7 +216,7 @@
         }
     }
 
-    private Player Loser => Game.GetPlayer(Game.BattleLoser);
+    private Player? Loser => Game.GetPlayer(Game.BattleLoser);
 
-    private string ConfirmLabel => traitorToReplace == null ? "Conclude Battle" : Client.CurrentSkin.Format("Conclude Battle and Reveal & Replace {0}", traitorToReplace);
+    private string ConfirmLabel => TraitorToReplace == null ? "Conclude Battle" : Client.CurrentSkin.Format("Conclude Battle and Reveal & Replace {0}", TraitorToReplace);
 }

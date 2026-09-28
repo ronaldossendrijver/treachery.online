@@ -19,7 +19,7 @@
 
                 @if (CardIsVisible) 
                 {
-                    <Image Shown=@Game.CardsOnAuction.Top Width="150" />
+                    <Image Shown=@Game.CardsOnAuction!.Top Width="150" />
                 }
                 else 
                 {
@@ -34,7 +34,7 @@
                             
                     @if (ShowCurrentBid)
                     {
-                        <img src="@Client.CurrentSkin.GetImageUrl(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" alt="@Name(Game.CurrentBid.Initiator)"/>
+                        <img src="@Client.CurrentSkin.GetImageUrl(Game.CurrentBid!.Initiator)" width="36" style="vertical-align: top;" alt="@Name(Game.CurrentBid.Initiator)"/>
                         <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSrc="@Client.CurrentSkin.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
                     }
                 </div>
@@ -43,7 +43,7 @@
 
             <div class="col align-top">
 
-                @if (!Client.IsObserver && Client.Player.Faction != Faction.None)
+                @if (!Client.IsObserver && Player.Faction != Faction.None)
                 {
                     <CheckboxComponent @bind-Value="@Client.AutoPass" OnChanged="AutoPassChanged">Auto-pass</CheckboxComponent>
                     @if (Client.AutoPass)
@@ -199,7 +199,7 @@
 
     protected override async Task CycleAsync()
     {
-        if (Client.Status.TimedEvent != null && Client.Timer > 0 && DateTimeOffset.Now.Subtract(Client.Status.TimedEvent.Time).TotalSeconds > Client.Timer)
+        if (Client.Status!.TimedEvent != null && Client.Timer > 0 && DateTimeOffset.Now.Subtract(Client.Status.TimedEvent.Time).TotalSeconds > Client.Timer)
         {
             await Pass();
         }
@@ -223,7 +223,7 @@
 
     private bool IsWhiteBidding => Game.CurrentAuctionType == AuctionType.WhiteOnceAround || Game.CurrentAuctionType == AuctionType.WhiteSilent; 
 
-    private bool CardIsVisible => (Game.HasBiddingPrescience(Player) || IsWhiteBidding) && Game.CardsOnAuction.Top != null;
+    private bool CardIsVisible => (Game.HasBiddingPrescience(Player) || IsWhiteBidding) && Game.CardsOnAuction!.Top != null;
 
     private string KarmaInfoMessage => Client.CurrentSkin.Format("If you use a {0} card to bid any amount of {1} you wish, that card will be set aside until someone outbids you and will be discarded only if you win the auction. If you instead use your {0} card to win immediately, it is immediately discarded.", TreacheryCardType.Karma, Concept.Resource);
 

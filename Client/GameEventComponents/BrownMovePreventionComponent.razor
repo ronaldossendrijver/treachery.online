@@ -7,7 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 @inherits GameEventComponent<BrownMovePrevention>
-@implements IDisposable
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
@@ -15,7 +14,7 @@
 
     <Body>
 
-        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="territory" Values="BrownMovePrevention.ValidTerritories(Player)">
+        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="_territory" Values="BrownMovePrevention.ValidTerritories(Player)">
             <Label>Territory</Label>
         </SelectComponent>
         
@@ -31,7 +30,7 @@
 
     protected override string Background => Client.CurrentSkin.GetImageUrl(BrownMovePrevention.CardToUse(Player));
 
-    private Territory? territory;
+    private Territory? _territory;
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -41,12 +40,12 @@
         }
     }
 
-     private void HandleLocationSelected(object sender, Location l)
+     private void HandleLocationSelected(object? sender, Location l)
     {
-        SetIfValid(ref territory, BrownMovePrevention.ValidTerritories(Player), l.Territory);
+        SetIfValid(ref _territory, BrownMovePrevention.ValidTerritories(Player), l.Territory);
     }
 
-    protected override BrownMovePrevention ConfirmedResult => new(Game, Faction) { Territory = territory };
+    protected override BrownMovePrevention ConfirmedResult => new(Game, Faction) { Territory = _territory };
 
     public override void Dispose()
     {
@@ -54,5 +53,15 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    private string ToUse => BrownMovePrevention.CardToUse(Player) != null ? Client.CurrentSkin.Describe(BrownMovePrevention.CardToUse(Player)) : "Nexus Cunning";
+    private string ToUse
+    {
+        get
+        {
+            var cardToUse = BrownMovePrevention.CardToUse(Player);
+            return cardToUse != null
+                ? Client.CurrentSkin.Describe(cardToUse)
+                : "Nexus Cunning";
+        }
+    }
+
 }

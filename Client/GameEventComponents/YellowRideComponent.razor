@@ -80,12 +80,11 @@
         get
         {
             var toRide = YellowRidesMonster.ToRide(Game);
-            if (toRide.IsGreatMonster)
-            {
-                return Client.CurrentSkin.Format("Ride the {0} with forces from your reserves?", Concept.GreatMonster);
-            }
-
-            return Client.CurrentSkin.Format("Ride the Worm that appeared in {0}?", toRide.Territory);
+            if (toRide == null) return string.Empty;
+            
+            return toRide.IsGreatMonster 
+                ? Client.CurrentSkin.Format("Ride the {0} with forces from your reserves?", Concept.GreatMonster) 
+                : Client.CurrentSkin.Format("Ride the Worm that appeared in {0}?", toRide.Territory);
         }
     }
 
