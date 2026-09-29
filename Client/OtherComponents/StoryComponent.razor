@@ -12,9 +12,9 @@
     @{
         var previousPhase = Phase.AwaitingPlayers;
         var previousMainPhase = MainPhase.Started;
-        IBid previousWinningBid = null;
+        IBid? previousWinningBid = null;
 
-        var replayBase = new Game(Game.Version, Game.Participation);
+        var replayBase = new Game(Game!.Version, Game.Participation);
 
         for (var i = 0; i < Game.History.Count; i++)
         {
@@ -44,7 +44,7 @@
             if (evt is BluePrediction bp && replay.YieldsSecrets(evt.Initiator))
             {
                 <div>
-                    <img class="img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(Faction.Blue)" /> Predicted that <img class="img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(bp.ToWin)" /> win in turn @bp.Turn.
+                    <img class="img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(Faction.Blue)" alt="@Client.CurrentSkin.Describe(Faction.Blue)"/> Predicted that <img class="img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(bp.ToWin)" alt="@Client.CurrentSkin.Describe(bp.ToWin)"/> win in turn @bp.Turn.
                 </div>
             }
 
@@ -53,7 +53,7 @@
                 if (replay.WinningBid != previousWinningBid)
                 {
                     <div>
-                        <img class="img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(replay.WinningBid.Initiator)" /> 
+                        <img class="img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(replay.WinningBid.Initiator)" alt="@Client.CurrentSkin.Describe(replay.WinningBid.Initiator)"/> 
                         buy 
                         <RichText Shown=@replay.CardJustWon/>
                         for @replay.WinningBid.TotalAmount
