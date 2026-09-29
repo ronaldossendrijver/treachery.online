@@ -48,14 +48,14 @@ else
                     <input @ref="@_focusField" class="form-control mt-1" @bind-value="@_newUsername" @bind-value:event="oninput" @onchange="@OnUserNameChanged" maxlength="40" placeholder="User name (used to log in)" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
                     <input type="password" class="form-control mt-1" @bind-value="@_newPassword" @bind-value:event="oninput" maxlength="80" placeholder="Password" autocomplete="new-password" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
                     <input type="password" class="form-control mt-1" @bind-value="@_newPasswordConfirm" @bind-value:event="oninput" maxlength="80" placeholder="Repeat password" autocomplete="new-password" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
-                    <input class="form-control mt-1" @bind-value="@_newEmail" @bind-value:event="oninput" maxlength="80" placeholder="E-mail address (in case you ever need to reset your password)" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
-                    <input class="form-control mt-1" @bind-value="@_newPlayerName" @bind-value:event="oninput" maxlength="80" placeholder="Player name (visible to other players)" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
+                    <input class="form-control mt-1" @bind-value="@_newEmail" @bind-value:event="oninput" maxlength="254" placeholder="E-mail address (in case you ever need to reset your password)" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
+                    <input class="form-control mt-1" @bind-value="@_newPlayerName" @bind-value:event="oninput" maxlength="40" placeholder="Player name (visible to other players)" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
                     <div class="text-danger small">@NewAccountMessage</div>
                     <button class="btn btn-primary mt-1" disabled="@(State is LoginComponentState.Loading)" @onclick="@NewAccount">Create account</button>
                     break;
                 case LoginComponentState.RequestPasswordReset:
                     <div>Enter the username or e-mail address associated to your account to receive a password reset token</div>
-                    <input @ref="@_focusField" class="form-control mt-1" @bind-value="@_passwordResetUsernameOrEmail" @bind-value:event="oninput" maxlength="80" placeholder="Username or e-mail address" @onkeyup="@(e => KeyUp(e, PasswordReset))"/>
+                    <input @ref="@_focusField" class="form-control mt-1" @bind-value="@_passwordResetUsernameOrEmail" @bind-value:event="oninput" maxlength="254" placeholder="Username or e-mail address" @onkeyup="@(e => KeyUp(e, PasswordReset))"/>
                     <div class="text-danger small">@PasswordResetMessage</div>
                     <button class="btn btn-primary mt-1" disabled="@(State is LoginComponentState.Loading)" @onclick="@PasswordReset">Request password reset</button>
                     break;
@@ -280,5 +280,3 @@ else
         }
     }
 }
-
-

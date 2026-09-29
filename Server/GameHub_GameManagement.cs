@@ -8,7 +8,19 @@ public partial class GameHub
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<GameInitInfo>(ErrorType.UserNotFound);
-        
+
+        var playerNameError = ValidatePlayerName(user.PlayerName);
+        if (playerNameError != ErrorType.None)
+            return Error<GameInitInfo>(playerNameError);
+
+        var gameName = !string.IsNullOrEmpty(name) ? name : $"{user.PlayerName}'s Game";
+        if (gameName.Length > MaximumGameNameLength)
+            return Error<GameInitInfo>(ErrorType.GameNameTooLong);
+
+        var passwordError = ValidatePasswordHash(hashedPassword, allowEmpty: true);
+        if (passwordError != ErrorType.None)
+            return Error<GameInitInfo>(passwordError);
+
         if (RunningGamesByGameId.Values.Count(g => g.CreatorUserId == user.Id) >= MaximumNumberOfGamesPerPlayer)
             return Error<GameInitInfo>(ErrorType.TooManyGames);
 
@@ -33,7 +45,7 @@ public partial class GameHub
             CreatorUserId = user.Id,
             GameId = gameId,
             Game = game,
-            Name = !string.IsNullOrEmpty(name) ? name : $"{user.PlayerName}'s Game",
+            Name = gameName,
             HashedPassword = hashedPassword,
             ObserversRequirePassword = false
         };
@@ -63,7 +75,11 @@ public partial class GameHub
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<ServerStatus>(ErrorType.UserNotFound);
-        
+
+        var playerNameError = ValidatePlayerName(user.PlayerName);
+        if (playerNameError != ErrorType.None)
+            return Error<ServerStatus>(playerNameError);
+
         if (ScheduledGamesByGameId.Values.Count(g => g.CreatorUserId == user.Id) >= 3)
             return Error<ServerStatus>(ErrorType.TooManyScheduledGames);
 
@@ -171,6 +187,10 @@ public partial class GameHub
         
         if (!game.Game.IsPlayer(user.Id))
         {
+            var playerNameError = ValidatePlayerName(user.PlayerName);
+            if (playerNameError != ErrorType.None)
+                return Error<GameInitInfo>(playerNameError);
+
             if (!string.IsNullOrEmpty(game.HashedPassword) && !game.HashedPassword.Equals(hashedPassword))
                 return Error<GameInitInfo>(ErrorType.IncorrectGamePassword);
         
@@ -387,6 +407,10 @@ public partial class GameHub
 
         if (!game!.Game.IsObserver(user!.Id))
         {
+            var playerNameError = ValidatePlayerName(user.PlayerName);
+            if (playerNameError != ErrorType.None)
+                return Error<GameInitInfo>(playerNameError);
+
             if (game.ObserversRequirePassword && !string.IsNullOrEmpty(game.HashedPassword) &&
                 !game.HashedPassword.Equals(hashedPassword))
                 return Error<GameInitInfo>(ErrorType.IncorrectGamePassword);

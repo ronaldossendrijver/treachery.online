@@ -28,6 +28,7 @@
     <ProjectReference Include="..\Bots\Treachery.Bots\Treachery.Bots.csproj" />
     <ProjectReference Include="..\Client\Treachery.Client.csproj" />
     <ProjectReference Include="..\Shared\Treachery.Shared.csproj" />
+    <ProjectReference Include="..\Server\Treachery.Server.csproj" />
   </ItemGroup>
 
   <ItemGroup>

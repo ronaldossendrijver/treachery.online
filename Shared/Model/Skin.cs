@@ -952,6 +952,10 @@ public class Skin : IDescriber
             ErrorType.NoCreator => "You are not the creator of this game",
             ErrorType.AlreadyPlayer => "You are already a player in this game",
             ErrorType.UserNotInGame => "User not found in game",
+            ErrorType.InvalidEmail => "Enter a valid e-mail address",
+            ErrorType.EmailTooLong => "E-mail address must be 254 characters or less",
+            ErrorType.InvalidPasswordHash => "Invalid password hash; submit a SHA-256 hash",
+            ErrorType.GameNameTooLong => "Game name must be 128 characters or less",
             
             _ => throw new ArgumentOutOfRangeException(nameof(e), e, null)
         };
