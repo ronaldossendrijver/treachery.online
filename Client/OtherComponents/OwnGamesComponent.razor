@@ -205,14 +205,14 @@
             <div class="row">
                 <label for="playerName" class="col-4 col-form-label">Player name</label>
                 <div class="col-8">
-                    <input type="text" class="form-control" id="playerName" @bind="@PlayerName"
+                    <input type="text" class="form-control" id="playerName" @bind="@PlayerName" maxlength="40"
                            style="font: normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif;">
                 </div>
             </div>
             <div class="row">
                 <label for="email" class="col-4 col-form-label">E-mail address</label>
                 <div class="col-8">
-                    <input type="text" class="form-control" id="email" @bind="@Email">
+                    <input type="text" class="form-control" id="email" @bind="@Email" maxlength="254">
                 </div>
             </div>
             <div class="row">
@@ -408,11 +408,14 @@
     {
         if (ValidateUpdatedUserInfo())
         {
-            await Client.RequestUpdateUserInfo(
+            ChangeUserInfoMessage = await Client.RequestUpdateUserInfo(
                 string.IsNullOrEmpty(Password1) ? string.Empty : Support.GetHash(Password1), 
                 Email ?? string.Empty, 
                 PlayerName ?? string.Empty);
-            
+
+            if (ChangeUserInfoMessage != null)
+                return;
+
             GetUserInfoFromClient();
             EditUser = false;
         }
@@ -427,7 +430,9 @@
     
     private bool ValidateUpdatedUserInfo()
     {
-        if (!string.IsNullOrEmpty(Password1) && Password1.Length < 6) ChangeUserInfoMessage = "Password must be at least 6 characters";
+        if (PlayerName == null || PlayerName.Trim().Length <= 3) ChangeUserInfoMessage = Client.CurrentSkin.Describe(ErrorType.PlayerNameTooShort);
+        else if (PlayerName.Trim().Length > 40) ChangeUserInfoMessage = Client.CurrentSkin.Describe(ErrorType.PlayerNameTooLong);
+        else if (!string.IsNullOrEmpty(Password1) && Password1.Length < 6) ChangeUserInfoMessage = "Password must be at least 6 characters";
         else if (!string.IsNullOrEmpty(Password1) && !Password1.Equals(Password2)) ChangeUserInfoMessage = "Passwords do not not match";
         else if (Email?.Contains('@') is not true || Email?.Contains('.') is not true) ChangeUserInfoMessage = "Enter a valid e-mail address";
         else ChangeUserInfoMessage = null;

@@ -4,29 +4,15 @@ public partial class GameHub
 {
     public async Task<Result<LoginInfo>> RequestCreateUser(string userName, string hashedPassword, string email, string playerName)
     {
+        var validationError = ValidateUserName(userName);
+        if (validationError == ErrorType.None)
+            validationError = ValidateProfile(playerName, email, hashedPassword);
+        if (validationError != ErrorType.None)
+            return Error<LoginInfo>(validationError);
+
         var cleanedUsername = userName.Trim().ToLower();
-        
-        if (cleanedUsername.Length <= 3)
-        {
-            return Error<LoginInfo>(ErrorType.UserNameTooShort);
-        }
-        
-        if (cleanedUsername.Length > 40)
-        {
-            return Error<LoginInfo>(ErrorType.UserNameTooLong);
-        }
-        
         var trimmedPlayerName = playerName.Trim();
-        
-        if (trimmedPlayerName.Length <= 3)
-        {
-            return Error<LoginInfo>(ErrorType.PlayerNameTooShort);
-        }
-        
-        if (trimmedPlayerName.Length > 40)
-        {
-            return Error<LoginInfo>(ErrorType.PlayerNameTooLong);
-        }
+        email = email.Trim();
         
         await using var db = GetDbContext();
         
@@ -85,6 +71,9 @@ public partial class GameHub
     {
         if (Game.LatestVersion != version)
             return Error<LoginInfo>(ErrorType.InvalidGameVersion);
+
+        if (ValidateUserName(userName) != ErrorType.None || ValidatePasswordHash(hashedPassword) != ErrorType.None)
+            return Error<LoginInfo>(ErrorType.InvalidUserNameOrPassword);
         
         await using var db = GetDbContext();
       
@@ -104,6 +93,9 @@ public partial class GameHub
     
     public async Task<VoidResult> RequestPasswordReset(string usernameOrEmail)
     {
+        if (string.IsNullOrWhiteSpace(usernameOrEmail) || usernameOrEmail.Trim().Length > MaximumEmailLength)
+            return Error(ErrorType.UnknownUsernameOrEmailAddress);
+
         await using var db = GetDbContext();
 
         var users = db.Users.Where(x =>
@@ -118,6 +110,10 @@ public partial class GameHub
         
         if (string.IsNullOrEmpty(mail))
             return Error(ErrorType.UnknownUsernameOrEmailAddress);
+
+        var emailError = ValidateEmail(mail);
+        if (emailError != ErrorType.None)
+            return Error(emailError);
 
         if (users.Any(u => (DateTimeOffset.Now - u.PasswordResetTokenCreated).TotalMinutes < 5))
             return Error(ErrorType.ResetRequestTooSoon);
@@ -156,6 +152,12 @@ public partial class GameHub
     
     public async Task<Result<LoginInfo>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword)
     {
+        var validationError = ValidateUserName(userName);
+        if (validationError == ErrorType.None)
+            validationError = ValidatePasswordHash(newHashedPassword);
+        if (validationError != ErrorType.None)
+            return Error<LoginInfo>(validationError);
+
         await using var db = GetDbContext();
 
         var user = await db.Users.FirstOrDefaultAsync(x =>
@@ -193,9 +195,13 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var loggedInUser))
             return Error<LoginInfo>(ErrorType.UserNotFound);
 
+        var validationError = ValidateProfile(playerName, email, hashedPassword, allowEmptyPassword: true);
+        if (validationError != ErrorType.None)
+            return Error<LoginInfo>(validationError);
+
         var user = loggedInUser.User;
         user.PlayerName = playerName.Trim();
-        user.Email = email;
+        user.Email = email.Trim();
         if (!string.IsNullOrEmpty(hashedPassword))
             user.HashedPassword = hashedPassword;
         
@@ -220,4 +226,3 @@ public partial class GameHub
         return Success(FilteredServerStatus(GameListScope.Active, user.Id));
     }
 }
-

@@ -58,5 +58,9 @@ public enum ErrorType
     CannotRemoveLastHost,
     NoCreator,
     AlreadyPlayer,
-    UserNotInGame
+    UserNotInGame,
+    InvalidEmail,
+    EmailTooLong,
+    InvalidPasswordHash,
+    GameNameTooLong
 }
