@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Treachery.Server;
 
@@ -60,14 +61,18 @@ public class Startup
         });
         
         using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
-        var context = serviceScope.ServiceProvider.GetService<TreacheryContext>();
-
-        if (context == null) return;
-            
-        var pending = context.Database.GetPendingMigrations();
-        if (pending.Any())
+        var context = serviceScope.ServiceProvider.GetRequiredService<TreacheryContext>();
+        var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<Startup>>();
+        try
         {
-            context.Database.Migrate();
+            var compressedGames = GameStorageMigration.Migrate(context);
+            if (compressedGames > 0)
+                logger.LogInformation("Compressed legacy JSON for {GameCount} games.", compressedGames);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Game database migration failed; the server will not start.");
+            throw;
         }
     }
 }
