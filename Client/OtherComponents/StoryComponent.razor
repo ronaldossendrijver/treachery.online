@@ -24,7 +24,7 @@
 
             var replay = replayBase.Clone();
 
-            if ((previousPhase == Phase.TradingFactions || previousPhase == Phase.SelectingFactions) &&
+            if (previousPhase is Phase.TradingFactions or Phase.SelectingFactions &&
                 replay.CurrentPhase != Phase.TradingFactions && replay.CurrentPhase != Phase.SelectingFactions)
             {
                 <h4 class="h4">Setup</h4>
@@ -57,7 +57,7 @@
                         buy 
                         <RichText Shown=@replay.CardJustWon/>
                         for @replay.WinningBid.TotalAmount
-                        @if (replay.WinningBid is Bid b && b.KarmaCard != null)
+                        @if (replay.WinningBid is Bid { KarmaCard: not null } b)
                         {
                             <span> using <strong>@Client.CurrentSkin.Describe(b.KarmaCard)</strong></span>
                         }
@@ -91,7 +91,7 @@
                 <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowResources="true" ShowForces="true" ShowLeaders="true" ShowPoints="true" />
             }
 
-            if (evt is BattleInitiated)
+            if (evt is BattleInitiated && replay.BattleAboutToStart?.Territory != null)
             {
                 <h5 class="mt-2">Battle for @Client.CurrentSkin.Describe(replay.BattleAboutToStart.Territory)</h5>
             }
@@ -99,7 +99,7 @@
             if (IsMilestone(evt))
             {
                 <div class="mb-1">
-                    <img class="img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(evt.Initiator)" /> @evt.GetMessage().ToString(Client.CurrentSkin)
+                    <img class="img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(evt.Initiator)" alt="@Client.CurrentSkin.Describe(evt.Initiator)"/> @evt.GetMessage().ToString(Client.CurrentSkin)
                 </div>
             }
 
@@ -138,16 +138,18 @@
                             <td>
                                 @foreach (var b in replay.BattalionsIn(sh))
                                 {
+                                    var batFaction = replay.GetPlayer(b.Faction)!;
+                                    
                                     if (b.AmountOfForces > 0)
                                     {
-                                        <Image Width=24 Shown=replay.GetPlayer(b.Faction).Force />
+                                        <Image Width=24 Shown="@batFaction.Force" />
                                         <strong>@b.AmountOfForces</strong>
                                         <span>&nbsp;</span>
                                     }
 
                                     @if (b.AmountOfSpecialForces > 0)
                                     {
-                                        <Image Width=24 Shown=replay.GetPlayer(b.Faction).SpecialForce />
+                                        <Image Width=24 Shown="@batFaction.SpecialForce" />
                                         <strong>@b.AmountOfSpecialForces</strong>
                                     }
                                 }
@@ -197,7 +199,7 @@
                 @foreach (var w in replay.Winners)
                 {
                     <div>
-                        <h3 class="h3"><img class="img-fluid" width="30" src="@Client.CurrentSkin.GetImageUrl(w.Faction)" /> @w.Name wins @Client.CurrentSkin.Describe(replay.WinMethod)!</h3>
+                        <h3 class="h3"><img class="img-fluid" width="30" src="@Client.CurrentSkin.GetImageUrl(w.Faction)" alt="@Client.CurrentSkin.Describe(w.Faction)"/> @w.Name wins @Client.CurrentSkin.Describe(replay.WinMethod)!</h3>
                     </div>
                 }
 
@@ -222,11 +224,11 @@
     private bool IsMilestone(GameEvent evt)
     {
         return
-            (evt is FaceDanced fd && fd.FaceDancerCalled) ||
-            (evt is FaceDancerRevealed fdr && !fdr.Passed) ||
-            (evt is TreacheryCalled tc && tc.TraitorCalled) ||
-            (evt is GreySwappedCardOnBid gscob && !gscob.Passed) ||
-            (evt is TerrorRevealed tr && tr.Type == TerrorType.Atomics) ||
+            evt is FaceDanced { FaceDancerCalled: true } ||
+            evt is FaceDancerRevealed { Passed: false } ||
+            evt is TreacheryCalled { TraitorCalled: true } ||
+            evt is GreySwappedCardOnBid { Passed: false } ||
+            evt is TerrorRevealed { Type: TerrorType.Atomics } ||
             evt is PoisonToothCancelled ||
             evt is ReplacedCardWon ||
             evt is Voice ||
