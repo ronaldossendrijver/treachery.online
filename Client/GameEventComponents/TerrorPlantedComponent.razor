@@ -57,7 +57,7 @@
 
     protected override TerrorPlanted PassedResult => new(Game, Faction) { Passed = true };
 
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
         SetIfValid(ref _stronghold, TerrorPlanted.ValidStrongholds(Game, Player), l.Territory);
     }
@@ -68,9 +68,11 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    private string[] ValueLabels => ["Place or move a token", Client.CurrentSkin.Format("Remove a token to gain 4 ", Concept.Resource)];
+    private string ConfirmLabel => TerrorPlanted.MayRemoveTokens(Game, Player) 
+        ? "Remove token" 
+        : Game.UnplacedTerrorTokens.Contains(_type) ? "Place token" : "Move token";
 
-    private string ConfirmLabel => TerrorPlanted.MayRemoveTokens(Game, Player) ? "Remove token" : Game.UnplacedTerrorTokens.Contains(_type) ? "Place token" : "Move token";
-
-    private string HeaderMessage => TerrorPlanted.MayRemoveTokens(Game, Player) ? "You may now remove Terror" : "You may now place Terror";
+    private string HeaderMessage => TerrorPlanted.MayRemoveTokens(Game, Player) 
+        ? "You may now remove Terror" 
+        : "You may now place Terror";
 }

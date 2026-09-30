@@ -7,14 +7,13 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 @inherits GameEventComponent<PerformYellowSetup>
-@implements IDisposable
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Distribute @(10 - forces.Sum(fl => fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces)) forces on @Client.CurrentSkin.Describe(Game.Map.SietchTabr), @Client.CurrentSkin.Describe(Game.Map.FalseWallSouth), and @Client.CurrentSkin.Describe(Game.Map.FalseWallWest).</Header>
+    <Header>Distribute @(10 - Forces.Sum(fl => fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces)) forces on @Client.CurrentSkin.Describe(Game.Map.SietchTabr), @Client.CurrentSkin.Describe(Game.Map.FalseWallSouth), and @Client.CurrentSkin.Describe(Game.Map.FalseWallWest).</Header>
     <Body>
 
-        <ForceSelectionComponent Game="Game" Player="Player" OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="true" FixedMaxForces="10" FixedMaxSpecialForces="@(Player.HasSpecialForces ? 10 : 0)" AllowMultipleTerritories="true" />
+        <ForceSelectionComponent Game="Game" Player="Player" OnChanged="@StateHasChanged" Forces="Forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="true" FixedMaxForces="10" FixedMaxSpecialForces="@(Player.HasSpecialForces ? 10 : 0)" AllowMultipleTerritories="true" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
@@ -37,9 +36,9 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Yellow;
 
-    internal Dictionary<Location, Battalion> forces = new();
+    internal Dictionary<Location, Battalion> Forces = new();
 
-    protected override PerformYellowSetup ConfirmedResult => new(Game, Faction) { ForceLocations = forces };
+    protected override PerformYellowSetup ConfirmedResult => new(Game, Faction) { ForceLocations = Forces };
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -69,7 +68,7 @@
         }
     }
 
-    private void HandleAddForce(object sender, Location l)
+    private void HandleAddForce(object? sender, Location l)
     {
         if (ValidLocations.Contains(l))
         {
@@ -77,7 +76,7 @@
         }
     }
 
-    private void HandleAddSpecialForce(object sender, Location l)
+    private void HandleAddSpecialForce(object? sender, Location l)
     {
         if (ValidLocations.Contains(l))
         {
@@ -85,7 +84,7 @@
         }
     }
 
-    private void HandleRemoveForce(object sender, Location l)
+    private void HandleRemoveForce(object? sender, Location l)
     {
         if (ValidLocations.Contains(l))
         {
@@ -93,7 +92,7 @@
         }
     }
 
-    private void HandleRemoveSpecialForce(object sender, Location l)
+    private void HandleRemoveSpecialForce(object? sender, Location l)
     {
         if (ValidLocations.Contains(l))
         {
@@ -105,52 +104,31 @@
     {
         get
         {
-            var result = new List<Location>();
-            result.Add(Game.Map.SietchTabr);
+            var result = new List<Location> { Game.Map.SietchTabr };
             result.AddRange(Game.Map.FalseWallSouth.Locations);
             result.AddRange(Game.Map.FalseWallWest.Locations);
             return result;
         }
     }
 
-    protected int Forces(Location l, bool special)
+    private void ForceAmountButton(Location location, int amount, bool specialForces)
     {
-        if (forces.ContainsKey(l))
-        {
-            if (special)
-            {
-                return forces[l].AmountOfSpecialForces;
-            }
-
-            return forces[l].AmountOfForces;
-        }
-
-        return 0;
-    }
-
-    protected void ForceAmountButton(Location location, int amount, bool specialForces)
-    {
-        if (forces.ContainsKey(location))
+        if (Forces.ContainsKey(location))
         {
             if (specialForces)
             {
-                forces[location].ChangeSpecialForces(amount);
+                Forces[location].ChangeSpecialForces(amount);
             }
             else
             {
-                forces[location].ChangeForces(amount);
+                Forces[location].ChangeForces(amount);
             }
         }
         else if (amount > 0)
         {
-            if (specialForces)
-            {
-                forces.Add(location, new Battalion(Faction, 0, amount, location));
-            }
-            else
-            {
-                forces.Add(location, new Battalion(Faction, amount, 0, location));
-            }
+            Forces.Add(location, specialForces 
+                ? new Battalion(Faction, 0, amount, location) 
+                : new Battalion(Faction, amount, 0, location));
         }
 
         StateHasChanged();

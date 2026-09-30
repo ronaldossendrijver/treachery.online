@@ -55,23 +55,23 @@
 
         @if (ShipmentType is ShipmentType.ShipmentSiteToSite)
         {
-            <SelectComponent ButtonHint="ClickHintButton.Lmb" ModifierHint="ClickHintModifier.Ctrl" @bind-Value="_shipmentFrom" Values="@Shipment.ValidSourceLocations(Game, Player)">
+            <SelectComponent ButtonHint="ClickHintButton.Lmb" ModifierHint="ClickHintModifier.Ctrl" @bind-Value="ShipmentFrom" Values="@Shipment.ValidSourceLocations(Game, Player)">
                 <Label>From</Label>
             </SelectComponent>
         }
         else if (ShipmentType is ShipmentType.ShipmentSiteToSite && Player.HomeWorlds.Count > 1)
         {
-            <SelectComponent ButtonHint="ClickHintButton.Lmb" ModifierHint="ClickHintModifier.Ctrl" @bind-Value="_shipmentFrom" Values="@Player.HomeWorlds">
+            <SelectComponent ButtonHint="ClickHintButton.Lmb" ModifierHint="ClickHintModifier.Ctrl" @bind-Value="ShipmentFrom" Values="@Player.HomeWorlds">
                 <Label>To</Label>
             </SelectComponent>
         }
         else
         {
-            _shipmentFrom = Player.HomeWorlds[0];
+            ShipmentFrom = Player.HomeWorlds[0];
         }
 
         <div class="mt-1 mb-1">
-            <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="_shipmentTo" Values="ValidShipmentLocations.OrderByDescending(l => l.IsStronghold).ThenBy(Name)">
+            <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="ShipmentTo" Values="ValidShipmentLocations.OrderByDescending(l => l.IsStronghold).ThenBy(Name)">
                 <Label>
                     @if (ShipmentType is ShipmentType.ShipmentBack)
                     {
@@ -85,7 +85,7 @@
             </SelectComponent>
         </div>
 
-        @if (ShipmentType is not ShipmentType.ShipmentBack && _shipmentTo != null && Game.ContainsConflictingAlly(Player, _shipmentTo))
+        @if (ShipmentType is not ShipmentType.ShipmentBack && ShipmentTo != null && Game.ContainsConflictingAlly(Player, ShipmentTo))
         {
             <div class="text-danger bg-dark">Note: if you place forces there, all of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
         }
@@ -187,10 +187,10 @@
         }
         
         @if (
-            _shipmentTo != null &&
+            ShipmentTo != null &&
             ShipmentType is ShipmentType.ShipmentNormal or ShipmentType.ShipmentWhiteSecretAlly && 
             (ShipmentForceAmount > 0 || ShipmentSpecialForceAmount > 0) && 
-            Shipment.MaySmuggle(Game, Player, _shipmentTo))
+            Shipment.MaySmuggle(Game, Player, ShipmentTo))
         {
             <div class="mt-1">
 
@@ -291,9 +291,8 @@
     internal int SmuggledForceAmount { get; set; }
     internal int SmuggledSpecialForceAmount { get; set; }
     internal Dictionary<Location, Battalion> ForceOrigins { get; } = new();
-
-    internal Location? _shipmentFrom;
-    internal Location? _shipmentTo;
+    internal Location? ShipmentFrom;
+    internal Location? ShipmentTo;
 
     protected override Shipment ConfirmedResult
     {
@@ -310,8 +309,8 @@
                 SmuggledSpecialAmount = SmuggledSpecialForceAmount,
                 NoFieldValue = NoFieldValue,
                 CunningNoFieldValue = CunningNoFieldValue,
-                From = _shipmentFrom,
-                To = _shipmentTo,
+                From = ShipmentFrom,
+                To = ShipmentTo,
                 Passed = false,
                 KarmaCard = KarmaCard,
                 AllyContributionAmount = ShipmentAllyContributionAmount,
@@ -342,15 +341,15 @@
         Client.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
     }
 
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
-        SetIfValid(ref _shipmentTo, 
+        SetIfValid(ref ShipmentTo, 
             Shipment.ValidShipmentLocations(Game, Player, ShipmentType is ShipmentType.ShipmentSiteToSite, ShipmentType is ShipmentType.ShipmentWhiteSecretAlly), l);
     }
 
-    private void HandleLocationSelectedWithModifier(object sender, Location l)
+    private void HandleLocationSelectedWithModifier(object? sender, Location l)
     {
-        SetIfValid(ref _shipmentFrom, Shipment.ValidSourceLocations(Game, Player), l);
+        SetIfValid(ref ShipmentFrom, Shipment.ValidSourceLocations(Game, Player), l);
     }
     
     private int Cost => Shipment.DetermineCost(Game, Player, ConfirmedResult);
@@ -370,8 +369,8 @@
         {
             ShipmentType.ShipmentNormal => Shipment.ValidMaxNormalShipmentForces(Player, false, NoFieldValue),
             ShipmentType.ShipmentWhiteSecretAlly => Shipment.ValidMaxSecretAllyShipmentForces(Player, false),
-            ShipmentType.ShipmentSiteToSite => Shipment.ValidMaxShipmentSiteToSiteForces(Player, false, _shipmentFrom),
-            ShipmentType.ShipmentBack => Shipment.ValidMaxShipmentBackForces(Player, false, _shipmentTo),
+            ShipmentType.ShipmentSiteToSite => Shipment.ValidMaxShipmentSiteToSiteForces(Player, false, ShipmentFrom),
+            ShipmentType.ShipmentBack => Shipment.ValidMaxShipmentBackForces(Player, false, ShipmentTo),
             _ => throw new ArgumentOutOfRangeException()
         };
 
@@ -380,8 +379,8 @@
         {
             ShipmentType.ShipmentNormal => Shipment.ValidMaxNormalShipmentForces(Player, true, NoFieldValue),
             ShipmentType.ShipmentWhiteSecretAlly => Shipment.ValidMaxSecretAllyShipmentForces(Player, true),
-            ShipmentType.ShipmentSiteToSite => Shipment.ValidMaxShipmentSiteToSiteForces(Player, true, _shipmentFrom),
-            ShipmentType.ShipmentBack => Shipment.ValidMaxShipmentBackForces(Player, true, _shipmentTo),
+            ShipmentType.ShipmentSiteToSite => Shipment.ValidMaxShipmentSiteToSiteForces(Player, true, ShipmentFrom),
+            ShipmentType.ShipmentBack => Shipment.ValidMaxShipmentBackForces(Player, true, ShipmentTo),
             _ => 0
         };
 

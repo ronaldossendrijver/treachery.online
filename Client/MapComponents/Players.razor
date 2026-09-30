@@ -17,7 +17,7 @@
             var forcesToDraw = new List<MapForce>();
 
             float radiusModifier = 1;
-            if (Client.Status.PlayerShouldBeHighlighted(p))
+            if (Client.Status != null && Client.Status.PlayerShouldBeHighlighted(p))
             {
                 radiusModifier = 1.5f;
             }

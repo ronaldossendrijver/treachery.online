@@ -7,7 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 @inherits GameEventComponent<Revival>
-@implements IDisposable
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
@@ -17,113 +16,113 @@
         @{
             if (Player.Nexus == Faction.Red && NexusPlayed.CanUseSecretAlly(Game, Player))
             {
-                <CheckboxComponent @bind-Value=@useRedSecretAlly>Use your Nexus card to get 3 additional free revivals beyond your revival limit?</CheckboxComponent>
+                <CheckboxComponent @bind-Value=@UseRedSecretAlly>Use your Nexus card to get 3 additional free revivals beyond your revival limit?</CheckboxComponent>
             }
             else
             {
-                useRedSecretAlly = false;
+                UseRedSecretAlly = false;
             }
 
-            if (Revival.ValidMaxRevivals(Game, Player, false, useRedSecretAlly) > 0)
+            if (Revival.ValidMaxRevivals(Game, Player, false, UseRedSecretAlly) > 0)
             {
-                <SelectForcesComponent @bind-Value="amountOfForces" Min="0" Max="Revival.ValidMaxRevivals(Game, Player, false, useRedSecretAlly)" Faction="Faction" Special="false" />
+                <SelectForcesComponent @bind-Value="AmountOfForces" Min="0" Max="Revival.ValidMaxRevivals(Game, Player, false, UseRedSecretAlly)" Faction="Faction" Special="false" />
             }
             else
             {
-                amountOfForces = 0;
+                AmountOfForces = 0;
             }
 
-            if (Revival.ValidMaxRevivals(Game, Player, true, useRedSecretAlly) > 0)
+            if (Revival.ValidMaxRevivals(Game, Player, true, UseRedSecretAlly) > 0)
             {
-                <SelectForcesComponent @bind-Value="amountOfSpecialForces" Min="0" Max="Revival.ValidMaxRevivals(Game, Player, true, useRedSecretAlly)" Faction="Faction" Special="true" />
+                <SelectForcesComponent @bind-Value="AmountOfSpecialForces" Min="0" Max="Revival.ValidMaxRevivals(Game, Player, true, UseRedSecretAlly)" Faction="Faction" Special="true" />
             }
             else
             {
-                amountOfSpecialForces = 0;
+                AmountOfSpecialForces = 0;
             }
 
             if (Revival.ValidMaxRevivalsByRed(Game, Player) > 0)
             {
                 <div class="mt-2">You may select up to <SimpleNumberComponent>@Revival.ValidMaxRevivalsByRed(Game, Player)</SimpleNumberComponent> forces to be revived by your ally:</div>
 
-                if (Revival.ValidMaxRevivals(Game, Player, false, useRedSecretAlly) > 0)
+                if (Revival.ValidMaxRevivals(Game, Player, false, UseRedSecretAlly) > 0)
                 {
-                    <SelectForcesComponent @bind-Value="forcesPaidByRed" Min="0" Max="Revival.ValidMaxRevivalsByRed(Game, Player)" Faction="Faction" Special="false" />
+                    <SelectForcesComponent @bind-Value="ForcesPaidByRed" Min="0" Max="Revival.ValidMaxRevivalsByRed(Game, Player)" Faction="Faction" Special="false" />
                 }
                 else
                 {
-                    forcesPaidByRed = 0;
+                    ForcesPaidByRed = 0;
                 }
 
-                if (Revival.ValidMaxRevivals(Game, Player, true, useRedSecretAlly) > 0)
+                if (Revival.ValidMaxRevivals(Game, Player, true, UseRedSecretAlly) > 0)
                 {
-                    <SelectForcesComponent @bind-Value="specialForcesPaidByRed" Min="0" Max="Revival.ValidMaxRevivalsByRed(Game, Player)" Faction="Faction" Special="true" />
+                    <SelectForcesComponent @bind-Value="SpecialForcesPaidByRed" Min="0" Max="Revival.ValidMaxRevivalsByRed(Game, Player)" Faction="Faction" Special="true" />
                 }
                 else
                 {
-                    specialForcesPaidByRed = 0;
+                    SpecialForcesPaidByRed = 0;
                 }
             }
             else
             {
-                forcesPaidByRed = 0;
-                specialForcesPaidByRed = 0;
+                ForcesPaidByRed = 0;
+                SpecialForcesPaidByRed = 0;
             }
 
-            var maxForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfForcesThatMayBePlacedOnPlanet(Game, Player, useRedSecretAlly, amountOfForces + forcesPaidByRed) : 0;
-            var maxSpecialForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, amountOfSpecialForces + specialForcesPaidByRed) : 0;
+            var maxForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfForcesThatMayBePlacedOnPlanet(Game, Player, UseRedSecretAlly, AmountOfForces + ForcesPaidByRed) : 0;
+            var maxSpecialForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, AmountOfSpecialForces + SpecialForcesPaidByRed) : 0;
 
             if (maxForcesPlacedOnPlanet > 0)
             {
                 <div>
-                    <SelectForcesComponent Label="Place forces on the planet?" @bind-Value="amountOfForcesToLocation" Min=0 Max=maxForcesPlacedOnPlanet Faction=Faction Special="false"/>
+                    <SelectForcesComponent Label="Place forces on the planet?" @bind-Value="AmountOfForcesToLocation" Min=0 Max=maxForcesPlacedOnPlanet Faction=Faction Special="false"/>
                 </div>
             }
             else
             {
-                amountOfForcesToLocation = 0;
+                AmountOfForcesToLocation = 0;
             }
 
             if (maxSpecialForcesPlacedOnPlanet > 0)
             {
                 <div>
-                    <SelectForcesComponent Label="Place forces on the planet?" @bind-Value="amountOfSpecialForcesToLocation" Min=0 Max=maxSpecialForcesPlacedOnPlanet Faction=Faction Special="true"/>
+                    <SelectForcesComponent Label="Place forces on the planet?" @bind-Value="AmountOfSpecialForcesToLocation" Min=0 Max=maxSpecialForcesPlacedOnPlanet Faction=Faction Special="true"/>
                 </div>
             }
             else
             {
-                amountOfSpecialForcesToLocation = 0;
+                AmountOfSpecialForcesToLocation = 0;
             }
 
-            if (amountOfForcesToLocation > 0 || amountOfSpecialForcesToLocation > 0)
+            if (AmountOfForcesToLocation > 0 || AmountOfSpecialForcesToLocation > 0)
             {
-                <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="location" Values=@Revival.ValidRevivedForceLocations(Game, Player)>
+                <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="Location" Values=@Revival.ValidRevivedForceLocations(Game, Player)>
                     <Label>Place them where?</Label>
                 </SelectComponent>
             }
             else
             {
-                location = null;
+                Location = null;
             }
 
             @if (Revival.ValidRevivalHeroes(Game, Player).Any())
             {
-                <SelectFromImageComponent Game="Game" @bind-Value="hero" Values="Revival.ValidRevivalHeroes(Game, Player)" Required="false" ImageWidth="80"/>                
+                <SelectFromImageComponent Game="Game" @bind-Value="Hero" Values="Revival.ValidRevivalHeroes(Game, Player)" Required="false" ImageWidth="80"/>                
             }
             else
             {
-                hero = null;
+                Hero = null;
             }
 
-            if (hero != null && Revival.MayAssignSkill(Game, Player, hero))
+            if (Hero != null && Revival.MayAssignSkill(Game, Player, Hero))
             {
-                <RadioComponent @bind-Value="assignSkill" Values="@(new[] {false,true})" ValueLabels="@(new[] {"No","Yes"})">
+                <RadioComponent @bind-Value="AssignSkill" Values="@([false,true])" ValueLabels="@(["No","Yes"])">
                     <Label>Do you wish to assign a skill to this leader?</Label>
                 </RadioComponent>
             }
             else
             {
-                assignSkill = false;
+                AssignSkill = false;
             }
 
             <div class="mt-1 text-end">Revival cost for you: <SimpleNumberComponent>@(CostOfRevival.TotalCostForPlayer)</SimpleNumberComponent></div>
@@ -141,16 +140,16 @@
 
 @code {
 
-    internal int amountOfForces;
-    internal int amountOfSpecialForces;
-    internal int forcesPaidByRed;
-    internal int specialForcesPaidByRed;
-    internal IHero? hero;
-    internal bool assignSkill;
-    internal bool useRedSecretAlly;
-    internal int amountOfForcesToLocation;
-    internal int amountOfSpecialForcesToLocation;
-    internal Location? location;
+    internal int AmountOfForces;
+    internal int AmountOfSpecialForces;
+    internal int ForcesPaidByRed;
+    internal int SpecialForcesPaidByRed;
+    internal IHero? Hero;
+    internal bool AssignSkill;
+    internal bool UseRedSecretAlly;
+    internal int AmountOfForcesToLocation;
+    internal int AmountOfSpecialForcesToLocation;
+    internal Location? Location;
     
     protected override void OnAfterRender(bool firstRender)
     {
@@ -168,22 +167,22 @@
 
     protected override Revival ConfirmedResult => new(Game, Faction)
     {
-        AmountOfForces = amountOfForces, 
-        AmountOfSpecialForces = amountOfSpecialForces, 
-        ExtraForcesPaidByRed = forcesPaidByRed, 
-        ExtraSpecialForcesPaidByRed = specialForcesPaidByRed, 
-        Hero = hero, 
-        AssignSkill = assignSkill,
-        NumberOfForcesInLocation = amountOfForcesToLocation,
-        NumberOfSpecialForcesInLocation = amountOfSpecialForcesToLocation,
-        Location = location,
-        UsesRedSecretAlly = useRedSecretAlly
+        AmountOfForces = AmountOfForces, 
+        AmountOfSpecialForces = AmountOfSpecialForces, 
+        ExtraForcesPaidByRed = ForcesPaidByRed, 
+        ExtraSpecialForcesPaidByRed = SpecialForcesPaidByRed, 
+        Hero = Hero, 
+        AssignSkill = AssignSkill,
+        NumberOfForcesInLocation = AmountOfForcesToLocation,
+        NumberOfSpecialForcesInLocation = AmountOfSpecialForcesToLocation,
+        Location = Location,
+        UsesRedSecretAlly = UseRedSecretAlly
     };
 
-    private RevivalCost CostOfRevival => Revival.DetermineCost(Game, Player, hero, amountOfForces, amountOfSpecialForces, forcesPaidByRed, specialForcesPaidByRed, useRedSecretAlly);
+    private RevivalCost CostOfRevival => Revival.DetermineCost(Game, Player, Hero, AmountOfForces, AmountOfSpecialForces, ForcesPaidByRed, SpecialForcesPaidByRed, UseRedSecretAlly);
 
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
-        SetIfValid(ref location, Revival.ValidRevivedForceLocations(Game, Player), l);
+        SetIfValid(ref Location, Revival.ValidRevivedForceLocations(Game, Player), l);
     }
 }

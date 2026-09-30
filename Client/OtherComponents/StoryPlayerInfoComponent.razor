@@ -7,6 +7,8 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
+@if (Game is null) return;
+
 <div>
     <table class="table table-sm">
         <thead>
@@ -79,7 +81,9 @@
             {
                 <tr class ="table-dark">
 
-                    <td><img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" /></td>
+                    <td>
+                        <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" alt="@Client.CurrentSkin.Describe(p.Faction)"/>
+                    </td>
 
                     @if (ShowName)
                     {
@@ -91,11 +95,11 @@
                         <td>
                             @if (p.Ally != Faction.None)
                             {
-                                <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Ally)" />
+                                <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Ally)" alt="@Client.CurrentSkin.Describe(p.Ally)"/>
                             }
                             else if (p.Nexus != Faction.None)
                             {
-                                <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Nexus)" />
+                                <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Nexus)" alt="@Client.CurrentSkin.Describe(p.Nexus)"/>
                                 <strong>*</strong>
                             }
                         </td>
@@ -165,7 +169,7 @@
                         <td>
                             @foreach (var l in p.LocationsWithAnyForces.Where(l => Game.Applicable(Rule.Homeworlds) || !l.Territory.IsHomeworld).OrderByDescending(l => l.IsStronghold).ThenBy(l => l.Orientation))
                             {
-                                var isContested = l != Game.Map.PolarSink && p.Occupies(l.Territory) && Game.NrOfOccupantsExcludingFaction(l.Territory, p.Faction) > 0;
+                                var isContested = !Equals(l, Game.Map.PolarSink) && p.Occupies(l.Territory) && Game.NrOfOccupantsExcludingFaction(l.Territory, p.Faction) > 0;
 
                                 <div class="@(isContested?"text-danger":"")">
 
@@ -187,14 +191,14 @@
 
                                     @if (p.ForcesIn(l) > 0)
                                     {
-                                        <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionForceImageUrl(p.Faction)' title=@Client.CurrentSkin.Describe(p.Force) /><strong>&nbsp;@p.ForcesIn(l)</strong>
+                                        <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionForceImageUrl(p.Faction)' alt="@Client.CurrentSkin.Describe(p.Force)" /><strong>&nbsp;@p.ForcesIn(l)</strong>
                                     }
 
                                     <span>&nbsp;</span>
 
                                     @if (p.SpecialForcesIn(l) > 0)
                                     {
-                                        <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionSpecialForceImageUrl(p.Faction)' title=@Client.CurrentSkin.Describe(p.SpecialForce) /><strong>&nbsp;@p.SpecialForcesIn(l)</strong>
+                                        <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionSpecialForceImageUrl(p.Faction)' alt="@Client.CurrentSkin.Describe(p.SpecialForce)" /><strong>&nbsp;@p.SpecialForcesIn(l)</strong>
                                     }
 
                                 </div>
@@ -211,9 +215,9 @@
                                 <Image Class="img-fluid p-1" Width=60 Shown=@c />
                             }
 
-                            @if (Game.Applicable(Rule.GreenMessiah) && p.Faction == Faction.Green && p.TotalForcesKilledInBattle >= 7 && Game.IsAlive(LeaderManager.Messiah))
+                            @if (Game.Applicable(Rule.GreenMessiah) && p is { Faction: Faction.Green, TotalForcesKilledInBattle: >= 7 } && Game.IsAlive(LeaderManager.Messiah))
                             {
-                                <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" title=@Client.CurrentSkin.Describe(Concept.Messiah)/>
+                                <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
                             }
 
                         </td>
@@ -224,12 +228,12 @@
                         <td>
                             @if (p.ForcesKilled > 0)
                             {
-                                <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionForceImageUrl(p.Faction)' title=@Client.CurrentSkin.Describe(p.Force) /><strong>&nbsp;@p.ForcesKilled</strong>
+                                <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionForceImageUrl(p.Faction)' alt="@Client.CurrentSkin.Describe(p.Force)" /><strong>&nbsp;@p.ForcesKilled</strong>
                             }
 
                             @if (p.SpecialForcesKilled > 0)
                             {
-                                <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionSpecialForceImageUrl(p.Faction)' title=@Client.CurrentSkin.Describe(p.SpecialForce) /><strong>&nbsp;@p.SpecialForcesKilled</strong>
+                                <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionSpecialForceImageUrl(p.Faction)' alt="@Client.CurrentSkin.Describe(p.SpecialForce)" /><strong>&nbsp;@p.SpecialForcesKilled</strong>
                             }
 
                             @foreach (var c in p.Leaders.Where(l => !Game.IsAlive(l)))
@@ -239,7 +243,7 @@
 
                             @if (p.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah) && !Game.MessiahIsAlive)
                             {
-                                <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" title=@Client.CurrentSkin.Describe(Concept.Messiah)/>
+                                <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
                             }
 
                         </td>
@@ -264,36 +268,36 @@
     [Parameter]
     public Game? Game { get; set; }
 
-    private IEnumerable<Player> Players => Game.Players;
+    private IEnumerable<Player> Players => Game?.Players ?? [];
 
     [Parameter]
-    public bool ShowName { get; set; } = false;
+    public bool ShowName { get; set; }
 
     [Parameter]
-    public bool ShowAlly { get; set; } = false;
+    public bool ShowAlly { get; set; }
 
     [Parameter]
-    public bool ShowCards { get; set; } = false;
+    public bool ShowCards { get; set; }
 
     [Parameter]
-    public bool ShowTraitorsAndFacedancers { get; set; } = false;
+    public bool ShowTraitorsAndFacedancers { get; set; }
 
     [Parameter]
-    public bool ShowResources { get; set; } = false;
+    public bool ShowResources { get; set; }
 
     [Parameter]
-    public bool ShowTechTokens { get; set; } = false;
+    public bool ShowTechTokens { get; set; }
 
     [Parameter]
-    public bool ShowForces { get; set; } = false;
+    public bool ShowForces { get; set; }
 
     [Parameter]
-    public bool ShowPoints { get; set; } = false;
+    public bool ShowPoints { get; set; }
 
     [Parameter]
-    public bool ShowLeaders { get; set; } = false;
+    public bool ShowLeaders { get; set; }
 
     [Parameter]
-    public bool ShowTanks { get; set; } = false;
+    public bool ShowTanks { get; set; }
 
 }

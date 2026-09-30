@@ -155,8 +155,8 @@ internal static class HistoricalComponentDriver
                 c.NoFieldValue = shipment.NoFieldValue;
                 c.CunningNoFieldValue = shipment.CunningNoFieldValue;
                 c.KarmaCard = shipment.KarmaCard;
-                c._shipmentFrom = shipment.From;
-                c._shipmentTo = shipment.To;
+                c.ShipmentFrom = shipment.From;
+                c.ShipmentTo = shipment.To;
                 c.ForceOrigins.Clear();
                 foreach (var (location, battalion) in shipment.ForceLocations)
                 {
@@ -229,16 +229,16 @@ internal static class HistoricalComponentDriver
             case Revival revival:
             {
                 var c = Expect<RevivalComponent>(component);
-                c.amountOfForces = revival.AmountOfForces;
-                c.amountOfSpecialForces = revival.AmountOfSpecialForces;
-                c.forcesPaidByRed = revival.ExtraForcesPaidByRed;
-                c.specialForcesPaidByRed = revival.ExtraSpecialForcesPaidByRed;
-                c.hero = revival.Hero;
-                c.assignSkill = revival.AssignSkill;
-                c.useRedSecretAlly = revival.UsesRedSecretAlly;
-                c.amountOfForcesToLocation = revival.NumberOfForcesInLocation;
-                c.amountOfSpecialForcesToLocation = revival.NumberOfSpecialForcesInLocation;
-                c.location = revival.Location;
+                c.AmountOfForces = revival.AmountOfForces;
+                c.AmountOfSpecialForces = revival.AmountOfSpecialForces;
+                c.ForcesPaidByRed = revival.ExtraForcesPaidByRed;
+                c.SpecialForcesPaidByRed = revival.ExtraSpecialForcesPaidByRed;
+                c.Hero = revival.Hero;
+                c.AssignSkill = revival.AssignSkill;
+                c.UseRedSecretAlly = revival.UsesRedSecretAlly;
+                c.AmountOfForcesToLocation = revival.NumberOfForcesInLocation;
+                c.AmountOfSpecialForcesToLocation = revival.NumberOfSpecialForcesInLocation;
+                c.Location = revival.Location;
                 return;
             }
 
@@ -327,17 +327,17 @@ internal static class HistoricalComponentDriver
             case NexusPlayed nexus:
             {
                 var c = Expect<NexusPlayedComponent>(component);
-                c.greenPrescienceAspect = nexus.GreenPrescienceAspect;
-                c.purpleAmountOfForces = nexus.PurpleForces;
-                c.purpleAmountOfSpecialForces = nexus.PurpleSpecialForces;
-                c.purpleHero = nexus.PurpleHero;
-                c.purpleAssignSkill = nexus.PurpleAssignSkill;
-                c.purpleAmountOfSpecialForcesToLocation = nexus.PurpleNumberOfSpecialForcesInLocation;
-                c.brownCard = nexus.BrownCard;
-                c.pinkTerritory = nexus.PinkTerritory;
-                c.pinkFaction = nexus.PinkFaction;
-                c.cyanTerritory = nexus.CyanTerritory;
-                c.purpleOrYellowLocation = nexus.PurpleLocation;
+                c.GreenPrescienceAspect = nexus.GreenPrescienceAspect;
+                c.PurpleAmountOfForces = nexus.PurpleForces;
+                c.PurpleAmountOfSpecialForces = nexus.PurpleSpecialForces;
+                c.PurpleHero = nexus.PurpleHero;
+                c.PurpleAssignSkill = nexus.PurpleAssignSkill;
+                c.PurpleAmountOfSpecialForcesToLocation = nexus.PurpleNumberOfSpecialForcesInLocation;
+                c.BrownCard = nexus.BrownCard;
+                c.PinkTerritory = nexus.PinkTerritory;
+                c.PinkFaction = nexus.PinkFaction;
+                c.CyanTerritory = nexus.CyanTerritory;
+                c.PurpleOrYellowLocation = nexus.PurpleLocation;
                 return;
             }
 
@@ -471,7 +471,7 @@ internal static class HistoricalComponentDriver
                         c.forces = placement.ForceLocations;
                         break;
                     case PerformYellowSetupComponent c:
-                        c.forces = placement.ForceLocations;
+                        c.Forces = placement.ForceLocations;
                         break;
                 }
                 break;

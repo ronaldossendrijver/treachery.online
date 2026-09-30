@@ -9,7 +9,7 @@
 
 @inherits GameComponent
 
-@if (Player != null && Client.CurrentPhase >= Phase.TradingFactions)
+@if (Client.CurrentPhase >= Phase.TradingFactions && ShownPlayer != null)
 {
     <div class="card p-1 border-light mb-1" style="animation:fadeIn 3s;">
 
@@ -60,14 +60,14 @@
                         </div>
 
                         <!-- Leaders -->
-                        @foreach (var v in ShownPlayer.Leaders.Where(l => Client.Game.IsAlive(l)))
+                        @foreach (var v in ShownPlayer.Leaders.Where(l => Game.IsAlive(l)))
                         {
-                            <Image Src=@Client.CurrentSkin.GetImageUrl(v) Highlighted="@Game.IsSkilled(v)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
+                            <Image Src=@Client.CurrentSkin.GetImageUrl(v) Highlighted="@Game.IsSkilled(v)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Game)/>
                         }
 
-                        @foreach (var v in ShownPlayer.Leaders.Where(l => !Client.Game.IsAlive(l)))
+                        @foreach (var v in ShownPlayer.Leaders.Where(l => !Game.IsAlive(l)))
                         {
-                            <Image Src=@Client.CurrentSkin.GetImageUrl(v) Darkened Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
+                            <Image Src=@Client.CurrentSkin.GetImageUrl(v) Darkened Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Game)/>
                         }
 
                         <!-- Traitors and Face Dancers -->
@@ -76,16 +76,16 @@
                             <h5 class="mt-1 mb-0">Face Dancers</h5>
                             @foreach (var v in ShownPlayer.FaceDancers)
                             {
-                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) Blurred="@ShownPlayer.RevealedFaceDancers.Contains(v)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
+                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) Blurred="@ShownPlayer.RevealedFaceDancers.Contains(v)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Game)/>
                             }
                         }
-                        else if (!Client.Game.AssistedNoteKeepingEnabled(Player) && ShownPlayer.Traitors.Count == 1)
+                        else if (!Game.AssistedNoteKeepingEnabled(Player) && ShownPlayer.Traitors.Count == 1)
                         {
                             <div>
                                 <Image Src="@Client.CurrentSkin.GetImageUrl(ShownPlayer.Traitors.First())" 
                                        Class="img-fluid p-1" 
                                        Width=60 
-                                       Popover=@Client.CurrentSkin.GetPopup(ShownPlayer.Traitors.First(), Client.Game)/> is your traitor.
+                                       Popover=@Client.CurrentSkin.GetPopup(ShownPlayer.Traitors.First(), Game)/> is your traitor.
                             </div>
                         }
                         else if (ShownPlayer.Traitors.Count > 0)
@@ -101,18 +101,18 @@
 
                             @foreach (var v in ShownPlayer.Traitors)
                             {
-                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) Blurred="@ShownPlayer.RevealedTraitors.Contains(v)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
+                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) Blurred="@ShownPlayer.RevealedTraitors.Contains(v)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Game)/>
                             }
 
                             @foreach (var v in ShownPlayer.DiscardedTraitors)
                             {
-                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) GreyedOut Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Client.Game)/>
+                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) GreyedOut Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Game)/>
                             }
                         }
 
-                        @if (Client.CurrentPhase > Phase.DiallingStorm && Client.Game.HasStormPrescience(Player))
+                        @if (Client.CurrentPhase > Phase.DiallingStorm && Game.HasStormPrescience(Player))
                         {
-                            <div>The next storm will move <SimpleNumberComponent>@(Client.Game.NextStormMoves)</SimpleNumberComponent> sectors.</div>
+                            <div>The next storm will move <SimpleNumberComponent>@(Game.NextStormMoves)</SimpleNumberComponent> sectors.</div>
                         }
 
                         @if (ShownPlayer.Faction == Faction.Blue && Client.CurrentPhase > Phase.BluePredicting)
@@ -122,7 +122,7 @@
 
                         @if (ShownPlayer.Faction == Faction.Green)
                         {
-                            if (Client.Game.Applicable(Rule.GreenMessiah))
+                            if (Game.Applicable(Rule.GreenMessiah))
                             {
                                 <div>
                                     <img class="img-fluid m-0 p-0" width="32" height="32"
@@ -169,13 +169,13 @@
                             </div>
                         }
 
-                        @if (Client.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Client.Game.HasResourceDeckPrescience(Player) && !Client.Game.ResourceCardDeck.IsEmpty)
+                        @if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(Player) && !Game.ResourceCardDeck!.IsEmpty)
                         {
-                            <Hoverable Popover=@Client.CurrentSkin.GetPopup(Client.Game.ResourceCardDeck.Top)>Top card of @Name(Concept.Resource) Deck: <strong>@Name(Client.Game.ResourceCardDeck.Top)</strong></Hoverable>
+                            <Hoverable Popover=@Client.CurrentSkin.GetPopup(Game.ResourceCardDeck!.Top!)>Top card of @Name(Concept.Resource) Deck: <strong>@Name(Game.ResourceCardDeck.Top)</strong></Hoverable>
                         }
 
                         <!-- Cards -->
-                        @if (ShownPlayer.TreacheryCards.Count == 0 && Client.Game.GetCardSetAsideForBid(Player) == null)
+                        @if (ShownPlayer.TreacheryCards.Count == 0 && Game.GetCardSetAsideForBid(Player) == null)
                         {
                             <div>You don't own any treachery cards.</div>
                         }
@@ -188,9 +188,9 @@
                                     <Image Shown=@v Class="img-fluid p-1"/>
                                 }
 
-                                @if (Client.Game.GetCardSetAsideForBid(Player) != null)
+                                @if (Game.GetCardSetAsideForBid(Player) != null)
                                 {
-                                    var v = Client.Game.GetCardSetAsideForBid(Player);
+                                    var v = Game.GetCardSetAsideForBid(Player);
                                     <Image Shown=@v Class="img-fluid p-1"/>
                                 }
 
@@ -204,7 +204,7 @@
                     }
                     else
                     {
-                        <FactionComponent Faction="Client.Player.Faction"/>
+                        <FactionComponent Faction="Player.Faction"/>
                     }
                 
                 </div>
@@ -229,6 +229,8 @@
     {
         get
         {
+            if (ShownPlayer is null) return string.Empty;
+            
             if (ShownPlayer.BankedResources > 0)
             {
                 if (ShownPlayer.Bribes + ShownPlayer.Extortion > 0)
