@@ -26,6 +26,7 @@ public partial class Game
         var currentOwner = OwnerOf(h);
         var leaderToRemove = (Leader)h;
         currentOwner!.Leaders.Remove(leaderToRemove);
+        CapturedLeaders.Remove(leaderToRemove);
         var pink = GetPlayer(Faction.Pink);
         pink?.Leaders.Add(leaderToRemove);
     }
