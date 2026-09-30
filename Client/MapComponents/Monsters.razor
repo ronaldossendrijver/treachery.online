@@ -8,9 +8,9 @@
 *@
 @inherits MapComponent
 
-@foreach (var m in Client.Game.Monsters)
+@foreach (var m in Game.Monsters)
 {
-    var position = Client.CurrentSkin.GetCenter(m.Territory.MiddleLocation, Client.Game.Map);
+    var position = Client.CurrentSkin.GetCenter(m.Territory.MiddleLocation, Game.Map);
 
     <MapImage X="@(position.X - Client.CurrentSkin.MONSTERTOKEN_RADIUS)" Y="@(position.Y - Client.CurrentSkin.MONSTERTOKEN_RADIUS)" Width=@(2 * Client.CurrentSkin.MONSTERTOKEN_RADIUS) Height="@(2 * Client.CurrentSkin.MONSTERTOKEN_RADIUS)" Src="@Client.CurrentSkin.Monster_URL" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"/>
 }

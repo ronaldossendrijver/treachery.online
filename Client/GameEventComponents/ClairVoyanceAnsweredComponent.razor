@@ -8,6 +8,8 @@
 *@
 @inherits GameEventComponent<ClairVoyanceAnswered>
 
+@if (Game.LatestClairvoyance is null) return;
+
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>@Client.CurrentSkin.Describe(Game.LatestClairvoyance.Initiator) questions you with @Client.CurrentSkin.Describe(TreacheryCardType.Clairvoyance)!</Header>

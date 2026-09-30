@@ -13,7 +13,7 @@
     <Header>Put one card on top or on the bottom of the Treachery Card deck</Header>
     <Body>
         
-        <SelectFromImageComponent @bind-Value="card" Values="Game.CardsOnAuction.Items" ImageWidth="80" />
+        <SelectFromImageComponent @bind-Value="_card" Values="Game.CardsOnAuction!.Items" ImageWidth="80" />
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Put on top" ConfirmError="@Validation" Pass="Other" PassText="Put at bottom" />
 
     </Body>
@@ -25,9 +25,9 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Grey;
 
-    private TreacheryCard? card;
+    private TreacheryCard? _card;
 
-    protected override GreyRemovedCardFromAuction ConfirmedResult => new(Game, Faction) { PutOnTop = true, Card = card };
+    protected override GreyRemovedCardFromAuction ConfirmedResult => new(Game, Faction) { PutOnTop = true, Card = _card };
 
-    protected override GreyRemovedCardFromAuction OtherResult => new(Game, Faction) { PutOnTop = false, Card = card };
+    protected override GreyRemovedCardFromAuction OtherResult => new(Game, Faction) { PutOnTop = false, Card = _card };
 }

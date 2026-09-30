@@ -203,7 +203,7 @@
         {
             foreach (var b in Game.BattalionsIn(intelligenceLocation))
             {
-                var p = Game.GetPlayer(b.Faction);
+                var p = Game.GetPlayer(b.Faction)!;
                 if (b.AmountOfSpecialForces > 0 || b.AmountOfForces > 0)
                 {
                     if (b.AmountOfForces > 0)
@@ -258,7 +258,7 @@
 
     private string ProtectedFromStormText(Location l)
     {
-        return Client.Game.IsProtectedFromStorm(l) ? "Protected" : "NOT protected";
+        return Game.IsProtectedFromStorm(l) ? "Protected" : "NOT protected";
     }
 
     protected ElementReference Element;

@@ -78,7 +78,7 @@
     private Faction GetAssignedFaction(int userId)
     {
         var seat = SeatedPlayers.GetValueOrDefault(userId);
-        return seat == -1 ? Faction.None : Client.Game.GetFactionInSeat(seat) ?? Faction.None;
+        return seat == -1 ? Faction.None : Game.GetFactionInSeat(seat) ?? Faction.None;
     }
 
     private void AssignFaction(int userId, Faction faction)

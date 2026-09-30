@@ -15,23 +15,25 @@
 
         @{
             var toBeDivided = DivideResources.GetResourcesToBeDivided(Game);
+            if (toBeDivided != null)
+            {
+                <div class="mt-1">
+                    @toBeDivided.Amount @Name(Concept.Resource) was collected from @Name(toBeDivided.Territory) by you and <FactionComponent Faction=@toBeDivided.OtherFaction Diameter="30"/>
+                </div>
 
-            <div class="mt-1">
-                @toBeDivided.Amount @Name(Concept.Resource) was collected from @Name(toBeDivided.Territory) by you and <FactionComponent Faction=@toBeDivided.OtherFaction Diameter="30"/>
-            </div>
+                <div class="mt-1">
+                    <SelectResourcesComponent @bind-Value="amountToFirstFaction" Min=0 Max=@toBeDivided.Amount Label="How much should go to you?" />
+                </div>
 
-            <div class="mt-1">
-                <SelectResourcesComponent @bind-Value="amountToFirstFaction" Min=0 Max=@toBeDivided.Amount Label="How much should go to you?" />
-            </div>
+                <div class="mt-1">
+                    If <FactionComponent Faction=@toBeDivided.OtherFaction Diameter="30"/> agree, they will receive the remaining @(toBeDivided.Amount - amountToFirstFaction) @Name(Concept.Resource)
+                </div>
 
-            <div class="mt-1">
-                If <FactionComponent Faction=@toBeDivided.OtherFaction Diameter="30"/> agree, they will receive the remaining @(toBeDivided.Amount - amountToFirstFaction) @Name(Concept.Resource)
-            </div>
-
-            <div class="mt-1">
-                If you pass, you get @DivideResources.GainedByFirstFaction(toBeDivided, false, amountToFirstFaction) and <FactionComponent Faction=@toBeDivided.OtherFaction Diameter="30"/> get @DivideResources.GainedByOtherFaction(toBeDivided, false, amountToFirstFaction)
-            </div>
-
+                <div class="mt-1">
+                    If you pass, you get @DivideResources.GainedByFirstFaction(toBeDivided, false, amountToFirstFaction) and <FactionComponent Faction=@toBeDivided.OtherFaction Diameter="30"/> get @DivideResources.GainedByOtherFaction(toBeDivided, false, amountToFirstFaction)
+                </div>
+            }
+            
             <ButtonRowComponent Pass="Pass" Confirm="Confirm" ConfirmError=@Validation />
         }
 

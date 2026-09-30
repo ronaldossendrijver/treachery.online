@@ -13,7 +13,7 @@
     <Header>Replace a player with a Bot (or vice versa)</Header>
     <Body>
 
-        <SelectFromImageComponent @bind-Value="toReplace" Values="PlayerReplaced.ValidTargets(Game)" Required="true" ImageWidth="40" />
+        <SelectFromImageComponent @bind-Value="_toReplace" Values="PlayerReplaced.ValidTargets(Game)" Required="true" ImageWidth="40" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@Validation" />
 
@@ -23,9 +23,10 @@
 
 @code {
 
-    private Faction toReplace;
+    private Faction _toReplace;
 
-    protected override PlayerReplaced ConfirmedResult => new(Game, Faction) { ToReplace = toReplace };
+    protected override PlayerReplaced ConfirmedResult => new(Game, Faction) { ToReplace = _toReplace };
 
-    private string ConfirmLabel => Game.GetPlayer(toReplace) != null && Game.GetPlayer(toReplace).IsBot ? "Replace by a human" : "Replace by a bot";
+    private string ConfirmLabel => Game.GetPlayer(_toReplace) is { IsBot: true } ? "Replace by a human" : "Replace by a bot";
+
 }

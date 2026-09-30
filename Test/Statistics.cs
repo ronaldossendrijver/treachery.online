@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using Treachery.Shared;
+﻿using System.Globalization;
 
 namespace Treachery.Test;
 
@@ -137,14 +133,14 @@ public class Statistics
         }
     }
 
-    private static void OutputCounter<T>(string title, ObjectCounter<T> c, IDescriber describer, int topX = -1)
+    private static void OutputCounter<T>(string title, ObjectCounter<T> c, IDescriber describer, int topX = -1) where T : notnull
     {
         Console.WriteLine("***" + title + "***");
         var coll = topX > 0 ? c.GetHighest(topX) : c.Counted;
         foreach (var i in coll) Console.WriteLine(describer.Format("{0};{1}", i, c.CountOf(i)));
     }
 
-    private static void OutputCounterGrouped<T>(string title, IEnumerable<T> groupedBy, ObjectCounter<T>[] counters, string[] counterLabels, IDescriber describer)
+    private static void OutputCounterGrouped<T>(string title, IEnumerable<T> groupedBy, ObjectCounter<T>[] counters, string[] counterLabels, IDescriber describer) where T : notnull
     {
         if (counters.Count() != counterLabels.Length) throw new ArgumentException("Number of counters does not equal number of counter labels");
 
@@ -175,6 +171,6 @@ public class FactionAndTurn
 
     public override string ToString()
     {
-        return Message.DefaultDescriber.Format("{0};{1}", Faction, Turn);
+        return Message.DefaultDescriber?.Format("{0};{1}", Faction, Turn) ?? "?";
     }
 }

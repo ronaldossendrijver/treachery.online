@@ -19,17 +19,17 @@
 
             if (ambassador == Ambassador.Blue)
             {
-                <SelectFromImageComponent @bind-Value=_actualAmbassador Values=@AmbassadorActivated.GetValidBlueAmbassadors(Game)>
+                <SelectFromImageComponent @bind-Value=ActualAmbassador Values=@AmbassadorActivated.GetValidBlueAmbassadors(Game)>
                     <Label>Activate the effect of which ambassador?</Label>
                 </SelectFromImageComponent>
                 <br/>
             }
             else
             {
-                _actualAmbassador = ambassador;
+                ActualAmbassador = ambassador;
             }
 
-            switch (_actualAmbassador)
+            switch (ActualAmbassador)
             {
                 case Ambassador.Green:
 
@@ -39,7 +39,7 @@
                 case Ambassador.Brown:
 
                     <div>Discard cards from your hand for 3 @Name(Concept.Resource) each?</div>
-                    <SelectFromImageComponent Selected="_brownCards" Values=@AmbassadorActivated.GetValidBrownCards(Player) T=TreacheryCard OnChanged=StateHasChanged ImageWidth="80">
+                    <SelectFromImageComponent Selected="BrownCards" Values=@AmbassadorActivated.GetValidBrownCards(Player) T=TreacheryCard OnChanged=StateHasChanged ImageWidth="80">
                         <Label>Select the cards you wish to discard for 3 @Client.CurrentSkin.Describe(Concept.Resource) each</Label>
                     </SelectFromImageComponent>
                     break;
@@ -48,30 +48,30 @@
                 
                     if (AmbassadorActivated.VidalCanBeTaken(Game, Player)) {
 
-                        <CheckboxComponent @bind-Value="_pinkTakeVidal">Take @Name(Game.Vidal)</CheckboxComponent>
+                        <CheckboxComponent @bind-Value="PinkTakeVidal">Take @Name(Game.Vidal)</CheckboxComponent>
                     }
                     else
                     {
-                        _pinkTakeVidal = false;
+                        PinkTakeVidal = false;
                     }
                     
-                    if (!_pinkTakeVidal && AmbassadorActivated.AllianceCanBeOffered(Game, Player))
+                    if (!PinkTakeVidal && AmbassadorActivated.AllianceCanBeOffered(Game, Player))
                     {
-                        <CheckboxComponent @bind-Value="_pinkOfferAlliance">Offer an alliance to @Name(victim)</CheckboxComponent>
+                        <CheckboxComponent @bind-Value="PinkOfferAlliance">Offer an alliance to @Name(victim)</CheckboxComponent>
                         
-                        if (_pinkOfferAlliance && AmbassadorActivated.VidalCanBeOfferedToNewAlly(Game, Player))
+                        if (PinkOfferAlliance && AmbassadorActivated.VidalCanBeOfferedToNewAlly(Game, Player))
                         {
-                            <CheckboxComponent @bind-Value="_pinkGiveVidal">Give @Name(Game.Vidal) to @Name(victim) if they agree to ally</CheckboxComponent>
+                            <CheckboxComponent @bind-Value="PinkGiveVidal">Give @Name(Game.Vidal) to @Name(victim) if they agree to ally</CheckboxComponent>
                         }
                         else
                         {
-                            _pinkGiveVidal = false;
+                            PinkGiveVidal = false;
                         }
                     }
                     else
                     {
-                        _pinkOfferAlliance = false;
-                        _pinkGiveVidal = false;
+                        PinkOfferAlliance = false;
+                        PinkGiveVidal = false;
                     }
                     break;
 
@@ -84,29 +84,29 @@
 
                     <div>Move a group of your forces?</div>
 
-                    var validSources = AmbassadorActivated.ValidYellowSources(Game, Player);
+                    var validSources = AmbassadorActivated.ValidYellowSources(Game, Player).ToArray();
 
                     if (validSources.Any())
                     {
-                        _yellowFromTerritory ??= validSources.First();
+                        YellowFromTerritory ??= validSources.First();
 
                         <div class="mt-1 mb-1">
-                            <SelectComponent T=Territory OnChanged="StateHasChanged" ButtonHint="ClickHintButton.Lmb" ModifierHint="ClickHintModifier.Ctrl" @bind-Value="_yellowFromTerritory" Values="validSources">
+                            <SelectComponent T=Territory OnChanged="StateHasChanged" ButtonHint="ClickHintButton.Lmb" ModifierHint="ClickHintModifier.Ctrl" @bind-Value="YellowFromTerritory" Values="validSources">
                                 <Label>From</Label>
                             </SelectComponent>
 
-                            <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="_yellowForces" Locations="Player.LocationsWithAnyForcesInTerritory(_yellowFromTerritory)" InitializeToMaximum="true"/>
+                            <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="YellowForces" Locations="Player.LocationsWithAnyForcesInTerritory(YellowFromTerritory)" InitializeToMaximum="true"/>
 
-                            <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="_yellowOrOrangeToLocation" Values=@AmbassadorActivated.ValidYellowTargets(Game, Player)>
+                            <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="YellowOrOrangeToLocation" Values=@AmbassadorActivated.ValidYellowTargets(Game, Player)>
                                 <Label>To</Label>
                             </SelectComponent>
                         </div>
                     }
                     else
                     {
-                        _yellowFromTerritory = null;
-                        _yellowForces = new Dictionary<Location, Battalion>();
-                        _yellowOrOrangeToLocation = null;
+                        YellowFromTerritory = null;
+                        YellowForces = new Dictionary<Location, Battalion>();
+                        YellowOrOrangeToLocation = null;
 
                         <div>You don't have any forces to move.</div>
                     }
@@ -131,7 +131,7 @@
                 case Ambassador.Grey:
 
                     <div>Discard a card from your hand to draw a new one?</div>
-                    <SelectFromImageComponent @bind-Value=@_greyCard Values=@AmbassadorActivated.GetValidGreyCards(Player) ImageWidth="80">
+                    <SelectFromImageComponent @bind-Value=@GreyCard Values=@AmbassadorActivated.GetValidGreyCards(Player) ImageWidth="80">
                         <Label>Select the card you wish to discard</Label>
                     </SelectFromImageComponent>
                     break;
@@ -145,21 +145,21 @@
 
                     <div>Send up to 4 forces to any location?</div>
 
-                    var validTargets = AmbassadorActivated.ValidOrangeTargets(Game, Player);
+                    var validTargets = AmbassadorActivated.ValidOrangeTargets(Game, Player).ToArray();
                     if (validTargets.Any())
                     {
                         <div class="mt-1 mb-1">
-                            <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="_yellowOrOrangeToLocation" Values="validTargets.OrderByDescending(l => l.IsStronghold).ThenBy(l => Name(l))">
+                            <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="YellowOrOrangeToLocation" Values="validTargets.OrderByDescending(l => l.IsStronghold).ThenBy(Name)">
                                 <Label>To</Label>
                             </SelectComponent>
                         </div>
 
-                        <SelectForcesComponent @bind-Value=_orangeForceAmount Min="0" Max=@AmbassadorActivated.ValidOrangeMaxForces(Player) Faction="Faction" Special="false" />
+                        <SelectForcesComponent @bind-Value=OrangeForceAmount Min="0" Max=@AmbassadorActivated.ValidOrangeMaxForces(Player) Faction="Faction" Special="false" />
                     }
                     else
                     {
-                        _yellowOrOrangeToLocation = null;
-                        _orangeForceAmount = 0;
+                        YellowOrOrangeToLocation = null;
+                        OrangeForceAmount = 0;
 
                         <div>There are no valid locations to ship to.</div>
                     }
@@ -170,24 +170,24 @@
                     <div>Revive one of your leaders or up to 4 forces for free?</div>
                     @if (AmbassadorActivated.ValidPurpleMaxAmount(Player) > 0)
                     {
-                        <SelectForcesComponent @bind-Value="_purpleAmountOfForces" Min="0" Max=@AmbassadorActivated.ValidPurpleMaxAmount(Player) Faction="Faction" Special="false" />
+                        <SelectForcesComponent @bind-Value="PurpleAmountOfForces" Min="0" Max=@AmbassadorActivated.ValidPurpleMaxAmount(Player) Faction="Faction" Special="false" />
                     }
                     else
                     {
-                        _purpleAmountOfForces = 0;
+                        PurpleAmountOfForces = 0;
                     }
 
-                    <SelectFromImageComponent Game="Game" @bind-Value=@_purpleHero Values="AmbassadorActivated.ValidPurpleHeroes(Game, Player)" Required="false" ImageWidth="80"/>
+                    <SelectFromImageComponent Game="Game" @bind-Value=@PurpleHero Values="AmbassadorActivated.ValidPurpleHeroes(Game, Player)" Required="false" ImageWidth="80"/>
 
-                    @if (_purpleHero != null && Revival.MayAssignSkill(Game, Player, _purpleHero))
+                    @if (PurpleHero != null && Revival.MayAssignSkill(Game, Player, PurpleHero))
                     {
-                        <RadioComponent @bind-Value=_purpleAssignSkill Values="@(new[] {false,true})" ValueLabels="@(new[] {"No","Yes"})">
+                        <RadioComponent @bind-Value=PurpleAssignSkill Values="@([false,true])" ValueLabels="@(["No","Yes"])">
                             <Label>Do you wish to assign a skill to this leader?</Label>
                         </RadioComponent>
                     }
                     else
                     {
-                        _purpleAssignSkill = false;
+                        PurpleAssignSkill = false;
                     }
 
                     break;
@@ -212,19 +212,19 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Pink;
 
-    internal Ambassador _actualAmbassador;
-    internal List<TreacheryCard> _brownCards = new();
-    internal bool _pinkOfferAlliance;
-    internal bool _pinkTakeVidal;
-    internal bool _pinkGiveVidal;
-    internal Territory? _yellowFromTerritory;
-    internal Location? _yellowOrOrangeToLocation;
-    internal Dictionary<Location, Battalion> _yellowForces = new();
-    internal TreacheryCard? _greyCard;
-    internal int _orangeForceAmount;
-    internal int _purpleAmountOfForces;
-    internal IHero? _purpleHero;
-    internal bool _purpleAssignSkill;
+    internal Ambassador ActualAmbassador;
+    internal List<TreacheryCard> BrownCards = [];
+    internal bool PinkOfferAlliance;
+    internal bool PinkTakeVidal;
+    internal bool PinkGiveVidal;
+    internal Territory? YellowFromTerritory;
+    internal Location? YellowOrOrangeToLocation;
+    internal Dictionary<Location, Battalion> YellowForces = new();
+    internal TreacheryCard? GreyCard;
+    internal int OrangeForceAmount;
+    internal int PurpleAmountOfForces;
+    internal IHero? PurpleHero;
+    internal bool PurpleAssignSkill;
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -243,27 +243,27 @@
     }
 
     protected override AmbassadorActivated ConfirmedResult => new(Game, Faction) { 
-        BlueSelectedAmbassador = _actualAmbassador,  
-        BrownCards = _brownCards,
-        PinkOfferAlliance = _pinkOfferAlliance, PinkGiveVidalToAlly = _pinkGiveVidal, PinkTakeVidal = _pinkTakeVidal,
-        YellowOrOrangeTo = _yellowOrOrangeToLocation, 
-        YellowForceLocations = _yellowForces,
-        OrangeForceAmount = _orangeForceAmount,
-        GreyCard = _greyCard,
-        PurpleAmountOfForces = _purpleAmountOfForces, PurpleHero = _purpleHero, PurpleAssignSkill = _purpleAssignSkill
+        BlueSelectedAmbassador = ActualAmbassador,  
+        BrownCards = BrownCards,
+        PinkOfferAlliance = PinkOfferAlliance, PinkGiveVidalToAlly = PinkGiveVidal, PinkTakeVidal = PinkTakeVidal,
+        YellowOrOrangeTo = YellowOrOrangeToLocation, 
+        YellowForceLocations = YellowForces,
+        OrangeForceAmount = OrangeForceAmount,
+        GreyCard = GreyCard,
+        PurpleAmountOfForces = PurpleAmountOfForces, PurpleHero = PurpleHero, PurpleAssignSkill = PurpleAssignSkill
 
     };
 
     protected override AmbassadorActivated PassedResult => new(Game, Faction) { Passed = true };
 
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
-        var targets = _actualAmbassador == Ambassador.Yellow ? AmbassadorActivated.ValidYellowTargets(Game, Player) : AmbassadorActivated.ValidOrangeTargets(Game, Player);
-        SetIfValid(ref _yellowOrOrangeToLocation, targets.OrderByDescending(l => l.IsStronghold).ThenBy(l => Name(l)), l);
+        var targets = ActualAmbassador == Ambassador.Yellow ? AmbassadorActivated.ValidYellowTargets(Game, Player) : AmbassadorActivated.ValidOrangeTargets(Game, Player);
+        SetIfValid(ref YellowOrOrangeToLocation, targets.OrderByDescending(l => l.IsStronghold).ThenBy(Name), l);
     }
 
-    private void HandleLocationSelectedWithModifier(object sender, Location l)
+    private void HandleLocationSelectedWithModifier(object? sender, Location l)
     {
-        SetIfValid(ref _yellowFromTerritory, AmbassadorActivated.ValidYellowSources(Game, Player), l.Territory);
+        SetIfValid(ref YellowFromTerritory, AmbassadorActivated.ValidYellowSources(Game, Player), l.Territory);
     }
 }

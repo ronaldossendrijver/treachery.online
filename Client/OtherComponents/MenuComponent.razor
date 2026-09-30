@@ -10,20 +10,20 @@
 
 <div class="row m-0 d-flex justify-content-center" style="animation:fadeIn 1s;">
 
-    @if (Client.Game.EventCount > 0)
+    @if (Game.EventCount > 0)
     {
         <div class="col col-xs-auto p-0">
-            <a class="btn btn-link p-1" @onclick="e => SetVisible(Players)" title="Help">
+            <a class="btn btn-link p-1" @onclick="@(_ => SetVisible(Players))" title="Help">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-people" viewBox="0 0 16 16">
                     <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/>
                 </svg>
             </a>
         </div>
         
-        if (Client.IsHost || Client.UserName == Client.ServerInfo.AdminName)
+        if (Client.IsHost || Client.ServerInfo != null && Client.UserName == Client.ServerInfo.AdminName)
         {
             <div class="col col-xs-auto p-0">
-            <a class="btn btn-link p-1" title="Save game..." @onclick="Save">
+            <a class="btn btn-link p-1" title="Save game..." @onclick="@Save">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
                     <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
                     <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
@@ -54,28 +54,28 @@
                 </label>
             </div>
             
-            @if (Client.Game.NumberOfBots > 0)
+            @if (Game.NumberOfBots > 0)
             {
                 <div class="col col-xs-auto p-0">
-                    @if (Client.Game.Participation.BotsSpeed == 0)
+                    @if (Game.Participation.BotsSpeed == 0)
                     {
-                        <a class="btn btn-link p-1" @onclick="e => Client.RequestSetBotSpeed(1)" title="Bots are paused">
+                        <a class="btn btn-link p-1" @onclick="@(_ => Client.RequestSetBotSpeed(1))" title="Bots are paused">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-pause-fill" viewBox="0 0 16 16">
                                 <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z" />
                             </svg>
                         </a>
                     }
-                    else if (Client.Game.Participation.BotsSpeed == 1)
+                    else if (Game.Participation.BotsSpeed == 1)
                     {
-                        <a class="btn btn-link p-1" @onclick="e => Client.RequestSetBotSpeed(2)" title="Bots at normal speed">
+                        <a class="btn btn-link p-1" @onclick="@(_ => Client.RequestSetBotSpeed(2))" title="Bots at normal speed">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-play-fill" viewBox="0 0 16 16">
                                 <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z" />
                             </svg>
                         </a>
                     }
-                    else if (Client.Game.Participation.BotsSpeed == 2)
+                    else if (Game.Participation.BotsSpeed == 2)
                     {
-                        <a class="btn btn-link p-1" @onclick="e => Client.RequestSetBotSpeed(4)" title="Bots at higher speed">
+                        <a class="btn btn-link p-1" @onclick="@(_ => Client.RequestSetBotSpeed(4))" title="Bots at higher speed">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-fast-forward-fill" viewBox="0 0 16 16">
                                 <path d="M7.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696z"/>
                                 <path d="M15.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C8.713 12.69 8 12.345 8 11.692V4.308c0-.653.713-.998 1.233-.696z"/>
@@ -84,7 +84,7 @@
                     }
                     else
                     {
-                        <a class="btn btn-link p-1" @onclick="e => Client.RequestSetBotSpeed(0)" title="Bots at highest speed">
+                        <a class="btn btn-link p-1" @onclick="@(_ => Client.RequestSetBotSpeed(0))" title="Bots at highest speed">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-very-fast-forward-fill" viewBox="0 0 16 16">
                                 <!-- Left triangle -->
                                 <path d="M0 1.5 L0 14.5 L5.333 8 Z"/>
@@ -99,10 +99,10 @@
                 </div>
             }
 
-            @if (Client.Game.EventCount > 1)
+            @if (Game.EventCount > 1)
             {
                 <div class="col col-xs-auto p-0">
-                    <a class="btn btn-link p-1" @onclick="e => SetVisible(Host)" title="Undo">
+                    <a class="btn btn-link p-1" @onclick="_ => SetVisible(Host)" title="Undo">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-skip-backward" viewBox="0 0 16 16">
                             <path d="M.5 3.5A.5.5 0 0 1 1 4v3.248l6.267-3.636c.52-.302 1.233.043 1.233.696v2.94l6.267-3.636c.52-.302 1.233.043 1.233.696v7.384c0 .653-.713.998-1.233.696L8.5 8.752v2.94c0 .653-.713.998-1.233.696L1 8.752V12a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5zm7 1.133L1.696 8 7.5 11.367V4.633zm7.5 0L9.196 8 15 11.367V4.633z" />
                         </svg>
@@ -113,7 +113,7 @@
     }
 
     <div class="col col-xs-auto p-0">
-    <a class="btn btn-link p-1" @onclick="e => SetVisible(Help)" title="Help">
+    <a class="btn btn-link p-1" @onclick="_ => SetVisible(Help)" title="Help">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-info-circle" viewBox="0 0 16 16">
             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
             <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
@@ -122,7 +122,7 @@
     </div>
 
     <div class="col col-xs-auto p-0">
-    <a class="btn btn-link p-1" @onclick="e => SetVisible(Volume)" title="Adjust music and sound volume">
+    <a class="btn btn-link p-1" @onclick="_ => SetVisible(Volume)" title="Adjust music and sound volume">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-music-note-beamed" viewBox="0 0 16 16">
             <path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13c0-1.104 1.12-2 2.5-2s2.5.896 2.5 2zm9-2c0 1.105-1.12 2-2.5 2s-2.5-.895-2.5-2 1.12-2 2.5-2 2.5.895 2.5 2z" />
             <path fill-rule="evenodd" d="M14 11V2h1v9h-1zM6 3v10H5V3h1z" />
@@ -220,7 +220,7 @@ else if (IsVisible(Players))
     private const int MaxSkinFileSize = 262144;
 
     [Parameter]
-    public object Visible { get; set; } = null;
+    public object? Visible { get; set; }
 
     private async Task ToMainScreen()
     {
@@ -241,21 +241,32 @@ else if (IsVisible(Players))
     private async Task ToggleFullScreen()
     {
         await Browser.ToggleFullScreen();
-        await Task.Delay(2000).ContinueWith(e => Client.Refresh(nameof(ToggleFullScreen)));
+        await Task.Delay(2000).ContinueWith(_ => Client.Refresh(nameof(ToggleFullScreen)));
     }
 
     private async Task Save()
     {
-        var stateData = GameState.GetStateAsString(Client.Game);
+        var stateData = GameState.GetStateAsString(Game);
         await Browser.Save("savegame.json", stateData);
     }
 
     private async Task LoadGame()
     {
+        if (_fileInput is null)
+        {
+            _loadValidationError = "File not found";
+            return;
+        }
+            
         try
         {
             _loadValidationError = "";
             var data = await Browser.LoadFile(_fileInput);
+            if (data is null)
+            {
+                _loadValidationError = "File is empty";
+                return;
+            }
             await Browser.ClearFileInput("fileInput");
 
             if (data.Length < MaxSaveGameSize)
@@ -275,12 +286,23 @@ else if (IsVisible(Players))
 
     private async Task LoadSkin()
     {
+        if (_skinInput is null)
+        {
+            _loadValidationError = "File not found";
+            return;
+        }
+        
         try
         {
             _loadValidationError = "";
             var data = await Browser.LoadFile(_skinInput);
             await Browser.ClearFileInput("skinInput");
 
+            if (data is null)
+            {
+                _loadValidationError = "File is empty";
+                return;
+            }
             if (data.Length < MaxSkinFileSize)
             {
                 await Client.RequestSetSkin(data);

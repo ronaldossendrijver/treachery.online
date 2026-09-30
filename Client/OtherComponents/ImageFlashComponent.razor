@@ -8,22 +8,25 @@
 *@
 @inherits GameComponent;
 
-@if (Client.Game != null && Client.Status != null && Time > 0)
+@if (Client.Game != null && Client.Status != null && _time > 0)
 {
-    <div style="position:absolute;left:@Support.Px(WindowX);top:@Support.Px(WindowY);width:@Support.Px(FlashWidth);overflow:hidden;animation:fadeInFadeOut @(Time)ms;z-index:1000;" @onclick=@Hide>
+    <div style="position:absolute;left:@Support.Px(_windowX);top:@Support.Px(_windowY);width:@Support.Px(_flashWidth);overflow:hidden;animation:fadeInFadeOut @(_time)ms;z-index:1000;" @onclick=@Hide>
 
         @foreach (var img in Client.Status.FlashInfo)
         {
-            <div style="float:left;position:relative;top:0px;display:inline-block;vertical-align:top;width:@Support.Px(ItemWidth)">
+            if (img.ToShow != null)
+            {
+                <div style="float:left;position:relative;top:0;display:inline-block;vertical-align:top;width:@Support.Px(ItemWidth)">
 
-                <img src="@Client.CurrentSkin.GetImageUrl(img.ToShow)" width=@CardWidth style="filter:drop-shadow(2px 2px 2px black);" alt="@Name(img.ToShow)"/>
+                    <img src="@Client.CurrentSkin.GetImageUrl(img.ToShow)" width=@_cardWidth style="filter:drop-shadow(2px 2px 2px black);" alt="@Name(img.ToShow)"/>
 
-                @if (img.Message != null)
-                {
-                    <div style="@MsgStyle"><ExpressionComponent Game=Game Expression=@img.Message.Expression Size=24 TextBorder=@Support.TextBorder(2, "black")/></div>
-                }
+                    @if (img.Message != null)
+                    {
+                        <div style="@MsgStyle"><ExpressionComponent Game=Game Expression=@img.Message.Expression Size=24 TextBorder=@Support.TextBorder(2, "black")/></div>
+                    }
 
-            </div>
+                </div>
+            }
         }
 
     </div>
@@ -31,58 +34,58 @@
 
 @code {
 
-    public const float SPACING_X = 1.1f;
-    private int WindowX = 0;
-    private int WindowY = 0;
-    private int FlashWidth = 500;
-    private int CardWidth = 100;
-    private int Time = 0;
-    private int afterEventId = -1;
-    private Dimensions dimensions = new() { Width = 640, Height = 480 };
+    private const float SpacingX = 1.1f;
+    private int _windowX;
+    private int _windowY;
+    private int _flashWidth = 500;
+    private int _cardWidth = 100;
+    private int _time;
+    private int _afterEventId = -1;
+    private Dimensions _dimensions = new() { Width = 640, Height = 480 };
 
     private void ApplyDimensions()
     {
         var nrOfItems = Client.Status != null ? Client.Status.FlashInfo.Count() : 0;
         
-        if (dimensions.Height > dimensions.Width)
+        if (_dimensions.Height > _dimensions.Width)
         {
             //phone-like screen
 
-            CardWidth = (int)(0.3f * dimensions.Width);
+            _cardWidth = (int)(0.3f * _dimensions.Width);
 
             if (nrOfItems <= 3)
             {
-                WindowY = (int)(0.5f * (dimensions.Height - 1.41f * CardWidth));
+                _windowY = (int)(0.5f * (_dimensions.Height - 1.41f * _cardWidth));
             }
             else
             {
-                WindowY = (int)(0.5f * (dimensions.Height - 2 * 1.41f * CardWidth));
+                _windowY = (int)(0.5f * (_dimensions.Height - 2 * 1.41f * _cardWidth));
             }
         }
         else
         {
-            CardWidth = (int)(0.15f * dimensions.Width);
+            _cardWidth = (int)(0.15f * _dimensions.Width);
 
             if (nrOfItems <= 4)
             {
-                WindowY = (int)(0.5f * (dimensions.Height - 1.41f * CardWidth));
+                _windowY = (int)(0.5f * (_dimensions.Height - 1.41f * _cardWidth));
             }
             else
             {
-                WindowY = (int)(0.5f * (dimensions.Height - 2 * 1.41f * CardWidth));
+                _windowY = (int)(0.5f * (_dimensions.Height - 2 * 1.41f * _cardWidth));
             }
         }
 
-        FlashWidth = nrOfItems * (ItemWidth + 20);
-        WindowX = (int)(0.5f * (dimensions.Width - FlashWidth));
+        _flashWidth = nrOfItems * (ItemWidth + 20);
+        _windowX = (int)(0.5f * (_dimensions.Width - _flashWidth));
 
-        if (Client.Game.EventCount != afterEventId)
+        if (Game.EventCount != _afterEventId)
         {
-            afterEventId = Client.Game.EventCount;
+            _afterEventId = Game.EventCount;
 
             if (Client.Status != null && Client.Status.FlashInfo.Any())
             {
-                Time = 5000 + Client.Status.FlashInfo.Count() * 1000;
+                _time = 5000 + Client.Status.FlashInfo.Count() * 1000;
             }
         }
     }
@@ -91,27 +94,32 @@
     {
         if (firstDraw)
         {
-            dimensions = await Browser.GetWindowDimensions();
-            ApplyDimensions();
-            StateHasChanged();
+            var currentDimensions = await Browser.GetWindowDimensions();
+            if (currentDimensions != null)
+            {
+                _dimensions = currentDimensions;
+                ApplyDimensions();
+                StateHasChanged();
+            }
+            
             return;
         }
         
-        if (Time > 0)
+        if (_time > 0)
         {
-            await Task.Delay(Time).ContinueWith(e => Hide());
+            await Task.Delay(_time).ContinueWith(_ => Hide());
         }
     }
 
     private void Hide()
     {
-        Time = 0;
+        _time = 0;
         StateHasChanged();
     }
 
     private string MsgStyle =>
-        string.Format("width:{0};font:normal normal normal 24px Advokat, Calibri, Tahoma, sans-serif;color:white;text-align:center;", Support.Px(CardWidth));
+        $"width:{Support.Px(_cardWidth)};font:normal normal normal 24px Advokat, Calibri, Tahoma, sans-serif;color:white;text-align:center;";
 
-    private int ItemWidth => (int)(SPACING_X * CardWidth);
+    private int ItemWidth => (int)(SpacingX * _cardWidth);
 }
 

@@ -7,14 +7,13 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 @inherits GameEventComponent<PerformCyanSetup>
-@implements IDisposable
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Place 6 forces in an empty territory of your choice.</Header>
     <Body>
 
-        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="target" Values="PerformCyanSetup.ValidLocations(Game)">
+        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="_target" Values="PerformCyanSetup.ValidLocations(Game)">
             <Label>To</Label>
         </SelectComponent>
 
@@ -29,9 +28,9 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Cyan;
 
-    private Location? target;
+    private Location? _target;
 
-    protected override PerformCyanSetup ConfirmedResult => new(Game, Faction) { Target = target };
+    protected override PerformCyanSetup ConfirmedResult => new(Game, Faction) { Target = _target };
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -47,8 +46,8 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
-        SetIfValid(ref target, Game.Map.Locations(false), l);
+        SetIfValid(ref _target, Game.Map.Locations(false), l);
     }
 }

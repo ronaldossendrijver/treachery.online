@@ -253,12 +253,12 @@ internal static class HistoricalComponentDriver
             case RaiseDeadPlayed raiseDead:
             {
                 var c = Expect<RaiseDeadComponent>(component);
-                c.amountOfForces = raiseDead.AmountOfForces;
-                c.amountOfSpecialForces = raiseDead.AmountOfSpecialForces;
-                c.hero = raiseDead.Hero;
-                c.assignSkill = raiseDead.AssignSkill;
-                c.amountOfSpecialForcesToLocation = raiseDead.NumberOfSpecialForcesInLocation;
-                c.location = raiseDead.Location;
+                c.AmountOfForces = raiseDead.AmountOfForces;
+                c.AmountOfSpecialForces = raiseDead.AmountOfSpecialForces;
+                c.Hero = raiseDead.Hero;
+                c.AssignSkill = raiseDead.AssignSkill;
+                c.AmountOfSpecialForcesToLocation = raiseDead.NumberOfSpecialForcesInLocation;
+                c.Location = raiseDead.Location;
                 return;
             }
 
@@ -287,9 +287,9 @@ internal static class HistoricalComponentDriver
             case FaceDanced faceDanced:
             {
                 var c = Expect<FaceDancedComponent>(component);
-                c.forces = faceDanced.ForceLocations;
-                c.targetForces = faceDanced.TargetForceLocations;
-                c.forcesFromReserve = faceDanced.ForcesFromReserve;
+                c.Forces = faceDanced.ForceLocations;
+                c.TargetForces = faceDanced.TargetForceLocations;
+                c.ForcesFromReserve = faceDanced.ForcesFromReserve;
                 return;
             }
 
@@ -368,7 +368,7 @@ internal static class HistoricalComponentDriver
                 return;
 
             case KarmaMonster karmaMonster:
-                Expect<KarmaMonsterComponent>(component).target = karmaMonster.Territory;
+                Expect<KarmaMonsterComponent>(component).Target = karmaMonster.Territory;
                 return;
 
             case TraitorDiscarded traitorDiscarded:
@@ -382,18 +382,18 @@ internal static class HistoricalComponentDriver
             case BlueAccompanies accompanies:
             {
                 var c = Expect<BlueAccompaniesComponent>(component);
-                c.target = accompanies.Location;
-                c.addExtraAdvisor = accompanies.ExtraAdvisor;
+                c.Target = accompanies.Location;
+                c.AddExtraAdvisor = accompanies.ExtraAdvisor;
                 return;
             }
 
             case LoserConcluded loser:
             {
                 var c = Expect<LoserConcludedComponent>(component);
-                c._cardToKeep = loser.KeptCard;
-                c._assassinate = loser.Assassinate;
-                c._karmaDecision = loser.KarmaForcedKeptCardDecision;
-                c._cardsToForceKeepOrDiscard = loser.ForcedKeptOrDiscardedCards.ToList();
+                c.CardToKeep = loser.KeptCard;
+                c.Assassinate = loser.Assassinate;
+                c.KarmaDecision = loser.KarmaForcedKeptCardDecision;
+                c.CardsToForceKeepOrDiscard = loser.ForcedKeptOrDiscardedCards.ToList();
                 return;
             }
 
@@ -409,8 +409,8 @@ internal static class HistoricalComponentDriver
             case CardTraded cardTrade:
             {
                 var c = Expect<CardTradedComponent>(component);
-                c.card = cardTrade.Card;
-                c.returnCard = cardTrade.RequestedCard;
+                c.Card = cardTrade.Card;
+                c.ReturnCard = cardTrade.RequestedCard;
                 return;
             }
 
@@ -440,21 +440,21 @@ internal static class HistoricalComponentDriver
             {
                 var c = Expect<AmbassadorActivatedComponent>(component);
                 var ambassador = AmbassadorActivated.GetAmbassador(ambassadorActivated.Game);
-                c._actualAmbassador = ambassador == Ambassador.Blue
+                c.ActualAmbassador = ambassador == Ambassador.Blue
                     ? ambassadorActivated.BlueSelectedAmbassador
                     : ambassador;
-                c._brownCards = ambassadorActivated.BrownCards.ToList();
-                c._pinkOfferAlliance = ambassadorActivated.PinkOfferAlliance;
-                c._pinkGiveVidal = ambassadorActivated.PinkGiveVidalToAlly;
-                c._pinkTakeVidal = ambassadorActivated.PinkTakeVidal;
-                c._yellowFromTerritory = ambassadorActivated.YellowForceLocations.Keys.FirstOrDefault()?.Territory;
-                c._yellowOrOrangeToLocation = ambassadorActivated.YellowOrOrangeTo;
-                c._yellowForces = ambassadorActivated.YellowForceLocations;
-                c._greyCard = ambassadorActivated.GreyCard;
-                c._orangeForceAmount = ambassadorActivated.OrangeForceAmount;
-                c._purpleAmountOfForces = ambassadorActivated.PurpleAmountOfForces;
-                c._purpleHero = ambassadorActivated.PurpleHero;
-                c._purpleAssignSkill = ambassadorActivated.PurpleAssignSkill;
+                c.BrownCards = ambassadorActivated.BrownCards.ToList();
+                c.PinkOfferAlliance = ambassadorActivated.PinkOfferAlliance;
+                c.PinkGiveVidal = ambassadorActivated.PinkGiveVidalToAlly;
+                c.PinkTakeVidal = ambassadorActivated.PinkTakeVidal;
+                c.YellowFromTerritory = ambassadorActivated.YellowForceLocations.Keys.FirstOrDefault()?.Territory;
+                c.YellowOrOrangeToLocation = ambassadorActivated.YellowOrOrangeTo;
+                c.YellowForces = ambassadorActivated.YellowForceLocations;
+                c.GreyCard = ambassadorActivated.GreyCard;
+                c.OrangeForceAmount = ambassadorActivated.OrangeForceAmount;
+                c.PurpleAmountOfForces = ambassadorActivated.PurpleAmountOfForces;
+                c.PurpleHero = ambassadorActivated.PurpleHero;
+                c.PurpleAssignSkill = ambassadorActivated.PurpleAssignSkill;
                 return;
             }
 
@@ -468,7 +468,7 @@ internal static class HistoricalComponentDriver
                         c.forces = placement.ForceLocations;
                         break;
                     case PerformSetupComponent c:
-                        c.forces = placement.ForceLocations;
+                        c.Forces = placement.ForceLocations;
                         break;
                     case PerformYellowSetupComponent c:
                         c.Forces = placement.ForceLocations;

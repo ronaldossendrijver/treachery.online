@@ -7,14 +7,13 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 @inherits GameEventComponent<KarmaMonster>
-@implements IDisposable
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to make @Client.CurrentSkin.Describe(Concept.Monster) appear in a territory of choice</Header>
     <Body>
 
-        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="target" Values="KarmaMonster.ValidTargets(Game).OrderBy(t => Name(t))">
+        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="Target" Values="KarmaMonster.ValidTargets(Game).OrderBy(t => Name(t))">
             <Label>Territory</Label>
         </SelectComponent>
 
@@ -28,9 +27,9 @@
 
     protected override Faction IsFactionSpecific => Faction.Yellow;
 
-    internal Territory? target;
+    internal Territory? Target;
 
-    protected override KarmaMonster ConfirmedResult => new(Game, Faction) { Territory = target };
+    protected override KarmaMonster ConfirmedResult => new(Game, Faction) { Territory = Target };
 
     public override void Dispose()
     {
@@ -46,8 +45,9 @@
         }
     }
 
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
-        SetIfValid(ref target, KarmaMonster.ValidTargets(Game), l.Territory);
+        if (sender == null) throw new ArgumentNullException(nameof(sender));
+        SetIfValid(ref Target, KarmaMonster.ValidTargets(Game), l.Territory);
     }
 }

@@ -13,7 +13,7 @@
     <Header>Use @ToUse to prevent a faction from playing @Client.CurrentSkin.Describe(TreacheryCardType.Karma) this phase?</Header>
 
     <Body>
-        <SelectFromImageComponent @bind-Value="target" Values="Game.PlayersOtherThan(Player)" Required="true" ImageWidth="40" />
+        <SelectFromImageComponent @bind-Value="_target" Values="Game.PlayersOtherThan(Player)" Required="true" ImageWidth="40" />
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Prevent use of {0}", TreacheryCardType.Karma)" ConfirmError="@Validation" />
     </Body>
 
@@ -25,9 +25,19 @@
 
     protected override string Background => Client.CurrentSkin.GetImageUrl(BrownKarmaPrevention.CardToUse(Player));
 
-    private Faction target;
+    private Faction _target;
 
-    protected override BrownKarmaPrevention ConfirmedResult => new(Game, Faction) { Target = target };
+    protected override BrownKarmaPrevention ConfirmedResult => new(Game, Faction) { Target = _target };
 
-    private string ToUse => BrownKarmaPrevention.CardToUse(Player) != null ? Client.CurrentSkin.Describe(BrownKarmaPrevention.CardToUse(Player)) : "Nexus Cunning";
+    private string ToUse
+    {
+        get
+        {
+            var cardToUse = BrownKarmaPrevention.CardToUse(Player);
+            return cardToUse != null 
+                ? Client.CurrentSkin.Describe(cardToUse) 
+                : "Nexus Cunning";
+        }
+    }
+
 }

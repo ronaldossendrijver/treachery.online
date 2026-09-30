@@ -9,17 +9,17 @@
 @inherits MapComponent
 
 @{
-    foreach (var stronghold in Client.Game.Map.Strongholds)
+    foreach (var stronghold in Game.Map.Strongholds)
     {
-        var center = Client.CurrentSkin.GetCenter(stronghold, Client.Game.Map);
-        var x = stronghold == Game.Map.HiddenMobileStronghold ? center.X - 1.6f * Client.CurrentSkin.PlayerTokenRadius : center.X - 2.2f * Client.CurrentSkin.PlayerTokenRadius;
+        var center = Client.CurrentSkin.GetCenter(stronghold, Game.Map);
+        var x = Equals(stronghold, Game.Map.HiddenMobileStronghold) ? center.X - 1.6f * Client.CurrentSkin.PlayerTokenRadius : center.X - 2.2f * Client.CurrentSkin.PlayerTokenRadius;
         var y = center.Y - Client.CurrentSkin.PlayerTokenRadius;
 
-        if (Client.Game.StrongholdOwnership.TryGetValue(stronghold, out var owner))
+        if (Game.StrongholdOwnership.TryGetValue(stronghold, out var owner))
         {
-            var opacity = stronghold == Game.Map.HiddenMobileStronghold && !showHMS ? 0.2f : 1f;
-            <MapImage X=x Y=y Diameter=@Client.CurrentSkin.PlayerTokenRadius Src="@Client.CurrentSkin.GetFactionTableImageUrl(Client.Game.StrongholdOwnership[stronghold])"
-               Opacity=opacity Popover=@Client.CurrentSkin.GetPopup((StrongholdAdvantage)stronghold.Advantage, owner) PopoverStyle=""/>
+            var opacity = Equals(stronghold, Game.Map.HiddenMobileStronghold) && !_showHms ? 0.2f : 1f;
+            <MapImage X=x Y=y Diameter=@Client.CurrentSkin.PlayerTokenRadius Src="@Client.CurrentSkin.GetFactionTableImageUrl(Game.StrongholdOwnership[stronghold])"
+               Opacity=opacity Popover=@Client.CurrentSkin.GetPopup(stronghold.Advantage, owner) PopoverStyle=""/>
 
             y += Client.CurrentSkin.PlayerTokenRadius;
         }
@@ -39,22 +39,20 @@
             var popover = $"{Client.CurrentSkin.Describe(ambassador)} Ambassador - {Client.CurrentSkin.GetAmbassadorDescription(ambassador)}";
             <MapImage X=x Y=y Diameter=@Client.CurrentSkin.PlayerTokenRadius Src=@Client.CurrentSkin.GetImageUrl(ambassador)
             ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover PopoverAsTooltip="true"/>
-
-            y += Client.CurrentSkin.PlayerTokenRadius;
         }
     }
 
     var forceLocations = Game.ForcesOnPlanetExcludingEmptyLocations();
 
-    foreach (var location in Game.Map.Locations(false).Where(l => l.Visible).OrderBy(l => Client.CurrentSkin.GetCenter(l, Client.Game.Map).Y))
+    foreach (var location in Game.Map.Locations(false).Where(l => l.Visible).OrderBy(l => Client.CurrentSkin.GetCenter(l, Game.Map).Y))
     {
-        var pos = Client.CurrentSkin.GetCenter(location, Client.Game.Map);
+        var pos = Client.CurrentSkin.GetCenter(location, Game.Map);
         var showForces = true;
         float forceDiameter = 2 * Client.CurrentSkin.FORCETOKEN_RADIUS;
 
-        if (location is HiddenMobileStronghold hms)
+        if (location is HiddenMobileStronghold)
         {
-            if (!showHMS) showForces = false;
+            if (!_showHms) showForces = false;
             forceDiameter = 1.5f * Client.CurrentSkin.FORCETOKEN_RADIUS;
 
             <MapImage 
@@ -63,11 +61,11 @@
                Width=@(Client.CurrentSkin.HmsRadius + Math.Abs(Client.CurrentSkin.HmsDx)) Height="@(2 * Client.CurrentSkin.HmsRadius)"
                Src="@Client.CurrentSkin.HMS_URL"
                ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="5" ShadowY="5" ShadowBlur="1"
-               Opacity="@(showHMS ? 1f : 0.3f)"
+               Opacity="@(_showHms ? 1f : 0.3f)"
                Popover=@Intel(location)
                OnClick=@(e => OnClick(e, location)) />
 
-            @if (showHMS && Client.Status.HighlightedTerritories.Contains(location.Territory))
+            @if (_showHms && Client.Status != null && Client.Status.HighlightedTerritories.Contains(location.Territory))
             {
                 <Circle X="pos.X + 0.3f * Client.CurrentSkin.HmsRadius" Y="pos.Y" Radius="0.85f * Client.CurrentSkin.HmsRadius"
                     FillColor="@Client.CurrentSkin.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
@@ -76,10 +74,10 @@
             <MapImage X="@(pos.X - 0.4f * Client.CurrentSkin.HmsRadius + Math.Abs(Client.CurrentSkin.HmsDx))"
                Y="@(pos.Y - 0.18f * Client.CurrentSkin.HmsRadius)"
                Diameter="@(Client.CurrentSkin.FORCETOKEN_RADIUS)"
-               Src="@(showHMS ? Client.CurrentSkin.Eye_URL : Client.CurrentSkin.EyeSlash_URL)"
+               Src="@(_showHms ? Client.CurrentSkin.Eye_URL : Client.CurrentSkin.EyeSlash_URL)"
                ShadowColor="black" ShadowX="1" ShadowY="1" ShadowBlur="0"
-               OnClick="OnShowHmsClick"
-               Popover="@(showHMS ? "Hide HMS" : "Show HMS")" PopoverAsTooltip="true"/>
+               OnClick="@(OnShowHmsClick)"
+               Popover="@(_showHms ? "Hide HMS" : "Show HMS")" PopoverAsTooltip="true"/>
         }
         else if (location is DiscoveredLocation ds)
         {
@@ -90,7 +88,7 @@
                 ShadowX=1 ShadowY=1
                 OnClick=@(e => OnClick(e, location)) />
 
-            @if (Client.Status.HighlightedTerritories.Contains(location.Territory))
+            @if (Client.Status != null && Client.Status.HighlightedTerritories.Contains(location.Territory))
             {
                 <Circle X=pos.X Y=pos.Y Radius=@(1.25f * Client.CurrentSkin.FORCETOKEN_RADIUS)
                     FillColor="@Client.CurrentSkin.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
@@ -116,14 +114,14 @@
 
 @code {
 
-    private Situation situation = new();
+    private readonly Situation _situation = new();
     protected override bool ShouldRender()
     {
-        return Client.InGame && (CheckAndResetDirty() || situation.RequiresUpdate(Client));
+        return Client.InGame && (CheckAndResetDirty() || _situation.RequiresUpdate(Client));
     }
 
-    private bool showHMS = true;
-    private bool dirty = false;
+    private bool _showHms = true;
+    private bool _dirty;
 
     [Parameter]
     public EventCallback<LocationEventArgs> OnLocationClick { get; set; }
@@ -135,15 +133,15 @@
 
     private bool CheckAndResetDirty()
     {
-        var result = dirty;
-        dirty = false;
+        var result = _dirty;
+        _dirty = false;
         return result;
     }
 
     private void OnShowHmsClick(MouseEventArgs e)
     {
-        showHMS = !showHMS;
-        dirty = true;
+        _showHms = !_showHms;
+        _dirty = true;
         StateHasChanged();
     }
 }

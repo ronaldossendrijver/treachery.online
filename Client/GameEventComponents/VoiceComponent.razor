@@ -13,14 +13,14 @@
     <Header>Use Voice</Header>
     <Body>
 
-        @if (Game.CurrentBattle.IsInvolved(Faction.Green))
+        @if (Game.CurrentBattle!.IsInvolved(Faction.Green))
         {
             <div class="text-info small mb-2">Note: Voice should be used before Prescience.</div>
         }
 
-        <RadioComponent @bind-Value="mustUse" Values="@(new[] {true,false})" ValueLabels="@(new[] {"Force the use of...","Deny the use of..."})" />
+        <RadioComponent @bind-Value="_mustUse" Values="@(new[] {true,false})" ValueLabels="@(new[] {"Force the use of...","Deny the use of..."})" />
 
-        <SelectComponent @bind-Value="type" Values="ValidTypes" />
+        <SelectComponent @bind-Value="_type" Values="ValidTypes" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Use Voice" ConfirmError="@Validation" />
 
@@ -32,10 +32,10 @@
 
     protected override Faction IsFactionSpecific => Faction.Blue;
 
-    private bool mustUse = true;
-    private TreacheryCardType type;
+    private bool _mustUse = true;
+    private TreacheryCardType _type;
 
-    protected override Voice ConfirmedResult => new(Game, Faction) { Must = mustUse, Type = type };
+    protected override Voice ConfirmedResult => new(Game, Faction) { Must = _mustUse, Type = _type };
 
     private IEnumerable<TreacheryCardType> ValidTypes => Voice.ValidTypes(Game).OrderBy(t => Name(t));
 }

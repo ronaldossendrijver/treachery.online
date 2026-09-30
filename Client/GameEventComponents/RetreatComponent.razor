@@ -75,7 +75,7 @@
 
     protected override Retreat PassedResult => new(Game, Faction) { Location = target, Forces = 0, SpecialForces = 0 };
 
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
         SetIfValid(ref target, Retreat.ValidTargets(Game, Player), l);
     }

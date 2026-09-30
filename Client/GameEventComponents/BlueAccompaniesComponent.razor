@@ -13,17 +13,17 @@
     <Header>Accompany the latest shipment?</Header>
     <Body>
 
-        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="target" Values="BlueAccompanies.ValidTargets(Game, Player)">
+        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="Target" Values="BlueAccompanies.ValidTargets(Game, Player)">
             <Label>To</Label>
         </SelectComponent>
 
-        @if (target != null && BlueAccompanies.MaySendExtraAdvisor(Game, Player, target))
+        @if (Target != null && BlueAccompanies.MaySendExtraAdvisor(Game, Player, Target))
         {
-            <CheckboxComponent @bind-Value="addExtraAdvisor">Do you wish to send one additional @Name(Player.SpecialForce)?</CheckboxComponent>
+            <CheckboxComponent @bind-Value="AddExtraAdvisor">Do you wish to send one additional @Name(Player.SpecialForce)?</CheckboxComponent>
         }
         else
         {
-            addExtraAdvisor = false;
+            AddExtraAdvisor = false;
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError="@Validation" Pass="Pass" PassText="No" />
@@ -37,8 +37,8 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Blue;
 
-    internal Location? target;
-    internal bool addExtraAdvisor;
+    internal Location? Target;
+    internal bool AddExtraAdvisor;
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -54,12 +54,12 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override BlueAccompanies ConfirmedResult => new(Game, Faction) { Location = target, Accompanies = true, ExtraAdvisor = addExtraAdvisor };
+    protected override BlueAccompanies ConfirmedResult => new(Game, Faction) { Location = Target, Accompanies = true, ExtraAdvisor = AddExtraAdvisor };
 
     protected override BlueAccompanies PassedResult => new(Game, Faction) { Accompanies = false };
 
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
-        SetIfValid(ref target, BlueAccompanies.ValidTargets(Game, Player), l);
+        SetIfValid(ref Target, BlueAccompanies.ValidTargets(Game, Player), l);
     }
 }

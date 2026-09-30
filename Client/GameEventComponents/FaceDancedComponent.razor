@@ -15,28 +15,28 @@
         <Header>Choose which forces to replace by your own</Header>
         <Body>
 
-            <div class="mb-2">You may place up to <strong>@FaceDanced.MaximumNumberOfForces(Game, Player)</strong> forces in <strong>@Name(Game.CurrentBattle.Territory)</strong> from your reserves and/or from anywhere on the planet.</div>
+            <div class="mb-2">You may place up to <strong>@FaceDanced.MaximumNumberOfForces(Game, Player)</strong> forces in <strong>@Name(Game.CurrentBattle!.Territory)</strong> from your reserves and/or from anywhere on the planet.</div>
 
             @if (FaceDanced.MaximumNumberOfForces(Game, Player) > 0)
             {
                 <div>
-                    <SelectForcesComponent @bind-Value="forcesFromReserve" Min="0" Max="Player.ForcesInReserve" Faction="Faction" Special="false" Label="From reserves:" />
+                    <SelectForcesComponent @bind-Value="ForcesFromReserve" Min="0" Max="Player.ForcesInReserve" Faction="Faction" Special="false" Label="From reserves:" />
                 </div>
 
                 @if (FaceDanced.ValidSourceLocations(Game, Player).Any())
                 {
                     <div class="mt-2 mb-0">From somewhere on the planet:</div>
-                    <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="forces" Locations="FaceDanced.ValidSourceLocations(Game, Player)" MaySelectFromStorm="true" AlwaysShowLocation="true" AllowMultipleTerritories="true" />
+                    <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="Forces" Locations="FaceDanced.ValidSourceLocations(Game, Player)" MaySelectFromStorm="true" AlwaysShowLocation="true" AllowMultipleTerritories="true" />
                 }
 
                 <div class="mt-2 mb-0">Select where to put your replacements:</div>
-                <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="targetForces" Locations="FaceDanced.ValidTargetLocations(Game)" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="@FaceDanced.MaximumNumberOfForces(Game, Player)" />
+                <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="TargetForces" Locations="FaceDanced.ValidTargetLocations(Game)" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="@FaceDanced.MaximumNumberOfForces(Game, Player)" />
             }
             else
             {
-                forcesFromReserve = 0;
-                forces.Clear();
-                targetForces.Clear();
+                ForcesFromReserve = 0;
+                Forces.Clear();
+                TargetForces.Clear();
             }
 
             <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
@@ -55,18 +55,18 @@ else {
 
         @if (FaceDanced.MayCallFaceDancer(Game, Player))
         {
-            <div class="mb-2">If you decide to reveal, you may place up to <strong>@FaceDanced.MaximumNumberOfForces(Game, Player)</strong> forces in <strong>@Name(Game.CurrentBattle.Territory)</strong> from your reserves and/or from anywhere on the planet.</div>
+            <div class="mb-2">If you decide to reveal, you may place up to <strong>@FaceDanced.MaximumNumberOfForces(Game, Player)</strong> forces in <strong>@Name(Game.CurrentBattle!.Territory)</strong> from your reserves and/or from anywhere on the planet.</div>
 
-            <SelectForcesComponent @bind-Value="forcesFromReserve" Min="0" Max="Player.ForcesInReserve" Faction="Faction" Special="false" Label="From reserves:"/>
+            <SelectForcesComponent @bind-Value="ForcesFromReserve" Min="0" Max="Player.ForcesInReserve" Faction="Faction" Special="false" Label="From reserves:"/>
 
             @if (FaceDanced.ValidSourceLocations(Game, Player).Any())
             {
                 <label class="mt-2 mb-0">From somewhere on the planet:</label>
-                <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="forces" Locations="FaceDanced.ValidSourceLocations(Game, Player)" MaySelectFromStorm="true" AlwaysShowLocation="true" AllowMultipleTerritories="true"/>
+                <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="Forces" Locations="FaceDanced.ValidSourceLocations(Game, Player)" MaySelectFromStorm="true" AlwaysShowLocation="true" AllowMultipleTerritories="true"/>
             }
 
             <label class="mt-2 mb-0">Select where to put your replacements:</label>
-            <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="targetForces" Locations="FaceDanced.ValidTargetLocations(Game)" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="@FaceDanced.MaximumNumberOfForces(Game, Player)" />
+            <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="TargetForces" Locations="FaceDanced.ValidTargetLocations(Game)" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="@FaceDanced.MaximumNumberOfForces(Game, Player)" />
 
             <ButtonRowComponent Confirm="Confirm" ConfirmText="Reveal & Place Forces" ConfirmError=@Validation Pass="Pass" PassText="Pass" />
         }
@@ -85,13 +85,13 @@ else {
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Purple;
 
-    internal Dictionary<Location, Battalion> forces = new();
-    internal Dictionary<Location, Battalion> targetForces = new();
-    internal int forcesFromReserve;
+    internal Dictionary<Location, Battalion> Forces = new();
+    internal Dictionary<Location, Battalion> TargetForces = new();
+    internal int ForcesFromReserve;
 
     protected override FaceDanced ConfirmedResult => Game.Version > 150 ?
-        new FaceDanced(Game, Faction) { ForceLocations = forces, ForcesFromReserve = forcesFromReserve, TargetForceLocations = targetForces } :
-        new FaceDanced(Game, Faction) { FaceDancerCalled = true, ForceLocations = forces, ForcesFromReserve = forcesFromReserve, TargetForceLocations = targetForces };
+        new FaceDanced(Game, Faction) { ForceLocations = Forces, ForcesFromReserve = ForcesFromReserve, TargetForceLocations = TargetForces } :
+        new FaceDanced(Game, Faction) { FaceDancerCalled = true, ForceLocations = Forces, ForcesFromReserve = ForcesFromReserve, TargetForceLocations = TargetForces };
 
     protected override FaceDanced PassedResult => new(Game, Faction) { FaceDancerCalled = false };
 
@@ -115,7 +115,7 @@ else {
         Client.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveTargetForce;
     }
 
-    private void HandleAddForce(object sender, Location l)
+    private void HandleAddForce(object? sender, Location l)
     {
         if (FaceDanced.ValidSourceLocations(Game, Player).Contains(l))
         {
@@ -123,7 +123,7 @@ else {
         }
     }
 
-    private void HandleAddTargetForce(object sender, Location l)
+    private void HandleAddTargetForce(object? sender, Location l)
     {
         if (FaceDanced.ValidTargetLocations(Game).Contains(l))
         {
@@ -131,7 +131,7 @@ else {
         }
     }
 
-    private void HandleRemoveForce(object sender, Location l)
+    private void HandleRemoveForce(object? sender, Location l)
     {
         if (FaceDanced.ValidSourceLocations(Game, Player).Contains(l))
         {
@@ -139,7 +139,7 @@ else {
         }
     }
 
-    private void HandleRemoveTargetForce(object sender, Location l)
+    private void HandleRemoveTargetForce(object? sender, Location l)
     {
         if (FaceDanced.ValidTargetLocations(Game).Contains(l))
         {
@@ -147,87 +147,47 @@ else {
         }
     }
 
-    protected int Forces(Location l, bool special)
+    private void ForceAmountButton(Location location, int amount, bool specialForces)
     {
-        if (forces.ContainsKey(l))
-        {
-            if (special)
-            {
-                return forces[l].AmountOfSpecialForces;
-            }
-
-            return forces[l].AmountOfForces;
-        }
-
-        return 0;
-    }
-
-    protected void ForceAmountButton(Location location, int amount, bool specialForces)
-    {
-        if (forces.ContainsKey(location))
+        if (Forces.ContainsKey(location))
         {
             if (specialForces)
             {
-                forces[location].ChangeSpecialForces(amount);
+                Forces[location].ChangeSpecialForces(amount);
             }
             else
             {
-                forces[location].ChangeForces(amount);
+                Forces[location].ChangeForces(amount);
             }
         }
         else if (amount > 0)
         {
-            if (specialForces)
-            {
-                forces.Add(location, new Battalion(Faction, 0, amount, location ));
-            }
-            else
-            {
-                forces.Add(location, new Battalion(Faction, amount, 0, location));
-            }
+            Forces.Add(location, specialForces 
+                ? new Battalion(Faction, 0, amount, location) 
+                : new Battalion(Faction, amount, 0, location));
         }
 
         StateHasChanged();
     }
 
-    protected int TargetForces(Location l, bool special)
+    private void TargetForceAmountButton(Location location, int amount, bool specialForces)
     {
-        if (targetForces.ContainsKey(l))
-        {
-            if (special)
-            {
-                return targetForces[l].AmountOfSpecialForces;
-            }
-
-            return targetForces[l].AmountOfForces;
-        }
-
-        return 0;
-    }
-
-    protected void TargetForceAmountButton(Location location, int amount, bool specialForces)
-    {
-        if (targetForces.ContainsKey(location))
+        if (TargetForces.ContainsKey(location))
         {
             if (specialForces)
             {
-                targetForces[location].ChangeSpecialForces(amount);
+                TargetForces[location].ChangeSpecialForces(amount);
             }
             else
             {
-                targetForces[location].ChangeForces(amount);
+                TargetForces[location].ChangeForces(amount);
             }
         }
         else if (amount > 0)
         {
-            if (specialForces)
-            {
-                targetForces.Add(location, new Battalion(Faction, 0, amount, location));
-            }
-            else
-            {
-                targetForces.Add(location, new Battalion(Faction, amount, 0, location));
-            }
+            TargetForces.Add(location, specialForces 
+                ? new Battalion(Faction, 0, amount, location) 
+                : new Battalion(Faction, amount, 0, location));
         }
 
         StateHasChanged();

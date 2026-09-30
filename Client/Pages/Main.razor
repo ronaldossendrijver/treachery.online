@@ -14,7 +14,7 @@
 @using Treachery.Client.GameEventComponents
 @implements IDisposable
 
-@if (Client.InScheduledMaintenance)
+@if (Client.InScheduledMaintenance && Client.ServerInfo != null)
 {
     <div class="alert alert-danger text-center p-0" role="alert">
         treachery.online will be down for maintenance from @Client.ServerInfo.ScheduledMaintenance.ToLocalTime() until @Client.ServerInfo.ScheduledMaintenance.AddMinutes(15).ToLocalTime() (your local time)
@@ -105,7 +105,7 @@ else
             <!--Menu, player panel and report-->
             <div class="col-sm-12 col-lg-3 cursor-hand @Scrollbars">
                 <MenuComponent/>
-                @if (Client.CurrentPhase > Phase.TradingFactions)
+                @if (Client.CurrentPhase > Phase.TradingFactions && Client.Player != null)
                 {
                     if (Client.Player.Faction is Faction.None)
                     {
@@ -119,7 +119,7 @@ else
                         <PlayerPanel ShownPlayer="Client.Player" />                        
                     }
                 }
-                @if (Client.Game.CurrentReport != null)
+                @if (Client.Game?.CurrentReport != null)
                 {
                     <ReportComponent Report="Client.Game.CurrentReport" />
                 }
@@ -139,7 +139,7 @@ else
                 <MenuComponent/>
                 <GameStatusComponent/>
                 <ActionPanel/>
-                @if (Client.Game.CurrentReport != null)
+                @if (Client.Game?.CurrentReport != null)
                 {
                     <ReportComponent Report="Client.Game.CurrentReport"/>
                 }

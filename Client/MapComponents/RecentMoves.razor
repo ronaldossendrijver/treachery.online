@@ -9,28 +9,29 @@
 @inherits MapComponent
 
 
-@if (Client.CurrentSkin.ShowArrowsForRecentMoves && Client.Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
+@if (Client.CurrentSkin.ShowArrowsForRecentMoves && Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
 {
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-            width="@(Client.CurrentSkin.PlanetRadius * 2)" height="@(Client.CurrentSkin.PlanetRadius * 2)" 
-            style="position: absolute; left:0px; top:0px; height: 100%; width: 100%;"
-            pointer-events="none">
+    <svg width="@(Client.CurrentSkin.PlanetRadius * 2)" height="@(Client.CurrentSkin.PlanetRadius * 2)"
+         style="position: absolute; left:0; top:0; height: 100%; width: 100%;"
+         pointer-events="none">
 
-        @foreach (var move in Client.Game.RecentMoves.Where(m => m.To is not Homeworld))
+        @foreach (var move in Game.RecentMoves.Where(m => m.To is not Homeworld))
         {
+            if (move.To is null) continue;
+            
             foreach (var origin in move.ForceLocations.Keys)
             {
                 var path = Map.FindFirstShortestPath(origin, move.To, false, move.Initiator, Game);
 
                 if (path != null && path.Contains(Game.Map.PolarSink)) {
 
-                    Location from = null;
+                    Location? from = null;
                     foreach (var to in path)
                     {
-                        if (from != null && (to == move.To || to.Territory != from.Territory))
+                        if (from != null && (Equals(to, move.To) || to.Territory != from.Territory))
                         {
                             <Arrow FillColor="@Client.CurrentSkin.FactionColor[move.Initiator]" StrokeColor=@Client.CurrentSkin.GetFactionColorTransparent(move.Initiator, "bb")
-                                    MarginX="0" MarginY="0" Radius="@(1.2f * Client.CurrentSkin.PlanetRadius)" From=@Client.CurrentSkin.GetCenter(from, Client.Game.Map) To=@Client.CurrentSkin.GetCenter(to, Client.Game.Map) ArrowScale="0.05f" />
+                                    MarginX="0" MarginY="0" Radius="@(1.2f * Client.CurrentSkin.PlanetRadius)" From=@Client.CurrentSkin.GetCenter(from, Game.Map) To=@Client.CurrentSkin.GetCenter(to, Game.Map) ArrowScale="0.05f" />
                         }
 
                         if (from == null || to.Territory != from.Territory)
@@ -43,7 +44,7 @@
                 {
 
                     <Arrow FillColor="@Client.CurrentSkin.FactionColor[move.Initiator]" StrokeColor=@Client.CurrentSkin.GetFactionColorTransparent(move.Initiator, "bb")
-                            MarginX="0" MarginY="0" Radius="@(1.2f * Client.CurrentSkin.PlanetRadius)" From=@Client.CurrentSkin.GetCenter(origin, Client.Game.Map) To=@Client.CurrentSkin.GetCenter(move.To, Client.Game.Map) ArrowScale="0.05f" />
+                            MarginX="0" MarginY="0" Radius="@(1.2f * Client.CurrentSkin.PlanetRadius)" From=@Client.CurrentSkin.GetCenter(origin, Game.Map) To=@Client.CurrentSkin.GetCenter(move.To, Game.Map) ArrowScale="0.05f" />
                 }
             }
         }

@@ -13,7 +13,7 @@
     <h5>Treachery Cards</h5>
     <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
 
-        @foreach (var v in TreacheryCardManager.GetCardsInPlay(Client.Game))
+        @foreach (var v in TreacheryCardManager.GetCardsInPlay(Game))
         {
             <div class="card">
                 <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
@@ -24,7 +24,7 @@
 
     </div>
 
-    @if (Client.Game.IsPlaying(Faction.White))
+    @if (Game.IsPlaying(Faction.White))
     {
         <h5 class="mt-2">@Client.CurrentSkin.Describe(Faction.White) Cards</h5>
         <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
@@ -44,7 +44,7 @@
     <h5 class="mt-2">@Client.CurrentSkin.Describe(Concept.Resource) Cards</h5>
     <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
 
-        @foreach (var v in Map.GetResourceCardsInPlay(Client.Game))
+        @foreach (var v in Map.GetResourceCardsInPlay(Game))
         {
             <div class="card">
                 <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
@@ -55,7 +55,7 @@
 
     </div>
 
-    @if (Client.Game.Applicable(Rule.LeaderSkills))
+    @if (Game.Applicable(Rule.LeaderSkills))
     {
         <h5 class="mt-2">Leader Skill Cards</h5>
         <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
@@ -72,7 +72,7 @@
         </div>
     }
 
-    @if (Client.Game.Applicable(Rule.StrongholdBonus))
+    @if (Game.Applicable(Rule.StrongholdBonus))
     {
         <h5 class="mt-2">Stronghold Cards</h5>
         <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
@@ -89,7 +89,7 @@
         </div>
     }
 
-    @if (Client.Game.Applicable(Rule.NexusCards))
+    @if (Game.Applicable(Rule.NexusCards))
     {
         <h5 class="mt-2">Nexus Cards</h5>
         <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
@@ -106,12 +106,12 @@
         </div>
     }
 
-    @if (Client.Game.Applicable(Rule.Homeworlds))
+    @if (Game.Applicable(Rule.Homeworlds))
     {
         <h5 class="mt-2">Homeworld Cards</h5>
         <div class="row row-cols-2 row-cols-md-3 ms-1 me-1">
 
-            @foreach (var w in Client.Game.Map.Homeworlds)
+            @foreach (var w in Game.Map.Homeworlds)
             {
                 <div class="card">
                     <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetPopup(w)>
@@ -123,7 +123,7 @@
         </div>
     }
 
-    @if (Client.Game.IsPlaying(Faction.Pink))
+    @if (Game.IsPlaying(Faction.Pink))
     {
         <h5 class="mt-2">Ambassador Tokens</h5>
         <div class="row row-cols-6 row-cols-md-12 ms-1 me-1">
@@ -141,7 +141,7 @@
         </div>
     }
 
-    @if (Client.Game.IsPlaying(Faction.Cyan))
+    @if (Game.IsPlaying(Faction.Cyan))
     {
         <h5 class="mt-2">Terror Tokens</h5>
         <div>
@@ -156,7 +156,7 @@
         </div>
     }
 
-    @if (Client.Game.Applicable(Rule.DiscoveryTokens))
+    @if (Game.Applicable(Rule.DiscoveryTokens))
     {
         <h5 class="mt-2">Discovery Tokens</h5>
         <div>

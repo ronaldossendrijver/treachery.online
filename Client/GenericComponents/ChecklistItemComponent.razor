@@ -31,9 +31,9 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    private void CheckboxClicked(T value, object checkedValue)
+    private void CheckboxClicked(T? value, object? checkedValue)
     {
-        if (Values == null)
+        if (Values == null || value is null || checkedValue is null)
             return;
 
         var check = (bool)checkedValue;

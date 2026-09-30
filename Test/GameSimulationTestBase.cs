@@ -693,7 +693,7 @@ public abstract class GameSimulationTestBase
             if (!testCase.Testvalues[valueId].Equals(actualValues)) 
                 File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
             
-            Assert.AreEqual(testCase.Testvalues[valueId], actualValues, fileName + ", " + previousPhase + " - " + game.CurrentPhase + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + Testvalues.Difference);
+            Assert.AreEqual(testCase.Testvalues[valueId], actualValues, fileName + ", " + previousPhase + " - " + game.CurrentPhase + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + TestValues.Difference);
 
             var strangeCase = TestIllegalCases(game, evt);
             if (strangeCase != "") File.WriteAllText("illegalCase_" + game.EventCount + "_" + strangeCase + ".json", GameState.GetStateAsString(game));
@@ -848,11 +848,11 @@ public abstract class GameSimulationTestBase
         return p.IsBot ? DefaultSkin.Default.Format("{0}Bot", p.Faction) : p.Name.Replace(';', ':');
     }
 
-    private static Testvalues DetermineTestvalues(Game game)
+    private static TestValues DetermineTestvalues(Game game)
     {
         var forces = game.Forces();
 
-        var result = new Testvalues
+        var result = new TestValues
         {
             currentPhase = game.CurrentPhase,
             forcesinArrakeen = forces[game.Map.Arrakeen].Sum(b => b.TotalAmountOfForces),

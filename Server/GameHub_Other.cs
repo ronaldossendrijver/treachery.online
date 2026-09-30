@@ -159,7 +159,7 @@ public partial class GameHub
             }
 
             foreach (var persistedGame in (await context.PersistedGames.ToListAsync())
-                     .Where(persistedGame => persistedGame.GameId != null && !RunningGamesByGameId.ContainsKey(persistedGame.GameId)))
+                     .Where(persistedGame => !RunningGamesByGameId.ContainsKey(persistedGame.GameId)))
             {
                 context.Remove(persistedGame);
                 amountOfDeletedGames++;
@@ -318,17 +318,15 @@ public partial class GameHub
 
             foreach (var persistedGame in context.PersistedGames.AsNoTracking())
             {
-
                 var id = persistedGame.GameId;
 
-                if (id == null) continue;
                 try
                 {
                     var gameState = GameState.Load(persistedGame.GameState);
                     var gameName = persistedGame.GameName;
-                    var participation = Utilities.Deserialize<Participation>(persistedGame.GameParticipation);
+                    var participation = Utilities.Deserialize<Participation>(persistedGame.GameParticipation) ?? new Participation();
                     var loadMessage = Game.TryLoad(gameState, participation, false, true, out var game);
-                    if (loadMessage == null)
+                    if (loadMessage == null && game != null)
                     {
                         var managedGame = new ManagedGame
                         {
@@ -360,9 +358,7 @@ public partial class GameHub
             {
                 var id = scheduledGame.GameId;
                 
-                if (id == null) continue;
-                
-                var subscriptions = Utilities.Deserialize<Dictionary<int,SubscriptionType>>(scheduledGame.SubscribedUsers);
+                var subscriptions = Utilities.Deserialize<Dictionary<int,SubscriptionType>>(scheduledGame.SubscribedUsers) ?? [];
                 var game = new ScheduledGame
                 {
                     ScheduledGameId = scheduledGame.GameId,

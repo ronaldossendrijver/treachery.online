@@ -7,7 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 @inherits GameEventComponent<KarmaHmsMovement>
-@implements IDisposable
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
@@ -16,7 +15,7 @@
 
         <p class="text-info">You have @Game.KarmaHmsMovesLeft move(s) left. </p>
 
-        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="target" Values="KarmaHmsMovement.ValidLocations(Game)">
+        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="Target" Values="KarmaHmsMovement.ValidLocations(Game)">
             <Label>To</Label>
         </SelectComponent>
 
@@ -30,7 +29,7 @@
 
     protected override Faction IsFactionSpecific => Faction.Grey;
 
-    public Location? target;
+    public Location? Target;
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -46,12 +45,12 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override KarmaHmsMovement ConfirmedResult => new(Game, Faction) { Passed = false, Target = target };
+    protected override KarmaHmsMovement ConfirmedResult => new(Game, Faction) { Passed = false, Target = Target };
 
     protected override KarmaHmsMovement PassedResult => new(Game, Faction) { Passed = true };
 
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
-        SetIfValid(ref target, Game.Map.Locations(false), l);
+        SetIfValid(ref Target, Game.Map.Locations(false), l);
     }
 }

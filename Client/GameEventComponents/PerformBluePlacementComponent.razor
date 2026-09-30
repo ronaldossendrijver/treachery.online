@@ -7,14 +7,13 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 @inherits GameEventComponent<PerformBluePlacement>
-@implements IDisposable
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Place one peaceful advisor in any territory of your choice. If you are alone in the territory, it is flipped to a fighter.</Header>
     <Body>
 
-        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="target" Values="PerformBluePlacement.ValidLocations(Game)">
+        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="Target" Values="PerformBluePlacement.ValidLocations(Game)">
             <Label>To</Label>
         </SelectComponent>
 
@@ -29,7 +28,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Blue;
 
-    public Location? target;
+    public Location? Target;
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -45,10 +44,10 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override PerformBluePlacement ConfirmedResult => new(Game, Faction) { Target = target };
+    protected override PerformBluePlacement ConfirmedResult => new(Game, Faction) { Target = Target };
 
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
-        SetIfValid(ref target, Game.Map.Locations(false), l);
+        SetIfValid(ref Target, Game.Map.Locations(false), l);
     }
 }

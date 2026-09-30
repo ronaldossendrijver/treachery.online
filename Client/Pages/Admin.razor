@@ -211,7 +211,7 @@ else
         Client.RefreshHandler += StateHasChanged;
         Client.IsAdmin = true;
         await Client.Start();
-        MaintenanceDate = Client.ServerInfo.ScheduledMaintenance;
+        MaintenanceDate = Client.ServerInfo?.ScheduledMaintenance ?? DateTimeOffset.MinValue;
     }
 
     public void Dispose()

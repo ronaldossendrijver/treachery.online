@@ -12,9 +12,10 @@
     <div class="card-header">Victory!</div>
     <div class="card-body">
 
-        @foreach (var w in Client.Game.Winners)
+        @foreach (var w in Game.Winners)
         {
-            <h1 class="h1"><img width="72" src="@Client.CurrentSkin.GetImageUrl(w.Faction)" /> @w.Name</h1>
+            <h1 class="h1">
+                <img width="72" src="@Client.CurrentSkin.GetImageUrl(w.Faction)" alt="@Client.CurrentSkin.Describe(w.Faction)"/> @w.Name</h1>
         }
 
         @if (!Game.Applicable(Rule.DisableEndOfGameReport))

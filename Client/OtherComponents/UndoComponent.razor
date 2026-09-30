@@ -47,7 +47,7 @@
 
     private string DetermineEventDescription(int eventNumber, GameEvent e)
     {
-        return "" + eventNumber + ". " + e.GetShortMessage()?.ToString(Client.CurrentSkin);
+        return "" + eventNumber + ". " + e.GetShortMessage().ToString(Client.CurrentSkin);
     }
 
     private string DetermineGroup(Moment m)
@@ -61,13 +61,13 @@
         {
             var result = new Dictionary<string,Dictionary<int, GameEvent>>();
 
-            for (var i = Client.Game.History.Count - 1; i > 0; i--)
+            for (var i = Game.History.Count - 1; i > 0; i--)
             {
-                var e = Client.Game.History[i];
+                var e = Game.History[i];
                 if (e is AllyPermission or BattleRevision or AutomationConfigured) 
                     continue;
                 
-                var group = DetermineGroup(Client.Game.Moments[i-1]);
+                var group = DetermineGroup(Game.Moments[i-1]);
                 if (!result.ContainsKey(group))
                 {
                     result.Add(group, new Dictionary<int, GameEvent>());

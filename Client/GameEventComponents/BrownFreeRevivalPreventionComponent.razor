@@ -13,7 +13,7 @@
     <Header>Use @ToUse to prevent a faction from taking Free Revival?</Header>
 
     <Body>
-        <SelectFromImageComponent @bind-Value="target" Values="Game.PlayersOtherThan(Player)" Required="true" ImageWidth="40" />
+        <SelectFromImageComponent @bind-Value="_target" Values="Game.PlayersOtherThan(Player)" Required="true" ImageWidth="40" />
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Prevent Free Revival" ConfirmError="@Validation" />
     </Body>
 
@@ -25,9 +25,19 @@
 
     protected override string Background => Client.CurrentSkin.GetImageUrl(BrownFreeRevivalPrevention.CardToUse(Player));
 
-    private Faction target;
+    private Faction _target;
 
-    protected override BrownFreeRevivalPrevention ConfirmedResult => new(Game, Faction) { Target = target };
+    protected override BrownFreeRevivalPrevention ConfirmedResult => new(Game, Faction) { Target = _target };
 
-    private string ToUse => BrownFreeRevivalPrevention.CardToUse(Player) != null ? Client.CurrentSkin.Describe(BrownFreeRevivalPrevention.CardToUse(Player)) : "Nexus Cunning";
+    private string ToUse
+    {
+        get
+        {
+            var cardToUse = BrownFreeRevivalPrevention.CardToUse(Player);
+            return cardToUse != null 
+                ? Client.CurrentSkin.Describe(cardToUse) 
+                : "Nexus Cunning"; 
+        }
+    }
+
 }

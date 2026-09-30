@@ -25,7 +25,7 @@ public interface IGameService
     
     //Server info
     public ServerInfo? ServerInfo { get; }
-    public AdminInfo AdminInfo { get; }
+    public AdminInfo? AdminInfo { get; }
     public GameInfo[] OwnGames { get; }
     public GameInfo[] ActiveGames { get; }
     public GameInfo[] ActiveGamesWithOpenSeats { get; }

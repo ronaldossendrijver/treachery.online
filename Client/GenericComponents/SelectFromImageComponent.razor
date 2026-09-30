@@ -14,19 +14,20 @@
 }
 
 <div>
-
-    @foreach (var valueToShow in Values)
+    @if (Values != null)
     {
-        <Image Shown=@valueToShow Game=Game
-               Class="pe-1"
-               OnClick="@(_ => Click(valueToShow))"
-               Darkened="@DetermineDarkened(valueToShow)"
-               Pointer
-               Width="@ImageWidth" 
-               PopoverAsTooltip="@PopupsAsTooltip"
-               HighlightOnHover/>
+        foreach (var valueToShow in Values)
+        {
+            <Image Shown=@valueToShow Game=Game
+                   Class="pe-1"
+                   OnClick="@(_ => Click(valueToShow))"
+                   Darkened="@DetermineDarkened(valueToShow)"
+                   Pointer
+                   Width="@ImageWidth"
+                   PopoverAsTooltip="@PopupsAsTooltip"
+                   HighlightOnHover/>
+        }
     }
-
 </div>
 
 @code {
@@ -74,7 +75,7 @@
     {
         await base.OnParametersSetAsync();
 
-        if (Selected == null && !Values.Contains(Value) && Required)
+        if (Selected == null && Values != null && !Values.Contains(Value) && Required)
         {
             Value = Values.FirstOrDefault();
             await Notify();
@@ -83,6 +84,8 @@
 
     private async Task SwapSelection(T value)
     {
+        if (Selected is null) return;
+            
         if (Selected.Contains(value))
         {
             Selected.Remove(value);

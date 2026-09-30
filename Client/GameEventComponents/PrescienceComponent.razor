@@ -13,12 +13,12 @@
     <Header>Use Prescience</Header>
     <Body>
 
-        @if (Game.CurrentBattle.IsInvolved(Faction.Blue))
+        @if (Game.CurrentBattle!.IsInvolved(Faction.Blue))
         {
             <div class="text-info small mb-2">Note: Voice should be used before Prescience.</div>
         }
 
-        <RadioComponent @bind-Value="aspect" Values="Prescience.ValidAspects(Game, Player)">
+        <RadioComponent @bind-Value="_aspect" Values="Prescience.ValidAspects(Game, Player)">
             <Label>What should be foreseen?</Label>
         </RadioComponent>
 
@@ -32,7 +32,7 @@
 
     protected override Faction IsFactionSpecific => Faction.Green;
 
-    private PrescienceAspect aspect;
+    private PrescienceAspect _aspect;
 
-    protected override Prescience ConfirmedResult => new(Game, Faction) { Aspect = aspect };
+    protected override Prescience ConfirmedResult => new(Game, Faction) { Aspect = _aspect };
 }

@@ -15,12 +15,12 @@
     <WinnerPanel/>
 }
 
-@if (Client.Game.CurrentPhase is Phase.Bidding)
+@if (Game.CurrentPhase is Phase.Bidding)
 {
     <NormalBiddingPanel CanBid="@Client.Actions.Contains(typeof(Bid))" />
 }
 
-@if (Client.Game.CurrentPhase is Phase.BlackMarketBidding)
+@if (Game.CurrentPhase is Phase.BlackMarketBidding)
 {
     <BlackMarketBiddingPanel CanBid="@Client.Actions.Contains(typeof(BlackMarketBid))" />
 }
@@ -194,7 +194,9 @@
             break;
 
         case nameof(BattleClaimed):
-            var titleBattleClaimed = Faction == Faction.Pink ? Client.CurrentSkin.Format("Do you wish to fight in {0}? Otherwise, your ally will.", Game.BattleAboutToStart.Territory) : Client.CurrentSkin.Format("Should {0} fight the battle in {1}?", Faction.Pink, Game.BattleAboutToStart.Territory);
+            var titleBattleClaimed = Faction == Faction.Pink 
+                ? Client.CurrentSkin.Format("Do you wish to fight in {0}? Otherwise, your ally will.", Game.BattleAboutToStart!.Territory) 
+                : Client.CurrentSkin.Format("Should {0} fight the battle in {1}?", Faction.Pink, Game.BattleAboutToStart!.Territory);
             <YesNoActionComponent GameEventType="BattleClaimed" Title=@titleBattleClaimed Alert="true"/>
             break;
 
@@ -456,7 +458,7 @@
             break;
 
         case nameof(BrownExtraMove):
-            var cardToUse = BrownExtraMove.CardToUse(Client.Player);
+            var cardToUse = BrownExtraMove.CardToUse(Client.Player!);
             var titleBrownExtraMove = Client.CurrentSkin.Format("Use {0} to be able to move your forces one extra territory?", cardToUse != null ? Name(cardToUse) : "Nexus Cunning");
             var background = cardToUse != null ? Client.CurrentSkin.GetImageUrl(cardToUse) : Client.CurrentSkin.GetImageUrl(Nexus.Brown);
             <SimpleActionComponent GameEventType="BrownExtraMove" BackgroundImage=@background Title=@titleBrownExtraMove Alert="false"/>
@@ -493,7 +495,7 @@
         case nameof(WhiteRevealedNoField):
             <SimpleActionComponent GameEventType="WhiteRevealedNoField"
                                    IsFactionSpecific=Faction.White
-                                   Title="@Client.CurrentSkin.Format("Reveal your currently active No-Field of {0}, placing {1} forces?", Client.Game.CurrentNoFieldValue, Math.Min(Client.Game.CurrentNoFieldValue, Client.Player.ForcesInReserve))"
+                                   Title="@Client.CurrentSkin.Format("Reveal your currently active No-Field of {0}, placing {1} forces?", Game.CurrentNoFieldValue, Math.Min(Game.CurrentNoFieldValue, Client.Player!.ForcesInReserve))"
                                    ConfirmLabel="Reveal"/>
             break;
 
@@ -559,12 +561,12 @@
             break;
 
         case nameof(SwitchedSkilledLeader):
-            var skilledLeader = SwitchedSkilledLeader.SwitchableLeader(Game, Player);
-            var titleSwitchedSkilledLeader = Client.CurrentSkin.Format("Place {0} {1} your player shield?", skilledLeader, Client.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of");
-            var confirmLabel = Client.CurrentSkin.Format("Put {0} shield", Client.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of");
+            var skilledLeader = SwitchedSkilledLeader.SwitchableLeader(Game, Player!);
+            var titleSwitchedSkilledLeader = Client.CurrentSkin.Format("Place {0} {1} your player shield?", skilledLeader, Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of");
+            var confirmLabel = Client.CurrentSkin.Format("Put {0} shield", Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of");
 
             <SimpleActionComponent GameEventType="SwitchedSkilledLeader"
-                                   BackgroundImage="@Client.CurrentSkin.GetImageUrl(Client.Game.Skill(skilledLeader))" Title=@titleSwitchedSkilledLeader
+                                   BackgroundImage="@Client.CurrentSkin.GetImageUrl(Game.Skill(skilledLeader))" Title=@titleSwitchedSkilledLeader
                                    ConfirmLabel=@confirmLabel/>
             break;
 
@@ -590,12 +592,12 @@
     }
 }
 
-@if (DealAccepted.CurrentDeals(Client.Game).Any() || (!Client.IsObserver && (DealAccepted.AcceptableDeals(Client.Game, Client.Player).Any() || DealAccepted.CancellableDeals(Client.Game, Client.Player).Any())))
+@if (DealAccepted.CurrentDeals(Game).Any() || (!Client.IsObserver && (DealAccepted.AcceptableDeals(Game, Client.Player!).Any() || DealAccepted.CancellableDeals(Game, Client.Player!).Any())))
 {
     <DealComponent/>
 }
 
-@if (!Client.IsObserver && Client.Game.AssistedNoteKeepingEnabled(Player))
+@if (!Client.IsObserver && Game.AssistedNoteKeepingEnabled(Player))
 {
     <NoteComponent/>
 }
@@ -605,7 +607,7 @@
     <TrackerComponent/>
 }
 
-@if (Client.Game.CurrentMainPhase != MainPhase.Ended && Client.Actions.Contains(typeof(PlayerReplaced)))
+@if (Game.CurrentMainPhase != MainPhase.Ended && Client.Actions.Contains(typeof(PlayerReplaced)))
 {
     <PlayerReplacedComponent/>
 }

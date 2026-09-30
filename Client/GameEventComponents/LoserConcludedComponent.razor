@@ -16,24 +16,24 @@
 
         @if (LoserConcluded.CardsLoserMayKeep(Game).Any())
         {
-            <SelectFromImageComponent @bind-Value="_cardToKeep" Values=@LoserConcluded.CardsLoserMayKeep(Game) Required=false ImageWidth="80">
+            <SelectFromImageComponent @bind-Value="CardToKeep" Values=@LoserConcluded.CardsLoserMayKeep(Game) Required=false ImageWidth="80">
                 <Label>You may select one card to keep:</Label>
             </SelectFromImageComponent>
         }
         else
         {
-            _cardToKeep = null;
+            CardToKeep = null;
         }
 
         @if (LoserConcluded.CanAssassinate(Game, Player)) {
 
             var assassinated = LoserConcluded.TargetOfAssassination(Game, Player);
             var winner = Game.GetPlayer(Game.BattleWinner);
-            var reward = winner == null ? null : LoserConcluded.AssassinationReward(Game, winner, assassinated);
+            var reward = winner == null || assassinated == null ? null : LoserConcluded.AssassinationReward(Game, winner, assassinated);
 
-            <RadioComponent @bind-Value=_assassinate 
-                Values=@(new[] {true, false}) 
-                ValueLabels="@(new[] {"Yes","No"})">
+            <RadioComponent @bind-Value=Assassinate 
+                Values=@([true, false]) 
+                ValueLabels="@(["Yes","No"])">
                 <Label>
                     <div>Execute an assassination mission by revealing <Image Shown=@assassinated Popover=@Client.CurrentSkin.GetPopup(assassinated, Game) Class="img-float" Width="50"/> as your traitor?</div>
                     @if (reward == null)
@@ -49,30 +49,30 @@
         }
         else {
 
-            _assassinate = false;
+            Assassinate = false;
         }
 
         @if (LoserConcluded.MayUseKarmaToForceKeptCards(Game, Player))
         {
-            <RadioComponent @bind-Value="_karmaDecision"
+            <RadioComponent @bind-Value="KarmaDecision"
                             Values=@DecisionValues
                             ValueLabels=@DecisionValueLabels>
                 <Label>Use @Name(TreacheryCardType.Karma) to force your opponent to discard or keep any or all cards used in battle?</Label>
             </RadioComponent>
 
-            @if (_karmaDecision == LoserConcluded.KARMA_KEEP || _karmaDecision == LoserConcluded.KARMA_DISCARD)
+            @if (KarmaDecision == LoserConcluded.KARMA_KEEP || KarmaDecision == LoserConcluded.KARMA_DISCARD)
             {
-                <SelectFromImageComponent Selected="_cardsToForceKeepOrDiscard" Values=@LoserConcluded.CardsThatMayBeKeptOrDiscarded(Game) T=TreacheryCard OnChanged=StateHasChanged ImageWidth="80" />
+                <SelectFromImageComponent Selected="CardsToForceKeepOrDiscard" Values=@LoserConcluded.CardsThatMayBeKeptOrDiscarded(Game) T=TreacheryCard OnChanged=StateHasChanged ImageWidth="80" />
             }
             else
             {
-                _cardsToForceKeepOrDiscard = new List<TreacheryCard>();
+                CardsToForceKeepOrDiscard = new List<TreacheryCard>();
             }
         }
         else
         {
-            _karmaDecision = LoserConcluded.KARMA_NO;
-            _cardsToForceKeepOrDiscard = new List<TreacheryCard>();
+            KarmaDecision = LoserConcluded.KARMA_NO;
+            CardsToForceKeepOrDiscard = new List<TreacheryCard>();
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
@@ -83,17 +83,17 @@
 
 @code {
 
-    internal TreacheryCard? _cardToKeep;
+    internal TreacheryCard? CardToKeep;
 
-    internal bool _assassinate;
+    internal bool Assassinate;
 
-    internal int _karmaDecision = LoserConcluded.KARMA_NO;
+    internal int KarmaDecision = LoserConcluded.KARMA_NO;
 
-    protected override LoserConcluded ConfirmedResult => new(Game, Faction) { KeptCard = _cardToKeep, Assassinate = _assassinate, KarmaForcedKeptCardDecision = _karmaDecision, ForcedKeptOrDiscardedCards = _cardsToForceKeepOrDiscard };
+    protected override LoserConcluded ConfirmedResult => new(Game, Faction) { KeptCard = CardToKeep, Assassinate = Assassinate, KarmaForcedKeptCardDecision = KarmaDecision, ForcedKeptOrDiscardedCards = CardsToForceKeepOrDiscard };
 
-    private IEnumerable<int> DecisionValues => new[] { LoserConcluded.KARMA_NO, LoserConcluded.KARMA_KEEP, LoserConcluded.KARMA_DISCARD };
+    internal List<TreacheryCard> CardsToForceKeepOrDiscard = [];
+    
+    private static IEnumerable<int> DecisionValues => [LoserConcluded.KARMA_NO, LoserConcluded.KARMA_KEEP, LoserConcluded.KARMA_DISCARD];
 
-    private IEnumerable<string> DecisionValueLabels => new[] { "No", "Force keeping...", "Force discarding..." };
-
-    internal List<TreacheryCard> _cardsToForceKeepOrDiscard = new();
+    private static IEnumerable<string> DecisionValueLabels => ["No", "Force keeping...", "Force discarding..."];
 }

@@ -24,14 +24,25 @@
                     if (Max(l) > 0 && ShowNormalForces) 
                     {
                         <td class="ps-0 bg-transparent">
-                            <SelectForcesComponent Value=@Forces[l].AmountOfForces OnDown="@(_ => ChangeForceAmount(l, -1, false))" OnUp="@(_ => ChangeForceAmount(l, 1, false))" Min="Min" Max="Max(l)" Faction="Player.Faction" Special="false"/>
+                            <SelectForcesComponent Value=@Forces[l].AmountOfForces 
+                                                   OnDown="@(_ => ChangeForceAmount(l, -1, false))" 
+                                                   OnUp="@(_ => ChangeForceAmount(l, 1, false))" 
+                                                   Min="@Min" 
+                                                   Max="@Max(l)" 
+                                                   Faction="@Player.Faction"/>
                         </td>
                     }
 
                     if (MaxSpecial(l) > 0 && ShowSpecialForces) 
                     {
                         <td class="ps-0 bg-transparent">
-                            <SelectForcesComponent Value=@Forces[l].AmountOfSpecialForces OnDown="@(_ => ChangeForceAmount(l, -1, true))" OnUp="@(_ => ChangeForceAmount(l, 1, true))" Min="Min" Max="MaxSpecial(l)" Faction="Player.Faction" Special="true"/>
+                            <SelectForcesComponent Value=@Forces[l].AmountOfSpecialForces 
+                                                   OnDown="@(_ => ChangeForceAmount(l, -1, true))" 
+                                                   OnUp="@(_ => ChangeForceAmount(l, 1, true))" 
+                                                   Min="Min" 
+                                                   Max="MaxSpecial(l)" 
+                                                   Faction="Player.Faction" 
+                                                   Special/>
                         </td>
                     }
                 }
@@ -48,17 +59,17 @@
 
 @code {
 
-    [Parameter]
-    public Game? Game { get; set; }
+    [Parameter, EditorRequired]
+    public required Game Game { get; set; }
 
-    [Parameter]
-    public Player? Player { get; set; }
+    [Parameter, EditorRequired]
+    public required Player Player { get; set; }
 
-    [Parameter]
-    public Dictionary<Location, Battalion>? Forces { get; set; }
+    [Parameter, EditorRequired]
+    public required Dictionary<Location, Battalion> Forces { get; set; }
 
-    [Parameter]
-    public IEnumerable<Location>? Locations { get; set; }
+    [Parameter, EditorRequired]
+    public required IEnumerable<Location> Locations { get; set; }
 
     [Parameter]
     public bool MaySelectFromStorm { get; set; }
@@ -161,5 +172,4 @@
             bat.Clear();
         }
     }
-
 }

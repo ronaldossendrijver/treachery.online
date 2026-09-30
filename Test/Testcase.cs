@@ -13,5 +13,5 @@ namespace Treachery.Test;
 
 public class Testcase
 {
-    public List<Testvalues> Testvalues = new();
+    public List<TestValues> Testvalues = new();
 }

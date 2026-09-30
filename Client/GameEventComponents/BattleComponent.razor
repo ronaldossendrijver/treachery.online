@@ -9,42 +9,50 @@
 @using System.Globalization
 @inherits GameEventComponent<Battle>
 
+@{
+
+    if (Game.CurrentBattle?.Territory is null) return;
+    
+    var opponent = Game.CurrentBattle.OpponentOf(Faction);
+    if (opponent is null) return;
+}
+
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" TimedEvent="Game.LatestEvent(typeof(BattleInitiated))">
 
     <Header>
-        Fighting <Image Shown="Opponent.Faction" Width="30" /> in @Name(Game.CurrentBattle.Territory).
+        Fighting <Image Shown="opponent.Faction" Width="30" /> in @Name(Game.CurrentBattle.Territory).
     </Header>
 
     <Body>
 
         <div class="mt-1">
             Opponent forces: 
-            @if (Opponent.ForcesIn(Game.CurrentBattle.Territory) > 0)
+            @if (opponent.ForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageUrl(Opponent.Faction)" width=30 height="30" alt="@Client.CurrentSkin.Describe(Opponent.Force)"/>
-                <span>&nbsp;<strong>@Opponent.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
+                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageUrl(opponent.Faction)" width=30 height="30" alt="@Client.CurrentSkin.Describe(opponent.Force)"/>
+                <span>&nbsp;<strong>@opponent.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
             }
-            @if (Opponent.HasAlly && Opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory) > 0)
+            @if (opponent.HasAlly && opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageUrl(Opponent.Ally)" width=30 height="30" alt="@Client.CurrentSkin.Describe(Opponent.Force)"/>
-                <span>&nbsp;<strong>@Opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
+                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageUrl(opponent.Ally)" width=30 height="30" alt="@Client.CurrentSkin.Describe(opponent.Force)"/>
+                <span>&nbsp;<strong>@opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
             }
-            @if (Opponent.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
+            @if (opponent.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(Opponent.Faction)" alt="@Client.CurrentSkin.Describe(Opponent.SpecialForce)" width=30 height="30"/>
+                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(opponent.Faction)" alt="@Client.CurrentSkin.Describe(opponent.SpecialForce)" width=30 height="30"/>
                 
-                @if (Opponent.Faction != Faction.White) {
+                @if (opponent.Faction != Faction.White) {
 
-                    <span>&nbsp;<strong>@Opponent.SpecialForcesIn(Game.CurrentBattle.Territory)</strong></span>
+                    <span>&nbsp;<strong>@opponent.SpecialForcesIn(Game.CurrentBattle.Territory)</strong></span>
                 }
             }
-            @if (Opponent.HasAlly && Opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
+            @if (opponent.HasAlly && opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(Opponent.Ally)" alt="@Client.CurrentSkin.Describe(Opponent.SpecialForce)" width=30 height="30"/>
+                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(opponent.Ally)" alt="@Client.CurrentSkin.Describe(opponent.SpecialForce)" width=30 height="30"/>
 
-                @if (Opponent.Ally != Faction.White)
+                @if (opponent.Ally != Faction.White)
                 {
-                    <span>&nbsp;<strong>@Opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory)</strong></span>
+                    <span>&nbsp;<strong>@opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory)</strong></span>
                 }
             }
 
@@ -55,7 +63,7 @@
             <div class="text-success mt-1"><Image Shown=Faction.Pink Width="30"/> forces contribute <strong>@Game.CurrentPinkBattleContribution</strong> to your opponents dial.</div>
         }
 
-        @if (!Battle.ValidBattleHeroes(Game, Opponent).Any())
+        @if (!Battle.ValidBattleHeroes(Game, opponent).Any())
         {
             <div class="text-warning mt-1">Your opponent has no leaders available for this battle!</div>
         }
@@ -186,7 +194,7 @@
                 <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
             </svg>
 
-            <NumberComponent Value="ConfirmedResult.Dial(Game, Game.CurrentBattle.OpponentOf(Faction).Faction)" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+            <NumberComponent Value="ConfirmedResult.Dial(Game, opponent.Faction)" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
 
         </div>
 
@@ -224,7 +232,7 @@
         @if (Player.MessiahAvailable && !Game.Prevented(FactionAdvantage.GreenUseMessiah))
         {
             <div class="mt-2">
-                <RadioComponent @bind-Value="Messiah" Values="@(new[] {false,true})" ValueLabels="@(new[] {"No","Yes"})">
+                <RadioComponent @bind-Value="Messiah" Values="@([false,true])" ValueLabels="@(["No","Yes"])">
                     <Label>Should <img class="img-fluid" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/> join the fight?</Label>
                 </RadioComponent>
             </div>
@@ -267,9 +275,9 @@
     {
         base.OnInitialized();
         
-        if (Game.CurrentBattle.PlanOf(Faction) == null)
+        if (Game.CurrentBattle?.PlanOf(Faction) == null)
         {
-            var previousPlan = Game.CurrentBattle.PreviousPlanOf(Faction);
+            var previousPlan = Game.CurrentBattle?.PreviousPlanOf(Faction);
             if (previousPlan != null && previousPlan.Validate() == null)
             {
                 Forces = previousPlan.Forces + previousPlan.ForcesAtHalfStrength;
@@ -309,8 +317,6 @@
         }
     }
 
-    private Player Opponent => Game.CurrentBattle.OpponentOf(Faction);
-
     private string GetTextForAspect(PrescienceAspect aspect, Battle plan, bool showEverything)
     {
         switch (aspect)
@@ -337,9 +343,9 @@
         return "?";
     }
 
-    private IEnumerable<TreacheryCard> Weapons 
-        => Battle.ValidWeapons(Game, Player, Defense, Hero, Game.CurrentBattle.Territory).OrderBy(Name);
+    private IEnumerable<TreacheryCard?> Weapons 
+        => Battle.ValidWeapons(Game, Player, Defense, Hero, Game.CurrentBattle?.Territory).OrderBy(Name);
 
-    private IEnumerable<TreacheryCard> Defenses 
-        => Battle.ValidDefenses(Game, Player, Weapon, Game.CurrentBattle.Territory).OrderBy(Name);
+    private IEnumerable<TreacheryCard?> Defenses 
+        => Battle.ValidDefenses(Game, Player, Weapon, Game.CurrentBattle?.Territory).OrderBy(Name);
 }

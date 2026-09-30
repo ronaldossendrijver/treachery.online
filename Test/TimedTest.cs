@@ -5,7 +5,7 @@ namespace Treachery.Test;
 
 internal class TimedTest : IDisposable
 {
-    public event EventHandler<ElapsedEventArgs> Elapsed;
+    public event EventHandler<ElapsedEventArgs>? Elapsed;
     private readonly Timer _timer;
     private readonly object _toTest;
 
@@ -27,7 +27,7 @@ internal class TimedTest : IDisposable
         _timer.Stop();
     }
 
-    private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+    private void Timer_Elapsed(object? sender, ElapsedEventArgs e)
     {
         //Console.WriteLine(DateTime.Now.ToLongTimeString() + ";Elapsing timer for game;" + ((Game)_toTest).Seed);
         Elapsed?.Invoke(_toTest, e);

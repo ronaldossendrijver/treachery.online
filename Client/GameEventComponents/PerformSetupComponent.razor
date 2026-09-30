@@ -7,7 +7,8 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 @inherits GameEventComponent<PerformSetup>
-@implements IDisposable
+
+@if (CurrentPlayer is null) return;
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
@@ -17,17 +18,17 @@
 
     <Body>
 
-        <SelectResourcesComponent @bind-Value="resources" Min="0" Max="100" Label="@Client.CurrentSkin.Describe(Concept.Resource)" />
+        <SelectResourcesComponent @bind-Value="_resources" Min="0" Max="100" Label="@Client.CurrentSkin.Describe(Concept.Resource)" />
 
         <div class="mt-1">Initial forces on planet (you may use the planet map):</div>
-        <div class="small">Add / Remove @Client.CurrentSkin.Describe(currentPlayer.Force): <ClickHintComponent Button="ClickHintButton.Lmb" /> / <ClickHintComponent Button="ClickHintButton.Lmb" Modifier="ClickHintModifier.Shift" /></div>
+        <div class="small">Add / Remove @Client.CurrentSkin.Describe(CurrentPlayer.Force): <ClickHintComponent Button="ClickHintButton.Lmb" /> / <ClickHintComponent Button="ClickHintButton.Lmb" Modifier="ClickHintModifier.Shift" /></div>
 
-        @if (currentPlayer.HasSpecialForces && !currentPlayer.Is(Faction.White))
+        @if (CurrentPlayer.HasSpecialForces && !CurrentPlayer.Is(Faction.White))
         {
-            <div class="small">Add / Remove @Client.CurrentSkin.Describe(currentPlayer.SpecialForce): <ClickHintComponent Button="ClickHintButton.Lmb" Modifier="ClickHintModifier.Ctrl" /> / <ClickHintComponent Button="ClickHintButton.Lmb" Modifier="ClickHintModifier.Ctrl | ClickHintModifier.Shift" /></div>
+            <div class="small">Add / Remove @Client.CurrentSkin.Describe(CurrentPlayer.SpecialForce): <ClickHintComponent Button="ClickHintButton.Lmb" Modifier="ClickHintModifier.Ctrl" /> / <ClickHintComponent Button="ClickHintButton.Lmb" Modifier="ClickHintModifier.Ctrl | ClickHintModifier.Shift" /></div>
         }
 
-        <ForceSelectionComponent Game="Client.Game" Player="currentPlayer" OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="20" FixedMaxSpecialForces="MaxSpecialForces" AllowMultipleTerritories="true"/>
+        <ForceSelectionComponent Game="Client.Game" Player="CurrentPlayer" OnChanged="@StateHasChanged" Forces="Forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="20" FixedMaxSpecialForces="MaxSpecialForces" AllowMultipleTerritories="true"/>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
@@ -39,20 +40,20 @@
 
     protected override bool IsUrgent => true;
 
-    private Player? currentPlayer;
-    private int resources;
-    internal Dictionary<Location, Battalion> forces = new();
+    private Player? CurrentPlayer { get; set; }
+    private int _resources;
+    internal Dictionary<Location, Battalion> Forces = new();
 
-    protected override PerformSetup ConfirmedResult => new(Game, Faction) { Passed = false, Resources = resources, ForceLocations = forces };
+    protected override PerformSetup ConfirmedResult => new(Game, Faction) { Passed = false, Resources = _resources, ForceLocations = Forces };
 
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
 
-        if (currentPlayer == null || currentPlayer.Faction != Game.NextFactionToPerformCustomSetup)
+        if (CurrentPlayer == null || CurrentPlayer.Faction != Game.NextFactionToPerformCustomSetup)
         {
-            forces = new Dictionary<Location, Battalion>();
-            currentPlayer = CurrentPlayer;
+            Forces = new Dictionary<Location, Battalion>();
+            CurrentPlayer = CurrentPlayer;
         }
     }
 
@@ -76,9 +77,7 @@
         Client.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveSpecialForce;
     }
 
-    private Player CurrentPlayer => Game.GetPlayer(Game.NextFactionToPerformCustomSetup);
-
-    private void HandleAddForce(object sender, Location l)
+    private void HandleAddForce(object? sender, Location l)
     {
         if (ValidLocations.Contains(l))
         {
@@ -86,15 +85,15 @@
         }
     }
 
-    private void HandleAddSpecialForce(object sender, Location l)
+    private void HandleAddSpecialForce(object? sender, Location l)
     {
-        if (CurrentPlayer.HasSpecialForces && ValidLocations.Contains(l))
+        if (CurrentPlayer is { HasSpecialForces: true } && ValidLocations.Contains(l))
         {
             ForceAmountButton(l, 1, true);
         }
     }
 
-    private void HandleRemoveForce(object sender, Location l)
+    private void HandleRemoveForce(object? sender, Location l)
     {
         if (ValidLocations.Contains(l))
         {
@@ -102,9 +101,9 @@
         }
     }
 
-    private void HandleRemoveSpecialForce(object sender, Location l)
+    private void HandleRemoveSpecialForce(object? sender, Location l)
     {
-        if (CurrentPlayer.HasSpecialForces && ValidLocations.Contains(l))
+        if (CurrentPlayer is { HasSpecialForces: true } && ValidLocations.Contains(l))
         {
             ForceAmountButton(l, -1, true);
         }
@@ -112,51 +111,31 @@
 
     private IEnumerable<Location> ValidLocations => Game.Map.Locations(false).OrderByDescending(l => l.IsStronghold).ThenBy(l => Client.CurrentSkin.Describe(l));
 
-    protected int Forces(Location l, bool special)
+    private void ForceAmountButton(Location location, int amount, bool specialForces)
     {
-        if (forces.ContainsKey(l))
-        {
-            if (special)
-            {
-                return forces[l].AmountOfSpecialForces;
-            }
-
-            return forces[l].AmountOfForces;
-        }
-
-        return 0;
-    }
-
-    protected void ForceAmountButton(Location location, int amount, bool specialForces)
-    {
-        if (forces.ContainsKey(location))
+        if (Forces.ContainsKey(location))
         {
             if (specialForces)
             {
-                forces[location].ChangeSpecialForces(amount);
+                Forces[location].ChangeSpecialForces(amount);
             }
             else
             {
-                forces[location].ChangeForces(amount);
+                Forces[location].ChangeForces(amount);
             }
         }
         else if (amount > 0)
         {
-            if (specialForces)
-            {
-                forces.Add(location, new Battalion(Faction, 0, amount, location));
-            }
-            else
-            {
-                forces.Add(location, new Battalion(Faction, amount, 0, location));
-            }
+            Forces.Add(location, specialForces 
+                ? new Battalion(Faction, 0, amount, location) 
+                : new Battalion(Faction, amount, 0, location));
         }
 
         StateHasChanged();
     }
 
-    private Faction CurrentFaction => currentPlayer != null ? currentPlayer.Faction : Faction.Black;
+    private Faction CurrentFaction => CurrentPlayer?.Faction ?? Faction.Black;
 
-    private int MaxSpecialForces => currentPlayer != null && currentPlayer.HasSpecialForces ? 20 : 0;
+    private int MaxSpecialForces => CurrentPlayer?.HasSpecialForces == true ? 20 : 0;
 }
 

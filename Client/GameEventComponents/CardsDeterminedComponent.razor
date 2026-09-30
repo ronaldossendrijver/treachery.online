@@ -14,12 +14,12 @@
     <Body>
 
         <h4>Treachery Cards</h4>
-        <SelectFromImageComponent Selected="selectedTreacheryCards" Values="Game.TreacheryDeck.Items" T="TreacheryCard" OnChanged="StateHasChanged" ImageWidth="80" />
+        <SelectFromImageComponent Selected="_selectedTreacheryCards" Values="@Game.TreacheryDeck!.Items" T="TreacheryCard" OnChanged="StateHasChanged" ImageWidth="80" />
 
         @if(Game.WhiteCache.Any())
         {
             <h4>@Client.CurrentSkin.Describe(Faction.White) Cards</h4>
-            <SelectFromImageComponent Selected="selectedWhiteCards" Values="Game.WhiteCache" T=TreacheryCard OnChanged=StateHasChanged/>
+            <SelectFromImageComponent Selected="@_selectedWhiteCards" Values="@Game.WhiteCache" T=TreacheryCard OnChanged="@StateHasChanged"/>
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Cards" ConfirmError="@Validation" />
@@ -32,16 +32,16 @@
 
     protected override bool IsUrgent => true;
 
-    private List<TreacheryCard>? selectedTreacheryCards;
-    private List<TreacheryCard>? selectedWhiteCards;
+    private List<TreacheryCard> _selectedTreacheryCards = [];
+    private List<TreacheryCard> _selectedWhiteCards = [];
 
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
 
-        selectedTreacheryCards = new List<TreacheryCard>(Game.TreacheryDeck.Items);
-        selectedWhiteCards = new List<TreacheryCard>(Game.WhiteCache);
+        _selectedTreacheryCards = [.. Game.TreacheryDeck!.Items];
+        _selectedWhiteCards = [.. Game.WhiteCache];
     }
 
-    protected override CardsDetermined ConfirmedResult => new(Game, Faction) { TreacheryCards = selectedTreacheryCards, WhiteCards = selectedWhiteCards };
+    protected override CardsDetermined ConfirmedResult => new(Game, Faction) { TreacheryCards = _selectedTreacheryCards, WhiteCards = _selectedWhiteCards };
 }

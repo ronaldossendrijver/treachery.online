@@ -42,7 +42,7 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    private void HandleLocationSelected(object sender, Location location)
+    private void HandleLocationSelected(object? sender, Location location)
     {
         SetIfValid(ref target, EcazInitialPlacement.ValidLocations(Game), location);
     }

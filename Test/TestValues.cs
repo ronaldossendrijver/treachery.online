@@ -7,13 +7,11 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Collections.Generic;
-using System.Linq;
-using Treachery.Shared;
+// ReSharper disable InconsistentNaming
 
 namespace Treachery.Test;
 
-public class Testvalues
+public class TestValues
 {
     public Phase currentPhase;
     public int forcesinArrakeen;
@@ -22,19 +20,16 @@ public class Testvalues
     public int forcesinHabbanya;
     public int forcesinTuek;
     public int nrofplayers;
-    public Faction[] winners;
-    public TestvaluesPerPlayer[] playervalues;
+    private readonly Faction[] winners = [];
+    public TestvaluesPerPlayer[] playervalues = [];
 
     public static string Difference { get; private set; } = "";
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
-        if (obj is not Testvalues) return false;
+        if (obj is not TestValues other) return false;
 
-        var other = obj as Testvalues;
-
-        if (!
-                Check(other.currentPhase, currentPhase, "currentPhase") &&
+        if (!Check(other.currentPhase, currentPhase, "currentPhase") &&
             Check(other.forcesinArrakeen, forcesinArrakeen, "forcesinArrakeen") &&
             Check(other.forcesinCarthag, forcesinCarthag, "forcesinCarthag") &&
             Check(other.forcesinTabr, forcesinTabr, "forcesinTabr") &&
@@ -53,6 +48,7 @@ public class Testvalues
 
     public override int GetHashCode()
     {
+        // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
         return base.GetHashCode();
     }
 
@@ -75,7 +71,7 @@ public class Testvalues
         return false;
     }
 
-    public static bool CheckEnum<T>(IEnumerable<T> a, IEnumerable<T> b, string compared)
+    private static bool CheckEnum<T>(IEnumerable<T>? a, IEnumerable<T>? b, string compared)
     {
         if (a == null)
         {
@@ -85,7 +81,7 @@ public class Testvalues
             return false;
         }
 
-        if (a.SequenceEqual(b))
+        if (b != null && a.SequenceEqual(b))
         {
             return true;
         }
@@ -122,34 +118,33 @@ public class TestvaluesPerPlayer
 
     public override bool Equals(object? obj)
     {
-        if (obj is not TestvaluesPerPlayer) return false;
-
-        var other = obj as TestvaluesPerPlayer;
+        if (obj is not TestvaluesPerPlayer other) return false;
 
         return
-            Testvalues.Check(other.ally, ally, faction + "ally") &&
-            Testvalues.Check(other.bribes, bribes, faction + "bribes") &&
-            Testvalues.Check(other.cardcount, cardcount, faction + "cardcount") &&
-            Testvalues.Check(other.cardtypes, cardtypes, faction + "cardtypes") &&
-            Testvalues.Check(other.facedancers, facedancers, faction + "facedancers") &&
-            Testvalues.Check(other.faction, faction, faction + "faction") &&
-            Testvalues.Check(other.forcesinreserve, forcesinreserve, faction + "forcesinreserve") &&
-            Testvalues.Check(other.forceskilled, forceskilled, faction + "forceskilled") &&
-            Testvalues.Check(other.nroftechtokens, nroftechtokens, faction + "nroftechtokens") &&
-            Testvalues.Check(other.position, position, faction + "position") &&
-            Testvalues.Check(other.resources, resources, faction + "resources") &&
-            Testvalues.Check(other.specialforcesinreserve, specialforcesinreserve, faction + "specialforcesinreserve") &&
-            Testvalues.Check(other.specialforceskilled, specialforceskilled, faction + "specialforceskilled") &&
-            Testvalues.Check(other.totaldeathcount, totaldeathcount, faction + "totaldeathcount") &&
-            Testvalues.Check(other.totalforcesonplanet, totalforcesonplanet, faction + "totalforcesonplanet") &&
-            Testvalues.Check(other.totalspecialforcesonplanet, totalspecialforcesonplanet, faction + "totalspecialforcesonplanet") &&
-            Testvalues.Check(other.traitors, traitors, faction + "traitors");
+            TestValues.Check(other.ally, ally, faction + "ally") &&
+            TestValues.Check(other.bribes, bribes, faction + "bribes") &&
+            TestValues.Check(other.cardcount, cardcount, faction + "cardcount") &&
+            TestValues.Check(other.cardtypes, cardtypes, faction + "cardtypes") &&
+            TestValues.Check(other.facedancers, facedancers, faction + "facedancers") &&
+            TestValues.Check(other.faction, faction, faction + "faction") &&
+            TestValues.Check(other.forcesinreserve, forcesinreserve, faction + "forcesinreserve") &&
+            TestValues.Check(other.forceskilled, forceskilled, faction + "forceskilled") &&
+            TestValues.Check(other.nroftechtokens, nroftechtokens, faction + "nroftechtokens") &&
+            TestValues.Check(other.position, position, faction + "position") &&
+            TestValues.Check(other.resources, resources, faction + "resources") &&
+            TestValues.Check(other.specialforcesinreserve, specialforcesinreserve, faction + "specialforcesinreserve") &&
+            TestValues.Check(other.specialforceskilled, specialforceskilled, faction + "specialforceskilled") &&
+            TestValues.Check(other.totaldeathcount, totaldeathcount, faction + "totaldeathcount") &&
+            TestValues.Check(other.totalforcesonplanet, totalforcesonplanet, faction + "totalforcesonplanet") &&
+            TestValues.Check(other.totalspecialforcesonplanet, totalspecialforcesonplanet, faction + "totalspecialforcesonplanet") &&
+            TestValues.Check(other.traitors, traitors, faction + "traitors");
     }
 
     public override int GetHashCode()
     {
+        // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
         return base.GetHashCode();
     }
-
-
 }
+
+// ReSharper enable InconsistentNaming

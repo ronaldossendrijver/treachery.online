@@ -15,7 +15,7 @@
 
         <div class="card-header text-center">
 
-            @Client.CurrentSkin.Describe(Client.Game.CurrentReport.About) Report &nbsp;
+            @Client.CurrentSkin.Describe(Game.CurrentReport.About) Report &nbsp;
 
             @if (SortDescending)
             {
@@ -60,7 +60,7 @@
     [Parameter]
     public Report? Report { get; set; }
 
-    public bool SortDescending { get; set; } = false;
+    private bool SortDescending { get; set; }
 
     private string FontStyle(Message m)
     {
@@ -69,8 +69,11 @@
 
     private IEnumerable<Message> MessagesInOrder {
 
-        get {
+        get
+        {
 
+            if (Report is null) return [];
+            
             var messagesAscending = Report.Messages.Where(m => m.Target == Faction.None || m.Target == Client.Faction);
 
             if (SortDescending)

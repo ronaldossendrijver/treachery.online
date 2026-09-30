@@ -12,8 +12,8 @@
 
     <Header>Select your starting Treachery Card. The remaining cards will be shuffled and dealt to the other factions.</Header>
     <Body>
-        <SelectFromImageComponent @bind-Value="card" Values="Game.StartingTreacheryCards.Items" ImageWidth="80" />
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Select {0}", card)" ConfirmError="@Validation" />
+        <SelectFromImageComponent @bind-Value="_card" Values="Game.StartingTreacheryCards!.Items" ImageWidth="80" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Select {0}", _card)" ConfirmError="@Validation" />
     </Body>
 
 </GameEventComponentLayout>
@@ -23,7 +23,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Grey;
 
-    private TreacheryCard? card;
+    private TreacheryCard? _card;
 
-    protected override GreySelectedStartingCard ConfirmedResult => new(Game, Faction) { Card = card };
+    protected override GreySelectedStartingCard ConfirmedResult => new(Game, Faction) { Card = _card };
 }

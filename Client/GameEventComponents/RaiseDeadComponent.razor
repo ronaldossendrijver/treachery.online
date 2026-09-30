@@ -21,59 +21,59 @@
 
             if (hasForcesToRevive)
             {
-                <SelectForcesComponent @bind-Value="amountOfForces" Min="0" Max="RaiseDeadPlayed.ValidMaxAmount(Game, Player, false)" Faction="Faction" Special="false" />
+                <SelectForcesComponent @bind-Value="AmountOfForces" Min="0" Max="RaiseDeadPlayed.ValidMaxAmount(Game, Player, false)" Faction="Faction" Special="false" />
             }
             else
             {
-                amountOfForces = 0;
+                AmountOfForces = 0;
             }
 
             if (hasSpecialForcesToRevive)
             {
-                <SelectForcesComponent @bind-Value="amountOfSpecialForces" Min="0" Max="RaiseDeadPlayed.ValidMaxAmount(Game, Player, true)" Faction="Faction" Special="true" />
+                <SelectForcesComponent @bind-Value="AmountOfSpecialForces" Min="0" Max="RaiseDeadPlayed.ValidMaxAmount(Game, Player, true)" Faction="Faction" Special="true" />
             }
             else
             {
-                amountOfSpecialForces = 0;
+                AmountOfSpecialForces = 0;
             }
 
-            var maxSpecialForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, amountOfSpecialForces) : 0;
+            var maxSpecialForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, AmountOfSpecialForces) : 0;
             if (maxSpecialForcesPlacedOnPlanet > 0)
             {
                 <div>
-                    <SelectForcesComponent Label="Place forces on the planet?" @bind-Value="amountOfSpecialForcesToLocation" Min=0 Max=maxSpecialForcesPlacedOnPlanet Faction=Faction Special="true"/>
+                    <SelectForcesComponent Label="Place forces on the planet?" @bind-Value="AmountOfSpecialForcesToLocation" Min=0 Max=maxSpecialForcesPlacedOnPlanet Faction=Faction Special="true"/>
                 </div>
             }
             else
             {
-                amountOfSpecialForcesToLocation = 0;
+                AmountOfSpecialForcesToLocation = 0;
             }
 
-            if (amountOfSpecialForcesToLocation > 0)
+            if (AmountOfSpecialForcesToLocation > 0)
             {
-                <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="location" Values=@Revival.ValidRevivedForceLocations(Game, Player)>
+                <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="Location" Values=@Revival.ValidRevivedForceLocations(Game, Player)>
                     <Label>Place them where?</Label>
                 </SelectComponent>
             }
             else
             {
-                location = null;
+                Location = null;
             }
 
             if (hasHeroesToRevive)
             {
-                <SelectFromImageComponent Game="Game" @bind-Value="hero" Values="RaiseDeadPlayed.ValidHeroes(Game, Player)" Required="false" ImageWidth="80" />
+                <SelectFromImageComponent Game="Game" @bind-Value="Hero" Values="RaiseDeadPlayed.ValidHeroes(Game, Player)" Required="false" ImageWidth="80" />
             }
 
-            if (hero != null && Revival.MayAssignSkill(Game, Player, hero))
+            if (Hero != null && Revival.MayAssignSkill(Game, Player, Hero))
             {
-                <RadioComponent @bind-Value="assignSkill" Values="@(new[] {false,true})" ValueLabels="@(new[] {"No","Yes"})">
+                <RadioComponent @bind-Value="AssignSkill" Values="@([false,true])" ValueLabels="@(["No","Yes"])">
                     <Label>Do you wish to assign a skill to this leader?</Label>
                 </RadioComponent>
             }
             else
             {
-                assignSkill = false;
+                AssignSkill = false;
             }
 
             if (!(hasForcesToRevive || hasSpecialForcesToRevive || hasHeroesToRevive))
@@ -90,12 +90,12 @@
 
 @code {
 
-    internal int amountOfForces;
-    internal int amountOfSpecialForces;
-    internal IHero? hero;
-    internal bool assignSkill;
-    internal int amountOfSpecialForcesToLocation;
-    internal Location? location;
+    internal int AmountOfForces;
+    internal int AmountOfSpecialForces;
+    internal IHero? Hero;
+    internal bool AssignSkill;
+    internal int AmountOfSpecialForcesToLocation;
+    internal Location? Location;
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -113,16 +113,16 @@
 
     protected override RaiseDeadPlayed ConfirmedResult => new(Game, Faction)
     {
-        AmountOfForces = amountOfForces, 
-        AmountOfSpecialForces = amountOfSpecialForces, 
-        Hero = hero, 
-        AssignSkill = assignSkill,
-        NumberOfSpecialForcesInLocation = amountOfSpecialForcesToLocation,
-        Location = location
+        AmountOfForces = AmountOfForces, 
+        AmountOfSpecialForces = AmountOfSpecialForces, 
+        Hero = Hero, 
+        AssignSkill = AssignSkill,
+        NumberOfSpecialForcesInLocation = AmountOfSpecialForcesToLocation,
+        Location = Location
     };
 
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
-        SetIfValid(ref location, Revival.ValidRevivedForceLocations(Game, Player), l);
+        SetIfValid(ref Location, Revival.ValidRevivedForceLocations(Game, Player), l);
     }
 }

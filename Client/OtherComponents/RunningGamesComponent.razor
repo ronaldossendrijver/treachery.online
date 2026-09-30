@@ -254,12 +254,12 @@
 
     private async Task JoinGameAsPlayer(string gameId, string password, int seat)
     {
-        JoinErrors[gameId] = await Client.RequestJoinGame(gameId, password, seat);
+        JoinErrors[gameId] = await Client.RequestJoinGame(gameId, password, seat) ?? string.Empty;
     }
 
     private async Task JoinGameAsObserver(string gameId, string password)
     {
-        JoinErrors[gameId] = await Client.RequestObserveGame(gameId, password);
+        JoinErrors[gameId] = await Client.RequestObserveGame(gameId, password) ?? string.Empty;
     }
 
     private string JoinButtonTitle(Faction faction) => $"Join game as {Name(faction)}";

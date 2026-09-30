@@ -59,7 +59,7 @@ public class TrainingData : IDisposable, IAsyncDisposable
 
     private static string GetDateCsv(GameEvent latest) => latest switch
     {
-        Shipment shipment => $"{shipment.To.Id};{shipment.ForceAmount};{shipment.SpecialForceAmount}",
+        Shipment { To: not null } shipment => $"{shipment.To.Id};{shipment.ForceAmount};{shipment.SpecialForceAmount}",
         _ => string.Empty
     };
     
@@ -213,7 +213,7 @@ public class PlayerKnowledge
         Homeworlds = Game.Applicable(Rule.Homeworlds);
         AllyBlocksAdvisors = !Game.Applicable(Rule.AdvisorsDontConflictWithAlly);
         LatestAtreidesOrAllyBidAmount = Game.Bids.Values.LastOrDefault(x=> !x.Passed && (x.Initiator == Faction.Green || x.Initiator == atr?.Ally))?.TotalAmount ?? -1;
-        TreacheryCardOnBidId = Game.HasBiddingPrescience(Me) && !Game.CardsOnAuction.IsEmpty? Game.CardsOnAuction.Top.Id  : -1;
+        TreacheryCardOnBidId = Game.HasBiddingPrescience(Me) && Game.CardsOnAuction is { IsEmpty: false } ? Game.CardsOnAuction.Top!.Id  : -1;
         MaximumTurns = Game.MaximumTurns;
         CurrentTurn = Game.CurrentTurn;
         PredictedFaction = Me.PredictedFaction;
@@ -257,7 +257,7 @@ public class PlayerKnowledge
         //    Console.WriteLine("Hee!");
         
         // Me
-        Player[0] = Game.GetPlayer(MyFaction);
+        Player[0] = Game.GetPlayer(MyFaction)!;
         
         // Others
         
@@ -309,8 +309,8 @@ public class PlayerKnowledge
                         : Game.DistanceFromStorm(l) <= 6
                             ? 0.5f
                             : 0,
-                HasWormNextTurn = Game.HasResourceDeckPrescience(Me) && !Game.ResourceCardDeck.IsEmpty &&
-                                  Game.ResourceCardDeck.Top.Territory == l.Territory,
+                HasWormNextTurn = Game.HasResourceDeckPrescience(Me) && !Game.ResourceCardDeck!.IsEmpty &&
+                                  Game.ResourceCardDeck!.Top!.Territory == l.Territory,
             };
 
             for (var i = 0; i < NrOfPlayers; i++)
@@ -323,7 +323,7 @@ public class PlayerKnowledge
         }
     }
 
-    private PlayerInfo DetermineKnownPlayerInfo(Player player)
+    private PlayerInfo DetermineKnownPlayerInfo(Player? player)
     {
         if (player == null) 
             return Test.PlayerInfo.Empty;

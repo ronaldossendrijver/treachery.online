@@ -44,7 +44,7 @@
 
     protected override PerformHmsPlacement ConfirmedResult => new(Game, Faction) { Target = target };
 
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
         SetIfValid(ref target, PerformHmsPlacement.ValidLocations(Game, Player), l);
     }

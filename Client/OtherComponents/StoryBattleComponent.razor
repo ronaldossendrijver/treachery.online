@@ -7,6 +7,8 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
+@if (Game is null || AggressorBattle is null || DefenderBattle is null) return;
+
 <div>
     <table class="table table-sm">
         <thead>
@@ -29,7 +31,7 @@
 
             <tr class="table-dark" style="@BackgroundStyle(AggressorBattle.Initiator)">
                 <td>
-                    <img class="img-fluid p-1" width="60" src="@Client.CurrentSkin.GetFactionTableImageUrl(AggressorBattle.Initiator)" />
+                    <img class="img-fluid p-1" width="60" src="@Client.CurrentSkin.GetFactionTableImageUrl(AggressorBattle.Initiator)" alt="@Client.CurrentSkin.Describe(AggressorBattle.Initiator)"/>
 
                     @if (AggressorBattle.Initiator == Game.BattleWinner)
                     {
@@ -47,7 +49,7 @@
 
                     @if (AggressorBattle.Messiah)
                     {
-                        <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" title=@Client.CurrentSkin.Describe(Concept.Messiah) />
+                        <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" title=@Client.CurrentSkin.Describe(Concept.Messiah) alt=@Client.CurrentSkin.Describe(Concept.Messiah) />
                     }
 
                 </td>
@@ -74,7 +76,7 @@
 
             <tr class="table-dark" style="@BackgroundStyle(DefenderBattle.Initiator)">
                 <td>
-                    <img class="img-fluid p-1" width="60" src="@Client.CurrentSkin.GetFactionTableImageUrl(DefenderBattle.Initiator)" />
+                    <img class="img-fluid p-1" width="60" src="@Client.CurrentSkin.GetFactionTableImageUrl(DefenderBattle.Initiator)" alt="@Client.CurrentSkin.Describe(DefenderBattle.Initiator)"/>
 
                     @if (DefenderBattle.Initiator == Game.BattleWinner)
                     {
@@ -92,7 +94,7 @@
 
                     @if (DefenderBattle.Messiah)
                     {
-                        <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" title=@Client.CurrentSkin.Describe(Concept.Messiah) />
+                        <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" title=@Client.CurrentSkin.Describe(Concept.Messiah) alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
                     }
                 </td>
 
@@ -125,17 +127,14 @@
     [Parameter]
     public Game? Game { get; set; }
 
-    private Battle AggressorBattle => Game.AggressorPlan;
+    private Battle? AggressorBattle => Game?.AggressorPlan;
 
-    private Battle DefenderBattle => Game.DefenderPlan;
+    private Battle? DefenderBattle => Game?.DefenderPlan;
 
     private string BackgroundStyle(Faction f)
     {
-        if (f == Game.BattleWinner)
-        {
-            return "background-color:#AAFFAA32";
-        }
-
-        return "background-color:#FFAAAA32";
+        return f == Game?.BattleWinner 
+            ? "background-color:#AAFFAA32" 
+            : "background-color:#FFAAAA32";
     }
 }

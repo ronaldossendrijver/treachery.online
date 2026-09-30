@@ -7,7 +7,6 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 @inherits GameEventComponent<BrownRemoveForce>
-@implements IDisposable
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
@@ -15,14 +14,14 @@
 
     <Body>
 
-        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="location" Values="BrownRemoveForce.ValidLocations(Game)">
+        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="_location" Values="BrownRemoveForce.ValidLocations(Game)">
             <Label>From</Label>
         </SelectComponent>
 
-        <SelectFromImageComponent @bind-Value="target" Values="BrownRemoveForce.ValidFactions(Game, Player, location)" Required="true" ImageWidth="40" />
+        <SelectFromImageComponent @bind-Value="_target" Values="BrownRemoveForce.ValidFactions(Game, Player, _location)" Required="true" ImageWidth="40" />
 
         <div class="mt-1">
-            <SelectFromImageComponent @bind-Value="special" Values="ForceChoices" ImageWidth="40" Required="true" />
+            <SelectFromImageComponent @bind-Value="_special" Values="ForceChoices" ImageWidth="40" Required="true" />
         </div>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Remove Force" ConfirmError="@Validation" />
@@ -37,11 +36,11 @@
 
     protected override string Background => BrownRemoveForce.CardToUse(Player) != null ? Client.CurrentSkin.GetImageUrl(BrownRemoveForce.CardToUse(Player)) : Client.CurrentSkin.GetImageUrl(Nexus.Brown);
 
-    private Location? location;
-    private Faction target;
-    private bool special;
+    private Location? _location;
+    private Faction _target;
+    private bool _special;
 
-    protected override BrownRemoveForce ConfirmedResult => new(Game, Faction) { Location = location, Target = target, SpecialForce = special };
+    protected override BrownRemoveForce ConfirmedResult => new(Game, Faction) { Location = _location, Target = _target, SpecialForce = _special };
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -57,14 +56,22 @@
         Client.OnLocationSelected -= HandleLocationSelected;
     }
 
-    private IEnumerable<bool> ForceChoices => BrownRemoveForce.ValidSpecialForceChoices(Game, location, target);
+    private IEnumerable<bool> ForceChoices => BrownRemoveForce.ValidSpecialForceChoices(Game, _location, _target);
 
-    private IEnumerable<string> ImageURLs => BrownRemoveForce.ValidSpecialForceChoices(Game, location, target).Select(special => special ? Client.CurrentSkin.GetFactionSpecialForceImageUrl(target) : Client.CurrentSkin.GetFactionForceImageUrl(target));
-
-    private void HandleLocationSelected(object sender, Location l)
+    private void HandleLocationSelected(object? sender, Location l)
     {
-        SetIfValid(ref location, BrownRemoveForce.ValidLocations(Game), l);
+        SetIfValid(ref _location, BrownRemoveForce.ValidLocations(Game), l);
     }
 
-    private string ToUse => BrownRemoveForce.CardToUse(Player) != null ? Client.CurrentSkin.Describe(BrownRemoveForce.CardToUse(Player)) : "Nexus Cunning";
+    private string ToUse
+    {
+        get
+        {
+            var cardToUse = BrownRemoveForce.CardToUse(Player);
+            return cardToUse != null 
+                ? Client.CurrentSkin.Describe(cardToUse) 
+                : "Nexus Cunning";
+        }
+    }
+
 }

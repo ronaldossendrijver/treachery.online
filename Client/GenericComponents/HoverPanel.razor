@@ -53,7 +53,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         var currentDimensions = await Browser.GetWindowDimensions();
-        if (Math.Abs(_dims.Width - currentDimensions.Width) > 0.1f || Math.Abs(_dims.Height - currentDimensions.Height) > 0.1f)
+        if (currentDimensions is not null && (Math.Abs(_dims.Width - currentDimensions.Width) > 0.1f || Math.Abs(_dims.Height - currentDimensions.Height) > 0.1f))
         {
             _dims = currentDimensions;
             StateHasChanged();

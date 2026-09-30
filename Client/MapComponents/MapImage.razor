@@ -73,12 +73,12 @@ else
     [Parameter]
     public string? Popover { get; set; }
     private string? _popover;
-    private bool _popoverNeedsRefresh = false;
+    private bool _popoverNeedsRefresh;
 
     [Parameter]
     public bool PopoverAsTooltip { get; set; }
 
-    private string Alt => PopoverAsTooltip ? Popover : string.Empty;
+    private string Alt => PopoverAsTooltip ? Popover ?? string.Empty : string.Empty;
 
     private Dictionary<string, object> _attributes = [];
 
@@ -94,7 +94,9 @@ else
 
         _attributes = new Dictionary<string, object>();
 
-        if (Popover != null && !PopoverAsTooltip)
+        if (Popover == null) return;
+        
+        if (!PopoverAsTooltip)
         {
             _attributes.Add("data-bs-trigger", "hover");
             _attributes.Add("data-bs-toggle", "popover");
@@ -126,10 +128,6 @@ else
             }
         }
     }
-
-    private string BackgroundCircleStyle => $"position:absolute;left:{Px(X + 0.5f * Width)};top:{Px(Y + 0.5f * Height)};";
-
-    private string BackgroundRectangleStyle => $"position:absolute;left:{Px(X)};top:{Px(Y)};";
 
     private string Style
     {

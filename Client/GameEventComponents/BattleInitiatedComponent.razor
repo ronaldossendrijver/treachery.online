@@ -8,6 +8,8 @@
 *@
 @inherits GameEventComponent<BattleInitiated>
 
+@if (Battles is null) return;
+
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Select whom and where to battle</Header>
@@ -39,7 +41,7 @@
 
         if (Battles.Count == 1)
         {
-            _ = Task.Delay(500).ContinueWith(e => Confirm());
+            _ = Task.Delay(500).ContinueWith(_ => Confirm());
         }
     }
 
