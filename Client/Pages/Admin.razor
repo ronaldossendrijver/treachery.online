@@ -153,6 +153,68 @@ else
                 </div>
             </div>
             <div class="card mb-2">
+                <div class="card-header">Error log</div>
+                <div class="card-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col-sm-12 col-md-3">
+                            <label class="form-label" for="errorLogFrom">From</label>
+                            <input id="errorLogFrom" type="datetime-local" class="form-control form-control-sm"
+                                   @bind="ErrorLogFrom" @bind:format="yyyy-MM-ddTHH:mm"/>
+                        </div>
+                        <div class="col-sm-12 col-md-3">
+                            <label class="form-label" for="errorLogTo">To</label>
+                            <input id="errorLogTo" type="datetime-local" class="form-control form-control-sm"
+                                   @bind="ErrorLogTo" @bind:format="yyyy-MM-ddTHH:mm"/>
+                        </div>
+                        <div class="col-sm-12 col-md-2">
+                            <label class="form-label" for="errorLogSource">Source</label>
+                            <input id="errorLogSource" class="form-control form-control-sm" @bind="ErrorLogSource" @bind:event="oninput"/>
+                        </div>
+                        <div class="col-sm-12 col-md-3">
+                            <label class="form-label" for="errorLogSearch">Message or URL</label>
+                            <input id="errorLogSearch" class="form-control form-control-sm" @bind="ErrorLogSearch" @bind:event="oninput"/>
+                        </div>
+                        <div class="col-sm-12 col-md-1 d-flex align-items-end">
+                            <button class="btn btn-primary btn-sm" @onclick="LoadErrorLog">Filter</button>
+                        </div>
+                    </div>
+                    <p class="small">Showing up to 500 entries. Entries are retained for 30 days.</p>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                            <tr class="small table-dark">
+                                <th>Time</th>
+                                <th>Source</th>
+                                <th>User</th>
+                                <th>Message</th>
+                                <th>URL</th>
+                                <th>Details</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var error in Client.ErrorLogs)
+                            {
+                                <tr class="small table-dark">
+                                    <td>@error.OccurredAt.LocalDateTime</td>
+                                    <td>@error.Source</td>
+                                    <td>@(error.Username ?? error.UserId?.ToString() ?? "")</td>
+                                    <td>@error.Message</td>
+                                    <td>@error.Url</td>
+                                    <td>
+                                        <details>
+                                            <summary>View</summary>
+                                            <pre class="text-wrap">@error.Details</pre>
+                                            <div>@error.UserAgent</div>
+                                        </details>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-2">
                 <div class="card-header">Scheduled games</div>
                 <div class="card-body">
                     <table class="table table-sm">
@@ -197,6 +259,10 @@ else
     private string GameUsernameFilter { get; set; } = string.Empty;
     private DateTime? GameTimeFrom { get; set; }
     private DateTime? GameTimeTo { get; set; }
+    private DateTime? ErrorLogFrom { get; set; }
+    private DateTime? ErrorLogTo { get; set; }
+    private string ErrorLogSource { get; set; } = string.Empty;
+    private string ErrorLogSearch { get; set; } = string.Empty;
     private List<string> Messages { get; } = [];
 
     private IEnumerable<GameInfo> FilteredGames => Client.ActiveGames
@@ -230,6 +296,16 @@ else
     private async Task GetAdminInfo()
     {
         Messages.Add(await Client.GetAdminInfo());
+        StateHasChanged();
+    }
+
+    private async Task LoadErrorLog()
+    {
+        Messages.Add(await Client.GetAdminErrorLog(
+            ErrorLogFrom.HasValue ? new DateTimeOffset(ErrorLogFrom.Value) : null,
+            ErrorLogTo.HasValue ? new DateTimeOffset(ErrorLogTo.Value) : null,
+            ErrorLogSource,
+            ErrorLogSearch));
         StateHasChanged();
     }
     

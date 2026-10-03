@@ -9,6 +9,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     //Admin info
     public AdminInfo AdminInfo { get; private set; } = null!;
+    public ErrorLogInfo[] ErrorLogs { get; private set; } = [];
     
     //Server info
     public bool IsAdmin { get; set; } = false;
@@ -85,6 +87,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     private readonly HubConnection _connection;
     private Browser Browser { get; }
+    private readonly ConcurrentQueue<ClientErrorReport> _pendingClientErrors = new();
+    private int _pendingClientErrorCount;
     
     public Client(NavigationManager navigationManager, Browser browser)
     {
@@ -115,6 +119,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     {
         await _connection.StartAsync();
         await Connect();
+        await FlushPendingClientErrors();
         
         if (!string.IsNullOrEmpty(userToken) && !string.IsNullOrEmpty(gameId))
         {
@@ -784,6 +789,61 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
     }
 
+    public async Task<string> GetAdminErrorLog(DateTimeOffset? from, DateTimeOffset? to, string? source, string? search)
+    {
+        var result = await Invoke<ErrorLogInfo[]>(nameof(IGameHub.GetAdminErrorLog), UserToken, from, to, source, search);
+        if (result is { Success: true, Contents: not null })
+        {
+            ErrorLogs = result.Contents;
+            return $"Retrieved {ErrorLogs.Length} error-log entries";
+        }
+
+        return CurrentSkin.Describe(result.Error);
+    }
+
+    public async Task ReportClientError(ClientErrorReport report)
+    {
+        if (!IsConnected)
+        {
+            if (Interlocked.Increment(ref _pendingClientErrorCount) <= 20)
+                _pendingClientErrors.Enqueue(report);
+            else
+            {
+                Interlocked.Decrement(ref _pendingClientErrorCount);
+                Support.Log("Unable to queue client error because the pending error queue is full.");
+            }
+            return;
+        }
+
+        await SendClientError(report);
+    }
+
+    private async Task FlushPendingClientErrors()
+    {
+        while (IsConnected && _pendingClientErrors.TryDequeue(out var report))
+        {
+            Interlocked.Decrement(ref _pendingClientErrorCount);
+            await SendClientError(report);
+        }
+    }
+
+    private async Task SendClientError(ClientErrorReport report)
+    {
+        try
+        {
+            var result = await _connection.InvokeAsync<VoidResult>(
+                nameof(IGameHub.ReportClientError),
+                UserToken,
+                report);
+            if (!result.Success)
+                Support.Log($"Unable to record client error: {result.Error}: {result.ErrorDetails}");
+        }
+        catch (Exception exception)
+        {
+            Support.Log($"Unable to send client error to the server: {exception}");
+        }
+    }
+
     private async Task Heartbeat()
     {
         try
@@ -914,7 +974,11 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             await Browser.PlaySound(CurrentSkin.GetSound(m), CurrentEffectVolume);
     }
 
-    private async Task OnReconnected(string? _) => await RequestReconnectGame();
+    private async Task OnReconnected(string? _)
+    {
+        await RequestReconnectGame();
+        await FlushPendingClientErrors();
+    }
 
     private Task OnDisconnected(Exception? arg)
     {

@@ -12,6 +12,7 @@ public partial class TreacheryContext(DbContextOptions<TreacheryContext> options
     public DbSet<PersistedGame> PersistedGames { get; set; }
     public DbSet<ArchivedGame> ArchivedGames { get; set; }
     public DbSet<PersistedScheduledGame> ScheduledGames { get; set; }
+    public DbSet<ErrorLogEntry> ErrorLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,6 +24,7 @@ public partial class TreacheryContext(DbContextOptions<TreacheryContext> options
         modelBuilder.Entity<PersistedGame>().Property(g => g.GameParticipation).HasConversion(gameJson);
         modelBuilder.Entity<ArchivedGame>().Property(g => g.GameState).HasConversion(gameJson);
         modelBuilder.Entity<ArchivedGame>().Property(g => g.GameParticipation).HasConversion(gameJson);
+        modelBuilder.Entity<ErrorLogEntry>().HasIndex(entry => entry.OccurredAt);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

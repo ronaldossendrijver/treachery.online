@@ -136,4 +136,7 @@ public interface IGameService
     Task<string> AdminCancelGame(string scheduledGameId);
     Task<string> AdminDeleteUser(int userId);
     Task<string> GetAdminInfo();
+    ErrorLogInfo[] ErrorLogs { get; }
+    Task<string> GetAdminErrorLog(DateTimeOffset? from, DateTimeOffset? to, string? source, string? search);
+    Task ReportClientError(ClientErrorReport report);
 }

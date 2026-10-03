@@ -389,6 +389,55 @@
 
     <script type="text/javascript">
         window.addEventListener("resize", SetPlanetMapScale);
+
+        window.treacheryErrorLogging = (() => {
+            let dotNetReference;
+            const report = (source, message, details, lineNumber, columnNumber) => {
+                if (dotNetReference == null) return;
+                dotNetReference.invokeMethodAsync(
+                    "ReportClientError",
+                    source,
+                    String(message || "Unknown client error"),
+                    String(details || ""),
+                    window.location.pathname + window.location.hash,
+                    navigator.userAgent,
+                    lineNumber || null,
+                    columnNumber || null
+                ).catch(error => console.warn("Unable to report client error to treachery.online", error));
+            };
+            const onError = event => {
+                report(
+                    "JavaScript",
+                    event.message || "JavaScript resource failed to load",
+                    event.error && event.error.stack || "",
+                    event.lineno,
+                    event.colno
+                );
+            };
+            const onUnhandledRejection = event => {
+                const reason = event.reason;
+                report(
+                    "JavaScript",
+                    reason && reason.message || String(reason || "Unhandled promise rejection"),
+                    reason && reason.stack || ""
+                );
+            };
+
+            return {
+                start: reference => {
+                    dotNetReference = reference;
+                    window.addEventListener("error", onError);
+                    window.addEventListener("unhandledrejection", onUnhandledRejection);
+                },
+                stop: () => {
+                    window.removeEventListener("error", onError);
+                    window.removeEventListener("unhandledrejection", onUnhandledRejection);
+                    dotNetReference = null;
+                },
+                getUrl: () => window.location.pathname + window.location.hash,
+                getUserAgent: () => navigator.userAgent
+            };
+        })();
     </script>
 
 </body>

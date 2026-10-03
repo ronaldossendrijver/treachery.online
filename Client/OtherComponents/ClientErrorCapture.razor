@@ -1,0 +1,47 @@
+@implements IAsyncDisposable
+@inject IJSRuntime JavaScript
+@inject IGameService GameService
+
+@code {
+    private DotNetObjectReference<ClientErrorCapture>? _reference;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        _reference = DotNetObjectReference.Create(this);
+        await JavaScript.InvokeVoidAsync("treacheryErrorLogging.start", _reference);
+    }
+
+    [JSInvokable]
+    public Task ReportClientError(
+        string source,
+        string message,
+        string details,
+        string url,
+        string userAgent,
+        int? lineNumber,
+        int? columnNumber)
+    {
+        return GameService.ReportClientError(new ClientErrorReport
+        {
+            Source = source,
+            Message = message,
+            Details = details,
+            Url = url,
+            UserAgent = userAgent,
+            LineNumber = lineNumber,
+            ColumnNumber = columnNumber
+        });
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_reference == null)
+            return;
+
+        await JavaScript.InvokeVoidAsync("treacheryErrorLogging.stop");
+        _reference.Dispose();
+    }
+}
