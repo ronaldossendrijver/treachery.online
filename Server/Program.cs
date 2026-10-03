@@ -17,8 +17,11 @@ public static class Program
 {
     public static void Main(string[] args)
     {
+        Console.WriteLine($"{DateTime.Now:HH:mm:ss} Treachery.Server process starting (pid {Environment.ProcessId}, working directory '{Environment.CurrentDirectory}').");
         Message.DefaultDescriber = DefaultSkin.Default;
-        CreateHostBuilder(args).Build().Run();
+        var host = CreateHostBuilder(args).Build();
+        Console.WriteLine($"{DateTime.Now:HH:mm:ss} Treachery.Server host built; starting Run().");
+        host.Run();
     }
 
     private static IHostBuilder CreateHostBuilder(string[] args)
@@ -27,7 +30,11 @@ public static class Program
             .ConfigureLogging(logging =>
             {
                 logging.ClearProviders();
-                logging.AddConsole();
+                logging.AddSimpleConsole(options =>
+                {
+                    options.TimestampFormat = "HH:mm:ss ";
+                    options.SingleLine = true;
+                });
             })
             .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
     }

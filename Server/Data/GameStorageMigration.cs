@@ -1,17 +1,51 @@
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
+using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
 
 namespace Treachery.Server;
 
 public static class GameStorageMigration
 {
-    public static int Migrate(TreacheryContext context)
+    private const int ProgressInterval = 100;
+
+    public static int Migrate(TreacheryContext context, ILogger? logger = null)
     {
+        logger ??= Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
+        LogDataSource(context, logger);
+
+        logger.LogInformation("Applying database migrations...");
+        var stopwatch = Stopwatch.StartNew();
         context.Database.Migrate();
-        return CompressLegacyGames(context);
+        logger.LogInformation("Database migrations applied in {Elapsed}.", stopwatch.Elapsed);
+
+        stopwatch.Restart();
+        logger.LogInformation("Compressing legacy game JSON...");
+        var count = CompressLegacyGames(context, logger);
+        logger.LogInformation("Legacy game JSON compression finished: {RowCount} rows compressed in {Elapsed}.", count, stopwatch.Elapsed);
+        return count;
     }
 
-    private static int CompressLegacyGames(TreacheryContext context)
+    private static void LogDataSource(TreacheryContext context, ILogger logger)
+    {
+        try
+        {
+            var builder = new SqliteConnectionStringBuilder(context.Database.GetConnectionString());
+            var dataSource = builder.DataSource;
+            var fullPath = string.IsNullOrEmpty(dataSource) || dataSource == ":memory:" ? dataSource : Path.GetFullPath(dataSource);
+            var exists = !string.IsNullOrEmpty(fullPath) && File.Exists(fullPath);
+            var size = exists ? new FileInfo(fullPath).Length : 0;
+            logger.LogInformation("Using SQLite data source '{DataSource}' (full path: '{FullPath}', exists: {Exists}, size: {Size} bytes, working directory: '{WorkingDirectory}').",
+                dataSource, fullPath, exists, size, Environment.CurrentDirectory);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Unable to determine SQLite data source.");
+        }
+    }
+
+    private static int CompressLegacyGames(TreacheryContext context, ILogger logger)
     {
         var connection = context.Database.GetDbConnection();
         var wasClosed = connection.State == ConnectionState.Closed;
@@ -20,7 +54,7 @@ public static class GameStorageMigration
 
         try
         {
-            return CompressTable(connection, "PersistedGames") + CompressTable(connection, "ArchivedGames");
+            return CompressTable(connection, "PersistedGames", logger) + CompressTable(connection, "ArchivedGames", logger);
         }
         finally
         {
@@ -29,8 +63,21 @@ public static class GameStorageMigration
         }
     }
 
-    private static int CompressTable(DbConnection connection, string table)
+    private static int CompressTable(DbConnection connection, string table, ILogger logger)
     {
+        long remaining;
+        using (var countCommand = connection.CreateCommand())
+        {
+            countCommand.CommandText = $"""
+                SELECT COUNT(*)
+                FROM "{table}"
+                WHERE typeof("GameState") = 'text' OR typeof("GameParticipation") = 'text'
+                """;
+            remaining = Convert.ToInt64(countCommand.ExecuteScalar());
+        }
+
+        logger.LogInformation("Compressing table {Table}: {Remaining} rows need compression.", table, remaining);
+        var stopwatch = Stopwatch.StartNew();
         var count = 0;
         var lastId = long.MinValue;
         while (true)
@@ -55,7 +102,10 @@ public static class GameStorageMigration
             using (var reader = select.ExecuteReader())
             {
                 if (!reader.Read())
+                {
+                    logger.LogInformation("Finished compressing table {Table}: {RowCount} rows compressed in {Elapsed}.", table, count, stopwatch.Elapsed);
                     return count;
+                }
 
                 lastId = reader.GetInt64(0);
                 state = CompressIfText(reader.GetValue(1));
@@ -77,6 +127,9 @@ public static class GameStorageMigration
 
             transaction.Commit();
             count++;
+
+            if (count % ProgressInterval == 0)
+                logger.LogInformation("Compressing table {Table}: {RowCount}/{Remaining} rows done, elapsed {Elapsed}.", table, count, remaining, stopwatch.Elapsed);
         }
     }
 

@@ -65,7 +65,10 @@ public class Startup
         var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<Startup>>();
         try
         {
-            var compressedGames = GameStorageMigration.Migrate(context);
+            logger.LogInformation("Starting game database migration...");
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var compressedGames = GameStorageMigration.Migrate(context, logger);
+            logger.LogInformation("Game database migration completed in {Elapsed}.", stopwatch.Elapsed);
             if (compressedGames > 0)
                 logger.LogInformation("Compressed legacy JSON for {GameCount} games.", compressedGames);
         }
