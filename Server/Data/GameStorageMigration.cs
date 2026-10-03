@@ -20,6 +20,12 @@ public static class GameStorageMigration
         context.Database.Migrate();
         logger.LogInformation("Database migrations applied in {Elapsed}.", stopwatch.Elapsed);
 
+        if (!CompressedJson.CompressGameJson)
+        {
+            logger.LogInformation("Game JSON compression is disabled; skipping legacy game JSON compression.");
+            return 0;
+        }
+
         stopwatch.Restart();
         logger.LogInformation("Compressing legacy game JSON...");
         var count = CompressLegacyGames(context, logger);

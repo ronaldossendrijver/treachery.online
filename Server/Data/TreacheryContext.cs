@@ -15,14 +15,14 @@ public partial class TreacheryContext(DbContextOptions<TreacheryContext> options
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        var compressedJson = new ValueConverter<string, byte[]>(
-            json => CompressedJson.Compress(json),
-            data => CompressedJson.Decompress(data));
+        var gameJson = new ValueConverter<string, byte[]>(
+            json => CompressedJson.Encode(json),
+            data => CompressedJson.Decode(data));
 
-        modelBuilder.Entity<PersistedGame>().Property(g => g.GameState).HasConversion(compressedJson);
-        modelBuilder.Entity<PersistedGame>().Property(g => g.GameParticipation).HasConversion(compressedJson);
-        modelBuilder.Entity<ArchivedGame>().Property(g => g.GameState).HasConversion(compressedJson);
-        modelBuilder.Entity<ArchivedGame>().Property(g => g.GameParticipation).HasConversion(compressedJson);
+        modelBuilder.Entity<PersistedGame>().Property(g => g.GameState).HasConversion(gameJson);
+        modelBuilder.Entity<PersistedGame>().Property(g => g.GameParticipation).HasConversion(gameJson);
+        modelBuilder.Entity<ArchivedGame>().Property(g => g.GameState).HasConversion(gameJson);
+        modelBuilder.Entity<ArchivedGame>().Property(g => g.GameParticipation).HasConversion(gameJson);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

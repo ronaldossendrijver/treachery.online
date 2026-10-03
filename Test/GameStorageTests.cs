@@ -16,6 +16,7 @@ using Treachery.Server;
 namespace Treachery.Test;
 
 [TestClass]
+[DoNotParallelize]
 public sealed class GameStorageTests
 {
     private const string LegacyMigration = "20260729104158_NullabilityUpdates";
@@ -60,9 +61,56 @@ public sealed class GameStorageTests
         Assert.ThrowsExactly<InvalidDataException>(() => CompressedJson.Decompress(compressed[..^8]));
     }
 
+    [TestCleanup]
+    public void RestoreCompressionSetting() => CompressedJson.CompressGameJson = false;
+
+    [TestMethod]
+    public void CompressionIsDisabledByDefault()
+    {
+        Assert.IsFalse(CompressedJson.CompressGameJson);
+        Assert.AreEqual("{\"a\":1}", Encoding.UTF8.GetString(CompressedJson.Encode("{\"a\":1}")));
+    }
+
+    [TestMethod]
+    public void DecodeAcceptsCompressedAndPlainJson()
+    {
+        foreach (var json in new[] { "", "{}", "{\"name\":\"\u00e9\u6e38\"}" })
+        {
+            Assert.AreEqual(json, CompressedJson.Decode(CompressedJson.Compress(json)));
+            Assert.AreEqual(json, CompressedJson.Decode(Encoding.UTF8.GetBytes(json)));
+        }
+    }
+
+    [TestMethod]
+    public void LegacyDatabaseIsReadableWithoutCompressionAtStartup()
+    {
+        using var database = new TestDatabase();
+        var state = GameState.GetStateAsString(CreateGame());
+        const string participation = "{}";
+        using (var legacy = database.CreateContext())
+        {
+            legacy.GetService<IMigrator>().Migrate(LegacyMigration);
+            InsertGame(legacy, 1, state, participation);
+            InsertGame(legacy, 2, CompressedJson.Compress(state), participation);
+            InsertGame(legacy, 3, CompressedJson.Compress(state), CompressedJson.Compress(participation));
+        }
+
+        using var migrated = database.CreateContext();
+        Assert.AreEqual(0, GameStorageMigration.Migrate(migrated));
+        AssertStorageTypes(migrated, "PersistedGames", 1, "text", "text");
+        AssertStorageTypes(migrated, "PersistedGames", 2, "blob", "text");
+        AssertStorageTypes(migrated, "PersistedGames", 3, "blob", "blob");
+        foreach (var row in migrated.PersistedGames.AsNoTracking())
+        {
+            Assert.AreEqual(state, row.GameState);
+            Assert.AreEqual(participation, row.GameParticipation);
+        }
+    }
+
     [TestMethod]
     public void LegacyDatabaseMigratesAndRestoresGameWithoutChangingMetadata()
     {
+        CompressedJson.CompressGameJson = true;
         using var database = new TestDatabase();
         var game = CreateGame();
         var state = GameState.GetStateAsString(game);
@@ -134,8 +182,11 @@ public sealed class GameStorageTests
     }
 
     [TestMethod]
-    public void NewSavesAndUpdatesUseCompressedBlobs()
+    [DataRow(false)]
+    [DataRow(true)]
+    public void NewSavesAndUpdatesRoundTrip(bool compress)
     {
+        CompressedJson.CompressGameJson = compress;
         using var database = new TestDatabase();
         var game = CreateGame();
         var state = GameState.GetStateAsString(game);
@@ -154,6 +205,8 @@ public sealed class GameStorageTests
             context.SaveChanges();
             AssertStorageTypes(context, "PersistedGames", 1, "blob", "blob");
             AssertStorageTypes(context, "ArchivedGames", 1, "blob", "blob");
+            Assert.AreEqual(compress, IsStoredCompressed(context, "PersistedGames", 1));
+            Assert.AreEqual(compress, IsStoredCompressed(context, "ArchivedGames", 1));
             context.ChangeTracker.Clear();
             var saved = context.PersistedGames.Single();
             Assert.AreEqual(state, saved.GameState);
@@ -173,6 +226,7 @@ public sealed class GameStorageTests
     [TestMethod]
     public void InterruptedMigrationResumesWithoutRecompressingCompletedRows()
     {
+        CompressedJson.CompressGameJson = true;
         using var database = new TestDatabase();
         using (var context = database.CreateContext())
         {
@@ -233,7 +287,7 @@ public sealed class GameStorageTests
         try
         {
             using var context = database.CreateContext();
-            AssertStorageTypes(context, "PersistedGames", 1, "blob", "blob");
+            AssertStorageTypes(context, "PersistedGames", 1, "text", "text");
             Assert.AreEqual(state, context.PersistedGames.Single().GameState);
             var server = host.Services.GetRequiredService<IServer>();
             var addresses = server.Features.Get<IServerAddressesFeature>();
@@ -298,6 +352,21 @@ public sealed class GameStorageTests
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(stateType, reader.GetString(0));
             Assert.AreEqual(participationType, reader.GetString(1));
+        }
+        finally
+        {
+            context.Database.CloseConnection();
+        }
+    }
+
+    private static bool IsStoredCompressed(TreacheryContext context, string table, int id)
+    {
+        context.Database.OpenConnection();
+        try
+        {
+            using var command = context.Database.GetDbConnection().CreateCommand();
+            command.CommandText = $"""SELECT "GameState" FROM "{table}" WHERE "Id" = {id}""";
+            return CompressedJson.IsCompressed((byte[])command.ExecuteScalar()!);
         }
         finally
         {

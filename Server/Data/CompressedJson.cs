@@ -8,6 +8,19 @@ public static class CompressedJson
 {
     private static readonly Encoding Utf8 = new UTF8Encoding(false, true);
 
+    /// <summary>
+    /// When false, game JSON is written as uncompressed UTF-8 and legacy TEXT rows are left as-is at startup.
+    /// Reading always accepts gzip-compressed, uncompressed UTF-8 BLOB and legacy TEXT values.
+    /// </summary>
+    public static bool CompressGameJson { get; set; } = false;
+
+    public static byte[] Encode(string json) => CompressGameJson ? Compress(json) : Utf8.GetBytes(json);
+
+    // Valid JSON never starts with the gzip magic bytes (0x1f is a control character, 0x8b a UTF-8 continuation byte).
+    public static string Decode(byte[] data) => IsCompressed(data) ? Decompress(data) : Utf8.GetString(data);
+
+    public static bool IsCompressed(byte[] data) => data.Length >= 2 && data[0] == 0x1f && data[1] == 0x8b;
+
     public static byte[] Compress(string json)
     {
         using var output = new MemoryStream();
