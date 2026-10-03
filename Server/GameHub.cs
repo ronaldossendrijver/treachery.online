@@ -43,6 +43,12 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
 
     private TreacheryContext GetDbContext() => new(DbContextOptions, Configuration);
 
+    internal static bool TryGetLoggedInUser(string? userToken, [NotNullWhen(true)] out LoggedInUser? user)
+    {
+        user = null;
+        return userToken != null && UsersByUserToken.TryGetValue(userToken, out user);
+    }
+
     
     private static readonly char[] TokenChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".ToCharArray();
     private static readonly Random TokenRandom = new();

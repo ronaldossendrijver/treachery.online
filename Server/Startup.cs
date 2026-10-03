@@ -28,8 +28,12 @@ public class Startup
             {
                 options.EnableDetailedErrors = true;
                 options.MaximumReceiveMessageSize = 4194304;
+                options.AddFilter<ErrorLoggingHubFilter>();
             }).AddJsonProtocol(jsonOptions => GameEventJsonTypeInfoResolver.Configure(jsonOptions.PayloadSerializerOptions));
         services.AddDbContext<TreacheryContext>();
+        services.AddScoped<ErrorLogService>();
+        services.AddScoped<ErrorLoggingHubFilter>();
+        services.AddHostedService<ErrorLogCleanupService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,6 +50,8 @@ public class Startup
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }
+
+        app.UseMiddleware<ErrorLoggingMiddleware>();
 
         app.UseHttpsRedirection();
         app.UseBlazorFrameworkFiles();
@@ -71,6 +77,10 @@ public class Startup
             logger.LogInformation("Game database migration completed in {Elapsed}.", stopwatch.Elapsed);
             if (compressedGames > 0)
                 logger.LogInformation("Compressed legacy JSON for {GameCount} games.", compressedGames);
+            var deletedErrorLogs = context.ErrorLogs
+                .Where(entry => entry.OccurredAt < DateTime.UtcNow.AddDays(-30))
+                .ExecuteDelete();
+            logger.LogInformation("Deleted {DeletedCount} error-log entries older than 30 days.", deletedErrorLogs);
         }
         catch (Exception ex)
         {
