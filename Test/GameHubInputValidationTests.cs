@@ -254,6 +254,21 @@ public class GameHubInputValidationTests
     }
 
     [TestMethod]
+    public async Task CreateGameWithNullStateAndSkinReturnsLoadableGameState()
+    {
+        var account = await CreateAccount();
+        var result = await hub.RequestCreateGame("Game", account.Token, "", null, null);
+
+        Assert.IsTrue(result.Success);
+        Assert.IsNotNull(result.Contents);
+        var state = GameState.Load(result.Contents.GameState);
+        var loadError = Game.TryLoad(state, result.Contents.Participation, false, false, out var loadedGame);
+
+        Assert.IsNull(loadError);
+        Assert.IsNotNull(loadedGame);
+    }
+
+    [TestMethod]
     public async Task LegacyOversizedPlayerNameCannotPropagateIntoNewGamesOrParticipation()
     {
         var username = Guid.NewGuid().ToString("N");
