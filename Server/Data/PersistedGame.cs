@@ -30,6 +30,8 @@ public class PersistedGame
     
     public string GameState { get; set; } = string.Empty;
 
+    public string? GameInfo { get; set; }
+
     public string GameParticipation { get; set; } = string.Empty;
 
     [MaxLength(4000)] public string HashedPassword { get; init; } = string.Empty;

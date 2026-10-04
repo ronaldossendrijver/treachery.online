@@ -112,6 +112,9 @@ namespace Treachery.Server.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("GameInfo")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("GameName")
                         .IsRequired()
                         .HasMaxLength(128)

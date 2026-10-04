@@ -58,11 +58,7 @@
                                     @av.Name
                                 </td>
                                 <td class="w-25" style="@fontColorStyle">
-                                    @if (av.RequiresLoad)
-                                    {
-                                        <div>Saved game; open to load</div>
-                                    }
-                                    else
+                                    @if (av.HasDetails)
                                     {
                                         <div>@Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)
                                             <br>

@@ -191,12 +191,13 @@ public sealed class GameStorageTests
         var game = CreateGame();
         var state = GameState.GetStateAsString(game);
         var participation = Utilities.Serialize(game.Participation);
+        var info = Utilities.Serialize(Treachery.Shared.GameInfo.FromGame(game));
         using (var context = database.CreateContext())
         {
             Assert.AreEqual(0, GameStorageMigration.Migrate(context));
             context.PersistedGames.Add(new PersistedGame
             {
-                Id = 1, GameId = "new-game", GameState = state, GameParticipation = participation
+                Id = 1, GameId = "new-game", GameState = state, GameInfo = info, GameParticipation = participation
             });
             context.ArchivedGames.Add(new ArchivedGame
             {
@@ -210,8 +211,10 @@ public sealed class GameStorageTests
             context.ChangeTracker.Clear();
             var saved = context.PersistedGames.Single();
             Assert.AreEqual(state, saved.GameState);
+            Assert.AreEqual(info, saved.GameInfo);
             Assert.AreEqual(participation, saved.GameParticipation);
             saved.GameState = state + " ";
+            saved.GameInfo = info;
             saved.GameParticipation = "{}";
             context.SaveChanges();
         }
@@ -219,6 +222,7 @@ public sealed class GameStorageTests
         using var restarted = database.CreateContext();
         Assert.AreEqual(0, GameStorageMigration.Migrate(restarted));
         Assert.AreEqual(state + " ", restarted.PersistedGames.Single().GameState);
+        Assert.AreEqual(info, restarted.PersistedGames.Single().GameInfo);
         Assert.AreEqual("{}", restarted.PersistedGames.Single().GameParticipation);
         Assert.AreEqual(state, restarted.ArchivedGames.Single().GameState);
     }
@@ -269,11 +273,12 @@ public sealed class GameStorageTests
     public async Task ServerStartupMigratesLegacyDatabaseBeforeServingRequests()
     {
         using var database = new TestDatabase();
-        var state = GameState.GetStateAsString(CreateGame());
+        var game = CreateGame();
+        var state = GameState.GetStateAsString(game);
         using (var legacy = database.CreateContext())
         {
             legacy.GetService<IMigrator>().Migrate(LegacyMigration);
-            InsertGame(legacy, 1, state, "{}");
+            InsertGame(legacy, 1, state, Utilities.Serialize(game.Participation));
         }
 
         using var host = Host.CreateDefaultBuilder([])
@@ -295,6 +300,25 @@ public sealed class GameStorageTests
             using var client = new HttpClient { BaseAddress = new Uri(addresses.Addresses.Single()) };
             using var response = await client.PostAsync("/gameHub/negotiate?negotiateVersion=1", null);
             response.EnsureSuccessStatusCode();
+
+            PersistedGame? backfilledGame = null;
+            var backfillDeadline = DateTimeOffset.UtcNow.AddSeconds(5);
+            while (DateTimeOffset.UtcNow < backfillDeadline)
+            {
+                using var pollingContext = database.CreateContext();
+                backfilledGame = await pollingContext.PersistedGames.AsNoTracking().SingleAsync();
+                if (backfilledGame.GameInfo != null)
+                    break;
+
+                await Task.Delay(25);
+            }
+
+            Assert.IsNotNull(backfilledGame?.GameInfo);
+            var info = Utilities.Deserialize<Treachery.Shared.GameInfo>(backfilledGame.GameInfo);
+            Assert.IsNotNull(info);
+            Assert.IsTrue(info.HasDetails);
+            Assert.AreEqual(2, info.MaxPlayers);
+            Assert.AreEqual(2, info.NrOfPlayers);
         }
         finally
         {

@@ -675,7 +675,7 @@ public partial class GameHub
         UpdateServerStatusIfNeeded();
     }
 
-    private static void UpdateServerStatusIfNeeded(bool forceUpdate = false)
+    private void UpdateServerStatusIfNeeded(bool forceUpdate = false)
     {
         var now = DateTimeOffset.Now;
         
@@ -766,7 +766,7 @@ public partial class GameHub
         await SendMail(mailMessage);
     }
     
-    private static GameInfo ExtractGameInfo(ManagedGame managedGame)
+    private GameInfo ExtractGameInfo(ManagedGame managedGame)
     {
         var common = new GameInfo
         {
@@ -780,21 +780,15 @@ public partial class GameHub
             SeatedPlayers = managedGame.Participation.SeatedPlayers
         };
 
-        if (!managedGame.IsLoaded)
+        GameInfo? details;
+        if (managedGame.IsLoaded)
         {
-            return new GameInfo
-            {
-                GameId = common.GameId,
-                CreatorId = common.CreatorId,
-                CreatorUsername = common.CreatorUsername,
-                CreationDate = common.CreationDate,
-                LastActivity = common.LastActivity,
-                Name = common.Name,
-                HasPassword = common.HasPassword,
-                RequiresLoad = true,
-                SeatedPlayers = common.SeatedPlayers,
-                NrOfPlayers = managedGame.Participation.SeatedPlayers.Count
-            };
+            details = GameInfo.FromGame(managedGame.Game);
+            GameInfoSummaryCache.Set(managedGame.GameId, details);
+        }
+        else
+        {
+            GameInfoSummaryCache.TryGet(managedGame.GameId, out details);
         }
 
         return new GameInfo
@@ -806,28 +800,19 @@ public partial class GameHub
             LastActivity = common.LastActivity,
             Name = common.Name,
             HasPassword = common.HasPassword,
-            FactionsInPlay = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ?
-                managedGame.Game.Settings.AllowedFactionsInPlay.ToArray() :
-                managedGame.Game.Players.Where(p => p.Faction != Faction.None).Select(p => p.Faction).ToArray(),
-            NrOfBots = managedGame.Game.NumberOfBots,
-            Ruleset = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ?
-                Game.DetermineApproximateRuleset(managedGame.Game.Settings.AllowedFactionsInPlay, managedGame.Game.Settings.InitialRules, Game.ExpansionLevel) :
-                Game.DetermineApproximateRuleset(managedGame.Game.Players.Select(p => p.Faction).ToList(), managedGame.Game.Rules, Game.ExpansionLevel),
-            MainPhase = managedGame.Game.CurrentMainPhase,
-            Phase = managedGame.Game.CurrentPhase,
-            Turn = managedGame.Game.CurrentTurn,
-            MaxPlayers = managedGame.Game.Settings.NumberOfPlayers,
-            MaxTurns = managedGame.Game.Settings.MaximumTurns,
-            NrOfPlayers = managedGame.Game.Participation.SeatedPlayers.Count,
-            SeatedPlayers = managedGame.Game.Participation.SeatedPlayers,
-            AvailableSeats = managedGame.Game.Players
-                .Where(p => managedGame.Game.SeatIsAvailable(p.Seat))
-                .Select(p => new AvailableSeatInfo
-                {
-                    Seat = p.Seat,
-                    Faction = p.Faction,
-                    IsBot = p.IsBot
-                }).ToArray()
+            RequiresLoad = !managedGame.IsLoaded,
+            HasDetails = details?.HasDetails == true,
+            FactionsInPlay = details?.FactionsInPlay ?? [],
+            NrOfBots = details?.NrOfBots ?? 0,
+            Ruleset = details?.Ruleset ?? default,
+            MainPhase = details?.MainPhase ?? default,
+            Phase = details?.Phase ?? default,
+            Turn = details?.Turn ?? 0,
+            MaxPlayers = details?.MaxPlayers ?? 0,
+            MaxTurns = details?.MaxTurns ?? 0,
+            NrOfPlayers = managedGame.Participation.SeatedPlayers.Count,
+            SeatedPlayers = managedGame.Participation.SeatedPlayers,
+            AvailableSeats = details?.AvailableSeats ?? []
         };
     }
 }
