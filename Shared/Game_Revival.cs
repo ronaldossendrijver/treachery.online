@@ -166,7 +166,7 @@ public partial class Game
         if (freeRevivedSpecialForces > 0)
         {
             player.ReviveSpecialForces(freeRevivedSpecialForces);
-            FactionsThatRevivedSpecialForcesThisTurn.Add(player.Faction);
+            if (Version >= 188) FactionsThatRevivedSpecialForcesThisTurn.Add(player.Faction);
         }
        
         if (player.Faction != Faction.Purple) RevivalTechTokenIncome = true;
