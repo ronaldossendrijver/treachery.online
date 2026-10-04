@@ -594,10 +594,13 @@ public partial class GameHub
             
             case GameListScope.All:
             {
+                var recentGames = RunningGames
+                    .Where(game => game.CreationDate >= DateTimeOffset.Now.AddMonths(-1))
+                    .ToArray();
                 var completeServerStatus = new ServerStatus
                 {
-                    RunningGames = RunningGames,
-                    OwnGames = RunningGames.Where(mg => mg.CreatorId == userId).ToArray(),
+                    RunningGames = recentGames,
+                    OwnGames = recentGames.Where(mg => mg.CreatorId == userId).ToArray(),
                     ScheduledGames = ScheduledGames,
                     RecentlySeenUsers = RecentlySeenUsers,
                 };

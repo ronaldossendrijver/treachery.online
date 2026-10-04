@@ -21,7 +21,7 @@
 
         if (IsBiddingPhase || OneOrMorePlayersNeedToAct || PlayersAreInSequence) {
 
-            <ErrorBoundary @ref=_errorBoundary>
+            <ErrorLoggingBoundary @ref=_errorBoundary>
 
                 <ChildContent>
 
@@ -99,11 +99,11 @@
                     </div>
                 </ErrorContent>
 
-            </ErrorBoundary>
+            </ErrorLoggingBoundary>
         }
 
         <div class="text-dark fw-bold text-center" style="@StatusStyle">
-            <ExpressionComponent Game=Game Expression=@Client.Status.GetMessage(Client.Player!, Client.IsHost).Expression Size="20"/>
+            <ExpressionComponent Game=Game Expression=@Client.Status.GetMessage(Client.Player, Client.IsHost).Expression Size="20"/>
         </div>
 
         @if (!AutoConfirm && CanEndPhase)
@@ -143,7 +143,7 @@
     private bool TimeLimitSet { get; set; }
     private int TimeLimit { get; set; } = 20;
 
-    private ErrorBoundary? _errorBoundary;
+    private ErrorLoggingBoundary? _errorBoundary;
 
     protected override async Task OnInitializedAsync()
     {

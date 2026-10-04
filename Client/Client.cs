@@ -9,6 +9,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     //Admin info
     public AdminInfo AdminInfo { get; private set; } = null!;
+    public ErrorLogInfo[] ErrorLogs { get; private set; } = [];
     
     //Server info
     public bool IsAdmin { get; set; } = false;
@@ -85,6 +87,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     private readonly HubConnection _connection;
     private Browser Browser { get; }
+    private readonly ConcurrentQueue<ClientErrorReport> _pendingClientErrors = new();
+    private int _pendingClientErrorCount;
     
     public Client(NavigationManager navigationManager, Browser browser)
     {
@@ -115,6 +119,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     {
         await _connection.StartAsync();
         await Connect();
+        await FlushPendingClientErrors();
         
         if (!string.IsNullOrEmpty(userToken) && !string.IsNullOrEmpty(gameId))
         {
@@ -485,11 +490,14 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     //Game Management
 
+    private static string HashGamePassword(string? password)
+        => string.IsNullOrEmpty(password) ? string.Empty : Support.GetHash(password);
+
     public async Task<string?> RequestCreateGame(string name, string password, string? stateData = null, string? skinData = null)
     {
         if (!LoggedIn) return "Not logged in";
         
-        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestCreateGame), name, UserToken, password, stateData, skinData);
+        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestCreateGame), name, UserToken, HashGamePassword(password), stateData, skinData);
         if (result is { Success: true, Contents: not null })
         {
             var loadMessage = await LoadGame(result.Contents);
@@ -541,7 +549,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public async Task<string?> RequestJoinGame(string gameId, string password, int seat)
     {
-        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestJoinGame), UserToken, gameId, password, seat);
+        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestJoinGame), UserToken, gameId, HashGamePassword(password), seat);
         if (!result.Success || result.Contents is null) 
             return CurrentSkin.Describe(result.Error);
         
@@ -561,7 +569,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public async Task<string?> RequestObserveGame(string gameId, string password)
     {
-        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestObserveGame), UserToken, gameId, password);
+        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestObserveGame), UserToken, gameId, HashGamePassword(password));
         if (!result.Success || result.Contents is null) 
             return CurrentSkin.Describe(result.Error);
         
@@ -784,6 +792,63 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
     }
 
+    public async Task<string> GetAdminErrorLog(DateTimeOffset? from, DateTimeOffset? to, int? gameVersion)
+    {
+        if (!LoggedIn) return "Not logged in";
+
+        var result = await Invoke<ErrorLogInfo[]>(nameof(IGameHub.GetAdminErrorLog), UserToken, from, to, gameVersion);
+        if (result is { Success: true, Contents: not null })
+        {
+            ErrorLogs = result.Contents;
+            return $"Retrieved {ErrorLogs.Length} error-log entries";
+        }
+
+        return CurrentSkin.Describe(result.Error);
+    }
+
+    public async Task ReportClientError(ClientErrorReport report)
+    {
+        if (!IsConnected)
+        {
+            if (Interlocked.Increment(ref _pendingClientErrorCount) <= 20)
+                _pendingClientErrors.Enqueue(report);
+            else
+            {
+                Interlocked.Decrement(ref _pendingClientErrorCount);
+                Support.Log("Unable to queue client error because the pending error queue is full.");
+            }
+            return;
+        }
+
+        await SendClientError(report);
+    }
+
+    private async Task FlushPendingClientErrors()
+    {
+        while (IsConnected && _pendingClientErrors.TryDequeue(out var report))
+        {
+            Interlocked.Decrement(ref _pendingClientErrorCount);
+            await SendClientError(report);
+        }
+    }
+
+    private async Task SendClientError(ClientErrorReport report)
+    {
+        try
+        {
+            var result = await _connection.InvokeAsync<VoidResult>(
+                nameof(IGameHub.ReportClientError),
+                UserToken,
+                report);
+            if (!result.Success)
+                Support.Log($"Unable to record client error: {result.Error}: {result.ErrorDetails}");
+        }
+        catch (Exception exception)
+        {
+            Support.Log($"Unable to send client error to the server: {exception}");
+        }
+    }
+
     private async Task Heartbeat()
     {
         try
@@ -855,25 +920,32 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     private async Task PerformPostEventTasks()
     {
-        if (!InGame || Player is null) return;
-        
-        Status = GameStatus.DetermineStatus(Game, Player, !IsObserver);
-        Actions = Game.GetApplicableEvents(Player, IsHost);
+        if (!InGame)
+            return;
 
-        var lastActionTime = Game.LastAction;
-        if (!Status.WaitingForHost && IsHost && Status.WaitingForPlayers.Count > 0 && Status.WaitingForPlayers.All(p => p.IsBot))
-            _ = Task.Delay(NudgeBotsDelay).ContinueWith(_ => RequestNudgeBots(lastActionTime));
-        
-        await TurnAlert();
-        await PlaySoundsForMilestones();
-        await Browser.RemoveFocusFromButtons();
+        var player = Player;
+        if (player is null && !IsObserver)
+            return;
 
-        if (Game.CurrentMainPhase == MainPhase.Bidding) 
-            ResetAutoPassThreshold();
+        Status = GameStatus.DetermineStatus(Game, player, player != null);
+        Actions = player is null ? [] : Game.GetApplicableEvents(player, IsHost);
+
+        if (player != null)
+        {
+            var lastActionTime = Game.LastAction;
+            if (!Status.WaitingForHost && IsHost && Status.WaitingForPlayers.Count > 0 && Status.WaitingForPlayers.All(p => p.IsBot))
+                _ = Task.Delay(NudgeBotsDelay).ContinueWith(_ => RequestNudgeBots(lastActionTime));
+
+            await TurnAlert();
+            await PlaySoundsForMilestones();
+            await Browser.RemoveFocusFromButtons();
+
+            if (Game.CurrentMainPhase == MainPhase.Bidding)
+                ResetAutoPassThreshold();
+        }
 
         Refresh(nameof(PerformPostEventTasks));
     }
-
     private async Task RequestNudgeBots(DateTime gameLastAction)
     {
         if (!InGame) return;
@@ -914,7 +986,11 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             await Browser.PlaySound(CurrentSkin.GetSound(m), CurrentEffectVolume);
     }
 
-    private async Task OnReconnected(string? _) => await RequestReconnectGame();
+    private async Task OnReconnected(string? _)
+    {
+        await RequestReconnectGame();
+        await FlushPendingClientErrors();
+    }
 
     private Task OnDisconnected(Exception? arg)
     {

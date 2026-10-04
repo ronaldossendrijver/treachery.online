@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Treachery.Server;
 
@@ -10,9 +11,11 @@ using Treachery.Server;
 namespace Treachery.Server.Migrations
 {
     [DbContext(typeof(TreacheryContext))]
-    partial class TreacheryContextModelSnapshot : ModelSnapshot
+    [Migration("20261003161915_ErrorLogAdded")]
+    partial class ErrorLogAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.12");
@@ -54,9 +57,6 @@ namespace Treachery.Server.Migrations
                         .IsRequired()
                         .HasMaxLength(16000)
                         .HasColumnType("TEXT");
-
-                    b.Property<int?>("GameVersion")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Message")
                         .IsRequired()

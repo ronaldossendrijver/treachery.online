@@ -75,6 +75,10 @@ public class Browser(IJSRuntime jsRuntime)
     {
         return await JsInvoke<bool>("UrlExists", url);
     }
+    public async Task<bool> CopyToClipboard(string text)
+    {
+        return await JsInvoke<bool>("CopyToClipboard", text);
+    }
 
     public async Task SetPlanetMapScale()
     {

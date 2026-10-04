@@ -22,7 +22,7 @@
     @if (!_collapsedInternal) 
     {
         <div class="card-body" style="@BodyStyle">
-            <ErrorBoundary @ref=_errorBoundary>
+            <ErrorLoggingBoundary @ref=_errorBoundary>
                 <ChildContent>
                     @Body
                 </ChildContent>
@@ -37,7 +37,7 @@
                         button and include a savegame file of the current situation.
                     </div>
                 </ErrorContent>
-            </ErrorBoundary>
+            </ErrorLoggingBoundary>
         </div>
     }
 
@@ -95,7 +95,7 @@
 
     private string Border => IsUrgent ? "border-white" : "";
 
-    private ErrorBoundary? _errorBoundary;
+    private ErrorLoggingBoundary? _errorBoundary;
 
     protected override void OnAfterRender(bool firstRender)
     {

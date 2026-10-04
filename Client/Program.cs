@@ -10,6 +10,7 @@
 using System.Net.Http;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Treachery.Client;
 
@@ -22,6 +23,7 @@ public class Program
         builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
         builder.Services.AddSingleton<IGameService, Client>();
         builder.Services.AddSingleton<Browser>();
+        builder.Services.AddSingleton<ILoggerProvider, ClientErrorLoggerProvider>();
         await builder.Build().RunAsync();
     }
 }

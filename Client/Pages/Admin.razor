@@ -98,10 +98,6 @@ else
                 <div class="card-body">
                     <div class="row g-2 mb-3">
                         <div class="col-sm-12 col-md-4">
-                            <label class="form-label" for="gameUsernameFilter">Username</label>
-                            <input id="gameUsernameFilter" class="form-control form-control-sm" @bind="@GameUsernameFilter" @bind:event="oninput"/>
-                        </div>
-                        <div class="col-sm-12 col-md-4">
                             <label class="form-label" for="gameTimeFromFilter">Game time from</label>
                             <input id="gameTimeFromFilter" type="datetime-local" class="form-control form-control-sm"
                                    @bind="@GameTimeFrom" @bind:format="yyyy-MM-ddTHH:mm"/>
@@ -110,6 +106,10 @@ else
                             <label class="form-label" for="gameTimeToFilter">Game time to</label>
                             <input id="gameTimeToFilter" type="datetime-local" class="form-control form-control-sm"
                                    @bind="@GameTimeTo" @bind:format="yyyy-MM-ddTHH:mm"/>
+                        </div>
+                        <div class="col-sm-12 col-md-4">
+                            <label class="form-label" for="gameUsernameFilter">Username</label>
+                            <input id="gameUsernameFilter" class="form-control form-control-sm" @bind="@GameUsernameFilter" @bind:event="oninput"/>
                         </div>
                     </div>
                     <table class="table table-sm">
@@ -150,6 +150,67 @@ else
                         }
                         </tbody>
                     </table>
+                </div>
+            </div>
+            <div class="card mb-2">
+                <div class="card-header">Error log</div>
+                <div class="card-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col-sm-12 col-md-3">
+                            <label class="form-label" for="errorLogVersion">Version</label>
+                            <input id="errorLogVersion" type="number" class="form-control form-control-sm"
+                                   @bind="ErrorLogVersion"/>
+                        </div>
+                        <div class="col-sm-12 col-md-3">
+                            <label class="form-label" for="errorLogFrom">From</label>
+                            <input id="errorLogFrom" type="datetime-local" class="form-control form-control-sm"
+                                   @bind="ErrorLogFrom" @bind:format="yyyy-MM-ddTHH:mm"/>
+                        </div>
+                        <div class="col-sm-12 col-md-3">
+                            <label class="form-label" for="errorLogTo">To</label>
+                            <input id="errorLogTo" type="datetime-local" class="form-control form-control-sm"
+                                   @bind="ErrorLogTo" @bind:format="yyyy-MM-ddTHH:mm"/>
+                        </div>
+                        <div class="col-sm-12 col-md-3 d-flex align-items-end">
+                            <button class="btn btn-primary btn-sm" @onclick="LoadErrorLog">Filter</button>
+                        </div>
+                    </div>
+                    <p class="small">Showing up to 500 entries. Entries are retained for 30 days.</p>
+                    <div class="table-responsive">
+                        <table class="table table-sm" style="table-layout:fixed;width:100%">
+                            <thead>
+                            <tr class="small table-dark">
+                                <th>Time</th>
+                                <th>Version</th>
+                                <th>Source</th>
+                                <th>User</th>
+                                <th style="width:35%">Message</th>
+                                <th style="width:35%">Details</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var error in Client.ErrorLogs)
+                            {
+                                <tr class="small table-dark">
+                                    <td>@error.OccurredAt.LocalDateTime</td>
+                                    <td>@(error.GameVersion?.ToString() ?? "Unknown")</td>
+                                    <td>@error.Source</td>
+                                    <td>@(error.Username ?? error.UserId?.ToString() ?? "")</td>
+                                    <td style="width:35%;overflow-wrap:anywhere">@error.Message</td>
+                                    <td style="width:35%">
+                                        <details>
+                                            <summary>View</summary>
+                                            <pre class="text-wrap" title="Click to copy error details"
+                                                 style="white-space:pre-wrap;overflow-wrap:anywhere;cursor:pointer"
+                                                 @onclick="@(() => CopyErrorDetails(error))">@error.Details</pre>
+                                            <div>@error.UserAgent</div>
+                                        </details>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             <div class="card mb-2">
@@ -197,6 +258,9 @@ else
     private string GameUsernameFilter { get; set; } = string.Empty;
     private DateTime? GameTimeFrom { get; set; }
     private DateTime? GameTimeTo { get; set; }
+    private int? ErrorLogVersion { get; set; }
+    private DateTime? ErrorLogFrom { get; set; }
+    private DateTime? ErrorLogTo { get; set; }
     private List<string> Messages { get; } = [];
 
     private IEnumerable<GameInfo> FilteredGames => Client.ActiveGames
@@ -210,8 +274,15 @@ else
     {
         Client.RefreshHandler += StateHasChanged;
         Client.IsAdmin = true;
+        GameTimeFrom = DateTime.Now.AddMonths(-1);
+        GameTimeTo = DateTime.Now;
+        ErrorLogVersion = Game.LatestVersion;
+        ErrorLogFrom = DateTime.Now.AddDays(-31);
+        ErrorLogTo = DateTime.Now;
         await Client.Start();
         MaintenanceDate = Client.ServerInfo?.ScheduledMaintenance ?? DateTimeOffset.MinValue;
+        if (Client.LoggedIn)
+            await LoadErrorLog();
     }
 
     public void Dispose()
@@ -231,6 +302,26 @@ else
     {
         Messages.Add(await Client.GetAdminInfo());
         StateHasChanged();
+    }
+
+    private async Task LoadErrorLog()
+    {
+        if (!Client.LoggedIn)
+            return;
+
+        Messages.Add(await Client.GetAdminErrorLog(
+            ErrorLogFrom.HasValue ? new DateTimeOffset(ErrorLogFrom.Value) : null,
+            ErrorLogTo.HasValue ? new DateTimeOffset(ErrorLogTo.Value) : null,
+            ErrorLogVersion));
+        StateHasChanged();
+    }
+    private async Task CopyErrorDetails(ErrorLogInfo error)
+    {
+        var contents = error.Details;
+        if (!string.IsNullOrWhiteSpace(error.UserAgent))
+            contents += $"{Environment.NewLine}User agent: {error.UserAgent}";
+
+        await Browser.CopyToClipboard(contents);
     }
     
     private async Task PersistState()

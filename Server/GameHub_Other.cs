@@ -2,6 +2,8 @@
 
 public partial class GameHub
 {
+    private static ConcurrentDictionary<string, DateTimeOffset> LastClientErrorReportByConnectionId { get; } = [];
+
     public async Task<Result<ServerInfo>> Connect()
     {
         await Task.CompletedTask;
@@ -288,6 +290,16 @@ public partial class GameHub
     }
 
     private static bool Restoring { get; set; }
+
+    // Games created before passwords were hashed on the client stored the plain password.
+    private static string NormalizeLegacyGamePassword(string storedPassword)
+    {
+        if (string.IsNullOrEmpty(storedPassword) || ValidatePasswordHash(storedPassword) == ErrorType.None)
+            return storedPassword;
+
+        var bytes = System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(storedPassword));
+        return Convert.ToHexStringLower(bytes);
+    }
     
     private async Task RestoreGamesIfServerJustStarted()
     {
@@ -335,7 +347,7 @@ public partial class GameHub
                             GameId = persistedGame.GameId,
                             Game = game,
                             Name = gameName,
-                            HashedPassword = persistedGame.HashedPassword,
+                            HashedPassword = NormalizeLegacyGamePassword(persistedGame.HashedPassword),
                             ObserversRequirePassword = persistedGame.ObserversRequirePassword,
                             StatisticsSent = persistedGame.StatisticsSent,
                             LastActivity = persistedGame.LastAction,
@@ -471,6 +483,88 @@ public partial class GameHub
 
         await Task.CompletedTask;
         return Success(result);
+    }
+
+    public async Task<Result<ErrorLogInfo[]>> GetAdminErrorLog(
+        string userToken,
+        DateTimeOffset? from,
+        DateTimeOffset? to,
+        int? gameVersion)
+    {
+        if (string.IsNullOrEmpty(userToken) || !UsersByUserToken.TryGetValue(userToken, out var user) ||
+            user.Username != Configuration["GameAdminUsername"])
+            return Error<ErrorLogInfo[]>(ErrorType.InvalidUserNameOrPassword);
+
+        await using var context = GetDbContext();
+        var query = context.ErrorLogs.AsNoTracking();
+        if (from.HasValue)
+            query = query.Where(entry => entry.OccurredAt >= from.Value.UtcDateTime);
+        if (to.HasValue)
+            query = query.Where(entry => entry.OccurredAt <= to.Value.UtcDateTime);
+        if (gameVersion.HasValue)
+            query = query.Where(entry => entry.GameVersion == gameVersion.Value);
+
+        var logs = await query
+            .OrderByDescending(entry => entry.OccurredAt)
+            .Take(500)
+            .Select(entry => new ErrorLogInfo
+            {
+                Id = entry.Id,
+                OccurredAt = new DateTimeOffset(DateTime.SpecifyKind(entry.OccurredAt, DateTimeKind.Utc)),
+                GameVersion = entry.GameVersion,
+                Source = entry.Source,
+                Message = entry.Message,
+                Details = entry.Details,
+                Url = entry.Url,
+                UserAgent = entry.UserAgent,
+                UserId = entry.UserId,
+                Username = entry.Username
+            })
+            .ToArrayAsync();
+
+        return Success(logs);
+    }
+
+    public async Task<VoidResult> ReportClientError(string? userToken, ClientErrorReport report)
+    {
+        if (report is null || report.Source is not ("JavaScript" or "Blazor"))
+            return Error(ErrorType.InvalidGameEvent);
+
+        var now = DateTimeOffset.UtcNow;
+        var connectionId = Context.ConnectionId;
+        while (true)
+        {
+            var lastReport = LastClientErrorReportByConnectionId.GetOrAdd(connectionId, DateTimeOffset.MinValue);
+            if (now - lastReport < TimeSpan.FromSeconds(2))
+                return Error(ErrorType.InvalidGameEvent, "Client error reporting rate limited.");
+            if (LastClientErrorReportByConnectionId.TryUpdate(connectionId, now, lastReport))
+                break;
+        }
+
+        GameHub.TryGetLoggedInUser(userToken, out var user);
+        var details = report.Details;
+        if (report.LineNumber.HasValue)
+            details += $"\nLine: {report.LineNumber}, column: {report.ColumnNumber}";
+
+        var httpContext = Context.GetHttpContext()
+                         ?? throw new InvalidOperationException("Client error reports require an HTTP connection.");
+        var errorLog = httpContext.RequestServices.GetRequiredService<ErrorLogService>();
+        await errorLog.RecordAsync(
+            $"Client/{report.Source}",
+            report.Message,
+            details,
+            report.Url,
+            report.UserAgent,
+            user?.Id,
+            user?.Username);
+
+        return Success();
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        LastClientErrorReportByConnectionId.TryRemove(Context.ConnectionId, out _);
+        await base.OnDisconnectedAsync(exception);
     }
     
     public async Task<VoidResult> RequestNudgeBots(string userToken, string gameId)

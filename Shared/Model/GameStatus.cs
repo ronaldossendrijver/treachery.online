@@ -60,14 +60,14 @@ public class GameStatus
     {
     }
 
-    public bool WaitingForMe(Player player, bool isHost)
+    public bool WaitingForMe(Player? player, bool isHost)
     {
         return (WaitingForHost && isHost) ||
-               WaitingForPlayers.Contains(player) ||
+               (player != null && WaitingForPlayers.Contains(player)) ||
                WaitingInSequence.Any(se => se.Player == player && se.HasTurn);
     }
 
-    public bool WaitingForOthers(Player player, bool isHost)
+    public bool WaitingForOthers(Player? player, bool isHost)
     {
         return !WaitingForMe(player, isHost);
     }
@@ -77,10 +77,10 @@ public class GameStatus
         return WaitingForPlayers.Contains(p);
     }
 
-    public Message GetMessage(Player player, bool isHost) 
+    public Message GetMessage(Player? player, bool isHost)
         => WaitingForMe(player, isHost) ? DescriptionWhenAwaited : DescriptionWhenWaiting;
 
-    public static GameStatus DetermineStatus(Game game, Player me, bool isPlayer)
+    public static GameStatus DetermineStatus(Game game, Player? me, bool isPlayer)
     {
         var result = game.CurrentPhase switch
         {
@@ -519,7 +519,7 @@ public class GameStatus
             Phase.None or _ => Status(Express("Unknown phase: " + game.CurrentPhase))
         };
 
-        result.FlashInfo = DetermineFlash(game, me.Faction, isPlayer);
+        result.FlashInfo = DetermineFlash(game, me?.Faction ?? Faction.None, isPlayer);
         result.HighlightedTerritories = DetermineHighlights(game).ToList();
 
         return result;
@@ -603,7 +603,7 @@ public class GameStatus
         };
     }
 
-    private static GameStatus DetermineBattleStatus(Game game, Player me)
+    private static GameStatus DetermineBattleStatus(Game game, Player? me)
     {
         if (game.CurrentBattle == null)
             return Status(
@@ -614,11 +614,11 @@ public class GameStatus
         var latestBattleEvent = game.LatestEvent(typeof(BattleInitiated));
         var toMakePlan = PlayersThatNeedToMakeABattlePlan(game);
 
-        if (game.CurrentBattle!.Aggressor == me.Faction)
+        if (me != null && game.CurrentBattle!.Aggressor == me.Faction)
             return Status(
                 Express("You are aggressor against ", game.CurrentBattle!.Defender, " in ", game.CurrentBattle!.Territory, "! Please confirm your Battle Plan."),
                 Express("You are waiting for ", game.CurrentBattle!.Defender, " to defend ", game.CurrentBattle!.Territory, "..."), toMakePlan, latestBattleEvent);
-        if (game.CurrentBattle!.Defender == me.Faction)
+        if (me != null && game.CurrentBattle!.Defender == me.Faction)
             return Status(
                 Express("You must defend against ", game.CurrentBattle!.Aggressor, " in ", game.CurrentBattle!.Territory, "! Please confirm your Battle Plan."),
                 Express("You are waiting for ", game.CurrentBattle!.Aggressor, " to attack ", game.CurrentBattle!.Territory, "..."), toMakePlan, latestBattleEvent);

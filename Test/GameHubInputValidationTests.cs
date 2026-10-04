@@ -1,4 +1,4 @@
-using System.Threading;
+﻿using System.Threading;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -79,6 +79,14 @@ public class GameHubInputValidationTests
     private static string BoundaryEmail(int length) =>
         $"{new string('a', 64)}@{new string('b', 63)}.{new string('c', 63)}.{new string('d', length - 197)}.com";
 
+    [TestMethod]
+    public async Task AdminErrorLogRejectsAnonymousRequestWithoutThrowing()
+    {
+        var result = await hub.GetAdminErrorLog(null!, null, null, null);
+
+        Assert.IsFalse(result.Success);
+        Assert.AreEqual(ErrorType.InvalidUserNameOrPassword, result.Error);
+    }
     [TestMethod]
     public async Task CreationAndUpdateAcceptEmailAt254CharacterBoundary()
     {
@@ -251,6 +259,22 @@ public class GameHubInputValidationTests
         var saved = db.PersistedGames.Single();
         Assert.AreEqual(name, saved.GameName);
         Assert.AreEqual(passwordHash, saved.HashedPassword);
+    }
+
+    [TestMethod]
+    public async Task GameCreatedWithClientPasswordHashCanBeJoinedWithSamePassword()
+    {
+        var host = await CreateAccount();
+        var clientHash = Treachery.Client.Support.GetHash("xxx");
+        var game = await hub.RequestCreateGame("Protected game", host.Token, clientHash, "", "");
+        Assert.IsTrue(game.Success, game.Error.ToString());
+        Assert.IsNotNull(game.Contents);
+
+        var player = await CreateAccount();
+        var wrong = await hub.RequestJoinGame(player.Token, game.Contents.GameId, Treachery.Client.Support.GetHash("yyy"), -1);
+        Assert.IsFalse(wrong.Success);
+        var join = await hub.RequestJoinGame(player.Token, game.Contents.GameId, Treachery.Client.Support.GetHash("xxx"), -1);
+        Assert.IsTrue(join.Success, join.Error.ToString());
     }
 
     [TestMethod]
