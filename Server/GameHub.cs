@@ -1,6 +1,9 @@
 ﻿namespace Treachery.Server;
 
-public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions, IConfiguration configuration)
+public partial class GameHub(
+    DbContextOptions<TreacheryContext> dbContextOptions,
+    IConfiguration configuration,
+    GameInfoSummaryCache gameInfoSummaryCache)
     : Hub<IGameClient>, IGameHub
 {
     private const int CleanupFrequencyHours = 7;
@@ -39,6 +42,8 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     private static DateTimeOffset LastUpdatedServerStatus { get; set; }
     
     private IConfiguration Configuration { get; } = configuration;
+
+    private GameInfoSummaryCache GameInfoSummaryCache { get; } = gameInfoSummaryCache;
 
     private DbContextOptions<TreacheryContext> DbContextOptions { get; } = dbContextOptions;
 

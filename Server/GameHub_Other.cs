@@ -123,13 +123,14 @@ public partial class GameHub
                 var persistedGame = await context.PersistedGames.FirstOrDefaultAsync(g => g.GameId == game.GameId);
                 if (persistedGame != null)
                 {
-                    if (persistedGame.LastAction == game.LastActivity)
+                    if (persistedGame.LastAction == game.LastActivity && persistedGame.GameInfo != null)
                     {
                         amountOfUnchanged++;
                         continue;
                     }
                     
                     persistedGame.GameState = GameState.GetStateAsString(game.Game);
+                    persistedGame.GameInfo = Utilities.Serialize(GameInfo.FromGame(game.Game));
                     persistedGame.GameParticipation = Utilities.Serialize(game.Game.Participation);
                     persistedGame.StatisticsSent = game.StatisticsSent;
                     persistedGame.LastAsyncPlayMessageSent = game.LastAsyncPlayMessageSent;
@@ -145,6 +146,7 @@ public partial class GameHub
                         CreatorUserId = game.CreatorUserId,
                         GameId = key,
                         GameState = GameState.GetStateAsString(game.Game),
+                        GameInfo = Utilities.Serialize(GameInfo.FromGame(game.Game)),
                         GameName = game.Name,
                         GameParticipation = Utilities.Serialize(game.Game.Participation),
                         HashedPassword = game.HashedPassword,
@@ -167,6 +169,7 @@ public partial class GameHub
                 if (!RunningGamesByGameId.ContainsKey(persistedGame.GameId))
                 {
                     context.Remove(new PersistedGame { Id = persistedGame.Id });
+                    GameInfoSummaryCache.Remove(persistedGame.GameId);
                     amountOfDeletedGames++;
                 }
             }
@@ -233,6 +236,7 @@ public partial class GameHub
 
         await context.SaveChangesAsync();
         context.ChangeTracker.Clear();
+        GameInfoSummaryCache.Remove(game.GameId);
     }
 
     private async Task PersistGameIfNeeded(ManagedGame game)
@@ -252,10 +256,11 @@ public partial class GameHub
         var persistedGame = await context.PersistedGames.FirstOrDefaultAsync(g => g.GameId == game.GameId);
         if (persistedGame != null)
         {
-            if (persistedGame.LastAction == game.LastActivity)
+            if (persistedGame.LastAction == game.LastActivity && persistedGame.GameInfo != null)
                 return;
 
             persistedGame.GameState = GameState.GetStateAsString(game.Game);
+            persistedGame.GameInfo = Utilities.Serialize(GameInfo.FromGame(game.Game));
             persistedGame.GameParticipation = Utilities.Serialize(game.Game.Participation);
             persistedGame.StatisticsSent = game.StatisticsSent;
             persistedGame.LastAsyncPlayMessageSent = game.LastAsyncPlayMessageSent;
@@ -270,6 +275,7 @@ public partial class GameHub
                 CreatorUserId = game.CreatorUserId,
                 GameId = game.GameId,
                 GameState = GameState.GetStateAsString(game.Game),
+                GameInfo = Utilities.Serialize(GameInfo.FromGame(game.Game)),
                 GameName = game.Name,
                 GameParticipation = Utilities.Serialize(game.Game.Participation),
                 HashedPassword = game.HashedPassword,
@@ -342,6 +348,7 @@ public partial class GameHub
                     persistedGame.CreationDate,
                     persistedGame.CreatorUserId,
                     persistedGame.GameParticipation,
+                    persistedGame.GameInfo,
                     persistedGame.HashedPassword,
                     persistedGame.ObserversRequirePassword,
                     persistedGame.StatisticsSent,
@@ -370,6 +377,13 @@ public partial class GameHub
                         LastAsyncPlayMessageSent = persistedGame.LastAsyncPlayMessageSent,
                         Participation = participation
                     };
+
+                    if (!string.IsNullOrEmpty(persistedGame.GameInfo))
+                    {
+                        var summary = Utilities.Deserialize<GameInfo>(persistedGame.GameInfo);
+                        if (summary?.HasDetails == true)
+                            GameInfoSummaryCache.Set(id, summary);
+                    }
 
                     if (persistedGame.LastAction >= recentGameThreshold)
                     {

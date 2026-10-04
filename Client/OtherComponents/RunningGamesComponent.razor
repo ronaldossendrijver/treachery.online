@@ -41,7 +41,20 @@
                             <td style="@fontColorStyle">
                                 @if (av.RequiresLoad)
                                 {
-                                    <div>Saved game; open to load</div>
+                                    <div>
+                                        <UserIcon Size="20" Title="Players" MarginClass=""/>
+                                        <span class="me-1">
+                                            @av.NrOfPlayers
+                                            @if (av.HasDetails && av.Phase == Phase.AwaitingPlayers)
+                                            {
+                                                <text>/@av.MaxPlayers</text>
+                                            }
+                                        </span>
+                                    </div>
+                                    @if (av.HasDetails && av.NrOfBots > 0)
+                                    {
+                                        <div style="display: inline-block;"><BotIcon Size="16" Title="Bots" MarginClass="me-1"/><span>@av.NrOfBots</span></div>
+                                    }
                                 }
                                 else if (av.Phase == Phase.AwaitingPlayers)
                                 {
@@ -61,17 +74,13 @@
                                 }
                             </td>
                             <td style="@fontColorStyle">
-                                @if (av.RequiresLoad)
-                                {
-                                    <div>Game details load when opened</div>
-                                }
-                                else if (av.Phase == Phase.AwaitingPlayers)
+                                @if (av.HasDetails && av.Phase == Phase.AwaitingPlayers)
                                 {
                                     <div>
                                         @Name(av.Ruleset), @av.MaxTurns turns, not yet started
                                     </div>
                                 }
-                                else
+                                else if (av.HasDetails)
                                 {
                                     <div>
                                         @Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)
@@ -207,7 +216,13 @@
                             <td style="@fontColorStyle">
                                 @if (av.RequiresLoad)
                                 {
-                                    <div>Saved game; open to load</div>
+                                    <div style="display: inline-block;">
+                                        <UserIcon Size="20" Title="Players" MarginClass=""/><span class="me-1">@av.NrOfPlayers</span>
+                                    </div>
+                                    @if (av.HasDetails && av.NrOfBots > 0)
+                                    {
+                                        <div style="display: inline-block;"><BotIcon Size="16" Title="Bots" MarginClass="me-1"/><span>@av.NrOfBots</span></div>
+                                    }
                                 }
                                 else
                                 {
@@ -221,17 +236,13 @@
                                 }
                             </td>
                             <td style="@fontColorStyle">
-                                @if (av.RequiresLoad)
-                                {
-                                    <div>Game details load when opened</div>
-                                }
-                                else if (av.Phase == Phase.AwaitingPlayers)
+                                @if (av.HasDetails && av.Phase == Phase.AwaitingPlayers)
                                 {
                                     <div>
                                         @Name(av.Ruleset), @av.MaxTurns turns
                                     </div>
                                 }
-                                else
+                                else if (av.HasDetails)
                                 {
                                     <div>
                                         <div>

@@ -19,6 +19,7 @@ public class GameInfo
     public string GameId { get; init; } = string.Empty;
     public bool HasPassword { get; init; }
     public bool RequiresLoad { get; init; }
+    public bool HasDetails { get; init; }
     public string Name { get; init; } = string.Empty;
     public int MaxPlayers { get; init; }
     public int MaxTurns { get; init; }
@@ -35,6 +36,33 @@ public class GameInfo
     
     [JsonIgnore] 
     public bool CanBeJoined => RequiresLoad || Phase is Phase.AwaitingPlayers && SeatedPlayers.Count < MaxPlayers || AvailableSeats.Length > 0;
+
+    public static GameInfo FromGame(Game game) => new()
+    {
+        HasDetails = true,
+        FactionsInPlay = game.CurrentPhase <= Phase.AwaitingPlayers
+            ? game.Settings.AllowedFactionsInPlay.ToArray()
+            : game.Players.Where(p => p.Faction != Faction.None).Select(p => p.Faction).ToArray(),
+        NrOfBots = game.NumberOfBots,
+        Ruleset = game.CurrentPhase <= Phase.AwaitingPlayers
+            ? Game.DetermineApproximateRuleset(game.Settings.AllowedFactionsInPlay, game.Settings.InitialRules, Game.ExpansionLevel)
+            : Game.DetermineApproximateRuleset(game.Players.Select(p => p.Faction).ToList(), game.Rules, Game.ExpansionLevel),
+        MainPhase = game.CurrentMainPhase,
+        Phase = game.CurrentPhase,
+        Turn = game.CurrentTurn,
+        MaxPlayers = game.Settings.NumberOfPlayers,
+        MaxTurns = game.Settings.MaximumTurns,
+        NrOfPlayers = game.Participation.SeatedPlayers.Count,
+        SeatedPlayers = game.Participation.SeatedPlayers,
+        AvailableSeats = game.Players
+            .Where(p => game.SeatIsAvailable(p.Seat))
+            .Select(p => new AvailableSeatInfo
+            {
+                Seat = p.Seat,
+                Faction = p.Faction,
+                IsBot = p.IsBot
+            }).ToArray()
+    };
 
     public int YourCurrentSeat(int userId) => SeatedPlayers.GetValueOrDefault(userId, -1);
 

@@ -33,6 +33,8 @@ public class Startup
         services.AddDbContext<TreacheryContext>();
         services.AddScoped<ErrorLogService>();
         services.AddScoped<ErrorLoggingHubFilter>();
+        services.AddSingleton<GameInfoSummaryCache>();
+        services.AddHostedService<GameInfoBackfillService>();
         services.AddHostedService<ErrorLogCleanupService>();
     }
 

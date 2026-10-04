@@ -31,7 +31,7 @@ public class GameHubInputValidationTests
         db.Database.EnsureCreated();
         db.Database.ExecuteSqlRaw("INSERT INTO sqlite_sequence(name,seq) VALUES ('Users',{0})",
             Interlocked.Add(ref nextUserId, 100));
-        hub = new GameHub(options, configuration)
+        hub = new GameHub(options, configuration, new GameInfoSummaryCache())
         {
             Context = Substitute.For<HubCallerContext>(),
             Groups = Substitute.For<IGroupManager>(),
