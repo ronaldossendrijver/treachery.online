@@ -57,7 +57,8 @@ public partial class Game
     internal void GiveCharity(Player to, int basicAmount)
     {
         var homeworldBonus = 0;
-        if (GetsExtraCharityAndFreeRevivalDueToLowThreshold(to)) homeworldBonus = 1;
+        if ((Version <= 139 || !CharityIsCancelled) && GetsExtraCharityAndFreeRevivalDueToLowThreshold(to))
+            homeworldBonus = 1;
 
         var brown = GetPlayer(Faction.Brown);
 
