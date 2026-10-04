@@ -171,7 +171,7 @@ else
                             <input id="errorLogSource" class="form-control form-control-sm" @bind="ErrorLogSource" @bind:event="oninput"/>
                         </div>
                         <div class="col-sm-12 col-md-3">
-                            <label class="form-label" for="errorLogSearch">Message or URL</label>
+                            <label class="form-label" for="errorLogSearch">Message</label>
                             <input id="errorLogSearch" class="form-control form-control-sm" @bind="ErrorLogSearch" @bind:event="oninput"/>
                         </div>
                         <div class="col-sm-12 col-md-1 d-flex align-items-end">
@@ -180,15 +180,14 @@ else
                     </div>
                     <p class="small">Showing up to 500 entries. Entries are retained for 30 days.</p>
                     <div class="table-responsive">
-                        <table class="table table-sm">
+                        <table class="table table-sm" style="table-layout:fixed;width:100%">
                             <thead>
                             <tr class="small table-dark">
                                 <th>Time</th>
                                 <th>Source</th>
                                 <th>User</th>
-                                <th>Message</th>
-                                <th>URL</th>
-                                <th>Details</th>
+                                <th style="width:35%">Message</th>
+                                <th style="width:35%">Details</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -198,14 +197,19 @@ else
                                     <td>@error.OccurredAt.LocalDateTime</td>
                                     <td>@error.Source</td>
                                     <td>@(error.Username ?? error.UserId?.ToString() ?? "")</td>
-                                    <td>@error.Message</td>
-                                    <td>@error.Url</td>
-                                    <td>
-                                        <details>
-                                            <summary>View</summary>
-                                            <pre class="text-wrap">@error.Details</pre>
-                                            <div>@error.UserAgent</div>
-                                        </details>
+                                    <td style="width:35%;overflow-wrap:anywhere">@error.Message</td>
+                                    <td style="width:35%">
+                                        <div class="d-flex justify-content-between align-items-start gap-2">
+                                            <details class="flex-grow-1">
+                                                <summary>View</summary>
+                                                <pre class="text-wrap" style="white-space:pre-wrap;overflow-wrap:anywhere">@error.Details</pre>
+                                                <div>@error.UserAgent</div>
+                                            </details>
+                                            <button class="btn btn-outline-light btn-sm" title="Copy error details"
+                                                    @onclick="@(() => CopyErrorDetails(error))">
+                                                @(CopiedErrorLogId == error.Id ? "Copied" : "Copy")
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             }
@@ -263,6 +267,7 @@ else
     private DateTime? ErrorLogTo { get; set; }
     private string ErrorLogSource { get; set; } = string.Empty;
     private string ErrorLogSearch { get; set; } = string.Empty;
+    private int? CopiedErrorLogId { get; set; }
     private List<string> Messages { get; } = [];
 
     private IEnumerable<GameInfo> FilteredGames => Client.ActiveGames
@@ -276,8 +281,14 @@ else
     {
         Client.RefreshHandler += StateHasChanged;
         Client.IsAdmin = true;
+        GameTimeFrom = DateTime.Now.AddMonths(-1);
+        GameTimeTo = DateTime.Now;
+        ErrorLogFrom = DateTime.Now.AddDays(-31);
+        ErrorLogTo = DateTime.Now;
         await Client.Start();
         MaintenanceDate = Client.ServerInfo?.ScheduledMaintenance ?? DateTimeOffset.MinValue;
+        if (Client.LoggedIn)
+            await LoadErrorLog();
     }
 
     public void Dispose()
@@ -301,12 +312,27 @@ else
 
     private async Task LoadErrorLog()
     {
+        if (!Client.LoggedIn)
+            return;
+
         Messages.Add(await Client.GetAdminErrorLog(
             ErrorLogFrom.HasValue ? new DateTimeOffset(ErrorLogFrom.Value) : null,
             ErrorLogTo.HasValue ? new DateTimeOffset(ErrorLogTo.Value) : null,
             ErrorLogSource,
             ErrorLogSearch));
         StateHasChanged();
+    }
+    private async Task CopyErrorDetails(ErrorLogInfo error)
+    {
+        var contents = error.Details;
+        if (!string.IsNullOrWhiteSpace(error.UserAgent))
+            contents += $"{Environment.NewLine}User agent: {error.UserAgent}";
+
+        if (await Browser.CopyToClipboard(contents))
+        {
+            CopiedErrorLogId = error.Id;
+            StateHasChanged();
+        }
     }
     
     private async Task PersistState()

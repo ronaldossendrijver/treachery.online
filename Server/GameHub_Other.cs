@@ -290,6 +290,16 @@ public partial class GameHub
     }
 
     private static bool Restoring { get; set; }
+
+    // Games created before passwords were hashed on the client stored the plain password.
+    private static string NormalizeLegacyGamePassword(string storedPassword)
+    {
+        if (string.IsNullOrEmpty(storedPassword) || ValidatePasswordHash(storedPassword) == ErrorType.None)
+            return storedPassword;
+
+        var bytes = System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(storedPassword));
+        return Convert.ToHexStringLower(bytes);
+    }
     
     private async Task RestoreGamesIfServerJustStarted()
     {
@@ -337,7 +347,7 @@ public partial class GameHub
                             GameId = persistedGame.GameId,
                             Game = game,
                             Name = gameName,
-                            HashedPassword = persistedGame.HashedPassword,
+                            HashedPassword = NormalizeLegacyGamePassword(persistedGame.HashedPassword),
                             ObserversRequirePassword = persistedGame.ObserversRequirePassword,
                             StatisticsSent = persistedGame.StatisticsSent,
                             LastActivity = persistedGame.LastAction,
@@ -482,7 +492,8 @@ public partial class GameHub
         string? source,
         string? search)
     {
-        if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
+        if (string.IsNullOrEmpty(userToken) || !UsersByUserToken.TryGetValue(userToken, out var user) ||
+            user.Username != Configuration["GameAdminUsername"])
             return Error<ErrorLogInfo[]>(ErrorType.InvalidUserNameOrPassword);
 
         await using var context = GetDbContext();

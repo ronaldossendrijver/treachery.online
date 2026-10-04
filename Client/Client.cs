@@ -490,11 +490,14 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     //Game Management
 
+    private static string HashGamePassword(string? password)
+        => string.IsNullOrEmpty(password) ? string.Empty : Support.GetHash(password);
+
     public async Task<string?> RequestCreateGame(string name, string password, string? stateData = null, string? skinData = null)
     {
         if (!LoggedIn) return "Not logged in";
         
-        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestCreateGame), name, UserToken, password, stateData, skinData);
+        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestCreateGame), name, UserToken, HashGamePassword(password), stateData, skinData);
         if (result is { Success: true, Contents: not null })
         {
             var loadMessage = await LoadGame(result.Contents);
@@ -546,7 +549,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public async Task<string?> RequestJoinGame(string gameId, string password, int seat)
     {
-        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestJoinGame), UserToken, gameId, password, seat);
+        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestJoinGame), UserToken, gameId, HashGamePassword(password), seat);
         if (!result.Success || result.Contents is null) 
             return CurrentSkin.Describe(result.Error);
         
@@ -566,7 +569,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public async Task<string?> RequestObserveGame(string gameId, string password)
     {
-        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestObserveGame), UserToken, gameId, password);
+        var result = await Invoke<GameInitInfo>(nameof(IGameHub.RequestObserveGame), UserToken, gameId, HashGamePassword(password));
         if (!result.Success || result.Contents is null) 
             return CurrentSkin.Describe(result.Error);
         
@@ -791,6 +794,8 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public async Task<string> GetAdminErrorLog(DateTimeOffset? from, DateTimeOffset? to, string? source, string? search)
     {
+        if (!LoggedIn) return "Not logged in";
+
         var result = await Invoke<ErrorLogInfo[]>(nameof(IGameHub.GetAdminErrorLog), UserToken, from, to, source, search);
         if (result is { Success: true, Contents: not null })
         {
@@ -915,25 +920,32 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     private async Task PerformPostEventTasks()
     {
-        if (!InGame || Player is null) return;
-        
-        Status = GameStatus.DetermineStatus(Game, Player, !IsObserver);
-        Actions = Game.GetApplicableEvents(Player, IsHost);
+        if (!InGame)
+            return;
 
-        var lastActionTime = Game.LastAction;
-        if (!Status.WaitingForHost && IsHost && Status.WaitingForPlayers.Count > 0 && Status.WaitingForPlayers.All(p => p.IsBot))
-            _ = Task.Delay(NudgeBotsDelay).ContinueWith(_ => RequestNudgeBots(lastActionTime));
-        
-        await TurnAlert();
-        await PlaySoundsForMilestones();
-        await Browser.RemoveFocusFromButtons();
+        var player = Player;
+        if (player is null && !IsObserver)
+            return;
 
-        if (Game.CurrentMainPhase == MainPhase.Bidding) 
-            ResetAutoPassThreshold();
+        Status = GameStatus.DetermineStatus(Game, player, player != null);
+        Actions = player is null ? [] : Game.GetApplicableEvents(player, IsHost);
+
+        if (player != null)
+        {
+            var lastActionTime = Game.LastAction;
+            if (!Status.WaitingForHost && IsHost && Status.WaitingForPlayers.Count > 0 && Status.WaitingForPlayers.All(p => p.IsBot))
+                _ = Task.Delay(NudgeBotsDelay).ContinueWith(_ => RequestNudgeBots(lastActionTime));
+
+            await TurnAlert();
+            await PlaySoundsForMilestones();
+            await Browser.RemoveFocusFromButtons();
+
+            if (Game.CurrentMainPhase == MainPhase.Bidding)
+                ResetAutoPassThreshold();
+        }
 
         Refresh(nameof(PerformPostEventTasks));
     }
-
     private async Task RequestNudgeBots(DateTime gameLastAction)
     {
         if (!InGame) return;
