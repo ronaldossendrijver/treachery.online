@@ -6,6 +6,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     private const int CleanupFrequencyHours = 7;
     private const int ServerStatusFrequencyMs = 6000;
     private const int PersistFrequencyMinutes = 30;
+    private const int RecentGameLoadDays = 7;
     private const int MaximumLoginTimeDays = 90; 
     private const int ActiveGameThresholdMinutes = 120;
     private const int GamePersistFrequencyMinutes = 5;
@@ -72,7 +73,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
     
     private static Result<TResult> Success<TResult>(TResult contents) => new() { Success = true, Contents = contents };
 
-    private static bool AreValid<TResult>(string? userToken, string? gameId, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out LoggedInUser? user, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out ManagedGame? game, out Result<TResult>? error)
+    private static bool AreValid<TResult>(string? userToken, string? gameId, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out LoggedInUser? user, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out ManagedGame? game, out Result<TResult>? error, bool allowUnloaded = false)
     {
         user = null;
         game = null;
@@ -96,13 +97,13 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
             return false;
         }
             
-        if (RunningGamesByGameId.TryGetValue(gameId, out game)) return true;
+        if (RunningGamesByGameId.TryGetValue(gameId, out game) && (allowUnloaded || game.IsLoaded)) return true;
         
         error = Error<TResult>(ErrorType.GameNotFound);
         return false;
     }
     
-    private static bool AreValid(string? userToken, string? gameId, [NotNullWhen(true)] out LoggedInUser? user, [NotNullWhen(true)] out ManagedGame? game, out VoidResult error)
+    private static bool AreValid(string? userToken, string? gameId, [NotNullWhen(true)] out LoggedInUser? user, [NotNullWhen(true)] out ManagedGame? game, out VoidResult error, bool allowUnloaded = false)
     {
         user = null;
         game = null;
@@ -126,7 +127,7 @@ public partial class GameHub(DbContextOptions<TreacheryContext> dbContextOptions
             return false;
         }
 
-        if (RunningGamesByGameId.TryGetValue(gameId, out game)) return true;
+        if (RunningGamesByGameId.TryGetValue(gameId, out game) && (allowUnloaded || game.IsLoaded)) return true;
         
         error = Error(ErrorType.GameNotFound);
         return false;

@@ -44,6 +44,7 @@ public partial class GameHub
             CreatorUserId = user.Id,
             GameId = gameId,
             Game = game,
+            Participation = game.Participation,
             Name = gameName,
             HashedPassword = hashedPassword,
             ObserversRequirePassword = false
@@ -144,6 +145,7 @@ public partial class GameHub
                 loadedGame.ResetSeats();
 
             game.Game = loadedGame;
+            game.Participation = loadedGame.Participation;
             await Clients.Group(gameId).HandleLoadGame(new GameInitInfo
             {
                 GameId = gameId,
@@ -181,8 +183,22 @@ public partial class GameHub
 
     public async Task<Result<GameInitInfo>> RequestJoinGame(string userToken, string gameId, string hashedPassword, int seat)
     {
-        if (!AreValid<GameInitInfo>(userToken, gameId, out var user, out var game, out var error))
+        if (!AreValid<GameInitInfo>(userToken, gameId, out var user, out var game, out var error, allowUnloaded: true))
             return error!;
+
+        if (!game!.Participation.SeatedPlayers.ContainsKey(user!.Id))
+        {
+            var playerNameError = ValidatePlayerName(user.PlayerName);
+            if (playerNameError != ErrorType.None)
+                return Error<GameInitInfo>(playerNameError);
+
+            if (!string.IsNullOrEmpty(game.HashedPassword) && !game.HashedPassword.Equals(hashedPassword))
+                return Error<GameInitInfo>(ErrorType.IncorrectGamePassword);
+        }
+
+        var loadResult = await EnsureGameLoaded(game!);
+        if (!loadResult.Success)
+            return Error<GameInitInfo>(loadResult.Error, loadResult.ErrorDetails);
         
         if (!game.Game.IsPlayer(user.Id))
         {
@@ -356,15 +372,14 @@ public partial class GameHub
     
     public async Task<Result<ServerStatus>> RequestCloseGame(string userToken, string gameId)
     {
-        if (!AreValid<ServerStatus>(userToken, gameId, out var user, out var game, out var error))
+        if (!AreValid<ServerStatus>(userToken, gameId, out var user, out var game, out var error, allowUnloaded: true))
             return error!;
         
         if (game!.CreatorUserId != user!.Id)
             return Error<ServerStatus>(ErrorType.NoCreator);
 
-        foreach (var userId in game.Game.Participation.PlayerNames.Keys)
+        foreach (var userId in game.Participation.PlayerNames.Keys)
         {
-            game.Game.RemoveUser(userId, true);
             await Clients.Group(gameId).HandleRemoveUser(userId, true);
             await RemoveFromGroup(gameId, userId);
         }
@@ -401,8 +416,26 @@ public partial class GameHub
 
     public async Task<Result<GameInitInfo>> RequestObserveGame(string userToken, string gameId, string hashedPassword)
     {
-        if (!AreValid<GameInitInfo>(userToken, gameId, out var user, out var game, out var error))
+        if (!AreValid<GameInitInfo>(userToken, gameId, out var user, out var game, out var error, allowUnloaded: true))
             return error!;
+
+        if (!game!.Participation.Observers.Contains(user!.Id))
+        {
+            var playerNameError = ValidatePlayerName(user.PlayerName);
+            if (playerNameError != ErrorType.None)
+                return Error<GameInitInfo>(playerNameError);
+
+            if (game.ObserversRequirePassword && !string.IsNullOrEmpty(game.HashedPassword) &&
+                !game.HashedPassword.Equals(hashedPassword))
+                return Error<GameInitInfo>(ErrorType.IncorrectGamePassword);
+
+            if (game.Participation.SeatedPlayers.ContainsKey(user.Id))
+                return Error<GameInitInfo>(ErrorType.AlreadyPlayer);
+        }
+
+        var loadResult = await EnsureGameLoaded(game!);
+        if (!loadResult.Success)
+            return Error<GameInitInfo>(loadResult.Error, loadResult.ErrorDetails);
 
         if (!game!.Game.IsObserver(user!.Id))
         {
@@ -438,10 +471,17 @@ public partial class GameHub
 
     public async Task<Result<GameInitInfo>> RequestReconnectGame(string userToken, string gameId)
     {
-        if (!AreValid<GameInitInfo>(userToken, gameId, out var user, out var game, out var error))
+        if (!AreValid<GameInitInfo>(userToken, gameId, out var user, out var game, out var error, allowUnloaded: true))
             return error!;
+
+        if (!game!.Participation.PlayerNames.ContainsKey(user!.Id))
+            return Error<GameInitInfo>(ErrorType.UserNotInGame);
+
+        var loadResult = await EnsureGameLoaded(game!);
+        if (!loadResult.Success)
+            return Error<GameInitInfo>(loadResult.Error, loadResult.ErrorDetails);
         
-        if (!game!.Game.IsParticipant(user!.Id))
+        if (!game.Game.IsParticipant(user.Id))
             return Error<GameInitInfo>(ErrorType.UserNotInGame);
        
         await AddToGroup(gameId, user.Id, Context.ConnectionId);
@@ -726,36 +766,68 @@ public partial class GameHub
         await SendMail(mailMessage);
     }
     
-    private static GameInfo ExtractGameInfo(ManagedGame managedGame) => new()
+    private static GameInfo ExtractGameInfo(ManagedGame managedGame)
     {
-        GameId = managedGame.GameId,
-        CreatorId = managedGame.CreatorUserId,
-        CreatorUsername = UsersById.TryGetValue(managedGame.CreatorUserId, out var creator) ? creator.Name : "?",
-        CreationDate = managedGame.CreationDate,
-        FactionsInPlay = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? 
-            managedGame.Game.Settings.AllowedFactionsInPlay.ToArray() : 
-            managedGame.Game.Players.Where(p => p.Faction != Faction.None).Select(p => p.Faction).ToArray(),
-        NrOfBots = managedGame.Game.NumberOfBots,
-        Ruleset = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ? 
-            Game.DetermineApproximateRuleset(managedGame.Game.Settings.AllowedFactionsInPlay, managedGame.Game.Settings.InitialRules, Game.ExpansionLevel)  : 
-            Game.DetermineApproximateRuleset(managedGame.Game.Players.Select(p => p.Faction).ToList(), managedGame.Game.Rules, Game.ExpansionLevel),
-        LastActivity = managedGame.LastActivity,
-        MainPhase = managedGame.Game.CurrentMainPhase,
-        Phase = managedGame.Game.CurrentPhase,
-        Turn = managedGame.Game.CurrentTurn,
-        Name = managedGame.Name,
-        HasPassword = !string.IsNullOrEmpty(managedGame.HashedPassword),
-        MaxPlayers = managedGame.Game.Settings.NumberOfPlayers,
-        MaxTurns = managedGame.Game.Settings.MaximumTurns,
-        NrOfPlayers = managedGame.Game.Participation.SeatedPlayers.Count,
-        SeatedPlayers = managedGame.Game.Participation.SeatedPlayers,
-        AvailableSeats = managedGame.Game.Players
-            .Where(p => managedGame.Game.SeatIsAvailable(p.Seat))
-            .Select(p => new AvailableSeatInfo
+        var common = new GameInfo
+        {
+            GameId = managedGame.GameId,
+            CreatorId = managedGame.CreatorUserId,
+            CreatorUsername = UsersById.TryGetValue(managedGame.CreatorUserId, out var creator) ? creator.Name : "?",
+            CreationDate = managedGame.CreationDate,
+            LastActivity = managedGame.LastActivity,
+            Name = managedGame.Name,
+            HasPassword = !string.IsNullOrEmpty(managedGame.HashedPassword),
+            SeatedPlayers = managedGame.Participation.SeatedPlayers
+        };
+
+        if (!managedGame.IsLoaded)
+        {
+            return new GameInfo
             {
-                Seat = p.Seat, 
-                Faction = p.Faction, 
-                IsBot = p.IsBot
-            }).ToArray()
-    };
+                GameId = common.GameId,
+                CreatorId = common.CreatorId,
+                CreatorUsername = common.CreatorUsername,
+                CreationDate = common.CreationDate,
+                LastActivity = common.LastActivity,
+                Name = common.Name,
+                HasPassword = common.HasPassword,
+                RequiresLoad = true,
+                SeatedPlayers = common.SeatedPlayers,
+                NrOfPlayers = managedGame.Participation.SeatedPlayers.Count
+            };
+        }
+
+        return new GameInfo
+        {
+            GameId = common.GameId,
+            CreatorId = common.CreatorId,
+            CreatorUsername = common.CreatorUsername,
+            CreationDate = common.CreationDate,
+            LastActivity = common.LastActivity,
+            Name = common.Name,
+            HasPassword = common.HasPassword,
+            FactionsInPlay = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ?
+                managedGame.Game.Settings.AllowedFactionsInPlay.ToArray() :
+                managedGame.Game.Players.Where(p => p.Faction != Faction.None).Select(p => p.Faction).ToArray(),
+            NrOfBots = managedGame.Game.NumberOfBots,
+            Ruleset = managedGame.Game.CurrentPhase <= Phase.AwaitingPlayers ?
+                Game.DetermineApproximateRuleset(managedGame.Game.Settings.AllowedFactionsInPlay, managedGame.Game.Settings.InitialRules, Game.ExpansionLevel) :
+                Game.DetermineApproximateRuleset(managedGame.Game.Players.Select(p => p.Faction).ToList(), managedGame.Game.Rules, Game.ExpansionLevel),
+            MainPhase = managedGame.Game.CurrentMainPhase,
+            Phase = managedGame.Game.CurrentPhase,
+            Turn = managedGame.Game.CurrentTurn,
+            MaxPlayers = managedGame.Game.Settings.NumberOfPlayers,
+            MaxTurns = managedGame.Game.Settings.MaximumTurns,
+            NrOfPlayers = managedGame.Game.Participation.SeatedPlayers.Count,
+            SeatedPlayers = managedGame.Game.Participation.SeatedPlayers,
+            AvailableSeats = managedGame.Game.Players
+                .Where(p => managedGame.Game.SeatIsAvailable(p.Seat))
+                .Select(p => new AvailableSeatInfo
+                {
+                    Seat = p.Seat,
+                    Faction = p.Faction,
+                    IsBot = p.IsBot
+                }).ToArray()
+        };
+    }
 }

@@ -104,6 +104,46 @@ public class ManagedGameTests
         Assert.AreSame(replacementGame, managedGame.Game);
     }
 
+    [TestMethod]
+    public async Task LoadIfNeededAsyncLoadsOnlyOnceForConcurrentRequests()
+    {
+        var managedGame = new ManagedGame();
+        var loadedGame = new Game();
+        var loadCount = 0;
+
+        async Task<string?> LoadGame()
+        {
+            return await managedGame.LoadIfNeededAsync(async () =>
+            {
+                Interlocked.Increment(ref loadCount);
+                await Task.Delay(20);
+                return (loadedGame, null);
+            });
+        }
+
+        await Task.WhenAll(LoadGame(), LoadGame());
+
+        Assert.AreEqual(1, loadCount);
+        Assert.IsTrue(managedGame.IsLoaded);
+        Assert.AreSame(loadedGame, managedGame.Game);
+    }
+
+    [TestMethod]
+    public async Task LoadIfNeededAsyncAllowsRetryAfterFailure()
+    {
+        var managedGame = new ManagedGame();
+        var firstError = await managedGame.LoadIfNeededAsync(() => Task.FromResult<(Game? game, string? error)>((null, "unavailable")));
+
+        Assert.AreEqual("unavailable", firstError);
+        Assert.IsFalse(managedGame.IsLoaded);
+
+        var game = new Game();
+        var secondError = await managedGame.LoadIfNeededAsync(() => Task.FromResult<(Game? game, string? error)>((game, null)));
+
+        Assert.IsNull(secondError);
+        Assert.AreSame(game, managedGame.Game);
+    }
+
     private static class InterlockedExtensions
     {
         public static void Max(ref int location, int value)

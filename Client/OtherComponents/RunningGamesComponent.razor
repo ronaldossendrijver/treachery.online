@@ -39,7 +39,11 @@
                                 <span style="font: normal normal normal 14px Advokat, Calibri, Tahoma, sans-serif;">@av.Name</span>
                             </td>
                             <td style="@fontColorStyle">
-                                @if (av.Phase == Phase.AwaitingPlayers)
+                                @if (av.RequiresLoad)
+                                {
+                                    <div>Saved game; open to load</div>
+                                }
+                                else if (av.Phase == Phase.AwaitingPlayers)
                                 {
                                     <div>
                                         <UserIcon Size="20" Title="Players" MarginClass=""/><span class="me-1">@(av.NrOfPlayers)/@av.MaxPlayers</span>
@@ -57,7 +61,11 @@
                                 }
                             </td>
                             <td style="@fontColorStyle">
-                                @if (av.Phase == Phase.AwaitingPlayers)
+                                @if (av.RequiresLoad)
+                                {
+                                    <div>Game details load when opened</div>
+                                }
+                                else if (av.Phase == Phase.AwaitingPlayers)
                                 {
                                     <div>
                                         @Name(av.Ruleset), @av.MaxTurns turns, not yet started
@@ -77,7 +85,15 @@
                                 }
                             </td>
                             <td>
-                                @if (!av.YouAreIn(Client.UserId!.Value))
+                                @if (av.RequiresLoad && !av.YouAreIn(Client.UserId!.Value))
+                                {
+                                    @if (av.HasPassword)
+                                    {
+                                        <input class="form-inline form-control-sm" style="max-width:80px" @bind="Passwords[av.GameId]" maxlength="24" placeholder="Password"/>
+                                    }
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, Passwords[av.GameId]))" Title="Open saved game" MarginClass="m-1">Open</CommandButton>
+                                }
+                                else if (!av.YouAreIn(Client.UserId!.Value))
                                 {
                                     if (av.HasPassword)
                                     {
@@ -189,16 +205,27 @@
                                 <span style="font: normal normal normal 14px Advokat, Calibri, Tahoma, sans-serif;">@av.Name</span>
                             </td>
                             <td style="@fontColorStyle">
-                                <div style="display: inline-block;">
-                                    <UserIcon Size="20" Title="Players" MarginClass=""/><span class="me-1">@av.NrOfPlayers</span>
-                                </div>
-                                @if (av.NrOfBots > 0)
+                                @if (av.RequiresLoad)
                                 {
-                                    <div style="display: inline-block;"><BotIcon Size="16" Title="Bots" MarginClass="me-1"/><span>@av.NrOfBots</span></div>
+                                    <div>Saved game; open to load</div>
+                                }
+                                else
+                                {
+                                    <div style="display: inline-block;">
+                                        <UserIcon Size="20" Title="Players" MarginClass=""/><span class="me-1">@av.NrOfPlayers</span>
+                                    </div>
+                                    @if (av.NrOfBots > 0)
+                                    {
+                                        <div style="display: inline-block;"><BotIcon Size="16" Title="Bots" MarginClass="me-1"/><span>@av.NrOfBots</span></div>
+                                    }
                                 }
                             </td>
                             <td style="@fontColorStyle">
-                                @if (av.Phase == Phase.AwaitingPlayers)
+                                @if (av.RequiresLoad)
+                                {
+                                    <div>Game details load when opened</div>
+                                }
+                                else if (av.Phase == Phase.AwaitingPlayers)
                                 {
                                     <div>
                                         @Name(av.Ruleset), @av.MaxTurns turns
@@ -220,7 +247,15 @@
                                 }
                             </td>
                             <td>
-                                @if (!av.YouAreIn(Client.UserId!.Value))
+                                @if (av.RequiresLoad && !av.YouAreIn(Client.UserId!.Value))
+                                {
+                                    @if (av.HasPassword)
+                                    {
+                                        <input class="form-inline form-control-sm" style="max-width:80px" @bind="Passwords[av.GameId]" maxlength="24" placeholder="Password"/>
+                                    }
+                                    <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, Passwords[av.GameId]))" Title="Open saved game" MarginClass="m-1">Open</CommandButton>
+                                }
+                                else if (!av.YouAreIn(Client.UserId!.Value))
                                 {
                                     <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, Passwords[av.GameId]))" Title="Observe game" MarginClass="m-1">👁</CommandButton>
                                 }

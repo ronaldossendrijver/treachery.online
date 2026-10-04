@@ -18,6 +18,7 @@ public class GameInfo
     public DateTimeOffset CreationDate { get; init; }
     public string GameId { get; init; } = string.Empty;
     public bool HasPassword { get; init; }
+    public bool RequiresLoad { get; init; }
     public string Name { get; init; } = string.Empty;
     public int MaxPlayers { get; init; }
     public int MaxTurns { get; init; }
@@ -33,7 +34,7 @@ public class GameInfo
     public AvailableSeatInfo[] AvailableSeats { get; init; } = [];
     
     [JsonIgnore] 
-    public bool CanBeJoined => Phase is Phase.AwaitingPlayers && SeatedPlayers.Count < MaxPlayers || AvailableSeats.Length > 0;
+    public bool CanBeJoined => RequiresLoad || Phase is Phase.AwaitingPlayers && SeatedPlayers.Count < MaxPlayers || AvailableSeats.Length > 0;
 
     public int YourCurrentSeat(int userId) => SeatedPlayers.GetValueOrDefault(userId, -1);
 
