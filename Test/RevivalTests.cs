@@ -35,4 +35,25 @@ public class RevivalTests
 
         Assert.IsNotNull(revival.Validate());
     }
+
+    [TestMethod]
+    public void AutoClaimedSpecialForcePreventsManualRevivalOfAnotherSpecialForce()
+    {
+        var game = new Game();
+        var player = new Player(game, Faction.Red)
+        {
+            SpecialForcesKilled = 2
+        };
+        game.Players.Add(player);
+
+        game.ClaimFreeRevival(player);
+
+        var revival = new Revival(game, player.Faction)
+        {
+            AmountOfSpecialForces = 1
+        };
+
+        Assert.IsNotNull(revival.Validate());
+        Assert.AreEqual(1, player.SpecialForcesKilled);
+    }
 }
