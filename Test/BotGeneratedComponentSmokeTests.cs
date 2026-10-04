@@ -74,9 +74,59 @@ public sealed class BotGeneratedComponentSmokeTests
             $"Expected broad component coverage, but rendered only: {string.Join(", ", renderedActionTypes.Select(type => type.Name).Order())}");
     }
 
-    private static Game CreateGame()
+    [TestMethod]
+    [Timeout(10_000, CooperativeCancellation = true)]
+    public void AutomaticPassesStopWhenBiddingEndsWhileGreenCannotBid()
     {
-        var game = new Game();
+        var game = CreateGame(184);
+        var bots = game.Players.ToDictionary(
+            player => player.Faction,
+            player => new ClassicBot(game, player, BotParameters.GetDefaultParameters(player.Faction)));
+
+        for (var eventNumber = 0;
+             game.CurrentPhase != Phase.GameEnded && !(game.CurrentPhase == Phase.Bidding && game.CurrentAuctionType == AuctionType.Normal) && eventNumber < 1_000;
+             eventNumber++)
+        {
+            var gameEvent = DetermineBotEvent(game, bots);
+            Assert.IsNotNull(gameEvent, $"No bot could act in phase {game.CurrentPhase}.");
+            gameEvent.Time = DateTimeOffset.UnixEpoch.AddSeconds(eventNumber);
+            Assert.IsNull(
+                gameEvent.Execute(true, true),
+                $"Bot produced an invalid {gameEvent.GetType().Name} in phase {game.CurrentPhase}.");
+        }
+
+        Assert.AreEqual(Phase.Bidding, game.CurrentPhase);
+        Assert.AreEqual(AuctionType.Normal, game.CurrentAuctionType);
+
+        var green = game.GetPlayer(Faction.Green)!;
+        var card = TreacheryCardManager.GetCardsInPlay(game).First();
+        while (green.HasRoomForCards)
+        {
+            green.TreacheryCards.Add(card);
+        }
+
+        game.BidSequence!.CheckCurrentPlayer();
+        Assert.IsTrue(game.BidSequence.CurrentPlayer.HasRoomForCards);
+        game.LatestBidByGreenOrGreenAllyWasPassed = true;
+
+        foreach (var player in game.Players.Where(player => player.Faction != Faction.Green))
+        {
+            var automation = new AutomationConfigured(game, player.Faction)
+            {
+                Action = ItemAction.Create,
+                RuleType = AutomationRuleType.BiddingPassWhenGreenOrGreenAllyPassed
+            };
+            Assert.IsNull(automation.Execute(false, true));
+        }
+
+        var firstPass = new Bid(game, game.BidSequence.CurrentFaction) { Passed = true };
+        Assert.IsNull(firstPass.Execute(false, true));
+        Assert.AreEqual(Phase.BiddingReport, game.CurrentPhase);
+    }
+
+    private static Game CreateGame(int version = Game.LatestVersion)
+    {
+        var game = new Game(version, new Participation());
         var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
         rules.Add(Rule.FillWithBots);
 
