@@ -118,7 +118,7 @@ public partial class GameHub
         
         await using (var context = GetDbContext())
         {
-            foreach (var (key, game) in RunningGamesByGameId.Where(x => x.Value.LastActivity > LastPersistedRunningGames))
+            foreach (var (key, game) in RunningGamesByGameId.Where(x => x.Value.IsLoaded && x.Value.LastActivity > LastPersistedRunningGames))
             {
                 var persistedGame = await context.PersistedGames.FirstOrDefaultAsync(g => g.GameId == game.GameId);
                 if (persistedGame != null)
@@ -160,11 +160,15 @@ public partial class GameHub
                 context.ChangeTracker.Clear();
             }
 
-            foreach (var persistedGame in (await context.PersistedGames.ToListAsync())
-                     .Where(persistedGame => !RunningGamesByGameId.ContainsKey(persistedGame.GameId)))
+            foreach (var persistedGame in await context.PersistedGames.AsNoTracking()
+                         .Select(persistedGame => new { persistedGame.Id, persistedGame.GameId })
+                         .ToListAsync())
             {
-                context.Remove(persistedGame);
-                amountOfDeletedGames++;
+                if (!RunningGamesByGameId.ContainsKey(persistedGame.GameId))
+                {
+                    context.Remove(new PersistedGame { Id = persistedGame.Id });
+                    amountOfDeletedGames++;
+                }
             }
 
             LastPersistedRunningGames = now;
@@ -328,35 +332,64 @@ public partial class GameHub
 
             RunningGamesByGameId.Clear();
 
-            foreach (var persistedGame in context.PersistedGames.AsNoTracking())
+            var recentGameThreshold = DateTimeOffset.Now.AddDays(-RecentGameLoadDays);
+            var persistedGames = await context.PersistedGames.AsNoTracking()
+                .Select(persistedGame => new
+                {
+                    persistedGame.Id,
+                    persistedGame.GameId,
+                    persistedGame.GameName,
+                    persistedGame.CreationDate,
+                    persistedGame.CreatorUserId,
+                    persistedGame.GameParticipation,
+                    persistedGame.HashedPassword,
+                    persistedGame.ObserversRequirePassword,
+                    persistedGame.StatisticsSent,
+                    persistedGame.LastAsyncPlayMessageSent,
+                    persistedGame.LastAction
+                })
+                .ToListAsync();
+
+            foreach (var persistedGame in persistedGames)
             {
                 var id = persistedGame.GameId;
 
                 try
                 {
-                    var gameState = GameState.Load(persistedGame.GameState);
-                    var gameName = persistedGame.GameName;
                     var participation = Utilities.Deserialize<Participation>(persistedGame.GameParticipation) ?? new Participation();
-                    var loadMessage = Game.TryLoad(gameState, participation, false, true, out var game);
-                    if (loadMessage == null && game != null)
+                    var managedGame = new ManagedGame
                     {
-                        var managedGame = new ManagedGame
-                        {
-                            CreationDate = persistedGame.CreationDate,
-                            CreatorUserId = persistedGame.CreatorUserId,
-                            GameId = persistedGame.GameId,
-                            Game = game,
-                            Name = gameName,
-                            HashedPassword = NormalizeLegacyGamePassword(persistedGame.HashedPassword),
-                            ObserversRequirePassword = persistedGame.ObserversRequirePassword,
-                            StatisticsSent = persistedGame.StatisticsSent,
-                            LastActivity = persistedGame.LastAction,
-                            LastAsyncPlayMessageSent = persistedGame.LastAsyncPlayMessageSent,
-                        };
+                        CreationDate = persistedGame.CreationDate,
+                        CreatorUserId = persistedGame.CreatorUserId,
+                        GameId = persistedGame.GameId,
+                        Name = persistedGame.GameName,
+                        HashedPassword = NormalizeLegacyGamePassword(persistedGame.HashedPassword),
+                        ObserversRequirePassword = persistedGame.ObserversRequirePassword,
+                        StatisticsSent = persistedGame.StatisticsSent,
+                        LastActivity = persistedGame.LastAction,
+                        LastAsyncPlayMessageSent = persistedGame.LastAsyncPlayMessageSent,
+                        Participation = participation
+                    };
 
-                        RunningGamesByGameId.TryAdd(id, managedGame);
-                        amountRunning++;
+                    if (persistedGame.LastAction >= recentGameThreshold)
+                    {
+                        var gameStateData = await context.PersistedGames.AsNoTracking()
+                            .Where(game => game.Id == persistedGame.Id)
+                            .Select(game => game.GameState)
+                            .SingleAsync();
+                        var loadMessage = Game.TryLoad(GameState.Load(gameStateData), participation, false, true, out var loadedGame);
+                        if (loadMessage != null || loadedGame is null)
+                        {
+                            Log($"Unable to restore game {id}: {loadMessage?.ToString() ?? "Unknown error"}");
+                            continue;
+                        }
+
+                        managedGame.Game = loadedGame;
+                        managedGame.Participation = loadedGame.Participation;
                     }
+
+                    RunningGamesByGameId.TryAdd(id, managedGame);
+                    amountRunning++;
                 }
                 catch (Exception ex)
                 {
@@ -399,6 +432,37 @@ public partial class GameHub
         
         return (amountRunning, amountScheduled);
     }
+
+    private async Task<VoidResult> EnsureGameLoaded(ManagedGame game)
+    {
+        var errorDetails = await game.LoadIfNeededAsync(async () =>
+        {
+            try
+            {
+                await using var context = GetDbContext();
+                var gameStateData = await context.PersistedGames.AsNoTracking()
+                    .Where(persistedGame => persistedGame.GameId == game.GameId)
+                    .Select(persistedGame => persistedGame.GameState)
+                    .SingleOrDefaultAsync();
+                if (gameStateData is null)
+                    return (null, "The saved game could not be found in storage.");
+
+                var loadMessage = Game.TryLoad(GameState.Load(gameStateData), game.Participation, false, true, out var loadedGame);
+                return loadMessage is null && loadedGame is not null
+                    ? (loadedGame, null)
+                    : (null, loadMessage?.ToString() ?? "The saved game could not be restored.");
+            }
+            catch (Exception ex)
+            {
+                Log($"Unable to load saved game {game.GameId}: {ex}");
+                return (null, ex.Message);
+            }
+        });
+
+        return errorDetails is null
+            ? Success()
+            : Error(ErrorType.InvalidGameEvent, errorDetails);
+    }
     
     public async Task<Result<string>> AdminCloseGame(string userToken, string gameId)
     {
@@ -409,9 +473,8 @@ public partial class GameHub
         {
             RunningGamesByGameId.Remove(gameId, out _);
 
-            foreach (var userId in game.Game.Participation.PlayerNames.Keys)
+            foreach (var userId in game.Participation.PlayerNames.Keys)
             {
-                game.Game.RemoveUser(userId, true);
                 await Clients.Group(gameId).HandleRemoveUser(userId, true);
                 await RemoveFromGroup(gameId, userId);
             }
@@ -427,6 +490,10 @@ public partial class GameHub
 
         if (!RunningGamesByGameId.TryGetValue(gameId, out var game))
             return Error<string>(ErrorType.GameNotFound);
+
+        var loadResult = await EnsureGameLoaded(game);
+        if (!loadResult.Success)
+            return Error<string>(loadResult.Error, loadResult.ErrorDetails);
 
         await Task.CompletedTask;
         return Success(GameState.GetStateAsString(game.Game));
@@ -451,9 +518,8 @@ public partial class GameHub
 
         foreach (var game in RunningGamesByGameId.Values.Where(x => x.CreatorUserId == userId).ToArray())
         {
-            foreach (var participatingUserId in game.Game.Participation.PlayerNames.Keys)
+            foreach (var participatingUserId in game.Participation.PlayerNames.Keys)
             {
-                game.Game.RemoveUser(participatingUserId, true);
                 await Clients.Group(game.GameId).HandleRemoveUser(participatingUserId, true);
                 await RemoveFromGroup(game.GameId, participatingUserId);
             }

@@ -51,19 +51,27 @@
                         {
                             var fontColorStyle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20 ? "color:grey" : "color:white";
                             var factions = av.FactionsInPlay;
+                            GamePasswords.TryAdd(av.GameId, string.Empty);
 
                             <tr class="small table-dark">
                                 <td class="w-25">
                                     @av.Name
                                 </td>
                                 <td class="w-25" style="@fontColorStyle">
-                                    <div>@Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)
-                                        <br>
-                                        @foreach (var f in factions.Where(f => f != Faction.None))
-                                        {
-                                            <Image Shown="f" Width="18" NoShadow/>
-                                        }
-                                    </div>
+                                    @if (av.RequiresLoad)
+                                    {
+                                        <div>Saved game; open to load</div>
+                                    }
+                                    else
+                                    {
+                                        <div>@Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)
+                                            <br>
+                                            @foreach (var f in factions.Where(f => f != Faction.None))
+                                            {
+                                                <Image Shown="f" Width="18" NoShadow/>
+                                            }
+                                        </div>
+                                    }
                                 </td>
                                 <td class="w-25">
                                     @av.LastActivity?.DateTime.ToLocalTime().ToString("dd-MM HH:mm")
@@ -72,6 +80,14 @@
                                     @if (av.YouAreIn(Client.UserId!.Value))
                                     {
                                         <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId!.Value)))" MarginClass="m-1" Title="Resume game">▶</CommandButton>
+                                    }
+                                    else if (av.RequiresLoad)
+                                    {
+                                        @if (av.HasPassword)
+                                        {
+                                            <input class="form-inline form-control-sm" style="max-width:80px" @bind="GamePasswords[av.GameId]" maxlength="24" placeholder="Password"/>
+                                        }
+                                        <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, GamePasswords[av.GameId]))" MarginClass="m-1" Title="Open saved game">Open</CommandButton>
                                     }
                                     <CommandButton Small OnClick="@(_ => Delete(av))" MarginClass="m-1" Title="Delete game">🗑️</CommandButton>
                                 </td>
@@ -274,6 +290,7 @@
 @code {
 
     private OwnGamesComponentState State { get; set; } = OwnGamesComponentState.List;
+    private Dictionary<string, string> GamePasswords { get; } = new();
     
     private const int MaxSaveGameSize = 4194304;
 
@@ -453,6 +470,11 @@
     private async Task JoinGameAsPlayer(string gameId, string password, int seat = -1)
     {
         await Client.RequestJoinGame(gameId, password, seat);
+    }
+
+    private async Task JoinGameAsObserver(string gameId, string password)
+    {
+        await Client.RequestObserveGame(gameId, password);
     }
     
     private enum OwnGamesComponentState
