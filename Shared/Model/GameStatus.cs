@@ -130,6 +130,11 @@ public class GameStatus
 
             Phase.Discarding => Status(game, "Please decide which card to discard.", "Waiting factions to discard...", game.FactionsThatMustDiscard),
 
+            Phase.DiscardingTraitor => Status(
+                Express("Please decide which traitor to discard."),
+                Express("Waiting for ", game.FactionThatMustDiscardTraitor, " to discard a traitor..."),
+                game.GetPlayer(game.FactionThatMustDiscardTraitor)),
+
             /* Setup */
 
             Phase.AwaitingPlayers => Status(
