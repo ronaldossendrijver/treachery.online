@@ -532,9 +532,8 @@ public partial class ClassicBot
         if (imInBattle)
         {
             var opponent = Game.CurrentBattle!.OpponentOf(Player);
-            waitForPrescienceOrVoice = Game.CurrentBattle.PlanOf(opponent) == null &&
-                                       (Prescience.MayUsePrescience(Game, opponent) ||
-                                        Voice.MayUseVoice(Game, opponent));
+            waitForPrescienceOrVoice = Prescience.MayUsePrescience(Game, opponent) ||
+                                       Voice.MayUseVoice(Game, opponent);
         }  
 
         if (imInBattle && !waitForPrescienceOrVoice && Game.LatestClairvoyanceBattle != Game.CurrentBattle)
