@@ -6,6 +6,7 @@ public class ErrorLogEntry
 {
     public int Id { get; set; }
     public DateTime OccurredAt { get; set; }
+    public int? GameVersion { get; set; }
 
     [MaxLength(64)]
     public string Source { get; set; } = string.Empty;

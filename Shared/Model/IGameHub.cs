@@ -199,6 +199,6 @@ public interface IGameHub
     Task<Result<string>> AdminCancelGame(string userToken, string scheduledGameId);
     Task<Result<string>> DeleteUser(string userToken, int userId);
     Task<Result<AdminInfo>> GetAdminInfo(string userToken);
-    Task<Result<ErrorLogInfo[]>> GetAdminErrorLog(string userToken, DateTimeOffset? from, DateTimeOffset? to, string? source, string? search);
+    Task<Result<ErrorLogInfo[]>> GetAdminErrorLog(string userToken, DateTimeOffset? from, DateTimeOffset? to, int? gameVersion);
     Task<VoidResult> ReportClientError(string? userToken, ClientErrorReport report);
 }

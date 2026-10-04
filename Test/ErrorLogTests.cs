@@ -43,6 +43,7 @@ public sealed class ErrorLogTests
             Assert.AreEqual(1, await errorLog.DeleteExpiredAsync());
             var retained = await context.ErrorLogs.AsNoTracking().SingleAsync();
             Assert.AreEqual("Client/JavaScript", retained.Source);
+            Assert.AreEqual(Game.LatestVersion, retained.GameVersion);
             Assert.AreEqual(4000, retained.Message.Length);
             Assert.AreEqual(7, retained.UserId);
             Assert.AreEqual("test user", retained.Username);

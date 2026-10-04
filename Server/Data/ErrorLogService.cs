@@ -14,6 +14,7 @@ public class ErrorLogService(TreacheryContext context)
         context.ErrorLogs.Add(new ErrorLogEntry
         {
             OccurredAt = DateTime.UtcNow,
+            GameVersion = Game.LatestVersion,
             Source = Limit(source, 64),
             Message = Limit(message, 4000),
             Details = Limit(details, 16000),

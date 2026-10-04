@@ -82,7 +82,7 @@ public class GameHubInputValidationTests
     [TestMethod]
     public async Task AdminErrorLogRejectsAnonymousRequestWithoutThrowing()
     {
-        var result = await hub.GetAdminErrorLog(null!, null, null, null, null);
+        var result = await hub.GetAdminErrorLog(null!, null, null, null);
 
         Assert.IsFalse(result.Success);
         Assert.AreEqual(ErrorType.InvalidUserNameOrPassword, result.Error);

@@ -98,10 +98,6 @@ else
                 <div class="card-body">
                     <div class="row g-2 mb-3">
                         <div class="col-sm-12 col-md-4">
-                            <label class="form-label" for="gameUsernameFilter">Username</label>
-                            <input id="gameUsernameFilter" class="form-control form-control-sm" @bind="@GameUsernameFilter" @bind:event="oninput"/>
-                        </div>
-                        <div class="col-sm-12 col-md-4">
                             <label class="form-label" for="gameTimeFromFilter">Game time from</label>
                             <input id="gameTimeFromFilter" type="datetime-local" class="form-control form-control-sm"
                                    @bind="@GameTimeFrom" @bind:format="yyyy-MM-ddTHH:mm"/>
@@ -110,6 +106,10 @@ else
                             <label class="form-label" for="gameTimeToFilter">Game time to</label>
                             <input id="gameTimeToFilter" type="datetime-local" class="form-control form-control-sm"
                                    @bind="@GameTimeTo" @bind:format="yyyy-MM-ddTHH:mm"/>
+                        </div>
+                        <div class="col-sm-12 col-md-4">
+                            <label class="form-label" for="gameUsernameFilter">Username</label>
+                            <input id="gameUsernameFilter" class="form-control form-control-sm" @bind="@GameUsernameFilter" @bind:event="oninput"/>
                         </div>
                     </div>
                     <table class="table table-sm">
@@ -157,6 +157,11 @@ else
                 <div class="card-body">
                     <div class="row g-2 mb-3">
                         <div class="col-sm-12 col-md-3">
+                            <label class="form-label" for="errorLogVersion">Version</label>
+                            <input id="errorLogVersion" type="number" class="form-control form-control-sm"
+                                   @bind="ErrorLogVersion"/>
+                        </div>
+                        <div class="col-sm-12 col-md-3">
                             <label class="form-label" for="errorLogFrom">From</label>
                             <input id="errorLogFrom" type="datetime-local" class="form-control form-control-sm"
                                    @bind="ErrorLogFrom" @bind:format="yyyy-MM-ddTHH:mm"/>
@@ -166,15 +171,7 @@ else
                             <input id="errorLogTo" type="datetime-local" class="form-control form-control-sm"
                                    @bind="ErrorLogTo" @bind:format="yyyy-MM-ddTHH:mm"/>
                         </div>
-                        <div class="col-sm-12 col-md-2">
-                            <label class="form-label" for="errorLogSource">Source</label>
-                            <input id="errorLogSource" class="form-control form-control-sm" @bind="ErrorLogSource" @bind:event="oninput"/>
-                        </div>
-                        <div class="col-sm-12 col-md-3">
-                            <label class="form-label" for="errorLogSearch">Message</label>
-                            <input id="errorLogSearch" class="form-control form-control-sm" @bind="ErrorLogSearch" @bind:event="oninput"/>
-                        </div>
-                        <div class="col-sm-12 col-md-1 d-flex align-items-end">
+                        <div class="col-sm-12 col-md-3 d-flex align-items-end">
                             <button class="btn btn-primary btn-sm" @onclick="LoadErrorLog">Filter</button>
                         </div>
                     </div>
@@ -184,6 +181,7 @@ else
                             <thead>
                             <tr class="small table-dark">
                                 <th>Time</th>
+                                <th>Version</th>
                                 <th>Source</th>
                                 <th>User</th>
                                 <th style="width:35%">Message</th>
@@ -195,21 +193,18 @@ else
                             {
                                 <tr class="small table-dark">
                                     <td>@error.OccurredAt.LocalDateTime</td>
+                                    <td>@(error.GameVersion?.ToString() ?? "Unknown")</td>
                                     <td>@error.Source</td>
                                     <td>@(error.Username ?? error.UserId?.ToString() ?? "")</td>
                                     <td style="width:35%;overflow-wrap:anywhere">@error.Message</td>
                                     <td style="width:35%">
-                                        <div class="d-flex justify-content-between align-items-start gap-2">
-                                            <details class="flex-grow-1">
-                                                <summary>View</summary>
-                                                <pre class="text-wrap" style="white-space:pre-wrap;overflow-wrap:anywhere">@error.Details</pre>
-                                                <div>@error.UserAgent</div>
-                                            </details>
-                                            <button class="btn btn-outline-light btn-sm" title="Copy error details"
-                                                    @onclick="@(() => CopyErrorDetails(error))">
-                                                @(CopiedErrorLogId == error.Id ? "Copied" : "Copy")
-                                            </button>
-                                        </div>
+                                        <details>
+                                            <summary>View</summary>
+                                            <pre class="text-wrap" title="Click to copy error details"
+                                                 style="white-space:pre-wrap;overflow-wrap:anywhere;cursor:pointer"
+                                                 @onclick="@(() => CopyErrorDetails(error))">@error.Details</pre>
+                                            <div>@error.UserAgent</div>
+                                        </details>
                                     </td>
                                 </tr>
                             }
@@ -263,11 +258,9 @@ else
     private string GameUsernameFilter { get; set; } = string.Empty;
     private DateTime? GameTimeFrom { get; set; }
     private DateTime? GameTimeTo { get; set; }
+    private int? ErrorLogVersion { get; set; }
     private DateTime? ErrorLogFrom { get; set; }
     private DateTime? ErrorLogTo { get; set; }
-    private string ErrorLogSource { get; set; } = string.Empty;
-    private string ErrorLogSearch { get; set; } = string.Empty;
-    private int? CopiedErrorLogId { get; set; }
     private List<string> Messages { get; } = [];
 
     private IEnumerable<GameInfo> FilteredGames => Client.ActiveGames
@@ -283,6 +276,7 @@ else
         Client.IsAdmin = true;
         GameTimeFrom = DateTime.Now.AddMonths(-1);
         GameTimeTo = DateTime.Now;
+        ErrorLogVersion = Game.LatestVersion;
         ErrorLogFrom = DateTime.Now.AddDays(-31);
         ErrorLogTo = DateTime.Now;
         await Client.Start();
@@ -318,8 +312,7 @@ else
         Messages.Add(await Client.GetAdminErrorLog(
             ErrorLogFrom.HasValue ? new DateTimeOffset(ErrorLogFrom.Value) : null,
             ErrorLogTo.HasValue ? new DateTimeOffset(ErrorLogTo.Value) : null,
-            ErrorLogSource,
-            ErrorLogSearch));
+            ErrorLogVersion));
         StateHasChanged();
     }
     private async Task CopyErrorDetails(ErrorLogInfo error)
@@ -328,11 +321,7 @@ else
         if (!string.IsNullOrWhiteSpace(error.UserAgent))
             contents += $"{Environment.NewLine}User agent: {error.UserAgent}";
 
-        if (await Browser.CopyToClipboard(contents))
-        {
-            CopiedErrorLogId = error.Id;
-            StateHasChanged();
-        }
+        await Browser.CopyToClipboard(contents);
     }
     
     private async Task PersistState()

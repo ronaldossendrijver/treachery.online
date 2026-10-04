@@ -792,11 +792,11 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
     }
 
-    public async Task<string> GetAdminErrorLog(DateTimeOffset? from, DateTimeOffset? to, string? source, string? search)
+    public async Task<string> GetAdminErrorLog(DateTimeOffset? from, DateTimeOffset? to, int? gameVersion)
     {
         if (!LoggedIn) return "Not logged in";
 
-        var result = await Invoke<ErrorLogInfo[]>(nameof(IGameHub.GetAdminErrorLog), UserToken, from, to, source, search);
+        var result = await Invoke<ErrorLogInfo[]>(nameof(IGameHub.GetAdminErrorLog), UserToken, from, to, gameVersion);
         if (result is { Success: true, Contents: not null })
         {
             ErrorLogs = result.Contents;

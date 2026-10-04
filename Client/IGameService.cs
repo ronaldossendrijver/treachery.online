@@ -137,6 +137,6 @@ public interface IGameService
     Task<string> AdminDeleteUser(int userId);
     Task<string> GetAdminInfo();
     ErrorLogInfo[] ErrorLogs { get; }
-    Task<string> GetAdminErrorLog(DateTimeOffset? from, DateTimeOffset? to, string? source, string? search);
+    Task<string> GetAdminErrorLog(DateTimeOffset? from, DateTimeOffset? to, int? gameVersion);
     Task ReportClientError(ClientErrorReport report);
 }

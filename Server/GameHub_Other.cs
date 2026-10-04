@@ -489,8 +489,7 @@ public partial class GameHub
         string userToken,
         DateTimeOffset? from,
         DateTimeOffset? to,
-        string? source,
-        string? search)
+        int? gameVersion)
     {
         if (string.IsNullOrEmpty(userToken) || !UsersByUserToken.TryGetValue(userToken, out var user) ||
             user.Username != Configuration["GameAdminUsername"])
@@ -502,13 +501,8 @@ public partial class GameHub
             query = query.Where(entry => entry.OccurredAt >= from.Value.UtcDateTime);
         if (to.HasValue)
             query = query.Where(entry => entry.OccurredAt <= to.Value.UtcDateTime);
-        if (!string.IsNullOrWhiteSpace(source))
-            query = query.Where(entry => entry.Source.Contains(source));
-        if (!string.IsNullOrWhiteSpace(search))
-        {
-            var term = search.Trim();
-            query = query.Where(entry => entry.Message.Contains(term) || entry.Url.Contains(term));
-        }
+        if (gameVersion.HasValue)
+            query = query.Where(entry => entry.GameVersion == gameVersion.Value);
 
         var logs = await query
             .OrderByDescending(entry => entry.OccurredAt)
@@ -517,6 +511,7 @@ public partial class GameHub
             {
                 Id = entry.Id,
                 OccurredAt = new DateTimeOffset(DateTime.SpecifyKind(entry.OccurredAt, DateTimeKind.Utc)),
+                GameVersion = entry.GameVersion,
                 Source = entry.Source,
                 Message = entry.Message,
                 Details = entry.Details,
