@@ -386,23 +386,23 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public event EventHandler<Location>? OnLocationSelectedWithShift;
     public event EventHandler<Location>? OnLocationSelectedWithShiftAndWithCtrlOrAlt;
 
-    public void LocationClick(LocationEventArgs e)
+    public void LocationClick(LocationEventArgs? e)
     {
-        if (e.Location is null) return;
+        if (e?.Location is not { } location) return;
         
         if (e.ShiftKey)
         {
             if (e.CtrlKey || e.AltKey)
-                OnLocationSelectedWithShiftAndWithCtrlOrAlt?.Invoke(this, e.Location);
+                OnLocationSelectedWithShiftAndWithCtrlOrAlt?.Invoke(this, location);
             else
-                OnLocationSelectedWithShift?.Invoke(this, e.Location);
+                OnLocationSelectedWithShift?.Invoke(this, location);
         }
         else
         {
             if (e.CtrlKey || e.AltKey)
-                OnLocationSelectedWithCtrlOrAlt?.Invoke(this, e.Location);
+                OnLocationSelectedWithCtrlOrAlt?.Invoke(this, location);
             else
-                OnLocationSelected?.Invoke(this, e.Location);
+                OnLocationSelected?.Invoke(this, location);
         }
     }
 

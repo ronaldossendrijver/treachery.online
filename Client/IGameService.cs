@@ -82,7 +82,7 @@ public interface IGameService
     public event EventHandler<Location> OnLocationSelectedWithShift;
     public event EventHandler<Location> OnLocationSelectedWithShiftAndWithCtrlOrAlt;
 
-    public void LocationClick(LocationEventArgs e);
+    public void LocationClick(LocationEventArgs? e);
     
     //Authentication
     
