@@ -314,6 +314,47 @@ public class GameHubInputValidationTests
     }
 
     [TestMethod]
+    public async Task EstablishingGameOpensOnlyBotSeatsWhenConfigured()
+    {
+        var host = await CreateAccount("Host");
+        var createdGame = await hub.RequestCreateGame("Game", host.Token, "", "", "");
+        Assert.IsTrue(createdGame.Success);
+        Assert.IsNotNull(createdGame.Contents);
+
+        var secondPlayer = await CreateAccount("Second player");
+        var joined = await hub.RequestJoinGame(secondPlayer.Token, createdGame.Contents.GameId, "", -1);
+        Assert.IsTrue(joined.Success, joined.Error.ToString());
+
+        var gameClient = Substitute.For<IGameClient>();
+        hub.Clients.Group(Arg.Any<string>()).Returns(gameClient);
+
+        Dictionary<int, int>? seatedPlayers = null;
+        int[] openedSeats = [];
+        gameClient.HandleAssignSeats(Arg.Do<Dictionary<int, int>>(seats => seatedPlayers = new(seats)))
+            .Returns(Task.CompletedTask);
+        gameClient.HandleOpenOrCloseSeats(Arg.Do<int[]>(seats => openedSeats = seats))
+            .Returns(Task.CompletedTask);
+
+        var settings = new GameSettings
+        {
+            NumberOfPlayers = 3,
+            AllowedFactionsInPlay = [Faction.Green, Faction.Black, Faction.Yellow],
+            AutoOpenEmptySeats = true
+        };
+        var started = await hub.RequestEstablishPlayers(host.Token, createdGame.Contents.GameId, new EstablishPlayers
+        {
+            Settings = settings,
+            Seed = 1
+        });
+
+        Assert.IsTrue(started.Success, started.Error.ToString());
+        Assert.IsNotNull(seatedPlayers);
+        Assert.AreEqual(2, seatedPlayers.Count);
+        Assert.AreEqual(1, openedSeats.Length);
+        Assert.IsFalse(seatedPlayers.Values.Contains(openedSeats[0]));
+    }
+
+    [TestMethod]
     public async Task CreateGameWithNullStateAndSkinReturnsLoadableGameState()
     {
         var account = await CreateAccount();

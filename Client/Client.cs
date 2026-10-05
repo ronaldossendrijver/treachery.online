@@ -685,24 +685,9 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         
         var result = await Invoke($"Request{typeof(T).Name}", UserToken, GameId, gameEvent);
 
-        await OpenEmptySeats(gameEvent);
-
         return result.Success 
             ? null 
             : result.Error is ErrorType.InvalidGameEvent ? result.ErrorDetails : CurrentSkin.Describe(result.Error);
-    }
-
-    private async Task OpenEmptySeats<T>(T gameEvent) where T : GameEvent
-    {
-        if (!InGame) return;
-        
-        if (gameEvent is EstablishPlayers { Settings.AutoOpenEmptySeats: true })
-        {
-            foreach (var p in Game.Players.Where(p => !Game.Participation.SeatedPlayers.ContainsValue(p.Seat)).ToArray())
-            {
-                await RequestOpenOrCloseSeat(p.Seat);
-            }
-        }
     }
 
     public async Task<string?> RequestSetBotSpeed(int speed)

@@ -10,7 +10,9 @@ public partial class GameHub
         if (!AreValid(userToken, gameId, out _, out var game, out var error))
             return error;
         
-        await ProcessGameEvent(userToken, gameId, e);
+        var result = await ProcessGameEvent(userToken, gameId, e);
+        if (!result.Success)
+            return result;
 
         var participation = game.Game.Participation;
 
@@ -26,6 +28,19 @@ public partial class GameHub
         }
         
         await Clients.Group(gameId).HandleAssignSeats(participation.SeatedPlayers);
+
+        if (e.Settings.AutoOpenEmptySeats)
+        {
+            var seatsToOpen = game.Game.Players
+                .Where(game.Game.IsBot)
+                .Select(player => player.Seat)
+                .ToArray();
+
+            participation.AvailableSeats.UnionWith(seatsToOpen);
+
+            if (seatsToOpen.Length > 0)
+                await Clients.Group(gameId).HandleOpenOrCloseSeats(seatsToOpen);
+        }
         
         game.LastActivity = DateTimeOffset.Now;
         await PersistGameIfNeeded(game);
