@@ -11,8 +11,9 @@
 <div class="card mb-2" style="animation:fadeIn 1s;">
 
     @{
-        var acceptableDeals = DealAccepted.AcceptableDeals(Game, Player).ToArray();
-        var cancellableDeals = DealAccepted.CancellableDeals(Game, Player).ToArray();
+        var player = Client.Player;
+        var acceptableDeals = player is null ? [] : DealAccepted.AcceptableDeals(Game, player).ToArray();
+        var cancellableDeals = player is null ? [] : DealAccepted.CancellableDeals(Game, player).ToArray();
         var currentDeals = DealAccepted.CurrentDeals(Game).ToArray();
 
         <div class="card-header" @onclick=@(e => _collapsed = !_collapsed) style="cursor:pointer">

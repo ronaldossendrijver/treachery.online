@@ -14,7 +14,7 @@ public partial class Game
     #region Version
 
     private const int LowestSupportedVersion = 100;
-    public const int LatestVersion = 188;
+    public const int LatestVersion = 189;
     
     #endregion Version
 
@@ -964,10 +964,10 @@ public partial class Game
 
     internal bool EveryoneActedOrPassed => HasActedOrPassed.Count == Players.Count;
 
-    public bool AssistedNoteKeepingEnabled(Player p)
+    public bool AssistedNoteKeepingEnabled(Player? p)
     {
         return Applicable(Rule.AssistedNotekeeping) ||
-               (p.Is(Faction.Green) && Applicable(Rule.AssistedNotekeepingForGreen));
+               (p != null && p.Is(Faction.Green) && Applicable(Rule.AssistedNotekeepingForGreen));
     }
 
     public bool HasStormPrescience(Player? p)

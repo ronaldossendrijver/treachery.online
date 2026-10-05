@@ -135,9 +135,9 @@
 
         result += Client.CurrentSkin.Format("<h4>Discard pile: {0} cards</h4>", Game.TreacheryDiscardPile.Items.Count);
 
-        if (Game.AssistedNoteKeepingEnabled(Player))
+        if (Client.Player is { } player && Game.AssistedNoteKeepingEnabled(player))
         {
-            var known = Game.KnownCards(Player);
+            var known = Game.KnownCards(player);
             result += "<div class=\"row row-cols-6 mt-1\">";
             foreach (var c in Game.TreacheryDiscardPile.Items)
             {

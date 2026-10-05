@@ -180,10 +180,10 @@
 
         _canBid = CanBid;
 
-        if (!IsSilentAuction)
+        if (!IsSilentAuction && Client.Player is { } player)
         {
-            var allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllyResources(Faction);
-            var playerResources = Player.Resources;
+            var allyResources = player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllyResources(Faction);
+            var playerResources = player.Resources;
             var bidToDo = Game.CurrentBid != null ? Game.CurrentBid.TotalAmount + 1 : 1;
             AllyContributionAmount = Math.Min(bidToDo, allyResources);
             Amount = Math.Min(bidToDo - AllyContributionAmount, playerResources);
@@ -223,7 +223,7 @@
 
     private bool IsWhiteBidding => Game.CurrentAuctionType == AuctionType.WhiteOnceAround || Game.CurrentAuctionType == AuctionType.WhiteSilent; 
 
-    private bool CardIsVisible => (Game.HasBiddingPrescience(Player) || IsWhiteBidding) && Game.CardsOnAuction!.Top != null;
+    private bool CardIsVisible => (IsWhiteBidding || (Client.Player is { } player && Game.HasBiddingPrescience(player))) && Game.CardsOnAuction!.Top != null;
 
     private string KarmaInfoMessage => Client.CurrentSkin.Format("If you use a {0} card to bid any amount of {1} you wish, that card will be set aside until someone outbids you and will be discarded only if you win the auction. If you instead use your {0} card to win immediately, it is immediately discarded.", TreacheryCardType.Karma, Concept.Resource);
 

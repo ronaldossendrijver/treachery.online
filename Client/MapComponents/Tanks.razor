@@ -101,7 +101,7 @@
 
     private string Popover(Leader l)
     {
-        return Player.Is(l.Faction) || Player.Is(Faction.Purple) ? Client.CurrentSkin.GetPopup(l, Game) : "?";
+        return Client.Player is { } player && (player.Is(l.Faction) || player.Is(Faction.Purple)) ? Client.CurrentSkin.GetPopup(l, Game) : "?";
     }
 
 }
