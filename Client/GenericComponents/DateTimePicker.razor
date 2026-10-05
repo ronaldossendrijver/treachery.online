@@ -10,11 +10,11 @@
 <div class="row mb-1">
     <div class="col">
         <label for="datePicker">@Label</label>
-        <input type="date" id="datePicker" class="form-control" @bind:get="@SelectedDate" @bind:set="@HandleDateChanged" @bind:event="oninput"/>
+        <input type="date" id="datePicker" class="form-control" @bind:get="@SelectedDate" @bind:set="@HandleDateChanged" @bind:event="onchange"/>
     </div>
     <div class="col">
         <label for="timePicker">@TimeLabel</label>
-        <input type="time" id="timePicker" class="form-control" @bind:get="@SelectedTime" @bind:set="@HandleTimeChanged" @bind:event="oninput"/>
+        <input type="time" id="timePicker" class="form-control" @bind:get="@SelectedTime" @bind:set="@HandleTimeChanged" @bind:event="onchange"/>
     </div>
 </div>
 
@@ -37,6 +37,7 @@
     
     private DateTime? SelectedDate { get; set; }
     private TimeOnly? SelectedTime { get; set; }
+    private DateTimeOffset? _lastValue;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -44,26 +45,44 @@
         {
             await ValueChanged.InvokeAsync(DateTimeOffset.Now);
         }
-        else
+        else if (_lastValue != Value)
         {
-            SelectedDate = Value.DateTime;
+            _lastValue = Value;
+            SelectedDate = Value.DateTime.Date;
             SelectedTime = TimeOnly.FromDateTime(Value.DateTime);
         }
     }
     
     private async Task HandleDateChanged(DateTime? value)
     {
-        await ValueChanged.InvokeAsync(ConstructDateTimeOffset(value, SelectedTime));
+        // Ignore incomplete input so the user can keep editing
+        if (value == null)
+            return;
+
+        SelectedDate = value.Value.Date;
+        await NotifyValueChanged();
     }
 
     private async Task HandleTimeChanged(TimeOnly? value)
     {
-        await ValueChanged.InvokeAsync(ConstructDateTimeOffset(SelectedDate, value));
+        if (value == null)
+            return;
+
+        SelectedTime = value;
+        await NotifyValueChanged();
+    }
+
+    private async Task NotifyValueChanged()
+    {
+        var value = ConstructDateTimeOffset(SelectedDate, SelectedTime);
+        _lastValue = value;
+        await ValueChanged.InvokeAsync(value);
     }
     
     private DateTimeOffset ConstructDateTimeOffset(DateTime? date, TimeOnly? time)
     {
-        var dateTime = date ?? DateTimeOffset.Now;
-        return new DateTimeOffset(new DateOnly(dateTime.Year, dateTime.Month, dateTime.Day), time ?? TimeOnly.MinValue, DateTimeOffset.Now.Offset);
+        var dateTime = date ?? DateTime.Now;
+        var localDateTime = new DateTime(DateOnly.FromDateTime(dateTime), time ?? TimeOnly.MinValue);
+        return new DateTimeOffset(localDateTime, TimeZoneInfo.Local.GetUtcOffset(localDateTime));
     }
 }
