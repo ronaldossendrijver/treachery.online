@@ -512,6 +512,25 @@ public partial class GameHub
         await Task.CompletedTask;
         return Success(GameState.GetStateAsString(game.Game));
     }
+
+    public async Task<Result<string>> AdminDownloadBotDecisionGame(string userToken, int errorLogId)
+    {
+        if (string.IsNullOrEmpty(userToken) || !UsersByUserToken.TryGetValue(userToken, out var user) ||
+            user.Username != Configuration["GameAdminUsername"])
+            return Error<string>(ErrorType.InvalidUserNameOrPassword);
+
+        await using var context = GetDbContext();
+        var snapshot = await context.ErrorLogSnapshots
+            .AsNoTracking()
+            .Where(entry => entry.ErrorLogEntryId == errorLogId &&
+                            entry.ErrorLogEntry.Source == "Server/BotDecision")
+            .Select(entry => entry.GameState)
+            .SingleOrDefaultAsync();
+
+        return snapshot is null
+            ? Error<string>(ErrorType.GameNotFound)
+            : Success(snapshot);
+    }
     
     public async Task<Result<string>> AdminCancelGame(string userToken, string scheduledGameId)
     {
@@ -592,6 +611,8 @@ public partial class GameHub
                 Id = entry.Id,
                 OccurredAt = new DateTimeOffset(DateTime.SpecifyKind(entry.OccurredAt, DateTimeKind.Utc)),
                 GameVersion = entry.GameVersion,
+                GameId = entry.GameId,
+                HasGameSnapshot = context.ErrorLogSnapshots.Any(snapshot => snapshot.ErrorLogEntryId == entry.Id),
                 Source = entry.Source,
                 Message = entry.Message,
                 Details = entry.Details,

@@ -8,6 +8,9 @@ public class ErrorLogEntry
     public DateTime OccurredAt { get; set; }
     public int? GameVersion { get; set; }
 
+    [MaxLength(36)]
+    public string? GameId { get; set; }
+
     [MaxLength(64)]
     public string Source { get; set; } = string.Empty;
 
@@ -27,4 +30,6 @@ public class ErrorLogEntry
 
     [MaxLength(4000)]
     public string? Username { get; set; }
+
+    public ErrorLogSnapshot? GameSnapshot { get; set; }
 }

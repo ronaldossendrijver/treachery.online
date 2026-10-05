@@ -332,7 +332,8 @@ public partial class GameHub
             foreach (var bot in bots)
             {
                 var classicBot = GetOrInitializeBot(managedGame, bot);
-                var evt = classicBot.DetermineHighestPriorityInPhaseAction(eventsPerBot[bot.Seat]);
+                var evt = await DetermineBotAction(managedGame, classicBot,
+                    () => classicBot.DetermineHighestPriorityInPhaseAction(eventsPerBot[bot.Seat]));
                 if (evt == null) continue;
                 await ValidateAndExecute(evt, managedGame, false);
                 return;
@@ -341,7 +342,8 @@ public partial class GameHub
             foreach (var bot in bots)
             {
                 var classicBot = GetOrInitializeBot(managedGame, bot);
-                var evt = classicBot.DetermineHighPriorityInPhaseAction(eventsPerBot[bot.Seat]);
+                var evt = await DetermineBotAction(managedGame, classicBot,
+                    () => classicBot.DetermineHighPriorityInPhaseAction(eventsPerBot[bot.Seat]));
                 if (evt == null) continue;
                 await ValidateAndExecute(evt, managedGame, false);
                 return;
@@ -350,7 +352,8 @@ public partial class GameHub
             foreach (var bot in bots)
             {
                 var classicBot = GetOrInitializeBot(managedGame, bot);
-                var evt = classicBot.DetermineMiddlePriorityInPhaseAction(eventsPerBot[bot.Seat]);
+                var evt = await DetermineBotAction(managedGame, classicBot,
+                    () => classicBot.DetermineMiddlePriorityInPhaseAction(eventsPerBot[bot.Seat]));
                 if (evt == null) continue;
                 await ValidateAndExecute(evt, managedGame, false);
                 return;
@@ -359,7 +362,8 @@ public partial class GameHub
             foreach (var bot in bots)
             {
                 var classicBot = GetOrInitializeBot(managedGame, bot);
-                var evt = classicBot.DetermineLowPriorityInPhaseAction(eventsPerBot[bot.Seat]);
+                var evt = await DetermineBotAction(managedGame, classicBot,
+                    () => classicBot.DetermineLowPriorityInPhaseAction(eventsPerBot[bot.Seat]));
                 if (evt == null) continue;
                 await ValidateAndExecute(evt, managedGame, false);
                 return;
@@ -369,7 +373,8 @@ public partial class GameHub
                 foreach (var bot in bots)
                 {
                     var classicBot = GetOrInitializeBot(managedGame, bot);
-                    var evt = classicBot.DetermineEndPhaseAction(eventsPerBot[bot.Seat]);
+                    var evt = await DetermineBotAction(managedGame, classicBot,
+                        () => classicBot.DetermineEndPhaseAction(eventsPerBot[bot.Seat]));
                     if (evt == null) continue;
                     await ValidateAndExecute(evt, managedGame, true);
                     return;
@@ -377,17 +382,41 @@ public partial class GameHub
         }
     }
 
-    private static IBot GetOrInitializeBot(ManagedGame game, Player player)
+    private async Task<GameEvent?> DetermineBotAction(
+        ManagedGame managedGame,
+        ClassicBot bot,
+        Func<GameEvent?> determine)
+    {
+        var action = determine();
+        var decisions = bot.DrainInvalidDecisions();
+        foreach (var decision in decisions)
+        {
+            try
+            {
+                await using var context = GetDbContext();
+                await new ErrorLogService(context).RecordBotDecisionAsync(managedGame.GameId, decision);
+            }
+            catch (Exception exception)
+            {
+                Console.Error.WriteLine(
+                    $"Unable to persist invalid bot decision for game {managedGame.GameId}: {exception}");
+            }
+        }
+
+        return action;
+    }
+
+    private static ClassicBot GetOrInitializeBot(ManagedGame game, Player player)
     {
         if (game.Bots.TryGetValue(player.Faction, out var bot))
         {
             bot.SetGameAndPlayer(game.Game, player);
-            return bot;
+            return (ClassicBot)bot;
         }
         
         bot = new ClassicBot(game.Game, player, BotParameters.GetDefaultParameters(player.Faction));
         game.Bots.Add(player.Faction, bot);
-        return bot;
+        return (ClassicBot)bot;
     }
     
     private static int DetermineBotDelay(MainPhase phase, GameEvent? e, int speed)

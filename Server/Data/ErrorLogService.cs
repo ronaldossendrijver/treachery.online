@@ -1,3 +1,5 @@
+using Treachery.Bots;
+
 namespace Treachery.Server;
 
 public class ErrorLogService(TreacheryContext context)
@@ -27,9 +29,39 @@ public class ErrorLogService(TreacheryContext context)
         await context.SaveChangesAsync();
     }
 
+    public async Task RecordBotDecisionAsync(string gameId, InvalidBotDecision decision)
+    {
+        var entry = new ErrorLogEntry
+        {
+            OccurredAt = decision.OccurredAt,
+            GameVersion = Game.LatestVersion,
+            GameId = Limit(gameId, 36),
+            Source = "Server/BotDecision",
+            Message = Limit($"Invalid bot decision: {decision.ActionType}", 4000),
+            Details = Limit(
+                $"Faction: {decision.Faction}, seat: {decision.Seat}{Environment.NewLine}" +
+                $"Decision: {decision.Message}{Environment.NewLine}" +
+                $"Validation error: {decision.ValidationError}",
+                16000),
+            Url = string.Empty,
+            UserAgent = string.Empty,
+            GameSnapshot = new ErrorLogSnapshot { GameState = decision.GameState }
+        };
+
+        context.ErrorLogs.Add(entry);
+        await context.SaveChangesAsync();
+    }
+
     public async Task<int> DeleteExpiredAsync(CancellationToken cancellationToken = default)
     {
         var retentionDate = DateTime.UtcNow.AddDays(-30);
+        var expiredEntryIds = context.ErrorLogs
+            .Where(entry => entry.OccurredAt < retentionDate)
+            .Select(entry => entry.Id);
+        await context.ErrorLogSnapshots
+            .Where(snapshot => expiredEntryIds.Contains(snapshot.ErrorLogEntryId))
+            .ExecuteDeleteAsync(cancellationToken);
+
         return await context.ErrorLogs
             .Where(entry => entry.OccurredAt < retentionDate)
             .ExecuteDeleteAsync(cancellationToken);

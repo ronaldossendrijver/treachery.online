@@ -10,6 +10,7 @@
 @page "/admin/"
 
 @using Treachery.Client.OtherComponents
+@using System.Threading
 @implements IDisposable
 
 @if (!Client.IsConnected)
@@ -169,13 +170,13 @@ else
                         <div class="col-sm-12 col-md-3">
                             <label class="form-label" for="errorLogTo">To</label>
                             <input id="errorLogTo" type="datetime-local" class="form-control form-control-sm"
-                                   @bind="ErrorLogTo" @bind:format="yyyy-MM-ddTHH:mm"/>
+                                   @bind="ErrorLogTo" @bind:format="yyyy-MM-ddTHH:mm" @bind:after="MarkErrorLogToManuallySet"/>
                         </div>
                         <div class="col-sm-12 col-md-3 d-flex align-items-end">
                             <button class="btn btn-primary btn-sm" @onclick="LoadErrorLog">Filter</button>
                         </div>
                     </div>
-                    <p class="small">Showing up to 500 entries. Entries are retained for 30 days.</p>
+                    <p class="small">Showing up to 500 entries. Entries are retained for 30 days. This list refreshes every 30 seconds.</p>
                     <div class="table-responsive">
                         <table class="table table-sm" style="table-layout:fixed;width:100%">
                             <thead>
@@ -183,6 +184,8 @@ else
                                 <th>Time</th>
                                 <th>Version</th>
                                 <th>Source</th>
+                                <th>Game</th>
+                                <th>Savegame</th>
                                 <th>User</th>
                                 <th style="width:35%">Message</th>
                                 <th style="width:35%">Details</th>
@@ -195,6 +198,16 @@ else
                                     <td>@error.OccurredAt.LocalDateTime</td>
                                     <td>@(error.GameVersion?.ToString() ?? "Unknown")</td>
                                     <td>@error.Source</td>
+                                    <td>@error.GameId</td>
+                                    <td>
+                                        @if (error.HasGameSnapshot)
+                                        {
+                                            <button class="btn btn-primary btn-sm" title="Download savegame at the time of this bot decision"
+                                                    @onclick="@(() => DownloadBotDecisionGame(error))">
+                                                Download
+                                            </button>
+                                        }
+                                    </td>
                                     <td>@(error.Username ?? error.UserId?.ToString() ?? "")</td>
                                     <td style="width:35%;overflow-wrap:anywhere">@error.Message</td>
                                     <td style="width:35%">
@@ -254,6 +267,9 @@ else
 
 @code {
 
+    private readonly CancellationTokenSource _errorLogRefreshCancellation = new();
+    private bool _errorLogRefreshStarted;
+    private bool _errorLogToManuallySet;
     private DateTimeOffset MaintenanceDate { get; set; }
     private string GameUsernameFilter { get; set; } = string.Empty;
     private DateTime? GameTimeFrom { get; set; }
@@ -281,13 +297,22 @@ else
         ErrorLogTo = DateTime.Now;
         await Client.Start();
         MaintenanceDate = Client.ServerInfo?.ScheduledMaintenance ?? DateTimeOffset.MinValue;
-        if (Client.LoggedIn)
-            await LoadErrorLog();
     }
 
     public void Dispose()
     {
-        Client.RefreshHandler += StateHasChanged;
+        Client.RefreshHandler -= StateHasChanged;
+        _errorLogRefreshCancellation.Cancel();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Client.LoggedIn && !_errorLogRefreshStarted)
+        {
+            _errorLogRefreshStarted = true;
+            await RefreshErrorLog(false);
+            _ = RefreshErrorLogPeriodically(_errorLogRefreshCancellation.Token);
+        }
     }
     
     private const string StartScreenStyle = "min-height: 97vh; background-image: url('art/planet.png'); background-size: 1024px; background-position-x: center; background-position-y: -50px; background-repeat: no-repeat;";
@@ -304,16 +329,38 @@ else
         StateHasChanged();
     }
 
-    private async Task LoadErrorLog()
+    private Task LoadErrorLog() => RefreshErrorLog(true);
+
+    private async Task RefreshErrorLog(bool addMessage)
     {
         if (!Client.LoggedIn)
             return;
 
-        Messages.Add(await Client.GetAdminErrorLog(
+        if (!addMessage && !_errorLogToManuallySet)
+            ErrorLogTo = DateTime.Now;
+
+        var result = await Client.GetAdminErrorLog(
             ErrorLogFrom.HasValue ? new DateTimeOffset(ErrorLogFrom.Value) : null,
             ErrorLogTo.HasValue ? new DateTimeOffset(ErrorLogTo.Value) : null,
-            ErrorLogVersion));
+            ErrorLogVersion);
+        if (addMessage)
+            Messages.Add(result);
         StateHasChanged();
+    }
+
+    private void MarkErrorLogToManuallySet() => _errorLogToManuallySet = true;
+
+    private async Task RefreshErrorLogPeriodically(CancellationToken cancellationToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
+        try
+        {
+            while (await timer.WaitForNextTickAsync(cancellationToken))
+                await InvokeAsync(() => RefreshErrorLog(false));
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
     }
     private async Task CopyErrorDetails(ErrorLogInfo error)
     {
@@ -345,6 +392,12 @@ else
     private async Task Download(GameInfo av)
     {
         Messages.Add(await Client.AdminDownloadGame(av.GameId));
+        StateHasChanged();
+    }
+
+    private async Task DownloadBotDecisionGame(ErrorLogInfo error)
+    {
+        Messages.Add(await Client.AdminDownloadBotDecisionGame(error));
         StateHasChanged();
     }
     

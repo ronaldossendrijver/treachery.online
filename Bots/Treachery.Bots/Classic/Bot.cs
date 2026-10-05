@@ -7,11 +7,14 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Treachery.Bots;
+ using System.Collections.Concurrent;
+
+ namespace Treachery.Bots;
 
 public partial class ClassicBot(Game game, Player player, BotParameters param) : IBot
 {
     private const bool LogBotInfo = false;
+    private readonly ConcurrentQueue<InvalidBotDecision> _invalidDecisions = new();
     
     private Game Game { get; set; } = game;
 
@@ -239,6 +242,14 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
                 if (error != null)
                 {
                     LogError($"--invalid decision ({action.GetType()})--> {action.GetMessage()}: {error}");
+                    _invalidDecisions.Enqueue(new InvalidBotDecision(
+                        DateTime.UtcNow,
+                        Faction,
+                        Player.Seat,
+                        action.GetType().Name,
+                        action.GetMessage()?.ToString() ?? string.Empty,
+                        error.ToString(),
+                        GameState.GetStateAsString(Game)));
                 }
                 else
                 {
@@ -249,6 +260,15 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
         }
 
         return false;
+    }
+
+    public IReadOnlyList<InvalidBotDecision> DrainInvalidDecisions()
+    {
+        var decisions = new List<InvalidBotDecision>();
+        while (_invalidDecisions.TryDequeue(out var decision))
+            decisions.Add(decision);
+
+        return decisions;
     }
 
     #endregion PublicInterface
@@ -312,3 +332,12 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
 
     #endregion SupportMethods
 }
+
+public sealed record InvalidBotDecision(
+    DateTime OccurredAt,
+    Faction Faction,
+    int Seat,
+    string ActionType,
+    string Message,
+    string ValidationError,
+    string GameState);
