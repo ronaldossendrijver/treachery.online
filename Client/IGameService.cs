@@ -133,6 +133,7 @@ public interface IGameService
     Task<string> AdminRestoreState();
     Task<string> AdminCloseGame(string gameId);
     Task<string> AdminDownloadGame(string gameId);
+    Task<string> AdminDownloadBotDecisionGame(ErrorLogInfo error);
     Task<string> AdminCancelGame(string scheduledGameId);
     Task<string> AdminDeleteUser(int userId);
     Task<string> GetAdminInfo();

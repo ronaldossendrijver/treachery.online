@@ -87,6 +87,42 @@ public class GameHubInputValidationTests
         Assert.IsFalse(result.Success);
         Assert.AreEqual(ErrorType.InvalidUserNameOrPassword, result.Error);
     }
+
+    [TestMethod]
+    public async Task AdminCanListAndDownloadBotDecisionSavegame()
+    {
+        configuration["GameAdminUsername"] = "admin";
+        var admin = await hub.RequestCreateUser("admin", PasswordHash, "admin@example.com", "Administrator");
+        Assert.IsTrue(admin.Success);
+        Assert.IsNotNull(admin.Contents);
+
+        var savegame = Utilities.Serialize(new GameState { Version = Game.LatestVersion, Events = [] });
+        var decision = new InvalidBotDecision(
+            DateTime.UtcNow,
+            Faction.Yellow,
+            2,
+            "Shipment",
+            "Test decision",
+            "Test validation error",
+            savegame);
+        await using (var db = CreateContext())
+            await new ErrorLogService(db).RecordBotDecisionAsync("test-game-id", decision);
+
+        var logs = await hub.GetAdminErrorLog(admin.Contents.Token, null, null, null);
+        Assert.IsTrue(logs.Success);
+        var log = logs.Contents!.Single();
+        Assert.AreEqual("test-game-id", log.GameId);
+        Assert.IsTrue(log.HasGameSnapshot);
+
+        var download = await hub.AdminDownloadBotDecisionGame(admin.Contents.Token, log.Id);
+        Assert.IsTrue(download.Success);
+        Assert.AreEqual(savegame, download.Contents);
+
+        var unauthorized = await hub.AdminDownloadBotDecisionGame(string.Empty, log.Id);
+        Assert.IsFalse(unauthorized.Success);
+        Assert.AreEqual(ErrorType.InvalidUserNameOrPassword, unauthorized.Error);
+    }
+
     [TestMethod]
     public async Task CreationAndUpdateAcceptEmailAt254CharacterBoundary()
     {

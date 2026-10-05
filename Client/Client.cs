@@ -764,6 +764,17 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         await Browser.Save($"savegame-{gameId}.json", result.Contents);
         return "Savegame downloaded";
     }
+
+    public async Task<string> AdminDownloadBotDecisionGame(ErrorLogInfo error)
+    {
+        var result = await Invoke<string>(nameof(IGameHub.AdminDownloadBotDecisionGame), UserToken, error.Id);
+        if (result is not { Success: true, Contents: not null })
+            return CurrentSkin.Describe(result.Error);
+
+        var gameId = string.IsNullOrWhiteSpace(error.GameId) ? "unknown" : error.GameId;
+        await Browser.Save($"savegame-bot-error-{error.Id}-{gameId}.json", result.Contents);
+        return "Bot decision savegame downloaded";
+    }
     
     public async Task<string> AdminCancelGame(string scheduledGameId)
     {
