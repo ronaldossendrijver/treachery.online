@@ -161,12 +161,16 @@
          */
 
         let currentSounds = new Map();
+        function isExpectedMediaFetchAbort(error) {
+            const message = error && error.message || String(error);
+            return /fetching process for the media resource was aborted by the user agent at the user[’']s request/i.test(message);
+        }
+
         function isExpectedPlaybackInterruption(error) {
             const errorName = error && error.name;
-            const message = error && error.message || String(error);
             return errorName === "NotAllowedError"
                 || errorName === "AbortError"
-                || /fetching process for the media resource was aborted by the user agent at the user[’']s request/i.test(message);
+                || isExpectedMediaFetchAbort(error);
         }
 
         function playSound(sound) {
@@ -435,6 +439,7 @@
         window.treacheryErrorLogging = (() => {
             let dotNetReference;
             const report = (source, message, details, lineNumber, columnNumber) => {
+                if (source === "JavaScript" && isExpectedMediaFetchAbort(message)) return;
                 if (dotNetReference == null) return;
                 dotNetReference.invokeMethodAsync(
                     "ReportClientError",
