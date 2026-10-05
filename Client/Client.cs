@@ -738,7 +738,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public async Task<string> AdminPersistState()
     {
         if (!LoggedIn) return "Not logged in";
-        if (!InGame) return "Not in game";
         
         var result = await Invoke<string>(nameof(IGameHub.AdminPersistState), UserToken);
         return result is { Success: true, Contents: not null } ? result.Contents : CurrentSkin.Describe(result.Error);

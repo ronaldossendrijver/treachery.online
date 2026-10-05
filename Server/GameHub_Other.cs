@@ -88,6 +88,7 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user) || user.Username != Configuration["GameAdminUsername"])
             return Error<string>(ErrorType.InvalidUserNameOrPassword);
         
+        await RestoreGamesIfServerJustStarted();
         var (amountOfNewGames, amountOfUpdatedGames, amountOfUnchanged, amountOfDeletedGames) = await PersistRunningGames();
         var amountOfScheduledGames = await PersistScheduledGames();
             
