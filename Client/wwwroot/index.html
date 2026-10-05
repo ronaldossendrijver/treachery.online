@@ -161,13 +161,51 @@
          */
 
         let currentSounds = new Map();
+        function isExpectedPlaybackInterruption(error) {
+            const errorName = error && error.name;
+            const message = error && error.message || String(error);
+            return errorName === "NotAllowedError"
+                || errorName === "AbortError"
+                || /fetching process for the media resource was aborted by the user agent at the user[’']s request/i.test(message);
+        }
+
+        function playSound(sound) {
+            const playbackCallStack = new Error().stack || "Unavailable";
+            const enrichError = error => {
+                const errorName = error && error.name;
+                const errorMessage = error && error.message || String(error);
+                const mediaError = sound.error;
+                const source = sound.currentSrc || sound.src || "(unknown)";
+                const mediaState = mediaError
+                    ? `Media error code: ${mediaError.code}; ${mediaError.message || ""}`
+                    : `Media state: networkState=${sound.networkState}, readyState=${sound.readyState}`;
+                const enriched = new Error(
+                    `${errorMessage}\nAudio source: ${source}\n${mediaState}\nPlayback requested at:\n${playbackCallStack}`);
+                enriched.name = errorName || "Error";
+                return enriched;
+            };
+            let playPromise;
+            try {
+                playPromise = sound.play();
+            } catch (error) {
+                if (!isExpectedPlaybackInterruption(error)) throw enrichError(error);
+                return;
+            }
+
+            if (playPromise) {
+                playPromise.catch(error => {
+                    if (!isExpectedPlaybackInterruption(error)) throw enrichError(error);
+                });
+            }
+        }
+
         function PlaySound(file, fadeTime, volume, loop) {
 
             let sound = currentSounds.get(file);
             if (sound != null)
             {
                 sound.currentTime = 0;
-                sound.play();
+                playSound(sound);
             }
             else
             {
@@ -194,7 +232,7 @@
                     sound.volume = volume;
                 }
 
-                sound.play();
+                playSound(sound);
             }
         }
 
@@ -391,8 +429,6 @@
         <a class="dismiss">🗙</a>
     </div>
 
-    <script src="_framework/blazor.webassembly.js"></script>
-
     <script type="text/javascript">
         window.addEventListener("resize", SetPlanetMapScale);
 
@@ -445,6 +481,8 @@
             };
         })();
     </script>
+
+    <script src="_framework/blazor.webassembly.js"></script>
 
 </body>
 

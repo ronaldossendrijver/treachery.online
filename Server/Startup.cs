@@ -54,6 +54,16 @@ public class Startup
         }
 
         app.UseMiddleware<ErrorLoggingMiddleware>();
+        app.Use(async (context, next) =>
+        {
+            context.Response.OnStarting(() =>
+            {
+                if (context.Response.ContentType?.StartsWith("text/html", StringComparison.OrdinalIgnoreCase) == true)
+                    context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+                return Task.CompletedTask;
+            });
+            await next();
+        });
 
         app.UseHttpsRedirection();
         app.UseBlazorFrameworkFiles();
