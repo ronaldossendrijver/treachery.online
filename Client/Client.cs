@@ -381,10 +381,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         ((InGame && ServerInfo.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 6 && CurrentPhase <= Phase.AwaitingPlayers) ||
          ServerInfo.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 1);
   
-    public event EventHandler<Location> OnLocationSelected = null!;
-    public event EventHandler<Location> OnLocationSelectedWithCtrlOrAlt = null!;
-    public event EventHandler<Location> OnLocationSelectedWithShift = null!;
-    public event EventHandler<Location> OnLocationSelectedWithShiftAndWithCtrlOrAlt = null!;
+    public event EventHandler<Location>? OnLocationSelected;
+    public event EventHandler<Location>? OnLocationSelectedWithCtrlOrAlt;
+    public event EventHandler<Location>? OnLocationSelectedWithShift;
+    public event EventHandler<Location>? OnLocationSelectedWithShiftAndWithCtrlOrAlt;
 
     public void LocationClick(LocationEventArgs e)
     {
@@ -393,16 +393,16 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         if (e.ShiftKey)
         {
             if (e.CtrlKey || e.AltKey)
-                OnLocationSelectedWithShiftAndWithCtrlOrAlt.Invoke(this, e.Location);
+                OnLocationSelectedWithShiftAndWithCtrlOrAlt?.Invoke(this, e.Location);
             else
-                OnLocationSelectedWithShift.Invoke(this, e.Location);
+                OnLocationSelectedWithShift?.Invoke(this, e.Location);
         }
         else
         {
             if (e.CtrlKey || e.AltKey)
-                OnLocationSelectedWithCtrlOrAlt.Invoke(this, e.Location);
+                OnLocationSelectedWithCtrlOrAlt?.Invoke(this, e.Location);
             else
-                OnLocationSelected.Invoke(this, e.Location);
+                OnLocationSelected?.Invoke(this, e.Location);
         }
     }
 

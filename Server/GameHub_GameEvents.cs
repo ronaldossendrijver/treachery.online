@@ -206,7 +206,11 @@ public partial class GameHub
         return await ValidateAndExecute(e, game, game.Game.IsHost(user.Id));
     }
 
-    private async Task<VoidResult> ValidateAndExecute<TEvent>(TEvent e, ManagedGame game, bool isHost)
+    private async Task<VoidResult> ValidateAndExecute<TEvent>(
+        TEvent e,
+        ManagedGame game,
+        bool isHost,
+        Player? botPlayer = null)
         where TEvent : GameEvent
     {
         return await game.ProcessEventAsync(async () =>
@@ -217,7 +221,18 @@ public partial class GameHub
 
             if (validationResult != null)
             {
-                Log("Invalid bot decision: " + validationResult);
+                Log((botPlayer is null ? "Invalid game event: " : "Invalid bot decision: ") + validationResult);
+                if (botPlayer is not null)
+                {
+                    await RecordInvalidBotDecision(game, new InvalidBotDecision(
+                        DateTime.UtcNow,
+                        botPlayer.Faction,
+                        botPlayer.Seat,
+                        e.GetType().Name,
+                        e.GetMessage()?.ToString() ?? string.Empty,
+                        validationResult.ToString(),
+                        GameState.GetStateAsString(game.Game)));
+                }
                 return Error(ErrorType.InvalidGameEvent, validationResult.ToString());
             }
 
@@ -350,7 +365,7 @@ public partial class GameHub
                 var evt = await DetermineBotAction(managedGame, classicBot,
                     () => classicBot.DetermineHighestPriorityInPhaseAction(eventsPerBot[bot.Seat]));
                 if (evt == null) continue;
-                await ValidateAndExecute(evt, managedGame, false);
+                await ValidateAndExecute(evt, managedGame, false, bot);
                 return;
             }
             
@@ -360,7 +375,7 @@ public partial class GameHub
                 var evt = await DetermineBotAction(managedGame, classicBot,
                     () => classicBot.DetermineHighPriorityInPhaseAction(eventsPerBot[bot.Seat]));
                 if (evt == null) continue;
-                await ValidateAndExecute(evt, managedGame, false);
+                await ValidateAndExecute(evt, managedGame, false, bot);
                 return;
             }
             
@@ -370,7 +385,7 @@ public partial class GameHub
                 var evt = await DetermineBotAction(managedGame, classicBot,
                     () => classicBot.DetermineMiddlePriorityInPhaseAction(eventsPerBot[bot.Seat]));
                 if (evt == null) continue;
-                await ValidateAndExecute(evt, managedGame, false);
+                await ValidateAndExecute(evt, managedGame, false, bot);
                 return;
             }
             
@@ -380,7 +395,7 @@ public partial class GameHub
                 var evt = await DetermineBotAction(managedGame, classicBot,
                     () => classicBot.DetermineLowPriorityInPhaseAction(eventsPerBot[bot.Seat]));
                 if (evt == null) continue;
-                await ValidateAndExecute(evt, managedGame, false);
+                await ValidateAndExecute(evt, managedGame, false, bot);
                 return;
             }
             
@@ -391,7 +406,7 @@ public partial class GameHub
                     var evt = await DetermineBotAction(managedGame, classicBot,
                         () => classicBot.DetermineEndPhaseAction(eventsPerBot[bot.Seat]));
                     if (evt == null) continue;
-                    await ValidateAndExecute(evt, managedGame, true);
+                    await ValidateAndExecute(evt, managedGame, true, bot);
                     return;
                 }
         }
@@ -405,20 +420,23 @@ public partial class GameHub
         var action = determine();
         var decisions = bot.DrainInvalidDecisions();
         foreach (var decision in decisions)
-        {
-            try
-            {
-                await using var context = GetDbContext();
-                await new ErrorLogService(context).RecordBotDecisionAsync(managedGame.GameId, decision);
-            }
-            catch (Exception exception)
-            {
-                Console.Error.WriteLine(
-                    $"Unable to persist invalid bot decision for game {managedGame.GameId}: {exception}");
-            }
-        }
+            await RecordInvalidBotDecision(managedGame, decision);
 
         return action;
+    }
+
+    private async Task RecordInvalidBotDecision(ManagedGame managedGame, InvalidBotDecision decision)
+    {
+        try
+        {
+            await using var context = GetDbContext();
+            await new ErrorLogService(context).RecordBotDecisionAsync(managedGame.GameId, decision);
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine(
+                $"Unable to persist invalid bot decision for game {managedGame.GameId}: {exception}");
+        }
     }
 
     private static ClassicBot GetOrInitializeBot(ManagedGame game, Player player)
