@@ -13,6 +13,12 @@
     <link href="css/bootstrap.min.css" rel="stylesheet" />
     
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Ignore queued hover callbacks that run after Bootstrap disposes a tooltip or popover.
+        bootstrap.Tooltip.prototype._isWithActiveTrigger = function () {
+            return this._activeTrigger != null && Object.values(this._activeTrigger).includes(true);
+        };
+    </script>
 
     <link rel="stylesheet" href="css/app.css?v=182" />
 
