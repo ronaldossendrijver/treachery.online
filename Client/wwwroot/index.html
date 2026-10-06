@@ -18,6 +18,14 @@
         bootstrap.Tooltip.prototype._isWithActiveTrigger = function () {
             return this._activeTrigger != null && Object.values(this._activeTrigger).includes(true);
         };
+
+        // Skip queued transition callbacks (e.g. hide completion) when the tooltip or popover was disposed in the meantime.
+        const queueTooltipCallback = bootstrap.Tooltip.prototype._queueCallback;
+        bootstrap.Tooltip.prototype._queueCallback = function (callback, element, isAnimated) {
+            return queueTooltipCallback.call(this, () => {
+                if (this._element) callback();
+            }, element, isAnimated);
+        };
     </script>
 
     <link rel="stylesheet" href="css/app.css?v=182" />
