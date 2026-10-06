@@ -613,7 +613,6 @@ public partial class GameHub
                 OccurredAt = new DateTimeOffset(DateTime.SpecifyKind(entry.OccurredAt, DateTimeKind.Utc)),
                 GameVersion = entry.GameVersion,
                 GameId = entry.GameId,
-                HasGameSnapshot = context.ErrorLogSnapshots.Any(snapshot => snapshot.ErrorLogEntryId == entry.Id),
                 Source = entry.Source,
                 Message = entry.Message,
                 Details = entry.Details,
@@ -624,12 +623,24 @@ public partial class GameHub
             })
             .ToArrayAsync();
 
+        var logIds = logs.Select(log => log.Id).ToArray();
+        var snapshotLogIds = (await context.ErrorLogSnapshots
+                .AsNoTracking()
+                .Where(snapshot => logIds.Contains(snapshot.ErrorLogEntryId))
+                .Select(snapshot => snapshot.ErrorLogEntryId)
+                .Distinct()
+                .ToListAsync())
+            .ToHashSet();
+
+        foreach (var log in logs)
+            log.HasGameSnapshot = snapshotLogIds.Contains(log.Id);
+
         return Success(logs);
     }
 
     public async Task<VoidResult> ReportClientError(string? userToken, ClientErrorReport report)
     {
-        if (report is null || report.Source is not ("JavaScript" or "Blazor"))
+        if (report.Source is not ("JavaScript" or "Blazor"))
             return Error(ErrorType.InvalidGameEvent);
 
         var now = DateTimeOffset.UtcNow;
@@ -672,9 +683,9 @@ public partial class GameHub
     public async Task<VoidResult> RequestNudgeBots(string userToken, string gameId)
     {
         if (!AreValid(userToken, gameId, out _, out var game, out var error))
-            return error!;
+            return error;
 
-        ScheduleBotEvent(game!, true);
+        ScheduleBotEvent(game, true);
 
         await Task.CompletedTask;
         return Success();

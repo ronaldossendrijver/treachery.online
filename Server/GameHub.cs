@@ -78,11 +78,11 @@ public partial class GameHub(
     
     private static Result<TResult> Success<TResult>(TResult contents) => new() { Success = true, Contents = contents };
 
-    private static bool AreValid<TResult>(string? userToken, string? gameId, [NotNullWhen(true)] out LoggedInUser? user, [NotNullWhen(true)] out ManagedGame? game, out Result<TResult>? error, bool allowUnloaded = false)
+    private static bool AreValid<TResult>(string? userToken, string? gameId, [NotNullWhen(true)] out LoggedInUser? user, [NotNullWhen(true)] out ManagedGame? game, out Result<TResult> error, bool allowUnloaded = false)
     {
         user = null;
         game = null;
-        error = null;
+        error = new Result<TResult> { Success = true, Contents = default };
 
         if (userToken == null)
         {

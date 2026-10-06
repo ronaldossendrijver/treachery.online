@@ -221,7 +221,6 @@ public partial class GameHub
 
             if (validationResult != null)
             {
-                Log((botPlayer is null ? "Invalid game event: " : "Invalid bot decision: ") + validationResult);
                 if (botPlayer is not null)
                 {
                     await RecordInvalidBotDecision(game, new InvalidBotDecision(
@@ -229,7 +228,7 @@ public partial class GameHub
                         botPlayer.Faction,
                         botPlayer.Seat,
                         e.GetType().Name,
-                        e.GetMessage()?.ToString() ?? string.Empty,
+                        e.GetMessage().ToString(),
                         validationResult.ToString(),
                         GameState.GetStateAsString(game.Game)));
                 }
@@ -434,7 +433,7 @@ public partial class GameHub
         }
         catch (Exception exception)
         {
-            Console.Error.WriteLine(
+            await Console.Error.WriteLineAsync(
                 $"Unable to persist invalid bot decision for game {managedGame.GameId}: {exception}");
         }
     }
