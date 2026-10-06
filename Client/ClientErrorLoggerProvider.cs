@@ -6,6 +6,13 @@ using Microsoft.JSInterop;
 
 namespace Treachery.Client;
 
+internal static class ClientErrorReporting
+{
+    public static bool IsSignalRServerTimeout(Exception exception) =>
+        exception is TimeoutException &&
+        exception.Message.StartsWith("Server timeout (", StringComparison.Ordinal);
+}
+
 /// <summary>
 /// Records unhandled Blazor exceptions (logged by the renderer) in the server error log without
 /// replacing the page, so the default non-blocking error banner remains the only visible effect.
@@ -22,6 +29,9 @@ public sealed class ClientErrorLoggerProvider(IServiceProvider services) : ILogg
 
     private async Task Report(string category, string message, Exception? exception)
     {
+        if (exception is not null && ClientErrorReporting.IsSignalRServerTimeout(exception))
+            return;
+
         if (Interlocked.Exchange(ref _reporting, 1) == 1)
             return;
 

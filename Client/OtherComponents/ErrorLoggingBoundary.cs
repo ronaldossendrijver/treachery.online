@@ -11,6 +11,9 @@ public class ErrorLoggingBoundary : ErrorBoundary
 
     protected override async Task OnErrorAsync(Exception exception)
     {
+        if (ClientErrorReporting.IsSignalRServerTimeout(exception))
+            return;
+
         var url = string.Empty;
         var userAgent = string.Empty;
         try
