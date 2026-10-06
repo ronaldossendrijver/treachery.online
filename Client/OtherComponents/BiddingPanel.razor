@@ -43,7 +43,7 @@
 
             <div class="col align-top">
 
-                @if (!Client.IsObserver && Player.Faction != Faction.None)
+                @if (!Client.IsObserver && Client.Player is { Faction: not Faction.None })
                 {
                     <CheckboxComponent @bind-Value="@Client.AutoPass" OnChanged="AutoPassChanged">Auto-pass</CheckboxComponent>
                     @if (Client.AutoPass)

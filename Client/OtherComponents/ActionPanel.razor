@@ -592,7 +592,7 @@
     }
 }
 
-@if (DealAccepted.CurrentDeals(Game).Any() || (!Client.IsObserver && (DealAccepted.AcceptableDeals(Game, Client.Player!).Any() || DealAccepted.CancellableDeals(Game, Client.Player!).Any())))
+@if (DealAccepted.CurrentDeals(Game).Any() || (!Client.IsObserver && Client.Player is { } dealPlayer && (DealAccepted.AcceptableDeals(Game, dealPlayer).Any() || DealAccepted.CancellableDeals(Game, dealPlayer).Any())))
 {
     <DealComponent/>
 }

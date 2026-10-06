@@ -159,7 +159,7 @@
         _popoversNeedUpdate = true;
     }
 
-    private bool IsKnownCard(TreacheryCard c) => Client.Player!.KnownCards.Contains(c);
+    private bool IsKnownCard(TreacheryCard c) => Client.Player?.KnownCards.Contains(c) ?? false;
 
     private string ButtonStyle(object o) => o == _shown ? "btn-primary" : "btn-outline-primary";
 
