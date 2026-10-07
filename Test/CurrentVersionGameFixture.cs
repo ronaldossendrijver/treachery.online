@@ -34,14 +34,4 @@ internal static class CurrentVersionGameFixture
 
         return game;
     }
-
-    public static Game Create(int version)
-    {
-        if (version is < Game.LatestVersion - 3 or > Game.LatestVersion)
-        {
-            throw new ArgumentOutOfRangeException(nameof(version));
-        }
-
-        return new Game(version, new Participation());
-    }
 }

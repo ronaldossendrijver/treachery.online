@@ -41,14 +41,14 @@ public sealed class SavegameComponentReplayTests
         Parallel.ForEach(files, po, file =>
         {
             var state = GameState.Load(File.ReadAllText(file));
-            if (state.Version < Game.LatestVersion - 3)
+            if (state.Version < Game.LatestVersion - 10)
             {
                 return;
             }
 
             Console.WriteLine("Checking {0} (version {1})...", file, state.Version);
             
-            var game = CurrentVersionGameFixture.Create(state.Version);
+            var game = new Game(state.Version, new Participation());
             var eventIndex = 0;
             foreach (var historicalEvent in state.Events)
             {
