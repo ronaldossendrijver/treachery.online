@@ -11,14 +11,14 @@
 
 @if (Label != null)
 {
-    <label class="mb-0" for="@Id">@Label</label>
+    <label class="ui-mb-0" for="@Id">@Label</label>
 }
 
 @foreach (var item in _shown.Values)
 {
-    <div class="form-check mb-0">
-        <input class="form-check-input" style="cursor:pointer" type="radio" id="@Id-@item.Id" value=@item.Id @onclick=@(_ => ChangeValue(item.Value)) checked=@Equals(item.Value, Value)>
-        <label class="form-check-label" style="cursor:pointer" for="@Id-@item.Id">@item.Label</label>
+    <div class="ui-form-check ui-mb-0">
+        <input class="ui-form-check-input" style="cursor:pointer" type="radio" id="@Id-@item.Id" value=@item.Id @onclick=@(_ => ChangeValue(item.Value)) checked=@Equals(item.Value, Value)>
+        <label class="ui-form-check-label" style="cursor:pointer" for="@Id-@item.Id">@item.Label</label>
     </div>
 }
 

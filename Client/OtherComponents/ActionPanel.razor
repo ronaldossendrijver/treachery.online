@@ -33,10 +33,6 @@
             <EstablishPlayersComponent/>
             break;
             
-        case nameof(AutomationConfigured):
-            <AutomationConfiguredComponent/>
-            break;
-
         case nameof(FactionSelected):
             <FactionSelectedComponent/>
             break;
@@ -252,10 +248,6 @@
             <RaiseDeadComponent BackgroundImage="@GetImage(TreacheryCardType.RaiseDead)"/>
             break;
 
-        case nameof(Donated):
-            <DonatedComponent/>
-            break;
-
         case nameof(ResourcesTransferred):
             <ResourcesTransferredComponent/>
             break;
@@ -398,10 +390,6 @@
 
         case nameof(HideSecrets):
             <SimpleActionComponent GameEventType="HideSecrets" Title="Hide your secret info (like cards and traitors) from other players at the end of the game?" ConfirmLabel = "Yes" Alert = "true" Dismissable = "true" DismissLabel = "No" />
-            break;
-
-        case nameof(DealOffered):
-            <DealOfferedComponent/>
             break;
 
         case nameof(Discarded):
@@ -590,11 +578,6 @@
             <PlanetologyComponent/>
             break;
     }
-}
-
-@if (DealAccepted.CurrentDeals(Game).Any() || (!Client.IsObserver && Client.Player is { } dealPlayer && (DealAccepted.AcceptableDeals(Game, dealPlayer).Any() || DealAccepted.CancellableDeals(Game, dealPlayer).Any())))
-{
-    <DealComponent/>
 }
 
 @if (!Client.IsObserver && Game.AssistedNoteKeepingEnabled(Player))

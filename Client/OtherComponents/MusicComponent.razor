@@ -10,17 +10,17 @@
  
 @if (Visible)
 {
-    <div class="card p-1 mb-2 small">
-        <div class="card-body">
+    <div class="ui-card ui-p-1 ui-mb-2 ui-small">
+        <div class="ui-card-body">
             
-            <label for="musicVolume" class="form-label">&nbsp;Music volume</label>
-            <input id="musicVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredMusicVolume" @bind:event="oninput" @onchange="@AdjustVolume"/>
+            <label for="musicVolume" class="ui-form-label">&nbsp;Music volume</label>
+            <input id="musicVolume" class="ui-form-range" type="range" min="0" max="100" step="1" @bind="@DesiredMusicVolume" @bind:event="oninput" @onchange="@AdjustVolume"/>
 
-            <label for="effectVolume" class="form-label">&nbsp;Sound effects volume</label>
-            <input id="effectVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredEffectVolume" @bind:event="oninput" @onchange="@AdjustVolume" />
+            <label for="effectVolume" class="ui-form-label">&nbsp;Sound effects volume</label>
+            <input id="effectVolume" class="ui-form-range" type="range" min="0" max="100" step="1" @bind="@DesiredEffectVolume" @bind:event="oninput" @onchange="@AdjustVolume" />
                         
-            <label for="chatVolume" class="form-label">&nbsp;Chat notification volume</label>
-            <input id="chatVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredChatVolume" @bind:event="oninput" @onchange="@AdjustVolume" />
+            <label for="chatVolume" class="ui-form-label">&nbsp;Chat notification volume</label>
+            <input id="chatVolume" class="ui-form-range" type="range" min="0" max="100" step="1" @bind="@DesiredChatVolume" @bind:event="oninput" @onchange="@AdjustVolume" />
                         
         </div>
     </div>

@@ -7,11 +7,11 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-<div class="d-flex align-items-center">
+<div class="ui-d-flex ui-align-items-center">
 
     @if (Label != "")
     {
-        <label class="me-1">@Label</label>
+        <label class="ui-me-1">@Label</label>
     }
     
     <NumberPickerComponent Disabled="@Disabled" @bind-Value="@Value" OnChanged="Notify" Min="Min" Max="Max" StepUp="StepUp" StepDown="StepDown" 

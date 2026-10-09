@@ -41,7 +41,7 @@
 
         @if (_advancedOptions)
         {
-            <label class="mt-1 mb-0">AI Players</label>
+            <label class="ui-mt-1 ui-mb-0">AI Players</label>
             @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots, Game.ExpansionLevel))
             {
                 <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" Callback="StateHasChanged" />
@@ -51,7 +51,7 @@
             {
                 if (Game.GetRulesInGroup(ruleGroup, Game.ExpansionLevel).Any())
                 {
-                    <label class="mt-1 mb-0">@Client.CurrentSkin.Describe(ruleGroup)</label>
+                    <label class="ui-mt-1 ui-mb-0">@Client.CurrentSkin.Describe(ruleGroup)</label>
                     @foreach (var rule in Game.GetRulesInGroup(ruleGroup, Game.ExpansionLevel).OrderBy(r => Name(r)))
                     {
                         <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" />

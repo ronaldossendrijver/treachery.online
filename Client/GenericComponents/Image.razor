@@ -12,11 +12,11 @@
 {
     if (OnClick.HasDelegate)
     {
-        <img alt="@Alt" class="@JointClass" width=@_imgWidth src=@Src @onclick="@OnClick" @ref=@_element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover />
+        <img alt="@Alt" class="@JointClass" width=@_imgWidth src=@Src @onclick="@OnClick" @ref=@_element data-game-popover=@Popover tabindex="0" />
     }
     else
     {
-        <img alt="@Alt" class="@JointClass" width=@_imgWidth src=@Src @ref=@_element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover />
+        <img alt="@Alt" class="@JointClass" width=@_imgWidth src=@Src @ref=@_element data-game-popover=@Popover tabindex="0" />
     }
 }
 else if (Popover != null)

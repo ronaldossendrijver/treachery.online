@@ -14,24 +14,24 @@
 }
 else
 {
-    <div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeIn90 3s;">
-        <div class="card-header">
+    <div class="ui-card ui-mb-2 ui-shadow-lg ui-border-light" style="opacity:0.9;animation:fadeIn90 3s;">
+        <div class="ui-card-header">
             Welcome to treachery.online!
         </div>
-        <div class="card-body">
+        <div class="ui-card-body">
 
-            <ul class="nav nav-tabs mb-2">
-                <li class="nav-item">
-                    <button class="nav-link @GetActive(LoginComponentState.Login)" aria-current="page" @onclick="@(_ => State = LoginComponentState.Login)">Login</button>
+            <ul class="ui-nav ui-nav-tabs ui-mb-2">
+                <li class="ui-nav-item">
+                    <button class="ui-nav-link @GetActive(LoginComponentState.Login)" aria-current="page" @onclick="@(_ => State = LoginComponentState.Login)">Login</button>
                 </li>
-                <li class="nav-item">
-                    <button class="nav-link @GetActive(LoginComponentState.NewAccount)" @onclick="@(_ => State = LoginComponentState.NewAccount)">Create account</button>
+                <li class="ui-nav-item">
+                    <button class="ui-nav-link @GetActive(LoginComponentState.NewAccount)" @onclick="@(_ => State = LoginComponentState.NewAccount)">Create account</button>
                 </li>
-                <li class="nav-item">
-                    <button class="nav-link @GetActive(LoginComponentState.RequestPasswordReset)" @onclick="@(_ => State = LoginComponentState.RequestPasswordReset)">Forgot password?</button>
+                <li class="ui-nav-item">
+                    <button class="ui-nav-link @GetActive(LoginComponentState.RequestPasswordReset)" @onclick="@(_ => State = LoginComponentState.RequestPasswordReset)">Forgot password?</button>
                 </li>
-                <li class="nav-item">
-                    <button class="nav-link @GetActive(LoginComponentState.EnterNewPassword)" @onclick="@(_ => State = LoginComponentState.EnterNewPassword)">Set new password</button>
+                <li class="ui-nav-item">
+                    <button class="ui-nav-link @GetActive(LoginComponentState.EnterNewPassword)" @onclick="@(_ => State = LoginComponentState.EnterNewPassword)">Set new password</button>
                 </li>
             </ul>
 
@@ -39,40 +39,40 @@ else
             {
                 case LoginComponentState.Login:
                     <div>Please enter your user name and password</div>
-                    <input @ref="@_focusField" class="form-control mt-1 mt-1" @bind-value="@_username" @bind-value:event="oninput" maxlength="40" placeholder="User name" @onkeyup="@(e => KeyUp(e, Login))"/>
-                    <input type="password" class="form-control mt-1" @bind-value="@_password" @bind-value:event="oninput" maxlength="80" placeholder="Password" @onkeyup="@(e => KeyUp(e, Login))"/>
-                    <div class="text-danger small">@LoginMessage</div>
-                    <button class="btn btn-primary mt-1" disabled="@(State is LoginComponentState.Loading)" @onclick="@Login">Log in</button>
+                    <input @ref="@_focusField" class="ui-form-control ui-mt-1 ui-mt-1" @bind-value="@_username" @bind-value:event="oninput" maxlength="40" placeholder="User name" @onkeyup="@(e => KeyUp(e, Login))"/>
+                    <input type="password" class="ui-form-control ui-mt-1" @bind-value="@_password" @bind-value:event="oninput" maxlength="80" placeholder="Password" @onkeyup="@(e => KeyUp(e, Login))"/>
+                    <div class="ui-text-danger ui-small">@LoginMessage</div>
+                    <button class="ui-btn ui-btn-primary ui-mt-1" disabled="@(State is LoginComponentState.Loading)" @onclick="@Login">Log in</button>
                     break;
                 case LoginComponentState.NewAccount:
-                    <input @ref="@_focusField" class="form-control mt-1" @bind-value="@_newUsername" @bind-value:event="oninput" @onchange="@OnUserNameChanged" maxlength="40" placeholder="User name (used to log in)" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
-                    <input type="password" class="form-control mt-1" @bind-value="@_newPassword" @bind-value:event="oninput" maxlength="80" placeholder="Password" autocomplete="new-password" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
-                    <input type="password" class="form-control mt-1" @bind-value="@_newPasswordConfirm" @bind-value:event="oninput" maxlength="80" placeholder="Repeat password" autocomplete="new-password" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
-                    <input class="form-control mt-1" @bind-value="@_newEmail" @bind-value:event="oninput" maxlength="254" placeholder="E-mail address (in case you ever need to reset your password)" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
-                    <input class="form-control mt-1" @bind-value="@_newPlayerName" @bind-value:event="oninput" maxlength="40" placeholder="Player name (visible to other players)" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
-                    <div class="text-danger small">@NewAccountMessage</div>
-                    <button class="btn btn-primary mt-1" disabled="@(State is LoginComponentState.Loading)" @onclick="@NewAccount">Create account</button>
+                    <input @ref="@_focusField" class="ui-form-control ui-mt-1" @bind-value="@_newUsername" @bind-value:event="oninput" @onchange="@OnUserNameChanged" maxlength="40" placeholder="User name (used to log in)" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
+                    <input type="password" class="ui-form-control ui-mt-1" @bind-value="@_newPassword" @bind-value:event="oninput" maxlength="80" placeholder="Password" autocomplete="new-password" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
+                    <input type="password" class="ui-form-control ui-mt-1" @bind-value="@_newPasswordConfirm" @bind-value:event="oninput" maxlength="80" placeholder="Repeat password" autocomplete="new-password" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
+                    <input class="ui-form-control ui-mt-1" @bind-value="@_newEmail" @bind-value:event="oninput" maxlength="254" placeholder="E-mail address (in case you ever need to reset your password)" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
+                    <input class="ui-form-control ui-mt-1" @bind-value="@_newPlayerName" @bind-value:event="oninput" maxlength="40" placeholder="Player name (visible to other players)" @onkeyup="@(e => KeyUp(e, NewAccount))"/>
+                    <div class="ui-text-danger ui-small">@NewAccountMessage</div>
+                    <button class="ui-btn ui-btn-primary ui-mt-1" disabled="@(State is LoginComponentState.Loading)" @onclick="@NewAccount">Create account</button>
                     break;
                 case LoginComponentState.RequestPasswordReset:
                     <div>Enter the username or e-mail address associated to your account to receive a password reset token</div>
-                    <input @ref="@_focusField" class="form-control mt-1" @bind-value="@_passwordResetUsernameOrEmail" @bind-value:event="oninput" maxlength="254" placeholder="Username or e-mail address" @onkeyup="@(e => KeyUp(e, PasswordReset))"/>
-                    <div class="text-danger small">@PasswordResetMessage</div>
-                    <button class="btn btn-primary mt-1" disabled="@(State is LoginComponentState.Loading)" @onclick="@PasswordReset">Request password reset</button>
+                    <input @ref="@_focusField" class="ui-form-control ui-mt-1" @bind-value="@_passwordResetUsernameOrEmail" @bind-value:event="oninput" maxlength="254" placeholder="Username or e-mail address" @onkeyup="@(e => KeyUp(e, PasswordReset))"/>
+                    <div class="ui-text-danger ui-small">@PasswordResetMessage</div>
+                    <button class="ui-btn ui-btn-primary ui-mt-1" disabled="@(State is LoginComponentState.Loading)" @onclick="@PasswordReset">Request password reset</button>
                     break;
                 case LoginComponentState.EnterNewPassword:
                     <div>Enter the password reset token you received by email, your username and your new password</div>
-                    <input @ref="@_focusField" class="form-control mt-1" @bind-value="@_resetToken" @bind-value:event="oninput" maxlength="80" placeholder="Reset token" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
-                    <input class="form-control mt-1" @bind-value="@_resetUsername" @bind-value:event="oninput" maxlength="40" placeholder="User name" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
-                    <input type="password" class="form-control mt-1" @bind-value="@_resetPassword" @bind-value:event="oninput" maxlength="80" placeholder="Password" autocomplete="new-password" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
-                    <input type="password" class="form-control mt-1" @bind-value="@_resetPasswordConfirm" @bind-value:event="oninput" maxlength="80" placeholder="Repeat password" autocomplete="new-password" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
-                    <div class="text-danger small">@ResetPasswordMessage</div>
-                    <button class="btn btn-primary mt-1" disabled="@(State is LoginComponentState.Loading)" @onclick="@NewPassword">Set new password</button>
+                    <input @ref="@_focusField" class="ui-form-control ui-mt-1" @bind-value="@_resetToken" @bind-value:event="oninput" maxlength="80" placeholder="Reset token" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
+                    <input class="ui-form-control ui-mt-1" @bind-value="@_resetUsername" @bind-value:event="oninput" maxlength="40" placeholder="User name" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
+                    <input type="password" class="ui-form-control ui-mt-1" @bind-value="@_resetPassword" @bind-value:event="oninput" maxlength="80" placeholder="Password" autocomplete="new-password" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
+                    <input type="password" class="ui-form-control ui-mt-1" @bind-value="@_resetPasswordConfirm" @bind-value:event="oninput" maxlength="80" placeholder="Repeat password" autocomplete="new-password" @onkeyup="@(e => KeyUp(e, NewPassword))"/>
+                    <div class="ui-text-danger ui-small">@ResetPasswordMessage</div>
+                    <button class="ui-btn ui-btn-primary ui-mt-1" disabled="@(State is LoginComponentState.Loading)" @onclick="@NewPassword">Set new password</button>
                     break;
             }
         </div>
-        <div class="card-footer">
-            <div class="row">
-                <span class="col">Version @Game.LatestVersion (October 2026)</span>
+        <div class="ui-card-footer">
+            <div class="ui-row">
+                <span class="ui-col">Version @Game.LatestVersion (October 2026)</span>
             </div>
         </div>
     </div>

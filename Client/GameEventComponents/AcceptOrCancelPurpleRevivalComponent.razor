@@ -18,7 +18,7 @@
         {
             @if (Game.CurrentRevivalRequests.Any(req => req.Player.IsBot))
             {
-                <div class="text-warning mb-1">Bots are awaiting your decision before starting to revive...</div>
+                <div class="ui-text-warning ui-mb-1">Bots are awaiting your decision before starting to revive...</div>
             }
             
             <div>Early revival requests:</div>
@@ -35,11 +35,11 @@
             }
 
             <div>Existing early revival offers:</div>
-            <table class="table table-sm">
+            <table class="ui-table ui-table-sm">
                 <tbody>
                     @foreach (var kvp in Game.EarlyRevivalsOffers)
                     {
-                        <tr class="table-dark">
+                        <tr class="ui-table-dark">
                             <td><Image Shown=@kvp.Key Width="32"/></td>
                             <td>
                                 @if (kvp.Value == int.MaxValue)
@@ -52,7 +52,7 @@
                                 }
                             </td>
                             <td>
-                                <button class="btn btn-primary btn-sm" @onclick="_ => Cancel(kvp.Key)">Cancel</button>
+                                <button class="ui-btn ui-btn-primary ui-btn-sm" @onclick="_ => Cancel(kvp.Key)">Cancel</button>
                             </td>
                         </tr>
                     }

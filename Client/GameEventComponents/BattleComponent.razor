@@ -25,21 +25,21 @@
 
     <Body>
 
-        <div class="mt-1">
+        <div class="ui-mt-1">
             Opponent forces: 
             @if (opponent.ForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageUrl(opponent.Faction)" width=30 height="30" alt="@Client.CurrentSkin.Describe(opponent.Force)"/>
+                <img class="ui-img-fluid ui-ms-1" src="@Client.CurrentSkin.GetFactionForceImageUrl(opponent.Faction)" width=30 height="30" alt="@Client.CurrentSkin.Describe(opponent.Force)"/>
                 <span>&nbsp;<strong>@opponent.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
             }
             @if (opponent.HasAlly && opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageUrl(opponent.Ally)" width=30 height="30" alt="@Client.CurrentSkin.Describe(opponent.Force)"/>
+                <img class="ui-img-fluid ui-ms-1" src="@Client.CurrentSkin.GetFactionForceImageUrl(opponent.Ally)" width=30 height="30" alt="@Client.CurrentSkin.Describe(opponent.Force)"/>
                 <span>&nbsp;<strong>@opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
             }
             @if (opponent.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(opponent.Faction)" alt="@Client.CurrentSkin.Describe(opponent.SpecialForce)" width=30 height="30"/>
+                <img class="ui-img-fluid ui-ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(opponent.Faction)" alt="@Client.CurrentSkin.Describe(opponent.SpecialForce)" width=30 height="30"/>
                 
                 @if (opponent.Faction != Faction.White) {
 
@@ -48,7 +48,7 @@
             }
             @if (opponent.HasAlly && opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(opponent.Ally)" alt="@Client.CurrentSkin.Describe(opponent.SpecialForce)" width=30 height="30"/>
+                <img class="ui-img-fluid ui-ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(opponent.Ally)" alt="@Client.CurrentSkin.Describe(opponent.SpecialForce)" width=30 height="30"/>
 
                 @if (opponent.Ally != Faction.White)
                 {
@@ -60,15 +60,15 @@
 
         @if (Game.CurrentPinkBattleContribution > 0 && !(Player.Faction == Faction.Pink || Player.Ally == Faction.Pink))
         {
-            <div class="text-success mt-1"><Image Shown=Faction.Pink Width="30"/> forces contribute <strong>@Game.CurrentPinkBattleContribution</strong> to your opponents dial.</div>
+            <div class="ui-text-success ui-mt-1"><Image Shown=Faction.Pink Width="30"/> forces contribute <strong>@Game.CurrentPinkBattleContribution</strong> to your opponents dial.</div>
         }
 
         @if (!Battle.ValidBattleHeroes(Game, opponent).Any())
         {
-            <div class="text-warning mt-1">Your opponent has no leaders available for this battle!</div>
+            <div class="ui-text-warning ui-mt-1">Your opponent has no leaders available for this battle!</div>
         }
 
-        <div class="text-warning mt-1">
+        <div class="ui-text-warning ui-mt-1">
             @if(Client.Faction == Game.CurrentBattle.Aggressor) {
 
                 <span>You are aggressor.</span>
@@ -83,11 +83,11 @@
         {
             @if (Faction == Faction.Blue || Player.Ally == Faction.Blue)
             {
-                <div class="text-success mt-1">Your opponent @(Game.CurrentVoice.Must? "must use" : "may not use") @Client.CurrentSkin.Describe(Game.CurrentVoice.Type).</div>
+                <div class="ui-text-success ui-mt-1">Your opponent @(Game.CurrentVoice.Must? "must use" : "may not use") @Client.CurrentSkin.Describe(Game.CurrentVoice.Type).</div>
             }
             else
             {
-                <div class="text-warning mt-1">You @(Game.CurrentVoice.Must? "must use" : "may not use") @Client.CurrentSkin.Describe(Game.CurrentVoice.Type).</div>
+                <div class="ui-text-warning ui-mt-1">You @(Game.CurrentVoice.Must? "must use" : "may not use") @Client.CurrentSkin.Describe(Game.CurrentVoice.Type).</div>
             }
         }
 
@@ -98,14 +98,14 @@
             {
                 if (opponentBattlePlan != null)
                 {
-                    <div class="text-success mt-1">Enemy @PrescienceAspect.Dial: @GetTextForAspect(PrescienceAspect.Dial, opponentBattlePlan, true).</div>
-                    <Hoverable Class="text-success mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Weapon, opponentBattlePlan, true)>Enemy @PrescienceAspect.Weapon: @GetTextForAspect(PrescienceAspect.Weapon, opponentBattlePlan, true).</Hoverable>
-                    <Hoverable Class="text-success mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Defense, opponentBattlePlan, true)>Enemy @PrescienceAspect.Defense: @GetTextForAspect(PrescienceAspect.Defense, opponentBattlePlan, true).</Hoverable>
-                    <Hoverable Class="text-success mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Leader, opponentBattlePlan, true)>Enemy @PrescienceAspect.Leader: @GetTextForAspect(PrescienceAspect.Leader, opponentBattlePlan, true).</Hoverable>
+                    <div class="ui-text-success ui-mt-1">Enemy @PrescienceAspect.Dial: @GetTextForAspect(PrescienceAspect.Dial, opponentBattlePlan, true).</div>
+                    <Hoverable Class="ui-text-success ui-mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Weapon, opponentBattlePlan, true)>Enemy @PrescienceAspect.Weapon: @GetTextForAspect(PrescienceAspect.Weapon, opponentBattlePlan, true).</Hoverable>
+                    <Hoverable Class="ui-text-success ui-mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Defense, opponentBattlePlan, true)>Enemy @PrescienceAspect.Defense: @GetTextForAspect(PrescienceAspect.Defense, opponentBattlePlan, true).</Hoverable>
+                    <Hoverable Class="ui-text-success ui-mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Leader, opponentBattlePlan, true)>Enemy @PrescienceAspect.Leader: @GetTextForAspect(PrescienceAspect.Leader, opponentBattlePlan, true).</Hoverable>
                 }
                 else
                 {
-                    <div class="text-success mt-1">Opponent battle plan will be visible as soon as they confirm it.</div>
+                    <div class="ui-text-success ui-mt-1">Opponent battle plan will be visible as soon as they confirm it.</div>
                 }
             }
             else
@@ -114,11 +114,11 @@
                 {
                     if (opponentBattlePlan != null)
                     {
-                        <Hoverable Class="text-success mt-1" Popover=@GetPopupForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan, false)>Enemy @Game.CurrentPrescience.Aspect: @GetTextForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan, false).</Hoverable>
+                        <Hoverable Class="ui-text-success ui-mt-1" Popover=@GetPopupForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan, false)>Enemy @Game.CurrentPrescience.Aspect: @GetTextForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan, false).</Hoverable>
                     }
                     else
                     {
-                        <div class="text-success mt-1">Opponent @Game.CurrentPrescience.Aspect will be visible as soon as they confirm their battle plan.</div>
+                        <div class="ui-text-success ui-mt-1">Opponent @Game.CurrentPrescience.Aspect will be visible as soon as they confirm their battle plan.</div>
                     }
                 }
 
@@ -126,11 +126,11 @@
                 {
                     if (opponentBattlePlan != null)
                     {
-                        <Hoverable Class="text-success mt-1" Popover=@GetPopupForAspect(Game.CurrentNexusPrescience.GreenPrescienceAspect, opponentBattlePlan, false)>Enemy @Game.CurrentNexusPrescience.GreenPrescienceAspect: @GetTextForAspect(Game.CurrentNexusPrescience.GreenPrescienceAspect, opponentBattlePlan, false).</Hoverable>
+                        <Hoverable Class="ui-text-success ui-mt-1" Popover=@GetPopupForAspect(Game.CurrentNexusPrescience.GreenPrescienceAspect, opponentBattlePlan, false)>Enemy @Game.CurrentNexusPrescience.GreenPrescienceAspect: @GetTextForAspect(Game.CurrentNexusPrescience.GreenPrescienceAspect, opponentBattlePlan, false).</Hoverable>
                     }
                     else
                     {
-                        <div class="text-success mt-1">Opponent @Game.CurrentNexusPrescience.GreenPrescienceAspect will be visible as soon as they confirm their battle plan.</div>
+                        <div class="ui-text-success ui-mt-1">Opponent @Game.CurrentNexusPrescience.GreenPrescienceAspect will be visible as soon as they confirm their battle plan.</div>
                     }
                 }
             }
@@ -138,10 +138,10 @@
 
         @if (Game.CurrentPinkBattleContribution > 0 && (Player.Faction == Faction.Pink || Player.Ally == Faction.Pink))
         {
-            <div class="text-success mt-1"><FactionComponent Faction=Faction.Pink Diameter="20"/> forces contribute <strong>@Game.CurrentPinkBattleContribution</strong> to your dial.</div>
+            <div class="ui-text-success ui-mt-1"><FactionComponent Faction=Faction.Pink Diameter="20"/> forces contribute <strong>@Game.CurrentPinkBattleContribution</strong> to your dial.</div>
         }
 
-        <div class="mt-1">
+        <div class="ui-mt-1">
 
             @{
                 var forceSupplier = Battle.DetermineForceSupplier(Game, Player);
@@ -190,7 +190,7 @@
                 }
             }
 
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="bi bi-arrow-right" stroke="white" viewBox="0 0 16 16" style="vertical-align: super">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="" stroke="white" viewBox="0 0 16 16" style="vertical-align: super">
                 <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
             </svg>
 
@@ -231,9 +231,9 @@
                 
         @if (Player.MessiahAvailable && !Game.Prevented(FactionAdvantage.GreenUseMessiah))
         {
-            <div class="mt-2">
+            <div class="ui-mt-2">
                 <RadioComponent @bind-Value="Messiah" Values="@([false,true])" ValueLabels="@(["No","Yes"])">
-                    <Label>Should <img class="img-fluid" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/> join the fight?</Label>
+                    <Label>Should <img class="ui-img-fluid" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/> join the fight?</Label>
                 </RadioComponent>
             </div>
         }

@@ -8,9 +8,9 @@
 *@
 @inherits GameComponent;
 
-<div class="card p-1 mb-2 border-light" style="animation:fadeIn 3s;">
-    <div class="card-header">Victory!</div>
-    <div class="card-body">
+<div class="ui-card ui-p-1 ui-mb-2 ui-border-light" style="animation:fadeIn 3s;">
+    <div class="ui-card-header">Victory!</div>
+    <div class="ui-card-body">
 
         @foreach (var w in Game.Winners)
         {
@@ -20,7 +20,7 @@
 
         @if (!Game.Applicable(Rule.DisableEndOfGameReport))
         {
-            <button class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#storyModal">Read the story of this game...</button>
+            <button class="ui-btn ui-btn-primary ui-mt-1" data-dialog-target="#storyModal">Read the story of this game...</button>
             <StoryComponent Id="storyModal" Game="Client.Game" />
         }
 

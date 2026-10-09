@@ -9,9 +9,9 @@
 @inherits GameComponent;
 @typeparam T
 
-<div class="form-check">
-    <input class="form-check-input" style="cursor:pointer" id="@Id" type="checkbox" disabled="@Disabled" checked="@IsChecked(Value)" @onchange="e => { CheckboxClicked(Value, e.Value); }" />
-    <label class="form-check-label" style="cursor:pointer" for="@Id">@Client.CurrentSkin.Describe(Value) @ChildContent</label>
+<div class="ui-form-check">
+    <input class="ui-form-check-input" style="cursor:pointer" id="@Id" type="checkbox" disabled="@Disabled" checked="@IsChecked(Value)" @onchange="e => { CheckboxClicked(Value, e.Value); }" />
+    <label class="ui-form-check-label" style="cursor:pointer" for="@Id">@Client.CurrentSkin.Describe(Value) @ChildContent</label>
 </div>
 
 @code 

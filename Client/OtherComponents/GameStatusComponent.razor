@@ -8,9 +8,9 @@
 *@
 @inherits GameEventComponent<EndPhase>
 
-<div class="card p-0 mb-2" style="background-color:#e8dba6ee;animation:fadeIn 1s">
+<div class="ui-card ui-p-0 ui-mb-2 game-status-panel">
 
-    <div class="card-body bg-transparent border-bottom-0">
+    <div class="ui-card-body ui-bg-transparent ui-border-bottom-0 game-status-panel-body">
 
     @if (Client.Status != null) {
 
@@ -19,91 +19,8 @@
             <div style="position:absolute;left:5px;top:0;color:@TimerColor(Client.Status.WaitingForMe(Player, Client.IsHost));font-weight:bolder;">@TimerText(Client.Status.TimedEvent)</div>
         }
 
-        if (IsBiddingPhase || OneOrMorePlayersNeedToAct || PlayersAreInSequence) {
-
-            <ErrorLoggingBoundary @ref=_errorBoundary>
-
-                <ChildContent>
-
-                <div class="row row-cols-6 d-flex justify-content-center mt-2 mb-3">
-
-                    @if (IsBiddingPhase && ToBid.Any())
-                    {
-                        var showTurnInSequence = Game.CurrentPhase is Phase.BlackMarketBidding or Phase.Bidding or Phase.BiddingReport;
-                        var hasTurn = Client.Status.WaitingForPlayers.Count == 1 && !showTurnInSequence ? Client.Status.WaitingForPlayers.First() : null;
-
-                        foreach (var se in ToBid)
-                        {
-                            <div class="col" style="filter:drop-shadow(1px 1px 1px black)">
-                                <NumberComponent Value="@Game.CardsOwnedBy(se.Player).Count()" Size="@(se.Player == hasTurn || (showTurnInSequence && se.HasTurn) ? 38 : 32)"
-                                                SymbolSrc="@Client.CurrentSkin.GetImageUrl(se.Player.Faction)"
-                                                BehindNumberSrc="@Client.CurrentSkin.CardBack_TreacheryCard_URL"
-                                                Title="@PlayerWithCardsTitle(se.Player)"
-                                                NumberColor="@(se.Player.HasRoomForCards ? "black" : "red")" 
-                                                NumberBorderColor="white" 
-                                                NumberBorderWidth=1 
-                                                NumberAlignment="NumberAlignment.BottomRight" 
-                                                NumberBackgroundFillColor="white" 
-                                                NumberBackgroundBorderColor="black" />
-                            </div>
-                        }
-                    }
-                    else if (OneOrMorePlayersNeedToAct)
-                    {
-                        if (Client.Status.WaitingForPlayers.Count() == 1)
-                        {
-
-                            var player = Client.Status.WaitingForPlayers.First();
-
-                            <div style="position: relative; width: 64px; height: 64px;">
-                                <img title="@player.Name" src="@Client.CurrentSkin.GetImageUrl(player.Faction)" style="position: absolute; left: 0; filter: drop-shadow(2px 2px 2px black); width: 64px;" alt="@player.Name"/>
-                                <img src="./art/worm.gif" style="position: absolute; top: -14px; left: -20px; filter: drop-shadow(1px 1px 1px black); width:94px;" alt="Worm"/>
-                            </div>
-                        }
-                        else
-                        {
-
-                            foreach (var p in Client.Status.WaitingForPlayers)
-                            {
-                                <div style="position: relative; width: 48px;">
-                                    <img class="p-2" title="@p.Name" src="@Client.CurrentSkin.GetImageUrl(p.Faction)" style="filter:drop-shadow(2px 2px 2px black);width:48px;" alt="@p.Name"/>
-                                </div>
-                            }
-                        }
-                    }
-                    else if (PlayersAreInSequence)
-                    {
-                        foreach (var f in Client.Status.WaitingInSequence)
-                        {
-                            <div class="align-self-center p-0 m-0" style="position: relative; width: 64px;">
-                                @if (f.HasTurn)
-                                {
-                                    <img title="@f.Player.Name" src="@Client.CurrentSkin.GetImageUrl(f.Player.Faction)" style="position: relative; filter: drop-shadow(2px 2px 2px black);width:64px;" alt="@f.Player.Name"/>
-                                    <img src="./art/worm.gif" style="position: absolute; top: -12px; left: -18px; filter: drop-shadow(1px 1px 1px black); width: 90px" alt="Worm"/>
-                                }
-                                else
-                                {
-                                    <img class="align-self-center p-2" title="@f.Player.Name" src="@Client.CurrentSkin.GetImageUrl(f.Player.Faction)" width="48" style="position: relative; filter: drop-shadow(2px 2px 2px black)" alt="@f.Player.Name"/>
-                                }
-                            </div>
-                        }
-                    }
-
-                </div>
-
-                </ChildContent>
-
-                <ErrorContent>
-                    <div class="alert alert-warning">
-                        An error has occured displaying the status of the game (Phase: @Game.CurrentPhase)
-                    </div>
-                </ErrorContent>
-
-            </ErrorLoggingBoundary>
-        }
-
-        <div class="text-dark fw-bold text-center" style="@StatusStyle">
-            <ExpressionComponent Game=Game Expression=@Client.Status.GetMessage(Client.Player, Client.IsHost).Expression Size="20"/>
+        <div class="ui-text-dark ui-fw-bold ui-text-center game-status-message" style="@StatusStyle">
+            <ExpressionComponent Game=Game Expression=@Client.Status.GetMessage(Client.Player!, Client.IsHost).Expression Size="20"/>
         </div>
 
         @if (!AutoConfirm && CanEndPhase)
@@ -111,20 +28,24 @@
             <ButtonRowComponent Confirm="Confirm" ConfirmText="Continue" ConfirmError=@Validation/>
         }
 
-        @if (AutoConfirm || CanEndPhase)
+        @if (AutoConfirm || CanEndPhase || Client.IsHost && Game.CurrentMainPhase == MainPhase.Bidding && Game.Players.Count(p => !p.IsBot) > 1)
         {
-            <div class="mt-1 mb-n3 float-end" style="color:black;">
-                <CheckboxComponent @bind-Value=AutoConfirm>Continue automatically</CheckboxComponent>
-            </div>
-        }
-
-        @if (Client.IsHost && Game.CurrentMainPhase == MainPhase.Bidding && Game.Players.Count(p => !p.IsBot) > 1)
-        {
-            <div class="mt-1" style="color:black;">
-                <CheckboxComponent @bind-Value="@TimeLimitSet" OnChanged=EnableOrDisableTimer>Time limit (seconds)</CheckboxComponent>
-                @if (TimeLimitSet)
+            <div class="game-status-options">
+                @if (AutoConfirm || CanEndPhase)
                 {
-                    <SelectNumberComponent Disabled=@(!TimeLimitSet) @bind-Value=@TimeLimit OnChanged=@UpdateTimer Min="10" Max="600" StepUp="TimerStepUp" StepDown="TimerStepDown" Size="30"/>
+                    <CheckboxComponent Class="game-status-checkbox" @bind-Value=AutoConfirm>Continue automatically</CheckboxComponent>
+                }
+
+                @if (Client.IsHost && Game.CurrentMainPhase == MainPhase.Bidding && Game.Players.Count(p => !p.IsBot) > 1)
+                {
+                    <div class="game-status-timer">
+                        <CheckboxComponent Class="game-status-checkbox" @bind-Value="@TimeLimitSet" OnChanged=EnableOrDisableTimer>Time limit</CheckboxComponent>
+                        @if (TimeLimitSet)
+                        {
+                            <span>(seconds)</span>
+                            <SelectNumberComponent Disabled=@(!TimeLimitSet) @bind-Value=@TimeLimit OnChanged=@UpdateTimer Min="10" Max="600" StepUp="TimerStepUp" StepDown="TimerStepDown" Size="30"/>
+                        }
+                    </div>
                 }
             </div>
         }
@@ -142,8 +63,6 @@
     private int TicksPassed { get; set; }
     private bool TimeLimitSet { get; set; }
     private int TimeLimit { get; set; } = 20;
-
-    private ErrorLoggingBoundary? _errorBoundary;
 
     protected override async Task OnInitializedAsync()
     {
@@ -163,11 +82,6 @@
             TicksPassed = 0;
             AutoConfirm = false;
         }
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        _errorBoundary?.Recover();
     }
 
     private Phase _previousPhase;
@@ -206,31 +120,7 @@
 
     protected override EndPhase ConfirmedResult => new(Game, Faction);
 
-    private IEnumerable<SequenceElement> ToBid
-    {
-        get
-        {
-            if (Game.CurrentPhase is Phase.BlackMarketAnnouncement or Phase.BlackMarketBidding)
-            {
-                return BlackMarketBid.PlayersToBid(Game);
-            }
-
-            return Bid.PlayersToBid(Game);
-        }
-    }
-
-    private bool IsBiddingPhase => Game.CurrentMainPhase == MainPhase.Bidding;
-
-    private bool OneOrMorePlayersNeedToAct => Client.Status!.WaitingForPlayers.Any();
-
-    private bool PlayersAreInSequence => Client.Status!.WaitingInSequence.Any();
-
     private string StatusStyle => Client.Status!.WaitingForMe(Player, Client.IsHost) ? Support.TextBorder(1, "#FF000016") : "";
-
-    private string PlayerWithCardsTitle(Player player)
-    {
-        return player.Name;
-    }
 
     private string TimerText(GameEvent? timedEvent)
     {

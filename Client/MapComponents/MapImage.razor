@@ -20,7 +20,13 @@
     <Rectangle X=X Y=Y Width="Width" Height="Height" FillColor=@BackgroundRectangleColor />
 }
 
-@if (OnClick.HasDelegate || OnMouseOver.HasDelegate || OnMouseExited.HasDelegate) 
+@if (KeyboardAccessible)
+{
+    <img src="@Src" style="@Style" @attributes="@_attributes" @ref=@Element
+         @onclick="@OnClick" @onkeydown="@OnKeyboardActivate"
+         role="button" tabindex="0" alt="@Alt"/>
+}
+else if (OnClick.HasDelegate || OnMouseOver.HasDelegate || OnMouseExited.HasDelegate)
 {
     <img src="@Src" style="@Style" @attributes="@_attributes" @ref=@Element  @onclick="@OnClick" @onmouseenter="@OnMouseOver" @onmouseout="@OnMouseExited" alt="@Alt"/>
 }
@@ -64,6 +70,12 @@ else
     [Parameter]
     public EventCallback<MouseEventArgs> OnClick { get; set; }
 
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    [Parameter]
+    public bool KeyboardAccessible { get; set; }
+
     [Parameter]
     public EventCallback<MouseEventArgs> OnMouseOver { get; set; }
 
@@ -92,24 +104,19 @@ else
             _popoverNeedsRefresh = true;
         }
 
-        _attributes = new Dictionary<string, object>();
+        _attributes = AdditionalAttributes is null
+            ? new Dictionary<string, object>()
+            : new Dictionary<string, object>(AdditionalAttributes);
 
         if (Popover == null) return;
         
         if (!PopoverAsTooltip)
         {
-            _attributes.Add("data-bs-trigger", "hover");
-            _attributes.Add("data-bs-toggle", "popover");
-            _attributes.Add("data-bs-html", "true");
-            _attributes.Add("data-bs-animation", "false");
-            _attributes.Add("data-bs-delay", "100");
-            _attributes.Add("data-container", "body");
-            _attributes.Add("data-bs-content", Popover);
-            _attributes.Add("data-bs-template", PopoverTemplate);
+            _attributes["data-game-popover"] = Popover;
         }
         else
         {
-            _attributes.Add("title", Popover);
+            _attributes["title"] = Popover;
         }
     }
 
@@ -158,6 +165,11 @@ else
             return result;
         }
     }
+
+    private Task OnKeyboardActivate(KeyboardEventArgs args) =>
+        args.Key is "Enter" or " "
+            ? OnClick.InvokeAsync(new MouseEventArgs())
+            : Task.CompletedTask;
 
     private string ShadowFilter => ShadowX > 0 || ShadowY > 0 ? $"drop-shadow({Px(ShadowX)} {Px(ShadowY)} {Px(ShadowBlur)} {ShadowColor})" : "";
 

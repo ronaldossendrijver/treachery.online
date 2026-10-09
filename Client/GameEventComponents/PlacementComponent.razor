@@ -18,7 +18,7 @@
 
         @if (InformAboutCaravan)
         {
-            <div class="text-info small">Note: if you wish to perform a @Client.CurrentSkin.Describe(TreacheryCardType.Caravan) this turn, you need to do that before performing your regular move.</div>
+            <div class="ui-text-info ui-small">Note: if you wish to perform a @Client.CurrentSkin.Describe(TreacheryCardType.Caravan) this turn, you need to do that before performing your regular move.</div>
         }
 
         @if (ValidSources.Any())
@@ -44,7 +44,7 @@
 
             @if (ToLocation != null && Game.ContainsConflictingAlly(Player, ToLocation))
             {
-                <div class="text-danger bg-dark">Note: if you place forces there, all of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
+                <div class="ui-text-danger ui-bg-dark">Note: if you place forces there, all of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
             }
 
             @if (Faction == Faction.Blue && ToLocation != null)

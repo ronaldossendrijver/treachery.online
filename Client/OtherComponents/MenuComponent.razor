@@ -8,23 +8,30 @@
 *@
 @inherits GameComponent
 
-<div class="row m-0 d-flex justify-content-center" style="animation:fadeIn 1s;">
+<div class="ui-row ui-m-0 game-menu-toolbar">
 
     @if (Game.EventCount > 0)
     {
-        <div class="col col-xs-auto p-0">
-            <a class="btn btn-link p-1" @onclick="@(_ => SetVisible(Players))" title="Help">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-people" viewBox="0 0 16 16">
+        <div class="ui-col ui-col-xs-auto ui-p-0 menu-dropdown-anchor">
+            <button class="ui-btn ui-btn-link ui-p-1" type="button" @onclick="@(_ => SetVisible(Players))" aria-label="Players" title="Players"
+               aria-expanded="@IsVisible(Players)" aria-controls="menu-players-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
                     <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/>
                 </svg>
-            </a>
+            </button>
+            @if (IsVisible(Players))
+            {
+                <div id="menu-players-dropdown" class="menu-dropdown menu-dropdown-players" role="region" aria-label="Players">
+                    <JoinedPlayersPanel />
+                </div>
+            }
         </div>
         
         if (Client.IsHost || Client.ServerInfo != null && Client.UserName == Client.ServerInfo.AdminName)
         {
-            <div class="col col-xs-auto p-0">
-            <a class="btn btn-link p-1" title="Save game..." @onclick="@Save">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+            <div class="ui-col ui-col-xs-auto ui-p-0">
+            <a class="ui-btn ui-btn-link ui-p-1" title="Save game..." @onclick="@Save">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
                     <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
                     <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
                 </svg>
@@ -34,9 +41,9 @@
 
         if (Client.IsHost && !Client.IsObserver)
         {
-            <div class="col col-xs-auto p-0">
-            <label class="btn btn-link p-1" title="Load game...">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-file-earmark-arrow-up" viewBox="0 0 16 16">
+            <div class="ui-col ui-col-xs-auto ui-p-0">
+            <label class="ui-btn ui-btn-link ui-p-1" title="Load game...">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
                     <path d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z" />
                     <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
                 </svg>
@@ -44,9 +51,9 @@
             </label>
             </div>
 
-            <div class="col col-xs-auto p-0">
-                <label class="btn btn-link p-1" title="Apply skin...">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-palette" viewBox="0 0 16 16">
+            <div class="ui-col ui-col-xs-auto ui-p-0">
+                <label class="ui-btn ui-btn-link ui-p-1" title="Apply skin...">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
                         <path d="M8 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm4 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM5.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm.5 6a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
                         <path d="M16 8c0 3.15-1.866 2.585-3.567 2.07C11.42 9.763 10.465 9.473 10 10c-.603.683-.475 1.819-.351 2.92C9.826 14.495 9.996 16 8 16a8 8 0 1 1 8-8zm-8 7c.611 0 .654-.171.655-.176.078-.146.124-.464.07-1.119-.014-.168-.037-.37-.061-.591-.052-.464-.112-1.005-.118-1.462-.01-.707.083-1.61.704-2.314.369-.417.845-.578 1.272-.618.404-.038.812.026 1.16.104.343.077.702.186 1.025.284l.028.008c.346.105.658.199.953.266.653.148.904.083.991.024C14.717 9.38 15 9.161 15 8a7 7 0 1 0-7 7z" />
                     </svg>
@@ -56,27 +63,27 @@
             
             @if (Game.NumberOfBots > 0)
             {
-                <div class="col col-xs-auto p-0">
+                <div class="ui-col ui-col-xs-auto ui-p-0">
                     @if (Game.Participation.BotsSpeed == 0)
                     {
-                        <a class="btn btn-link p-1" @onclick="@(_ => Client.RequestSetBotSpeed(1))" title="Bots are paused">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-pause-fill" viewBox="0 0 16 16">
+                        <a class="ui-btn ui-btn-link ui-p-1" @onclick="@(_ => Client.RequestSetBotSpeed(1))" title="Bots are paused">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
                                 <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z" />
                             </svg>
                         </a>
                     }
                     else if (Game.Participation.BotsSpeed == 1)
                     {
-                        <a class="btn btn-link p-1" @onclick="@(_ => Client.RequestSetBotSpeed(2))" title="Bots at normal speed">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-play-fill" viewBox="0 0 16 16">
+                        <a class="ui-btn ui-btn-link ui-p-1" @onclick="@(_ => Client.RequestSetBotSpeed(2))" title="Bots at normal speed">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
                                 <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z" />
                             </svg>
                         </a>
                     }
                     else if (Game.Participation.BotsSpeed == 2)
                     {
-                        <a class="btn btn-link p-1" @onclick="@(_ => Client.RequestSetBotSpeed(4))" title="Bots at higher speed">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-fast-forward-fill" viewBox="0 0 16 16">
+                        <a class="ui-btn ui-btn-link ui-p-1" @onclick="@(_ => Client.RequestSetBotSpeed(4))" title="Bots at higher speed">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
                                 <path d="M7.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696z"/>
                                 <path d="M15.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C8.713 12.69 8 12.345 8 11.692V4.308c0-.653.713-.998 1.233-.696z"/>
                             </svg>
@@ -84,8 +91,8 @@
                     }
                     else
                     {
-                        <a class="btn btn-link p-1" @onclick="@(_ => Client.RequestSetBotSpeed(0))" title="Bots at highest speed">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-very-fast-forward-fill" viewBox="0 0 16 16">
+                        <a class="ui-btn ui-btn-link ui-p-1" @onclick="@(_ => Client.RequestSetBotSpeed(0))" title="Bots at highest speed">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
                                 <!-- Left triangle -->
                                 <path d="M0 1.5 L0 14.5 L5.333 8 Z"/>
                                 <!-- Middle triangle -->
@@ -101,47 +108,88 @@
 
             @if (Game.EventCount > 1)
             {
-                <div class="col col-xs-auto p-0">
-                    <a class="btn btn-link p-1" @onclick="_ => SetVisible(Host)" title="Undo">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-skip-backward" viewBox="0 0 16 16">
+                <div class="ui-col ui-col-xs-auto ui-p-0 menu-dropdown-anchor">
+                    <button class="ui-btn ui-btn-link ui-p-1" type="button" @onclick="_ => SetVisible(Host)" title="Undo"
+                       aria-expanded="@IsVisible(Host)" aria-controls="menu-host-dropdown">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
                             <path d="M.5 3.5A.5.5 0 0 1 1 4v3.248l6.267-3.636c.52-.302 1.233.043 1.233.696v2.94l6.267-3.636c.52-.302 1.233.043 1.233.696v7.384c0 .653-.713.998-1.233.696L8.5 8.752v2.94c0 .653-.713.998-1.233.696L1 8.752V12a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5zm7 1.133L1.696 8 7.5 11.367V4.633zm7.5 0L9.196 8 15 11.367V4.633z" />
                         </svg>
-                    </a>
+                    </button>
+                    @if (IsVisible(Host))
+                    {
+                        <div id="menu-host-dropdown" class="menu-dropdown menu-dropdown-wide" role="region" aria-label="Undo and redo">
+                            @if (_loadValidationError != "")
+                            {
+                                <div class="ui-text-danger ui-small">@_loadValidationError</div>
+                                <button class="ui-btn ui-btn-primary ui-mt-1 ui-btn-sm" @onclick="ClearValidationErrors">Clear errors</button>
+                            }
+                            <UndoComponent />
+                            <RedoComponent />
+                        </div>
+                    }
                 </div>
             }
         }
     }
 
-    <div class="col col-xs-auto p-0">
-    <a class="btn btn-link p-1" @onclick="_ => SetVisible(Help)" title="Help">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-info-circle" viewBox="0 0 16 16">
-            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-            <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+    <div class="ui-col ui-col-xs-auto ui-p-0 menu-dropdown-anchor">
+    <button class="ui-btn ui-btn-link ui-p-1" type="button" @onclick="_ => SetVisible(Help)" aria-label="Help" title="Help"
+       aria-expanded="@IsVisible(Help)" aria-controls="menu-help-dropdown">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
+            <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <path d="M6.15 6.15a1.95 1.95 0 1 1 3.25 1.45c-.92.78-1.4 1.12-1.4 2.15h1.5c0-.43.13-.62.87-1.26a3.45 3.45 0 1 0-5.7-2.34zM7.25 11h1.5v1.5h-1.5z" />
         </svg>
-    </a>
+    </button>
+    @if (IsVisible(Help))
+    {
+        <div id="menu-help-dropdown" class="menu-dropdown menu-dropdown-wide" role="region" aria-label="Help and reference">
+            <div class="menu-dropdown-actions">
+                @if (Client.InGame)
+                {
+                    <button class="ui-btn ui-btn-primary" data-dialog-target="#mentatModal">List of Cards</button>
+                }
+                <a class="ui-btn ui-btn-primary" href="docs/Dune-Rulebook.pdf" target="_blank">Dune Rulebook</a>
+                <a class="ui-btn ui-btn-primary" href="docs/Dune-IxianAndTleilaxu-Rulebook.pdf" target="_blank">Ixian &amp; Tleilaxu Rulebook</a>
+                <a class="ui-btn ui-btn-primary" href="docs/Dune-ChoamAndRichese-Rulebook.pdf" target="_blank">CHOAM &amp; Richese Rulebook</a>
+                <a class="ui-btn ui-btn-primary" href="docs/Dune-EcazAndMoritani-Rulebook.pdf" target="_blank">Ecaz &amp; Moritani Rulebook</a>
+                <a class="ui-btn ui-btn-primary" href="docs/Dune-FAQ-Nov-2020.pdf" target="_blank">Dune FAQ</a>
+                <a class="ui-btn ui-btn-primary" href="https://www.gf9games.com/dune/classic-dune/" target="_blank">Buy boardgame from GF9</a>
+                <a class="ui-btn ui-btn-primary" href="https://dune.games" target="_blank">Dune Dashboard</a>
+                <button class="ui-btn ui-btn-primary" data-dialog-target="#creditModal">Credits</button>
+            </div>
+        </div>
+    }
     </div>
 
-    <div class="col col-xs-auto p-0">
-    <a class="btn btn-link p-1" @onclick="_ => SetVisible(Volume)" title="Adjust music and sound volume">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-music-note-beamed" viewBox="0 0 16 16">
+    <AutomationDialogComponent />
+
+    <GameInformationComponent />
+
+    <div class="ui-col ui-col-xs-auto ui-p-0 menu-dropdown-anchor">
+    <button class="ui-btn ui-btn-link ui-p-1" type="button" @onclick="_ => SetVisible(Volume)" title="Adjust music and sound volume"
+       aria-expanded="@IsVisible(Volume)" aria-controls="menu-volume-dropdown">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
             <path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13c0-1.104 1.12-2 2.5-2s2.5.896 2.5 2zm9-2c0 1.105-1.12 2-2.5 2s-2.5-.895-2.5-2 1.12-2 2.5-2 2.5.895 2.5 2z" />
             <path fill-rule="evenodd" d="M14 11V2h1v9h-1zM6 3v10H5V3h1z" />
             <path d="M5 2.905a1 1 0 0 1 .9-.995l8-.8a1 1 0 0 1 1.1.995V3L5 4V2.905z" />
         </svg>
-    </a>
+    </button>
+    <div id="menu-volume-dropdown" class="menu-dropdown menu-dropdown-volume" role="region" aria-label="Sound settings" hidden="@(!IsVisible(Volume))">
+        <MusicComponent Visible="IsVisible(Volume)" />
+    </div>
     </div>
 
-    <div class="col col-xs-auto p-0">
-    <a class="btn btn-link p-1" href="https://github.com/ronaldossendrijver/treachery.online/issues" target="_blank" title="Report a bug or suggest improvements">
+    <div class="ui-col ui-col-xs-auto ui-p-0">
+    <a class="ui-btn ui-btn-link ui-p-1" href="https://github.com/ronaldossendrijver/treachery.online/issues" target="_blank" title="Report a bug or suggest improvements">
         <svg width="98" height="96" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg" style="width:16px;height:16px;">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z" fill="white"/>
         </svg>
     </a>
     </div>
 
-    <div class="col col-xs-auto p-0">
-    <a class="btn btn-link p-1" @onclick="ToggleFullScreen" title="Toggle fullscreen">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-fullscreen" viewBox="0 0 16 16">
+    <div class="ui-col ui-col-xs-auto ui-p-0">
+    <a class="ui-btn ui-btn-link ui-p-1" @onclick="ToggleFullScreen" title="Toggle fullscreen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
             <path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z" />
         </svg>
     </a>
@@ -149,9 +197,9 @@
 
     @if (Client.InGame)
     {
-        <div class="col col-xs-auto p-0">
-        <a class="btn btn-link p-1" @onclick="@ToMainScreen" title="To main screen">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-box-arrow-left" viewBox="0 0 16 16">
+        <div class="ui-col ui-col-xs-auto ui-p-0">
+        <a class="ui-btn ui-btn-link ui-p-1" @onclick="@ToMainScreen" title="To main screen">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0v2z"/>
               <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
             </svg>
@@ -160,47 +208,6 @@
     }
 
 </div>
-
-<div class="text-danger small">@_loadValidationError</div>
-
-@if (_loadValidationError != "")
-{
-    <button class="btn btn-primary mt-1 btn-sm" @onclick="ClearValidationErrors">Clear errors</button>
-}
-
-@if (IsVisible(Host))
-{
-    <UndoComponent/>
-    <RedoComponent/>
-}
-else if (IsVisible(Help))
-{
-    <div class="card p-1 mb-2">
-        <div class="card-body text-center">
-
-            @if (Client.InGame)
-            {
-                <button class="btn btn-primary mt-1 me-1" data-bs-toggle="modal" data-bs-target="#mentatModal">List of Cards</button>
-            }
-
-            <a class="btn btn-primary mt-1" href="docs/Dune-Rulebook.pdf" target="_blank">Dune Rulebook</a>
-            <a class="btn btn-primary mt-1" href="docs/Dune-IxianAndTleilaxu-Rulebook.pdf" target="_blank">Ixian & Tleilaxu Rulebook</a>
-            <a class="btn btn-primary mt-1" href="docs/Dune-ChoamAndRichese-Rulebook.pdf" target="_blank">CHOAM & Richese Rulebook</a>
-            <a class="btn btn-primary mt-1" href="docs/Dune-EcazAndMoritani-Rulebook.pdf" target="_blank">Ecaz & Moritani Rulebook</a>
-            <a class="btn btn-primary mt-1" href="docs/Dune-FAQ-Nov-2020.pdf" target="_blank">Dune FAQ</a>
-
-            <a class="btn btn-primary mt-1" href="https://www.gf9games.com/dune/classic-dune/" target="_blank">Buy boardgame from GF9</a>
-            <a class="btn btn-primary mt-1" href="https://dune.games" target="_blank">Dune Dashboard</a>
-            <button class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#creditModal">Credits</button>
-        </div>
-    </div>
-}
-else if (IsVisible(Players))
-{
-    <JoinedPlayersPanel/>
-}
-
-<MusicComponent Visible="IsVisible(Volume)" />
 
 <MentatComponent Id="mentatModal"/>
 <CreditComponent Id="creditModal"/>

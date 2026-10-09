@@ -32,13 +32,16 @@
 
             <MapImage X="@(x)" Y="@(y)" Diameter=@factionTokenDiameter Src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" 
                    ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                   Popover="@Intel(p)"/>
+                   Popover="@Client.CurrentSkin.Describe(p.Faction)" PopoverAsTooltip="true"
+                   KeyboardAccessible="true"
+                   aria-haspopup="true"
+                   OnClick="@(_ => OnFactionClick.InvokeAsync(p.Faction))"/>
 
             if (p.HasAlly)
             {
                 <MapImage X="@(position.X)" Y="@(position.Y + 0.25f * Client.CurrentSkin.PlayerTokenRadius)" Diameter=@(1.2f * Client.CurrentSkin.PlayerTokenRadius) Src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Ally)" 
                        ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                       Popover="@Intel(p.AlliedPlayer)"/>
+                Popover="@Client.CurrentSkin.Describe(p.Ally)" PopoverAsTooltip="true"/>
             }
 
             var positionOnCircle = TwoPi / 180 + (4.5f - positionSector) * TwoPi / Map.NumberOfSectors;
@@ -55,7 +58,7 @@
                     <MapImage X=homeworldXy.X Y=@homeworldXy.Y
                        Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
                        Src="@Client.CurrentSkin.GetImageUrl(homeworld.World)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
-                    Popover=@Client.CurrentSkin.GetPopup(homeworld) OnClick="@(e => OnClick(e, homeworld))" PopoverStyle="" />
+                    Popover=@Client.CurrentSkin.GetPopup(homeworld) OnClick="@(e => OnClick(e, homeworld))" />
 
                     if (Game.IsOccupied(homeworld.World))
                     {
@@ -127,7 +130,7 @@
                 <MapImage Xy=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
                        Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
                        Src="@Client.CurrentSkin.GetImageUrl(tt)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                       Popover="@Client.CurrentSkin.GetPopup(tt)" PopoverStyle=""/>
+                       Popover="@Client.CurrentSkin.GetPopup(tt)"/>
             }
 
             if (p.Faction == Faction.Pink && Game.PinkLoyalLeader != null)
@@ -147,14 +150,14 @@
                 <MapImage Xy=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
                         Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
                         Src="@Client.CurrentSkin.GetImageUrl(skilledLeader)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                        Popover="@Client.CurrentSkin.GetPopup(skilledLeader, Game.Skill(skilledLeader))" PopoverStyle=""/>
+                        Popover="@Client.CurrentSkin.GetPopup(skilledLeader, Game.Skill(skilledLeader))"/>
 
                 <MapText ToShow="@Client.CurrentSkin.Describe(Game.Skill(skilledLeader))"
                         Xy=@Pos(positionOnCircle)
                         Font="@Client.CurrentSkin.SKILL_FONT" FontColor="@Client.CurrentSkin.SKILL_FONTCOLOR"
                         BorderWidth="@Client.CurrentSkin.SKILL_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.SKILL_FONT_BORDERCOLOR"
                         Align="@TextAlignment.Center" MaxWidth="3f * Client.CurrentSkin.PlayerTokenRadius"
-                        Popover="@Client.CurrentSkin.GetPopup(skilledLeader, Game.Skill(skilledLeader))" PopoverStyle="" />
+                        Popover="@Client.CurrentSkin.GetPopup(skilledLeader, Game.Skill(skilledLeader))" />
             }
 
             if (p.Faction == Faction.Pink && p.Ambassadors.Any())
@@ -259,34 +262,13 @@
     [Parameter]
     public EventCallback<LocationEventArgs> OnLocationClick { get; set; }
 
+    [Parameter]
+    public EventCallback<Faction> OnFactionClick { get; set; }
+
     private readonly Situation _situation = new();
     protected override bool ShouldRender()
     {
         return Client.InGame && _situation.RequiresUpdate(Client);
-    }
-
-    private string Intel(Player p)
-    {
-        var result = Client.CurrentSkin.Format("<p><strong>{0} plays {1}</strong></p>", p.Name, p.Faction);
-
-        foreach (var v in LeaderManager.Leaders.Where(l => l.Faction == p.Faction))
-        {
-            result += GetLeaderHtml(v);
-        }
-
-        result += "<div class=\"row m-0 mt-1 justify-content-center\">";
-
-        result += "</div>";
-
-        result += "<div class=\"mt-1 text-start\">" + Client.CurrentSkin.GetFactionInfo_HTML(Game, p.Faction) + "</div>";
-        return result;
-    }
-
-    private string GetLeaderHtml(Leader? l)
-    {
-        return l == null 
-            ? "" 
-            : $"<img class='img-fluid' src='{Client.CurrentSkin.GetImageUrl(l)}' width=80 style='filter:drop-shadow(-3px 3px 2px black);'/>";
     }
 
     private async Task OnClick(MouseEventArgs e, Location l)

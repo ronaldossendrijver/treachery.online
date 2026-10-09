@@ -7,14 +7,14 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-<div class="row mb-1">
-    <div class="col">
+<div class="ui-row ui-mb-1">
+    <div class="ui-col">
         <label for="datePicker">@Label</label>
-        <input type="date" id="datePicker" class="form-control" @bind:get="@SelectedDate" @bind:set="@HandleDateChanged" @bind:event="onchange"/>
+        <input type="date" id="datePicker" class="ui-form-control" @bind:get="@SelectedDate" @bind:set="@HandleDateChanged" @bind:event="onchange"/>
     </div>
-    <div class="col">
+    <div class="ui-col">
         <label for="timePicker">@TimeLabel</label>
-        <input type="time" id="timePicker" class="form-control" @bind:get="@SelectedTime" @bind:set="@HandleTimeChanged" @bind:event="onchange"/>
+        <input type="time" id="timePicker" class="ui-form-control" @bind:get="@SelectedTime" @bind:set="@HandleTimeChanged" @bind:event="onchange"/>
     </div>
 </div>
 

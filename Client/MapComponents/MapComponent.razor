@@ -43,9 +43,6 @@
     [Parameter]
     public double Opacity { get; set; } = 1.0f;
 
-    [Parameter]
-    public string PopoverStyle { get; set; } = "background-color:black;text-align:center;border:1px solid white;padding:3px 3px 3px 3px;filter:drop-shadow(-5px 5px 2px #000000AA);";
-
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -109,8 +106,6 @@
         return new PointD(x, y);
     }
 
-    protected string PopoverTemplate => $"<div class=\"popover\" role=\"tooltip\" style=\"{PopoverStyle}\"><div class=\"arrow\"></div><h3 class=\"popover-header p-0\"></h3><div class=\"popover-body p-0\"></div></div>";
-    
     protected string Intel(Location intelligenceLocation)
     {
         var result = "<div style='width:300px'>";
@@ -124,7 +119,7 @@
             result += Client.CurrentSkin.Format("<h5>{0}</h5>", Client.CurrentSkin.Describe(intelligenceLocation.Territory));
             if (intelligenceLocation.Orientation != "")
             {
-                result += "<div class='mt-0 mb-2'><strong>Sector: " + intelligenceLocation.Orientation + "</strong></div>";
+                result += "<div class='ui-mt-0 ui-mb-2'><strong>Sector: " + intelligenceLocation.Orientation + "</strong></div>";
             }
         }
 
@@ -190,11 +185,11 @@
     {
         var result = "";
 
-        result += "<div class=\"row m-0 bg-dark d-flex justify-content-center\">";
+        result += "<div class=\"ui-row ui-m-0 ui-bg-dark ui-d-flex ui-justify-content-center\">";
 
         if (Game.ResourcesOnPlanet.ContainsKey(intelligenceLocation))
         {
-            result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
+            result += string.Format("<div class=\"ui-col ui-col-auto\"><img class=\"ui-img-fluid ui-m-0 ui-p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
                 Client.CurrentSkin.Harvester_URL,
                 Game.ResourcesOnPlanet[intelligenceLocation]);
         }
@@ -208,14 +203,14 @@
                 {
                     if (b.AmountOfForces > 0)
                     {
-                        result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
+                        result += string.Format("<div class=\"ui-col ui-col-auto\"><img class=\"ui-img-fluid ui-m-0 ui-p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
                             Client.CurrentSkin.GetFactionForceImageUrl(p.Faction),
                             b.AmountOfForces);
                     }
 
                     if (b.AmountOfSpecialForces > 0)
                     {
-                        result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
+                        result += string.Format("<div class=\"ui-col ui-col-auto\"><img class=\"ui-img-fluid ui-m-0 ui-p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
                             Client.CurrentSkin.GetFactionSpecialForceImageUrl(p.Faction),
                             b.Faction == Faction.White && Client.Faction != Faction.White ? "?" : "" + (b.Faction == Faction.White ? Game.CurrentNoFieldValue : b.AmountOfSpecialForces));
                     }
@@ -225,7 +220,7 @@
 
         if (Game.TerrorIn(intelligenceLocation.Territory).Any())
         {
-            result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" style=\"filter:hue-rotate(180deg);\" /><strong>&nbsp;{1}</strong></div>",
+            result += string.Format("<div class=\"ui-col ui-col-auto\"><img class=\"ui-img-fluid ui-m-0 ui-p-0\" width=\"32\" height=\"32\" src=\"{0}\" style=\"filter:hue-rotate(180deg);\" /><strong>&nbsp;{1}</strong></div>",
                 Client.CurrentSkin.GetImageUrl(Faction.Cyan),
                 Game.TerrorIn(intelligenceLocation.Territory).Count());
         }
@@ -233,17 +228,17 @@
         var ambassador = Game.AmbassadorIn(intelligenceLocation.Territory);
         if (ambassador != Ambassador.None)
         {
-            result += $"<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{Client.CurrentSkin.GetImageUrl(ambassador)}\" /><strong></div>";
+            result += $"<div class=\"ui-col ui-col-auto\"><img class=\"ui-img-fluid ui-m-0 ui-p-0\" width=\"32\" height=\"32\" src=\"{Client.CurrentSkin.GetImageUrl(ambassador)}\" /><strong></div>";
         }
 
         if (Game.DiscoveriesOnPlanet.TryGetValue(intelligenceLocation, out var discovery))
         {
-            result += $"<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{Client.CurrentSkin.GetImageUrl(discovery.TokenType)}\" /></div>";
+            result += $"<div class=\"ui-col ui-col-auto\"><img class=\"ui-img-fluid ui-m-0 ui-p-0\" width=\"32\" height=\"32\" src=\"{Client.CurrentSkin.GetImageUrl(discovery.TokenType)}\" /></div>";
         }
 
         foreach (var hero in Game.LeaderState.Where(state => state.Value.Alive && state.Value.CurrentTerritory == intelligenceLocation.Territory).Select(state => state.Key))
         {
-            result += $"<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"64\" height=\"64\" src=\"{Client.CurrentSkin.GetImageUrl(hero)}\" /></div>";
+            result += $"<div class=\"ui-col ui-col-auto\"><img class=\"ui-img-fluid ui-m-0 ui-p-0\" width=\"64\" height=\"64\" src=\"{Client.CurrentSkin.GetImageUrl(hero)}\" /></div>";
         }
 
         result += "</div>";

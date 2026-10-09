@@ -20,12 +20,12 @@
 
         <SelectResourcesComponent @bind-Value="_resources" Min="0" Max="100" Label="@Client.CurrentSkin.Describe(Concept.Resource)" />
 
-        <div class="mt-1">Initial forces on planet (you may use the planet map):</div>
-        <div class="small">Add / Remove @Client.CurrentSkin.Describe(CurrentPlayer.Force): <ClickHintComponent Button="ClickHintButton.Lmb" /> / <ClickHintComponent Button="ClickHintButton.Lmb" Modifier="ClickHintModifier.Shift" /></div>
+        <div class="ui-mt-1">Initial forces on planet (you may use the planet map):</div>
+        <div class="ui-small">Add / Remove @Client.CurrentSkin.Describe(CurrentPlayer.Force): <ClickHintComponent Button="ClickHintButton.Lmb" /> / <ClickHintComponent Button="ClickHintButton.Lmb" Modifier="ClickHintModifier.Shift" /></div>
 
         @if (CurrentPlayer.HasSpecialForces && !CurrentPlayer.Is(Faction.White))
         {
-            <div class="small">Add / Remove @Client.CurrentSkin.Describe(CurrentPlayer.SpecialForce): <ClickHintComponent Button="ClickHintButton.Lmb" Modifier="ClickHintModifier.Ctrl" /> / <ClickHintComponent Button="ClickHintButton.Lmb" Modifier="ClickHintModifier.Ctrl | ClickHintModifier.Shift" /></div>
+            <div class="ui-small">Add / Remove @Client.CurrentSkin.Describe(CurrentPlayer.SpecialForce): <ClickHintComponent Button="ClickHintButton.Lmb" Modifier="ClickHintModifier.Ctrl" /> / <ClickHintComponent Button="ClickHintButton.Lmb" Modifier="ClickHintModifier.Ctrl | ClickHintModifier.Shift" /></div>
         }
 
         <ForceSelectionComponent Game="Client.Game" Player="CurrentPlayer" OnChanged="@StateHasChanged" Forces="Forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="20" FixedMaxSpecialForces="MaxSpecialForces" AllowMultipleTerritories="true"/>

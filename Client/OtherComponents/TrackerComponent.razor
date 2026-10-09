@@ -13,9 +13,9 @@
 
 <CardPickerComponent Tracker="this" Id="picker" />
 
-<div class="card mb-2" style="animation:fadeIn 1s;">
+<div class="ui-card ui-mb-2" style="animation:fadeIn 1s;">
 
-    <div class="card-header" @onclick="@(_ => _collapsed = !_collapsed)" style="cursor:pointer">
+    <div class="ui-card-header" @onclick="@(_ => _collapsed = !_collapsed)" style="cursor:pointer">
         Card Tracker
         <InfoComponent Contents="@InfoMessage" />
         <CollapseButton Collapsed="@_collapsed" />
@@ -23,28 +23,28 @@
 
     @if (!_collapsed)
     {
-        <div @ref=@_element class="card-body">
+        <div @ref=@_element class="ui-card-body">
 
-            <div class="mb-1">
+            <div class="ui-mb-1">
 
                 @foreach (var p in Players)
                 {
-                    <button class="btn @ButtonStyle(p) p-1" @onclick="@(_ => Toggle(p))" data-bs-toggle="tooltip" title="@Client.CurrentSkin.Describe(p.Faction)">
-                        <img class="img-fluid" width="29" height="29" src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" alt="@Name(p.Faction)"/>
+                    <button class="ui-btn @ButtonStyle(p) ui-p-1" @onclick="@(_ => Toggle(p))" title="@Client.CurrentSkin.Describe(p.Faction)">
+                        <img class="ui-img-fluid" width="29" height="29" src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" alt="@Name(p.Faction)"/>
                     </button>
                 }
 
                 @if (Client.Game.TreacheryDiscardPile != null)
                 {
-                    <button class="btn @ButtonStyle(Client.Game.TreacheryDiscardPile) p-1" @onclick="@(_ => Toggle(Client.Game.TreacheryDiscardPile))" data-bs-toggle="tooltip" title="Discarded Treachery Cards">
-                        <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" alt=""/>
+                    <button class="ui-btn @ButtonStyle(Client.Game.TreacheryDiscardPile) ui-p-1" @onclick="@(_ => Toggle(Client.Game.TreacheryDiscardPile))" title="Discarded Treachery Cards">
+                        <img class="ui-img-fluid ui-ms-1 ui-me-1" width="21" height="29" src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" alt=""/>
                     </button>
                 }
 
                 @if (Client.Game.ResourceCardDeck != null)
                 {
-                    <button class="btn @ButtonStyle(Client.Game.ResourceCardDeck!) p-1" @onclick="_ => Toggle(Client.Game.ResourceCardDeck!)" data-bs-toggle="tooltip" title="Discarded Spice Cards">
-                        <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Client.CurrentSkin.CardBack_ResourceCard_URL" alt=""/>
+                    <button class="ui-btn @ButtonStyle(Client.Game.ResourceCardDeck!) ui-p-1" @onclick="_ => Toggle(Client.Game.ResourceCardDeck!)" title="Discarded Spice Cards">
+                        <img class="ui-img-fluid ui-ms-1 ui-me-1" width="21" height="29" src="@Client.CurrentSkin.CardBack_ResourceCard_URL" alt=""/>
                     </button>
                 }
 
@@ -54,30 +54,30 @@
             @if (Shown is Player shown)
             {
                 <div>Treachery cards</div>
-                <div class="row row-cols-4 m-0">
+                <div class="ui-row ui-row-cols-4 ui-m-0">
 
                     @for (var i = 0; i < shown.MaximumNumberOfCards; i++)
                     {
                         var selIndex = i;
                         var cardId = Info.TrackedTreacheryCards[shown.Faction][selIndex];
 
-                        <a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#picker" @onmousedown="@(_ => InitiatePick(shown.Faction, selIndex))" title=@DeterminePopup(Info.TrackedTreacheryCards[shown.Faction][selIndex])>
+                        <button type="button" class="ui-btn ui-btn-link ui-p-1" data-dialog-target="#picker" @onmousedown="@(_ => InitiatePick(shown.Faction, selIndex))" title=@DeterminePopup(Info.TrackedTreacheryCards[shown.Faction][selIndex])>
                             @if (cardId == TreacheryCard.None)
                             {
-                                <svg class="img-fluid w-100" viewBox="0 0 268 372" xmlns="http://www.w3.org/2000/svg">
+                                <svg class="ui-img-fluid ui-w-100" viewBox="0 0 268 372" xmlns="http://www.w3.org/2000/svg">
                                     <rect width="268" height="372" rx="20" style="fill:rgb(64,64,64);stroke-width:3;stroke:rgb(200,200,200)"/>
                                 </svg>
                             }
                             else if (cardId == TreacheryCard.Unknown)
                             {
-                                <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" class="img-fluid" alt=""/>
+                                <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" class="ui-img-fluid" alt=""/>
                             }
                             else
                             {
                                 var card = TreacheryCardManager.Lookup.Find(cardId);
-                                <Image Shown=card Class="img-fluid" Pointer/>
+                                <Image Shown=card Class="ui-img-fluid" Pointer/>
                             }
-                        </a>
+                        </button>
                     }
 
                 </div>
@@ -113,15 +113,15 @@
 
             else if (Shown == Client.Game.TreacheryDiscardPile)
             {
-                <ul class="list-inline mt-0">
+                <ul class="list-inline ui-mt-0">
 
                     @foreach (var c in Info.DiscardedCards.Union(Info.RemovedCards))
                     {
-                        <li class="list-inline-item">
+                        <li class="ui-list-inline-item">
 
-                            <p class="mb-0">
-                                <RichText Shown=@c Class="badge bg-primary rounded-pill"/>
-                                <button class="btn-close btn-sm" @onclick="@(_ => SetNotDiscarded(c))"></button>
+                            <p class="ui-mb-0">
+                                <RichText Shown=@c Class="ui-badge ui-bg-primary rounded-pill"/>
+                                <button class="ui-btn-close ui-btn-sm" @onclick="@(_ => SetNotDiscarded(c))"></button>
                             </p>
 
                         </li>
@@ -129,12 +129,12 @@
 
                     @if (!Info.DiscardedCards.Any() && !Info.RemovedCards.Any())
                     {
-                        <li class="list-inline-item text-info">No treachery cards discarded yet.</li>
+                        <li class="ui-list-inline-item ui-text-info">No treachery cards discarded yet.</li>
                     }
 
                 </ul>
 
-                <button class="btn btn-primary btn-sm" @onclick="@Info.ClearDiscarded">Reshuffle (clear) discarded cards</button>
+                <button class="ui-btn ui-btn-primary ui-btn-sm" @onclick="@Info.ClearDiscarded">Reshuffle (clear) discarded cards</button>
             }
 
             else if (Shown == Client.Game.ResourceCardDeck)
@@ -152,18 +152,18 @@
                 {
                     if (Client.Game.ResourceCardDiscardPileA?.Items.Any() is true)
                     {
-                        <div class="small"><strong>Discard pile A:</strong> @Client.CurrentSkin.Join(Client.Game.ResourceCardDiscardPileA.Items)</div>
+                        <div class="ui-small"><strong>Discard pile A:</strong> @Client.CurrentSkin.Join(Client.Game.ResourceCardDiscardPileA.Items)</div>
                     }
                     if (Client.Game.ResourceCardDiscardPileB?.Items.Any() is true)
                     {
-                        <div class="small"><strong>Discard pile B:</strong> @Client.CurrentSkin.Join(Client.Game.ResourceCardDiscardPileB.Items)</div>
+                        <div class="ui-small"><strong>Discard pile B:</strong> @Client.CurrentSkin.Join(Client.Game.ResourceCardDiscardPileB.Items)</div>
                     }
                 }
                 else
                 {
                     if (Client.Game.ResourceCardDiscardPileA?.Items.Any() is true)
                     {
-                        <div class="small"><strong>Discarded:</strong> @Client.CurrentSkin.Join(Client.Game.ResourceCardDiscardPileA.Items)</div>
+                        <div class="ui-small"><strong>Discarded:</strong> @Client.CurrentSkin.Join(Client.Game.ResourceCardDiscardPileA.Items)</div>
                     }
                 }
             }
@@ -372,9 +372,9 @@
     {
         if (o == Shown)
         {
-            return "btn-primary";
+            return "ui-btn-primary";
         }
 
-        return "btn-outline-primary";
+        return "ui-btn-outline-primary";
     }
 }

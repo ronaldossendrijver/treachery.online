@@ -56,7 +56,7 @@
             <g
                 fill="@LocationColor(location)"
                 cursor="pointer" pointer-events="all" @onclick=@(e => OnClick(e, location))
-                data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-bs-content="@Intel(location)" data-bs-template="@PopoverTemplate">
+                data-game-popover="@Intel(location)" tabindex="0">
 
                     <path d="@Client.CurrentSkin.GetTerritoryBorder(location.Territory)"/>
             </g>

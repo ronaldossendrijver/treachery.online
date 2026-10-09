@@ -100,7 +100,7 @@
             var ruleInfo = "";
             foreach (var group in groups)
             {
-                ruleInfo += Client.CurrentSkin.Format("<h5 class='h5'>{0}</h5><p class='mt-0 mb-2'>{1}.</p>", group, rulesWithGroups.Where(rg => rg.Group == group).Select(rg => rg.Rule));
+                ruleInfo += Client.CurrentSkin.Format("<h5 class='ui-h5'>{0}</h5><p class='ui-mt-0 ui-mb-2'>{1}.</p>", group, rulesWithGroups.Where(rg => rg.Group == group).Select(rg => rg.Rule));
             }
 
             result += Client.CurrentSkin.Format("<h4>{0}</h4><p>Game version: {1}</p>{2}", Game.Ruleset, Game.Version, ruleInfo);
@@ -109,9 +109,9 @@
             result += $"<p><string>Game started:</strong> {Game.Started:dddd, dd MMMM yyyy H:mm:ss}";
             result += $"<p><string>Last activity:</strong> {Game.History.Last().Time:dddd, dd MMMM yyyy H:mm:ss}";
             result += $"<p><string>Game duration:</strong> {Math.Round(Game.Duration.TotalHours, 1)} hours";
-            result += "<table class='table table-sm'>";
+            result += "<table class='ui-table ui-table-sm'>";
             result += "<thead>";
-            result += "<tr class='table-dark'><th>Player</th><th>Bidding</th><th>Move</th><th>Battle</th><th>Total</th></tr>";
+            result += "<tr class='ui-table-dark'><th>Player</th><th>Bidding</th><th>Move</th><th>Battle</th><th>Total</th></tr>";
             result += "</thead>";
             
             result += "<tbody>";
@@ -123,7 +123,7 @@
                 var timeBattling = Game.TimeSpent(p.Faction, MainPhase.Battle);
                 var timeTotal = timeBidding + timeShipping + timeBattling;
 
-                result += Client.CurrentSkin.Format("<tr class='table-dark'><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>",
+                result += Client.CurrentSkin.Format("<tr class='ui-table-dark'><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>",
                 Game.GetPlayerName(p), timeBidding.ToString(@"h\:mm\:ss"), timeShipping.ToString(@"h\:mm\:ss"), timeBattling.ToString(@"h\:mm\:ss"), timeTotal.ToString(@"h\:mm\:ss"));
             }
 

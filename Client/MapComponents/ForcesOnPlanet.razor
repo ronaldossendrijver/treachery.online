@@ -19,7 +19,7 @@
         {
             var opacity = Equals(stronghold, Game.Map.HiddenMobileStronghold) && !_showHms ? 0.2f : 1f;
             <MapImage X=x Y=y Diameter=@Client.CurrentSkin.PlayerTokenRadius Src="@Client.CurrentSkin.GetFactionTableImageUrl(Game.StrongholdOwnership[stronghold])"
-               Opacity=opacity Popover=@Client.CurrentSkin.GetPopup(stronghold.Advantage, owner) PopoverStyle=""/>
+               Opacity=opacity Popover=@Client.CurrentSkin.GetPopup(stronghold.Advantage, owner)/>
 
             y += Client.CurrentSkin.PlayerTokenRadius;
         }

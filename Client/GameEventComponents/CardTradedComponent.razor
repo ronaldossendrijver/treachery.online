@@ -17,7 +17,7 @@
 
         @if (Player.AlliedPlayer!.IsBot)
         {
-            <div class="mt-1">Because you're playing with a Bot, you may select one of their cards to receive in return:</div>
+            <div class="ui-mt-1">Because you're playing with a Bot, you may select one of their cards to receive in return:</div>
             <SelectFromImageComponent @bind-Value="ReturnCard" Values="CardTraded.ValidCards(Player.AlliedPlayer)" Required="false" ImageWidth="80" />
         }
 

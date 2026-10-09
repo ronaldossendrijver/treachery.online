@@ -43,7 +43,7 @@
 
             if (Revival.ValidMaxRevivalsByRed(Game, Player) > 0)
             {
-                <div class="mt-2">You may select up to <SimpleNumberComponent>@Revival.ValidMaxRevivalsByRed(Game, Player)</SimpleNumberComponent> forces to be revived by your ally:</div>
+                <div class="ui-mt-2">You may select up to <SimpleNumberComponent>@Revival.ValidMaxRevivalsByRed(Game, Player)</SimpleNumberComponent> forces to be revived by your ally:</div>
 
                 if (Revival.ValidMaxRevivals(Game, Player, false, UseRedSecretAlly) > 0)
                 {
@@ -125,11 +125,11 @@
                 AssignSkill = false;
             }
 
-            <div class="mt-1 text-end">Revival cost for you: <SimpleNumberComponent>@(CostOfRevival.TotalCostForPlayer)</SimpleNumberComponent></div>
+            <div class="ui-mt-1 ui-text-end">Revival cost for you: <SimpleNumberComponent>@(CostOfRevival.TotalCostForPlayer)</SimpleNumberComponent></div>
 
             if (Player.Ally == Faction.Red)
             {
-                <div class="mt-1 text-end">Revival cost for @Client.CurrentSkin.Describe(Faction.Red): <SimpleNumberComponent>@(CostOfRevival.CostForEmperor)</SimpleNumberComponent></div>
+                <div class="ui-mt-1 ui-text-end">Revival cost for @Client.CurrentSkin.Describe(Faction.Red): <SimpleNumberComponent>@(CostOfRevival.CostForEmperor)</SimpleNumberComponent></div>
             }
 
             <ButtonRowComponent Confirm="Confirm" ConfirmText="Revive" ConfirmError=@Validation />

@@ -10,49 +10,69 @@
 
 @{
     var messages = MessagesInOrder.ToList();
+    var latestMessages = messages.OrderByDescending(message => message.Nr).Take(5).OrderBy(message => message.Nr).ToList();
 
-    <div class="card border-light pb-1" style="animation:fadeIn 1s;">
-
-        <div class="card-header text-center">
-
-            @Client.CurrentSkin.Describe(Game.CurrentReport.About) Report &nbsp;
-
-            @if (SortDescending)
+    <section class="map-report-panel" aria-label="@($"{Client.CurrentSkin.Describe(Game.CurrentReport.About)} report")">
+        <header class="map-report-header">
+            <button class="map-report-toggle" type="button" aria-expanded="@_isExpanded" @onclick="ToggleExpanded">
+                <span class="map-report-title">@Client.CurrentSkin.Describe(Game.CurrentReport.About) report</span>
+                <span class="map-report-count" aria-label="@($"{messages.Count} report entries")">@messages.Count</span>
+                <span class="map-report-chevron" aria-hidden="true">@(_isExpanded ? "⌄" : "⌃")</span>
+            </button>
+            @if (_isExpanded && messages.Count > 1)
             {
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-up" viewBox="0 0 16 16" @onclick=@ChangeSortOrder style="cursor:pointer">
-                    <title>Sort Descending (latest event first)</title>
-                    <path d="M3.5 12.5a.5.5 0 0 1-1 0V3.707L1.354 4.854a.5.5 0 1 1-.708-.708l2-1.999.007-.007a.498.498 0 0 1 .7.006l2 2a.5.5 0 1 1-.707.708L3.5 3.707V12.5zm3.5-9a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zM7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1z" />
-                </svg>               
+                <button class="map-report-sort" type="button" aria-label="@(SortDescending ? "Sort report oldest first" : "Sort report newest first")" title="@(SortDescending ? "Oldest first" : "Newest first")" @onclick="ChangeSortOrder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                        @if (SortDescending)
+                        {
+                            <path d="M3.5 12.5a.5.5 0 0 1-1 0V3.707L1.354 4.854a.5.5 0 1 1-.708-.708l2-1.999.007-.007a.498.498 0 0 1 .7.006l2 2a.5.5 0 1 1-.707.708L3.5 3.707V12.5zm3.5-9a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zM7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1z" />
+                        }
+                        else
+                        {
+                            <path d="M3.5 2.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 11.293V2.5zm3.5 1a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zM7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1z" />
+                        }
+                    </svg>
+                </button>
             }
-            else
-            {
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-down" viewBox="0 0 16 16" @onclick=@ChangeSortOrder style="cursor:pointer">
-                    <title>Sort Ascending (latest event last)</title>
-                    <path d="M3.5 2.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 11.293V2.5zm3.5 1a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zM7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1z" />
-                </svg>
-            }
+        </header>
 
-         </div>
-
-        <div class="card-body p-1 overflow-auto">
-
-            @if (messages.Any())
-            {
-                foreach (var message in MessagesInOrder)
+        @if (!_isExpanded)
+        {
+            <div class="map-report-latest" aria-label="Latest report entries">
+                @if (latestMessages.Count > 0)
                 {
-                    <div style="@FontStyle(message)">
-                        <ExpressionComponent Expression="@message.Expression" Game="@Game" Size="20"/>
-                    </div>
+                    foreach (var latest in latestMessages)
+                    {
+                        <div class="@MessageClass(latest)">
+                            <ExpressionComponent Expression="@latest.Expression" Game="@Game" Size="20" />
+                        </div>
+                    }
                 }
-            }
-            else
-            {
-                <div class="mt-1 ps-1 pe-1"><i>Nothing to report</i></div>
-            }
-
-        </div>
-
-    </div>
+                else
+                {
+                    <div class="map-report-empty"><i>Nothing to report</i></div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="map-report-messages" role="log" aria-live="polite">
+                @if (messages.Any())
+                {
+                    foreach (var message in messages)
+                    {
+                        <div class="@MessageClass(message)">
+                            <ExpressionComponent Expression="@message.Expression" Game="@Game" Size="20" />
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="map-report-empty"><i>Nothing to report</i></div>
+                }
+            </div>
+        }
+    </section>
 }
 
 @code {
@@ -61,11 +81,9 @@
     public Report? Report { get; set; }
 
     private bool SortDescending { get; set; }
+    private bool _isExpanded;
 
-    private string FontStyle(Message m)
-    {
-        return m.Target == Faction.None ? "" : "font-style: italic;";
-    }
+    private static string MessageClass(Message message) => message.Target == Faction.None ? "map-report-message" : "map-report-message map-report-message-private";
 
     private IEnumerable<Message> MessagesInOrder {
 
@@ -89,4 +107,6 @@
     {
         SortDescending = !SortDescending;
     }
+
+    private void ToggleExpanded() => _isExpanded = !_isExpanded;
 }

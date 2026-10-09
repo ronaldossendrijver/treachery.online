@@ -10,25 +10,7 @@
 
     <base href="/" />
 
-    <link href="css/bootstrap.min.css" rel="stylesheet" />
-    
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Ignore queued hover callbacks that run after Bootstrap disposes a tooltip or popover.
-        bootstrap.Tooltip.prototype._isWithActiveTrigger = function () {
-            return this._activeTrigger != null && Object.values(this._activeTrigger).includes(true);
-        };
-
-        // Skip queued transition callbacks (e.g. hide completion) when the tooltip or popover was disposed in the meantime.
-        const queueTooltipCallback = bootstrap.Tooltip.prototype._queueCallback;
-        bootstrap.Tooltip.prototype._queueCallback = function (callback, element, isAnimated) {
-            return queueTooltipCallback.call(this, () => {
-                if (this._element) callback();
-            }, element, isAnimated);
-        };
-    </script>
-
-    <link rel="stylesheet" href="css/app.css?v=182" />
+    <link rel="stylesheet" href="css/app.css?v=184" />
 
     <link rel="stylesheet" href="Treachery.Client.styles.css?v=182">
 
@@ -74,27 +56,39 @@
 
         function SetPlanetMapScale() {
 
-            try {
+            const frame = document.getElementById('mapdiv');
+            const board = document.getElementById('planetmap');
+            const content = document.getElementById('planetmap_inner');
+            if (!frame || !board || !content) return;
 
-                planetmap = document.getElementById('planetmap');
-                if (planetmap != null) {
-
-                    mapdiv = document.getElementById('mapdiv');
-                    if (mapdiv != null) {
-
-                        planetmap_inner = document.getElementById('planetmap_inner');
-                        scale = mapdiv.offsetWidth / planetmap_inner.offsetWidth;
-                        planetmap.style.transform = 'scale(' + scale + ')';
-
-                        planetmap_filler = document.getElementById('planetmap-filler');
-                        planetmap_filler.style.height = 1.110012062726176 * mapdiv.offsetWidth + "px";
-                    }
-                }
+            if (!mapResizeObserver) {
+                mapResizeObserver = new ResizeObserver(SetPlanetMapScale);
             }
-            catch {
+            mapResizeObserver.observe(frame);
 
-            }
+            const centerX = Number(content.dataset.mapCenterX);
+            const centerY = Number(content.dataset.mapCenterY);
+            const mapRadius = Number(content.dataset.mapRadius);
+            const playerTokenRadius = Number(content.dataset.playerTokenRadius);
+            if (![centerX, centerY, mapRadius, playerTokenRadius].every(Number.isFinite)) return;
+
+            const visualRadius = 1.06 * mapRadius + 1.5 * playerTokenRadius;
+            const reserveRight = parseFloat(getComputedStyle(frame).getPropertyValue('--map-reserve-right')) || 0;
+            const availableWidth = Math.max(0, frame.clientWidth - 16 - reserveRight);
+            const availableHeight = Math.max(0, frame.clientHeight - 16);
+            const diameter = 2 * visualRadius;
+            const scale = Math.min(availableWidth / diameter, availableHeight / diameter);
+            if (!Number.isFinite(scale) || scale <= 0) return;
+
+            board.style.width = `${content.offsetWidth}px`;
+            board.style.height = `${content.offsetHeight}px`;
+            board.style.left = `calc(50% - ${reserveRight / 2}px)`;
+            board.style.top = '50%';
+            board.style.transformOrigin = '0 0';
+            board.style.transform = `translate(${-centerX * scale}px, ${-centerY * scale}px) scale(${scale})`;
         }
+
+        let mapResizeObserver = null;
 
         function GetWindowDimensions() {
 
@@ -117,57 +111,100 @@
             document.querySelectorAll("button").forEach(item => item.blur());
         }
 
-        function EnablePopover(element) {
+        const gamePopoverSelector = '[data-game-popover]';
+        let activeGamePopover = null;
+        let activeGamePopoverTrigger = null;
+        let gamePopoverHideTimer = 0;
 
-            if (element == null) return;
-            
-            new bootstrap.Popover(element, { sanitize: false });
+        function HideGamePopover() {
+            if (activeGamePopover) {
+                activeGamePopover.remove();
+                activeGamePopover = null;
+                activeGamePopoverTrigger = null;
+            }
+        }
+
+        function ShowGamePopover(trigger) {
+            if (!trigger || !trigger.dataset.gamePopover) return;
+            window.clearTimeout(gamePopoverHideTimer);
+            HideGamePopover();
+
+            const popover = document.createElement('div');
+            popover.className = 'game-popover';
+            popover.setAttribute('role', 'tooltip');
+            popover.innerHTML = trigger.dataset.gamePopover;
+            document.body.appendChild(popover);
+
+            const bounds = trigger.getBoundingClientRect();
+            const popupBounds = popover.getBoundingClientRect();
+            const left = Math.min(window.innerWidth - popupBounds.width - 12, Math.max(12, bounds.left + (bounds.width - popupBounds.width) / 2));
+            const top = bounds.top > popupBounds.height + 12 ? bounds.top - popupBounds.height - 10 : Math.min(window.innerHeight - popupBounds.height - 12, bounds.bottom + 10);
+            popover.style.left = `${left}px`;
+            popover.style.top = `${top}px`;
+            activeGamePopover = popover;
+            activeGamePopoverTrigger = trigger;
+        }
+
+        document.addEventListener('pointerover', event => {
+            const trigger = event.target.closest(gamePopoverSelector);
+            if (trigger) ShowGamePopover(trigger);
+        });
+
+        document.addEventListener('pointerout', event => {
+            if (event.target.closest(gamePopoverSelector)) {
+                gamePopoverHideTimer = window.setTimeout(HideGamePopover, 120);
+            }
+        });
+
+        document.addEventListener('focusin', event => {
+            const trigger = event.target.closest(gamePopoverSelector);
+            if (trigger) ShowGamePopover(trigger);
+        });
+
+        document.addEventListener('focusout', event => {
+            if (event.target.closest(gamePopoverSelector)) HideGamePopover();
+        });
+
+        function EnablePopover(element) {
+            if (element && element.matches(gamePopoverSelector)) element.setAttribute('tabindex', '0');
         }
                 
         function EnablePopovers(element) {
 
             if (element == null) return;
             
-            element.querySelectorAll('[data-bs-toggle="popover"]').forEach( function (trigger) { EnablePopover(trigger); } );
+            element.querySelectorAll(gamePopoverSelector).forEach(EnablePopover);
         }
 
         function RemovePopover(element) {
 
             if (element == null) return;
             
-            var popover = bootstrap.Popover.getInstance(element);
-
-            if (popover != null) {
-
-                popover.dispose();
-            }
+            if (activeGamePopover && element && activeGamePopoverTrigger === element) HideGamePopover();
         }
 
         function RemovePopovers(element) {
 
             if (element == null) return;
             
-            element.querySelectorAll('[data-bs-toggle="popover"]').forEach( function (trigger) { RemovePopover(trigger); } );
+            element.querySelectorAll(gamePopoverSelector).forEach(RemovePopover);
         }
 
         function RefreshPopover(element) {
 
             if (element == null) return;
             
-            var popover = bootstrap.Popover.getInstance(element);
-            if (popover != null) {
-
-                popover.dispose();
+            if (element.matches(gamePopoverSelector)) {
+                EnablePopover(element);
+                if (activeGamePopoverTrigger === element) ShowGamePopover(element);
             }
-
-            new bootstrap.Popover(element, { sanitize: false });
         }
 
         function RefreshPopovers(element) {
             
             if (element == null) return;
             
-            element.querySelectorAll('[data-bs-toggle="popover"]').forEach( function (trigger) { RefreshPopover(trigger); } );
+            element.querySelectorAll(gamePopoverSelector).forEach(RefreshPopover);
         }
 
         /*
@@ -383,13 +420,27 @@
         function HideModal(modalId) {
 
             let element = document.getElementById(modalId);
-            let modal = bootstrap.Modal.getInstance(element);
-
-            if (modal != null) {
-
-                modal.hide();
-            }
+            if (element instanceof HTMLDialogElement && element.open) element.close();
         }
+
+        document.addEventListener('click', event => {
+            const menuOption = event.target.closest('.status-menu-options button');
+            if (menuOption) menuOption.closest('details').open = false;
+
+            const opener = event.target.closest('[data-dialog-target]');
+            if (opener) {
+                const dialog = document.querySelector(opener.dataset.dialogTarget);
+                if (dialog instanceof HTMLDialogElement && !dialog.open) dialog.showModal();
+                return;
+            }
+
+            const closer = event.target.closest('[data-dialog-close]');
+            if (closer) closer.closest('dialog')?.close();
+        });
+
+        document.addEventListener('click', event => {
+            if (event.target instanceof HTMLDialogElement && event.target.open) event.target.close();
+        });
 
         function ToggleFullScreen() {
 
@@ -437,7 +488,7 @@
 
 </head>
 
-<body style="background-color:black">
+<body class="app-body">
 
     <div id="app">Loading...</div>
 

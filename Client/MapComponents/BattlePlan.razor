@@ -209,7 +209,7 @@
                       ShadowY="1" 
                       ShadowBlur="1" 
                       Popover="@Client.CurrentSkin.GetPopup(card)" 
-                      PopoverStyle=""/>
+                     />
         }
 
         if (TraitorCalled)
@@ -259,7 +259,7 @@
 
             <MapImage X="@(X + Client.CurrentSkin.BattleWheelCardX + 1.1f * Client.CurrentSkin.BattleWheelCardWidth)" Y="@(Y + Client.CurrentSkin.BattleWheelCardY)" Width=@(Client.CurrentSkin.BattleWheelCardWidth) Height="@(Client.CurrentSkin.BattleWheelCardHeight)" 
                    Src="@Client.CurrentSkin.GetImageUrl(defenseToShow)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                   Popover="@Client.CurrentSkin.GetPopup(defenseToShow)" PopoverStyle=""/>
+                   Popover="@Client.CurrentSkin.GetPopup(defenseToShow)"/>
         }
         else if (!ShowEntirePlan)
         {
@@ -279,7 +279,7 @@
         {
             <MapImage X="@(X + Client.CurrentSkin.BattleWheelCardX)" Y="@(Y + Client.CurrentSkin.BattleWheelCardY)" Width=@(Client.CurrentSkin.BattleWheelCardWidth) Height="@(Client.CurrentSkin.BattleWheelCardHeight)" 
                    Src="@Client.CurrentSkin.GetImageUrl(Plan.Weapon)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                   Popover="@Client.CurrentSkin.GetPopup(Plan.Weapon)" PopoverStyle=""/>
+                   Popover="@Client.CurrentSkin.GetPopup(Plan.Weapon)"/>
         }
         else if (!ShowEntirePlan)
         {

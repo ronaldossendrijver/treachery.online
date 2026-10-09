@@ -1,252 +1,250 @@
-﻿@*
- * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
- * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
- * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
-*@
-
 @inherits GameComponent
 
-@if (Client.CurrentPhase >= Phase.TradingFactions && ShownPlayer != null)
+@if (Client.CurrentPhase >= Phase.TradingFactions && ShownPlayer is { } shownPlayer)
 {
-    <div class="card p-1 border-light mb-1" style="animation:fadeIn 3s;">
-
+    <div class="ui-card ui-mb-1 player-panel-card @(ShowHeader ? "player-panel-card-collapsible" : "player-panel-card-primary")" style="@FactionThemeStyle">
         @if (ShowHeader)
         {
-            <div class="card-header" @onclick=@(_ => _collapsed = !_collapsed) style="cursor:pointer">
-                @Name(ShownPlayer.Faction)
-                <CollapseButton Collapsed=@_collapsed />
-            </div>
+            <button class="player-panel-heading" type="button" aria-expanded="@(!_collapsed)" @onclick="ToggleCollapsed">
+                <img src="@Client.CurrentSkin.GetImageUrl(shownPlayer.Faction)" alt="" />
+                <span>@Name(shownPlayer.Faction)</span>
+                <span class="player-panel-collapse-icon" aria-hidden="true">@(_collapsed ? "⌄" : "⌃")</span>
+            </button>
         }
 
-        @if (!_collapsed || !ShowHeader) {
-            <div class="card-body p-0 bg-transparent text-center" style="background-image: url('@Client.CurrentSkin.GetImageUrl(ShownPlayer.Faction)'); background-position:center; background-size:300px 300px; background-clip:content-box; background-repeat: no-repeat">
-
-                <div class="card-text h-100 text-white" style="background-color:rgba(0,0,0,0.6);">
-
-                    @if (Client.CurrentPhase >= Phase.BlackMulligan)
-                    {
-                        <div class="row m-0 bg-dark justify-content-center">
-
-                            <!-- Resources -->
-                            <div class="col p-0">
-                                <img class="img-fluid m-0 p-0" width="24" height="24" 
-                                     src="@Client.CurrentSkin.Harvester_URL" 
-                                     title="@Name(Concept.Resource)" 
-                                     alt="@Name(Concept.Resource)"/><strong>&nbsp;@ResourcesText</strong>
-                            </div>
-
-                            <!-- Forces -->
-                            <div class="col p-0">
-                                <img class="img-fluid m-0 p-0" width="24" height="24" 
-                                     src="@Client.CurrentSkin.GetFactionForceImageUrl(ShownPlayer.Faction)" 
-                                     title="@Name(ShownPlayer.Force)" 
-                                     alt="@Name(ShownPlayer.Force)" /><strong>&nbsp;@ShownPlayer.ForcesInReserve</strong>
-                            </div>
-
-                            <!-- Special Forces -->
-                            @if (ShownPlayer.HasSpecialForces)
-                            {
-                                <div class="col p-0">
-                                    <img class="img-fluid m-0 p-0" width="24" height="24" 
-                                         src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(ShownPlayer.Faction)" 
-                                         title="@Name(ShownPlayer.SpecialForce)" 
-                                         alt="@Name(ShownPlayer.SpecialForce)"/><strong>&nbsp;@ShownPlayer.SpecialForcesInReserve</strong>
-                                </div>
-                            }
-
-                        </div>
-
-                        <!-- Leaders -->
-                        @foreach (var v in ShownPlayer.Leaders.Where(l => Game.IsAlive(l)))
+        @if (!_collapsed || !ShowHeader)
+        {
+            <div class="player-panel-body">
+                @if (!ShowHeader)
+                {
+                    <div class="player-panel-identity">
+                        <img src="@Client.CurrentSkin.GetImageUrl(shownPlayer.Faction)" alt="" />
+                        <span>@Name(shownPlayer.Faction)</span>
+                        @if (Client.CurrentPhase >= Phase.BlackMulligan)
                         {
-                            <Image Src=@Client.CurrentSkin.GetImageUrl(v) Highlighted="@Game.IsSkilled(v)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Game)/>
+                            @ResourceStrip(shownPlayer)
                         }
+                    </div>
+                }
 
-                        @foreach (var v in ShownPlayer.Leaders.Where(l => !Game.IsAlive(l)))
+                @if (Client.CurrentPhase >= Phase.BlackMulligan)
+                {
+                    <div class="player-panel-content">
+                        @if (ShowHeader)
                         {
-                            <Image Src=@Client.CurrentSkin.GetImageUrl(v) Darkened Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Game)/>
+                            @ResourceStrip(shownPlayer)
                         }
-
-                        <!-- Traitors and Face Dancers -->
-                        @if (ShownPlayer.FaceDancers.Count > 0)
-                        {
-                            <h5 class="mt-1 mb-0">Face Dancers</h5>
-                            @foreach (var v in ShownPlayer.FaceDancers)
-                            {
-                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) Blurred="@ShownPlayer.RevealedFaceDancers.Contains(v)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Game)/>
-                            }
-                        }
-                        else if (!Game.AssistedNoteKeepingEnabled(Player) && ShownPlayer.Traitors.Count == 1)
-                        {
-                            <div>
-                                <Image Src="@Client.CurrentSkin.GetImageUrl(ShownPlayer.Traitors.First())" 
-                                       Class="img-fluid p-1" 
-                                       Width=60 
-                                       Popover=@Client.CurrentSkin.GetPopup(ShownPlayer.Traitors.First(), Game)/> is your traitor.
-                            </div>
-                        }
-                        else if (ShownPlayer.Traitors.Count > 0)
-                        {
-                            @if (ShownPlayer.Traitors.Count > 1)
-                            {
-                                <h5 class="mt-1 mb-0">Traitors</h5>
-                            }
-                            else
-                            {
-                                <h5 class="mt-1 mb-0">Traitor</h5>
-                            }
-
-                            @foreach (var v in ShownPlayer.Traitors)
-                            {
-                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) Blurred="@ShownPlayer.RevealedTraitors.Contains(v)" Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Game)/>
-                            }
-
-                            @foreach (var v in ShownPlayer.DiscardedTraitors)
-                            {
-                                <Image Src=@Client.CurrentSkin.GetImageUrl(v) GreyedOut Class="img-fluid p-1" Width=60 Popover=@Client.CurrentSkin.GetPopup(v, Game)/>
-                            }
-                        }
-
-                        @if (Client.CurrentPhase > Phase.DiallingStorm && Game.HasStormPrescience(Player))
-                        {
-                            <div>The next storm will move <SimpleNumberComponent>@(Game.NextStormMoves)</SimpleNumberComponent> sectors.</div>
-                        }
-
-                        @if (ShownPlayer.Faction == Faction.Blue && Client.CurrentPhase > Phase.BluePredicting)
-                        {
-                            <div>Prediction: <FactionComponent Diameter=30 Faction=@ShownPlayer.PredictedFaction/><SimpleNumberComponent Size=30>@ShownPlayer.PredictedTurn</SimpleNumberComponent></div>
-                        }
-
-                        @if (ShownPlayer.Faction == Faction.Green)
-                        {
-                            if (Game.Applicable(Rule.GreenMessiah))
-                            {
-                                <div>
-                                    <img class="img-fluid m-0 p-0" width="32" height="32"
-                                         src="@Client.CurrentSkin.Messiah_URL"
-                                         title="@Client.CurrentSkin.Describe(Concept.Messiah)"
-                                         alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
-                                    @if (ShownPlayer.TotalForcesKilledInBattle >= 7)
+                        <div class="player-panel-sections">
+                            <section class="player-panel-section player-panel-leaders">
+                                <h3>Leaders</h3>
+                                <div class="player-panel-figures">
+                                    @foreach (var leader in shownPlayer.Leaders.Where(leader => Game.IsAlive(leader)))
                                     {
-                                        if (ShownPlayer.MessiahAvailable)
+                                        <Image Src="@Client.CurrentSkin.GetImageUrl(leader)" Highlighted="@Game.IsSkilled(leader)" Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(leader, Game)" />
+                                    }
+                                    @foreach (var leader in shownPlayer.Leaders.Where(leader => !Game.IsAlive(leader)))
+                                    {
+                                        <Image Src="@Client.CurrentSkin.GetImageUrl(leader)" Darkened Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(leader, Game)" />
+                                    }
+                                </div>
+                            </section>
+
+                            <section class="player-panel-section player-panel-traitors">
+                                <h3>@(shownPlayer.FaceDancers.Count > 0 ? "Face Dancers" : shownPlayer.Traitors.Count == 1 ? "Traitor" : "Traitors")</h3>
+                                <div class="player-panel-figures">
+                                    @if (shownPlayer.FaceDancers.Count > 0)
+                                    {
+                                        @foreach (var faceDancer in shownPlayer.FaceDancers)
                                         {
-                                            <span> is available.</span>
+                                            <Image Src="@Client.CurrentSkin.GetImageUrl(faceDancer)" Blurred="@shownPlayer.RevealedFaceDancers.Contains(faceDancer)" Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(faceDancer, Game)" />
                                         }
-                                        else
-                                        {
-                                            <span>has been killed.</span>
-                                        }
+                                    }
+                                    else if (!Game.AssistedNoteKeepingEnabled(Player) && shownPlayer.Traitors.Count == 1)
+                                    {
+                                        <span class="player-panel-traitor-note">
+                                            <Image Src="@Client.CurrentSkin.GetImageUrl(shownPlayer.Traitors.First())" Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(shownPlayer.Traitors.First(), Game)" />
+                                            Your traitor
+                                        </span>
                                     }
                                     else
                                     {
-                                        <span> will be available after <SimpleNumberComponent>@(7 - ShownPlayer.TotalForcesKilledInBattle)</SimpleNumberComponent> more forces are killed in battle.</span>
+                                        @foreach (var traitor in shownPlayer.Traitors)
+                                        {
+                                            <Image Src="@Client.CurrentSkin.GetImageUrl(traitor)" Blurred="@shownPlayer.RevealedTraitors.Contains(traitor)" Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(traitor, Game)" />
+                                        }
+                                        @foreach (var traitor in shownPlayer.DiscardedTraitors)
+                                        {
+                                            <Image Src="@Client.CurrentSkin.GetImageUrl(traitor)" GreyedOut Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(traitor, Game)" />
+                                        }
+                                        @if (shownPlayer.Traitors.Count == 0 && shownPlayer.DiscardedTraitors.Count == 0)
+                                        {
+                                            <span class="player-panel-empty-hand">No traitor information</span>
+                                        }
                                     }
                                 </div>
-                            }
-                        }
+                            </section>
 
-                        @if (ShownPlayer.Faction == Faction.Pink && Client.CurrentPhase > Phase.BluePredicting)
-                        {
-                            <div>
-                                Ambassadors:
-                                @foreach (var ambassador in ShownPlayer.Ambassadors)
-                                {
-                                    <Image Shown=@ambassador Width="30"/>
-                                }
-                            </div>
-                        }
+                            <section class="player-panel-section player-panel-owned">
+                                <h3>Cards</h3>
+                                <div class="player-panel-owned-content">
+                                    @if (CardsInHand.Count == 0)
+                                    {
+                                        <span class="player-panel-empty-hand">No treachery cards</span>
+                                    }
+                                    else
+                                    {
+                                        <div class="player-card-hand" aria-label="Treachery cards in hand">
+                                            @for (var i = 0; i < CardsInHand.Count; i++)
+                                            {
+                                                <span class="player-hand-card @(i > 0 ? "player-hand-card-overlap" : "")"
+                                                      style="@HandCardStyle(i, CardsInHand.Count)">
+                                                    <Image Shown="@CardsInHand[i]" Game="Game" Class="player-hand-image" />
+                                                </span>
+                                            }
+                                        </div>
+                                    }
+                                    @if (shownPlayer.Nexus != Faction.None)
+                                    {
+                                        <div class="player-panel-nexus">
+                                            <Image Width="38" Src="@Client.CurrentSkin.GetFactionFaceDownImageUrl(shownPlayer.Nexus)" Popover="@Client.CurrentSkin.GetNexusCardPopup(shownPlayer.Nexus.ToNexus())" />
+                                            <span>Nexus</span>
+                                        </div>
+                                    }
+                                </div>
+                            </section>
 
-                        @if (ShownPlayer.Faction == Faction.Cyan && Client.CurrentPhase > Phase.BluePredicting)
-                        {
-                            var style = $"color:white;{Support.TextBorder(1, "#289caa")}";
-
-                            <div>
-                            Available Terror:
-                            <ExpressionComponent Game="Game" Size="30" Expression=@Expression.Express(Game.UnplacedTerrorTokens) TextBorder=@style />
-                            </div>
-                        }
-
-                        @if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(Player) && !Game.ResourceCardDeck!.IsEmpty)
-                        {
-                            <Hoverable Popover=@Client.CurrentSkin.GetPopup(Game.ResourceCardDeck!.Top!)>Top card of @Name(Concept.Resource) Deck: <strong>@Name(Game.ResourceCardDeck.Top)</strong></Hoverable>
-                        }
-
-                        <!-- Cards -->
-                        @if (ShownPlayer.TreacheryCards.Count == 0 && Game.GetCardSetAsideForBid(Player) == null)
-                        {
-                            <div>You don't own any treachery cards.</div>
-                        }
-                        else
-                        {
-                            <div class="row row-cols-2 row-cols-xl-4 ms-0 me-0 mt-1 justify-content-center">
-
-                                @foreach (var v in ShownPlayer.TreacheryCards)
-                                {
-                                    <Image Shown=@v Class="img-fluid p-1"/>
-                                }
-
-                                @if (Game.GetCardSetAsideForBid(Player) != null)
-                                {
-                                    var v = Game.GetCardSetAsideForBid(Player);
-                                    <Image Shown=@v Class="img-fluid p-1"/>
-                                }
-
-                            </div>
-                        }
-
-                        @if (ShownPlayer.Nexus != Faction.None)
-                        {
-                            <div>Nexus: <Image Width=30 Src=@Client.CurrentSkin.GetFactionFaceDownImageUrl(ShownPlayer.Nexus) Popover=@Client.CurrentSkin.GetNexusCardPopup(ShownPlayer.Nexus.ToNexus())/></div>
-                        }
-                    }
-                    else
-                    {
-                        <FactionComponent Faction="Player.Faction"/>
-                    }
-                
-                </div>
-
+                            <section class="player-panel-section player-panel-faction-info">
+                                <h3>Faction information</h3>
+                                <div class="player-panel-faction-details">
+                                    @if (Client.CurrentPhase > Phase.DiallingStorm && Game.HasStormPrescience(Player))
+                                    {
+                                        <span>Next storm: <strong>@Game.NextStormMoves</strong> sectors</span>
+                                    }
+                                    @if (shownPlayer.Faction == Faction.Blue && Client.CurrentPhase > Phase.BluePredicting)
+                                    {
+                                        <span>Prediction: <FactionComponent Diameter="24" Faction="@shownPlayer.PredictedFaction" /><SimpleNumberComponent Size="24">@shownPlayer.PredictedTurn</SimpleNumberComponent></span>
+                                    }
+                                    @if (shownPlayer.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah))
+                                    {
+                                        <span class="player-panel-faction-note">
+                                            <img src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt="" />
+                                            @if (shownPlayer.TotalForcesKilledInBattle >= 7)
+                                            {
+                                                @(shownPlayer.MessiahAvailable ? "Messiah available" : "Messiah has been killed")
+                                            }
+                                            else
+                                            {
+                                                <span>Available after <SimpleNumberComponent>@(7 - shownPlayer.TotalForcesKilledInBattle)</SimpleNumberComponent> more forces are killed</span>
+                                            }
+                                        </span>
+                                    }
+                                    @if (shownPlayer.Faction == Faction.Pink && Client.CurrentPhase > Phase.BluePredicting)
+                                    {
+                                        <span>Ambassadors: @foreach (var ambassador in shownPlayer.Ambassadors) { <Image Shown="@ambassador" Width="24" /> }</span>
+                                    }
+                                    @if (shownPlayer.Faction == Faction.Cyan && Client.CurrentPhase > Phase.BluePredicting)
+                                    {
+                                        var textBorder = $"color:white;{Support.TextBorder(1, "#289caa")}";
+                                        <span>Available terror: <ExpressionComponent Game="Game" Size="24" Expression="@Expression.Express(Game.UnplacedTerrorTokens)" TextBorder="@textBorder" /></span>
+                                    }
+                                    @if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(Player) && !Game.ResourceCardDeck!.IsEmpty)
+                                    {
+                                        <Hoverable Popover="@Client.CurrentSkin.GetPopup(Game.ResourceCardDeck.Top!)">Resource deck top: <strong>@Name(Game.ResourceCardDeck.Top)</strong></Hoverable>
+                                    }
+                                    @if (!HasFactionInformation)
+                                    {
+                                        <span class="player-panel-faction-empty">No additional faction intel</span>
+                                    }
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <FactionComponent Faction="Player.Faction" />
+                }
             </div>
         }
-
     </div>
 }
 
 @code {
-
-    [Parameter]
-    public Player? ShownPlayer { get; set; }
-
-    [Parameter]
-    public bool ShowHeader { get; set; }
+    [Parameter] public Player? ShownPlayer { get; set; }
+    [Parameter] public bool ShowHeader { get; set; }
 
     private bool _collapsed = true;
+
+    private string FactionThemeStyle =>
+        $"--player-faction-color:{Client.CurrentSkin.GetFactionColor(ShownPlayer!.Faction)};--player-faction-image:url('{Client.CurrentSkin.GetImageUrl(ShownPlayer.Faction)}')";
+
+    private List<TreacheryCard> CardsInHand
+    {
+        get
+        {
+            var cards = ShownPlayer?.TreacheryCards.ToList() ?? [];
+            if (ShownPlayer != null && Game.GetCardSetAsideForBid(ShownPlayer) is { } setAsideCard)
+                cards.Add(setAsideCard);
+            return cards;
+        }
+    }
+
+    private bool HasFactionInformation =>
+        ShownPlayer is { } player
+        && ((player.Faction == Faction.Blue && Client.CurrentPhase > Phase.BluePredicting)
+            || (player.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah))
+            || (player.Faction == Faction.Pink && Client.CurrentPhase > Phase.BluePredicting)
+            || (player.Faction == Faction.Cyan && Client.CurrentPhase > Phase.BluePredicting)
+            || Client.CurrentPhase > Phase.DiallingStorm && Game.HasStormPrescience(Player)
+            || Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(Player));
+
+    private static string HandCardStyle(int index, int count)
+    {
+        var centeredIndex = index - (count - 1) / 2d;
+        return $"--hand-angle:{centeredIndex * 3:0.##}deg;z-index:{index + 1}";
+    }
+
+    private void ToggleCollapsed() => _collapsed = !_collapsed;
+
+    private RenderFragment ResourceStrip(Player shownPlayer) => __builder =>
+    {
+        <div class="player-panel-resource-strip" aria-label="Reserves">
+            <div title="@Name(Concept.Resource)">
+                <img src="@Client.CurrentSkin.Harvester_URL" alt="@Name(Concept.Resource)" />
+                <strong>@ResourcesText</strong>
+            </div>
+            <div title="@Name(shownPlayer.Force)">
+                <img src="@Client.CurrentSkin.GetFactionForceImageUrl(shownPlayer.Faction)" alt="@Name(shownPlayer.Force)" />
+                <strong>@shownPlayer.ForcesInReserve</strong>
+            </div>
+            @if (shownPlayer.HasSpecialForces)
+            {
+                <div title="@Name(shownPlayer.SpecialForce)">
+                    <img src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(shownPlayer.Faction)" alt="@Name(shownPlayer.SpecialForce)" />
+                    <strong>@shownPlayer.SpecialForcesInReserve</strong>
+                </div>
+            }
+        </div>
+    };
 
     private string ResourcesText
     {
         get
         {
             if (ShownPlayer is null) return string.Empty;
-            
+
             if (ShownPlayer.BankedResources > 0)
             {
                 if (ShownPlayer.Bribes + ShownPlayer.Extortion > 0)
                 {
                     if (ShownPlayer.ResourcesAfterBidding > 0)
-                    {
                         return Client.CurrentSkin.Format("{0}, {1} at end of turn, {2} at end of bidding, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, ShownPlayer.ResourcesAfterBidding, ShownPlayer.BankedResources, MainPhase.Contemplate);
-                    }
 
                     return Client.CurrentSkin.Format("{0}, {1} at {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, MainPhase.Contemplate, ShownPlayer.BankedResources, MainPhase.Contemplate);
                 }
 
                 if (ShownPlayer.ResourcesAfterBidding > 0)
-                {
                     return Client.CurrentSkin.Format("{0}, {1} at end of {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding, ShownPlayer.BankedResources, MainPhase.Contemplate);
-                }
 
                 return Client.CurrentSkin.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.BankedResources, MainPhase.Contemplate);
             }
@@ -254,17 +252,13 @@
             if (ShownPlayer.Bribes + ShownPlayer.Extortion > 0)
             {
                 if (ShownPlayer.ResourcesAfterBidding > 0)
-                {
                     return Client.CurrentSkin.Format("{0}, {1} at end of turn, {2} at end of bidding", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, ShownPlayer.ResourcesAfterBidding);
-                }
 
                 return Client.CurrentSkin.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, MainPhase.Contemplate);
             }
 
             if (ShownPlayer.ResourcesAfterBidding > 0)
-            {
                 return Client.CurrentSkin.Format("{0}, {1} at end of {2}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding);
-            }
 
             return Client.CurrentSkin.Format("{0}", ShownPlayer.Resources);
         }

@@ -7,23 +7,23 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-<table class="table table-borderless table-sm m-0 w-auto">
+<table class="ui-table ui-table-borderless ui-table-sm ui-m-0 ui-w-auto">
     <tbody>
 
         @foreach (var l in Locations)
         {
-            <tr class="small bg-transparent">
+            <tr class="ui-small ui-bg-transparent">
 
                 @if (AlwaysShowLocation || Locations.Count() > 1)
                 {
-                    <td class="ps-0 bg-transparent align-middle">@Client.CurrentSkin.Describe(l)</td>
+                    <td class="ui-ps-0 ui-bg-transparent ui-align-middle">@Client.CurrentSkin.Describe(l)</td>
                 }
 
                 @if (MaySelectFromStorm || !Game.IsInStorm(l)) {
 
                     if (Max(l) > 0 && ShowNormalForces) 
                     {
-                        <td class="ps-0 bg-transparent">
+                        <td class="ui-ps-0 ui-bg-transparent">
                             <SelectForcesComponent Value=@Forces[l].AmountOfForces 
                                                    OnDown="@(_ => ChangeForceAmount(l, -1, false))" 
                                                    OnUp="@(_ => ChangeForceAmount(l, 1, false))" 
@@ -35,7 +35,7 @@
 
                     if (MaxSpecial(l) > 0 && ShowSpecialForces) 
                     {
-                        <td class="ps-0 bg-transparent">
+                        <td class="ui-ps-0 ui-bg-transparent">
                             <SelectForcesComponent Value=@Forces[l].AmountOfSpecialForces 
                                                    OnDown="@(_ => ChangeForceAmount(l, -1, true))" 
                                                    OnUp="@(_ => ChangeForceAmount(l, 1, true))" 
@@ -48,7 +48,7 @@
                 }
                 else
                 {
-                    <td class="font-italic text-danger ps-0 bg-transparent">cannot move from storm</td>
+                    <td class="ui-font-italic ui-text-danger ui-ps-0 ui-bg-transparent">cannot move from storm</td>
                 }
 
             </tr>

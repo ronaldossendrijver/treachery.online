@@ -16,154 +16,137 @@
 
 @if (Client.InScheduledMaintenance && Client.ServerInfo != null)
 {
-    <div class="alert alert-danger text-center p-0" role="alert">
+    <div class="maintenance-banner" role="alert">
         treachery.online will be down for maintenance from @Client.ServerInfo.ScheduledMaintenance.ToLocalTime() until @Client.ServerInfo.ScheduledMaintenance.AddMinutes(60).ToLocalTime() (your local time)
     </div>
 }
 
 @if (!Client.IsConnected)
 {
-    <div class="row d-flex align-items-center" style="@StartScreenStyle">
-        <div class="d-flex justify-content-center">
-            Not Connected
-        </div>
+    <div class="entry-screen">
+        <div class="entry-card">Not connected</div>
     </div>
 }
 else if (!Client.LoggedIn)
 {
-    <div class="row d-flex align-items-center" style="@StartScreenStyle">
-        <div class="col-sm-12 col-lg-3"></div>
-        <div class="col-sm-12 col-lg-6">
-            <div class="d-flex justify-content-center">
-                <LoginComponent  />
-            </div>
+    <div class="entry-screen">
+        <div class="entry-card">
+            <LoginComponent />
         </div>
-        <div class="col-sm-12 col-lg-3"></div>
     </div>
 }
 else if (!Client.InGame)
 {
-    <div class="row" style="@StartScreenStyle">
-        <div class="col-sm-12 col-lg-2"></div>
-        <div class="col-sm-12 col-lg-5">
+    <div class="entry-screen entry-screen-wide">
+        <div class="entry-content">
             <RunningGamesComponent/>
-        </div>
-        <div class="col-sm-12 col-lg-3">
             <OwnGamesComponent/>
         </div>
-        <div class="col-sm-12 col-lg-2"></div>
     </div>
 }
 else if (Client.Game.CurrentPhase is Phase.AwaitingPlayers)
 {
-    <div class="row d-flex align-items-center" style="@StartScreenStyle">
-        <div class="col-sm-12 col-lg-3"></div>
-        <div class="col-sm-12 col-lg-6">
-            <div class="d-flex justify-content-center">
-                @if (Client.IsHost)
-                {
-                    <EstablishPlayersComponent/>
-                }
-                else
-                {
-                    <AwaitingGameComponent/>
-                }
-            </div>
+    <div class="entry-screen">
+        <div class="entry-card">
+            @if (Client.IsHost)
+            {
+                <EstablishPlayersComponent/>
+            }
+            else
+            {
+                <AwaitingGameComponent/>
+            }
         </div>
-        <div class="col-sm-12 col-lg-3"></div>
     </div>
 }
 else if (Client.PlayersNeedSeating)
 {
-    <div class="row d-flex align-items-center" style="@StartScreenStyle">
-        <div class="col-sm-12 col-lg-3"></div>
-        <div class="col-sm-12 col-lg-6">
-            <div class="d-flex justify-content-center">
-                <SeatPlayersComponent/>
-            </div>
+    <div class="entry-screen">
+        <div class="entry-card">
+            <SeatPlayersComponent/>
         </div>
-        <div class="col-sm-12 col-lg-3"></div>
     </div>
 }
 else
 {
-    <div @ref="@_element" class="row" style="@InGameScreenStyle">
-
-        @if (!Client.IsObserver)
-        {
-            <!--Map Column-->
-            <div id="mapdiv" class="col-sm-12 col-lg-6">
-                <GameBoard OnLocationClick="@Client.LocationClick" />
-            </div>
-
-            <!--Actions-->
-            <div class="col-sm-12 col-lg-3 @Scrollbars">
-                <GameStatusComponent CanEndPhase="@Client.Actions.Contains(typeof(EndPhase))" />
-                <ActionPanel/>
-            </div>
-            
-            <!--Menu, player panel and report-->
-            <div class="col-sm-12 col-lg-3 cursor-hand @Scrollbars">
+    <main @ref="_element" class="game-workspace">
+        <section id="mapdiv" class="map-stage" aria-label="Game map">
+            <GameBoard OnLocationClick="@Client.LocationClick" OnFactionClick="@ToggleFactionMenu" />
+            <div class="map-menu-dock">
                 <MenuComponent/>
-                @if (Client.CurrentPhase > Phase.TradingFactions && Client.Player != null)
-                {
-                    if (Client.Player.Faction is Faction.None)
+            </div>
+            <div class="map-card-piles">
+                <CardPilesRail />
+            </div>
+            <div class="map-launchers">
+                <CommunicationsPanel />
+                <DealsPanel />
+            </div>
+            @if (Client.Game?.CurrentReport is { } report)
+            {
+                <div class="map-report-dock">
+                    <ReportComponent Report="report" />
+                </div>
+            }
+            <FactionActionMenu SelectedFaction="@_selectedMapFaction" OnClose="@CloseFactionMenu" />
+        </section>
+        <div class="mobile-game-topbar">
+            <strong>TREACHERY ONLINE</strong>
+            <span>TURN @Client.Game!.CurrentTurn · @Client.CurrentSkin.Describe(Client.Game!.CurrentMainPhase)</span>
+        </div>
+
+        <aside class="game-rail @(Client.IsObserver ?"observer-rail" : "") @( _phoneSheetExpanded ? "sheet-expanded" : "sheet-collapsed")" aria-label="Game controls">
+            <button class="sheet-handle" type="button" aria-expanded="@_phoneSheetExpanded" @onclick="TogglePhoneSheet">
+                <span class="sheet-grip" aria-hidden="true"></span>
+                <span class="sheet-title">Game controls</span>
+                <span class="sheet-toggle-label">@(_phoneSheetExpanded ? "Hide" : "Show")</span>
+            </button>
+            <div class="rail-topbar">
+                <div class="rail-phase-info">
+                    <span class="eyebrow">TURN @Client.Game.CurrentTurn</span>
+                    <span class="main-phase-hover" tabindex="0" aria-describedby="main-phase-sequence-popover">
+                        <strong>@Client.CurrentSkin.Describe(Client.Game.CurrentMainPhase)</strong>
+                        <span class="main-phase-hover-hint" aria-hidden="true">⌄</span>
+                        <span id="main-phase-sequence-popover" class="main-phase-popover" role="tooltip">
+                            <MainPhaseTracker />
+                        </span>
+                    </span>
+                </div>
+                <TurnActivityIndicator />
+            </div>
+            <div class="game-rail-content">
+                <GameStatusComponent CanEndPhase="@(!Client.IsObserver && Client.Actions.Contains(typeof(EndPhase)))" />
+                <div class="game-rail-scroll">
+                    <ActionPanel/>
+                    <div class="mobile-card-piles">
+                        <CardPilesRail />
+                    </div>
+                    <TanksRail />
+                    @if (ShowAllPlayerPanels)
                     {
                         foreach (var p in Client.Game.Players)
                         {
                             <PlayerPanel ShownPlayer="p" ShowHeader="true" />
-                        }    
+                        }
                     }
-                    else
-                    {
-                        <PlayerPanel ShownPlayer="Client.Player" />                        
-                    }
-                }
-                @if (Client.Game?.CurrentReport != null)
+                </div>
+                @if (ShowOwnPlayerPanel)
                 {
-                    <ReportComponent Report="Client.Game.CurrentReport" />
+                    <div class="game-rail-footer">
+                        <PlayerPanel ShownPlayer="Client.Player" />
+                    </div>
                 }
             </div>
-        }
-        else
-        {
-            <div class="col-sm-12 col-lg-1"></div>
-            
-            <!--Map Column-->
-            <div id="mapdiv" class="col-sm-12 col-lg-6">
-                <GameBoard OnLocationClick="@Client.LocationClick" />
-            </div>
-
-            <!--Actions-->
-            <div class="col-sm-12 col-lg-4 cursor-hand @Scrollbars">
-                <MenuComponent/>
-                <GameStatusComponent/>
-                <ActionPanel/>
-                @if (Client.Game?.CurrentReport != null)
-                {
-                    <ReportComponent Report="Client.Game.CurrentReport"/>
-                }
-            </div>
-            
-            <!--Menu-->
-            <div class="col-sm-12 col-lg-1"></div>
-        }
+        </aside>
 
         <ImageFlashComponent  />
 
-    </div>
+    </main>
 }
-@if (Client.IsConnected && Client.LoggedIn)
+@if (Client.IsConnected && Client.LoggedIn && !IsInGameView)
 {
-    <!--Chat-->
-    <HoverPanel Width=400 HandleWidth=14 BackgroundColor="#e8dba6ee">
-        <ChatComponent/>
-    </HoverPanel>
-    
-    <!--Users-->
-    <HoverPanel Width=200 HandleWidth=14 BackgroundColor="#e8dba6ee" Position="HoverPanel.HoverPanelPosition.Right">
-        <UserListComponent/>
-    </HoverPanel>
+    <CommunicationsPanel />
+    <DealsPanel />
 }
     
 @code {
@@ -192,6 +175,8 @@ else
     }
 
     private bool _isFullscreen;
+    private bool _phoneSheetExpanded;
+    private Faction? _selectedMapFaction;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         var checkFullscreen = await Browser.IsFullScreen();
@@ -222,9 +207,22 @@ else
 
     private void RefreshPopovers() => _ = Browser.RefreshPopovers(_element);
 
-    private string Scrollbars => _isFullscreen? "vh-97 overflow-auto" : "";
+    private void TogglePhoneSheet() => _phoneSheetExpanded = !_phoneSheetExpanded;
 
-    private const string StartScreenStyle = "min-height: 97vh; background-image: url('art/planet.png'); background-size: 1024px; background-position-x: center; background-position-y: -50px; background-repeat: no-repeat;";
-    
-    private const string InGameScreenStyle = "overflow-y: hidden;";
+    private void ToggleFactionMenu(Faction faction) =>
+        _selectedMapFaction = _selectedMapFaction == faction ? null : faction;
+
+    private void CloseFactionMenu() => _selectedMapFaction = null;
+
+    private bool IsInGameView =>
+        Client.IsConnected && Client.LoggedIn && Client.InGame
+        && Client.Game.CurrentPhase is not Phase.AwaitingPlayers
+        && !Client.PlayersNeedSeating;
+
+    private bool HasPlayerPanel =>
+        !Client.IsObserver && Client.CurrentPhase > Phase.TradingFactions && Client.Player != null;
+
+    private bool ShowOwnPlayerPanel => HasPlayerPanel && Client.Player!.Faction is not Faction.None;
+
+    private bool ShowAllPlayerPanels => HasPlayerPanel && Client.Player!.Faction is Faction.None;
 }

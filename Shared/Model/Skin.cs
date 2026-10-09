@@ -447,7 +447,7 @@ public class Skin : IDescriber
         if (c == null)
             return "";
         return
-            $"<div style='filter:drop-shadow(-3px 3px 2px black);'><img src='{GetImageUrl(c)}' width=300 class='img-fluid'/></div><div class='bg-dark text-white text-center' style='width:300px'>{GetTreacheryCardDescription(c)}</div>";
+            $"<div style='filter:drop-shadow(-3px 3px 2px black);'><img src='{GetImageUrl(c)}' width=300 class='ui-img-fluid'/></div><div class='ui-bg-dark ui-text-white ui-text-center' style='width:300px'>{GetTreacheryCardDescription(c)}</div>";
     }
 
     public string GetPopup(IHero h)
@@ -479,7 +479,7 @@ public class Skin : IDescriber
         => $"<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{GetImageUrl(adv)}' width=300/><img src='{GetImageUrl(f)}' width=100 style='position:absolute;left:220px;top:40px;filter:drop-shadow(-3px 3px 2px black);'/></div>";
 
     private string GetImageHoverHtml(string imageUrl)
-        => $"<img src='{imageUrl}' width=300 class='img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/>";
+        => $"<img src='{imageUrl}' width=300 class='ui-img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/>";
 
     public string GetImageUrl(object obj)
     {

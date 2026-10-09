@@ -8,14 +8,14 @@
 *@
 @inherits GameEventComponent<AutomationConfigured>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsed="CollapseState.NotCollapsed">
 
     <Header>Manage Automation</Header>
 
     <Body>
     
         <SelectComponent @bind-Value="@NewRuleType" Values="@AutomationConfigured.GetAvailableRuleTypes(Game, Player)" Required/>
-        <div class="mt-1">
+        <div class="ui-mt-1">
             @switch (NewRuleType)
             {
                 case AutomationRuleType.BiddingPassAboveAmount:
@@ -27,17 +27,17 @@
                     break;
             }
         </div>
-        <CommandButton MarginClass="mt-1" OnClick="@Confirm">Create rule</CommandButton>
+        <CommandButton MarginClass="ui-mt-1" OnClick="@Confirm">Create rule</CommandButton>
         
         @if (CurrentAutomation.Any())
         {
             <hr style="border-color:white" />
-            <div class="mt-2">Current automation:</div>
-            <table class="table table-sm">
+            <div class="ui-mt-2">Current automation:</div>
+            <table class="ui-table ui-table-sm">
                 <tbody>
                     @foreach (var rule in CurrentAutomation)
                     {
-                        <tr class="table-dark">
+                        <tr class="ui-table-dark">
                             <td>
                                 <CommandButton OnClick="@(_ => Cancel(rule))" Small>🗙</CommandButton>
                             </td>

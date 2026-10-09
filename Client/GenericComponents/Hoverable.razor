@@ -10,7 +10,7 @@
 
 @if (Popover != null && Popover.Length > 0)
 {
-    <div @ref=@element class=@Class style=@Style data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content="@Popover">
+    <div @ref=@element class=@Class style=@Style data-game-popover="@Popover" tabindex="0">
         @ChildContent
     </div>
 }

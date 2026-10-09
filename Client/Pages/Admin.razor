@@ -16,45 +16,46 @@
 
 @if (!Client.IsConnected)
 {
-    <div class="row d-flex align-items-center" style="@StartScreenStyle">
-        <div class="d-flex justify-content-center">
+    <div class="ui-row ui-d-flex ui-align-items-center" style="@StartScreenStyle">
+        <div class="ui-d-flex ui-justify-content-center">
             Not Connected
         </div>
     </div>
 }
 else if (!Client.LoggedIn)
 {
-    <div class="row d-flex align-items-center" style="@StartScreenStyle">
-        <div class="col-sm-12 col-lg-3"></div>
-        <div class="col-sm-12 col-lg-6">
-            <div class="d-flex justify-content-center">
+    <div class="ui-row ui-d-flex ui-align-items-center" style="@StartScreenStyle">
+        <div class="ui-col-sm-12 ui-col-lg-3"></div>
+        <div class="ui-col-sm-12 ui-col-lg-6">
+            <div class="ui-d-flex ui-justify-content-center">
                 <LoginComponent/>
             </div>
         </div>
-        <div class="col-sm-12 col-lg-3"></div>
+        <div class="ui-col-sm-12 ui-col-lg-3"></div>
     </div>
 }
 else 
 {
-    <div class="row" style="@StartScreenStyle">
-        <div class="col-12">
-            <div class="card mb-2">
-                <div class="card-header">Server info</div>
-                <div class="card-body">
+    <div class="ui-row" style="@StartScreenStyle">
+        <div class="ui-col-sm-12 ui-col-lg-2"></div>
+        <div class="ui-col-sm-12 ui-col-lg-6">
+            <div class="ui-card ui-mb-2">
+                <div class="ui-card-header">Server info</div>
+                <div class="ui-card-body">
                     <h3 class="h3">Info</h3>
-                    <button class="btn btn-primary me-1" @onclick="@GetAdminInfo">Get admin info</button>
+                    <button class="ui-btn ui-btn-primary ui-me-1" @onclick="@GetAdminInfo">Get admin info</button>
                     <h3 class="h3">Maintenance window</h3>
                     <DateTimePicker @bind-Value="@MaintenanceDate"/>
-                    <button class="btn btn-primary me-1" @onclick="@UpdateMaintenance">Update</button>
+                    <button class="ui-btn ui-btn-primary ui-me-1" @onclick="@UpdateMaintenance">Update</button>
                     <h3 class="h3">Persist data</h3>
-                    <button class="btn btn-primary me-1" @onclick="@PersistState">Persist data</button>
+                    <button class="ui-btn ui-btn-primary ui-me-1" @onclick="@PersistState">Persist data</button>
                     <h3 class="h3">Restore persisted data</h3>
-                    <button class="btn btn-primary me-1" @onclick="@RestoreState">Restore data</button>
+                    <button class="ui-btn ui-btn-primary ui-me-1" @onclick="@RestoreState">Restore data</button>
                 </div>
             </div>
-            <div class="card mb-2">
-                <div class="card-header">Log</div>
-                <div class="card-body">
+            <div class="ui-card ui-mb-2">
+                <div class="ui-card-header">Log</div>
+                <div class="ui-card-body">
                     @foreach (var m in Messages)
                     {
                         <div>@m</div>
@@ -63,16 +64,16 @@ else
             </div>
             @if (Client.AdminInfo != null)
             {
-                <div class="card mb-2">
-                    <div class="card-header">Info</div>
-                    <div class="card-body">
+                <div class="ui-card ui-mb-2">
+                    <div class="ui-card-header">Info</div>
+                    <div class="ui-card-body">
                         <p><strong>Users by User Token: </strong>@Client.AdminInfo.UsersByUserTokenCount</p>
                         <p><strong>Games by Game Id: </strong>@Client.AdminInfo.GamesByGameIdCount</p>
                         <p><strong>Total Users: </strong>@Client.AdminInfo.Users.Count</p>
                         <p><strong>ConnectionInfo by UserId: </strong>@Client.AdminInfo.ConnectionInfoByUserIdCount</p>
-                        <table class="table table-sm">
+                        <table class="ui-table ui-table-sm">
                             <thead>
-                            <tr class="small table-dark">
+                            <tr class="ui-small ui-table-dark">
                                 <th>User id</th>
                                 <th>Username</th>
                                 <th>Player name</th>
@@ -84,7 +85,7 @@ else
                             <tbody>
                             @foreach (var av in Client.AdminInfo.Users)
                             {
-                                <tr class="small table-dark">
+                                <tr class="ui-small ui-table-dark">
                                     <td>@av.Id</td>
                                     <td>@av.Username</td>
                                     <td>@av.PlayerName</td>
@@ -95,7 +96,7 @@ else
                                             @av.LastLogin.LocalDateTime
                                         }
                                     </td>
-                                    <td><button class="btn btn-primary btn-sm me-1" @onclick="@(_ => DeleteUser(av))">Delete</button></td>
+                                    <td><button class="ui-btn ui-btn-primary ui-btn-sm ui-me-1" @onclick="@(_ => DeleteUser(av))">Delete</button></td>
                                 </tr>
                             }
                             </tbody>
@@ -103,29 +104,29 @@ else
                     </div>
                 </div>
             }
-            <div class="card mb-2">
-                <div class="card-header">Running games</div>
-                <div class="card-body">
-                    <div class="row g-2 mb-3">
-                        <div class="col-sm-12 col-md-3">
-                            <label class="form-label" for="gameTimeFromFilter">From</label>
-                            <input id="gameTimeFromFilter" type="datetime-local" class="form-control form-control-sm" value="@GameTimeFromInput" @onchange="@(e => GameTimeFromInput = e.Value?.ToString() ?? string.Empty)"/>
+            <div class="ui-card ui-mb-2">
+                <div class="ui-card-header">Running games</div>
+                <div class="ui-card-body">
+                    <div class="ui-row ui-g-2 ui-mb-3">
+                        <div class="ui-col-sm-12 ui-col-md-3">
+                            <label class="ui-form-label" for="gameUsernameFilter">Username</label>
+                            <input id="gameUsernameFilter" class="ui-form-control ui-form-control-sm" @bind="@GameUsernameInput"/>
                         </div>
-                        <div class="col-sm-12 col-md-3">
-                            <label class="form-label" for="gameTimeToFilter">To</label>
-                            <input id="gameTimeToFilter" type="datetime-local" class="form-control form-control-sm" value="@GameTimeToInput" @onchange="@(e => GameTimeToInput = e.Value?.ToString() ?? string.Empty)"/>
+                        <div class="ui-col-sm-12 ui-col-md-3">
+                            <label class="ui-form-label" for="gameTimeFromFilter">Game time from</label>
+                            <input id="gameTimeFromFilter" type="datetime-local" class="ui-form-control ui-form-control-sm" value="@GameTimeFromInput" @onchange="@(e => GameTimeFromInput = e.Value?.ToString() ?? string.Empty)"/>
                         </div>
-                        <div class="col-sm-12 col-md-3">
-                            <label class="form-label" for="gameUsernameFilter">Username</label>
-                            <input id="gameUsernameFilter" class="form-control form-control-sm" @bind="@GameUsernameInput"/>
+                        <div class="ui-col-sm-12 ui-col-md-3">
+                            <label class="ui-form-label" for="gameTimeToFilter">Game time to</label>
+                            <input id="gameTimeToFilter" type="datetime-local" class="ui-form-control ui-form-control-sm" value="@GameTimeToInput" @onchange="@(e => GameTimeToInput = e.Value?.ToString() ?? string.Empty)"/>
                         </div>
-                        <div class="col-sm-12 col-md-3 d-flex align-items-end">
-                            <button class="btn btn-primary btn-sm" @onclick="ApplyGameFilter">Filter</button>
+                        <div class="ui-col-sm-12 ui-col-md-3 ui-d-flex ui-align-items-center">
+                            <button class="ui-btn ui-btn-primary ui-btn-sm" @onclick="ApplyGameFilter">Filter</button>
                         </div>
                     </div>
-                    <table class="table table-sm">
+                    <table class="ui-table ui-table-sm">
                         <thead>
-                        <tr class="small table-dark">
+                        <tr class="ui-small ui-table-dark">
                             <th>Created</th>
                             <th>Username</th>
                             <th>Last activity</th>
@@ -137,7 +138,7 @@ else
                         @foreach (var av in FilteredGames)
                         {
                             var fontColorStyle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20 ? "color:grey" : "color:white";
-                            <tr class="small table-dark">
+                            <tr class="ui-small ui-table-dark">
                                 <td style="@fontColorStyle">
                                     @av.CreationDate.LocalDateTime
                                 </td>
@@ -151,11 +152,13 @@ else
                                     @av.Name
                                 </td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm me-1" title="Download savegame"
+                                    <button class="ui-btn ui-btn-primary ui-btn-sm ui-me-1" title="Download savegame"
                                             aria-label="Download savegame" @onclick="@(_ => Download(av))">
-                                        <span class="oi oi-data-transfer-download" aria-hidden="true"></span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                                            <path d="M8 1a.75.75 0 0 1 .75.75v7.19l2.22-2.22a.75.75 0 1 1 1.06 1.06l-3.5 3.5a.75.75 0 0 1-1.06 0l-3.5-3.5a.75.75 0 1 1 1.06-1.06l2.22 2.22V1.75A.75.75 0 0 1 8 1zM2.75 12a.75.75 0 0 1 .75.75v.5h9v-.5a.75.75 0 0 1 1.5 0V14a.75.75 0 0 1-.75.75h-10.5A.75.75 0 0 1 2 14v-1.25a.75.75 0 0 1 .75-.75z"/>
+                                        </svg>
                                     </button>
-                                    <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Close(av))">Close</button>
+                                    <button class="ui-btn ui-btn-primary ui-btn-sm ui-me-1" @onclick="@(_ => Close(av))">Close</button>
                                 </td>
                             </tr>
                         }
@@ -163,32 +166,32 @@ else
                     </table>
                 </div>
             </div>
-            <div class="card mb-2">
-                <div class="card-header">Error log</div>
-                <div class="card-body">
-                    <div class="row g-2 mb-3">
-                        <div class="col-sm-12 col-md-3">
-                            <label class="form-label" for="errorLogVersion">Version</label>
-                            <input id="errorLogVersion" type="number" class="form-control form-control-sm"
+            <div class="ui-card ui-mb-2">
+                <div class="ui-card-header">Error log</div>
+                <div class="ui-card-body">
+                    <div class="ui-row ui-g-2 ui-mb-3">
+                        <div class="ui-col-sm-12 ui-col-md-3">
+                            <label class="ui-form-label" for="errorLogVersion">Version</label>
+                            <input id="errorLogVersion" type="number" class="ui-form-control ui-form-control-sm"
                                    @bind="ErrorLogVersion"/>
                         </div>
-                        <div class="col-sm-12 col-md-3">
-                            <label class="form-label" for="errorLogFrom">From</label>
-                            <input id="errorLogFrom" type="datetime-local" class="form-control form-control-sm" value="@ErrorLogFromInput" @onchange="@(e => ErrorLogFromInput = e.Value?.ToString() ?? string.Empty)"/>
+                        <div class="ui-col-sm-12 ui-col-md-3">
+                            <label class="ui-form-label" for="errorLogFrom">From</label>
+                            <input id="errorLogFrom" type="datetime-local" class="ui-form-control ui-form-control-sm" value="@ErrorLogFromInput" @onchange="@(e => ErrorLogFromInput = e.Value?.ToString() ?? string.Empty)"/>
                         </div>
-                        <div class="col-sm-12 col-md-3">
-                            <label class="form-label" for="errorLogTo">To</label>
-                            <input id="errorLogTo" type="datetime-local" class="form-control form-control-sm" value="@ErrorLogToInput" @onchange="@(e => ErrorLogToInput = e.Value?.ToString() ?? string.Empty)"/>
+                        <div class="ui-col-sm-12 ui-col-md-3">
+                            <label class="ui-form-label" for="errorLogTo">To</label>
+                            <input id="errorLogTo" type="datetime-local" class="ui-form-control ui-form-control-sm" value="@ErrorLogToInput" @onchange="@(e => ErrorLogToInput = e.Value?.ToString() ?? string.Empty)"/>
                         </div>
-                        <div class="col-sm-12 col-md-3 d-flex align-items-end">
-                            <button class="btn btn-primary btn-sm" @onclick="LoadErrorLog">Filter</button>
+                        <div class="ui-col-sm-12 ui-col-md-3 ui-d-flex ui-align-items-center">
+                            <button class="ui-btn ui-btn-primary ui-btn-sm" @onclick="LoadErrorLog">Filter</button>
                         </div>
                     </div>
-                    <p class="small">Showing up to 500 entries. Entries are retained for 30 days. This list refreshes every 30 seconds.</p>
-                    <div class="table-responsive">
-                        <table class="table table-sm" style="table-layout:fixed;width:100%">
+                    <p class="ui-small">Showing up to 500 entries. Entries are retained for 30 days. This list refreshes every 30 seconds.</p>
+                    <div style="overflow-x:auto;">
+                        <table class="ui-table ui-table-sm" style="table-layout:fixed;width:100%">
                             <thead>
-                            <tr class="small table-dark">
+                            <tr class="ui-small ui-table-dark">
                                 <th>Time</th>
                                 <th>Version</th>
                                 <th>Source</th>
@@ -202,7 +205,7 @@ else
                             <tbody>
                             @foreach (var error in Client.ErrorLogs)
                             {
-                                <tr class="small table-dark">
+                                <tr class="ui-small ui-table-dark">
                                     <td>@error.OccurredAt.LocalDateTime</td>
                                     <td>@(error.GameVersion?.ToString() ?? "Unknown")</td>
                                     <td>@error.Source</td>
@@ -210,7 +213,7 @@ else
                                     <td>
                                         @if (error.HasGameSnapshot)
                                         {
-                                            <button class="btn btn-primary btn-sm" title="Download savegame at the time of this bot decision"
+                                            <button class="ui-btn ui-btn-primary ui-btn-sm" title="Download savegame at the time of this bot decision"
                                                     @onclick="@(() => DownloadBotDecisionGame(error))">
                                                 Download
                                             </button>
@@ -222,7 +225,7 @@ else
                                     <td style="width:35%">
                                         <details>
                                             <summary>View</summary>
-                                            <pre class="text-wrap" title="Click to copy error details"
+                                            <pre title="Click to copy error details"
                                                  style="white-space:pre-wrap;overflow-wrap:anywhere;cursor:pointer"
                                                  @onclick="@(() => CopyErrorDetails(error))">@error.Details</pre>
                                             <div title="Click to copy browser/session info" style="overflow-wrap:anywhere;cursor:pointer"
@@ -236,22 +239,22 @@ else
                     </div>
                 </div>
             </div>
-            <div class="card mb-2">
-                <div class="card-header">Scheduled games</div>
-                <div class="card-body">
-                    <table class="table table-sm">
+            <div class="ui-card ui-mb-2">
+                <div class="ui-card-header">Scheduled games</div>
+                <div class="ui-card-body">
+                    <table class="ui-table ui-table-sm">
                         <tbody>
                         @foreach (var av in Client.ScheduledGames.OrderByDescending(av => av.DateTime))
                         {
-                            <tr class="small table-dark">
-                                <td class="w-25">
+                            <tr class="ui-small ui-table-dark">
+                                <td class="ui-w-25">
                                     @av.DateTime
                                 </td>
-                                <td class="w-25">
+                                <td class="ui-w-25">
                                     @av.CreatorName
                                 </td>
-                                <td class="w-25">
-                                    <button class="btn btn-primary btn-sm me-1" @onclick="@(_ => Cancel(av))">Cancel</button>
+                                <td class="ui-w-25">
+                                    <button class="ui-btn ui-btn-primary ui-btn-sm ui-me-1" @onclick="@(_ => Cancel(av))">Cancel</button>
                                 </td>
                             </tr>
                         }
@@ -260,6 +263,18 @@ else
                 </div>
             </div>
         </div>
+        <div class="ui-col-sm-12 ui-col-lg-2">
+            <div class="ui-card ui-mb-2">
+                <div class="ui-card-header">Log</div>
+                <div class="ui-card-body">
+                    @foreach (var m in Messages)
+                    {
+                        <div>@m</div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="ui-col-sm-12 ui-col-lg-2"></div>
     </div>
 }
 

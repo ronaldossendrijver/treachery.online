@@ -8,27 +8,29 @@
 *@
 @inherits MapComponent
 
-<div id="planetmap" style="position:absolute; left:0px">
+<div id="planetmap">
 
-    <div id="planetmap_inner" style="position:absolute; width:@Px(Client.CurrentSkin.MapDimensions.X); height:@Px(Client.CurrentSkin.MapDimensions.Y);">
+    <div id="planetmap_inner"
+         style="width:@Px(Client.CurrentSkin.MapDimensions.X); height:@Px(Client.CurrentSkin.MapDimensions.Y);"
+         data-map-center-x="@Client.CurrentSkin.PlanetCenter.X"
+         data-map-center-y="@Client.CurrentSkin.PlanetCenter.Y"
+         data-map-radius="@Client.CurrentSkin.MapRadius"
+         data-player-token-radius="@Client.CurrentSkin.PlayerTokenRadius">
 
         <BackgroundImage X="0" Y="0" Width="@Client.CurrentSkin.MapDimensions.X" Height="@Client.CurrentSkin.MapDimensions.Y" Src="@Client.CurrentSkin.Map_URL"/>
 
         @if (Game.CurrentPhase > Phase.AwaitingPlayers)
         {
-            <div style="width:100%; height:100%;">
+            <div class="planetmap-overlays">
 
                 <SSW  />
                 <ResourcesOnPlanet  />
                 <Monsters  />
-                <Phases  />
-                <CardPiles  />
                 <Planet  OnLocationClick="@OnLocationClick"/>
                 <RecentMoves  />
                 <ForcesOnPlanet  OnLocationClick="@OnLocationClick" />
-                <Players  OnLocationClick="@OnLocationClick" />
+                <Players OnLocationClick="@OnLocationClick" OnFactionClick="@OnFactionClick" />
                 <Bids  />
-                <Tanks  />
                 <Disconnection  />
                 <BattlePlans  />
 
@@ -39,10 +41,11 @@
 
 </div>
 
-<div id="planetmap-filler" style="display:block"></div>
-
 @code {
 
     [Parameter]
     public EventCallback<LocationEventArgs> OnLocationClick { get; set; }
+
+    [Parameter]
+    public EventCallback<Faction> OnFactionClick { get; set; }
 }

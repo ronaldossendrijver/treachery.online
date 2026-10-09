@@ -9,13 +9,13 @@
 @inherits GameEventComponent<TBid>
 @typeparam TBid
 
-<div class="card p-1 mb-2 border-white" style="animation:fadeIn 1s;">
+<div class="ui-card ui-p-1 ui-mb-2 ui-border-white" style="animation:fadeIn 1s;">
 
-    <div class="card-body">
+    <div class="ui-card-body">
 
-        <div class="row">
+        <div class="ui-row">
 
-            <div class="col align-top" style="flex:0 0 150px">
+            <div class="ui-col ui-align-top" style="flex:0 0 150px">
 
                 @if (CardIsVisible) 
                 {
@@ -41,7 +41,7 @@
 
             </div>
 
-            <div class="col align-top">
+            <div class="ui-col ui-align-top">
 
                 @if (!Client.IsObserver && Client.Player is { Faction: not Faction.None })
                 {
@@ -75,7 +75,7 @@
 
                     if (CanUseKarma)
                     {
-                        <div class="mt-1">
+                        <div class="ui-mt-1">
                             <SelectFromImageComponent @bind-Value="KarmaCard" Values="Bid.ValidKarmaCards(Game, Player)" Required="false" ImageWidth="80">
                                 <Label>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to bid without limit or win immediately? <InfoComponent Contents="@KarmaInfoMessage" /></Label>
                             </SelectFromImageComponent>
@@ -86,7 +86,7 @@
                         KarmaCard = null;
                     }
 
-                    <div class="mt-1">
+                    <div class="ui-mt-1">
 
                         @if (Player.Ally != Faction.None && MaxAllyBidAmount > 0)
                         {
