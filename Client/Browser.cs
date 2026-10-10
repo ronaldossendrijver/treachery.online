@@ -110,6 +110,11 @@ public class Browser(IJSRuntime jsRuntime)
         await JsInvoke("StopSounds", null, 0);
     }
 
+    public async Task SetUiSoundVolume(float volume)
+    {
+        await JsInvoke("SetUiSoundVolume", CalculateVolume(volume));
+    }
+
     private static float CalculateVolume(float volumeOnLinearScaleFrom0To100)
     {
         if (volumeOnLinearScaleFrom0To100 <= 0)

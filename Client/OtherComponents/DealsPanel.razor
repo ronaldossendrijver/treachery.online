@@ -1,0 +1,58 @@
+@using Treachery.Client.GameEventComponents
+@inherits GameComponent
+
+@if (ShowLauncher)
+{
+    <button class="deals-launcher" type="button" data-dialog-target="#@DialogId" aria-haspopup="dialog"
+            aria-label="@($"Open deals. {DealCount} current or pending deals.")">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7.5 3.5h9A2.5 2.5 0 0 1 19 6v12a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 5 18V6a2.5 2.5 0 0 1 2.5-2.5z" />
+            <path d="M8 8h8M8 11.5h5M8 15h4" />
+        </svg>
+        <span>Deals</span>
+        @if (DealCount > 0)
+        {
+            <span class="deals-count">@DealCount</span>
+        }
+    </button>
+
+    <dialog id="@DialogId" class="deals-dialog" aria-labelledby="@($"{DialogId}-title")">
+        <div class="deals-shell">
+            <header class="communications-header">
+                <div>
+                    <span class="eyebrow">NEGOTIATIONS</span>
+                    <h2 id="@($"{DialogId}-title")">Deals</h2>
+                    <p>Review offers, manage current deals, or make a new offer.</p>
+                </div>
+                <button class="icon-button" type="button" data-dialog-close aria-label="Close deals">×</button>
+            </header>
+            <div class="deals-content">
+                @if (DealCount > 0)
+                {
+                    <DealComponent />
+                }
+                @if (!Client.IsObserver && Client.Actions.Contains(typeof(DealOffered)))
+                {
+                    <DealOfferedComponent />
+                }
+                @if (DealCount == 0 && (Client.IsObserver || !Client.Actions.Contains(typeof(DealOffered))))
+                {
+                    <p class="deals-empty">There are no current or pending deals.</p>
+                }
+            </div>
+        </div>
+    </dialog>
+}
+
+@code {
+    private string DialogId { get; } = $"deals-{Guid.NewGuid():N}";
+
+    private int DealCount =>
+        DealAccepted.CurrentDeals(Game).Count()
+        + (Client.Player is { } player
+            ? DealAccepted.AcceptableDeals(Game, player).Count() + DealAccepted.CancellableDeals(Game, player).Count()
+            : 0);
+
+    private bool ShowLauncher =>
+        Client.InGame && (DealCount > 0 || !Client.IsObserver && Client.Actions.Contains(typeof(DealOffered)));
+}

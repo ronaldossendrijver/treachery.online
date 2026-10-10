@@ -1,0 +1,105 @@
+@inherits GameComponent
+
+@if (Client.Status is { } status)
+{
+    if (status.WaitingForMe(Client.Player, Client.IsHost))
+    {
+        <div class="turn-activity turn-activity-personal" role="img" aria-label="Your turn">
+            <span class="turn-activity-label">YOUR TURN</span>
+            @if (Client.Player is { Faction: not Faction.None } player)
+            {
+                <span class="turn-activity-logo turn-activity-personal-logo">
+                    <img class="turn-activity-faction" src="@Client.CurrentSkin.GetImageUrl(player.Faction)" alt="" />
+                    <img class="turn-activity-worm" src="art/worm.gif" alt="" />
+                </span>
+            }
+        </div>
+    }
+    else if (IsBiddingPhase && ToBid.Any())
+    {
+        var bidders = ToBid.ToArray();
+        <div class="turn-activity-grid"
+             role="group"
+             aria-label="@($"Waiting for bids from {bidders.Length} players")"
+             style="@GridStyle(bidders.Length)">
+            @foreach (var bidder in bidders)
+            {
+                var player = bidder.Player;
+                <span class="turn-activity-grid-item turn-activity-logo" title="@player.Name">
+                    <img class="turn-activity-faction" src="@Client.CurrentSkin.GetImageUrl(player.Faction)" alt="@player.Name" />
+                    <span class="turn-activity-count">@Game.CardsOwnedBy(player).Count()</span>
+                    @if (bidder.HasTurn)
+                    {
+                        <img class="turn-activity-worm" src="art/worm.gif" alt="" />
+                    }
+                </span>
+            }
+        </div>
+    }
+    else if (status.WaitingForPlayers.Count == 1)
+    {
+        var player = status.WaitingForPlayers[0];
+        <div class="turn-activity turn-activity-other" role="img" aria-label="@($"Waiting for {player.Name}")">
+            <span class="turn-activity-logo">
+                <img class="turn-activity-faction" src="@Client.CurrentSkin.GetImageUrl(player.Faction)" alt="" />
+                <img class="turn-activity-worm" src="art/worm.gif" alt="" />
+            </span>
+        </div>
+    }
+    else if (status.WaitingForPlayers.Count > 1)
+    {
+        var waitingPlayers = status.WaitingForPlayers;
+        <div class="turn-activity-grid"
+             role="group"
+             aria-label="@($"Waiting for {waitingPlayers.Count} factions")"
+             style="@GridStyle(waitingPlayers.Count)">
+            @foreach (var player in waitingPlayers)
+            {
+                <span class="turn-activity-grid-item turn-activity-logo" title="@player.Name">
+                    <img class="turn-activity-faction" src="@Client.CurrentSkin.GetImageUrl(player.Faction)" alt="@player.Name" />
+                </span>
+            }
+        </div>
+    }
+    else if (status.WaitingInSequence.FirstOrDefault(item => item.HasTurn) is { } activePlayer)
+    {
+        <div class="turn-activity turn-activity-other" role="img" aria-label="@($"Waiting for {activePlayer.Player.Name}")">
+            <span class="turn-activity-logo">
+                <img class="turn-activity-faction" src="@Client.CurrentSkin.GetImageUrl(activePlayer.Player.Faction)" alt="" />
+                <img class="turn-activity-worm" src="art/worm.gif" alt="" />
+            </span>
+        </div>
+    }
+    else if (status.WaitingInSequence.Count > 0)
+    {
+        var sequencePlayers = status.WaitingInSequence;
+        <div class="turn-activity-grid"
+             role="group"
+             aria-label="@($"Waiting for {sequencePlayers.Count} factions")"
+             style="@GridStyle(sequencePlayers.Count)">
+            @foreach (var sequencePlayer in sequencePlayers)
+            {
+                <span class="turn-activity-grid-item turn-activity-logo" title="@sequencePlayer.Player.Name">
+                    <img class="turn-activity-faction" src="@Client.CurrentSkin.GetImageUrl(sequencePlayer.Player.Faction)" alt="@sequencePlayer.Player.Name" />
+                </span>
+            }
+        </div>
+    }
+}
+
+@code {
+    private bool IsBiddingPhase => Game.CurrentMainPhase == MainPhase.Bidding;
+
+    private IEnumerable<SequenceElement> ToBid =>
+        Game.CurrentPhase is Phase.BlackMarketAnnouncement or Phase.BlackMarketBidding
+            ? BlackMarketBid.PlayersToBid(Game)
+            : Bid.PlayersToBid(Game);
+
+    private static string GridStyle(int count)
+    {
+        var rows = count <= 5 ? 1 : 2;
+        var columns = (int)Math.Ceiling(count / (double)rows);
+        var size = rows == 1 ? 40 : 28;
+        return $"--turn-grid-columns:{columns};--turn-grid-size:{size}px";
+    }
+}

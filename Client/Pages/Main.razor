@@ -21,27 +21,55 @@
     </div>
 }
 
-@if (!Client.IsConnected)
+@if (!Client.IsConnected || !Client.LoggedIn)
 {
-    <div class="entry-screen">
-        <div class="entry-card">Not connected</div>
-    </div>
-}
-else if (!Client.LoggedIn)
-{
-    <div class="entry-screen">
-        <div class="entry-card">
-            <LoginComponent />
-        </div>
+    <div class="login-screen">
+        <video class="login-video" autoplay muted loop playsinline preload="auto" poster="art/planet.png" aria-hidden="true" tabindex="-1">
+            <source src="art/planet.mp4" type="video/mp4"/>
+        </video>
+        <div class="login-dust" aria-hidden="true"></div>
+        <div class="login-vignette" aria-hidden="true"></div>
+        <main class="login-stage">
+            <section class="login-hero" aria-label="treachery.online">
+                <h1 class="login-sr-only">treachery.online</h1>
+            </section>
+            <section class="login-panel">
+                @if (!Client.IsConnected)
+                {
+                    <div class="login-connecting" role="status">
+                        <img src="art/worm.gif" alt=""/>
+                        <strong>Not connected</strong>
+                        <span>Waiting for the server…</span>
+                    </div>
+                }
+                else
+                {
+                    <LoginComponent/>
+                }
+            </section>
+        </main>
     </div>
 }
 else if (!Client.InGame)
 {
-    <div class="entry-screen entry-screen-wide">
-        <div class="entry-content">
+    <div class="lobby-screen">
+        <div class="lobby-ambient" aria-hidden="true"></div>
+        <header class="lobby-header">
+            <video class="lobby-logo" autoplay muted loop playsinline preload="auto" poster="art/planet.png" aria-hidden="true" tabindex="-1">
+                <source src="art/planet.mp4" type="video/mp4"/>
+            </video>
+            <div class="lobby-greeting">
+                <span class="lobby-kicker">Welcome back</span>
+                <h1><span class="lobby-player-name">@Client.PlayerName</span></h1>
+                <p>Resume your games, join an open seat, or start a new struggle for Arrakis.</p>
+            </div>
+        </header>
+        <main class="lobby-grid">
             <RunningGamesComponent/>
-            <OwnGamesComponent/>
-        </div>
+            <div class="lobby-side">
+                <OwnGamesComponent/>
+            </div>
+        </main>
     </div>
 }
 else if (Client.Game.CurrentPhase is Phase.AwaitingPlayers)
@@ -72,8 +100,13 @@ else
     <main @ref="_element" class="game-workspace">
         <section id="mapdiv" class="map-stage" aria-label="Game map">
             <GameBoard OnLocationClick="@Client.LocationClick" OnFactionClick="@ToggleFactionMenu" />
-            <div class="map-menu-dock">
-                <MenuComponent/>
+            <div class="map-top-overlays">
+                <div class="map-tanks-dock">
+                    <TanksPile />
+                </div>
+                <div class="map-menu-dock">
+                    <MenuComponent/>
+                </div>
             </div>
             <div class="map-card-piles">
                 <CardPilesRail />
@@ -121,7 +154,6 @@ else
                     <div class="mobile-card-piles">
                         <CardPilesRail />
                     </div>
-                    <TanksRail />
                     @if (ShowAllPlayerPanels)
                     {
                         foreach (var p in Client.Game.Players)

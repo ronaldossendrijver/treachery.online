@@ -1,4 +1,4 @@
-@inherits GameComponent
+﻿@inherits GameComponent
 
 @if (Client.CurrentPhase >= Phase.TradingFactions && ShownPlayer is { } shownPlayer)
 {
@@ -35,46 +35,43 @@
                             @ResourceStrip(shownPlayer)
                         }
                         <div class="player-panel-sections">
-                            <section class="player-panel-section player-panel-leaders">
+                            <section class="player-panel-section player-panel-people" style="--figure-count:@FigureCount(shownPlayer)">
+                              <div class="player-panel-group player-panel-leaders">
                                 <h3>Leaders</h3>
                                 <div class="player-panel-figures">
                                     @foreach (var leader in shownPlayer.Leaders.Where(leader => Game.IsAlive(leader)))
                                     {
-                                        <Image Src="@Client.CurrentSkin.GetImageUrl(leader)" Highlighted="@Game.IsSkilled(leader)" Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(leader, Game)" />
+                                        <span class="player-panel-figure-slot"><Image Src="@Client.CurrentSkin.GetImageUrl(leader)" Highlighted="@Game.IsSkilled(leader)" Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(leader, Game)" /></span>
                                     }
                                     @foreach (var leader in shownPlayer.Leaders.Where(leader => !Game.IsAlive(leader)))
                                     {
-                                        <Image Src="@Client.CurrentSkin.GetImageUrl(leader)" Darkened Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(leader, Game)" />
+                                        <span class="player-panel-figure-slot"><Image Src="@Client.CurrentSkin.GetImageUrl(leader)" Darkened Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(leader, Game)" /></span>
                                     }
                                 </div>
-                            </section>
-
-                            <section class="player-panel-section player-panel-traitors">
+                              </div>
+                              <div class="player-panel-group player-panel-traitors">
                                 <h3>@(shownPlayer.FaceDancers.Count > 0 ? "Face Dancers" : shownPlayer.Traitors.Count == 1 ? "Traitor" : "Traitors")</h3>
                                 <div class="player-panel-figures">
                                     @if (shownPlayer.FaceDancers.Count > 0)
                                     {
                                         @foreach (var faceDancer in shownPlayer.FaceDancers)
                                         {
-                                            <Image Src="@Client.CurrentSkin.GetImageUrl(faceDancer)" Blurred="@shownPlayer.RevealedFaceDancers.Contains(faceDancer)" Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(faceDancer, Game)" />
+                                            <span class="player-panel-figure-slot"><Image Src="@Client.CurrentSkin.GetImageUrl(faceDancer)" Blurred="@shownPlayer.RevealedFaceDancers.Contains(faceDancer)" Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(faceDancer, Game)" /></span>
                                         }
                                     }
                                     else if (!Game.AssistedNoteKeepingEnabled(Player) && shownPlayer.Traitors.Count == 1)
                                     {
-                                        <span class="player-panel-traitor-note">
-                                            <Image Src="@Client.CurrentSkin.GetImageUrl(shownPlayer.Traitors.First())" Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(shownPlayer.Traitors.First(), Game)" />
-                                            Your traitor
-                                        </span>
+                                        <span class="player-panel-figure-slot"><Image Src="@Client.CurrentSkin.GetImageUrl(shownPlayer.Traitors.First())" Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(shownPlayer.Traitors.First(), Game)" /></span>
                                     }
                                     else
                                     {
                                         @foreach (var traitor in shownPlayer.Traitors)
                                         {
-                                            <Image Src="@Client.CurrentSkin.GetImageUrl(traitor)" Blurred="@shownPlayer.RevealedTraitors.Contains(traitor)" Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(traitor, Game)" />
+                                            <span class="player-panel-figure-slot"><Image Src="@Client.CurrentSkin.GetImageUrl(traitor)" Blurred="@shownPlayer.RevealedTraitors.Contains(traitor)" Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(traitor, Game)" /></span>
                                         }
                                         @foreach (var traitor in shownPlayer.DiscardedTraitors)
                                         {
-                                            <Image Src="@Client.CurrentSkin.GetImageUrl(traitor)" GreyedOut Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(traitor, Game)" />
+                                            <span class="player-panel-figure-slot"><Image Src="@Client.CurrentSkin.GetImageUrl(traitor)" GreyedOut Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(traitor, Game)" /></span>
                                         }
                                         @if (shownPlayer.Traitors.Count == 0 && shownPlayer.DiscardedTraitors.Count == 0)
                                         {
@@ -82,6 +79,7 @@
                                         }
                                     }
                                 </div>
+                              </div>
                             </section>
 
                             <section class="player-panel-section player-panel-owned">
@@ -172,6 +170,12 @@
 @code {
     [Parameter] public Player? ShownPlayer { get; set; }
     [Parameter] public bool ShowHeader { get; set; }
+
+    private int FigureCount(Player player) =>
+        player.Leaders.Count() + Math.Max(1,
+            player.FaceDancers.Count > 0 ? player.FaceDancers.Count :
+            !Game.AssistedNoteKeepingEnabled(Player) && player.Traitors.Count == 1 ? 1 :
+            player.Traitors.Count + player.DiscardedTraitors.Count);
 
     private bool _collapsed = true;
 

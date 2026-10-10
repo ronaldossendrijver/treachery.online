@@ -8,22 +8,22 @@
 *@
 @inherits GameComponent
 
-<div class="ui-card ui-mb-2 ui-shadow-lg ui-border-light" style="opacity:0.9;animation:fadeIn90 1s">
-    <div class="ui-card-header">Your games</div>
+<section class="lobby-panel lobby-panel-own">
+    <header class="lobby-panel-head">
+        <div>
+            <span class="lobby-kicker">Your house</span>
+            <h2>Your games</h2>
+        </div>
+    </header>
 
-    <div class="ui-card-body">
-        <ul class="ui-nav ui-nav-tabs ui-mb-2">
-            <li class="ui-nav-item">
-                <button class="ui-nav-link @GetActive(OwnGamesComponentState.List)" aria-current="page" @onclick="@(_ => State = OwnGamesComponentState.List)">Your games</button>
-            </li>
-            <li class="ui-nav-item">
-                <button class="ui-nav-link @GetActive(OwnGamesComponentState.Create)" @onclick="@(_ => State = OwnGamesComponentState.Create)">Create or load a game</button>
-            </li>
-            <li class="ui-nav-item">
-                <button class="ui-nav-link @GetActive(OwnGamesComponentState.Schedule)" @onclick="@(_ => State = OwnGamesComponentState.Schedule)">Schedule a game</button>
-            </li>
-        </ul>
+    <div class="lobby-panel-body">
+        <div class="lobby-tabs" role="tablist" aria-label="Your games">
+            <button type="button" role="tab" class="lobby-tab @GetActive(OwnGamesComponentState.List)" aria-selected="@(State == OwnGamesComponentState.List)" @onclick="@(_ => State = OwnGamesComponentState.List)">Your games</button>
+            <button type="button" role="tab" class="lobby-tab @GetActive(OwnGamesComponentState.Create)" aria-selected="@(State == OwnGamesComponentState.Create)" @onclick="@(_ => State = OwnGamesComponentState.Create)">Create or load</button>
+            <button type="button" role="tab" class="lobby-tab @GetActive(OwnGamesComponentState.Schedule)" aria-selected="@(State == OwnGamesComponentState.Schedule)" @onclick="@(_ => State = OwnGamesComponentState.Schedule)">Schedule</button>
+        </div>
 
+        <div class="lobby-tab-panel" @key="State">
         @switch (State)
         {
             case OwnGamesComponentState.List:
@@ -31,258 +31,256 @@
                 var myScheduledGames = Client.ScheduledGames.Where(info => info.CreatorUserId == Client.UserId).OrderByDescending(av => av.DateTime).ToList();
                 if (!myGames.Any() && !myScheduledGames.Any())
                 {
-                    <div class="ui-text-info ui-mb-2">No games yet...</div>
+                    <div class="lobby-empty lobby-empty-compact">
+                        <p>You have no games yet.</p>
+                        <button type="button" class="lobby-cta" @onclick="@(_ => State = OwnGamesComponentState.Create)">Create your first game</button>
+                    </div>
                 }
 
                 if (myGames.Any())
                 {
-                    <div class="ui-text-info ui-mb-2">Started games</div>
-                    <table class="ui-table ui-table-sm">
-                        <thead>
-                        <tr class="ui-small ui-table-dark">
-                            <th scope="col">Name</th>
-                            <th scope="col">Info</th>
-                            <th scope="col">Last action</th>
-                            <th scope="col" style="text-align: right;">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
+                    <h3 class="lobby-section-title">Started games</h3>
+                    <div class="lobby-game-list">
                         @foreach (var av in myGames)
                         {
-                            var fontColorStyle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20 ? "color:grey" : "color:white";
-                            var factions = av.FactionsInPlay;
+                            var idle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20;
                             GamePasswords.TryAdd(av.GameId, string.Empty);
 
-                            <tr class="ui-small ui-table-dark">
-                                <td class="ui-w-25">
-                                    @av.Name
-                                </td>
-                                <td class="ui-w-25" style="@fontColorStyle">
+                            <article class="lobby-game @(idle ? "is-idle" : "")">
+                                <div class="lobby-game-main">
+                                    <div class="lobby-game-name">@av.Name</div>
                                     @if (av.HasDetails)
                                     {
-                                        <div>@Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)
-                                            <br>
-                                            @foreach (var f in factions.Where(f => f != Faction.None))
+                                        <div class="lobby-game-meta"><span>@Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)</span></div>
+                                        <div class="lobby-game-factions">
+                                            @foreach (var f in av.FactionsInPlay.Where(f => f != Faction.None))
                                             {
-                                                <Image Shown="f" Width="18" NoShadow/>
+                                                <Image Shown="f" Width="20" NoShadow/>
                                             }
                                         </div>
                                     }
-                                </td>
-                                <td class="ui-w-25">
-                                    @av.LastActivity?.DateTime.ToLocalTime().ToString("dd-MM HH:mm")
-                                </td>
-                                <td class="ui-w-25" style="text-align: right;">
+                                    @if (av.LastActivity != null)
+                                    {
+                                        <div class="lobby-game-time" title="Last action">Last action @av.LastActivity?.DateTime.ToLocalTime().ToString("dd-MM HH:mm")</div>
+                                    }
+                                </div>
+                                <div class="lobby-game-actions">
                                     @if (av.YouAreIn(Client.UserId!.Value))
                                     {
-                                        <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId!.Value)))" MarginClass="ui-m-1" Title="Resume game">▶</CommandButton>
+                                        <CommandButton Small OnClick="@(_ => JoinGameAsPlayer(av.GameId, string.Empty, av.YourCurrentSeat(Client.UserId!.Value)))" MarginClass="" Title="Resume game">▶ Resume</CommandButton>
                                     }
                                     else if (av.RequiresLoad)
                                     {
                                         @if (av.HasPassword)
                                         {
-                                            <input class="ui-form-inline ui-form-control-sm" style="max-width:80px" @bind="GamePasswords[av.GameId]" maxlength="24" placeholder="Password"/>
+                                            <input class="lobby-input lobby-input-sm" @bind="GamePasswords[av.GameId]" maxlength="24" placeholder="Password" aria-label="Game password"/>
                                         }
-                                        <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, GamePasswords[av.GameId]))" MarginClass="ui-m-1" Title="Open saved game">Open</CommandButton>
+                                        <CommandButton Small OnClick="@(_ => JoinGameAsObserver(av.GameId, GamePasswords[av.GameId]))" MarginClass="" Title="Open saved game">Open</CommandButton>
                                     }
-                                    <CommandButton Small OnClick="@(_ => Delete(av))" MarginClass="ui-m-1" Title="Delete game">🗑️</CommandButton>
-                                </td>
-                            </tr>
+                                    <CommandButton Small Class="ui-btn-secondary lobby-icon-btn" OnClick="@(_ => Delete(av))" MarginClass="" Title="Delete game">@TrashIcon</CommandButton>
+                                </div>
+                            </article>
                         }
-                        </tbody>
-                    </table>
+                    </div>
                 }
 
                 if (myScheduledGames.Any())
                 {
-                    <div class="ui-text-info ui-mb-2">Scheduled games</div>
-                    <table class="ui-table ui-table-sm">
-                        <thead>
-                        <tr class="ui-small ui-table-dark">
-                            <th scope="col">Game info</th>
-                            <th scope="col">Subscribed players</th>
-                            <th scope="col">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
+                    <h3 class="lobby-section-title">Scheduled by you</h3>
+                    <div class="lobby-game-list">
                         @foreach (var game in myScheduledGames)
                         {
-                            <tr class="ui-small ui-table-dark">
-                                <td class="ui-w-20">
-                                    @game.DateTime.ToLocalTime().ToString("dd-MM HH:mm")
-                                </td>
-                                <td class="ui-w-40">
-                                    <div>@Name(game.Ruleset), @game.NumberOfPlayers players, @game.MaximumTurns turns
-                                        @if (game.AllowedFactionsInPlay.Count == 12)
-                                        {
-                                            <span>(all factions)</span>
-                                        }
-                                        else
-                                        {
+                            <article class="lobby-game lobby-game-scheduled">
+                                <div class="lobby-game-date" title="Starts at (your local time)">
+                                    <strong>@game.DateTime.ToLocalTime().ToString("dd-MM")</strong>
+                                    <span>@game.DateTime.ToLocalTime().ToString("HH:mm")</span>
+                                </div>
+                                <div class="lobby-game-main">
+                                    <div class="lobby-game-meta"><span>@Name(game.Ruleset), @game.NumberOfPlayers players, @game.MaximumTurns turns@(game.AllowedFactionsInPlay.Count == 12 ? " (all factions)" : "")</span></div>
+                                    @if (game.AllowedFactionsInPlay.Count != 12)
+                                    {
+                                        <div class="lobby-game-factions">
                                             @foreach (var f in game.AllowedFactionsInPlay)
                                             {
-                                                <Image Shown="f" Width="18" NoShadow/>
+                                                <Image Shown="f" Width="20" NoShadow/>
                                             }
-                                        }
-                                    </div>
-                                </td>
-                                <td class="ui-w-20" style="text-align: right;">
-                                    @foreach (var p in game.Subscribers.Where(u => u.Value != SubscriptionType.DontParticipate))
-                                    {
-                                        <div class="ui-me-1">
-                                            <span style="font: normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif;">@(game.SubscriberNames.GetValueOrDefault(p.Key, "?"))</span>
-                                            <span class="ui-badge ui-text-bg-primary ui-ms-1">@Name(p.Value)</span>
                                         </div>
                                     }
-                                </td>
-                                <td class="ui-w-20">
-                                    <CommandButton Small OnClick="@(_ => Cancel(game))">🗙</CommandButton>
-                                </td>
-                            </tr>
+                                    <div class="lobby-subscribers">
+                                        @foreach (var p in game.Subscribers.Where(u => u.Value != SubscriptionType.DontParticipate))
+                                        {
+                                            <span class="lobby-chip">
+                                                <span class="lobby-player-name">@(game.SubscriberNames.GetValueOrDefault(p.Key, "?"))</span>
+                                                <em>@Name(p.Value)</em>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="lobby-game-actions">
+                                    <CommandButton Small Class="ui-btn-secondary lobby-icon-btn" OnClick="@(_ => Cancel(game))" MarginClass="" Title="Cancel scheduled game">🗙</CommandButton>
+                                </div>
+                            </article>
                         }
-                        </tbody>
-                    </table>
+                    </div>
                 }
                 break;
 
             case OwnGamesComponentState.Create:
-                <input type="text" class="ui-form-control" @bind="@CreateGameName" maxlength="64" placeholder="Game name"/>
-                <CheckboxComponent @bind-Value="@CreateGameHasPassword">Require a password to join?</CheckboxComponent>
-                @if (CreateGameHasPassword)
-                {
-                    <input type="text" class="ui-form-control" @bind="@CreateGamePassword" maxlength="24" placeholder="Password"/>
-                }
-                <div class="ui-text-danger ui-small">@CreateError</div>
-                <CommandButton MarginClass="ui-mt-1" OnClick="@CreateNewGame">Create new game</CommandButton>
-                <label class="ui-btn ui-btn-primary ui-mt-1" disabled="@Loading">Load game from file
-                    @if (Loading)
+                <div class="lobby-form">
+                    <label class="lobby-field">
+                        <span>Game name</span>
+                        <input type="text" class="lobby-input" @bind="@CreateGameName" maxlength="64" placeholder="Game name"/>
+                    </label>
+                    <CheckboxComponent @bind-Value="@CreateGameHasPassword">Require a password to join?</CheckboxComponent>
+                    @if (CreateGameHasPassword)
                     {
-                        <div class="ui-spinner-border ui-spinner-border-sm ui-text-primary" role="status">
-                            <span class="ui-visually-hidden">Loading...</span>
-                        </div>
+                        <label class="lobby-field">
+                            <span>Password</span>
+                            <input type="text" class="lobby-input" @bind="@CreateGamePassword" maxlength="24" placeholder="Password"/>
+                        </label>
                     }
-                    <input hidden type="file" id="fileInput" @ref="FileInput" @onchange="@LoadAndCreateGame"/>
-                </label>
+                    @if (!string.IsNullOrEmpty(CreateError))
+                    {
+                        <div class="lobby-error" role="alert">@CreateError</div>
+                    }
+                    <div class="lobby-form-actions">
+                        <CommandButton Class="ui-btn-primary lobby-primary" MarginClass="" OnClick="@CreateNewGame">Create new game</CommandButton>
+                        <label class="ui-btn ui-btn-secondary lobby-file-btn" disabled="@Loading">
+                            Load game from file
+                            @if (Loading)
+                            {
+                                <span class="ui-spinner-border ui-spinner-border-sm" role="status">
+                                    <span class="ui-visually-hidden">Loading...</span>
+                                </span>
+                            }
+                            <input hidden type="file" id="fileInput" @ref="FileInput" @onchange="@LoadAndCreateGame"/>
+                        </label>
+                    </div>
+                </div>
                 break;
 
             case OwnGamesComponentState.Schedule:
-                <DateTimePicker @bind-Value="@ScheduleGameDateTime"/>
-                <SelectNumberComponent @bind-Value="@ScheduleGameNumberOfPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Label="Number of players:"/>
-                <SelectNumberComponent @bind-Value="@ScheduleGameMaximumTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns:"/>
-                <SelectFromImageComponent Selected="@ScheduleGameAllowedFactionsInPlay" Values="EstablishPlayers.AvailableFactions()" T="Faction" OnChanged="@StateHasChanged" ImageWidth="40" Required="false">
-                    <Label>Factions in play:</Label>
-                </SelectFromImageComponent>
-                <SelectComponent @bind-Value="@ScheduleGameRuleset" Values="@Game.GetAvailableRulesets()">
-                    <Label>Ruleset:</Label>
-                </SelectComponent>
-                <CheckboxComponent @bind-Value="@ScheduleGameAsyncPlay">Async play (send e-mail updates)</CheckboxComponent>
-                <div class="ui-text-danger ui-small">@ScheduleError</div>
-                <CommandButton MarginClass="ui-mt-1" OnClick="@ScheduleGame">Schedule game</CommandButton>
-                <a class="ui-btn ui-btn-dark ui-btn-sm ui-mt-1 ui-p-2 ui-text-start ui-p-0 ui-mt-0 ui-mb-0" href="https://discord.gg/rRGEfn4" target="_blank" title="Find players on Dune Discord">
-                    <svg style="margin-right:2px" width="18" height="18" viewBox="0 -28.5 256 256" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
+                <div class="lobby-form">
+                    <DateTimePicker @bind-Value="@ScheduleGameDateTime"/>
+                    <SelectNumberComponent @bind-Value="@ScheduleGameNumberOfPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Label="Number of players:"/>
+                    <SelectNumberComponent @bind-Value="@ScheduleGameMaximumTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns:"/>
+                    <SelectFromImageComponent Selected="@ScheduleGameAllowedFactionsInPlay" Values="EstablishPlayers.AvailableFactions()" T="Faction" OnChanged="@StateHasChanged" ImageWidth="40" Required="false">
+                        <Label>Factions in play:</Label>
+                    </SelectFromImageComponent>
+                    <SelectComponent @bind-Value="@ScheduleGameRuleset" Values="@Game.GetAvailableRulesets()">
+                        <Label>Ruleset:</Label>
+                    </SelectComponent>
+                    <CheckboxComponent @bind-Value="@ScheduleGameAsyncPlay">Async play (send e-mail updates)</CheckboxComponent>
+                    @if (!string.IsNullOrEmpty(ScheduleError))
+                    {
+                        <div class="lobby-error" role="alert">@ScheduleError</div>
+                    }
+                    <div class="lobby-form-actions">
+                        <CommandButton Class="ui-btn-primary lobby-primary" MarginClass="" OnClick="@ScheduleGame">Schedule game</CommandButton>
+                        <a class="ui-btn ui-btn-secondary lobby-discord" href="https://discord.gg/rRGEfn4" target="_blank" title="Find players on Dune Discord">
+                            <svg width="18" height="18" viewBox="0 -28.5 256 256" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
                         <g>
                             <path d="M216.856339,16.5966031 C200.285002,8.84328665 182.566144,3.2084988 164.041564,0 C161.766523,4.11318106 159.108624,9.64549908 157.276099,14.0464379 C137.583995,11.0849896 118.072967,11.0849896 98.7430163,14.0464379 C96.9108417,9.64549908 94.1925838,4.11318106 91.8971895,0 C73.3526068,3.2084988 55.6133949,8.86399117 39.0420583,16.6376612 C5.61752293,67.146514 -3.4433191,116.400813 1.08711069,164.955721 C23.2560196,181.510915 44.7403634,191.567697 65.8621325,198.148576 C71.0772151,190.971126 75.7283628,183.341335 79.7352139,175.300261 C72.104019,172.400575 64.7949724,168.822202 57.8887866,164.667963 C59.7209612,163.310589 61.5131304,161.891452 63.2445898,160.431257 C105.36741,180.133187 151.134928,180.133187 192.754523,160.431257 C194.506336,161.891452 196.298154,163.310589 198.110326,164.667963 C191.183787,168.842556 183.854737,172.420929 176.223542,175.320965 C180.230393,183.341335 184.861538,190.991831 190.096624,198.16893 C211.238746,191.588051 232.743023,181.531619 254.911949,164.955721 C260.227747,108.668201 245.831087,59.8662432 216.856339,16.5966031 Z M85.4738752,135.09489 C72.8290281,135.09489 62.4592217,123.290155 62.4592217,108.914901 C62.4592217,94.5396472 72.607595,82.7145587 85.4738752,82.7145587 C98.3405064,82.7145587 108.709962,94.5189427 108.488529,108.914901 C108.508531,123.290155 98.3405064,135.09489 85.4738752,135.09489 Z M170.525237,135.09489 C157.88039,135.09489 147.510584,123.290155 147.510584,108.914901 C147.510584,94.5396472 157.658606,82.7145587 170.525237,82.7145587 C183.391518,82.7145587 193.761324,94.5189427 193.539891,108.914901 C193.539891,123.290155 183.391518,135.09489 170.525237,135.09489 Z" fill="white" fill-rule="nonzero"/>
                         </g>
                     </svg>
-                    Find players on Dune Discord
-                </a>
+                            Find players on Discord
+                        </a>
+                    </div>
+                </div>
                 break;
             default:
                 <div>Unknown menu option</div>
                 break;
         }
-    </div>
-</div>
-
-<div class="ui-card ui-mb-2 ui-shadow-lg ui-border-light" style="opacity:0.9;animation:fadeIn90 1s">
-    <div class="ui-card-header">Your account</div>
-    <div class="ui-card-body">
-        <UserStatusComponent/>
-        <div class="ui-row">
-            <label for="userName" class="ui-col-4 ui-col-form-label">Username</label>
-            <div class="ui-col-8">
-                <input type="text" readonly class="ui-form-control-plaintext" id="userName" value="@Client.UserName">
-            </div>
         </div>
+    </div>
+</section>
+
+<section class="lobby-panel lobby-panel-account">
+    <header class="lobby-panel-head">
+        <div>
+            <span class="lobby-kicker">Your account</span>
+            <h2 class="lobby-player-name">@Client.PlayerName</h2>
+        </div>
+        <UserStatusComponent/>
+    </header>
+    <div class="lobby-panel-body">
         @if (DeleteUser)
         {
-            <div class="ui-form-label ui-alert-danger">
-                Are your sure you wish to delete your account and all your games?
+            <div class="lobby-error" role="alert">Are you sure you wish to delete your account and all your games?</div>
+            <div class="lobby-form-actions">
+                <button type="button" class="ui-btn ui-btn-secondary ui-btn-sm" @onclick="@CancelDelete">Cancel</button>
+                <CommandButton Class="ui-btn-danger" MarginClass="" OnClick="@DeleteUserInfo" Small>Yes, delete my account</CommandButton>
             </div>
-            <button class="ui-btn ui-btn-secondary ui-btn-sm ui-me-1" @onclick="@CancelDelete">Cancel</button>
-            <CommandButton Class="ui-btn-danger" OnClick="@DeleteUserInfo" Small>Yes, delete my account</CommandButton>
         }
         else if (EditUser)
         {
-            <div class="ui-row">
-                <label for="playerName" class="ui-col-4 ui-col-form-label">Player name</label>
-                <div class="ui-col-8">
-                    <input type="text" class="ui-form-control" id="playerName" @bind="@PlayerName" maxlength="40"
-                           style="font: normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif;">
+            <div class="lobby-form">
+                <div class="lobby-field">
+                    <span>Username</span>
+                    <div class="lobby-readonly">@Client.UserName</div>
+                </div>
+                <div class="lobby-field-pair">
+                    <label class="lobby-field">
+                        <span>Player name</span>
+                        <input type="text" class="lobby-input lobby-player-name" id="playerName" @bind="@PlayerName" maxlength="40">
+                    </label>
+                    <label class="lobby-field">
+                        <span>E-mail address</span>
+                        <input type="email" class="lobby-input" id="email" autocomplete="email" @bind="@Email" maxlength="254">
+                    </label>
+                </div>
+                <div class="lobby-field-pair">
+                    <label class="lobby-field">
+                        <span>New password</span>
+                        <input type="password" class="lobby-input" id="password1" autocomplete="new-password" placeholder="Leave empty to keep" @bind="@Password1">
+                    </label>
+                    <label class="lobby-field">
+                        <span>Repeat password</span>
+                        <input type="password" class="lobby-input" id="password2" autocomplete="new-password" @bind="@Password2">
+                    </label>
+                </div>
+                @if (!string.IsNullOrEmpty(ChangeUserInfoMessage))
+                {
+                    <div class="lobby-error" role="alert">@ChangeUserInfoMessage</div>
+                }
+                <div class="lobby-form-actions">
+                    <CommandButton OnClick="@UpdateUserInfo" MarginClass="" Small>Apply changes</CommandButton>
+                    <button type="button" class="ui-btn ui-btn-secondary ui-btn-sm" @onclick="@CancelEdit">Cancel</button>
+                    <button type="button" class="ui-btn ui-btn-danger ui-btn-sm lobby-push-right" @onclick="@EnterDelete">Delete account</button>
                 </div>
             </div>
-            <div class="ui-row">
-                <label for="email" class="ui-col-4 ui-col-form-label">E-mail address</label>
-                <div class="ui-col-8">
-                    <input type="text" class="ui-form-control" id="email" @bind="@Email" maxlength="254">
-                </div>
-            </div>
-            <div class="ui-row">
-                <label for="password1" class="ui-col-4 ui-col-form-label">Password</label>
-                <div class="ui-col-8">
-                    <input type="password" class="ui-form-control" id="password1" autocomplete="new-password" @bind="@Password1">
-                </div>
-            </div>
-            <div class="ui-row ui-mb-1">
-                <label for="password2" class="ui-col-4 ui-col-form-label">Repeat password</label>
-                <div class="ui-col-8">
-                    <input type="password" class="ui-form-control" id="password2" autocomplete="new-password" @bind="@Password2">
-                </div>
-            </div>
-            <div class="ui-text-danger ui-small ui-mb-1">@ChangeUserInfoMessage</div>
-            <button class="ui-btn ui-btn-danger ui-btn-sm ui-me-1" @onclick="@EnterDelete">Delete account</button>
-            <button class="ui-btn ui-btn-secondary ui-btn-sm ui-me-1" @onclick="@CancelEdit">Cancel</button>
-            <CommandButton OnClick="@UpdateUserInfo" Small>Apply changes</CommandButton>
         }
         else
         {
-            <div class="ui-row">
-                <label for="playerName" class="ui-col-4 ui-col-form-label">Player name</label>
-                <div class="ui-col-8">
-                    <input type="text" readonly class="ui-form-control-plaintext" id="playerName" @bind="@PlayerName"
-                           style="font: normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif;">
-                </div>
-            </div>
-            <div class="ui-row">
-                <label for="email" class="ui-col-4 ui-col-form-label">E-mail address</label>
-                <div class="ui-col-8">
-                    <input type="text" readonly class="ui-form-control-plaintext" id="email" @bind="@Email">
-                </div>
-            </div>
-            <button class="ui-btn ui-btn-primary ui-me-1" @onclick="@EnterEdit">Change account info</button>
+            <dl class="lobby-details">
+                <dt>Username</dt>
+                <dd>@Client.UserName</dd>
+                <dt>E-mail</dt>
+                <dd>@Email</dd>
+            </dl>
+            <button type="button" class="ui-btn ui-btn-secondary ui-btn-sm" @onclick="@EnterEdit">Change account info</button>
         }
     </div>
-</div>
+</section>
 
-<div class="ui-card ui-mb-2 ui-shadow-lg ui-border-light" style="opacity:0.9;animation:fadeIn90 1s">
-    <div class="ui-card-header">About...</div>
-    <div class="ui-card-body">
-        <div class="ui-mb-1">Game version @Game.LatestVersion</div>
-        <div class="ui-mb-1">Developed by <a href="https://www.nullentropy.nl" target="_blank" style="opacity: 80%; color: white; text-decoration: none; font-family: OrthodoxHerbertarian, sans-serif; vertical-align: bottom;">Nullentropy</a></div>
-        <div>Use
-            <a class="ui-btn ui-btn-link ui-p-1" href="https://github.com/ronaldossendrijver/treachery.online/issues" target="_blank" title="Report a bug or suggest improvements">
-                <svg width="98" height="96" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg" style="width:16px;height:16px;vertical-align: text-top;">
+<section class="lobby-panel lobby-panel-about">
+    <div class="lobby-panel-body lobby-about">
+        <div>
+            <span>Version @Game.LatestVersion</span>
+            <span>Developed by <a class="lobby-nullentropy" href="https://www.nullentropy.nl" target="_blank">Nullentropy</a></span>
+        </div>
+        <div class="lobby-about-links">
+            <a class="lobby-link-btn" href="https://github.com/ronaldossendrijver/treachery.online/issues" target="_blank" title="Report a bug or suggest improvements">
+                <svg width="98" height="96" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg" class="lobby-svg-icon">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z" fill="white"/>
                 </svg>
+                Feedback &amp; bugs
             </a>
-            for feature requests or bug reports
-        </div>
-        <div>
-            <a href="https://ko-fi.com/N4N618W4XV" target="_blank"><img height="36" style="border:0;height:36px;" src="https://storage.ko-fi.com/cdn/kofi2.png?v=6" alt="Donate"/></a>
+            <a href="https://ko-fi.com/N4N618W4XV" target="_blank" title="Support treachery.online"><img class="lobby-kofi" src="https://storage.ko-fi.com/cdn/kofi2.png?v=6" alt="Buy me a coffee"/></a>
         </div>
     </div>
-</div>
-
+</section>
 @code {
 
     private OwnGamesComponentState State { get; set; } = OwnGamesComponentState.List;
@@ -473,6 +471,14 @@
         await Client.RequestObserveGame(gameId, password);
     }
     
+    private static RenderFragment TrashIcon => __builder =>
+    {
+        <svg class="lobby-svg-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+        </svg>
+    };
+
     private enum OwnGamesComponentState
     {
         List, Create, Schedule

@@ -1,0 +1,205 @@
+.login-card {
+    position: relative;
+    width: min(100%, 440px);
+    padding: 26px 28px 16px;
+    border: 1px solid rgba(193, 167, 108, 0.32);
+    border-radius: 18px;
+    background:
+        linear-gradient(160deg, rgba(48, 42, 34, 0.78), rgba(18, 17, 15, 0.86) 55%),
+        rgba(18, 17, 15, 0.8);
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.65),
+        0 0 0 1px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 236, 196, 0.08);
+    backdrop-filter: blur(14px) saturate(1.2);
+    color: var(--ivory);
+}
+
+.login-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 18% auto;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--spice), transparent);
+    opacity: 0.8;
+}
+
+.login-card-head { margin-bottom: 18px; text-align: center; }
+
+.login-kicker {
+    display: block;
+    color: var(--spice);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+}
+
+.login-card-head h2 {
+    margin: 6px 0 0;
+    color: var(--ivory);
+    font-family: "Copperplate", Georgia, serif;
+    font-size: 1.55rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 22px rgba(213, 138, 66, 0.35);
+}
+
+.login-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin-bottom: 18px;
+    padding: 4px;
+    border: 1px solid rgba(193, 167, 108, 0.22);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.login-tab {
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ivory-muted);
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.login-tab:hover { color: var(--ivory); }
+
+.login-tab.active {
+    background: linear-gradient(180deg, #c99a52, #9b6b31);
+    color: #1b140b;
+    box-shadow: 0 4px 14px rgba(213, 138, 66, 0.35), inset 0 1px 0 rgba(255, 238, 200, 0.4);
+}
+
+.login-form { display: grid; gap: 12px; animation: login-form-in 0.35s ease-out; }
+
+.login-field-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.login-field { display: grid; gap: 5px; margin: 0; }
+
+.login-field > span {
+    color: var(--ivory-muted);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.login-field input {
+    width: 100%;
+    min-width: 0;
+    padding: 11px 13px;
+    border: 1px solid rgba(193, 167, 108, 0.25);
+    border-radius: 10px;
+    background: rgba(8, 7, 6, 0.55);
+    color: var(--ivory);
+    font-size: 0.98rem;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.login-field input::placeholder { color: rgba(201, 192, 171, 0.42); }
+
+.login-field input:hover { border-color: rgba(193, 167, 108, 0.45); }
+
+.login-field input:focus {
+    outline: none;
+    border-color: var(--spice);
+    background: rgba(8, 7, 6, 0.75);
+    box-shadow: 0 0 0 3px rgba(213, 138, 66, 0.22);
+}
+
+.login-hint { margin: 0; color: var(--ivory-muted); font-size: 0.9rem; line-height: 1.45; }
+
+.login-error {
+    margin: 0;
+    padding: 8px 12px;
+    border: 1px solid rgba(214, 96, 74, 0.45);
+    border-radius: 8px;
+    background: rgba(117, 40, 28, 0.35);
+    color: #f2b4a6;
+    font-size: 0.86rem;
+}
+
+.login-primary {
+    position: relative;
+    overflow: hidden;
+    margin-top: 4px;
+    padding: 13px 18px;
+    border: 1px solid #e0b26b;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #dca25a, #a8692c);
+    color: #1b130a;
+    font-family: "Copperplate", Georgia, serif;
+    font-size: 1.02rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 10px 26px rgba(213, 138, 66, 0.32), inset 0 1px 0 rgba(255, 240, 208, 0.5);
+    transition: transform 0.15s, box-shadow 0.2s, filter 0.2s;
+}
+
+.login-primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255, 244, 220, 0.45) 50%, transparent 70%);
+    transform: translateX(-120%);
+    animation: login-sheen 4.5s 2.5s ease-in-out infinite;
+}
+
+.login-primary:hover { filter: brightness(1.08); box-shadow: 0 14px 34px rgba(213, 138, 66, 0.45), inset 0 1px 0 rgba(255, 240, 208, 0.5); transform: translateY(-1px); }
+
+.login-primary:active { transform: translateY(1px); }
+
+.login-primary:focus-visible { outline: 2px solid var(--ivory); outline-offset: 3px; }
+
+.login-links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 14px; }
+
+.login-link {
+    padding: 2px 0;
+    border: 0;
+    background: none;
+    color: var(--brass-bright);
+    font-size: 0.86rem;
+    cursor: pointer;
+    text-decoration: underline transparent;
+    text-underline-offset: 3px;
+    transition: color 0.2s, text-decoration-color 0.2s;
+}
+
+.login-link:hover, .login-link:focus-visible { color: var(--ivory); text-decoration-color: currentColor; outline: none; }
+
+.login-loading { display: grid; justify-items: center; gap: 6px; padding: 8px 0 18px; color: var(--ivory-muted); }
+
+.login-loading img { width: 200px; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.8)); }
+
+.login-card-foot {
+    margin-top: 18px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(193, 167, 108, 0.14);
+    color: rgba(201, 192, 171, 0.55);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-align: center;
+}
+
+@keyframes login-form-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+@keyframes login-sheen { 0%, 70% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+
+@media (max-width: 520px) {
+    .login-card { padding: 20px 18px 12px; border-radius: 16px; }
+    .login-card-head h2 { font-size: 1.3rem; }
+    .login-field-pair { grid-template-columns: 1fr; }
+    .login-field input { font-size: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .login-form, .login-primary::after { animation: none; }
+}

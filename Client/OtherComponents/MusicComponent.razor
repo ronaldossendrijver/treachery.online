@@ -37,6 +37,7 @@
     private float DesiredChatVolume { get; set; } = 0;
     private string CurrentSoundtrack { get; set; } = "";
     private float CurrentMusicVolume { get; set; } = -1;
+    private float CurrentUiSoundVolume { get; set; } = -1;
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,6 +46,12 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (Math.Abs(CurrentUiSoundVolume - DesiredEffectVolume) > 0.001f)
+        {
+            CurrentUiSoundVolume = DesiredEffectVolume;
+            await Browser.SetUiSoundVolume(DesiredEffectVolume);
+        }
+
         await UpdateMusicAndSound();
     }
 

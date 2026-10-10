@@ -1,0 +1,130 @@
+@inherits MapComponent
+
+<div @ref="Element" class="rail-inventory" role="group" aria-label="Card piles">
+    <div class="rail-card-piles">
+        @if (!Game.ResourceCardDeck!.IsEmpty)
+        {
+            var resourceCard = Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(Client.Player)
+                ? Client.CurrentSkin.GetImageUrl(Game.ResourceCardDeck.Top)
+                : Client.CurrentSkin.CardBack_ResourceCard_URL;
+            <RailCardPile Label="Spice Deck" Count="@Game.ResourceCardDeck.Items.Count" Src="@resourceCard" Popover="@IntelOfResourceCardPile()" />
+        }
+        @if (Game.LatestSpiceCardA != null)
+        {
+            <RailCardPile Label="Spice discard A" Count="@Game.ResourceCardDiscardPileA!.Items.Count" Src="@Client.CurrentSkin.GetImageUrl(Game.LatestSpiceCardA)" Popover="@IntelOfResourceDiscardPileA()" />
+        }
+        @if (Game.Applicable(Rule.IncreasedResourceFlow) && Game.LatestSpiceCardB != null)
+        {
+            <RailCardPile Label="Spice discard B" Count="@Game.ResourceCardDiscardPileB!.Items.Count" Src="@Client.CurrentSkin.GetImageUrl(Game.LatestSpiceCardB)" Popover="@IntelOfResourceDiscardPileB()" />
+        }
+        @if (Game is { SandTroutOccured: true, SandTrout: not null })
+        {
+            <RailCardPile Label="Sandtrout" Count="1" Src="@Client.CurrentSkin.GetImageUrl(Game.SandTrout)" Popover="@Client.CurrentSkin.GetPopup(Game.SandTrout)" />
+        }
+        <RailCardPile Label="Treachery deck" Count="@Game.TreacheryDeck!.Items.Count" Src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" Popover="@IntelOfTreacheryCardPile()" />
+        @if (!Game.TreacheryDiscardPile!.IsEmpty)
+        {
+            <RailCardPile Label="Treachery discard" Count="@Game.TreacheryDiscardPile.Items.Count" Src="@Client.CurrentSkin.GetImageUrl(Game.TreacheryDiscardPile.Top)" Popover="@IntelOfTreacheryDiscardPile()" />
+        }
+        @if (Game.WhiteCache.Count > 0)
+        {
+            <RailCardPile Label="Richese cards" Count="@Game.WhiteCache.Count" Src="@Client.CurrentSkin.CardBack_TreacheryCard_URL"
+                          BadgeImage="@Client.CurrentSkin.GetImageUrl(Faction.White)" Popover="@IntelOfWhiteCardPile()" />
+        }
+    </div>
+</div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await Browser.EnablePopovers(Element);
+        else
+            await Browser.RefreshPopovers(Element);
+    }
+
+    private string IntelOfTreacheryCardPile() =>
+        Client.CurrentSkin.Format("<h4>Treachery Cards: {0} on deck</h4>", Game.TreacheryDeck!.Items.Count);
+
+    private string IntelOfTreacheryDiscardPile()
+    {
+        var result = "";
+        if (Game.TreacheryDiscardPile is null) return result;
+
+        result += Client.CurrentSkin.Format("<h4>Discard pile: {0} cards</h4>", Game.TreacheryDiscardPile.Items.Count);
+        if (Client.Player is { } player && Game.AssistedNoteKeepingEnabled(player))
+        {
+            var known = Game.KnownCards(player);
+            result += "<div class=\"ui-row ui-row-cols-6 ui-mt-1\">";
+            foreach (var card in Game.TreacheryDiscardPile.Items)
+            {
+                var src = known.Contains(card) ? Client.CurrentSkin.GetImageUrl(card) : Client.CurrentSkin.CardBack_TreacheryCard_URL;
+                result += $"<img src=\"{src}\" class=\"ui-img-fluid ui-p-1\"/>";
+            }
+            result += "</div>";
+        }
+        else if (Game.TreacheryDiscardPile.Top != null)
+        {
+            result += Client.CurrentSkin.GetPopup(Game.TreacheryDiscardPile.Top);
+        }
+        return result;
+    }
+
+    private string GetCardImages<T>(IEnumerable<T> items)
+    {
+        var result = "<div class=\"ui-row ui-row-cols-6 ui-mt-1\">";
+        foreach (var card in items)
+        {
+            if (card != null)
+                result += $"<img src=\"{Client.CurrentSkin.GetImageUrl(card)}\" class=\"ui-img-fluid ui-p-1\"/>";
+        }
+        result += "</div>";
+        return result;
+    }
+
+    private string IntelOfWhiteCardPile()
+    {
+        var result = Client.CurrentSkin.Format("<h4>Richese cards: {0} on deck</h4>", Game.WhiteCache.Count);
+        if (Client.Faction == Faction.White)
+            result += GetCardImages(Game.WhiteCache);
+        return result;
+    }
+
+    private string IntelOfResourceCardPile()
+    {
+        var result = Client.CurrentSkin.Format("<h4>{0} Cards: {1} on deck</h4>", Concept.Resource, Game.ResourceCardDeck!.Items.Count);
+        if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(Client.Player) && Game.ResourceCardDeck.Top != null)
+        {
+            result += "<p>Top Card:</p>";
+            result += Client.CurrentSkin.GetPopup(Game.ResourceCardDeck.Top);
+        }
+        return result;
+    }
+
+    private string IntelOfResourceDiscardPileA()
+    {
+        var pileName = Game.Applicable(Rule.IncreasedResourceFlow) ? " A" : "";
+        var result = $"<h4>Discard pile{pileName}: {Game.ResourceCardDiscardPileA!.Items.Count} cards</h4>";
+        if (Game.LatestSpiceCardA != null)
+        {
+            if (Client.Player is { } player && Game.AssistedNoteKeepingEnabled(player))
+                result += GetCardImages(Game.ResourceCardDiscardPileA.Items);
+            else
+                result += Client.CurrentSkin.GetPopup(Game.LatestSpiceCardA);
+        }
+        return result;
+    }
+
+    private string IntelOfResourceDiscardPileB()
+    {
+        var result = Client.CurrentSkin.Format("<h4>Discard pile B: {0} cards</h4>", Game.ResourceCardDiscardPileB!.Items.Count);
+        if (Game.LatestSpiceCardB != null)
+        {
+            if (Client.Player is { } player && Game.AssistedNoteKeepingEnabled(player))
+                result += GetCardImages(Game.ResourceCardDiscardPileB.Items);
+            else
+                result += Client.CurrentSkin.GetPopup(Game.LatestSpiceCardB);
+        }
+        return result;
+    }
+}

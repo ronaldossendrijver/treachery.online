@@ -1,0 +1,19 @@
+@using Treachery.Client.GameEventComponents
+@inherits GameComponent
+
+@if (Client.Actions.Contains(typeof(AutomationConfigured)))
+{
+    <div class="ui-col ui-col-xs-auto ui-p-0">
+        <button class="ui-btn ui-btn-link ui-p-1" type="button"
+                data-dialog-target="#@Id" aria-haspopup="dialog"
+                aria-label="Manage automation" title="Manage automation">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M9.6 1.2a1.7 1.7 0 0 0-3.2 0l-.2.6a5.8 5.8 0 0 0-1 .6l-.6-.2a1.7 1.7 0 0 0-2 2.8l.4.5a5.8 5.8 0 0 0 0 1.2l-.4.5a1.7 1.7 0 0 0 2 2.8l.6-.2c.3.2.7.4 1 .6l.2.6a1.7 1.7 0 0 0 3.2 0l.2-.6c.4-.2.7-.4 1-.6l.6.2a1.7 1.7 0 0 0 2-2.8l-.4-.5a5.8 5.8 0 0 0 0-1.2l.4-.5a1.7 1.7 0 0 0-2-2.8l-.6.2c-.3-.2-.7-.4-1-.6zM8 10.2a2.2 2.2 0 1 1 0-4.4 2.2 2.2 0 0 1 0 4.4" />
+            </svg>
+        </button>
+    </div>
+
+    <ModalComponent Id="@Id" Title="Manage automation" Size="dialog-large" Scrolling="true">
+        <AutomationConfiguredComponent />
+    </ModalComponent>
+}

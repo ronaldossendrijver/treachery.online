@@ -53,7 +53,7 @@
     @foreach (var location in Game.Map.Locations(false).Where(l => l != Game.Map.HiddenMobileStronghold && l is not DiscoveredLocation)) {
 
         <g clip-path="url(#@SectorClipName(location.Sector))">
-            <g
+            <g class="planet-location"
                 fill="@LocationColor(location)"
                 cursor="pointer" pointer-events="all" @onclick=@(e => OnClick(e, location))
                 data-game-popover="@Intel(location)" tabindex="0">
