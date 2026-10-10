@@ -12,14 +12,14 @@
     var messages = MessagesInOrder.ToList();
     var latestMessages = messages.OrderByDescending(message => message.Nr).Take(5).OrderBy(message => message.Nr).ToList();
 
-    <section class="map-report-panel" aria-label="@($"{Client.CurrentSkin.Describe(Game.CurrentReport.About)} report")">
+    <section class="map-report-panel @(_isCollapsed ? "is-collapsed" : "")" aria-label="@($"{Client.CurrentSkin.Describe(Game.CurrentReport.About)} report")">
         <header class="map-report-header">
-            <button class="map-report-toggle" type="button" aria-expanded="@_isExpanded" @onclick="ToggleExpanded">
+            <button class="map-report-toggle" type="button" aria-expanded="@(!_isCollapsed && _isExpanded)" @onclick="ToggleExpanded">
                 <span class="map-report-title">@Client.CurrentSkin.Describe(Game.CurrentReport.About) report</span>
                 <span class="map-report-count" aria-label="@($"{messages.Count} report entries")">@messages.Count</span>
                 <span class="map-report-chevron" aria-hidden="true">@(_isExpanded ? "⌄" : "⌃")</span>
             </button>
-            @if (_isExpanded && messages.Count > 1)
+            @if (!_isCollapsed && _isExpanded && messages.Count > 1)
             {
                 <button class="map-report-sort" type="button" aria-label="@(SortDescending ? "Sort report oldest first" : "Sort report newest first")" title="@(SortDescending ? "Oldest first" : "Newest first")" @onclick="ChangeSortOrder">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
@@ -34,9 +34,24 @@
                     </svg>
                 </button>
             }
+            <button class="map-report-collapse" type="button" aria-label="@(_isCollapsed ? "Show report" : "Hide report")" title="@(_isCollapsed ? "Show report" : "Hide report")" aria-expanded="@(!_isCollapsed)" @onclick="ToggleCollapsed">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    @if (_isCollapsed)
+                    {
+                        <path d="M3 10l5-5 5 5"/>
+                    }
+                    else
+                    {
+                        <path d="M3 6l5 5 5-5"/>
+                    }
+                </svg>
+            </button>
         </header>
 
-        @if (!_isExpanded)
+        @if (_isCollapsed)
+        {
+        }
+        else if (!_isExpanded)
         {
             <div class="map-report-latest" aria-label="Latest report entries">
                 @if (latestMessages.Count > 0)
@@ -108,5 +123,18 @@
         SortDescending = !SortDescending;
     }
 
-    private void ToggleExpanded() => _isExpanded = !_isExpanded;
+    private bool _isCollapsed;
+
+    private void ToggleExpanded()
+    {
+        if (_isCollapsed)
+        {
+            _isCollapsed = false;
+            return;
+        }
+
+        _isExpanded = !_isExpanded;
+    }
+
+    private void ToggleCollapsed() => _isCollapsed = !_isCollapsed;
 }

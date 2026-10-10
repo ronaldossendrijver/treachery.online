@@ -17,6 +17,7 @@
                     <img src="@token.Src" alt="" draggable="false" />
                 </button>
             }
+            <button type="button" class="tanks-pile-summary" aria-label="@($"Revival tanks: {pile.Summary}")" data-game-popover="@pile.SummaryPopover"></button>
         </div>
         <div class="tanks-pile-caption">
             <span>Tanks</span>
@@ -39,7 +40,7 @@
 
     private sealed record PileToken(int Index, double X, double Y, double Rotation, int Z, string Src, string Label, string Popover, bool IsLeader, bool Focusable, string Color);
 
-    private sealed record PileLayout(IReadOnlyList<PileToken> Tokens, double Width, double Height, int PieceCount, string Summary);
+    private sealed record PileLayout(IReadOnlyList<PileToken> Tokens, double Width, double Height, int PieceCount, string Summary, string SummaryPopover);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -57,6 +58,7 @@
         var leaders = new List<PileItem>();
         var forceGroups = new List<(PileItem Item, int Count)>();
         var summaries = new List<string>();
+        var summaryRows = new List<string>();
         var pieceCount = 0;
 
         foreach (var player in Game.Players)
@@ -65,6 +67,7 @@
             var color = Client.CurrentSkin.GetFactionColor(faction);
             var factionName = Client.CurrentSkin.Describe(faction);
             var parts = new List<string>();
+            var leaderNames = new List<string>();
 
             var forcesPopover = player.ForcesKilled + player.SpecialForcesKilled > 0 ? ForcePopover(faction, player.ForcesKilled, player.SpecialForcesKilled) : string.Empty;
 
@@ -96,19 +99,24 @@
                 var popover = hidden ? TextPopover(name) : LeaderPopover(name, Client.CurrentSkin.GetPopup(leader, Game));
                 leaders.Add(new PileItem($"{faction}-l-{leader.Id}", src, $"{name} in the tanks", popover, true, true, color));
                 parts.Add(name);
+                leaderNames.Add(name);
             }
 
             if (faction == Faction.Green && !Game.MessiahIsAlive)
             {
                 leaders.Add(new PileItem("messiah", Client.CurrentSkin.Messiah_URL, "Messiah in the tanks", TextPopover(Client.CurrentSkin.Describe(Concept.Messiah)), true, true, color));
                 parts.Add("Messiah");
+                leaderNames.Add("Messiah");
             }
 
             pieceCount += player.ForcesKilled + player.SpecialForcesKilled + player.Leaders.Count(leader => !Game.IsAlive(leader))
                           + (faction == Faction.Green && !Game.MessiahIsAlive ? 1 : 0);
 
             if (parts.Count > 0)
+            {
                 summaries.Add($"{factionName}: {string.Join(", ", parts)}");
+                summaryRows.Add(SummaryRow(faction, player.ForcesKilled, player.SpecialForcesKilled, leaderNames));
+            }
         }
 
         var forces = ForceTokens(forceGroups);
@@ -146,7 +154,10 @@
         var width = Math.Max(78, 2 * maxX + 8);
         var height = Math.Max(70, 2 * maxY + 8);
         var summary = summaries.Count == 0 ? "empty" : string.Join("; ", summaries);
-        return new PileLayout(tokens, width, height, pieceCount, summary);
+        var summaryPopover = summaryRows.Count == 0
+            ? TextPopover("The tanks are empty")
+            : $"<div class='tanks-summary'><div class='tanks-summary-title'>Revival tanks</div>{string.Join("", summaryRows)}</div>";
+        return new PileLayout(tokens, width, height, pieceCount, summary, summaryPopover);
     }
 
     private static List<PileItem> ForceTokens(List<(PileItem Item, int Count)> groups)
@@ -212,6 +223,20 @@
             rows.Add(ForceRow(Client.CurrentSkin.GetFactionSpecialForceImageUrl(faction), specialForces, "special " + Plural(specialForces, "force")));
 
         return $"<div style='padding:2px 4px'><div style='font-weight:800;margin-bottom:6px'>{name} in the tanks</div><div style='display:grid;gap:6px'>{string.Join("", rows)}</div></div>";
+    }
+
+    private string SummaryRow(Faction faction, int forces, int specialForces, List<string> leaderNames)
+    {
+        var name = System.Net.WebUtility.HtmlEncode(Client.CurrentSkin.Describe(faction));
+        var counts = new List<string>();
+        if (forces > 0)
+            counts.Add($"<span class='tanks-summary-count'><img src='{Client.CurrentSkin.GetFactionForceImageUrl(faction)}' alt=''/>{forces}</span>");
+        if (specialForces > 0)
+            counts.Add($"<span class='tanks-summary-count'><img src='{Client.CurrentSkin.GetFactionSpecialForceImageUrl(faction)}' alt=''/>{specialForces}</span>");
+        var leaders = leaderNames.Count == 0 ? string.Empty
+            : $"<div class='tanks-summary-leaders'>{string.Join(", ", leaderNames.Select(System.Net.WebUtility.HtmlEncode))}</div>";
+
+        return $"<div class='tanks-summary-row'><img class='tanks-summary-logo' src='{Client.CurrentSkin.GetImageUrl(faction)}' alt=''/><div><div class='tanks-summary-head'><strong>{name}</strong>{string.Join("", counts)}</div>{leaders}</div></div>";
     }
 
     private static string ForceRow(string src, int amount, string kind) =>

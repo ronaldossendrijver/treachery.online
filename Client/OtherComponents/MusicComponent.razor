@@ -10,19 +10,18 @@
  
 @if (Visible)
 {
-    <div class="ui-card ui-p-1 ui-mb-2 ui-small">
-        <div class="ui-card-body">
-            
-            <label for="musicVolume" class="ui-form-label">&nbsp;Music volume</label>
-            <input id="musicVolume" class="ui-form-range" type="range" min="0" max="100" step="1" @bind="@DesiredMusicVolume" @bind:event="oninput" @onchange="@AdjustVolume"/>
+    <div class="volume-settings ui-small">
+        <label for="musicVolume">Music</label>
+        <input id="musicVolume" class="ui-form-range" type="range" min="0" max="100" step="1" @bind="@DesiredMusicVolume" @bind:event="oninput" @onchange="@AdjustVolume"/>
+        <output for="musicVolume">@Math.Round(DesiredMusicVolume)</output>
 
-            <label for="effectVolume" class="ui-form-label">&nbsp;Sound effects volume</label>
-            <input id="effectVolume" class="ui-form-range" type="range" min="0" max="100" step="1" @bind="@DesiredEffectVolume" @bind:event="oninput" @onchange="@AdjustVolume" />
-                        
-            <label for="chatVolume" class="ui-form-label">&nbsp;Chat notification volume</label>
-            <input id="chatVolume" class="ui-form-range" type="range" min="0" max="100" step="1" @bind="@DesiredChatVolume" @bind:event="oninput" @onchange="@AdjustVolume" />
-                        
-        </div>
+        <label for="effectVolume">Sound effects</label>
+        <input id="effectVolume" class="ui-form-range" type="range" min="0" max="100" step="1" @bind="@DesiredEffectVolume" @bind:event="oninput" @onchange="@AdjustVolume" />
+        <output for="effectVolume">@Math.Round(DesiredEffectVolume)</output>
+
+        <label for="chatVolume">Chat notifications</label>
+        <input id="chatVolume" class="ui-form-range" type="range" min="0" max="100" step="1" @bind="@DesiredChatVolume" @bind:event="oninput" @onchange="@AdjustVolume" />
+        <output for="chatVolume">@Math.Round(DesiredChatVolume)</output>
     </div>
 
 }

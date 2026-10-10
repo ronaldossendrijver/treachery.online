@@ -104,18 +104,19 @@
 
                 foreach (var b in Game.BattalionsIn(homeworld)) {
 
+                    var reservesTooltip = ReservesTooltip(b);
                     var horizontalSpaceRequired = (b is { AmountOfForces: > 0, AmountOfSpecialForces: > 0 } ? 2 : 1) * Client.CurrentSkin.FORCETOKEN_RADIUS;
                     var reservesX = homeworldXy.X + 0.5f * (2 * Client.CurrentSkin.PlayerTokenRadius - horizontalSpaceRequired);
 
                     if (b.AmountOfForces > 0)
                     {
-                        forcesToDraw.Add(new MapForce { X = reservesX, Y = reservesY, Special = false, Amount = b.AmountOfForces, Faction = b.Faction });
+                        forcesToDraw.Add(new MapForce { X = reservesX, Y = reservesY, Special = false, Amount = b.AmountOfForces, Faction = b.Faction, Tooltip = reservesTooltip });
                         reservesX += Client.CurrentSkin.FORCETOKEN_RADIUS;
                     }
 
                     if (b.AmountOfSpecialForces > 0)
                     {
-                        forcesToDraw.Add(new MapForce { X = reservesX, Y = reservesY, Special = true, Amount = b.AmountOfSpecialForces, Faction = b.Faction });
+                        forcesToDraw.Add(new MapForce { X = reservesX, Y = reservesY, Special = true, Amount = b.AmountOfSpecialForces, Faction = b.Faction, Tooltip = reservesTooltip });
                     }
 
                     reservesY += Client.CurrentSkin.FORCETOKEN_RADIUS;
@@ -244,7 +245,7 @@
 
             foreach (var f in forcesToDraw)
             {
-                <MapForce X=@f.X Y=@f.Y Special=@f.Special Amount=@f.Amount Faction=@f.Faction Threatened=@false ShowPopover="true" Font="@Client.CurrentSkin.SKILL_FONT" Diameter="@Client.CurrentSkin.FORCETOKEN_RADIUS" />
+                <MapForce X=@f.X Y=@f.Y Special=@f.Special Amount=@f.Amount Faction=@f.Faction Threatened=@false Tooltip="@f.Tooltip" Font="@Client.CurrentSkin.SKILL_FONT" Diameter="@Client.CurrentSkin.FORCETOKEN_RADIUS" />
             }
 
             <MapText ToShow="@p.Name"
@@ -271,6 +272,17 @@
         return Client.InGame && _situation.RequiresUpdate(Client);
     }
 
+    private string ReservesTooltip(Battalion b)
+    {
+        var skin = Client.CurrentSkin;
+        var forceName = skin.ForceName_STR.TryGetValue(b.Faction, out var fn) ? fn : "forces";
+        var specialName = skin.SpecialForceName_STR.TryGetValue(b.Faction, out var sn) && sn != "-" ? sn : "special forces";
+        var parts = new List<string>();
+        if (b.AmountOfForces > 0 || b.AmountOfSpecialForces == 0) parts.Add($"{b.AmountOfForces} {forceName}");
+        if (b.AmountOfSpecialForces > 0) parts.Add($"{b.AmountOfSpecialForces} {specialName}");
+        return $"{skin.Describe(b.Faction)} reserves: {string.Join(", ", parts)}";
+    }
+
     private async Task OnClick(MouseEventArgs e, Location l)
     {
         await OnLocationClick.InvokeAsync(new LocationEventArgs { Location = l, AltKey = e.AltKey, CtrlKey = e.CtrlKey, ShiftKey = e.ShiftKey });
@@ -283,6 +295,7 @@
         internal bool Special;
         internal int Amount;
         internal Faction Faction;
+        internal string? Tooltip;
     }
 
     private PointD Pos(float positionOnCircle, float radiusOfToken = 0) {

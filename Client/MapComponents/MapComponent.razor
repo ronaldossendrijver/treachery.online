@@ -108,154 +108,145 @@
 
     protected string Intel(Location intelligenceLocation)
     {
-        var result = "<div style='width:300px'>";
+        var skin = Client.CurrentSkin;
+        var territory = intelligenceLocation.Territory;
+        var isPolarSink = Game.Map.PolarSink.Equals(intelligenceLocation);
+        var isStronghold = territory.IsStronghold || Game.IsSpecialStronghold(territory);
+        var hasOwner = Game.StrongholdOwnership.TryGetValue(intelligenceLocation, out var owner);
 
-        if (Game.StrongholdOwnership.TryGetValue(intelligenceLocation, out var owner))
+        var kind = intelligenceLocation is DiscoveredLocation ? "Discovery"
+            : isPolarSink ? "Safe haven"
+            : isStronghold ? "Stronghold"
+            : territory.IsProtectedFromWorm ? "Rock"
+            : "Sand";
+
+        var result = "<div class='loc-intel'><div class='loc-intel-head'><div class='loc-intel-heading'>";
+        result += $"<span class='loc-intel-kicker'>{kind}{(intelligenceLocation.Orientation != "" ? " · " + intelligenceLocation.Orientation + " sector" : "")}</span>";
+        result += $"<h5 class='loc-intel-title'>{skin.Describe(territory)}</h5></div>";
+
+        if (hasOwner)
         {
-            result += Client.CurrentSkin.GetPopup(intelligenceLocation.Advantage, owner);
+            result += $"<img class='loc-intel-owner' src='{skin.GetImageUrl(owner)}' alt='' title='{skin.Format("Held by {0}", owner)}'/>";
         }
-        else
+
+        result += "</div>";
+
+        if (hasOwner)
         {
-            result += Client.CurrentSkin.Format("<h5>{0}</h5>", Client.CurrentSkin.Describe(intelligenceLocation.Territory));
-            if (intelligenceLocation.Orientation != "")
-            {
-                result += "<div class='ui-mt-0 ui-mb-2'><strong>Sector: " + intelligenceLocation.Orientation + "</strong></div>";
-            }
+            result += $"<img class='loc-intel-advantage' src='{skin.GetImageUrl(intelligenceLocation.Advantage)}' alt=''/>";
         }
 
-        if (Client.CurrentSkin.ShowVerboseToolipsOnMap)
+        if (skin.ShowVerboseToolipsOnMap)
         {
-            if (Game.Map.PolarSink.Equals(intelligenceLocation))
-            {
-                result += Client.CurrentSkin.Format("<p>Safe haven: no battles are fought here.</p>");
-            }
+            result += "<div class='loc-intel-chips'>";
 
-            if (intelligenceLocation.Territory.IsStronghold || Game.IsSpecialStronghold(intelligenceLocation.Territory))
-            {
-                result += Client.CurrentSkin.Format("<p>Yields a victory point at end of turn.</p>");
-            }
+            if (intelligenceLocation.Sector == Game.SectorInStorm)
+                result += Chip("danger", "In storm");
+
+            if (isPolarSink)
+                result += Chip("good", "No battles");
+
+            if (isStronghold)
+                result += Chip("accent", "Victory point");
+
+            result += territory.IsProtectedFromWorm
+                ? Chip("good", skin.Format("Safe from {0}", Concept.Monster))
+                : Chip("bad", skin.Format("Exposed to {0}", Concept.Monster));
+
+            result += Game.IsProtectedFromStorm(intelligenceLocation)
+                ? Chip("good", "Safe from storm")
+                : Chip("bad", "Exposed to storm");
+
+            if (intelligenceLocation.SpiceBlowAmount > 0)
+                result += Chip("spice", skin.Format("{0} blow: {1}", Concept.Resource, intelligenceLocation.SpiceBlowAmount));
+
+            result += "</div>";
+
+            var notes = new List<string>();
 
             if (intelligenceLocation is DiscoveredLocation dl)
-            {
-                result += Client.CurrentSkin.Format("<p>{0}.</p>", Client.CurrentSkin.GetDiscoveryTokenDescription(dl.Discovery));
-            }
+                notes.Add(skin.Format("{0}.", skin.GetDiscoveryTokenDescription(dl.Discovery)));
 
-            if (intelligenceLocation.Territory == Game.AtomicsAftermath)
-            {
-                result += Client.CurrentSkin.Format("<p>ATOMICS AFTERMATH - No shipping here.</p>");
-            }
+            if (territory == Game.AtomicsAftermath)
+                notes.Add("<strong>Atomics aftermath:</strong> no shipping here.");
 
             if (Equals(intelligenceLocation, Game.Map.Arrakeen) || Equals(intelligenceLocation, Game.Map.Carthag))
             {
-                result += Client.CurrentSkin.Format("<p><strong>Harvesters: </strong>when occupied, grants a {0} collection rate of 3-per-force.</p>", Concept.Resource);
-                result += Client.CurrentSkin.Format("<p><strong>Ornithopters: </strong>when occupied, your forces can move up to 3 territories.</p>", Concept.Resource);
+                notes.Add(skin.Format("<strong>Harvesters:</strong> when occupied, grants a {0} collection rate of 3-per-force.", Concept.Resource));
+                notes.Add("<strong>Ornithopters:</strong> when occupied, your forces can move up to 3 territories.");
             }
 
-            if (Game.Applicable(Rule.IncreasedResourceFlow))
+            if (Game.Applicable(Rule.IncreasedResourceFlow) &&
+                (Equals(intelligenceLocation, Game.Map.Arrakeen) || Equals(intelligenceLocation, Game.Map.Carthag) || Equals(intelligenceLocation, Game.Map.TueksSietch)))
             {
-                if (Equals(intelligenceLocation, Game.Map.Arrakeen) || Equals(intelligenceLocation, Game.Map.Carthag) || Equals(intelligenceLocation, Game.Map.TueksSietch))
-                {
-                    var bonus = Equals(intelligenceLocation, Game.Map.Arrakeen) || Equals(intelligenceLocation, Game.Map.Carthag) ? 2 : 1;
-                    result += Client.CurrentSkin.Format("<p>Yields <strong>{0} {1}</strong> at end of turn when occupied.</p>", bonus, Concept.Resource);
-                }
+                var bonus = Equals(intelligenceLocation, Game.Map.TueksSietch) ? 1 : 2;
+                notes.Add(skin.Format("Yields <strong>{0} {1}</strong> at end of turn when occupied.", bonus, Concept.Resource));
             }
 
-            result += Client.CurrentSkin.Format("<p>{0} from {1}.</p>", ProtectedFromMonsterText(intelligenceLocation), Concept.Monster);
-            result += Client.CurrentSkin.Format("<p>{0} from Storms.</p>", ProtectedFromStormText(intelligenceLocation));
-
-            if (intelligenceLocation.Sector == Game.SectorInStorm)
-            {
-                result += "<p>Currently in Storm.</p>";
-            }
-
-            if (intelligenceLocation.SpiceBlowAmount > 0)
-            {
-                result += Client.CurrentSkin.Format("<p>May contain <strong>{0} {1}</strong> after {2}.</p>", intelligenceLocation.SpiceBlowAmount, Concept.Resource, MainPhase.Blow);
-            }
+            if (notes.Count > 0)
+                result += "<ul class='loc-intel-notes'>" + string.Concat(notes.Select(n => $"<li>{n}</li>")) + "</ul>";
         }
 
         result += SpiceAndForceAndTokenInfo(intelligenceLocation);
-
         result += "</div>";
 
         return result;
     }
 
+    private static string Chip(string tone, string text) => $"<span class='loc-intel-chip loc-intel-chip-{tone}'>{text}</span>";
+
+    private static string Occupant(string src, string? amount = null, bool large = false, string extraClass = "") =>
+        $"<span class='loc-intel-occupant{(large ? " loc-intel-occupant-leader" : "")} {extraClass}'><img src='{src}' alt=''/>{(amount != null ? $"<strong>{amount}</strong>" : "")}</span>";
+
     private string SpiceAndForceAndTokenInfo(Location intelligenceLocation)
     {
         var result = "";
 
-        result += "<div class=\"ui-row ui-m-0 ui-bg-dark ui-d-flex ui-justify-content-center\">";
-
-        if (Game.ResourcesOnPlanet.ContainsKey(intelligenceLocation))
+        if (Game.ResourcesOnPlanet.TryGetValue(intelligenceLocation, out var resources))
         {
-            result += string.Format("<div class=\"ui-col ui-col-auto\"><img class=\"ui-img-fluid ui-m-0 ui-p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
-                Client.CurrentSkin.Harvester_URL,
-                Game.ResourcesOnPlanet[intelligenceLocation]);
+            result += Occupant(Client.CurrentSkin.Harvester_URL, resources.ToString());
         }
 
         if (Game.ForcesOnPlanetExcludingEmptyLocations().ContainsKey(intelligenceLocation))
         {
             foreach (var b in Game.BattalionsIn(intelligenceLocation))
             {
-                var p = Game.GetPlayer(b.Faction)!;
-                if (b.AmountOfSpecialForces > 0 || b.AmountOfForces > 0)
+                if (b.AmountOfForces > 0)
                 {
-                    if (b.AmountOfForces > 0)
-                    {
-                        result += string.Format("<div class=\"ui-col ui-col-auto\"><img class=\"ui-img-fluid ui-m-0 ui-p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
-                            Client.CurrentSkin.GetFactionForceImageUrl(p.Faction),
-                            b.AmountOfForces);
-                    }
+                    result += Occupant(Client.CurrentSkin.GetFactionForceImageUrl(b.Faction), b.AmountOfForces.ToString());
+                }
 
-                    if (b.AmountOfSpecialForces > 0)
-                    {
-                        result += string.Format("<div class=\"ui-col ui-col-auto\"><img class=\"ui-img-fluid ui-m-0 ui-p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
-                            Client.CurrentSkin.GetFactionSpecialForceImageUrl(p.Faction),
-                            b.Faction == Faction.White && Client.Faction != Faction.White ? "?" : "" + (b.Faction == Faction.White ? Game.CurrentNoFieldValue : b.AmountOfSpecialForces));
-                    }
+                if (b.AmountOfSpecialForces > 0)
+                {
+                    var amount = b.Faction == Faction.White && Client.Faction != Faction.White ? "?" : (b.Faction == Faction.White ? Game.CurrentNoFieldValue : b.AmountOfSpecialForces).ToString();
+                    result += Occupant(Client.CurrentSkin.GetFactionSpecialForceImageUrl(b.Faction), amount);
                 }
             }
         }
 
         if (Game.TerrorIn(intelligenceLocation.Territory).Any())
         {
-            result += string.Format("<div class=\"ui-col ui-col-auto\"><img class=\"ui-img-fluid ui-m-0 ui-p-0\" width=\"32\" height=\"32\" src=\"{0}\" style=\"filter:hue-rotate(180deg);\" /><strong>&nbsp;{1}</strong></div>",
-                Client.CurrentSkin.GetImageUrl(Faction.Cyan),
-                Game.TerrorIn(intelligenceLocation.Territory).Count());
+            result += Occupant(Client.CurrentSkin.GetImageUrl(Faction.Cyan), Game.TerrorIn(intelligenceLocation.Territory).Count().ToString(), extraClass: "loc-intel-terror");
         }
 
         var ambassador = Game.AmbassadorIn(intelligenceLocation.Territory);
         if (ambassador != Ambassador.None)
         {
-            result += $"<div class=\"ui-col ui-col-auto\"><img class=\"ui-img-fluid ui-m-0 ui-p-0\" width=\"32\" height=\"32\" src=\"{Client.CurrentSkin.GetImageUrl(ambassador)}\" /><strong></div>";
+            result += Occupant(Client.CurrentSkin.GetImageUrl(ambassador));
         }
 
         if (Game.DiscoveriesOnPlanet.TryGetValue(intelligenceLocation, out var discovery))
         {
-            result += $"<div class=\"ui-col ui-col-auto\"><img class=\"ui-img-fluid ui-m-0 ui-p-0\" width=\"32\" height=\"32\" src=\"{Client.CurrentSkin.GetImageUrl(discovery.TokenType)}\" /></div>";
+            result += Occupant(Client.CurrentSkin.GetImageUrl(discovery.TokenType));
         }
 
         foreach (var hero in Game.LeaderState.Where(state => state.Value.Alive && state.Value.CurrentTerritory == intelligenceLocation.Territory).Select(state => state.Key))
         {
-            result += $"<div class=\"ui-col ui-col-auto\"><img class=\"ui-img-fluid ui-m-0 ui-p-0\" width=\"64\" height=\"64\" src=\"{Client.CurrentSkin.GetImageUrl(hero)}\" /></div>";
+            result += Occupant(Client.CurrentSkin.GetImageUrl(hero), large: true);
         }
 
-        result += "</div>";
-
-        return result;
+        return result == "" ? "" : $"<div class='loc-intel-occupants'>{result}</div>";
     }
-
-    private static string ProtectedFromMonsterText(Location l)
-    {
-        return l.Territory.IsProtectedFromWorm ? "Protected" : "NOT protected";
-    }
-
-    private string ProtectedFromStormText(Location l)
-    {
-        return Game.IsProtectedFromStorm(l) ? "Protected" : "NOT protected";
-    }
-
     protected ElementReference Element;
     
     public void Dispose()

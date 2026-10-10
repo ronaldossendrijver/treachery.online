@@ -8,7 +8,7 @@
 *@
 @inherits GameEventComponent<EndPhase>
 
-<div class="ui-card ui-p-0 ui-mb-2 game-status-panel">
+<div class="ui-card ui-p-0 ui-mb-2 game-status-panel @(Client.Status?.WaitingForMe(Player, Client.IsHost) == true ? "is-mine" : "")">
 
     <div class="ui-card-body ui-bg-transparent ui-border-bottom-0 game-status-panel-body">
 
@@ -16,10 +16,10 @@
 
         if (Client.Status.TimedEvent != null)
         {
-            <div style="position:absolute;left:5px;top:0;color:@TimerColor(Client.Status.WaitingForMe(Player, Client.IsHost));font-weight:bolder;">@TimerText(Client.Status.TimedEvent)</div>
+            <div class="game-status-clock" aria-label="Time elapsed">@TimerText(Client.Status.TimedEvent)</div>
         }
 
-        <div class="ui-text-dark ui-fw-bold ui-text-center game-status-message" style="@StatusStyle">
+        <div class="ui-text-center game-status-message">
             <ExpressionComponent Game=Game Expression=@Client.Status.GetMessage(Client.Player!, Client.IsHost).Expression Size="20"/>
         </div>
 
@@ -120,8 +120,6 @@
 
     protected override EndPhase ConfirmedResult => new(Game, Faction);
 
-    private string StatusStyle => Client.Status!.WaitingForMe(Player, Client.IsHost) ? Support.TextBorder(1, "#FF000016") : "";
-
     private string TimerText(GameEvent? timedEvent)
     {
         if (timedEvent == null) return string.Empty;
@@ -141,11 +139,6 @@
         }
 
         return result;
-    }
-
-    private string TimerColor(bool hasTurn)
-    {
-        return hasTurn ? "red" : "black";
     }
 
     private int TimerStepUp

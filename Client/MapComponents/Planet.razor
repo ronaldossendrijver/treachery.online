@@ -63,6 +63,33 @@
         </g>
     }
 
+    <!-- Storm clouds -->
+    @if (Game.SectorInStorm >= 0)
+    {
+        <g class="storm-clouds" @key="@Game.SectorInStorm" aria-hidden="true">
+            <defs>
+                <filter id="planetStormEdge" x="-25%" y="-25%" width="150%" height="150%">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="5" result="edgeNoise"/>
+                    <feDisplacementMap in="SourceGraphic" in2="edgeNoise" scale="26" xChannelSelector="R" yChannelSelector="G" result="ragged"/>
+                    <feGaussianBlur in="ragged" stdDeviation="5"/>
+                </filter>
+                <mask id="planetStormMask" maskUnits="userSpaceOnUse" x="0" y="0" width="@Client.CurrentSkin.MapDimensions.X" height="@Client.CurrentSkin.MapDimensions.Y">
+                    <path d="@StormWedge(Game.SectorInStorm)" fill="white" filter="url(#planetStormEdge)"/>
+                    <path d="@StormWedge(Game.SectorInStorm, 0, 0.98)" fill="white"/>
+                </mask>
+            </defs>
+            <g mask="url(#planetStormMask)">
+                <path class="storm-veil" d="@StormWedge(Game.SectorInStorm)"/>
+                <g class="storm-swirl storm-swirl-slow" style="@StormOrigin">
+                    <image href="art/storm-clouds.svg?v=2" x="@Round(CenterX - CloudSize * 0.7)" y="@Round(CenterY - CloudSize * 0.7)" width="@Round(CloudSize * 1.4)" height="@Round(CloudSize * 1.4)" opacity="0.8" preserveAspectRatio="none"/>
+                </g>
+                <g class="storm-swirl storm-swirl-fast" style="@StormOrigin">
+                    <image href="art/storm-clouds.svg?v=2" x="@Round(CenterX - CloudSize / 2)" y="@Round(CenterY - CloudSize / 2)" width="@Round(CloudSize)" height="@Round(CloudSize)" opacity="0.95" preserveAspectRatio="none"/>
+                </g>
+            </g>
+        </g>
+    }
+
 </svg>
 
 
@@ -91,11 +118,6 @@
     }
 
     private string LocationColor(Location l) {
-
-        if (Game.SectorInStorm >= 0 && l.Sector == Game.SectorInStorm)
-        {
-            return Client.CurrentSkin.STORM_OVERLAY_COLOR;
-        }
 
         if (Game.AtomicsAftermath == l.Territory)
         {
@@ -141,6 +163,33 @@
     private double ScaleX => 563f / Client.CurrentSkin.MapDimensions.X;
 
     private double ScaleY => 626f / Client.CurrentSkin.MapDimensions.Y;
+
+    private double CenterX => ScaleX * Client.CurrentSkin.PlanetCenter.X;
+
+    private double CenterY => ScaleY * Client.CurrentSkin.PlanetCenter.Y;
+
+    // Large enough that the rotating square texture always covers the storm wedge.
+    private double CloudSize => 2.3 * ScaleX * Client.CurrentSkin.PlanetRadius;
+
+    private string StormOrigin => FormattableString.Invariant($"transform-origin:{Round(CenterX)}px {Round(CenterY)}px");
+
+    // The storm sector widened slightly so the clouds creep over its borders.
+    // The storm sector, widened slightly so the clouds creep over its borders. The apex is pulled back
+    // behind the planet center so the ragged edge filter does not erode the narrow tip of the sector.
+    private string StormWedge(int sector, double spreadDegrees = 2.5, double radiusFactor = 1.05)
+    {
+        var radius = radiusFactor * Client.CurrentSkin.PlanetRadius;
+        var spread = spreadDegrees * Math.PI / 180;
+        var start = 2 * Math.PI * (6 - sector) / Map.NumberOfSectors + spread;
+        var end = 2 * Math.PI * (5 - sector) / Map.NumberOfSectors - spread;
+        var apexBack = spreadDegrees > 0 ? 0.08 * Client.CurrentSkin.PlanetRadius : 0;
+        var mid = (start + end) / 2;
+        string Point(double angle, double r) => FormattableString.Invariant(
+            $"{Round(ScaleX * (Math.Cos(angle) * r + Client.CurrentSkin.PlanetCenter.X))},{Round(ScaleY * (Math.Sin(angle) * r + Client.CurrentSkin.PlanetCenter.Y))}");
+
+        return FormattableString.Invariant(
+            $"M {Point(mid + Math.PI, apexBack)} L {Point(start, radius)} A {Round(ScaleX * radius)} {Round(ScaleY * radius)} 0 0 0 {Point(end, radius)} Z");
+    }
 
     private string PointerEvents => OnLocationClick.HasDelegate ? "all" : "none";
 

@@ -10,7 +10,7 @@
 
     <base href="/" />
 
-    <link rel="stylesheet" href="css/app.css?v=192" />
+    <link rel="stylesheet" href="css/app.css?v=197" />
 
     <link rel="stylesheet" href="Treachery.Client.styles.css?v=189">
 
@@ -214,7 +214,7 @@
         let currentSounds = new Map();
         function isExpectedMediaFetchAbort(error) {
             const message = error && error.message || String(error);
-            return /fetching process for the media resource was aborted by the user agent at the user[’']s request/i.test(message);
+            return /fetching process for the media resource was aborted by the user agent at the user[â€™']s request/i.test(message);
         }
 
         function isExpectedPlaybackInterruption(error) {
@@ -495,7 +495,7 @@
     <div id="blazor-error-ui">
         An unhandled error has occurred and was recorded.
         <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
+        <a class="dismiss">ðŸ—™</a>
     </div>
 
     <script type="text/javascript">

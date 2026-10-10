@@ -7,7 +7,7 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-<div class="ui-card @Width @Border ui-mb-2" style="@BackgroundStyle ;animation:fadeIn 1s;">
+<div class="ui-card @Width @Border ui-mb-2 game-event-card" style="@BackgroundStyle ;animation:fadeIn 1s;">
 
     @if (Collapsible)
     {
@@ -21,7 +21,7 @@
 
     @if (!_collapsedInternal) 
     {
-        <div class="ui-card-body" style="@BodyStyle">
+        <div class="ui-card-body game-event-body" style="@BodyStyle">
             <ErrorLoggingBoundary @ref=_errorBoundary>
                 <ChildContent>
                     @Body

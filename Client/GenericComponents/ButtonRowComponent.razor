@@ -7,16 +7,16 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-<div class="ui-mt-2 @Alignment">
+<div class="ui-button-row @Alignment">
 
     @if (Other.HasDelegate)
     {
-        <button class="ui-btn ui-btn-primary ui-me-1" @onclick="Other" disabled=@Disabled>@OtherText</button>
+        <button class="ui-btn ui-btn-primary" @onclick="Other" disabled=@Disabled>@OtherText</button>
     }
 
     @if (Pass.HasDelegate)
     {
-        <button class="ui-btn ui-btn-primary ui-me-1" @onclick="Pass" disabled=@Disabled>@PassText</button>
+        <button class="ui-btn ui-btn-primary ui-btn-pass" @onclick="Pass" disabled=@Disabled>@PassText</button>
     }
 
     @if (Confirm.HasDelegate)
@@ -24,12 +24,12 @@
         if (ConfirmError != null)
         {
             <span class="ui-d-inline-block" tabindex="0" data-toggle="tooltip" data-delay="0" title=@ConfirmError.ToString(Client.CurrentSkin)>
-                <button class="ui-btn ui-btn-primary" disabled=@true>@ConfirmText</button>
+                <button class="ui-btn ui-btn-primary ui-btn-confirm" disabled=@true>@ConfirmText</button>
             </span>
         }
         else
         {
-            <button class="ui-btn ui-btn-primary" @onclick="Confirm" disabled=@Disabled>@ConfirmText</button>
+            <button class="ui-btn ui-btn-primary ui-btn-confirm" @onclick="Confirm" disabled=@Disabled>@ConfirmText</button>
         }
         
     }

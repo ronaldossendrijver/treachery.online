@@ -39,6 +39,9 @@
     [Parameter]
     public bool ShowPopover { get; set; } = true;
 
+    [Parameter]
+    public string? Tooltip { get; set; }
+
     private bool _popoverNeedsRefresh;
 
     [Parameter]
@@ -55,7 +58,11 @@
 
         _attributes = new Dictionary<string, object>();
 
-        if (ShowPopover) 
+        if (Tooltip != null)
+        {
+            _attributes.Add("title", Tooltip);
+        }
+        else if (ShowPopover)
         {
             _attributes.Add("data-game-popover", $"<div style='position:relative'><img style='position:relative;filter:drop-shadow(-2px 2px 1px black);' src='{ForceUrl}' width=80/><span style='color:white;font-size:32px;font-weight:900;position:absolute;left:55px;top:-10px;-webkit-text-stroke:1px black'>{Amount}</span></div>");
             _popoverNeedsRefresh = true;
@@ -64,6 +71,11 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (Tooltip != null)
+        {
+            return;
+        }
+
         if (firstRender)
         {
             await Browser.EnablePopover(Element);
@@ -87,5 +99,5 @@
 
     private int BorderWidth => Threatened ? 2 * Client.CurrentSkin.FORCETOKEN_FONT_BORDERWIDTH : Client.CurrentSkin.FORCETOKEN_FONT_BORDERWIDTH;
 
-    private string PointerType => ShowPopover ? "" : "pointer-events:none";
+    private string PointerType => ShowPopover || Tooltip != null ? "" : "pointer-events:none";
 }
