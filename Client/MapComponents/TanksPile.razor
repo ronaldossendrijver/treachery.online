@@ -4,7 +4,7 @@
 {
     var pile = BuildLayout();
     _renderedKeys = pile.Tokens.Select(t => t.Key).ToHashSet();
-    <section @ref="Element" class="tanks-pile" aria-label="@($"Revival tanks: {pile.Summary}")">
+    <section @ref="Element" class="tanks-pile @(pile.Tokens.Count == 0 ? "is-empty" : "")" aria-label="@($"Revival tanks: {pile.Summary}")">
         <div class="tanks-pile-heap @(pile.Tokens.Count == 0 ? "is-empty" : "")" style="--pile-w: @PxValue(pile.Width); --pile-h: @PxValue(pile.Height)">
             @foreach (var token in pile.Tokens)
             {

@@ -73,7 +73,7 @@
 
     function particlesFor(shot, inward) {
         const dpr = window.devicePixelRatio || 1;
-        const block = Math.max(2, Math.round(Math.min(shot.width, shot.height) / 13)) * dpr;
+        const size = Math.min(shot.width, shot.height);
         const ctx = shot.canvas.getContext('2d');
         let data;
         try {
@@ -83,7 +83,8 @@
         }
 
         const particles = [];
-        const angle = -Math.PI / 4 + (Math.random() - 0.5) * 0.6;
+        const block = Math.max(2, Math.round(Math.max(2, size / 9) * dpr));
+        const angle =  -Math.PI / 4 + (Math.random() - 0.5) * 0.6;
         for (let y = 0; y < shot.canvas.height; y += block) {
             for (let x = 0; x < shot.canvas.width; x += block) {
                 const cx = Math.min(shot.canvas.width - 1, x + (block >> 1));
@@ -91,12 +92,12 @@
                 if (data[(cy * shot.canvas.width + cx) * 4 + 3] < 40) continue;
 
                 const sweep = (x / shot.canvas.width) * 0.45 + (1 - y / shot.canvas.height) * 0.15;
-                const distance = (18 + Math.random() * 46) * dpr;
+                const distance = (inward ? 18 + Math.random() * 46 : size * (1 + Math.random() * 2.2) + 14 + Math.random() * 30) * dpr;
                 const spread = angle + (Math.random() - 0.5) * 1.2;
                 particles.push({
                     sx: x, sy: y,
                     x: shot.left * dpr + x, y: shot.top * dpr + y,
-                    dx: Math.cos(spread) * distance, dy: Math.sin(spread) * distance - 10 * dpr * Math.random(),
+                    dx: Math.cos(spread) * distance, dy: Math.sin(spread) * distance - (inward ? 10 : 24) * dpr * Math.random(),
                     delay: inward ? (1 - sweep) * 0.45 + Math.random() * 0.12 : sweep + Math.random() * 0.12,
                     spin: (Math.random() - 0.5) * 2
                 });
@@ -106,6 +107,25 @@
         return particles.map(p => ({ ...p, size: block }));
     }
 
+    // A brief ember glow where the tokens stood, so the loss is noticeable even for small tokens.
+    function drawFlash(ctx, effect, elapsed) {
+        if (elapsed > 0.55) return;
+        const dpr = window.devicePixelRatio || 1;
+        const shot = effect.shot;
+        const x = (shot.left + shot.width / 2) * dpr;
+        const y = (shot.top + shot.height / 2) * dpr;
+        const t = elapsed / 0.55;
+        const radius = Math.max(shot.width, shot.height) * (0.7 + t * 1.3) * dpr;
+        const glow = ctx.createRadialGradient(x, y, 0, x, y, radius);
+        glow.addColorStop(0, `rgba(255, 196, 120, ${0.75 * (1 - t)})`);
+        glow.addColorStop(0.45, `rgba(240, 120, 40, ${0.45 * (1 - t)})`);
+        glow.addColorStop(1, 'rgba(200, 70, 20, 0)');
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+    }
     function tick(now) {
         const canvas = ensureOverlay();
         resizeOverlay();
@@ -113,8 +133,10 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         for (const effect of [...active]) {
-            const elapsed = (now - effect.start) / DURATION;
+            const elapsed = (now - effect.start) / (effect.duration || DURATION);
             if (elapsed < 0) continue;
+
+            if (effect.flash) drawFlash(ctx, effect, elapsed);
 
             for (const p of effect.particles) {
                 // Each particle animates over 55% of the effect, starting at its own delay.
@@ -148,16 +170,79 @@
         return document.querySelector(`[data-fx-key="${CSS.escape(key)}"]`);
     }
 
-    // Called synchronously before the killed tokens are removed from the DOM.
-    window.FxDisintegrate = function (keys) {
-        for (const key of keys || []) {
-            const el = byKey(key);
-            const shot = el && snapshot(el);
-            if (!shot) continue;
-            run({ shot, particles: particlesFor(shot, false), inward: false, start: performance.now() });
+    // Map force stacks are remembered for a few seconds, so a killed stack can still dissolve where it stood
+    // even when the DOM was already updated by the time the kill is detected.
+    const HISTORY_MS = 4000;
+    const memory = new Map();
+    let memoryTimer = 0;
+
+    function remember() {
+        const now = performance.now();
+        for (const el of document.querySelectorAll('[data-fx-key^="force-"]')) {
+            const tokens = [...el.querySelectorAll('img')]
+                .filter(img => img.complete && img.naturalWidth > 0)
+                .map(img => ({ img, rect: img.getBoundingClientRect(), rotation: rotationOf(img) }))
+                .filter(t => t.rect.width > 0);
+            if (tokens.length === 0) continue;
+            const key = el.dataset.fxKey;
+            const history = memory.get(key) || [];
+            const last = history[history.length - 1];
+            const same = last && last.tokens.length === tokens.length
+                && Math.abs(last.tokens[0].rect.left - tokens[0].rect.left) < 1 && Math.abs(last.tokens[0].rect.top - tokens[0].rect.top) < 1;
+            if (same) last.time = now;
+            else history.push({ time: now, tokens });
+            memory.set(key, history);
+        }
+
+        for (const [key, history] of memory) {
+            while (history.length > 1 && now - history[1].time > HISTORY_MS) history.shift();
+            if (now - history[history.length - 1].time > HISTORY_MS) memory.delete(key);
+        }
+    }
+
+    function ensureMemory() {
+        if (!memoryTimer) memoryTimer = setInterval(() => { if (!document.hidden) remember(); }, 350);
+    }
+
+    function shotOf(tokens) {
+        const rects = tokens.map(t => t.rect);
+        const left = Math.min(...rects.map(r => r.left));
+        const top = Math.min(...rects.map(r => r.top));
+        const right = Math.max(...rects.map(r => r.right));
+        const bottom = Math.max(...rects.map(r => r.bottom));
+        const dpr = window.devicePixelRatio || 1;
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.ceil((right - left) * dpr));
+        canvas.height = Math.max(1, Math.ceil((bottom - top) * dpr));
+        const ctx = canvas.getContext('2d');
+        for (const t of tokens) {
+            const shrink = Math.abs(Math.cos(t.rotation)) + Math.abs(Math.sin(t.rotation));
+            const w = t.rect.width / shrink;
+            const h = t.rect.height / shrink;
+            ctx.save();
+            ctx.translate((t.rect.left - left + t.rect.width / 2) * dpr, (t.rect.top - top + t.rect.height / 2) * dpr);
+            ctx.rotate(t.rotation);
+            ctx.drawImage(t.img, -w / 2 * dpr, -h / 2 * dpr, w * dpr, h * dpr);
+            ctx.restore();
+        }
+        return { canvas, left, top, width: right - left, height: bottom - top };
+    }
+
+    // Called when forces were killed: each item names a map stack and how many tokens it had before and has now.
+    window.FxDisintegrate = function (items) {
+        remember();
+        for (const item of items || []) {
+            const history = memory.get(item.key) || [];
+            const before = [...history].reverse().find(h => h.tokens.length > item.to);
+            if (!before) continue;
+            const lost = before.tokens.slice(Math.min(item.to, before.tokens.length - 1));
+            const shot = shotOf(lost);
+            run({ shot, particles: particlesFor(shot, false), inward: false, start: performance.now(), flash: true, duration: 1700 });
+            history.length = 0;
         }
     };
 
+    ensureMemory();
     // Called after new tokens appear in the tanks: they assemble from scattered pixels.
     window.FxIntegrate = function (keys, delay) {
         const wait = Math.max(0, delay || 0);

@@ -10,7 +10,7 @@
 
     <base href="/" />
 
-    <link rel="stylesheet" href="css/app.css?v=204" />
+    <link rel="stylesheet" href="css/app.css?v=211" />
 
     <link rel="stylesheet" href="Treachery.Client.styles.css?v=189">
 
@@ -431,7 +431,8 @@
 
             const opener = event.target.closest('[data-dialog-target]');
             if (opener) {
-                const dialog = document.querySelector(opener.dataset.dialogTarget);
+                const target = opener.dataset.dialogTarget || '';
+                const dialog = target.startsWith('#') ? document.getElementById(target.slice(1)) : document.querySelector(target);
                 if (dialog instanceof HTMLDialogElement && !dialog.open) dialog.showModal();
                 return;
             }
@@ -443,6 +444,76 @@
         document.addEventListener('click', event => {
             if (event.target instanceof HTMLDialogElement && event.target.open) event.target.close();
         });
+
+        function CloseMenuDropdowns(except) {
+            document.querySelectorAll('.game-menu-toolbar .menu-dropdown-anchor > button[aria-expanded]:not([aria-expanded="false"])')
+                .forEach(button => { if (!except || !except.contains(button)) button.click(); });
+        }
+
+        document.addEventListener('pointerdown', event => {
+            if (event.target.closest('dialog[open]')) return;
+            CloseMenuDropdowns(event.target.closest('.game-menu-toolbar .menu-dropdown-anchor'));
+        }, true);
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') CloseMenuDropdowns(null);
+        });
+
+        // Draggable floating panels: [data-draggable="key"] moved by its [data-drag-handle], kept inside its offset parent.
+        const dragPositions = {};
+        let activeDrag = null;
+
+        function clampDrag(el, x, y) {
+            const parent = el.offsetParent;
+            if (!parent) return { x, y };
+            const baseLeft = el.offsetLeft;
+            const baseTop = el.offsetTop;
+            const maxX = parent.clientWidth - el.offsetWidth - baseLeft, minX = -baseLeft;
+            const maxY = parent.clientHeight - 48 - baseTop, minY = -baseTop;
+            return { x: Math.min(Math.max(x, minX), Math.max(minX, maxX)), y: Math.min(Math.max(y, minY), Math.max(minY, maxY)) };
+        }
+
+        function applyDrag(el, x, y) {
+            const p = clampDrag(el, x, y);
+            el.style.setProperty('--drag-x', p.x + 'px');
+            el.style.setProperty('--drag-y', p.y + 'px');
+            return p;
+        }
+
+        function RestoreDragPosition(el, key) {
+            const p = dragPositions[key];
+            if (el && p) applyDrag(el, p.x, p.y);
+        }
+
+        document.addEventListener('pointerdown', event => {
+            const handle = event.target.closest('[data-drag-handle]');
+            if (!handle || event.button > 0 || event.target.closest('button, a, input, select, textarea')) return;
+            const el = handle.closest('[data-draggable]');
+            if (!el) return;
+            activeDrag = {
+                el, handle, id: event.pointerId, sx: event.clientX, sy: event.clientY,
+                x: parseFloat(el.style.getPropertyValue('--drag-x')) || 0,
+                y: parseFloat(el.style.getPropertyValue('--drag-y')) || 0
+            };
+            handle.setPointerCapture(event.pointerId);
+            el.classList.add('is-dragging');
+            event.preventDefault();
+        });
+
+        document.addEventListener('pointermove', event => {
+            if (!activeDrag || event.pointerId !== activeDrag.id) return;
+            const p = applyDrag(activeDrag.el, activeDrag.x + event.clientX - activeDrag.sx, activeDrag.y + event.clientY - activeDrag.sy);
+            dragPositions[activeDrag.el.dataset.draggable] = p;
+        });
+
+        function endDrag(event) {
+            if (!activeDrag || event.pointerId !== activeDrag.id) return;
+            activeDrag.el.classList.remove('is-dragging');
+            activeDrag = null;
+        }
+
+        document.addEventListener('pointerup', endDrag);
+        document.addEventListener('pointercancel', endDrag);
 
         function ToggleFullScreen() {
 
@@ -555,7 +626,7 @@
     </script>
 
     <script src="js/ui-feedback.js?v=2"></script>
-    <script src="js/fx.js?v=2"></script>
+    <script src="js/fx.js?v=4"></script>
     <script src="_framework/blazor.webassembly.js"></script>
 
 </body>

@@ -1,0 +1,142 @@
+﻿@*
+ * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
+ * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
+ * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+*@
+@using Treachery.Client.GameEventComponents
+@inherits GameComponent
+
+@{
+    var actions = BattleWheelState.ActionTypes.Where(a => Client.Actions.Contains(a)).ToList();
+    _panelRendered = actions.Count > 0 && !BattleWheelState.Hidden;
+    if (actions.Count == 0) return;
+
+    var battle = Game.CurrentBattle ?? Game.BattleAboutToStart;
+    var opponent = battle?.OpponentOf(Faction);
+}
+
+@if (BattleWheelState.Hidden)
+{
+    <button type="button" class="battle-wheel-pill" @onclick="@(() => BattleWheelState.Hidden = false)" aria-label="Show battle wheel">
+        <img src="@Client.CurrentSkin.BattleScreen_URL" alt="" />
+        <span>Battle wheel</span>
+        <span class="battle-wheel-pill-count" title="Pending battle actions">@actions.Count</span>
+    </button>
+}
+
+@* The panel stays mounted while hidden so a battle plan in progress is kept. *@
+<section class="battle-wheel-panel @(BattleWheelState.Hidden ? "is-hidden" : "")" data-draggable="battle-wheel" @ref="_element" aria-label="Battle wheel" aria-hidden="@(BattleWheelState.Hidden ? "true" : null)">
+    <header class="battle-wheel-head" data-drag-handle title="Drag to move the battle wheel">
+        <span class="battle-wheel-grip" aria-hidden="true"></span>
+        <div class="battle-wheel-title">
+            <span class="eyebrow">Battle@(battle?.Territory != null ? " · " + Name(battle.Territory) : "")</span>
+            <strong>
+                @if (opponent != null)
+                {
+                    <span>vs</span>
+                    <FactionComponent Faction="opponent.Faction" Diameter="20" />
+                    <span>@Name(opponent.Faction)</span>
+                    @if (battle!.Aggressor == Faction)
+                    {
+                        <span class="battle-wheel-role">aggressor</span>
+                    }
+                    else
+                    {
+                        <span class="battle-wheel-role">defender</span>
+                    }
+                }
+                else
+                {
+                    <span>Battle actions</span>
+                }
+            </strong>
+        </div>
+        <button type="button" class="battle-wheel-hide" @onclick="@(() => BattleWheelState.Hidden = true)" title="Hide the battle wheel to see the map">
+            <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8s-2.4 4.5-6.5 4.5S1.5 8 1.5 8Z"/><circle cx="8" cy="8" r="2"/><path d="M2.5 13.5l11-11"/></svg>
+            <span>Hide</span>
+        </button>
+    </header>
+
+    <div class="battle-wheel-body">
+        @foreach (var a in actions.Where(a => a != typeof(Battle)))
+        {
+            <div class="battle-wheel-action">
+                @switch (a.Name)
+                {
+                    case nameof(BattleClaimed):
+                        var titleBattleClaimed = Faction == Faction.Pink
+                            ? Client.CurrentSkin.Format("Do you wish to fight in {0}? Otherwise, your ally will.", Game.BattleAboutToStart?.Territory)
+                            : Client.CurrentSkin.Format("Should {0} fight the battle in {1}?", Faction.Pink, Game.BattleAboutToStart?.Territory);
+                        <YesNoActionComponent GameEventType="BattleClaimed" Title=@titleBattleClaimed Alert="true" />
+                        break;
+                    case nameof(Voice): <VoiceComponent /> break;
+                    case nameof(Prescience): <PrescienceComponent /> break;
+                    case nameof(KarmaPrescience):
+                        <SimpleActionComponent GameEventType="KarmaPrescience" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Client.CurrentSkin.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Karma)" />
+                        break;
+                    case nameof(ResidualPlayed):
+                        <SimpleActionComponent GameEventType="ResidualPlayed" BackgroundImage="@GetImage(TreacheryCardType.Residual)" Title="@Client.CurrentSkin.Format("Use {0} to kill a random available opponent leader?", TreacheryCardType.Residual)" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Residual)" />
+                        break;
+                    case nameof(BattleRevision): <SimpleActionComponent GameEventType="BattleRevision" Title="Change your battle plan?" Alert="false" ConfirmLabel="Change Plan" /> break;
+                    case nameof(TreacheryCalled): <TreacheryCalledComponent /> break;
+                    case nameof(PoisonToothCancelled):
+                        <SimpleActionComponent GameEventType="PoisonToothCancelled" BackgroundImage="@GetImage(TreacheryCardType.PoisonTooth)" Title="Cancel Poison Tooth?" Alert="false" ConfirmLabel="Cancel" />
+                        break;
+                    case nameof(PortableAntidoteUsed):
+                        <SimpleActionComponent GameEventType="PortableAntidoteUsed" BackgroundImage="@GetImage(TreacheryCardType.PortableAntidote)" Title="@Client.CurrentSkin.Format("Use your {0}?", TreacheryCardType.PortableAntidote)" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.PortableAntidote)" />
+                        break;
+                    case nameof(Diplomacy): <DiplomacyComponent /> break;
+                    case nameof(KarmaPinkDial):
+                        <SimpleActionComponent GameEventType="KarmaPinkDial" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Client.CurrentSkin.Format("Use {0} to add the difference between the leader discs to your dial", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Karma)" />
+                        break;
+                    case nameof(FaceDancerRevealed): <FaceDancerRevealedComponent /> break;
+                    case nameof(FaceDanced): <FaceDancedComponent /> break;
+                    case nameof(RockWasMelted): <RockWasMeltedComponent /> break;
+                    case nameof(Retreat): <RetreatComponent /> break;
+                    case nameof(Captured):
+                        <YesNoActionComponent GameEventType="Captured" Title="Do you wish to capture a random leader from your opponent?" Alert="true" ForFaction="Faction.Black" />
+                        break;
+                    case nameof(BattleConcluded): <BattleConcludedComponent /> break;
+                    case nameof(AuditCancelled): <AuditCancelledComponent /> break;
+                    case nameof(Audited): <AuditedComponent /> break;
+                }
+            </div>
+        }
+
+        @if (actions.Contains(typeof(Battle)))
+        {
+            <BattleComponent />
+        }
+    </div>
+</section>
+
+@code {
+
+    private ElementReference _element;
+    private bool _wasShown;
+    private bool _panelRendered;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        BattleWheelState.Changed += OnStateChanged;
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        BattleWheelState.Changed -= OnStateChanged;
+    }
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        var shown = _panelRendered;
+        if (shown && !_wasShown) Browser.RestoreDragPosition(_element, "battle-wheel");
+        _wasShown = shown;
+    }
+}

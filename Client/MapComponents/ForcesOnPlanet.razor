@@ -148,8 +148,9 @@
             if (newlyKilled.Count > 0)
             {
                 var lost = _forcesSnapshot
-                    .Where(s => newlyKilled.Contains(s.Value.Faction) && (forces.TryGetValue(s.Key, out var now) ? now.Amount : 0) < s.Value.Amount)
-                    .Select(s => s.Key)
+                    .Select(s => (s.Key, s.Value.Faction, From: s.Value.Amount, To: forces.TryGetValue(s.Key, out var now) ? now.Amount : 0))
+                    .Where(s => newlyKilled.Contains(s.Faction) && s.To < s.From)
+                    .Select(s => new Browser.FxLoss(s.Key, s.From, s.To))
                     .ToList();
 
                 if (lost.Count > 0) Browser.Disintegrate(lost);

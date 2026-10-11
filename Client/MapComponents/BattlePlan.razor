@@ -298,12 +298,14 @@ else
        ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"/>
 }
 
-<MapImage X="@(X + Client.CurrentSkin.BattleWheelForcesX - 0.5f * Client.CurrentSkin.FORCETOKEN_RADIUS)" Y="@(Y + 0.25f * Client.CurrentSkin.FORCETOKEN_RADIUS)"
-    Diameter="@Client.CurrentSkin.FORCETOKEN_RADIUS"
-    Src="@(_showPlan ? Client.CurrentSkin.EyeSlash_URL : Client.CurrentSkin.Eye_URL)"
-    OnClick="@OnShowPlanClick"
-    ShadowColor="black" ShadowX="1" ShadowY="1" ShadowBlur="0"
-    Popover="@(_showPlan ? "Hide Wheel" : "Show Wheel")" PopoverAsTooltip="true"/>
+<button type="button" class="battle-plan-toggle @(_showPlan ? "" : "is-collapsed")"
+        style="left:@Px(X + 0.5f * Client.CurrentSkin.BattleScreenWidth);top:@Px(Y)"
+        aria-pressed="@(_showPlan ? "true" : "false")"
+        title="@(_showPlan ? "Hide this battle wheel to see the map" : "Show this battle wheel")"
+        @onclick="@OnShowPlanClick">
+    <img src="@(_showPlan ? Client.CurrentSkin.EyeSlash_URL : Client.CurrentSkin.Eye_URL)" alt="" />
+    <span>@(_showPlan ? "Hide wheel" : "Show wheel")</span>
+</button>
 
 @code {
 

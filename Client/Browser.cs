@@ -56,13 +56,28 @@ public class Browser(IJSRuntime jsRuntime)
         await JsInvoke("HideModal", modalId);
     }
 
-    // Synchronous so the effect can snapshot tokens before Blazor removes them from the DOM.
-    public void Disintegrate(IEnumerable<string> keys)
+    public void RestoreDragPosition(ElementReference element, string key)
     {
         try
         {
             if (jsRuntime is IJSInProcessRuntime inProcess)
-                inProcess.InvokeVoid("FxDisintegrate", System.Linq.Enumerable.ToArray(keys));
+                inProcess.InvokeVoid("RestoreDragPosition", element, key);
+        }
+        catch (Exception e)
+        {
+            Support.Log("Error invoking method: {0}", e.Message);
+        }
+    }
+
+    public record FxLoss(string Key, int From, int To);
+
+    // Synchronous so the effect starts before Blazor removes the killed tokens from the DOM.
+    public void Disintegrate(IEnumerable<FxLoss> losses)
+    {
+        try
+        {
+            if (jsRuntime is IJSInProcessRuntime inProcess)
+                inProcess.InvokeVoid("FxDisintegrate", System.Linq.Enumerable.ToArray(losses));
         }
         catch (Exception e)
         {

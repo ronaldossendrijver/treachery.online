@@ -76,13 +76,17 @@
                 <filter id="planetStormSinkEdge" x="-10%" y="-10%" width="120%" height="120%">
                     <feGaussianBlur stdDeviation="1.5"/>
                 </filter>
-                <mask id="planetStormMask" maskUnits="userSpaceOnUse" x="0" y="0" width="@Client.CurrentSkin.MapDimensions.X" height="@Client.CurrentSkin.MapDimensions.Y">
+                <clipPath id="planetStormClip-@Game.SectorInStorm" clipPathUnits="userSpaceOnUse">
+                    <path d="@StormWedge(Game.SectorInStorm, 6, 1.12)"/>
+                </clipPath>
+                <mask id="planetStormMask-@Game.SectorInStorm" maskUnits="userSpaceOnUse" x="0" y="0" width="@Client.CurrentSkin.MapDimensions.X" height="@Client.CurrentSkin.MapDimensions.Y">
                     <path d="@StormWedge(Game.SectorInStorm)" fill="white" filter="url(#planetStormEdge)"/>
                     <path d="@StormWedge(Game.SectorInStorm, 0, 0.98)" fill="white"/>
                     <path d="@Client.CurrentSkin.GetTerritoryBorder(Game.Map.PolarSink.Territory)" fill="black" filter="url(#planetStormSinkEdge)"/>
                 </mask>
             </defs>
-            <g mask="url(#planetStormMask)">
+            <g clip-path="url(#planetStormClip-@Game.SectorInStorm)">
+            <g mask="url(#planetStormMask-@Game.SectorInStorm)">
                 <path class="storm-veil" d="@StormWedge(Game.SectorInStorm)"/>
                 <g class="storm-swirl storm-swirl-slow" style="@StormOrigin">
                     <image href="art/storm-clouds.svg?v=2" x="@Round(CenterX - CloudSize * 0.7)" y="@Round(CenterY - CloudSize * 0.7)" width="@Round(CloudSize * 1.4)" height="@Round(CloudSize * 1.4)" opacity="0.8" preserveAspectRatio="none"/>
@@ -90,6 +94,7 @@
                 <g class="storm-swirl storm-swirl-fast" style="@StormOrigin">
                     <image href="art/storm-clouds.svg?v=2" x="@Round(CenterX - CloudSize / 2)" y="@Round(CenterY - CloudSize / 2)" width="@Round(CloudSize)" height="@Round(CloudSize)" opacity="0.95" preserveAspectRatio="none"/>
                 </g>
+            </g>
             </g>
         </g>
     }
@@ -177,7 +182,6 @@
 
     private string StormOrigin => FormattableString.Invariant($"transform-origin:{Round(CenterX)}px {Round(CenterY)}px");
 
-    // The storm sector widened slightly so the clouds creep over its borders.
     // The storm sector, widened slightly so the clouds creep over its borders. The apex is pulled back
     // behind the planet center so the ragged edge filter does not erode the narrow tip of the sector.
     private string StormWedge(int sector, double spreadDegrees = 2.5, double radiusFactor = 1.05)
