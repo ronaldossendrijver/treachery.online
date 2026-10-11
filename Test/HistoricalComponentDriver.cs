@@ -300,8 +300,8 @@ internal static class HistoricalComponentDriver
             case AcceptOrCancelPurpleRevival purpleRevival:
             {
                 var c = Expect<AcceptOrCancelPurpleRevivalComponent>(component);
-                c._offerHero = purpleRevival.Hero;
-                c._price = purpleRevival.Price;
+                c.OfferHero = purpleRevival.Hero;
+                c.Price = purpleRevival.Price;
                 return;
             }
 
