@@ -15,6 +15,7 @@
         foreach (var p in Game.Players)
         {
             var forcesToDraw = new List<MapForce>();
+            var homeworldMarkers = new List<HomeworldMarker>();
 
             float radiusModifier = 1;
             if (Client.Status != null && Client.Status.PlayerShouldBeHighlighted(p))
@@ -60,29 +61,21 @@
                        Src="@Client.CurrentSkin.GetImageUrl(homeworld.World)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
                     Popover=@Client.CurrentSkin.GetPopup(homeworld) OnClick="@(e => OnClick(e, homeworld))" />
 
+                    // Drawn after the reserve force stacks so the stacks never hide them.
+                    var markerX = (float)(homeworldXy.X + 1.25f * Client.CurrentSkin.PlayerTokenRadius);
+                    var markerY = (float)(homeworldXy.Y + 1.25f * Client.CurrentSkin.PlayerTokenRadius);
                     if (Game.IsOccupied(homeworld.World))
                     {
                         var occupier = Game.OccupierOf(homeworld.World)!.Faction;
-                        var occupierMessage = Client.CurrentSkin.Format("Occupied by ", occupier);
-
-                        <MapImage X=@(homeworldXy.X + 0.75f * Client.CurrentSkin.PlayerTokenRadius) Y=@(homeworldXy.Y + 1.5f * Client.CurrentSkin.PlayerTokenRadius)
-                                  Diameter=@(0.5f * Client.CurrentSkin.PlayerTokenRadius)
-                                  Src="@Client.CurrentSkin.GetFactionFaceDownImageUrl(occupier)" ShadowColor="white" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
-                                  Popover=@occupierMessage PopoverAsTooltip="true" />
+                        homeworldMarkers.Add(new HomeworldMarker(markerX, markerY, Client.CurrentSkin.GetFactionFaceDownImageUrl(occupier), Client.CurrentSkin.Format("Occupied by {0}", occupier)));
                     }
                     else if (p.HasHighThreshold(homeworld.World))
                     {
-                        <MapImage X=@(homeworldXy.X + 0.75f * Client.CurrentSkin.PlayerTokenRadius) Y=@(homeworldXy.Y + 1.5f * Client.CurrentSkin.PlayerTokenRadius)
-                                  Diameter=@(0.5f * Client.CurrentSkin.PlayerTokenRadius)
-                                  Src="@Client.CurrentSkin.HighThreshold_URL" ShadowColor="white" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
-                                  Popover="High Threshold" PopoverAsTooltip="true" />
+                        homeworldMarkers.Add(new HomeworldMarker(markerX, markerY, Client.CurrentSkin.HighThreshold_URL, "High Threshold"));
                     }
                     else if (p.HasLowThreshold(homeworld.World))
                     {
-                        <MapImage X=@(homeworldXy.X + 0.75f * Client.CurrentSkin.PlayerTokenRadius) Y=@(homeworldXy.Y + 1.5f * Client.CurrentSkin.PlayerTokenRadius)
-                                  Diameter=@(0.5f * Client.CurrentSkin.PlayerTokenRadius)
-                                  Src="@Client.CurrentSkin.LowThreshold_URL" ShadowColor="white" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
-                                  Popover="Low Threshold" PopoverAsTooltip="true" />
+                        homeworldMarkers.Add(new HomeworldMarker(markerX, markerY, Client.CurrentSkin.LowThreshold_URL, "Low Threshold"));
                     }
                 }
                 else
@@ -248,6 +241,13 @@
                 <MapForce X=@f.X Y=@f.Y Special=@f.Special Amount=@f.Amount Faction=@f.Faction Threatened=@false Tooltip="@f.Tooltip" Font="@Client.CurrentSkin.SKILL_FONT" Diameter="@Client.CurrentSkin.FORCETOKEN_RADIUS" />
             }
 
+            foreach (var marker in homeworldMarkers)
+            {
+                <MapImage X=@marker.X Y=@marker.Y Diameter=@(0.85f * Client.CurrentSkin.PlayerTokenRadius)
+                          Src="@marker.Src" ShadowColor="#000000CC" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="1"
+                          Popover="@marker.Label" PopoverAsTooltip="true" />
+            }
+
             <MapText ToShow="@p.Name"
                      X="@position.X" Y="@y"
                      Font="@Client.CurrentSkin.PLAYERNAME_FONT" FontColor="@Client.CurrentSkin.PLAYERNAME_FONTCOLOR"
@@ -297,6 +297,8 @@
         internal Faction Faction;
         internal string? Tooltip;
     }
+
+    private sealed record HomeworldMarker(float X, float Y, string Src, string Label);
 
     private PointD Pos(float positionOnCircle, float radiusOfToken = 0) {
 

@@ -136,6 +136,17 @@
             const elapsed = (now - effect.start) / (effect.duration || DURATION);
             if (elapsed < 0) continue;
 
+            if (effect.kind === 'hold' || effect.kind === 'beam') {
+                if (effect.kind === 'hold') drawHold(ctx, effect, now);
+                else drawBeam(ctx, effect, elapsed);
+                ctx.globalAlpha = 1;
+                if (elapsed >= 1) {
+                    active.delete(effect);
+                    effect.done?.();
+                }
+                continue;
+            }
+
             if (effect.flash) drawFlash(ctx, effect, elapsed);
 
             for (const p of effect.particles) {
@@ -228,6 +239,172 @@
         return { canvas, left, top, width: right - left, height: bottom - top };
     }
 
+    // Opaque pixel blocks of a snapshot, in snapshot and viewport coordinates.
+    function blocksOf(shot, block) {
+        const dpr = window.devicePixelRatio || 1;
+        let data;
+        try {
+            data = shot.canvas.getContext('2d').getImageData(0, 0, shot.canvas.width, shot.canvas.height).data;
+        } catch {
+            return [];
+        }
+        const blocks = [];
+        for (let y = 0; y < shot.canvas.height; y += block) {
+            for (let x = 0; x < shot.canvas.width; x += block) {
+                const cx = Math.min(shot.canvas.width - 1, x + (block >> 1));
+                const cy = Math.min(shot.canvas.height - 1, y + (block >> 1));
+                if (data[(cy * shot.canvas.width + cx) * 4 + 3] < 40) continue;
+                blocks.push({ sx: x, sy: y, x: shot.left * dpr + x, y: shot.top * dpr + y, u: x / shot.canvas.width, v: y / shot.canvas.height });
+            }
+        }
+        return blocks;
+    }
+
+    function blockSize(shot) {
+        const dpr = window.devicePixelRatio || 1;
+        return Math.max(2, Math.round(Math.max(1.5, Math.min(shot.width, shot.height) / 11) * dpr));
+    }
+
+    const factionOfSource = key => (/^force-.+-([A-Za-z]+)-[fs]$/.exec(key) || [])[1] || null;
+    const factionOfTank = key => (/^tank-([A-Za-z]+)-[fs]-/.exec(key) || [])[1] || null;
+
+    // Killed stacks wait here briefly (still drawn where they stood) until their tanks token shows up to beam to.
+    const BEAM_WAIT_MS = 1100;
+    const pending = [];
+
+    function drawHold(ctx, effect, now) {
+        const dpr = window.devicePixelRatio || 1;
+        const shot = effect.shot;
+        const pulse = 0.5 + 0.5 * Math.sin((now - effect.start) / 55);
+        ctx.globalAlpha = 1;
+        ctx.drawImage(shot.canvas, shot.left * dpr, shot.top * dpr, shot.width * dpr, shot.height * dpr);
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = 0.18 + 0.22 * pulse;
+        ctx.drawImage(shot.canvas, shot.left * dpr, shot.top * dpr, shot.width * dpr, shot.height * dpr);
+        ctx.globalCompositeOperation = 'source-over';
+    }
+
+    function bezier(a, c, b, t) {
+        const u = 1 - t;
+        return u * u * a + 2 * u * t * c + t * t * b;
+    }
+
+    // Each source pixel block lifts off its token, streaks along an arc and lands on its place in the tanks token.
+    function drawBeam(ctx, effect, elapsed) {
+        const dpr = window.devicePixelRatio || 1;
+        const src = effect.shot;
+        const dst = effect.target;
+        const travel = 0.42;
+
+        if (elapsed < 0.4) drawFlash(ctx, { shot: src }, elapsed * 1.4);
+
+        for (const p of effect.particles) {
+            const t = (elapsed - p.delay) / travel;
+            if (t < 0) {
+                // Not yet departed: still part of the dissolving token, flickering just before lift-off.
+                const flicker = t > -0.25 ? 0.55 + 0.45 * Math.random() : 1;
+                ctx.globalAlpha = flicker;
+                ctx.drawImage(src.canvas, p.src.sx, p.src.sy, p.ss, p.ss, p.src.x, p.src.y, p.ss, p.ss);
+                continue;
+            }
+            if (t >= 1) {
+                ctx.globalAlpha = 1;
+                ctx.drawImage(dst.canvas, p.dst.sx, p.dst.sy, p.ds, p.ds, p.dst.x, p.dst.y, p.ds, p.ds);
+                continue;
+            }
+
+            const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+            const x = bezier(p.src.x, p.cx, p.dst.x, e);
+            const y = bezier(p.src.y, p.cy, p.dst.y, e);
+            const size = Math.max(1, (p.ss + (p.ds - p.ss) * e) * (1 - 0.45 * Math.sin(Math.PI * t)));
+
+            // Light streak behind the travelling pixel.
+            const back = Math.max(0, e - 0.08);
+            const tx = bezier(p.src.x, p.cx, p.dst.x, back);
+            const ty = bezier(p.src.y, p.cy, p.dst.y, back);
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.globalAlpha = 0.5 * Math.sin(Math.PI * t);
+            ctx.strokeStyle = 'rgba(255, 190, 110, 1)';
+            ctx.lineWidth = Math.max(1, size * 0.6);
+            ctx.beginPath();
+            ctx.moveTo(tx + size / 2, ty + size / 2);
+            ctx.lineTo(x + size / 2, y + size / 2);
+            ctx.stroke();
+            ctx.globalCompositeOperation = 'source-over';
+
+            ctx.globalAlpha = 1 - e;
+            ctx.drawImage(src.canvas, p.src.sx, p.src.sy, p.ss, p.ss, x, y, size, size);
+            ctx.globalAlpha = e;
+            ctx.drawImage(dst.canvas, p.dst.sx, p.dst.sy, p.ds, p.ds, x, y, size, size);
+        }
+
+        // Soft glow where the token materialises.
+        if (elapsed > 0.35) {
+            const t = Math.min(1, (elapsed - 0.35) / 0.65);
+            const gx = (dst.left + dst.width / 2) * dpr;
+            const gy = (dst.top + dst.height / 2) * dpr;
+            const r = Math.max(dst.width, dst.height) * (0.6 + 0.6 * t) * dpr;
+            const glow = ctx.createRadialGradient(gx, gy, 0, gx, gy, r);
+            const a = 0.45 * Math.sin(Math.PI * t);
+            glow.addColorStop(0, `rgba(255, 210, 140, ${a})`);
+            glow.addColorStop(1, 'rgba(240, 130, 50, 0)');
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = glow;
+            ctx.beginPath();
+            ctx.arc(gx, gy, r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+        }
+    }
+
+    function beam(item, target, done) {
+        const dpr = window.devicePixelRatio || 1;
+        const src = item.shot;
+        const srcBlocks = blocksOf(src, item.block);
+        const ds = blockSize(target);
+        const dstBlocks = blocksOf(target, ds);
+        if (srcBlocks.length === 0 || dstBlocks.length === 0) return false;
+
+        // Pair source and destination blocks by relative position so the token keeps its shape in transit.
+        const order = list => [...list].sort((a, b) => (a.v - b.v) || (a.u - b.u));
+        const s = order(srcBlocks);
+        const d = order(dstBlocks);
+        const n = Math.max(s.length, d.length);
+        const sx = (src.left + src.width / 2) * dpr, sy = (src.top + src.height / 2) * dpr;
+        const dx = (target.left + target.width / 2) * dpr, dy = (target.top + target.height / 2) * dpr;
+        const lift = Math.min(220, Math.hypot(dx - sx, dy - sy) * 0.35) * dpr;
+        const particles = [];
+        for (let k = 0; k < n; k++) {
+            const a = s[Math.floor(k * s.length / n)];
+            const b = d[Math.floor(k * d.length / n)];
+            const jitter = (Math.random() - 0.5) * 60 * dpr;
+            particles.push({
+                src: a, dst: b, ss: item.block, ds,
+                cx: (a.x + b.x) / 2 + jitter, cy: Math.min(a.y, b.y) - lift + jitter * 0.5,
+                // Dissolve sweeps from the top of the source token down, with some noise.
+                delay: 0.06 + a.v * 0.3 + Math.random() * 0.18
+            });
+        }
+
+        item.effect.kind = 'beam';
+        item.effect.target = target;
+        item.effect.particles = particles;
+        item.effect.start = performance.now();
+        item.effect.duration = 1900;
+        item.effect.done = done;
+        return true;
+    }
+
+    // Unclaimed stacks (no tanks token appeared) simply blow apart where they stood.
+    function scatter(item) {
+        item.effect.kind = 'scatter';
+        item.effect.particles = particlesFor(item.shot, false);
+        item.effect.start = performance.now();
+        item.effect.flash = true;
+        item.effect.duration = 1700;
+    }
+
     // Called when forces were killed: each item names a map stack and how many tokens it had before and has now.
     window.FxDisintegrate = function (items) {
         remember();
@@ -237,34 +414,79 @@
             if (!before) continue;
             const lost = before.tokens.slice(Math.min(item.to, before.tokens.length - 1));
             const shot = shotOf(lost);
-            run({ shot, particles: particlesFor(shot, false), inward: false, start: performance.now(), flash: true, duration: 1700 });
+            const now = performance.now();
+            const effect = { kind: 'hold', shot, particles: [], start: now, duration: BEAM_WAIT_MS + 400 };
+            const entry = { faction: factionOfSource(item.key), shot, block: blockSize(shot), effect, time: now };
+            pending.push(entry);
+            run(effect);
+            setTimeout(() => {
+                const i = pending.indexOf(entry);
+                if (i >= 0) {
+                    pending.splice(i, 1);
+                    scatter(entry);
+                }
+            }, BEAM_WAIT_MS);
             history.length = 0;
         }
     };
 
     ensureMemory();
-    // Called after new tokens appear in the tanks: they assemble from scattered pixels.
+    // Called after new tokens appear in the tanks: they are beamed in from the killed stacks, or assemble from scattered pixels.
     window.FxIntegrate = function (keys, delay) {
         const wait = Math.max(0, delay || 0);
+        const byFaction = new Map();
         for (const key of keys || []) {
             const el = byKey(key);
             if (!el) continue;
             el.style.visibility = 'hidden';
-            const begin = () => {
-                const shot = snapshot(el);
-                if (!shot) {
-                    el.style.visibility = '';
-                    return;
-                }
-                run({
-                    shot, particles: particlesFor(shot, true), inward: true, start: performance.now(),
-                    done: () => { el.style.visibility = ''; }
-                });
-            };
-            setTimeout(begin, wait);
+            const faction = factionOfTank(key);
+            if (faction && pending.some(p => p.faction === faction)) {
+                if (!byFaction.has(faction)) byFaction.set(faction, []);
+                byFaction.get(faction).push(el);
+            } else {
+                setTimeout(() => assemble(el), wait);
+            }
+        }
+
+        for (const [faction, els] of byFaction) {
+            const sources = pending.filter(p => p.faction === faction);
+            sources.forEach(s => pending.splice(pending.indexOf(s), 1));
+            beamWhenReady(sources, els, 0);
         }
     };
-})();
+
+    function assemble(el) {
+        const shot = snapshot(el);
+        if (!shot) {
+            el.style.visibility = '';
+            return;
+        }
+        run({
+            kind: 'scatter', shot, particles: particlesFor(shot, true), inward: true, start: performance.now(),
+            done: () => { el.style.visibility = ''; }
+        });
+    }
+
+    // Tank tokens are freshly rendered; their images may still be loading.
+    function beamWhenReady(sources, els, attempt) {
+        const tokens = els.flatMap(el => [...el.querySelectorAll('img'), ...(el.tagName === 'IMG' ? [el] : [])])
+            .map(img => ({ img, rect: img.getBoundingClientRect(), rotation: rotationOf(img) }))
+            .filter(t => t.rect.width > 0);
+        const ready = tokens.length > 0 && tokens.every(t => t.img.complete && t.img.naturalWidth > 0);
+        if (!ready && attempt < 12) {
+            setTimeout(() => beamWhenReady(sources, els, attempt + 1), 60);
+            return;
+        }
+
+        const show = () => els.forEach(el => { el.style.visibility = ''; });
+        const target = ready ? shotOf(tokens) : null;
+        let started = false;
+        for (const source of sources) {
+            if (target && beam(source, target, started ? null : show)) started = true;
+            else scatter(source);
+        }
+        if (!started) show();
+    }})();
 
 window.ScrollToEdge = function (element, toEnd) {
     if (element) element.scrollTop = toEnd ? element.scrollHeight : 0;
