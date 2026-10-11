@@ -18,12 +18,7 @@
 
             @if (Shipment.MayShipCrossPlanet(Game, Player))
             {
-                <div>In addition, your ally allows you to ship to other locations as well from your reserves.</div>
-            }
-
-            @if (Shipment.MayUseWhiteSecretAlly(Game, Player))
-            {
-                <div>You may also ship with <FactionComponent Faction="Faction.White"/> as your secret ally.</div>
+                <div>In addition, you are allowed you to ship to other locations as well from your reserves.</div>
             }
         }
         else
@@ -31,20 +26,25 @@
             <div>Select forces to ship, or pass.</div>
         }
 
-        @if (Shipment.MayShipCrossPlanet(Game, Player))
-        {
-            <div>You may ship site-to-site any number of forces from a source location to another location.</div>
-        }
-
-        @if (Shipment.MayShipToReserves(Game, Player))
-        {
-            <div>You may ship any number of forces from any one location back to your reserves.</div>
-        }
-
     </Header>
     <Body>
 
-        @if (ValidShipmentTypes.Count() > 1)
+    @if (Shipment.MayShipCrossPlanet(Game, Player))
+    {
+        <div>You may ship site-to-site any number of forces from a source location to another location.</div>
+    }
+
+    @if (Shipment.MayShipToReserves(Game, Player))
+    {
+        <div>You may ship any number of forces from any one location back to your reserves.</div>
+    }
+    
+    @if (Shipment.MayUseWhiteSecretAlly(Game, Player))
+    {
+        <div>You may also ship with <FactionComponent Faction="Faction.White"/> as your secret ally.</div>
+    }
+    
+    @if (ValidShipmentTypes.Count() > 1)
         {
             <RadioComponent @bind-Value="ShipmentType" Values="@ValidShipmentTypes" ValueLabels="@ValidShipmentTypeLabels" />
         }
