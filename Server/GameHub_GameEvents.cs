@@ -213,42 +213,49 @@ public partial class GameHub
         Player? botPlayer = null)
         where TEvent : GameEvent
     {
-        return await game.ProcessEventAsync(async () =>
+        return await game.ProcessEventAsync(() => ValidateAndExecuteInLock(e, game, isHost, botPlayer));
+    }
+
+    private async Task<VoidResult> ValidateAndExecuteInLock<TEvent>(
+        TEvent e,
+        ManagedGame game,
+        bool isHost,
+        Player? botPlayer = null)
+        where TEvent : GameEvent
+    {
+        e.Initialize(game.Game);
+        var validationResult = e.Execute(true, isHost);
+        e.Time = DateTimeOffset.Now;
+
+        if (validationResult != null)
         {
-            e.Initialize(game.Game);
-            var validationResult = e.Execute(true, isHost);
-            e.Time = DateTimeOffset.Now;
-
-            if (validationResult != null)
+            if (botPlayer is not null)
             {
-                if (botPlayer is not null)
-                {
-                    await RecordInvalidBotDecision(game, new InvalidBotDecision(
-                        DateTime.UtcNow,
-                        botPlayer.Faction,
-                        botPlayer.Seat,
-                        e.GetType().Name,
-                        e.GetMessage().ToString(),
-                        validationResult.ToString(),
-                        GameState.GetStateAsString(game.Game)));
-                }
-                return Error(ErrorType.InvalidGameEvent, validationResult.ToString());
+                await RecordInvalidBotDecision(game, new InvalidBotDecision(
+                    DateTime.UtcNow,
+                    botPlayer.Faction,
+                    botPlayer.Seat,
+                    e.GetType().Name,
+                    e.GetMessage().ToString(),
+                    validationResult.ToString(),
+                    GameState.GetStateAsString(game.Game)));
             }
+            return Error(ErrorType.InvalidGameEvent, validationResult.ToString());
+        }
 
-            if (game.Game.CurrentMainPhase is MainPhase.Ended && !game.StatisticsSent && game.Game.NumberOfBots < 0.5f * game.Game.NumberOfSeatedPlayers)
-            {
-                await SendEndOfGameMail(game);
-                game.StatisticsSent = true;
-            }
+        if (game.Game.CurrentMainPhase is MainPhase.Ended && !game.StatisticsSent && game.Game.NumberOfBots < 0.5f * game.Game.NumberOfSeatedPlayers)
+        {
+            await SendEndOfGameMail(game);
+            game.StatisticsSent = true;
+        }
 
-            game.LastActivity = DateTimeOffset.Now;
+        game.LastActivity = DateTimeOffset.Now;
 
-            await Clients.Group(game.GameId).HandleGameEvent(e, game.Game.History.Count);
-            await SendAsyncPlayMessagesIfApplicable(game.GameId);
-            await PersistGameIfNeeded(game);
-            ScheduleBotEvent(game);
-            return Success();
-        });
+        await Clients.Group(game.GameId).HandleGameEvent(e, game.Game.History.Count);
+        await SendAsyncPlayMessagesIfApplicable(game.GameId);
+        await PersistGameIfNeeded(game);
+        ScheduleBotEvent(game);
+        return Success();
     }
 
     private async Task SendAsyncPlayMessagesIfApplicable(string gameId)
@@ -350,6 +357,15 @@ public partial class GameHub
 
     private async Task PerformBotEvent(ManagedGame managedGame)
     {
+        await managedGame.ProcessEventAsync(async () =>
+        {
+            await PerformBotEventInLock(managedGame);
+            return true;
+        });
+    }
+
+    private async Task PerformBotEventInLock(ManagedGame managedGame)
+    {
         var game = managedGame.Game;
         var botsActAsHosts = game.Participation.Hosts.Count == 0 && game.NumberOfObservers > 0;
         
@@ -364,7 +380,7 @@ public partial class GameHub
                 var evt = await DetermineBotAction(managedGame, classicBot,
                     () => classicBot.DetermineHighestPriorityInPhaseAction(eventsPerBot[bot.Seat]));
                 if (evt == null) continue;
-                await ValidateAndExecute(evt, managedGame, false, bot);
+                await ValidateAndExecuteInLock(evt, managedGame, false, bot);
                 return;
             }
             
@@ -374,7 +390,7 @@ public partial class GameHub
                 var evt = await DetermineBotAction(managedGame, classicBot,
                     () => classicBot.DetermineHighPriorityInPhaseAction(eventsPerBot[bot.Seat]));
                 if (evt == null) continue;
-                await ValidateAndExecute(evt, managedGame, false, bot);
+                await ValidateAndExecuteInLock(evt, managedGame, false, bot);
                 return;
             }
             
@@ -384,7 +400,7 @@ public partial class GameHub
                 var evt = await DetermineBotAction(managedGame, classicBot,
                     () => classicBot.DetermineMiddlePriorityInPhaseAction(eventsPerBot[bot.Seat]));
                 if (evt == null) continue;
-                await ValidateAndExecute(evt, managedGame, false, bot);
+                await ValidateAndExecuteInLock(evt, managedGame, false, bot);
                 return;
             }
             
@@ -394,7 +410,7 @@ public partial class GameHub
                 var evt = await DetermineBotAction(managedGame, classicBot,
                     () => classicBot.DetermineLowPriorityInPhaseAction(eventsPerBot[bot.Seat]));
                 if (evt == null) continue;
-                await ValidateAndExecute(evt, managedGame, false, bot);
+                await ValidateAndExecuteInLock(evt, managedGame, false, bot);
                 return;
             }
             
@@ -405,7 +421,7 @@ public partial class GameHub
                     var evt = await DetermineBotAction(managedGame, classicBot,
                         () => classicBot.DetermineEndPhaseAction(eventsPerBot[bot.Seat]));
                     if (evt == null) continue;
-                    await ValidateAndExecute(evt, managedGame, true, bot);
+                    await ValidateAndExecuteInLock(evt, managedGame, true, bot);
                     return;
                 }
         }

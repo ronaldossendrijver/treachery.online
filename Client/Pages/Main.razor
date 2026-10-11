@@ -12,7 +12,16 @@
 
 @using Treachery.Client.MapComponents
 @using Treachery.Client.GameEventComponents
+@using System.IO
 @implements IDisposable
+
+@if (_skinLoadError is not null)
+{
+    <div class="alert alert-danger alert-dismissible text-center" role="alert">
+        @_skinLoadError
+        <button type="button" class="btn-close" aria-label="Dismiss" @onclick="DismissSkinLoadError"></button>
+    </div>
+}
 
 @if (Client.InScheduledMaintenance && Client.ServerInfo != null)
 {
@@ -199,6 +208,7 @@ else
     [Parameter] public string? GameId { get; set; }
 
     private ElementReference _element;
+    private string? _skinLoadError;
 
     protected override async Task OnInitializedAsync()
     {
@@ -240,14 +250,23 @@ else
         var existingSkinData = await Browser.LoadStringSetting("treachery.online;setting.skin");
         if (existingSkinData is { Length: > 0 })
         {
-            var skin = Skin.Load(existingSkinData, DefaultSkin.Default);
-            if (skin.Version == Skin.LatestVersion)
+            try
             {
-                Client.CurrentSkin = Skin.Load(existingSkinData, DefaultSkin.Default);
-                Message.DefaultDescriber = Client.CurrentSkin;
+                var skin = Skin.Load(existingSkinData, DefaultSkin.Default);
+                if (skin.Version == Skin.LatestVersion)
+                {
+                    Client.CurrentSkin = skin;
+                    Message.DefaultDescriber = Client.CurrentSkin;
+                }
+            }
+            catch (InvalidDataException ex)
+            {
+                _skinLoadError = ex.Message;
             }
         }
     }
+
+    private void DismissSkinLoadError() => _skinLoadError = null;
 
     private void RefreshPopovers() => _ = Browser.RefreshPopovers(_element);
 
