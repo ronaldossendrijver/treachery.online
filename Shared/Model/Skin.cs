@@ -8,6 +8,7 @@
  */
 
 using System.Collections;
+using System.IO;
 
 namespace Treachery.Shared;
 
@@ -1492,8 +1493,17 @@ public class Skin : IDescriber
 
     public static Skin Load(string data, Skin donor)
     {
-        var result = Utilities.Deserialize<Skin>(data);
-        if (result is null) throw new Exception("Invalid skin");
+        Skin? result;
+        try
+        {
+            result = Utilities.Deserialize<Skin>(data);
+        }
+        catch (JsonException ex)
+        {
+            throw new InvalidDataException("This is not a valid skin file", ex);
+        }
+
+        if (result is null) throw new InvalidDataException("This is not a valid skin file");
         Fix(result, donor);
         return result;
     }
