@@ -117,7 +117,48 @@
     private readonly Situation _situation = new();
     protected override bool ShouldRender()
     {
+        if (Client.InGame) DetectKilledForces();
         return Client.InGame && (CheckAndResetDirty() || _situation.RequiresUpdate(Client));
+    }
+
+    private Game? _forcesSnapshotGame;
+    private Dictionary<string, (Faction Faction, int Amount)> _forcesSnapshot = [];
+    private Dictionary<Faction, int> _killedSnapshot = [];
+
+    // Runs before the re-render, while the DOM still shows the old tokens, so killed tokens can dissolve in place.
+    private void DetectKilledForces()
+    {
+        var forces = new Dictionary<string, (Faction Faction, int Amount)>();
+        foreach (var (location, battalions) in Game.ForcesOnPlanetExcludingEmptyLocations())
+        {
+            foreach (var battalion in battalions)
+            {
+                if (battalion.AmountOfForces > 0)
+                    forces[ForcesInLocation.ForceFxKey(location, battalion.Faction, false)] = (battalion.Faction, battalion.AmountOfForces);
+                if (battalion.AmountOfSpecialForces > 0)
+                    forces[ForcesInLocation.ForceFxKey(location, battalion.Faction, true)] = (battalion.Faction, battalion.AmountOfSpecialForces);
+            }
+        }
+
+        var killed = Game.Players.ToDictionary(p => p.Faction, p => p.ForcesKilled + p.SpecialForcesKilled);
+
+        if (ReferenceEquals(_forcesSnapshotGame, Game))
+        {
+            var newlyKilled = killed.Where(k => k.Value > _killedSnapshot.GetValueOrDefault(k.Key)).Select(k => k.Key).ToHashSet();
+            if (newlyKilled.Count > 0)
+            {
+                var lost = _forcesSnapshot
+                    .Where(s => newlyKilled.Contains(s.Value.Faction) && (forces.TryGetValue(s.Key, out var now) ? now.Amount : 0) < s.Value.Amount)
+                    .Select(s => s.Key)
+                    .ToList();
+
+                if (lost.Count > 0) Browser.Disintegrate(lost);
+            }
+        }
+
+        _forcesSnapshotGame = Game;
+        _forcesSnapshot = forces;
+        _killedSnapshot = killed;
     }
 
     private bool _showHms = true;

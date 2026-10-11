@@ -56,6 +56,62 @@ public class Browser(IJSRuntime jsRuntime)
         await JsInvoke("HideModal", modalId);
     }
 
+    // Synchronous so the effect can snapshot tokens before Blazor removes them from the DOM.
+    public void Disintegrate(IEnumerable<string> keys)
+    {
+        try
+        {
+            if (jsRuntime is IJSInProcessRuntime inProcess)
+                inProcess.InvokeVoid("FxDisintegrate", System.Linq.Enumerable.ToArray(keys));
+        }
+        catch (Exception e)
+        {
+            Support.Log("Error invoking method: {0}", e.Message);
+        }
+    }
+
+    // Marks the button the user just clicked as busy until the matching EndBusy call.
+    public int BeginBusy()
+    {
+        try
+        {
+            if (jsRuntime is IJSInProcessRuntime inProcess)
+                return inProcess.Invoke<int>("UiBusyBegin");
+        }
+        catch (Exception e)
+        {
+            Support.Log("Error invoking method: {0}", e.Message);
+        }
+
+        return 0;
+    }
+
+    public void EndBusy(int token)
+    {
+        if (token == 0)
+            return;
+
+        try
+        {
+            if (jsRuntime is IJSInProcessRuntime inProcess)
+                inProcess.InvokeVoid("UiBusyEnd", token);
+        }
+        catch (Exception e)
+        {
+            Support.Log("Error invoking method: {0}", e.Message);
+        }
+    }
+
+    public async Task ScrollToEdge(ElementReference element, bool toEnd)
+    {
+        await JsInvoke("ScrollToEdge", element, toEnd);
+    }
+
+    public async Task Integrate(IEnumerable<string> keys, int delayMs)
+    {
+        await JsInvoke("FxIntegrate", System.Linq.Enumerable.ToArray(keys), delayMs);
+    }
+
     public async Task Save(string filename, string data)
     {
         await JsInvoke<object>("saveFile", filename, data);

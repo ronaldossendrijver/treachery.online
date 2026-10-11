@@ -3,6 +3,7 @@
 @if (Game.CurrentPhase >= Phase.MetheorAndStormSpell)
 {
     var pile = BuildLayout();
+    _renderedKeys = pile.Tokens.Select(t => t.Key).ToHashSet();
     <section @ref="Element" class="tanks-pile" aria-label="@($"Revival tanks: {pile.Summary}")">
         <div class="tanks-pile-heap @(pile.Tokens.Count == 0 ? "is-empty" : "")" style="--pile-w: @PxValue(pile.Width); --pile-h: @PxValue(pile.Height)">
             @foreach (var token in pile.Tokens)
@@ -13,7 +14,8 @@
                         tabindex="@(token.Focusable ? 0 : -1)"
                         aria-hidden="@(token.Focusable ? null : "true")"
                         aria-label="@token.Label"
-                        data-game-popover="@token.Popover">
+                        data-game-popover="@token.Popover"
+                        data-fx-key="tank-@token.Key">
                     <img src="@token.Src" alt="" draggable="false" />
                 </button>
             }
@@ -38,19 +40,61 @@
 
     private sealed record PileItem(string Key, string Src, string Label, string Popover, bool IsLeader, bool Focusable, string Color);
 
-    private sealed record PileToken(int Index, double X, double Y, double Rotation, int Z, string Src, string Label, string Popover, bool IsLeader, bool Focusable, string Color);
+    private sealed record PileToken(string Key, int Index, double X, double Y, double Rotation, int Z, string Src, string Label, string Popover, bool IsLeader, bool Focusable, string Color);
 
     private sealed record PileLayout(IReadOnlyList<PileToken> Tokens, double Width, double Height, int PieceCount, string Summary, string SummaryPopover);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (Game.CurrentPhase < Phase.MetheorAndStormSpell)
+        var game = Game;
+        if (game == null || game.CurrentPhase < Phase.MetheorAndStormSpell)
             return;
 
         if (firstRender)
             await Browser.EnablePopovers(Element);
         else
             await Browser.RefreshPopovers(Element);
+
+        await AnimateArrivals(game);
+    }
+
+    private Game? _arrivalsGame;
+    private HashSet<string> _renderedKeys = [];
+    private HashSet<string> _previousKeys = [];
+    private Dictionary<Faction, int> _previousKilled = [];
+
+    // Newly killed forces and leaders assemble from pixels, following the dissolve on the map.
+    private async Task AnimateArrivals(Game game)
+    {
+        if (!Client.InGame || !ReferenceEquals(game, Game))
+            return;
+
+        var killed = game.Players.ToDictionary(p => p.Faction, p => p.ForcesKilled + p.SpecialForcesKilled);
+        var keys = _renderedKeys;
+
+        var sameGame = ReferenceEquals(_arrivalsGame, game);
+        var previousKeys = _previousKeys;
+        var previousKilled = _previousKilled;
+        _arrivalsGame = game;
+        _previousKeys = keys;
+        _previousKilled = killed;
+
+        if (sameGame)
+        {
+            var arrived = keys.Where(k => !previousKeys.Contains(k)).ToHashSet();
+
+            foreach (var (faction, count) in killed)
+            {
+                if (count <= previousKilled.GetValueOrDefault(faction) || arrived.Any(k => k.StartsWith($"{faction}-f-") || k.StartsWith($"{faction}-s-")))
+                    continue;
+
+                var fallback = keys.FirstOrDefault(k => k == $"{faction}-f-0") ?? keys.FirstOrDefault(k => k == $"{faction}-s-0");
+                if (fallback != null) arrived.Add(fallback);
+            }
+
+            if (arrived.Count > 0)
+                await Browser.Integrate(arrived.Select(k => $"tank-{k}"), 650);
+        }
     }
 
     private PileLayout BuildLayout()
@@ -148,7 +192,7 @@
             var half = (item.IsLeader ? LeaderSize : ForceSize) / 2;
             maxX = Math.Max(maxX, Math.Abs(x) + half);
             maxY = Math.Max(maxY, Math.Abs(y) + half);
-            tokens.Add(new PileToken(slot, x, y, rotation, z, item.Src, item.Label, item.Popover, item.IsLeader, item.Focusable, item.Color));
+            tokens.Add(new PileToken(item.Key, slot, x, y, rotation, z, item.Src, item.Label, item.Popover, item.IsLeader, item.Focusable, item.Color));
         }
 
         var width = Math.Max(78, 2 * maxX + 8);

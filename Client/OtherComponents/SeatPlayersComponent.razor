@@ -8,12 +8,12 @@
 *@
 @inherits GameComponent
 
-<div class="ui-card ui-mb-2 ui-shadow-lg ui-border-light" style="opacity:0.9;animation:fadeInLate 3s;">
-    <div class="ui-card-header">Assign seats to players</div>
-    <div class="ui-card-body">
-        <table class="ui-table ui-table-sm">
+<div class="lobby-panel setup-panel setup-seating">
+    <div class="lobby-panel-head"><div><span class="lobby-kicker">Seating</span><h2>Assign seats to players</h2></div></div>
+    <div class="lobby-panel-body">
+        <table class="setup-seat-table">
             <thead>
-            <tr class="ui-table-dark">
+            <tr>
                 <th scope="col">Player</th>
                 <th scope="col">Seat</th>
             </tr>
@@ -22,7 +22,7 @@
             @foreach (var userId in SeatedPlayers.Keys)
             {
                 var currentSeatOfUserId = SeatedPlayers.GetValueOrDefault(userId, int.MinValue); 
-                <tr class="ui-table-dark">
+                <tr>
                     <td>
                         @Game.GetPlayerName(userId)
                     </td>
@@ -62,7 +62,7 @@
             }
             </tbody>
         </table>
-        <button class="ui-btn ui-btn-primary ui-mt-1" disabled="@(SeatedPlayers.ContainsValue(-1))" @onclick="@AssignSeats">Confirm</button>
+        <button class="ui-btn ui-btn-primary setup-seat-confirm" disabled="@(SeatedPlayers.ContainsValue(-1))" @onclick="@AssignSeats">Confirm</button>
     </div>
 </div>
 

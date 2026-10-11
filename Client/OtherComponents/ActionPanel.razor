@@ -585,11 +585,6 @@
     <NoteComponent/>
 }
 
-@if (!Client.IsObserver && Client.CurrentPhase >= Phase.SelectingTraitors && Client.Faction is Faction.Green)
-{
-    <TrackerComponent/>
-}
-
 @if (Game.CurrentMainPhase != MainPhase.Ended && Client.Actions.Contains(typeof(PlayerReplaced)))
 {
     <PlayerReplacedComponent/>

@@ -14,270 +14,326 @@
 @using System.Threading
 @implements IDisposable
 
-@if (!Client.IsConnected)
+@if (!Client.IsConnected || !Client.LoggedIn)
 {
-    <div class="ui-row ui-d-flex ui-align-items-center" style="@StartScreenStyle">
-        <div class="ui-d-flex ui-justify-content-center">
-            Not Connected
-        </div>
-    </div>
-}
-else if (!Client.LoggedIn)
-{
-    <div class="ui-row ui-d-flex ui-align-items-center" style="@StartScreenStyle">
-        <div class="ui-col-sm-12 ui-col-lg-3"></div>
-        <div class="ui-col-sm-12 ui-col-lg-6">
-            <div class="ui-d-flex ui-justify-content-center">
-                <LoginComponent/>
-            </div>
-        </div>
-        <div class="ui-col-sm-12 ui-col-lg-3"></div>
+    <div class="login-screen">
+        <video class="login-video" autoplay muted loop playsinline preload="auto" poster="art/planet.png" aria-hidden="true" tabindex="-1">
+            <source src="art/planet.mp4" type="video/mp4"/>
+        </video>
+        <div class="login-dust" aria-hidden="true"></div>
+        <div class="login-vignette" aria-hidden="true"></div>
+        <main class="login-stage">
+            <section class="login-hero" aria-label="treachery.online administration">
+                <h1 class="login-sr-only">treachery.online administration</h1>
+            </section>
+            <section class="login-panel">
+                @if (!Client.IsConnected)
+                {
+                    <div class="login-connecting" role="status">
+                        <img src="art/worm.gif" alt=""/>
+                        <strong>Not connected</strong>
+                        <span>Waiting for the server…</span>
+                    </div>
+                }
+                else
+                {
+                    <LoginComponent/>
+                }
+            </section>
+        </main>
     </div>
 }
 else 
 {
-    <div class="ui-row" style="@StartScreenStyle">
-        <div class="ui-col-sm-12 ui-col-lg-2"></div>
-        <div class="ui-col-sm-12 ui-col-lg-6">
-            <div class="ui-card ui-mb-2">
-                <div class="ui-card-header">Server info</div>
-                <div class="ui-card-body">
-                    <h3 class="h3">Info</h3>
-                    <button class="ui-btn ui-btn-primary ui-me-1" @onclick="@GetAdminInfo">Get admin info</button>
-                    <h3 class="h3">Maintenance window</h3>
-                    <DateTimePicker @bind-Value="@MaintenanceDate"/>
-                    <button class="ui-btn ui-btn-primary ui-me-1" @onclick="@UpdateMaintenance">Update</button>
-                    <h3 class="h3">Persist data</h3>
-                    <button class="ui-btn ui-btn-primary ui-me-1" @onclick="@PersistState">Persist data</button>
-                    <h3 class="h3">Restore persisted data</h3>
-                    <button class="ui-btn ui-btn-primary ui-me-1" @onclick="@RestoreState">Restore data</button>
-                </div>
+    <div class="lobby-screen admin-screen">
+        <div class="lobby-ambient" aria-hidden="true"></div>
+        <header class="lobby-header">
+            <video class="lobby-logo" autoplay muted loop playsinline preload="auto" poster="art/planet.png" aria-hidden="true" tabindex="-1">
+                <source src="art/planet.mp4" type="video/mp4"/>
+            </video>
+            <div class="lobby-greeting">
+                <span class="lobby-kicker">Administration</span>
+                <h1>Server control</h1>
+                <p>Monitor running games, users and errors, and manage maintenance and persisted state.</p>
             </div>
-            <div class="ui-card ui-mb-2">
-                <div class="ui-card-header">Log</div>
-                <div class="ui-card-body">
-                    @foreach (var m in Messages)
-                    {
-                        <div>@m</div>
-                    }
-                </div>
-            </div>
-            @if (Client.AdminInfo != null)
-            {
-                <div class="ui-card ui-mb-2">
-                    <div class="ui-card-header">Info</div>
-                    <div class="ui-card-body">
-                        <p><strong>Users by User Token: </strong>@Client.AdminInfo.UsersByUserTokenCount</p>
-                        <p><strong>Games by Game Id: </strong>@Client.AdminInfo.GamesByGameIdCount</p>
-                        <p><strong>Total Users: </strong>@Client.AdminInfo.Users.Count</p>
-                        <p><strong>ConnectionInfo by UserId: </strong>@Client.AdminInfo.ConnectionInfoByUserIdCount</p>
-                        <table class="ui-table ui-table-sm">
-                            <thead>
-                            <tr class="ui-small ui-table-dark">
-                                <th>User id</th>
-                                <th>Username</th>
-                                <th>Player name</th>
-                                <th>Email</th>
-                                <th>Last login</th>
-                                <th>Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach (var av in Client.AdminInfo.Users)
-                            {
-                                <tr class="ui-small ui-table-dark">
-                                    <td>@av.Id</td>
-                                    <td>@av.Username</td>
-                                    <td>@av.PlayerName</td>
-                                    <td>@av.Email</td>
-                                    <td>
-                                        @if (av.LastLogin != default)
-                                        {
-                                            @av.LastLogin.LocalDateTime
-                                        }
-                                    </td>
-                                    <td><button class="ui-btn ui-btn-primary ui-btn-sm ui-me-1" @onclick="@(_ => DeleteUser(av))">Delete</button></td>
+        </header>
+        <main class="lobby-grid admin-grid">
+            <div class="admin-main">
+                <section class="lobby-panel">
+                    <div class="lobby-panel-head">
+                        <div>
+                            <span class="lobby-kicker">@FilteredGames.Count() shown</span>
+                            <h2>Running games</h2>
+                        </div>
+                    </div>
+                    <div class="lobby-panel-body">
+                        <div class="admin-filters">
+                            <label class="lobby-field" for="gameUsernameFilter">
+                                <span>Username</span>
+                                <input id="gameUsernameFilter" class="lobby-input" @bind="@GameUsernameInput"/>
+                            </label>
+                            <label class="lobby-field" for="gameTimeFromFilter">
+                                <span>Activity from</span>
+                                <input id="gameTimeFromFilter" type="datetime-local" class="lobby-input" value="@GameTimeFromInput" @onchange="@(e => GameTimeFromInput = e.Value?.ToString() ?? string.Empty)"/>
+                            </label>
+                            <label class="lobby-field" for="gameTimeToFilter">
+                                <span>Activity to</span>
+                                <input id="gameTimeToFilter" type="datetime-local" class="lobby-input" value="@GameTimeToInput" @onchange="@(e => GameTimeToInput = e.Value?.ToString() ?? string.Empty)"/>
+                            </label>
+                            <button class="ui-btn ui-btn-primary admin-filter-btn" @onclick="ApplyGameFilter">Filter</button>
+                        </div>
+                        <div class="admin-table-wrap">
+                            <table class="admin-table">
+                                <thead>
+                                <tr>
+                                    <th>Game</th>
+                                    <th>Creator</th>
+                                    <th>Created</th>
+                                    <th>Last activity</th>
+                                    <th class="admin-actions-col">Actions</th>
                                 </tr>
-                            }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            }
-            <div class="ui-card ui-mb-2">
-                <div class="ui-card-header">Running games</div>
-                <div class="ui-card-body">
-                    <div class="ui-row ui-g-2 ui-mb-3">
-                        <div class="ui-col-sm-12 ui-col-md-3">
-                            <label class="ui-form-label" for="gameUsernameFilter">Username</label>
-                            <input id="gameUsernameFilter" class="ui-form-control ui-form-control-sm" @bind="@GameUsernameInput"/>
-                        </div>
-                        <div class="ui-col-sm-12 ui-col-md-3">
-                            <label class="ui-form-label" for="gameTimeFromFilter">Game time from</label>
-                            <input id="gameTimeFromFilter" type="datetime-local" class="ui-form-control ui-form-control-sm" value="@GameTimeFromInput" @onchange="@(e => GameTimeFromInput = e.Value?.ToString() ?? string.Empty)"/>
-                        </div>
-                        <div class="ui-col-sm-12 ui-col-md-3">
-                            <label class="ui-form-label" for="gameTimeToFilter">Game time to</label>
-                            <input id="gameTimeToFilter" type="datetime-local" class="ui-form-control ui-form-control-sm" value="@GameTimeToInput" @onchange="@(e => GameTimeToInput = e.Value?.ToString() ?? string.Empty)"/>
-                        </div>
-                        <div class="ui-col-sm-12 ui-col-md-3 ui-d-flex ui-align-items-center">
-                            <button class="ui-btn ui-btn-primary ui-btn-sm" @onclick="ApplyGameFilter">Filter</button>
-                        </div>
-                    </div>
-                    <table class="ui-table ui-table-sm">
-                        <thead>
-                        <tr class="ui-small ui-table-dark">
-                            <th>Created</th>
-                            <th>Username</th>
-                            <th>Last activity</th>
-                            <th>Game</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach (var av in FilteredGames)
-                        {
-                            var fontColorStyle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20 ? "color:grey" : "color:white";
-                            <tr class="ui-small ui-table-dark">
-                                <td style="@fontColorStyle">
-                                    @av.CreationDate.LocalDateTime
-                                </td>
-                                <td style="@fontColorStyle">
-                                    @av.CreatorUsername
-                                </td>
-                                <td style="@fontColorStyle">
-                                    @av.LastActivity?.LocalDateTime
-                                </td>
-                                <td style="@fontColorStyle">
-                                    @av.Name
-                                </td>
-                                <td>
-                                    <button class="ui-btn ui-btn-primary ui-btn-sm ui-me-1" title="Download savegame"
-                                            aria-label="Download savegame" @onclick="@(_ => Download(av))">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                                            <path d="M8 1a.75.75 0 0 1 .75.75v7.19l2.22-2.22a.75.75 0 1 1 1.06 1.06l-3.5 3.5a.75.75 0 0 1-1.06 0l-3.5-3.5a.75.75 0 1 1 1.06-1.06l2.22 2.22V1.75A.75.75 0 0 1 8 1zM2.75 12a.75.75 0 0 1 .75.75v.5h9v-.5a.75.75 0 0 1 1.5 0V14a.75.75 0 0 1-.75.75h-10.5A.75.75 0 0 1 2 14v-1.25a.75.75 0 0 1 .75-.75z"/>
-                                        </svg>
-                                    </button>
-                                    <button class="ui-btn ui-btn-primary ui-btn-sm ui-me-1" @onclick="@(_ => Close(av))">Close</button>
-                                </td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="ui-card ui-mb-2">
-                <div class="ui-card-header">Error log</div>
-                <div class="ui-card-body">
-                    <div class="ui-row ui-g-2 ui-mb-3">
-                        <div class="ui-col-sm-12 ui-col-md-3">
-                            <label class="ui-form-label" for="errorLogVersion">Version</label>
-                            <input id="errorLogVersion" type="number" class="ui-form-control ui-form-control-sm"
-                                   @bind="ErrorLogVersion"/>
-                        </div>
-                        <div class="ui-col-sm-12 ui-col-md-3">
-                            <label class="ui-form-label" for="errorLogFrom">From</label>
-                            <input id="errorLogFrom" type="datetime-local" class="ui-form-control ui-form-control-sm" value="@ErrorLogFromInput" @onchange="@(e => ErrorLogFromInput = e.Value?.ToString() ?? string.Empty)"/>
-                        </div>
-                        <div class="ui-col-sm-12 ui-col-md-3">
-                            <label class="ui-form-label" for="errorLogTo">To</label>
-                            <input id="errorLogTo" type="datetime-local" class="ui-form-control ui-form-control-sm" value="@ErrorLogToInput" @onchange="@(e => ErrorLogToInput = e.Value?.ToString() ?? string.Empty)"/>
-                        </div>
-                        <div class="ui-col-sm-12 ui-col-md-3 ui-d-flex ui-align-items-center">
-                            <button class="ui-btn ui-btn-primary ui-btn-sm" @onclick="LoadErrorLog">Filter</button>
-                        </div>
-                    </div>
-                    <p class="ui-small">Showing up to 500 entries. Entries are retained for 30 days. This list refreshes every 30 seconds.</p>
-                    <div style="overflow-x:auto;">
-                        <table class="ui-table ui-table-sm" style="table-layout:fixed;width:100%">
-                            <thead>
-                            <tr class="ui-small ui-table-dark">
-                                <th>Time</th>
-                                <th>Version</th>
-                                <th>Source</th>
-                                <th>Game</th>
-                                <th>Savegame</th>
-                                <th>User</th>
-                                <th style="width:35%">Message</th>
-                                <th style="width:35%">Details</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach (var error in Client.ErrorLogs)
-                            {
-                                <tr class="ui-small ui-table-dark">
-                                    <td>@error.OccurredAt.LocalDateTime</td>
-                                    <td>@(error.GameVersion?.ToString() ?? "Unknown")</td>
-                                    <td>@error.Source</td>
-                                    <td>@error.GameId</td>
-                                    <td>
-                                        @if (error.HasGameSnapshot)
-                                        {
-                                            <button class="ui-btn ui-btn-primary ui-btn-sm" title="Download savegame at the time of this bot decision"
-                                                    @onclick="@(() => DownloadBotDecisionGame(error))">
-                                                Download
+                                </thead>
+                                <tbody>
+                                @foreach (var av in FilteredGames)
+                                {
+                                    var idle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20;
+                                    <tr class="@(idle ? "is-idle" : "")">
+                                        <td data-label="Game" class="admin-strong">@av.Name</td>
+                                        <td data-label="Creator">@av.CreatorUsername</td>
+                                        <td data-label="Created">@av.CreationDate.LocalDateTime</td>
+                                        <td data-label="Last activity">@av.LastActivity?.LocalDateTime</td>
+                                        <td data-label="Actions" class="admin-actions">
+                                            <button class="ui-btn ui-btn-secondary ui-btn-sm lobby-icon-btn" title="Download savegame"
+                                                    aria-label="Download savegame" @onclick="@(_ => Download(av))">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                                                    <path d="M8 1a.75.75 0 0 1 .75.75v7.19l2.22-2.22a.75.75 0 1 1 1.06 1.06l-3.5 3.5a.75.75 0 0 1-1.06 0l-3.5-3.5a.75.75 0 1 1 1.06-1.06l2.22 2.22V1.75A.75.75 0 0 1 8 1zM2.75 12a.75.75 0 0 1 .75.75v.5h9v-.5a.75.75 0 0 1 1.5 0V14a.75.75 0 0 1-.75.75h-10.5A.75.75 0 0 1 2 14v-1.25a.75.75 0 0 1 .75-.75z"/>
+                                                </svg>
                                             </button>
-                                        }
-                                    </td>
-                                    <td>@(error.Username ?? error.UserId?.ToString() ?? "")</td>
-                                    <td style="width:35%;overflow-wrap:anywhere;cursor:pointer" title="Click to copy error message"
-                                        @onclick="@(() => Browser.CopyToClipboard(error.Message))">@error.Message</td>
-                                    <td style="width:35%">
-                                        <details>
-                                            <summary>View</summary>
-                                            <pre title="Click to copy error details"
-                                                 style="white-space:pre-wrap;overflow-wrap:anywhere;cursor:pointer"
-                                                 @onclick="@(() => CopyErrorDetails(error))">@error.Details</pre>
-                                            <div title="Click to copy browser/session info" style="overflow-wrap:anywhere;cursor:pointer"
-                                                 @onclick="@(() => Browser.CopyToClipboard(error.UserAgent ?? string.Empty))">@error.UserAgent</div>
-                                        </details>
-                                    </td>
-                                </tr>
+                                            <button class="ui-btn ui-btn-secondary ui-btn-sm" @onclick="@(_ => Close(av))">Close</button>
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                            @if (!FilteredGames.Any())
+                            {
+                                <p class="admin-empty">No games match these filters.</p>
                             }
-                            </tbody>
-                        </table>
+                        </div>
                     </div>
-                </div>
+                </section>
+
+                <section class="lobby-panel">
+                    <div class="lobby-panel-head">
+                        <div>
+                            <span class="lobby-kicker">Up to 500 entries · kept 30 days · refreshes every 30s</span>
+                            <h2>Error log</h2>
+                        </div>
+                    </div>
+                    <div class="lobby-panel-body">
+                        <div class="admin-filters">
+                            <label class="lobby-field" for="errorLogVersion">
+                                <span>Version</span>
+                                <input id="errorLogVersion" type="number" class="lobby-input" @bind="ErrorLogVersion"/>
+                            </label>
+                            <label class="lobby-field" for="errorLogFrom">
+                                <span>From</span>
+                                <input id="errorLogFrom" type="datetime-local" class="lobby-input" value="@ErrorLogFromInput" @onchange="@(e => ErrorLogFromInput = e.Value?.ToString() ?? string.Empty)"/>
+                            </label>
+                            <label class="lobby-field" for="errorLogTo">
+                                <span>To</span>
+                                <input id="errorLogTo" type="datetime-local" class="lobby-input" value="@ErrorLogToInput" @onchange="@(e => ErrorLogToInput = e.Value?.ToString() ?? string.Empty)"/>
+                            </label>
+                            <button class="ui-btn ui-btn-primary admin-filter-btn" @onclick="LoadErrorLog">Filter</button>
+                        </div>
+                        <div class="admin-table-wrap">
+                            <table class="admin-table admin-error-table">
+                                <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Version</th>
+                                    <th>Source</th>
+                                    <th>Game</th>
+                                    <th>Savegame</th>
+                                    <th>User</th>
+                                    <th class="admin-wide-col">Message</th>
+                                    <th class="admin-wide-col">Details</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var error in Client.ErrorLogs)
+                                {
+                                    <tr>
+                                        <td data-label="Time">@error.OccurredAt.LocalDateTime</td>
+                                        <td data-label="Version">@(error.GameVersion?.ToString() ?? "Unknown")</td>
+                                        <td data-label="Source">@error.Source</td>
+                                        <td data-label="Game">@error.GameId</td>
+                                        <td data-label="Savegame">
+                                            @if (error.HasGameSnapshot)
+                                            {
+                                                <button class="ui-btn ui-btn-secondary ui-btn-sm" title="Download savegame at the time of this bot decision"
+                                                        @onclick="@(() => DownloadBotDecisionGame(error))">
+                                                    Download
+                                                </button>
+                                            }
+                                        </td>
+                                        <td data-label="User">@(error.Username ?? error.UserId?.ToString() ?? "")</td>
+                                        <td data-label="Message" class="admin-copy admin-wide-col" title="Click to copy error message"
+                                            @onclick="@(() => Browser.CopyToClipboard(error.Message))">@error.Message</td>
+                                        <td data-label="Details" class="admin-wide-col">
+                                            <details class="admin-details">
+                                                <summary>View</summary>
+                                                <pre class="admin-copy" title="Click to copy error details"
+                                                     @onclick="@(() => CopyErrorDetails(error))">@error.Details</pre>
+                                                <div class="admin-copy" title="Click to copy browser/session info"
+                                                     @onclick="@(() => Browser.CopyToClipboard(error.UserAgent ?? string.Empty))">@error.UserAgent</div>
+                                            </details>
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                            @if (!Client.ErrorLogs.Any())
+                            {
+                                <p class="admin-empty">No errors logged in this period.</p>
+                            }
+                        </div>
+                    </div>
+                </section>
+
+                @if (Client.AdminInfo != null)
+                {
+                    <section class="lobby-panel">
+                        <div class="lobby-panel-head">
+                            <div>
+                                <span class="lobby-kicker">@Client.AdminInfo.Users.Count accounts</span>
+                                <h2>Users</h2>
+                            </div>
+                        </div>
+                        <div class="lobby-panel-body">
+                            <div class="admin-stats">
+                                <div><strong>@Client.AdminInfo.UsersByUserTokenCount</strong><span>Users by token</span></div>
+                                <div><strong>@Client.AdminInfo.GamesByGameIdCount</strong><span>Games by id</span></div>
+                                <div><strong>@Client.AdminInfo.Users.Count</strong><span>Total users</span></div>
+                                <div><strong>@Client.AdminInfo.ConnectionInfoByUserIdCount</strong><span>Connections</span></div>
+                            </div>
+                            <div class="admin-table-wrap">
+                                <table class="admin-table">
+                                    <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Username</th>
+                                        <th>Player name</th>
+                                        <th>Email</th>
+                                        <th>Last login</th>
+                                        <th class="admin-actions-col">Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach (var av in Client.AdminInfo.Users)
+                                    {
+                                        <tr>
+                                            <td data-label="Id">@av.Id</td>
+                                            <td data-label="Username" class="admin-strong">@av.Username</td>
+                                            <td data-label="Player name">@av.PlayerName</td>
+                                            <td data-label="Email">@av.Email</td>
+                                            <td data-label="Last login">
+                                                @if (av.LastLogin != default)
+                                                {
+                                                    @av.LastLogin.LocalDateTime
+                                                }
+                                            </td>
+                                            <td data-label="Actions" class="admin-actions"><button class="ui-btn ui-btn-secondary ui-btn-sm" @onclick="@(_ => DeleteUser(av))">Delete</button></td>
+                                        </tr>
+                                    }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                }
             </div>
-            <div class="ui-card ui-mb-2">
-                <div class="ui-card-header">Scheduled games</div>
-                <div class="ui-card-body">
-                    <table class="ui-table ui-table-sm">
-                        <tbody>
-                        @foreach (var av in Client.ScheduledGames.OrderByDescending(av => av.DateTime))
+
+            <div class="lobby-side admin-side">
+                <section class="lobby-panel">
+                    <div class="lobby-panel-head">
+                        <div>
+                            <span class="lobby-kicker">Server</span>
+                            <h2>Controls</h2>
+                        </div>
+                    </div>
+                    <div class="lobby-panel-body admin-controls">
+                        <div class="lobby-section-title">Info</div>
+                        <button class="ui-btn ui-btn-primary" @onclick="@GetAdminInfo">Get admin info</button>
+                        <div class="lobby-section-title">Maintenance window</div>
+                        <div class="admin-maintenance">
+                            <DateTimePicker @bind-Value="@MaintenanceDate"/>
+                            <button class="ui-btn ui-btn-primary" @onclick="@UpdateMaintenance">Update</button>
+                        </div>
+                        <div class="lobby-section-title">Persisted data</div>
+                        <div class="lobby-form-actions">
+                            <button class="ui-btn ui-btn-secondary" @onclick="@PersistState">Persist data</button>
+                            <button class="ui-btn ui-btn-secondary" @onclick="@RestoreState">Restore data</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="lobby-panel">
+                    <div class="lobby-panel-head">
+                        <div>
+                            <span class="lobby-kicker">This session</span>
+                            <h2>Log</h2>
+                        </div>
+                    </div>
+                    <div class="lobby-panel-body">
+                        @if (Messages.Count == 0)
                         {
-                            <tr class="ui-small ui-table-dark">
-                                <td class="ui-w-25">
-                                    @av.DateTime
-                                </td>
-                                <td class="ui-w-25">
-                                    @av.CreatorName
-                                </td>
-                                <td class="ui-w-25">
-                                    <button class="ui-btn ui-btn-primary ui-btn-sm ui-me-1" @onclick="@(_ => Cancel(av))">Cancel</button>
-                                </td>
-                            </tr>
+                            <p class="admin-empty">No actions yet.</p>
                         }
-                        </tbody>
-                    </table>
-                </div>
+                        else
+                        {
+                            <ol class="admin-log" aria-live="polite">
+                                @foreach (var m in Enumerable.Reverse(Messages))
+                                {
+                                    <li>@m</li>
+                                }
+                            </ol>
+                        }
+                    </div>
+                </section>
+
+                <section class="lobby-panel">
+                    <div class="lobby-panel-head">
+                        <div>
+                            <span class="lobby-kicker">@Client.ScheduledGames.Count() planned</span>
+                            <h2>Scheduled games</h2>
+                        </div>
+                    </div>
+                    <div class="lobby-panel-body">
+                        @if (!Client.ScheduledGames.Any())
+                        {
+                            <p class="admin-empty">No scheduled games.</p>
+                        }
+                        <div class="lobby-game-list">
+                            @foreach (var av in Client.ScheduledGames.OrderByDescending(av => av.DateTime))
+                            {
+                                <div class="lobby-game lobby-game-scheduled">
+                                    <div class="lobby-game-main">
+                                        <span class="lobby-game-name">@av.CreatorName</span>
+                                        <span class="lobby-game-time">@av.DateTime</span>
+                                    </div>
+                                    <div class="lobby-game-actions">
+                                        <button class="ui-btn ui-btn-secondary ui-btn-sm" @onclick="@(_ => Cancel(av))">Cancel</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </section>
             </div>
-        </div>
-        <div class="ui-col-sm-12 ui-col-lg-2">
-            <div class="ui-card ui-mb-2">
-                <div class="ui-card-header">Log</div>
-                <div class="ui-card-body">
-                    @foreach (var m in Messages)
-                    {
-                        <div>@m</div>
-                    }
-                </div>
-            </div>
-        </div>
-        <div class="ui-col-sm-12 ui-col-lg-2"></div>
+        </main>
     </div>
 }
-
 @code {
 
     private readonly CancellationTokenSource _errorLogRefreshCancellation = new();
@@ -331,8 +387,7 @@ else
             _ = RefreshErrorLogPeriodically(_errorLogRefreshCancellation.Token);
         }
     }
-    
-    private const string StartScreenStyle = "min-height: 97vh; background-image: url('art/planet.png'); background-size: 1024px; background-position-x: center; background-position-y: -50px; background-repeat: no-repeat;";
+
 
     private async Task UpdateMaintenance()
     {

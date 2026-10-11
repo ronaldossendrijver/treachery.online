@@ -10,7 +10,7 @@
 
 @{
     var messages = MessagesInOrder.ToList();
-    var latestMessages = messages.OrderByDescending(message => message.Nr).Take(5).OrderBy(message => message.Nr).ToList();
+
 
     <section class="map-report-panel @(_isCollapsed ? "is-collapsed" : "")" aria-label="@($"{Client.CurrentSkin.Describe(Game.CurrentReport.About)} report")">
         <header class="map-report-header">
@@ -53,10 +53,10 @@
         }
         else if (!_isExpanded)
         {
-            <div class="map-report-latest" aria-label="Latest report entries">
-                @if (latestMessages.Count > 0)
+            <div class="map-report-latest" aria-label="Report entries" tabindex="0" @ref="_latestElement">
+                @if (messages.Count > 0)
                 {
-                    foreach (var latest in latestMessages)
+                    foreach (var latest in messages)
                     {
                         <div class="@MessageClass(latest)">
                             <ExpressionComponent Expression="@latest.Expression" Game="@Game" Size="20" />
@@ -137,4 +137,24 @@
     }
 
     private void ToggleCollapsed() => _isCollapsed = !_isCollapsed;
+
+    private ElementReference _latestElement;
+    private int _scrolledCount = -1;
+    private bool _scrolledDescending;
+    private bool _wasCompact;
+
+    // Keep the newest entries in view in the compact panel; older ones remain reachable by scrolling.
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var compact = !_isCollapsed && !_isExpanded;
+        var count = Report?.Messages.Count ?? 0;
+        if (compact && (!_wasCompact || count != _scrolledCount || SortDescending != _scrolledDescending))
+        {
+            _scrolledCount = count;
+            _scrolledDescending = SortDescending;
+            await Browser.ScrollToEdge(_latestElement, !SortDescending);
+        }
+
+        _wasCompact = compact;
+    }
 }

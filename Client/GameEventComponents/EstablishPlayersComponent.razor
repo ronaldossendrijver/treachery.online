@@ -9,61 +9,97 @@
 
 @inherits GameEventComponent<EstablishPlayers>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsible="false">
+<div class="setup-layout">
 
-    <Header>Manage game settings</Header>
-    <Body>
+    <section class="lobby-panel setup-panel setup-settings">
+        <div class="lobby-panel-head">
+            <div>
+                <span class="lobby-kicker">Host settings</span>
+                <h2>Shape your struggle</h2>
+            </div>
+        </div>
+        <div class="lobby-panel-body">
+            <div class="setup-basics">
+                <div class="setup-stepper">
+                    <span class="setup-label">Turns</span>
+                    <SelectNumberComponent @bind-Value="@Settings.MaximumTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Size="32"/>
+                </div>
+                <div class="setup-stepper">
+                    <span class="setup-label">Players</span>
+                    <SelectNumberComponent @bind-Value="@Settings.NumberOfPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Size="32"/>
+                </div>
+                <div class="setup-ruleset">
+                    <SelectComponent @bind-Value="@Ruleset" Values="@Game.GetAvailableRulesets()">
+                        <Label><span class="setup-label">Ruleset</span></Label>
+                    </SelectComponent>
+                </div>
+            </div>
 
-        <SelectNumberComponent @bind-Value="@Settings.MaximumTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns:"/>
+            <div class="lobby-section-title">Factions in play <span>@Settings.AllowedFactionsInPlay.Count selected · click to toggle</span></div>
+            <div class="setup-factions">
+                <SelectFromImageComponent Selected="@Settings.AllowedFactionsInPlay" Values="EstablishPlayers.AvailableFactions()" T="Faction" OnChanged="@StateHasChanged" ImageWidth="44" Required="false"/>
+            </div>
 
-        <SelectNumberComponent @bind-Value="@Settings.NumberOfPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Label="Number of players:"/>
-        
-        <SelectFromImageComponent Selected="@Settings.AllowedFactionsInPlay" Values="EstablishPlayers.AvailableFactions()" T="Faction" OnChanged="@StateHasChanged" ImageWidth="40" Required="false">
-            <Label>Factions in play:</Label>
-        </SelectFromImageComponent>
-
-        <SelectComponent @bind-Value="@Ruleset" Values="@Game.GetAvailableRulesets()">
-            <Label>Ruleset:</Label>
-        </SelectComponent>
-        
-        <JoinedPlayersPanel/>
-        
-        <ButtonRowComponent Pass="@Cancel" PassText="Cancel game" Confirm="@Confirm" ConfirmText="Start" ConfirmError="@Validation" />
-        
-        <CheckboxComponent @bind-Value="@Settings.AutoOpenEmptySeats">Auto open all bot seats to other players at start</CheckboxComponent>
-        <CheckboxComponent @bind-Value="@Settings.AsyncPlay">Async play (send e-mail updates)</CheckboxComponent>
-        @if (Settings.AsyncPlay)
-        {
-            <SelectNumberComponent @bind-Value="@Settings.AsyncPlayMessageIntervalMinutes" Min="10" Max="120" StepDown="10" StepUp="10" Label="Minimum minutes between e-mails:"/>
-        }
-        
-        <CheckboxComponent @bind-Value="@_advancedOptions">Change advanced options</CheckboxComponent>
-
-        @if (_advancedOptions)
-        {
-            <label class="ui-mt-1 ui-mb-0">AI Players</label>
-            @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots, Game.ExpansionLevel))
-            {
-                <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" Callback="StateHasChanged" />
-            }
-
-            foreach (var ruleGroup in EstablishPlayers.AvailableRuleGroups())
-            {
-                if (Game.GetRulesInGroup(ruleGroup, Game.ExpansionLevel).Any())
+            <div class="lobby-section-title">Options</div>
+            <div class="setup-options">
+                <CheckboxComponent @bind-Value="@Settings.AutoOpenEmptySeats">Auto open all bot seats to other players at start</CheckboxComponent>
+                <CheckboxComponent @bind-Value="@Settings.AsyncPlay">Async play (send e-mail updates)</CheckboxComponent>
+                @if (Settings.AsyncPlay)
                 {
-                    <label class="ui-mt-1 ui-mb-0">@Client.CurrentSkin.Describe(ruleGroup)</label>
-                    @foreach (var rule in Game.GetRulesInGroup(ruleGroup, Game.ExpansionLevel).OrderBy(r => Name(r)))
-                    {
-                        <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" />
-                    }
+                    <div class="setup-stepper setup-stepper-inline">
+                        <span class="setup-label">Minutes between e-mails</span>
+                        <SelectNumberComponent @bind-Value="@Settings.AsyncPlayMessageIntervalMinutes" Min="10" Max="120" StepDown="10" StepUp="10" Size="28"/>
+                    </div>
                 }
+                <CheckboxComponent @bind-Value="@_advancedOptions">Change advanced options</CheckboxComponent>
+            </div>
+
+            @if (_advancedOptions)
+            {
+                <div class="setup-rules">
+                    <fieldset class="setup-rule-group">
+                        <legend>AI Players</legend>
+                        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots, Game.ExpansionLevel))
+                        {
+                            <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" Callback="StateHasChanged" />
+                        }
+                    </fieldset>
+
+                    @foreach (var ruleGroup in EstablishPlayers.AvailableRuleGroups())
+                    {
+                        if (Game.GetRulesInGroup(ruleGroup, Game.ExpansionLevel).Any())
+                        {
+                            <fieldset class="setup-rule-group">
+                                <legend>@Client.CurrentSkin.Describe(ruleGroup)</legend>
+                                @foreach (var rule in Game.GetRulesInGroup(ruleGroup, Game.ExpansionLevel).OrderBy(r => Name(r)))
+                                {
+                                    <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" />
+                                }
+                            </fieldset>
+                        }
+                    }
+                </div>
             }
-        }
+        </div>
+    </section>
 
-    </Body>
+    <section class="lobby-panel setup-panel setup-players">
+        <div class="lobby-panel-head">
+            <div>
+                <span class="lobby-kicker">Seats</span>
+                <h2>Players</h2>
+            </div>
+        </div>
+        <div class="lobby-panel-body">
+            <JoinedPlayersPanel/>
+        </div>
+    </section>
 
-</GameEventComponentLayout>
+    <div class="setup-actions">
+        <ButtonRowComponent Pass="@Cancel" PassText="Cancel game" Confirm="@Confirm" ConfirmText="Start game" ConfirmError="@Validation" />
+    </div>
 
+</div>
 @code {
 
     protected override bool IsUrgent => true;

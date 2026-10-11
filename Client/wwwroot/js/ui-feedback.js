@@ -187,4 +187,71 @@
         const el = event.target;
         if (el instanceof HTMLSelectElement || (el instanceof HTMLInputElement && el.type === "range")) play("select");
     }, { capture: true, passive: true });
+
+    // Busy state for buttons whose click starts a server request (driven by Client via UiBusyBegin/UiBusyEnd).
+    const busySelector = "button, .ui-btn, [role=button], input[type=submit], input[type=button]";
+    const busyOps = new Set();
+    let lastPressed = null;
+    let lastPressedAt = 0;
+    let busyElement = null;
+    let busySeq = 0;
+    let busyReleaseTimer = 0;
+
+    function rememberPress(event) {
+        if (!(event.target instanceof Element)) return;
+        const el = event.target.closest(busySelector);
+        if (!el || el.closest("#planetmap, .tanks-pile")) return;
+        lastPressed = el;
+        lastPressedAt = performance.now();
+    }
+
+    document.addEventListener("click", rememberPress, { capture: true, passive: true });
+    document.addEventListener("submit", event => {
+        const submitter = event.submitter;
+        if (submitter instanceof Element) {
+            lastPressed = submitter;
+            lastPressedAt = performance.now();
+        }
+    }, { capture: true, passive: true });
+
+    window.addEventListener("click", event => {
+        if (event.target instanceof Element && event.target.closest("[aria-busy=true]")) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+    }, { capture: true });
+
+    window.addEventListener("submit", event => {
+        if (event.target instanceof Element && event.target.querySelector("[aria-busy=true]")) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+    }, { capture: true });
+
+    window.UiBusyBegin = function () {
+        const token = ++busySeq;
+        if (!busyElement && lastPressed && lastPressed.isConnected && performance.now() - lastPressedAt < 800) {
+            busyElement = lastPressed;
+            busyElement.setAttribute("aria-busy", "true");
+            busyElement.classList.add("is-busy");
+            lastPressed = null;
+        }
+        if (busyElement) {
+            clearTimeout(busyReleaseTimer);
+            busyOps.add(token);
+        }
+        return token;
+    };
+
+    window.UiBusyEnd = function (token) {
+        if (!busyOps.delete(token) || busyOps.size > 0) return;
+        clearTimeout(busyReleaseTimer);
+        // Short grace period so chained requests (e.g. login followed by status refresh) keep one busy state.
+        busyReleaseTimer = setTimeout(() => {
+            if (busyOps.size > 0 || !busyElement) return;
+            busyElement.removeAttribute("aria-busy");
+            busyElement.classList.remove("is-busy");
+            busyElement = null;
+        }, 120);
+    };
 })();

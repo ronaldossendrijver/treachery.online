@@ -10,7 +10,7 @@
 
     <base href="/" />
 
-    <link rel="stylesheet" href="css/app.css?v=197" />
+    <link rel="stylesheet" href="css/app.css?v=204" />
 
     <link rel="stylesheet" href="Treachery.Client.styles.css?v=189">
 
@@ -129,11 +129,13 @@
             window.clearTimeout(gamePopoverHideTimer);
             HideGamePopover();
 
+            // Inside a modal dialog (top layer) the popover must live in the dialog to appear above it.
+            const host = trigger.closest('dialog[open]') || document.body;
             const popover = document.createElement('div');
             popover.className = 'game-popover';
             popover.setAttribute('role', 'tooltip');
             popover.innerHTML = trigger.dataset.gamePopover;
-            document.body.appendChild(popover);
+            host.appendChild(popover);
 
             const bounds = trigger.getBoundingClientRect();
             const popupBounds = popover.getBoundingClientRect();
@@ -552,7 +554,8 @@
         })();
     </script>
 
-    <script src="js/ui-feedback.js"></script>
+    <script src="js/ui-feedback.js?v=2"></script>
+    <script src="js/fx.js?v=2"></script>
     <script src="_framework/blazor.webassembly.js"></script>
 
 </body>

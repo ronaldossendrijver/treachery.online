@@ -73,9 +73,13 @@
                     <feDisplacementMap in="SourceGraphic" in2="edgeNoise" scale="26" xChannelSelector="R" yChannelSelector="G" result="ragged"/>
                     <feGaussianBlur in="ragged" stdDeviation="5"/>
                 </filter>
+                <filter id="planetStormSinkEdge" x="-10%" y="-10%" width="120%" height="120%">
+                    <feGaussianBlur stdDeviation="1.5"/>
+                </filter>
                 <mask id="planetStormMask" maskUnits="userSpaceOnUse" x="0" y="0" width="@Client.CurrentSkin.MapDimensions.X" height="@Client.CurrentSkin.MapDimensions.Y">
                     <path d="@StormWedge(Game.SectorInStorm)" fill="white" filter="url(#planetStormEdge)"/>
                     <path d="@StormWedge(Game.SectorInStorm, 0, 0.98)" fill="white"/>
+                    <path d="@Client.CurrentSkin.GetTerritoryBorder(Game.Map.PolarSink.Territory)" fill="black" filter="url(#planetStormSinkEdge)"/>
                 </mask>
             </defs>
             <g mask="url(#planetStormMask)">

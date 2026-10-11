@@ -72,11 +72,30 @@ else if (!Client.InGame)
         </main>
     </div>
 }
-else if (Client.Game.CurrentPhase is Phase.AwaitingPlayers)
+else if (Client.Game.CurrentPhase is Phase.AwaitingPlayers || Client.PlayersNeedSeating)
 {
-    <div class="entry-screen">
-        <div class="entry-card">
-            @if (Client.IsHost)
+    var seating = Client.Game.CurrentPhase is not Phase.AwaitingPlayers;
+    <div class="lobby-screen setup-screen">
+        <div class="lobby-ambient" aria-hidden="true"></div>
+        <header class="lobby-header">
+            <button type="button" class="setup-back" title="To main screen" aria-label="To main screen" @onclick="LeaveSetup">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10.35 2.65a.5.5 0 0 1 0 .7L5.71 8l4.64 4.65a.5.5 0 0 1-.7.7l-5-5a.5.5 0 0 1 0-.7l5-5a.5.5 0 0 1 .7 0z"/></svg>
+            </button>
+            <video class="lobby-logo" autoplay muted loop playsinline preload="auto" poster="art/planet.png" aria-hidden="true" tabindex="-1">
+                <source src="art/planet.mp4" type="video/mp4"/>
+            </video>
+            <div class="lobby-greeting">
+                <span class="lobby-kicker">@(seating ? "Seating" : Client.IsHost ? "Game setup" : "Awaiting players")</span>
+                <h1><span class="lobby-player-name">@Client.GameName</span></h1>
+                <p>@(seating ? "Assign every player to a seat around the planet." : Client.IsHost ? "Choose the rules and factions, wait for players to join, then start the game." : "The host is preparing the game. It starts as soon as all seats are filled.")</p>
+            </div>
+        </header>
+        <main class="setup-main">
+            @if (seating)
+            {
+                <SeatPlayersComponent/>
+            }
+            else if (Client.IsHost)
             {
                 <EstablishPlayersComponent/>
             }
@@ -84,15 +103,7 @@ else if (Client.Game.CurrentPhase is Phase.AwaitingPlayers)
             {
                 <AwaitingGameComponent/>
             }
-        </div>
-    </div>
-}
-else if (Client.PlayersNeedSeating)
-{
-    <div class="entry-screen">
-        <div class="entry-card">
-            <SeatPlayersComponent/>
-        </div>
+        </main>
     </div>
 }
 else
@@ -238,6 +249,12 @@ else
     }
 
     private void RefreshPopovers() => _ = Browser.RefreshPopovers(_element);
+
+    private async Task LeaveSetup()
+    {
+        await Client.ExitGame();
+        Client.Refresh(nameof(LeaveSetup));
+    }
 
     private void TogglePhoneSheet() => _phoneSheetExpanded = !_phoneSheetExpanded;
 

@@ -40,6 +40,9 @@
     public bool ShowPopover { get; set; } = true;
 
     [Parameter]
+    public string? FxKey { get; set; }
+
+    [Parameter]
     public string? Tooltip { get; set; }
 
     private bool _popoverNeedsRefresh;
@@ -57,6 +60,11 @@
         if (Font == "") Font = Client.CurrentSkin.FORCETOKEN_FONT;
 
         _attributes = new Dictionary<string, object>();
+
+        if (FxKey != null)
+        {
+            _attributes.Add("data-fx-key", FxKey);
+        }
 
         if (Tooltip != null)
         {
