@@ -28,4 +28,12 @@ public class SkinSerializationTests
         if (skinToTest is null) throw new Exception("Skin could not be deserialized");
         Assert.AreEqual(oldName, skinToTest.Describe(leader));
     }
+
+    [TestMethod]
+    public void LoadInvalidSkinReportsValidationError()
+    {
+        var exception = Assert.ThrowsExactly<InvalidDataException>(() => Skin.Load("P", DefaultSkin.Default));
+
+        Assert.AreEqual("This is not a valid skin file", exception.Message);
+    }
 }
