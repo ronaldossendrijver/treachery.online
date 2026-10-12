@@ -10,7 +10,7 @@
 
 @if (Game.CurrentBattle is null) return;
 
-@if (_showPlan) {
+@{
 
     <MapImage X=X Y=Y Diameter="@(Client.CurrentSkin.BattleScreenWidth)" Src="@Client.CurrentSkin.BattleScreen_URL" 
            ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="3" ShadowY="3" ShadowBlur="1" 
@@ -292,24 +292,8 @@
         }
     }
 }
-else
-{
-    <MapImage X=@(X + 0.5f * Client.CurrentSkin.BattleScreenWidth - Client.CurrentSkin.FORCETOKEN_RADIUS) Y=@Y Diameter=@(2*Client.CurrentSkin.FORCETOKEN_RADIUS) Src="@Client.CurrentSkin.BattleScreen_URL"
-       ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"/>
-}
-
-<button type="button" class="battle-plan-toggle @(_showPlan ? "" : "is-collapsed")"
-        style="left:@Px(X + 0.5f * Client.CurrentSkin.BattleScreenWidth);top:@Px(Y)"
-        aria-pressed="@(_showPlan ? "true" : "false")"
-        title="@(_showPlan ? "Hide this battle wheel to see the map" : "Show this battle wheel")"
-        @onclick="@OnShowPlanClick">
-    <img src="@(_showPlan ? Client.CurrentSkin.EyeSlash_URL : Client.CurrentSkin.Eye_URL)" alt="" />
-    <span>@(_showPlan ? "Hide wheel" : "Show wheel")</span>
-</button>
 
 @code {
-
-    private bool _showPlan = true;
 
     [Parameter, EditorRequired] 
     public Battle Plan { get; set; }
@@ -339,11 +323,5 @@ else
                 or LeaderSkill.Swordmaster 
                 or LeaderSkill.KillerMedic 
                 or LeaderSkill.MasterOfAssassins;
-    }
-
-    private void OnShowPlanClick(MouseEventArgs e)
-    {
-        _showPlan = !_showPlan;
-        StateHasChanged();
     }
 }

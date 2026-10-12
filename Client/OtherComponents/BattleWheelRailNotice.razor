@@ -16,8 +16,8 @@
 <div class="battle-wheel-notice">
     <img src="@Client.CurrentSkin.BattleScreen_URL" alt="" />
     <div>
-        <strong>Battle actions are on the battle wheel</strong>
-        <span>@(BattleWheelState.Hidden ? "The wheel is hidden." : "Drag its header to move it, or hide it to see the map.")</span>
+        <strong>Battle actions are on your battle wheel</strong>
+        <span>@(BattleWheelState.Hidden ? "The battle wheels are hidden." : "Drag to move it, or hide it to see the map.")</span>
     </div>
     <button type="button" class="ui-btn ui-btn-sm @(BattleWheelState.Hidden ? "ui-btn-primary" : "ui-btn-outline-secondary")" @onclick="@(() => BattleWheelState.Hidden = !BattleWheelState.Hidden)">
         @(BattleWheelState.Hidden ? "Show wheel" : "Hide wheel")

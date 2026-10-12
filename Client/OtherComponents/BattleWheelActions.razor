@@ -1,0 +1,61 @@
+﻿@*
+ * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
+ * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
+ * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+*@
+@using Treachery.Client.GameEventComponents
+@inherits GameComponent
+
+@foreach (var a in Actions.Where(a => a != typeof(Battle)))
+{
+    <div class="battle-wheel-action">
+        @switch (a.Name)
+        {
+            case nameof(BattleClaimed):
+                var titleBattleClaimed = Faction == Faction.Pink
+                    ? Client.CurrentSkin.Format("Do you wish to fight in {0}? Otherwise, your ally will.", Game.BattleAboutToStart?.Territory)
+                    : Client.CurrentSkin.Format("Should {0} fight the battle in {1}?", Faction.Pink, Game.BattleAboutToStart?.Territory);
+                <YesNoActionComponent GameEventType="BattleClaimed" Title=@titleBattleClaimed Alert="true" />
+                break;
+            case nameof(Voice): <VoiceComponent /> break;
+            case nameof(Prescience): <PrescienceComponent /> break;
+            case nameof(KarmaPrescience):
+                <SimpleActionComponent GameEventType="KarmaPrescience" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Client.CurrentSkin.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Karma)" />
+                break;
+            case nameof(ResidualPlayed):
+                <SimpleActionComponent GameEventType="ResidualPlayed" BackgroundImage="@GetImage(TreacheryCardType.Residual)" Title="@Client.CurrentSkin.Format("Use {0} to kill a random available opponent leader?", TreacheryCardType.Residual)" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Residual)" />
+                break;
+            case nameof(BattleRevision): <SimpleActionComponent GameEventType="BattleRevision" Title="Change your battle plan?" Alert="false" ConfirmLabel="Change Plan" /> break;
+            case nameof(TreacheryCalled): <TreacheryCalledComponent /> break;
+            case nameof(PoisonToothCancelled):
+                <SimpleActionComponent GameEventType="PoisonToothCancelled" BackgroundImage="@GetImage(TreacheryCardType.PoisonTooth)" Title="Cancel Poison Tooth?" Alert="false" ConfirmLabel="Cancel" />
+                break;
+            case nameof(PortableAntidoteUsed):
+                <SimpleActionComponent GameEventType="PortableAntidoteUsed" BackgroundImage="@GetImage(TreacheryCardType.PortableAntidote)" Title="@Client.CurrentSkin.Format("Use your {0}?", TreacheryCardType.PortableAntidote)" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.PortableAntidote)" />
+                break;
+            case nameof(Diplomacy): <DiplomacyComponent /> break;
+            case nameof(KarmaPinkDial):
+                <SimpleActionComponent GameEventType="KarmaPinkDial" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Client.CurrentSkin.Format("Use {0} to add the difference between the leader discs to your dial", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Karma)" />
+                break;
+            case nameof(FaceDancerRevealed): <FaceDancerRevealedComponent /> break;
+            case nameof(FaceDanced): <FaceDancedComponent /> break;
+            case nameof(RockWasMelted): <RockWasMeltedComponent /> break;
+            case nameof(Retreat): <RetreatComponent /> break;
+            case nameof(Captured):
+                <YesNoActionComponent GameEventType="Captured" Title="Do you wish to capture a random leader from your opponent?" Alert="true" ForFaction="Faction.Black" />
+                break;
+            case nameof(BattleConcluded): <BattleConcludedComponent /> break;
+            case nameof(AuditCancelled): <AuditCancelledComponent /> break;
+            case nameof(Audited): <AuditedComponent /> break;
+        }
+    </div>
+}
+
+@code {
+
+    [Parameter, EditorRequired]
+    public IReadOnlyList<Type> Actions { get; set; } = [];
+}

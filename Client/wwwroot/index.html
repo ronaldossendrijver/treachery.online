@@ -10,7 +10,7 @@
 
     <base href="/" />
 
-    <link rel="stylesheet" href="css/app.css?v=212" />
+    <link rel="stylesheet" href="css/app.css?v=218" />
 
     <link rel="stylesheet" href="Treachery.Client.styles.css?v=189">
 
@@ -495,7 +495,7 @@
 
         document.addEventListener('pointerdown', event => {
             const handle = event.target.closest('[data-drag-handle]');
-            if (!handle || event.button > 0 || event.target.closest('button, a, input, select, textarea')) return;
+            if (!handle || event.button > 0 || event.target.closest('button, a, input, select, textarea, .bw-picker')) return;
             const el = handle.closest('[data-draggable]');
             if (!el) return;
             activeDrag = {

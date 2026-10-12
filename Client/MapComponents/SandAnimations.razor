@@ -86,8 +86,8 @@
     private const double GustWidth = 54;
     private const double GustHeight = 18;
     private const double GustRadius = 24;
-    private const string GustTravel = "0.3";
-    private const string GustOpacityKeyTimes = "0;0.06;0.15;0.3;1";
+    private const string GustTravel = "0.6";
+    private const string GustOpacityKeyTimes = "0;0.12;0.3;0.6;1";
     private const double WormStep = 4;
     private const double WormMargin = 5;
 
@@ -97,10 +97,9 @@
 
     private sealed record Trail(string Color, string Width, int Length);
 
-    // A soft shadowed groove with a faint pale crest, tapering behind the unseen worm.
+    // A shadowed groove with a faint pale crest, tapering behind the unseen worm.
     private static readonly Trail[] WormTrails =
     [
-        new("rgba(74, 42, 16, 0.12)", "6", 90),
         new("rgba(122, 78, 34, 0.3)", "2.6", 75),
         new("rgba(255, 249, 232, 0.45)", "0.7", 55)
     ];
@@ -134,27 +133,38 @@
 
     private void BuildGusts()
     {
-        var map = Game.Map;
-        var skin = Client.CurrentSkin;
         var random = new Random(4711);
-        var candidates = map.Locations(false)
-            .Where(l => l is not DiscoveredLocation && l != map.HiddenMobileStronghold && l.Visible && IsSand(l.Territory))
+
+        // Sample a grid over every sand territory so gusts can be placed anywhere they fully fit.
+        var points = _shapes
+            .Where(entry => entry.Value.Any(p => p.Count > 0))
+            .SelectMany(entry =>
+            {
+                var all = entry.Value.SelectMany(p => p).ToList();
+                var (minX, maxX, minY, maxY) = (all.Min(p => p.X), all.Max(p => p.X), all.Min(p => p.Y), all.Max(p => p.Y));
+                var grid = new List<(Territory Territory, double X, double Y)>();
+                for (var x = minX + GustRadius; x <= maxX - GustRadius; x += 12)
+                for (var y = minY + GustRadius; y <= maxY - GustRadius; y += 12)
+                    grid.Add((entry.Key, x, y));
+                return grid;
+            })
             .OrderBy(_ => random.Next())
             .ToList();
 
         _gusts = [];
-        foreach (var location in candidates)
+        foreach (var (territory, x, y) in points)
         {
-            if (_gusts.Count == 8) break;
+            if (_gusts.Count == 16) break;
 
-            var center = skin.GetCenter(location, map);
-            if (!FitsWithin(location.Territory, center.X, center.Y, GustRadius * 0.8)) continue;
-            if (_gusts.Any(g => Math.Abs(g.X - center.X) + Math.Abs(g.Y - center.Y) < 70)) continue;
+            var center = (X: x, Y: y);
+            if (!FitsWithin(territory, center.X, center.Y, GustRadius * 0.7)) continue;
+            if (_gusts.Any(g => Math.Abs(g.X - center.X) + Math.Abs(g.Y - center.Y) < 42)) continue;
 
             var index = _gusts.Count;
             var angle = -25 + random.NextDouble() * 50 + (random.Next(2) == 0 ? 0 : 180);
-            var seconds = 1.5 * (19 + random.NextDouble() * 16);
-            var begin = 2 + index * 6.5 + random.NextDouble() * 4;
+            // Half the cycle of before at the same travel speed: gusts recur twice as often.
+            var seconds = 0.75 * (19 + random.NextDouble() * 16);
+            var begin = 1 + index * 3.25 + random.NextDouble() * 2;
             _gusts.Add(new Gust(
                 $"sandGustClip{index}",
                 center.X,
@@ -180,7 +190,7 @@
         if (starts.Count == 0) return;
 
         var random = new Random(1965);
-        var configs = new[] { (Speed: 2.5, Idle: 34.0, Begin: 6.0), (Speed: 2.0, Idle: 47.0, Begin: 31.0) };
+        var configs = new[] { (Speed: 2.5, Idle: 34.0, Begin: 6.0), (Speed: 2.0, Idle: 47.0, Begin: 31.0), (Speed: 2.2, Idle: 40.0, Begin: 18.0), (Speed: 2.7, Idle: 52.0, Begin: 44.0) };
 
         foreach (var config in configs)
         {

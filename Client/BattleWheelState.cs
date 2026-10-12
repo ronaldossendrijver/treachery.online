@@ -39,4 +39,14 @@ public static class BattleWheelState
         typeof(RockWasMelted), typeof(Retreat), typeof(Captured), typeof(BattleConcluded),
         typeof(AuditCancelled), typeof(Audited)
     ];
+
+    /// <summary>Decisions taken once the battle is resolved; these appear on the right-hand flap of the wheel.</summary>
+    public static readonly HashSet<Type> AfterBattleTypes =
+    [
+        typeof(Captured), typeof(AuditCancelled), typeof(Audited), typeof(Retreat), typeof(BattleConcluded),
+        typeof(FaceDancerRevealed), typeof(FaceDanced)
+    ];
 }
+
+/// <summary>Identity and state of one floating battle wheel.</summary>
+public sealed record BattleWheelFrame(string DragKey, Faction Combatant, bool IsAggressor, string? Role, string Territory, bool IsActive, bool Hidden);
