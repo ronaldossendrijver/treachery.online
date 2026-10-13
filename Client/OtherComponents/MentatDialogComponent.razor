@@ -1,0 +1,23 @@
+@inherits GameComponent
+
+@if (IsAvailable)
+{
+    <div class="ui-col ui-col-xs-auto ui-p-0 menu-col-text">
+        <button class="ui-btn ui-btn-link ui-p-1 menu-text-btn" type="button"
+                data-dialog-target="#@DialogId" aria-haspopup="dialog"
+                aria-label="Mentat: Notekeeping Assistant" title="Mentat: Notekeeping Assistant">
+            Notes
+        </button>
+    </div>
+
+    <ModalComponent Id="@DialogId" Title="Mentat: Notekeeping Assistant" Size="dialog-large" Scrolling="true">
+        <NoteComponent/>
+    </ModalComponent>
+}
+
+@code {
+
+    private const string DialogId = "mentatModal";
+
+    private bool IsAvailable => !Client.IsObserver && Client.Player is not null && Game.AssistedNoteKeepingEnabled(Client.Player);
+}

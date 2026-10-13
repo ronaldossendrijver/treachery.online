@@ -1224,6 +1224,17 @@ svg {
 .tracker-help summary::before { content: "?"; display: inline-grid; place-items: center; width: 18px; height: 18px; margin-right: 8px; border: 1px solid rgba(193, 167, 108, 0.45); border-radius: 50%; color: var(--brass-bright); font-size: 0.7rem; font-weight: 700; }
 .tracker-help summary:hover { color: var(--ivory); }
 .tracker-help p { margin: 10px 0 0; line-height: 1.55; }
+.tracker-card.is-static { cursor: default; }
+.tracker-card.is-static:hover { border-color: rgba(193, 167, 108, 0.45); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); transform: none; }
+.tracker-heroes { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.tracker-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.tracker-stat { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 8px 12px; border: 1px solid rgba(193, 167, 108, 0.2); border-radius: 10px; background: rgba(255, 255, 255, 0.04); }
+.tracker-stat img { flex: 0 0 auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)); }
+.tracker-stat > div { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.tracker-stat strong { color: var(--ivory); font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+.tracker-stat span { color: var(--ivory-muted); font-size: 0.74rem; }
+.tracker-stat-glyph { display: grid; place-items: center; flex: 0 0 24px; width: 24px; height: 24px; color: var(--spice); font-size: 1.15rem; }
+.game-menu-toolbar .ui-btn.menu-text-btn:not(.menu-dropdown .ui-btn, dialog .ui-btn) { width: auto; padding: 0 11px; color: #f2d9a6; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.06em; text-decoration: none; text-transform: uppercase; }
 
 @media (max-width: 720px) {
     .tracker { grid-template-columns: minmax(0, 1fr); gap: 10px; min-height: 0; }
@@ -1659,6 +1670,8 @@ button.communications-user:hover { background: rgba(255, 255, 255, 0.045); }
     .map-menu-dock .game-menu-toolbar > .ui-col:not(dialog .ui-col) { flex: 1 1 0; justify-content: center; min-width: 0; max-width: 34px; }
     .map-menu-dock .game-menu-toolbar .ui-btn:not(.menu-dropdown .ui-btn, dialog .ui-btn) { width: 100%; min-width: 0; max-width: 32px; height: 30px; min-height: 30px; border-radius: 7px; }
     .map-menu-dock .game-menu-toolbar svg:not(dialog svg), .map-menu-dock .game-menu-toolbar .notes-menu-icon { width: 16px; height: 16px; }
+    .map-menu-dock .game-menu-toolbar > .ui-col.menu-col-text { flex: 0 0 auto; max-width: none; }
+    .map-menu-dock .game-menu-toolbar .ui-btn.menu-text-btn:not(.menu-dropdown .ui-btn, dialog .ui-btn) { width: auto; max-width: none; padding: 0 6px; font-size: 0.68rem; letter-spacing: 0.02em; }
     .map-menu-dock .menu-dropdown { right: 0; left: auto; width: min(540px, calc(100vw - 16px)); max-height: calc(100dvh - 190px); }
     .map-launchers { right: 8px; bottom: max(72px, calc(env(safe-area-inset-bottom) + 66px)); }
     .map-launchers .communications-launcher, .map-launchers .deals-launcher { width: 44px; min-width: 44px; justify-content: center; padding: 0; }

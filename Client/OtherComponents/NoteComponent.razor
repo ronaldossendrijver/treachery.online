@@ -8,139 +8,158 @@
 *@
 @inherits GameComponent
 
-<div @ref="@_element" class="ui-card ui-mb-2">
+<div @ref="@_element" class="tracker">
 
-    <div class="ui-card-header" @onclick="@(_ => _collapsed = !_collapsed)" style="cursor:pointer">
-        Mentat: Notekeeping Assistant
-        <CollapseButton Collapsed="@_collapsed" />
-    </div>
+    <nav class="tracker-nav" role="tablist" aria-label="Factions">
+        @foreach (var p in Players)
+        {
+            <button type="button" role="tab" class="tracker-tab @(p == Shown ? "is-active" : "")" aria-selected="@(p == Shown)" @onclick="@(_ => Toggle(p))">
+                <img width="28" height="28" src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" alt=""/>
+                <span class="tracker-tab-label">@Client.CurrentSkin.Describe(p.Faction)</span>
+                <span class="tracker-tab-count" title="Treachery cards">@Game.CardsOwnedBy(p).Count()</span>
+            </button>
+        }
+    </nav>
 
-    @if (!_collapsed) {
-        <div class="ui-card-body">
+    <div class="tracker-pane" role="tabpanel">
 
-            <div class="ui-mb-1">
+        @if (Shown is { } shown)
+        {
+            <header class="tracker-pane-head">
+                <img width="44" height="44" src="@Client.CurrentSkin.GetFactionTableImageUrl(shown.Faction)" alt=""/>
+                <div>
+                    <div class="lobby-kicker">Mentat</div>
+                    <h3>@Client.CurrentSkin.Describe(shown.Faction)</h3>
+                </div>
+            </header>
 
-                @foreach (var p in Players.Where(p => p != Client.Player))
-                {
-                    <button class="ui-btn @ButtonStyle(p) ui-p-1" @onclick="@(_ => Toggle(p))" title="@Client.CurrentSkin.Describe(p.Faction)">
-                        <img class="ui-img-fluid" width="29" height="29" src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" alt="@Client.CurrentSkin.Describe(p.Faction)"/>
-                    </button>
-                }
-
-            </div>
-
-            @if (_shown is Player shown)
-            {
-                <div class="ui-row ui-m-0">
-
-                    <!-- Resources -->
-                    <div class="ui-col ui-col-auto ui-ps-0">
-                        <img class="ui-img-fluid ui-m-0 ui-p-0" width="24" height="24" src="@Client.CurrentSkin.Harvester_URL" title="@Client.CurrentSkin.Describe(Concept.Resource)" alt=""/><strong>&nbsp;@ResourcesText(shown)</strong>
+            <section class="tracker-section">
+                <div class="tracker-section-title">Status</div>
+                <div class="tracker-stats">
+                    <div class="tracker-stat" title="@Client.CurrentSkin.Describe(Concept.Resource)">
+                        <img width="24" height="24" src="@Client.CurrentSkin.Harvester_URL" alt=""/>
+                        <div>
+                            <strong>@shown.Resources</strong>
+                            <span>@ResourcesText(shown)</span>
+                        </div>
                     </div>
 
-                    <!-- Forces -->
-                    <div class="ui-col ui-col-auto ui-ps-0">
-                        <img class="ui-img-fluid ui-m-0 ui-p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionForceImageUrl(shown.Faction)" title="@Client.CurrentSkin.Describe(shown.Force)" alt=""/><strong>&nbsp;@shown.ForcesInReserve</strong>
+                    <div class="tracker-stat" title="@Client.CurrentSkin.Describe(shown.Force)">
+                        <img width="24" height="24" src="@Client.CurrentSkin.GetFactionForceImageUrl(shown.Faction)" alt=""/>
+                        <div>
+                            <strong>@shown.ForcesInReserve</strong>
+                            <span>in reserve</span>
+                        </div>
                     </div>
 
-                    <!-- Special Forces -->
                     @if (shown.HasSpecialForces)
                     {
-                        <div class="ui-col ui-col-auto ui-ps-0">
-                            <img class="ui-img-fluid ui-m-0 ui-p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(shown.Faction)" title="@Client.CurrentSkin.Describe(shown.SpecialForce)" alt=""/><strong>&nbsp;@shown.SpecialForcesInReserve</strong>
+                        <div class="tracker-stat" title="@Client.CurrentSkin.Describe(shown.SpecialForce)">
+                            <img width="24" height="24" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(shown.Faction)" alt=""/>
+                            <div>
+                                <strong>@shown.SpecialForcesInReserve</strong>
+                                <span>in reserve</span>
+                            </div>
                         </div>
                     }
 
+                    <div class="tracker-stat" title="Victory points">
+                        <span class="tracker-stat-glyph" aria-hidden="true">★</span>
+                        <div>
+                            <strong>@Game.NumberOfVictoryPoints(shown, true)</strong>
+                            <span>victory points</span>
+                        </div>
+                    </div>
+
+                    @if (shown.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah))
+                    {
+                        <div class="tracker-stat" title="@Client.CurrentSkin.Describe(Concept.Messiah)">
+                            <img width="24" height="24" src="@Client.CurrentSkin.Messiah_URL" alt=""/>
+                            <div>
+                                <strong>@MessiahStatus(shown)</strong>
+                                <span>@MessiahDetail(shown)</span>
+                            </div>
+                        </div>
+                    }
                 </div>
+            </section>
 
-                var cards = Game.CardsOwnedBy(shown).ToList();
+            var cards = Game.CardsOwnedBy(shown).ToList();
 
-                if (cards.Count > 0)
+            <section class="tracker-section">
+                <div class="tracker-section-title">Treachery cards <span>@cards.Count / @shown.MaximumNumberOfCards owned · @cards.Count(IsKnownCard) known</span></div>
+                @if (cards.Count > 0)
                 {
-                    <div>Treachery cards</div>
-                    <div class="ui-row ui-row-cols-4 ui-m-0">
-
+                    <div class="tracker-cards">
                         @foreach (var c in cards)
                         {
-                            var isKnown = IsKnownCard(c);
-                            var popover = isKnown ? Client.CurrentSkin.GetPopup(c) : "<div class='ui-p-1 ui-small' style='color:black;background-color:white;border: 1px solid black;'>Unknown</div>";
-
-                            <Hoverable Class="ui-card ui-border-0 ui-p-1" Popover=@popover>
-
-                                @if (IsKnownCard(c))
-                                {
-                                    <img src="@Client.CurrentSkin.GetImageUrl(c)" class="ui-img-fluid" alt="@Client.CurrentSkin.Describe(c)" />
-                                }
-                                else
-                                {
-                                    <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" class="ui-img-fluid" alt="Unknown" />
-                                }
-
-                            </Hoverable>
+                            if (IsKnownCard(c))
+                            {
+                                <div class="tracker-card is-static">
+                                    <Image Shown=c />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="tracker-card is-static" title="Unknown">
+                                    <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" alt="Unknown card"/>
+                                </div>
+                            }
                         }
-
                     </div>
                 }
                 else
                 {
-                    <div>They don't own any Treachery cards</div>
+                    <span class="tracker-empty">They don't own any treachery cards.</span>
                 }
+            </section>
 
-                if (shown.RevealedTraitors.Count > 0)
-                {
-                    <div class="ui-mt-1">@(shown.RevealedTraitors.Count > 1 ? "Revealed Traitors" : "Revealed Traitor")</div>
-                    <div class="ui-row ui-row-cols-4 ui-m-0">
-                        @foreach (var c in shown.RevealedTraitors)
+            @if (shown.RevealedTraitors.Count > 0)
+            {
+                <section class="tracker-section">
+                    <div class="tracker-section-title">Revealed @(shown.RevealedTraitors.Count > 1 ? "traitors" : "traitor")</div>
+                    <div class="tracker-heroes">
+                        @foreach (var h in shown.RevealedTraitors)
                         {
-                            <Image Class="ui-img-fluid ui-pe-1" Shown=@c Width=60/>
+                            <Image Shown=@h Width=64/>
                         }
                     </div>
-                }
-
-                if (shown.RevealedFaceDancers.Count > 0)
-                {
-                    <div class="ui-mt-1">Revealed Face Dancers</div>
-                    <div class="ui-row ui-row-cols-4 ui-m-0">
-                        @foreach (var c in shown.RevealedFaceDancers)
-                        {
-                            <Image Class="ui-img-fluid ui-pe-1" Shown=@c Width=60/>
-                        }
-                    </div>
-                }
-
-                <div>Current victory points: <strong>@Game.NumberOfVictoryPoints(shown, true)</strong></div>
-
-                if (shown.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah))
-                {
-                    if (shown.TotalForcesKilledInBattle >= 7)
-                    {
-                        if (shown.MessiahAvailable)
-                        {
-                            <div><img class="ui-img-fluid ui-m-0 ui-p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt=""/> is available.</div>
-                        }
-                        else
-                        {
-                            <div><img class="ui-img-fluid ui-m-0 ui-p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt=""/> is dead.</div>
-                        }
-                    }
-                    else
-                    {
-                        <div><img class="ui-img-fluid ui-m-0 ui-p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt=""/> available after <SimpleNumberComponent>@(7 - shown.TotalForcesKilledInBattle)</SimpleNumberComponent> more forces are killed.</div>
-                    }
-                }
+                </section>
             }
 
-        </div>
-    }
+            @if (shown.RevealedFaceDancers.Count > 0)
+            {
+                <section class="tracker-section">
+                    <div class="tracker-section-title">Revealed face dancers</div>
+                    <div class="tracker-heroes">
+                        @foreach (var h in shown.RevealedFaceDancers)
+                        {
+                            <Image Shown=@h Width=64/>
+                        }
+                    </div>
+                </section>
+            }
+        }
+        else
+        {
+            <p class="tracker-empty tracker-pick-hint">Select a faction to view what is publicly known about it.</p>
+        }
+
+        <details class="tracker-help">
+            <summary>About the notekeeping assistant</summary>
+            <p>The Mentat keeps track of publicly available information about each opponent: their @Client.CurrentSkin.Describe(Concept.Resource), forces in reserve, victory points, the treachery cards they own (cards you know are shown face up) and any traitors or face dancers they revealed.</p>
+        </details>
+    </div>
 
 </div>
 
 @code {
 
-    private object? _shown;
+    private Player? _shown;
     private ElementReference _element;
     private bool _popoversNeedUpdate = true;
-    private bool _collapsed = true;
+
+    private Player? Shown => _shown is not null && Game.Players.Contains(_shown) ? _shown : Players.FirstOrDefault();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -151,29 +170,41 @@
         }
     }
 
-    private IEnumerable<Player> Players => Game.Players.OrderBy(p => Name(p.Faction));
-    
-    private void Toggle(object toShow)
+    private IEnumerable<Player> Players => Game.Players.Where(p => p != Client.Player).OrderBy(p => Name(p.Faction));
+
+    private void Toggle(Player toShow)
     {
-        _shown = toShow == _shown ? null : toShow;
+        _shown = toShow;
         _popoversNeedUpdate = true;
     }
 
     private bool IsKnownCard(TreacheryCard c) => Client.Player?.KnownCards.Contains(c) ?? false;
 
-    private string ButtonStyle(object o) => o == _shown ? "ui-btn-primary" : "ui-btn-outline-primary";
+    private string MessiahStatus(Player p)
+    {
+        if (p.TotalForcesKilledInBattle < 7)
+        {
+            return "Not yet";
+        }
+
+        return p.MessiahAvailable ? "Available" : "Dead";
+    }
+
+    private string MessiahDetail(Player p) => p.TotalForcesKilledInBattle < 7
+        ? Client.CurrentSkin.Format("{0} after {1} more forces are killed", Concept.Messiah, 7 - p.TotalForcesKilledInBattle)
+        : Client.CurrentSkin.Describe(Concept.Messiah);
 
     private string ResourcesText(Player p)
     {
         if (p.Bribes > 0)
         {
-            return p.ResourcesAfterBidding > 0 
-                ? Client.CurrentSkin.Format("{0}, {1} at end of turn, {2} at end of bidding", p.Resources, p.Bribes, p.ResourcesAfterBidding) 
-                : Client.CurrentSkin.Format("{0}, {1} at {2}", p.Resources, p.Bribes, MainPhase.Contemplate);
+            return p.ResourcesAfterBidding > 0
+                ? Client.CurrentSkin.Format("{0} at end of turn, {1} at end of bidding", p.Bribes, p.ResourcesAfterBidding)
+                : Client.CurrentSkin.Format("{0} at {1}", p.Bribes, MainPhase.Contemplate);
         }
 
-        return p.ResourcesAfterBidding > 0 
-            ? Client.CurrentSkin.Format("{0}, {1} at end of {2}", p.Resources, p.ResourcesAfterBidding, MainPhase.Bidding) 
-            : Client.CurrentSkin.Format("{0}", p.Resources);
+        return p.ResourcesAfterBidding > 0
+            ? Client.CurrentSkin.Format("{0} at end of {1}", p.ResourcesAfterBidding, MainPhase.Bidding)
+            : Client.CurrentSkin.Describe(Concept.Resource);
     }
 }

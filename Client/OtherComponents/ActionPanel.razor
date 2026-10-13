@@ -511,11 +511,6 @@
     }
 }
 
-@if (!Client.IsObserver && Game.AssistedNoteKeepingEnabled(Player))
-{
-    <NoteComponent/>
-}
-
 @if (Game.CurrentMainPhase != MainPhase.Ended && Client.Actions.Contains(typeof(PlayerReplaced)))
 {
     <PlayerReplacedComponent/>
