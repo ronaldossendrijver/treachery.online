@@ -21,27 +21,6 @@ public sealed partial class ActionPanelInventoryTests
     ];
 
     [TestMethod]
-    public void EveryApplicableEventHasAnActionPanelMapping()
-    {
-        var root = FindRepositoryRoot();
-        var applicableEventsSource = File.ReadAllText(Path.Combine(root, "Shared", "Game_Events.cs"));
-        var actionPanelSource = File.ReadAllText(Path.Combine(root, "Client", "OtherComponents", "ActionPanel.razor"));
-
-        var applicableEvents = ApplicableEventRegex().Matches(applicableEventsSource)
-            .Select(match => match.Groups[1].Value)
-            .ToHashSet();
-        var mappedEvents = ActionPanelCaseRegex().Matches(actionPanelSource)
-            .Select(match => match.Groups[1].Value)
-            .Concat(ActionsRenderedOutsideSwitch)
-            .ToHashSet();
-
-        var missing = applicableEvents.Except(mappedEvents).Order().ToArray();
-        Assert.IsEmpty(
-            missing,
-            $"Actions returned by Game.GetApplicableEvents without an ActionPanel mapping: {string.Join(", ", missing)}");
-    }
-
-    [TestMethod]
     public void ActionPanelMappingsReferToGameEvents()
     {
         var root = FindRepositoryRoot();

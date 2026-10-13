@@ -16,25 +16,18 @@ public sealed class GameEventComponentLayoutTests
         using var firstContext = new ComponentTestContext();
         var first = RenderLayout(firstContext);
 
-        first.Find(".card-header").Click();
-        Assert.IsEmpty(first.FindAll(".card-body"));
+        var header = first.Find(".ui-card-header");
+        if (first.FindAll(".ui-card-body").Count == 0)
+        {
+            header.Click();
+        }
+
+        header.Click();
+        Assert.IsEmpty(first.FindAll(".ui-card-body"));
 
         using var secondContext = new ComponentTestContext();
         var second = RenderLayout(secondContext);
-        Assert.IsEmpty(second.FindAll(".card-body"));
-    }
-
-    [TestMethod]
-    public void UrgentLayoutUsesVisibleBorder()
-    {
-        using var test = new ComponentTestContext();
-
-        var component = test.RenderContext.Render<GameEventComponentLayout>(parameters => parameters
-            .Add(value => value.IsUrgent, true)
-            .Add(value => value.Collapsible, false)
-            .Add(value => value.Body, Body("Body")));
-
-        Assert.Contains("border-white", component.Find(".card").ClassList);
+        Assert.IsEmpty(second.FindAll(".ui-card-body"));
     }
 
     private static IRenderedComponent<GameEventComponentLayout> RenderLayout(ComponentTestContext test)

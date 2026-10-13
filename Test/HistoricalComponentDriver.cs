@@ -43,13 +43,19 @@ internal static class HistoricalComponentDriver
         GameEvent historicalEvent)
     {
         var componentType = ResolveComponentType(historicalEvent);
-        var componentParameters = historicalEvent is EstablishPlayers establishPlayers
-            ? new Dictionary<string, object>
+        var componentParameters = historicalEvent switch
+        {
+            EstablishPlayers establishPlayers => new Dictionary<string, object>
             {
                 [nameof(EstablishPlayersComponent.SeedFactory)] =
                     (Func<int>)(() => establishPlayers.Seed)
-            }
-            : null;
+            },
+            Battle battle => new Dictionary<string, object>
+            {
+                [nameof(BattleComponent.Frame)] = CreateBattleFrame(battle.Game, battle)
+            },
+            _ => null
+        };
         var rendered = test.RenderContext.Render<DynamicComponent>(parameters =>
         {
             parameters.Add(component => component.Type, componentType);
@@ -73,6 +79,19 @@ internal static class HistoricalComponentDriver
         ApplyHistoricalValues(renderedComponent, historicalEvent);
         RefreshComponent(rendered, renderedComponent);
         return rendered;
+    }
+
+    private static BattleWheelFrame CreateBattleFrame(Game game, Battle battle)
+    {
+        var isAggressor = game.CurrentBattle?.Aggressor == battle.Initiator;
+        return new BattleWheelFrame(
+            isAggressor ? "battle-wheel-aggressor" : "battle-wheel-defender",
+            battle.Initiator,
+            isAggressor,
+            isAggressor ? "Aggressor" : "Defender",
+            game.CurrentBattle?.Territory?.ToString() ?? "Battle",
+            true,
+            false);
     }
 
     public static HistoricalComponentResult ReadResult(

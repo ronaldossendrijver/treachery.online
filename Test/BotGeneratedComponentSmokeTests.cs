@@ -1,11 +1,3 @@
-using Bunit;
-using NSubstitute;
-using Treachery.Client.GameEventComponents;
-using Treachery.Bots;
-using Treachery.Client.OtherComponents;
-using Treachery.Shared;
-using Treachery.Shared.Model;
-
 namespace Treachery.Test;
 
 [TestClass]
@@ -84,7 +76,7 @@ public sealed class BotGeneratedComponentSmokeTests
             player => new ClassicBot(game, player, BotParameters.GetDefaultParameters(player.Faction)));
 
         for (var eventNumber = 0;
-             game.CurrentPhase != Phase.GameEnded && !(game.CurrentPhase == Phase.Bidding && game.CurrentAuctionType == AuctionType.Normal) && eventNumber < 1_000;
+             game.CurrentPhase != Phase.GameEnded && game is not { CurrentPhase: Phase.Bidding, CurrentAuctionType: AuctionType.Normal } && eventNumber < 1_000;
              eventNumber++)
         {
             var gameEvent = DetermineBotEvent(game, bots);

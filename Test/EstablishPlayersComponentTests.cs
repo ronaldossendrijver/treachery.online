@@ -18,7 +18,7 @@ public sealed class EstablishPlayersComponentTests
             .Returns(Task.FromResult<string?>(null));
 
         var component = test.RenderContext.Render<EstablishPlayersComponent>();
-        component.FindAll("button").Single(button => button.TextContent == "Start").Click();
+        component.FindAll("button").Single(button => button.TextContent.Trim() == "Start game").Click();
 
         Assert.IsNotNull(submitted);
         Assert.AreEqual(Game.LatestVersion, submitted.Game.Version);

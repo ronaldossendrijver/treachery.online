@@ -51,7 +51,12 @@ public class OwnGamesProfileValidationTests
         component.FindAll("button").Single(button => button.TextContent == "Change account info").Click();
         component.FindAll("button").Single(button => button.TextContent == "Apply changes").Click();
 
-        component.WaitForAssertion(() => Assert.IsTrue(component.Find("#playerName").HasAttribute("readonly")));
+        component.WaitForAssertion(() =>
+        {
+            Assert.HasCount(1, component.FindAll("button")
+                .Where(button => button.TextContent == "Change account info"));
+            Assert.IsEmpty(component.FindAll("#playerName"));
+        });
         test.Client.Received(1).RequestUpdateUserInfo("", "player@example.com", "Player");
     }
 

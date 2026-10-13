@@ -151,9 +151,10 @@ public sealed class SavegameComponentReplayTests
             return;
         }
 
-        if (rendered.FindAll(".card-body").Count == 0)
+        if (rendered.FindAll(".ui-card-body").Count == 0 &&
+            rendered.FindAll(".ui-card-header").Count > 0)
         {
-            rendered.Find(".card-header").Click();
+            rendered.Find(".ui-card-header").Click();
         }
 
         var postRenderHistoricalValidation = historicalEvent.Validate();
