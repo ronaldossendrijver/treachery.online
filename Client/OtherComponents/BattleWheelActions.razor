@@ -21,6 +21,14 @@
                 <YesNoActionComponent GameEventType="BattleClaimed" Title=@titleBattleClaimed Alert="true" />
                 break;
             case nameof(Voice): <VoiceComponent /> break;
+            case nameof(SwitchedSkilledLeader):
+                var skilledLeader = SwitchedSkilledLeader.SwitchableLeader(Game, Player!);
+                var behind = Game.IsInFrontOfShield(skilledLeader);
+                <SimpleActionComponent GameEventType="SwitchedSkilledLeader"
+                                       BackgroundImage="@Client.CurrentSkin.GetImageUrl(Game.Skill(skilledLeader))"
+                                       Title="@Client.CurrentSkin.Format("Place {0} {1} your player shield?", skilledLeader, behind ? "behind" : "in front of")"
+                                       ConfirmLabel="@(behind ? "Behind shield" : "In front of shield")" />
+                break;
             case nameof(Prescience): <PrescienceComponent /> break;
             case nameof(KarmaPrescience):
                 <SimpleActionComponent GameEventType="KarmaPrescience" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Client.CurrentSkin.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Karma)" />

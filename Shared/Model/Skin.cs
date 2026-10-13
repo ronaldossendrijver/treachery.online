@@ -447,8 +447,19 @@ public class Skin : IDescriber
     {
         if (c == null)
             return "";
-        return
-            $"<div style='filter:drop-shadow(-3px 3px 2px black);'><img src='{GetImageUrl(c)}' width=300 class='ui-img-fluid'/></div><div class='popover-caption' style='width:300px'>{GetTreacheryCardDescription(c)}</div>";
+
+        var image = $"<div class='card-popover-frame'><img src='{GetImageUrl(c)}' width=300 alt=''/></div>";
+        var description = GetTreacheryCardDescription(c);
+        if (string.IsNullOrWhiteSpace(description))
+            return $"<div class='card-popover'>{image}</div>";
+
+        var parts = description.Split(" - ");
+        var tagCount = 0;
+        while (tagCount < parts.Length - 1 && tagCount < 2 && parts[tagCount].Trim().Length is > 0 and <= 24) tagCount++;
+        var tags = string.Concat(parts.Take(tagCount).Select(t => $"<span class='card-popover-tag'>{t.Trim()}</span>"));
+        var text = string.Join(" - ", parts.Skip(tagCount)).Trim();
+
+        return $"<div class='card-popover'>{image}<div class='card-popover-info'><div class='card-popover-heading'><span class='card-popover-name'>{Describe(c)}</span>{tags}</div><p>{text}</p></div></div>";
     }
 
     public string GetPopup(IHero h)

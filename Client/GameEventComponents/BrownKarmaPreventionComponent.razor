@@ -14,7 +14,7 @@
 
     <Body>
         <SelectFromImageComponent @bind-Value="_target" Values="Game.PlayersOtherThan(Player)" Required="true" ImageWidth="40" />
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Prevent use of {0}", TreacheryCardType.Karma)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
     </Body>
 
 </GameEventComponentLayout>

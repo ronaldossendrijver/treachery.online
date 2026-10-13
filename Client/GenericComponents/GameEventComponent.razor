@@ -97,7 +97,8 @@
                     return "";
                 }
 
-                return $"background-color: {Client.CurrentSkin.GetFactionColorTransparent(IsFactionSpecific, "bb")};";
+                var color = Client.CurrentSkin.GetFactionColor(IsFactionSpecific);
+                return $"--event-faction-color: {color}; background: linear-gradient(105deg, {color}4d 0%, {color}1f 32%, {color}00 68%), var(--charcoal-soft); box-shadow: inset 3px 0 0 {color}b3;";
             }
 
             return $"background-color: rgba(0,0,0,0); background-image: url('{BackgroundImage}'); background-origin: content-box; background-size: cover; background-repeat: no-repeat;";

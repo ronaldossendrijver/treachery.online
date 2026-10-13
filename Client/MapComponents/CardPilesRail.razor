@@ -45,8 +45,8 @@
 
     private static string Enc(string text) => System.Net.WebUtility.HtmlEncode(text);
 
-    private static string Intel(string title, int count, string unit, string? body = null, string? note = null) =>
-        $"<div class='pile-intel'><div class='pile-intel-head'><span class='pile-intel-title'>{Enc(title)}</span><span class='pile-intel-count'>{count} {Enc(count == 1 ? unit : unit + "s")}</span></div>"
+    private static string Intel(string title, int count, string unit, string? body = null, string? note = null, bool large = false) =>
+        $"<div class='pile-intel{(large ? " is-large" : "")}'><div class='pile-intel-head'><span class='pile-intel-title'>{Enc(title)}</span><span class='pile-intel-count'>{count} {Enc(count == 1 ? unit : unit + "s")}</span></div>"
         + (note == null ? "" : $"<div class='pile-intel-note'>{Enc(note)}</div>")
         + (body ?? "") + "</div>";
 
@@ -80,7 +80,7 @@
         Grid(items.Where(card => card != null).Select(card => Client.CurrentSkin.GetImageUrl(card!)));
 
     private string IntelOfWhiteCardPile() =>
-        Intel($"{Client.CurrentSkin.Describe(Faction.White)} cards", Game.WhiteCache.Count, "card", Client.Faction == Faction.White ? GetCardImages(Game.WhiteCache) : null);
+        Intel($"{Client.CurrentSkin.Describe(Faction.White)} cards", Game.WhiteCache.Count, "card", Client.Faction == Faction.White ? GetCardImages(Game.WhiteCache) : null, large: true);
 
     private string IntelOfResourceCardPile()
     {

@@ -8,7 +8,7 @@
 *@
 @inherits GameEventComponent<AuditCancelled>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
+<GameEventComponentLayout Compact="true" IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
     <Header>Do you wish to pay @Client.CurrentSkin.Describe(Faction.Brown) @AuditCancelled.Cost(Game) @Client.CurrentSkin.Describe(Concept.Resource) to cancel a scheduled audit of @AuditCancelled.GetNumberOfCardsThatMayBeAudited(Game) of your treachery cards?</Header>
     <Body>
