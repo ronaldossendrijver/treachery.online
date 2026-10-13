@@ -378,8 +378,8 @@ public class Skin : IDescriber
             SubscriptionType.DontParticipate => "no",
             SubscriptionType.MaybeAsPlayer => "maybe",
             SubscriptionType.CertainAsPlayer => "yes",
-            SubscriptionType.MaybeAsHost => "maybe*",
-            SubscriptionType.CertainAsHost => "yes*",
+            SubscriptionType.MaybeAsHost => "maybe (can be host)",
+            SubscriptionType.CertainAsHost => "yes (as host)",
             _ => "unknown"
         };
     }
@@ -423,7 +423,7 @@ public class Skin : IDescriber
     }
 
     private static string GetPopup(string c)
-        => $"<div style='background-color:white;border-color:black;border-width:1px;border-style:solid;color:black;padding:2px;'>{c}</div>";
+        => $"<div class='popover-text'>{c}</div>";
 
     public string GetPopup(ResourceCard c)
         => GetImageHoverHtml(GetImageUrl(c));
@@ -448,7 +448,7 @@ public class Skin : IDescriber
         if (c == null)
             return "";
         return
-            $"<div style='filter:drop-shadow(-3px 3px 2px black);'><img src='{GetImageUrl(c)}' width=300 class='img-fluid'/></div><div class='bg-dark text-white text-center' style='width:300px'>{GetTreacheryCardDescription(c)}</div>";
+            $"<div style='filter:drop-shadow(-3px 3px 2px black);'><img src='{GetImageUrl(c)}' width=300 class='ui-img-fluid'/></div><div class='popover-caption' style='width:300px'>{GetTreacheryCardDescription(c)}</div>";
     }
 
     public string GetPopup(IHero h)
@@ -471,16 +471,16 @@ public class Skin : IDescriber
     }
 
     public string GetPopup(Leader? l, LeaderSkill s)
-        => l == null ? "" : $"<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{GetImageUrl(s)}' width=300/><img src='{GetImageUrl(l)}' width=140 style='position:absolute;left:200px;top:120px;filter:drop-shadow(-2px 2px 2px black);'/></div>";
+        => l == null ? "" : $"<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{GetImageUrl(s)}' width=300/><img src='{GetImageUrl(l)}' width=120 style='position:absolute;right:6px;bottom:6px;width:40%;filter:drop-shadow(-2px 2px 2px black);'/></div>";
     
     public string GetPopup(StrongholdAdvantage adv)
         => GetImageHoverHtml(GetImageUrl(adv));
 
     public string GetPopup(StrongholdAdvantage adv, Faction f)
-        => $"<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{GetImageUrl(adv)}' width=300/><img src='{GetImageUrl(f)}' width=100 style='position:absolute;left:220px;top:40px;filter:drop-shadow(-3px 3px 2px black);'/></div>";
+        => $"<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{GetImageUrl(adv)}' width=300/><img src='{GetImageUrl(f)}' width=100 style='position:absolute;right:6px;top:40px;width:33%;filter:drop-shadow(-3px 3px 2px black);'/></div>";
 
     private string GetImageHoverHtml(string imageUrl)
-        => $"<img src='{imageUrl}' width=300 class='img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/>";
+        => $"<img src='{imageUrl}' width=300 class='ui-img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/>";
 
     public string GetImageUrl(object obj)
     {

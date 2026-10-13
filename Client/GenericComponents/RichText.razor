@@ -66,13 +66,7 @@
             }
             else
             {
-                _attributes.Add("data-bs-trigger", "hover");
-                _attributes.Add("data-bs-toggle", "popover");
-                _attributes.Add("data-bs-html", "true");
-                _attributes.Add("data-bs-animation", "false");
-                _attributes.Add("data-bs-delay", "100");
-                _attributes.Add("data-container", "body");
-                _attributes.Add("data-bs-content", Popover ?? string.Empty);
+                _attributes.Add("data-game-popover", Popover ?? string.Empty);
                 _popoverNeedsRefresh = true;
             }
         }

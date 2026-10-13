@@ -10,7 +10,7 @@
 
 @if (Game.CurrentBattle is null) return;
 
-@if (_showPlan) {
+@{
 
     <MapImage X=X Y=Y Diameter="@(Client.CurrentSkin.BattleScreenWidth)" Src="@Client.CurrentSkin.BattleScreen_URL" 
            ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="3" ShadowY="3" ShadowBlur="1" 
@@ -209,7 +209,7 @@
                       ShadowY="1" 
                       ShadowBlur="1" 
                       Popover="@Client.CurrentSkin.GetPopup(card)" 
-                      PopoverStyle=""/>
+                     />
         }
 
         if (TraitorCalled)
@@ -259,7 +259,7 @@
 
             <MapImage X="@(X + Client.CurrentSkin.BattleWheelCardX + 1.1f * Client.CurrentSkin.BattleWheelCardWidth)" Y="@(Y + Client.CurrentSkin.BattleWheelCardY)" Width=@(Client.CurrentSkin.BattleWheelCardWidth) Height="@(Client.CurrentSkin.BattleWheelCardHeight)" 
                    Src="@Client.CurrentSkin.GetImageUrl(defenseToShow)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                   Popover="@Client.CurrentSkin.GetPopup(defenseToShow)" PopoverStyle=""/>
+                   Popover="@Client.CurrentSkin.GetPopup(defenseToShow)"/>
         }
         else if (!ShowEntirePlan)
         {
@@ -279,7 +279,7 @@
         {
             <MapImage X="@(X + Client.CurrentSkin.BattleWheelCardX)" Y="@(Y + Client.CurrentSkin.BattleWheelCardY)" Width=@(Client.CurrentSkin.BattleWheelCardWidth) Height="@(Client.CurrentSkin.BattleWheelCardHeight)" 
                    Src="@Client.CurrentSkin.GetImageUrl(Plan.Weapon)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                   Popover="@Client.CurrentSkin.GetPopup(Plan.Weapon)" PopoverStyle=""/>
+                   Popover="@Client.CurrentSkin.GetPopup(Plan.Weapon)"/>
         }
         else if (!ShowEntirePlan)
         {
@@ -292,22 +292,8 @@
         }
     }
 }
-else
-{
-    <MapImage X=@(X + 0.5f * Client.CurrentSkin.BattleScreenWidth - Client.CurrentSkin.FORCETOKEN_RADIUS) Y=@Y Diameter=@(2*Client.CurrentSkin.FORCETOKEN_RADIUS) Src="@Client.CurrentSkin.BattleScreen_URL"
-       ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"/>
-}
-
-<MapImage X="@(X + Client.CurrentSkin.BattleWheelForcesX - 0.5f * Client.CurrentSkin.FORCETOKEN_RADIUS)" Y="@(Y + 0.25f * Client.CurrentSkin.FORCETOKEN_RADIUS)"
-    Diameter="@Client.CurrentSkin.FORCETOKEN_RADIUS"
-    Src="@(_showPlan ? Client.CurrentSkin.EyeSlash_URL : Client.CurrentSkin.Eye_URL)"
-    OnClick="@OnShowPlanClick"
-    ShadowColor="black" ShadowX="1" ShadowY="1" ShadowBlur="0"
-    Popover="@(_showPlan ? "Hide Wheel" : "Show Wheel")" PopoverAsTooltip="true"/>
 
 @code {
-
-    private bool _showPlan = true;
 
     [Parameter, EditorRequired] 
     public Battle Plan { get; set; }
@@ -337,11 +323,5 @@ else
                 or LeaderSkill.Swordmaster 
                 or LeaderSkill.KillerMedic 
                 or LeaderSkill.MasterOfAssassins;
-    }
-
-    private void OnShowPlanClick(MouseEventArgs e)
-    {
-        _showPlan = !_showPlan;
-        StateHasChanged();
     }
 }

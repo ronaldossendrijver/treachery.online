@@ -15,7 +15,7 @@
 
         @if (Game.CurrentBattle!.IsInvolved(Faction.Blue))
         {
-            <div class="text-info small mb-2">Note: Voice should be used before Prescience.</div>
+            <div class="ui-text-info ui-small ui-mb-2">Note: Voice should be used before Prescience.</div>
         }
 
         <RadioComponent @bind-Value="_aspect" Values="Prescience.ValidAspects(Game, Player)">

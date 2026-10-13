@@ -15,10 +15,10 @@
 
         @if (Game.ShipmentPermissions.Any())
         {
-            <table class="table table-sm">
+            <table class="ui-table ui-table-sm">
 
                 <thead>
-                    <tr class="table-dark">
+                    <tr class="ui-table-dark">
                         <th scope="col">Faction</th>
                         <th scope="col">Cross planet</th>
                         <th scope="col">To (own) homeworld</th>
@@ -31,13 +31,13 @@
 
                     @foreach (var kvp in Game.ShipmentPermissions)
                     {
-                        <tr class="table-dark">
+                        <tr class="ui-table-dark">
                             <td><img width=24 src="@Client.CurrentSkin.GetImageUrl(kvp.Key)" /></td>
                             <td>@((kvp.Value & ShipmentPermission.Cross) == ShipmentPermission.Cross ? "Yes" : "No")</td>
                             <td>@((kvp.Value & ShipmentPermission.ToHomeworld) == ShipmentPermission.ToHomeworld ? "Yes" : "No")</td>
                             <td>@((kvp.Value & ShipmentPermission.OrangeRate) == ShipmentPermission.OrangeRate ? "Yes" : "No")</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" @onclick="e => Revoke(kvp.Key)">Revoke</button>
+                                <button class="ui-btn ui-btn-primary ui-btn-sm" @onclick="e => Revoke(kvp.Key)">Revoke</button>
                             </td>
                         </tr>
                     }
@@ -47,13 +47,13 @@
             </table>
         }
 
-        <div class="mt-2">
+        <div class="ui-mt-2">
             <SelectFromImageComponent Values="@SetShipmentPermission.ValidTargets(Game, Player)" Selected="@targets" Required="true" ImageWidth="40" T="Faction" OnChanged="StateHasChanged">
                 <Label>Set permissions for:</Label>
             </SelectFromImageComponent>
         </div>
 
-        <div class="mt-1">
+        <div class="ui-mt-1">
             <CheckboxComponent @bind-Value="@_crossPermission">Allow cross planet shipments</CheckboxComponent>
             <CheckboxComponent @bind-Value="@_homeworldPermission">Allow shipment to (own) homeworld</CheckboxComponent>
             <CheckboxComponent @bind-Value="@_discountPermission">May ship at half price</CheckboxComponent>

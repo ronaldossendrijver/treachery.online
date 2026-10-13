@@ -7,7 +7,7 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-<ModalComponent Id="@Id" Title="The story of this game..." Size="modal-xl" Scrolling="true" Printable="true">
+<ModalComponent Id="@Id" Title="The story of this game..." Size="dialog-wide" Scrolling="true" Printable="true">
 
     @{
         var previousPhase = Phase.AwaitingPlayers;
@@ -29,14 +29,14 @@
             {
                 <h4 class="h4">Setup</h4>
 
-                <div class="mt-1"><strong>Ruleset:</strong> @Client.CurrentSkin.Describe(replay.Ruleset)</div>
+                <div class="ui-mt-1"><strong>Ruleset:</strong> @Client.CurrentSkin.Describe(replay.Ruleset)</div>
 
                 @if (replay.GetCustomRules().Any())
                 {
-                    <div class="mt-1"><strong>Custom rules:</strong> @Client.CurrentSkin.Join(replay.GetCustomRules())</div>
+                    <div class="ui-mt-1"><strong>Custom rules:</strong> @Client.CurrentSkin.Join(replay.GetCustomRules())</div>
                 }
 
-                <div class="mt-1"><strong>Game started:</strong> @evt.Time.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss \"UTC\"")</div>
+                <div class="ui-mt-1"><strong>Game started:</strong> @evt.Time.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss \"UTC\"")</div>
 
                 <StoryPlayerInfoComponent Game="replay" ShowName="true" />
             }
@@ -44,7 +44,7 @@
             if (evt is BluePrediction bp && replay.YieldsSecrets(evt.Initiator))
             {
                 <div>
-                    <img class="img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(Faction.Blue)" alt="@Client.CurrentSkin.Describe(Faction.Blue)"/> Predicted that <img class="img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(bp.ToWin)" alt="@Client.CurrentSkin.Describe(bp.ToWin)"/> win in turn @bp.Turn.
+                    <img class="ui-img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(Faction.Blue)" alt="@Client.CurrentSkin.Describe(Faction.Blue)"/> Predicted that <img class="ui-img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(bp.ToWin)" alt="@Client.CurrentSkin.Describe(bp.ToWin)"/> win in turn @bp.Turn.
                 </div>
             }
 
@@ -53,8 +53,8 @@
                 if (replay.WinningBid != previousWinningBid)
                 {
                     <div>
-                        <img class="img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(replay.WinningBid.Initiator)" alt="@Client.CurrentSkin.Describe(replay.WinningBid.Initiator)"/> 
-                        buy 
+                        <img class="ui-img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(replay.WinningBid.Initiator)" alt="@Client.CurrentSkin.Describe(replay.WinningBid.Initiator)"/>
+                        buy
                         <RichText Shown=@replay.CardJustWon/>
                         for @replay.WinningBid.TotalAmount
                         @if (replay.WinningBid is Bid { KarmaCard: not null } b)
@@ -75,31 +75,31 @@
             {
                 <h4 class="h4">Turn @replay.CurrentTurn</h4>
 
-                <h5 class="mt-2">Situation at the start of Bidding:</h5>
+                <h5 class="ui-mt-2">Situation at the start of Bidding:</h5>
                 <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowCards="true" ShowTraitorsAndFacedancers="true" ShowResources="true" ShowTechTokens="@(replay.Applicable(Rule.TechTokens))" />
             }
 
             if (replay.CurrentMainPhase != previousMainPhase && replay.CurrentMainPhase == MainPhase.Resurrection)
             {
-                <h5 class="mt-2">Situation at the end of Bidding:</h5>
+                <h5 class="ui-mt-2">Situation at the end of Bidding:</h5>
                 <StoryPlayerInfoComponent Game="replay" ShowCards="true" ShowResources="true" />
             }
 
             if (replay.CurrentMainPhase != previousMainPhase && replay.CurrentMainPhase == MainPhase.Battle)
             {
-                <h5 class="mt-2">Situation at the end of Ship & Move:</h5>
+                <h5 class="ui-mt-2">Situation at the end of Ship & Move:</h5>
                 <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowResources="true" ShowForces="true" ShowLeaders="true" ShowPoints="true" />
             }
 
             if (evt is BattleInitiated && replay.BattleAboutToStart?.Territory != null)
             {
-                <h5 class="mt-2">Battle for @Client.CurrentSkin.Describe(replay.BattleAboutToStart.Territory)</h5>
+                <h5 class="ui-mt-2">Battle for @Client.CurrentSkin.Describe(replay.BattleAboutToStart.Territory)</h5>
             }
 
             if (IsMilestone(evt))
             {
-                <div class="mb-1">
-                    <img class="img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(evt.Initiator)" alt="@Client.CurrentSkin.Describe(evt.Initiator)"/> @evt.GetMessage().ToString(Client.CurrentSkin)
+                <div class="ui-mb-1">
+                    <img class="ui-img-fluid" width="24" src="@Client.CurrentSkin.GetImageUrl(evt.Initiator)" alt="@Client.CurrentSkin.Describe(evt.Initiator)"/> @evt.GetMessage().ToString(Client.CurrentSkin)
                 </div>
             }
 
@@ -110,13 +110,13 @@
 
             if (replay.CurrentPhase != previousPhase && replay.CurrentPhase == Phase.TurnConcluded)
             {
-                <h5 class="mt-2">Situation at the end of turn @replay.CurrentTurn:</h5>
+                <h5 class="ui-mt-2">Situation at the end of turn @replay.CurrentTurn:</h5>
                 <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowForces="true" ShowTanks="true" ShowResources="true" ShowTechTokens="true" ShowPoints="true" />
 
-                <table class="table table-sm" style="background-color:#FFFFFF32">
+                <table class="ui-table ui-table-sm" style="background-color:#FFFFFF32">
 
                     <thead>
-                        <tr class="table-dark">
+                        <tr class="ui-table-dark">
                             <th>Stronghold</th>
                             <th>Forces</th>
                             @if (replay.Applicable(Rule.StrongholdBonus))
@@ -133,13 +133,13 @@
                     <tbody>
                     @foreach (var sh in replay.Map.Strongholds)
                     {
-                            <tr class="table-dark">
+                            <tr class="ui-table-dark">
                             <td>@Client.CurrentSkin.Describe(sh)</td>
                             <td>
                                 @foreach (var b in replay.BattalionsIn(sh))
                                 {
                                     var batFaction = replay.GetPlayer(b.Faction)!;
-                                    
+
                                     if (b.AmountOfForces > 0)
                                     {
                                         <Image Width=24 Shown="@batFaction.Force" />
@@ -160,7 +160,7 @@
                                 var owner = replay.OwnerOf(sh);
 
                                 <td>
-                                
+
                                     @if (owner != null)
                                     {
                                         <Image Width=24 Shown=owner.Faction />
@@ -199,11 +199,11 @@
                 @foreach (var w in replay.Winners)
                 {
                     <div>
-                        <h3 class="h3"><img class="img-fluid" width="30" src="@Client.CurrentSkin.GetImageUrl(w.Faction)" alt="@Client.CurrentSkin.Describe(w.Faction)"/> @w.Name wins @Client.CurrentSkin.Describe(replay.WinMethod)!</h3>
+                        <h3 class="h3"><img class="ui-img-fluid" width="30" src="@Client.CurrentSkin.GetImageUrl(w.Faction)" alt="@Client.CurrentSkin.Describe(w.Faction)"/> @w.Name wins @Client.CurrentSkin.Describe(replay.WinMethod)!</h3>
                     </div>
                 }
 
-                <div class="mt-2 mb-0"><strong>Game ended:</strong> @evt.Time.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss \"UTC\"")</div>
+                <div class="ui-mt-2 ui-mb-0"><strong>Game ended:</strong> @evt.Time.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss \"UTC\"")</div>
             }
 
             previousPhase = replay.CurrentPhase;

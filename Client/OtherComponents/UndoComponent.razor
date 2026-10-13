@@ -8,12 +8,12 @@
 *@
 @inherits GameComponent
 
-<div class="card p-1 mb-2">
+<div class="ui-card ui-p-1 ui-mb-2">
 
-    <div class="card-header">Select up to (including) which action should be undone</div>
+    <div class="ui-card-header">Select up to (including) which action should be undone</div>
 
-    <div class="card-body">
-        <select class="form-select" @bind="_undoEventId" id="undoEventNr">
+    <div class="ui-card-body">
+        <select class="ui-form-select" @bind="_undoEventId" id="undoEventNr">
             @foreach (var group in UndoableEvents)
             {
                 <optgroup label="@group.Key">
@@ -25,7 +25,7 @@
             }
         </select>
        
-        <button class="btn btn-primary mt-1" @onclick="ConfirmUndo">Confirm</button>
+        <button class="ui-btn ui-btn-primary ui-mt-1" @onclick="ConfirmUndo">Confirm</button>
     </div>
 </div>
 

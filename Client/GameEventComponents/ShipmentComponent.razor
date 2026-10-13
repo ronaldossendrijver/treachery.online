@@ -18,12 +18,7 @@
 
             @if (Shipment.MayShipCrossPlanet(Game, Player))
             {
-                <div>In addition, your ally allows you to ship to other locations as well from your reserves.</div>
-            }
-
-            @if (Shipment.MayUseWhiteSecretAlly(Game, Player))
-            {
-                <div>You may also ship with <FactionComponent Faction="Faction.White"/> as your secret ally.</div>
+                <div>In addition, you are allowed you to ship to other locations as well from your reserves.</div>
             }
         }
         else
@@ -31,20 +26,25 @@
             <div>Select forces to ship, or pass.</div>
         }
 
-        @if (Shipment.MayShipCrossPlanet(Game, Player))
-        {
-            <div>You may ship site-to-site any number of forces from a source location to another location.</div>
-        }
-
-        @if (Shipment.MayShipToReserves(Game, Player))
-        {
-            <div>You may ship any number of forces from any one location back to your reserves.</div>
-        }
-
     </Header>
     <Body>
 
-        @if (ValidShipmentTypes.Count() > 1)
+    @if (Shipment.MayShipCrossPlanet(Game, Player))
+    {
+        <div>You may ship site-to-site any number of forces from a source location to another location.</div>
+    }
+
+    @if (Shipment.MayShipToReserves(Game, Player))
+    {
+        <div>You may ship any number of forces from any one location back to your reserves.</div>
+    }
+    
+    @if (Shipment.MayUseWhiteSecretAlly(Game, Player))
+    {
+        <div>You may also ship with <FactionComponent Faction="Faction.White"/> as your secret ally.</div>
+    }
+    
+    @if (ValidShipmentTypes.Count() > 1)
         {
             <RadioComponent @bind-Value="ShipmentType" Values="@ValidShipmentTypes" ValueLabels="@ValidShipmentTypeLabels" />
         }
@@ -70,7 +70,7 @@
             ShipmentFrom = Player.HomeWorlds[0];
         }
 
-        <div class="mt-1 mb-1">
+        <div class="ui-mt-1 ui-mb-1">
             <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="ShipmentTo" Values="ValidShipmentLocations.OrderByDescending(l => l.IsStronghold).ThenBy(Name)">
                 <Label>
                     @if (ShipmentType is ShipmentType.ShipmentBack)
@@ -87,7 +87,7 @@
 
         @if (ShipmentType is not ShipmentType.ShipmentBack && ShipmentTo != null && Game.ContainsConflictingAlly(Player, ShipmentTo))
         {
-            <div class="text-danger bg-dark">Note: if you place forces there, all of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
+            <div class="ui-text-danger ui-bg-dark">Note: if you place forces there, all of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
         }
 
         @if (Shipment.MayUseNoField(Game, Player))
@@ -141,7 +141,7 @@
                 worlds = worldsWithNormalForces.Union(worldsWithSpecialForces).ToArray();
             }
             
-            <div class="mt-1">
+            <div class="ui-mt-1">
 
                 @if (ValidShipmentForces > 0)
                 {
@@ -163,7 +163,7 @@
 
                 @if (selectNormalForceSources || selectSpecialForceSources)
                 {
-                    <div class="mt-1">Select from which worlds to ship these forces:</div>
+                    <div class="ui-mt-1">Select from which worlds to ship these forces:</div>
                     <ForceSelectionComponent Game=Game 
                                              Player=Player 
                                              Locations="@worlds" 
@@ -192,7 +192,7 @@
             (ShipmentForceAmount > 0 || ShipmentSpecialForceAmount > 0) && 
             Shipment.MaySmuggle(Game, Player, ShipmentTo))
         {
-            <div class="mt-1">
+            <div class="ui-mt-1">
 
                 <div>You may smuggle 1 force for free:</div>
 
@@ -224,8 +224,8 @@
 
         @if (Player.Ally != Faction.None && Cost > 0 && Game.ResourcesYourAllyCanPay(Player) > 0)
         {
-            <div class="mt-1">Let your ally support this shipment?</div>
-            <div class="mt-1">
+            <div class="ui-mt-1">Let your ally support this shipment?</div>
+            <div class="ui-mt-1">
                 <SelectResourcesFromFactionComponent @bind-Value="ShipmentAllyContributionAmount" 
                                                      Min="0" 
                                                      Max="Game.ResourcesYourAllyCanPay(Player)" 
@@ -240,7 +240,7 @@
 
         @if (Shipment.CanKarma(Game, Player) && (Faction != Faction.Yellow || ShipmentType is ShipmentType.ShipmentSiteToSite) && !Shipment.MayShipCrossPlanet(Game, Player))
         {
-            <div class="mt-1">
+            <div class="ui-mt-1">
 
                 <SelectFromImageComponent @bind-Value="KarmaCard" Values="Shipment.ValidKarmaCards(Game, Player)" Required="false" ImageWidth="80">
                     <Label>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to ship at @Client.CurrentSkin.Describe(Faction.Orange) rate?</Label>
@@ -248,7 +248,7 @@
             
                 @if (KarmaCard != null && !Player.TreacheryCards.Contains(KarmaCard))
                 {
-                    <div class="text-info">This card is offered to you by your ally</div>
+                    <div class="ui-text-info">This card is offered to you by your ally</div>
                 }
 
             </div>
@@ -258,7 +258,7 @@
             KarmaCard = null;
         }
 
-        <div class="mt-1 text-end">Total cost of shipment: <SimpleNumberComponent>@Cost</SimpleNumberComponent></div>
+        <div class="ui-mt-1 ui-text-end">Total cost of shipment: <SimpleNumberComponent>@Cost</SimpleNumberComponent></div>
 
         @if (ShipmentType is ShipmentType.ShipmentNormal && Faction != Faction.Yellow && Game.PreventedFromShipping(Faction))
         {

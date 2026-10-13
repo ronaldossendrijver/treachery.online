@@ -1,0 +1,252 @@
+@inherits GameComponent
+
+<button class="communications-launcher" type="button" data-dialog-target="#@DialogId" aria-haspopup="dialog"
+        aria-label="@($"Open communications. {Client.RecentlySeenUsers.Count} players recently seen.")">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 5.75A2.75 2.75 0 0 1 6.75 3h10.5A2.75 2.75 0 0 1 20 5.75v7.5A2.75 2.75 0 0 1 17.25 16H10l-5.5 4v-4.69A2.74 2.74 0 0 1 4 13.25z" />
+        <path d="M8 8h8M8 11.5h5" />
+    </svg>
+    <span>Messages &amp; players</span>
+    <span class="communications-online-count">@Client.RecentlySeenUsers.Count</span>
+</button>
+
+<dialog id="@DialogId" class="communications-dialog" aria-labelledby="@($"{DialogId}-title")" aria-describedby="@($"{DialogId}-description")">
+    <div class="communications-shell">
+        <header class="communications-header">
+            <div>
+                <span class="eyebrow">TREACHERY ONLINE</span>
+                <h2 id="@($"{DialogId}-title")">Communications</h2>
+                <p id="@($"{DialogId}-description")">Chat with a player, everyone in this game, or the whole server.</p>
+            </div>
+            <button class="icon-button" type="button" data-dialog-close aria-label="Close communications">×</button>
+        </header>
+
+        <div class="communications-layout">
+            <section class="communications-roster" aria-labelledby="@($"{DialogId}-roster-title")">
+                <div class="communications-section-heading">
+                    <h3 id="@($"{DialogId}-roster-title")">Players on the server</h3>
+                    <span>@Client.RecentlySeenUsers.Count</span>
+                </div>
+                <ul class="communications-user-list">
+                    @foreach (var user in Client.RecentlySeenUsers.Values.OrderBy(user => user.Name))
+                    {
+                        var player = Client.InGame ? Game.GetPlayerByUserId(user.Id) : null;
+                        var playerName = player != null ? Game.GetPlayerName(player) : user.Name;
+                        var target = player != null && player != Client.Player ? PlayerTarget(player) : null;
+                        var isSelected = target != null && target == _selectedRecipient;
+                        var statusLabel = UserStatusLabel(user.Status);
+
+                        <li class="communications-user-row">
+                            @if (target != null)
+                            {
+                                <button class="communications-user @(isSelected ? "is-selected" : "")" type="button"
+                                        aria-pressed="@isSelected" title="@($"Chat with {playerName}")"
+                                        @onclick="@(() => SelectPlayer(target))">
+                                    <span class="communications-user-avatar" aria-hidden="true">@Initials(playerName)</span>
+                                    <span class="communications-user-details">
+                                        <span class="communications-user-name">@playerName</span>
+                                        <span class="communications-user-meta">
+                                            @if (player!.Faction != Faction.None)
+                                            {
+                                                <span class="communications-faction">@player.Faction</span>
+                                            }
+                                            <span class="communications-status status-@user.Status.ToString().ToLowerInvariant()">@statusLabel</span>
+                                        </span>
+                                    </span>
+                                    <span class="communications-user-action" aria-hidden="true">Chat</span>
+                                </button>
+                            }
+                            else
+                            {
+                                <div class="communications-user communications-user-static">
+                                    <span class="communications-user-avatar" aria-hidden="true">@Initials(playerName)</span>
+                                    <span class="communications-user-details">
+                                        <span class="communications-user-name">@playerName</span>
+                                        <span class="communications-user-meta">
+                                            <span class="communications-status status-@user.Status.ToString().ToLowerInvariant()">@statusLabel</span>
+                                        </span>
+                                    </span>
+                                    @if (Client.InGame && !Client.IsObserver)
+                                    {
+                                        <span class="communications-user-action" title="Direct chat is available for players in this game">Not in game</span>
+                                    }
+                                </div>
+                            }
+                        </li>
+                    }
+                    @if (Client.RecentlySeenUsers.Count == 0)
+                    {
+                        <li class="communications-empty-users">No recently seen players.</li>
+                    }
+                </ul>
+            </section>
+
+            <section class="communications-chat" aria-labelledby="@($"{DialogId}-chat-title")">
+                <div class="communications-section-heading">
+                    <div>
+                        <h3 id="@($"{DialogId}-chat-title")">Chat</h3>
+                        <span class="communications-recipient-caption">@RecipientCaption</span>
+                    </div>
+                    @if (ShowGameChat)
+                    {
+                        <label class="communications-mute">
+                            <input type="checkbox" @bind="Client.MuteGlobalChat" @bind:after="OnMuteGlobalChatChanged" />
+                            <span>Hide server chat</span>
+                        </label>
+                    }
+                </div>
+
+                <div class="communications-messages" role="log" aria-live="polite" aria-relevant="additions text" aria-label="Chat messages" tabindex="0">
+                    @if (Client.UserId is int currentUserId)
+                    {
+                        @foreach (var message in Client.Messages.Where(message => !Client.MuteGlobalChat || message is not GlobalChatMessage))
+                        {
+                            var messageColor = message is GameChatMessage gameMessage
+                                ? Client.CurrentSkin.GetFactionColor(gameMessage.GetFaction(gameMessage.SourceUserId, Game))
+                                : "#756d5e";
+                            <div class="communications-message" style="@($"--message-accent:{messageColor}")">
+                                <ExpressionComponent Game="@Game" Expression="@message.GetBodyIncludingPlayerInfo(currentUserId, Client.RecentlySeenUsers, Game, !Client.InGame).Expression" Size="16" />
+                            </div>
+                        }
+                    }
+                    @if (!Client.Messages.Any(message => !Client.MuteGlobalChat || message is not GlobalChatMessage))
+                    {
+                        <p class="communications-empty-chat">Messages will appear here.</p>
+                    }
+                </div>
+
+                <form class="communications-composer" @onsubmit="@(_ => Send())" @onsubmit:preventDefault>
+                    <label class="communications-field-label" for="@($"{DialogId}-recipient")">Send to</label>
+                    <select id="@($"{DialogId}-recipient")" class="ui-form-select" @bind="_selectedRecipient">
+                        @if (!Client.MuteGlobalChat || !ShowGameChat)
+                        {
+                            <option value="@ServerTarget">Everyone on the server</option>
+                        }
+                        @if (ShowGameChat)
+                        {
+                            <option value="@GameTarget">Everyone in this game</option>
+                            @foreach (var player in Game.Players.Where(player => player != Client.Player).OrderBy(player => Game.GetPlayerName(player)))
+                            {
+                                <option value="@PlayerTarget(player)">@Game.GetPlayerName(player)</option>
+                            }
+                        }
+                    </select>
+                    <div class="communications-send-row">
+                        <label class="communications-field-label" for="@($"{DialogId}-message")">Message</label>
+                        <input id="@($"{DialogId}-message")" name="message" class="ui-form-control"
+                               type="text" maxlength="512" autocomplete="off"
+                               placeholder="@($"Write to {RecipientCaption.ToLowerInvariant()}…")"
+                               @bind="_message" @bind:event="oninput" />
+                        <button class="ui-btn ui-btn-primary communications-send" type="submit" disabled="@string.IsNullOrWhiteSpace(_message)">
+                            Send
+                            <span aria-hidden="true">↗</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+</dialog>
+
+@code {
+    private const string ServerTarget = "server";
+    private const string GameTarget = "game";
+
+    private string DialogId { get; } = $"communications-{Guid.NewGuid():N}";
+    private string _selectedRecipient = ServerTarget;
+    private string? _message;
+
+    private bool ShowGameChat => Client.InGame && !Client.IsObserver;
+
+    private string RecipientCaption => _selectedRecipient switch
+    {
+        ServerTarget => "Everyone on the server",
+        GameTarget => "Everyone in this game",
+        _ when int.TryParse(_selectedRecipient, out var userId) =>
+            Client.InGame && Game.GetPlayerByUserId(userId) is { } player
+                ? Game.GetPlayerName(player)
+                : Client.RecentlySeenUsers.TryGetValue(userId, out var user) ? user.Name : "selected player",
+        _ => "Everyone on the server"
+    };
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (ShowGameChat && Game.Players.FirstOrDefault(player => player != Client.Player) is { } player)
+            _selectedRecipient = PlayerTarget(player);
+    }
+
+    private string PlayerTarget(Player player) => Game.GetUserIdByName(Game.GetPlayerName(player)).ToString();
+
+    private void SelectPlayer(string target) => _selectedRecipient = target;
+
+    private void OnMuteGlobalChatChanged()
+    {
+        if (Client.MuteGlobalChat && _selectedRecipient == ServerTarget)
+        {
+            _selectedRecipient = ShowGameChat && Game.Players.FirstOrDefault(player => player != Client.Player) is { } player
+                ? PlayerTarget(player)
+                : GameTarget;
+        }
+    }
+
+    private static string Initials(string name)
+    {
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length switch
+        {
+            0 => "?",
+            1 => parts[0][..Math.Min(2, parts[0].Length)].ToUpperInvariant(),
+            _ => $"{char.ToUpperInvariant(parts[0][0])}{char.ToUpperInvariant(parts[^1][0])}"
+        };
+    }
+
+    private static string UserStatusLabel(UserStatus status) => status switch
+    {
+        UserStatus.Online => "Online",
+        UserStatus.Away => "Away",
+        UserStatus.Lfg => "Looking for game",
+        UserStatus.Lfm => "Looking for players",
+        UserStatus.InGame => "Playing",
+        _ => "Recently seen"
+    };
+
+    private async Task Send()
+    {
+        var body = _message?.Trim();
+        if (string.IsNullOrEmpty(body) || Client.UserId is not int userId)
+            return;
+
+        if (_selectedRecipient == ServerTarget)
+        {
+            await Client.SendGlobalChatMessage(new GlobalChatMessage
+            {
+                SourceUserId = userId,
+                Body = body
+            });
+        }
+        else if (_selectedRecipient == GameTarget)
+        {
+            await SendGameChat(userId, -1, body);
+        }
+        else if (int.TryParse(_selectedRecipient, out var targetUserId))
+        {
+            await SendGameChat(userId, targetUserId, body);
+        }
+
+        _message = "";
+    }
+
+    private async Task SendGameChat(int sourceUserId, int targetUserId, string body)
+    {
+        if (!Client.InGame)
+            return;
+
+        await Client.SendChatMessage(new GameChatMessage
+        {
+            SourceUserId = sourceUserId,
+            TargetUserId = targetUserId,
+            Body = body
+        });
+    }
+}

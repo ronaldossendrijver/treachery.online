@@ -1,0 +1,66 @@
+<button class="report-options-launcher" type="button" data-dialog-target="#report-layout-options" aria-haspopup="dialog">
+    Compare report layouts <span aria-hidden="true">↗</span>
+</button>
+
+<dialog id="report-layout-options" class="report-layout-dialog" aria-labelledby="report-layout-title">
+    <div class="report-layout-shell">
+        <header class="report-layout-header">
+            <div>
+                <span class="report-options-kicker">LAYOUT CONCEPTS</span>
+                <h2 id="report-layout-title">Game report placement</h2>
+                <p>The selected map-side dock keeps the event history easy to find without letting it grow through the action rail.</p>
+            </div>
+            <button class="icon-button" type="button" data-dialog-close aria-label="Close report layout concepts">×</button>
+        </header>
+
+        <div class="report-layout-options">
+            <article class="report-layout-option report-layout-option-selected" aria-label="Selected layout: map-side activity dock">
+                <div class="report-option-preview">
+                    <div class="report-mock-map"><span>ARRAKIS</span><i></i><i></i><i></i></div>
+                    <div class="report-mock-rail"><b>PLAYER</b><b>PHASE ACTION</b></div>
+                    <div class="report-mock-dock">
+                        <strong>Recent events <span>⌄</span></strong>
+                        <small>Guild shipment resolved</small>
+                        <small>Atreides forces moved to Arrakeen</small>
+                    </div>
+                </div>
+                <h3>1. Map-side activity dock</h3>
+                <p>A slim, collapsible timeline overlays the lower edge of the map. It stays discoverable and leaves the right action panel untouched.</p>
+                <span class="report-option-tag">Selected · always in view</span>
+            </article>
+
+            <article class="report-layout-option">
+                <div class="report-mock-preview report-mock-rail-feed">
+                    <div class="report-mock-status">YOUR TURN</div>
+                    <div class="report-mock-player">PLAYER PANEL</div>
+                    <div class="report-mock-feed">
+                        <strong>Recent activity <span>All events</span></strong>
+                        <small>Guild shipment resolved</small>
+                        <small>Atreides forces moved to Arrakeen</small>
+                    </div>
+                    <div class="report-mock-action">CURRENT ACTIONS</div>
+                </div>
+                <h3>2. Fixed-height rail feed</h3>
+                <p>A short “latest events” panel sits below the player panel and scrolls internally. It remains visible in context, with a compact height cap.</p>
+                <span class="report-option-tag">Persistent · uses some rail space</span>
+            </article>
+
+            <article class="report-layout-option">
+                <div class="report-mock-preview report-mock-modal-preview">
+                    <div class="report-mock-toolbar"><span>≡</span><span>⚙</span><span class="report-mock-report-button">▤ <i>4</i></span><span>ⓘ</span></div>
+                    <div class="report-mock-modal">
+                        <strong>Game report <span>×</span></strong>
+                        <small>Guild shipment resolved</small>
+                        <small>Atreides forces moved to Arrakeen</small>
+                        <small>Storm crossed the Shield Wall</small>
+                    </div>
+                </div>
+                <h3>3. Report button + full log</h3>
+                <p>A menu-bar button with an unread count opens the complete, internally scrolling timeline in a large dialog. No permanent panel height.</p>
+                <span class="report-option-tag">On demand · maximum room for actions</span>
+            </article>
+        </div>
+
+        <footer class="report-layout-footer">The selected map-side dock is used in live games; the other cards show alternatives.</footer>
+    </div>
+</dialog>

@@ -7,7 +7,7 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-<button class="btn @Class @SizeClass @MarginClass @PaddingClass" @onclick="@HandleClick" disabled="@Disabled" title="@Title">@ChildContent</button>
+<button class="ui-btn @Class @SizeClass @MarginClass @PaddingClass" @onclick="@HandleClick" disabled="@Disabled" title="@Title">@ChildContent</button>
 
 @code 
 {
@@ -15,7 +15,7 @@
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
     
-    [Parameter] public string Class { get; set; } = "btn-primary";
+    [Parameter] public string Class { get; set; } = "ui-btn-primary";
     
     [Parameter] public bool Small { get; set; }
 
@@ -27,7 +27,7 @@
     
     [Parameter] public string Title { get; set; } = string.Empty;
     
-    private string SizeClass => Small ? "btn-sm" : string.Empty;
+    private string SizeClass => Small ? "ui-btn-sm" : string.Empty;
 
     private bool Disabled => !Enabled || _busy;
 

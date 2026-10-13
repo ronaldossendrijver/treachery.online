@@ -1,0 +1,74 @@
+.bid-panel {
+    padding: 0;
+}
+
+.bid-panel-body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 14px 18px;
+    padding: 14px 16px;
+}
+
+.bid-lot {
+    position: relative;
+    flex: 0 0 150px;
+    width: 150px;
+    line-height: 0;
+}
+
+.bid-lot > ::deep img,
+.bid-lot > img {
+    display: block;
+    width: 150px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+}
+
+.bid-lot-overlay {
+    position: absolute;
+    top: 26%;
+    right: 0;
+    left: 0;
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    line-height: 1.2;
+    text-align: center;
+    filter: drop-shadow(2px 2px 2px black);
+    pointer-events: none;
+}
+
+.bid-lot-title {
+    padding: 0 6px;
+}
+
+.bid-lot-current {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.bid-controls {
+    display: grid;
+    flex: 1 1 220px;
+    align-content: start;
+    gap: 10px;
+    min-width: 0;
+}
+
+.bid-controls ::deep .ui-form-check {
+    margin: 0;
+}
+
+.bid-controls ::deep .ui-mt-1 {
+    margin-top: 0;
+}
+
+.bid-divider {
+    width: 100%;
+    margin: 2px 0;
+    border: 0;
+    border-top: 1px solid rgba(200, 177, 122, 0.35);
+}

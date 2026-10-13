@@ -6,50 +6,138 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
-@inherits MapComponent
+@using Treachery.Client.GameEventComponents
+@inherits GameComponent
 
-@if (Game.CurrentMainPhase == MainPhase.Battle && Game.CurrentPhase != Phase.BattleReport && Game.CurrentBattle != null)
+@*
+    Floating battle wheels over the map. Each combatant's wheel is the skin-configured BattlePlan; the wheel of the
+    current player is editable while their battle plan is due, and its tray hosts every other battle decision.
+*@
+@{
+    var actions = BattleWheelState.ActionTypes.Where(a => Client.Actions.Contains(a)).ToList();
+    var battle = Game.CurrentBattle;
+    var inBattle = Game.CurrentMainPhase == MainPhase.Battle && Game.CurrentPhase != Phase.BattleReport && battle != null;
+    var cards = new List<WheelCard>();
+
+    if (inBattle)
+    {
+        var hostIsAggressor = battle!.Aggressor == Faction || (battle.Defender != Faction && Player?.Ally == battle.Aggressor) || (battle.Defender != Faction && Player?.Ally != battle.Defender);
+        var maySeeBoth = Game.AggressorPlan != null && Game.DefenderPlan != null;
+        var aggressorWasFacedanced = Game.Version > 150 && Game.CurrentPhase == Phase.Facedancing && battle.Aggressor == Game.BattleWinner;
+        var defenderWasFacedanced = Game.Version > 150 && Game.CurrentPhase == Phase.Facedancing && battle.Defender == Game.BattleWinner;
+
+        foreach (var isAggressor in new[] { true, false })
+        {
+            var combatant = isAggressor ? battle.Aggressor : battle.Defender;
+            var plan = isAggressor ? Game.AggressorPlan : Game.DefenderPlan;
+            var opponentPlan = isAggressor ? Game.DefenderPlan : Game.AggressorPlan;
+            var isOwn = combatant == Faction;
+            var isHost = isAggressor == hostIsAggressor && actions.Count > 0;
+            var editing = isOwn && actions.Contains(typeof(Battle));
+
+            var maySee = plan != null && (plan.Initiator == Faction || (Game.GreenKarma && battle.OpponentOf(Faction.Green) == plan.Player));
+            var partial = plan != null && ((Game.CurrentPrescience != null && battle.OpponentOf(Game.CurrentPrescience.Initiator) == plan.Player) ||
+                                           (Game.CurrentNexusPrescience != null && battle.OpponentOf(Game.CurrentNexusPrescience.Initiator) == plan.Player));
+            var full = maySee || maySeeBoth;
+
+            if (!(editing || full || partial || isOwn || isHost)) continue;
+
+            cards.Add(new WheelCard(combatant, isAggressor, editing, isHost, editing || isHost && actions.Count > 0,
+                full ? plan : partial ? plan : null, full, opponentPlan,
+                isAggressor ? Game.DefenderTraitorAction is { Succeeded: true } : Game.AggressorTraitorAction is { Succeeded: true },
+                isAggressor ? aggressorWasFacedanced : defenderWasFacedanced,
+                plan == null ? (isOwn ? "Your battle plan is not submitted yet" : "Battle plan not submitted yet") : "Battle plan is hidden until both plans are in"));
+        }
+    }
+    else if (actions.Count > 0)
+    {
+        cards.Add(new WheelCard(Faction, true, false, true, true, null, false, null, false, false, ""));
+    }
+
+    if (cards.Count == 0) return;
+
+    var territory = (battle ?? Game.BattleAboutToStart)?.Territory;
+    var territoryName = territory != null ? Name(territory) : "Battle";
+    var hidden = BattleWheelState.Hidden;
+    var startActions = actions.Where(a => a != typeof(Battle) && !BattleWheelState.AfterBattleTypes.Contains(a)).ToList();
+    var endActions = actions.Where(a => BattleWheelState.AfterBattleTypes.Contains(a)).ToList();
+    RenderFragment? startFlap = null;
+    RenderFragment? endFlap = null;
+    if (startActions.Count > 0) startFlap = @<BattleWheelActions Actions="startActions" />;
+    if (endActions.Count > 0) endFlap = @<BattleWheelActions Actions="endActions" />;
+}
+
+<div class="bwl-layer @(hidden ? "is-hidden" : "")" style="--bwl-base:@Px(Client.CurrentSkin.BattleScreenWidth)">
+    @foreach (var card in cards)
+    {
+        var role = inBattle ? (card.IsAggressor ? "Aggressor" : "Defender") : null;
+        var frame = new BattleWheelFrame(card.IsAggressor ? "battle-wheel-aggressor" : "battle-wheel-defender", card.Combatant, card.IsAggressor, role, territoryName, card.IsActive, hidden);
+
+        if (card.Editing)
+        {
+            <BattleComponent @key="@frame.DragKey" Frame="frame" StartActions="@(card.IsHost ? startFlap : null)" EndActions="@(card.IsHost ? endFlap : null)" />
+        }
+        else
+        {
+            <BattleWheelCard @key="@frame.DragKey" Frame="frame" LeftFlap="@(card.IsHost ? startFlap : null)" RightFlap="@(card.IsHost ? endFlap : null)">
+                <Wheel>
+                    <div class="bwl-face">
+                        <div class="bwl-board">
+                            @if (card.Plan != null)
+                            {
+                                <BattlePlan Plan="card.Plan" ShowEntirePlan="card.ShowEntirePlan" OpponentPlan="card.OpponentPlan"
+                                            TraitorCalled="@(card.ShowEntirePlan && card.TraitorCalled)" Facedanced="card.Facedanced" IsAggressor="card.IsAggressor" X="0" Y="0" />
+                            }
+                            else
+                            {
+                                <img class="bwl-art" src="@Client.CurrentSkin.BattleScreen_URL" alt="" />
+                                @if (Client.CurrentSkin.FactionTableImage_URL.TryGetValue(card.Combatant, out var tint))
+                                {
+                                    <img class="bwl-art bwl-tint" src="@tint" alt="" />
+                                }
+                                @if (card.Note.Length > 0)
+                                {
+                                    <span class="bwl-note">@card.Note</span>
+                                }
+                            }
+                        </div>
+                    </div>
+                </Wheel>
+            </BattleWheelCard>
+        }
+    }
+</div>
+@if (hidden)
 {
-    var maySeeAggressorBattlePlan = Game.AggressorPlan != null && (Game.AggressorPlan.Initiator == Client.Faction || (Game.GreenKarma && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.AggressorPlan.Player));
-    var maySeeDefenderBattlePlan = Game.DefenderPlan != null && (Game.DefenderPlan.Initiator == Client.Faction || (Game.GreenKarma && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.DefenderPlan.Player));
+    <button type="button" class="battle-wheel-pill @(actions.Count > 0 ? "is-urgent" : "")" @onclick="@(() => BattleWheelState.Hidden = false)" aria-label="Show the battle wheels">
+        <img src="@Client.CurrentSkin.BattleScreen_URL" alt="" />
+        <span>Show battle wheel@(cards.Count > 1 ? "s" : "")</span>
+        @if (actions.Count > 0)
+        {
+            <span class="battle-wheel-pill-count" title="Pending battle actions">@actions.Count</span>
+        }
+    </button>
+}
 
-    var maySeeBothBattlePlans = Game.AggressorPlan != null && Game.DefenderPlan != null;
-    
-    var aggressorIsAffectedByPartialPrescience = Game.AggressorPlan != null && 
-                                                 ((Game.CurrentPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentPrescience.Initiator) == Game.AggressorPlan.Player) ||
-                                                  (Game.CurrentNexusPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentNexusPrescience.Initiator) == Game.AggressorPlan.Player));
+@code {
 
-    var defenderIsAffectedByPartialPrescience = Game.DefenderPlan != null && 
-                                                ((Game.CurrentPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentPrescience.Initiator) == Game.DefenderPlan.Player) ||
-                                                 (Game.CurrentNexusPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentNexusPrescience.Initiator) == Game.DefenderPlan.Player));
+    private sealed record WheelCard(
+        Faction Combatant, bool IsAggressor, bool Editing, bool IsHost, bool IsActive,
+        Battle? Plan, bool ShowEntirePlan, Battle? OpponentPlan, bool TraitorCalled, bool Facedanced, string Note);
 
-    var aggressorCallsTraitor = Game.AggressorTraitorAction is { Succeeded: true };
-    var defenderCallsTraitor = Game.DefenderTraitorAction is { Succeeded: true };
+    private static string Px(double x) => Utilities.Px(x);
 
-    var aggressorWasFacedanced = Game.Version > 150 && Game.CurrentPhase == Phase.Facedancing && Game.CurrentBattle.Aggressor == Game.BattleWinner;
-    var defenderWasFacedanced = Game.Version > 150 && Game.CurrentPhase == Phase.Facedancing && Game.CurrentBattle.Defender == Game.BattleWinner;
-
-    var x = 0.1f * Client.CurrentSkin.MapDimensions.X;
-    var y = 0.1f * Client.CurrentSkin.MapDimensions.Y;
-
-    if (maySeeAggressorBattlePlan || maySeeBothBattlePlans)
+    protected override void OnInitialized()
     {
-        <BattlePlan Plan="Game.AggressorPlan" ShowEntirePlan=true OpponentPlan="Game.DefenderPlan" Facedanced="aggressorWasFacedanced" TraitorCalled="defenderCallsTraitor" IsAggressor="true" X="x" Y="y" />
-    }
-    else if (aggressorIsAffectedByPartialPrescience)
-    {
-        <BattlePlan Plan="Game.AggressorPlan" ShowEntirePlan=false OpponentPlan="Game.DefenderPlan" Facedanced="aggressorWasFacedanced" TraitorCalled="false" IsAggressor="true" X="x" Y="y" Opacity="0.5f" />
+        base.OnInitialized();
+        BattleWheelState.Changed += OnStateChanged;
     }
 
-    x = 0.4f * Client.CurrentSkin.MapDimensions.X;
-    y = 0.5f * Client.CurrentSkin.MapDimensions.Y;
+    public override void Dispose()
+    {
+        base.Dispose();
+        BattleWheelState.Changed -= OnStateChanged;
+    }
 
-    if (maySeeDefenderBattlePlan || maySeeBothBattlePlans)
-    {
-        <BattlePlan  Plan="Game.DefenderPlan" ShowEntirePlan=true OpponentPlan="Game.AggressorPlan" Facedanced="defenderWasFacedanced" TraitorCalled="aggressorCallsTraitor" IsAggressor="false" X="x" Y="y" />
-    }
-    else if (defenderIsAffectedByPartialPrescience)
-    {
-        <BattlePlan  Plan="Game.DefenderPlan" ShowEntirePlan=false OpponentPlan="Game.AggressorPlan" Facedanced="defenderWasFacedanced" TraitorCalled="false" IsAggressor="false" X="x" Y="y" Opacity="0.5f" />
-    }
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
 }

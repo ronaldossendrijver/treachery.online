@@ -9,17 +9,17 @@
 
 @inherits GameComponent
 
-<div class="btn-group align-self-end">
-    <button type="button" class="btn @BtnTypeFromStatus dropdown-toggle btn-sm" data-bs-toggle="dropdown" aria-expanded="false" disabled="@_busy">
+<details class="status-menu ui-align-self-end">
+    <summary class="ui-btn @BtnTypeFromStatus ui-btn-sm" aria-label="Change subscription">
         @Name(CurrentSubscription)
-    </button>
-    <ul class="dropdown-menu">
+    </summary>
+    <ul class="status-menu-options">
         @foreach (var status in Enumerations.GetValuesExceptDefault(SubscriptionType.None).Where(s => s != CurrentSubscription))
         {
-            <li><a class="dropdown-item" href="#" @onclick="@(_ => SetSubscription(status))">@Name(status)</a></li>
+            <li><button type="button" disabled="@_busy" @onclick="@(_ => SetSubscription(status))">@Name(status)</button></li>
         }
     </ul>
-</div>
+</details>
 
 @code 
 {
@@ -32,11 +32,11 @@
     
     private string BtnTypeFromStatus => CurrentSubscription switch
     {
-        SubscriptionType.None => "btn-dark",
-        SubscriptionType.DontParticipate => "btn-danger",
-        SubscriptionType.MaybeAsPlayer or SubscriptionType.MaybeAsHost => "btn-warning",
-        SubscriptionType.CertainAsPlayer or SubscriptionType.CertainAsHost => "btn-primary",
-        _ => "btn-dark",
+        SubscriptionType.None => "ui-btn-dark",
+        SubscriptionType.DontParticipate => "ui-btn-danger",
+        SubscriptionType.MaybeAsPlayer or SubscriptionType.MaybeAsHost => "ui-btn-warning",
+        SubscriptionType.CertainAsPlayer or SubscriptionType.CertainAsHost => "ui-btn-primary",
+        _ => "ui-btn-dark",
     };
 
 

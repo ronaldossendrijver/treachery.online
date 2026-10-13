@@ -7,31 +7,29 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-<div class="modal fade" id="@Id" tabindex="-1" role="dialog" aria-labelledby="@LabelId" aria-hidden="true">
-    <div class="modal-dialog @Size" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="@LabelId">@Title</h5>
-                &nbsp;
+<dialog class="app-dialog @SizeClass" id="@Id" aria-labelledby="@LabelId">
+    <div class="dialog-panel">
+        <header class="dialog-header">
+            <h2 class="dialog-title" id="@LabelId">@Title</h2>
 
+            <div class="dialog-actions">
                 @if (Printable)
                 {
-                    <button class="btn btn-link p-0" type="button" @onclick="Print">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-printer" viewBox="0 0 16 16">
-                            <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" />
-                            <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z" />
+                    <button class="icon-button" type="button" aria-label="Print" @onclick="Print">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zM5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z" />
                         </svg>
                     </button>
                 }
 
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+                <button type="button" class="icon-button" data-dialog-close aria-label="Close dialog">×</button>
             </div>
-            <div class="modal-body @(ScrollClass)" id="@BodyId">
+        </header>
+        <div class="dialog-body @(Scrolling ?"dialog-scrollable" : "")" id="@BodyId">
                 @ChildContent
-            </div>
         </div>
     </div>
-</div>
+</dialog>
 
 @code {
 
@@ -42,7 +40,7 @@
     public string Id { get; set; } = "";
 
     [Parameter]
-    public string Size { get; set; } = ""; //modal-sm modal-lg modal-xl
+    public string Size { get; set; } = "";
 
     [Parameter]
     public string Title { get; set; } = "";
@@ -57,7 +55,13 @@
 
     private string BodyId => Id + "Body";
 
-    private string ScrollClass => Scrolling ? "overflow-auto" : "";
+    private string SizeClass => Size switch
+    {
+        "dialog-small" => "dialog-small",
+        "dialog-large" => "dialog-large",
+        "dialog-wide" => "dialog-wide",
+        _ => string.Empty
+    };
 
     private async Task Print()
     {

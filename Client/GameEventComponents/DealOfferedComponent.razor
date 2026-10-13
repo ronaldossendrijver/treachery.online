@@ -8,7 +8,7 @@
 *@
 @inherits GameEventComponent<DealOffered>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsed="CollapseState.Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsed="CollapseState.NotCollapsed">
 
     <Header>Offer a Deal</Header>
     <Body>
@@ -32,7 +32,7 @@
             <Label>Until</Label>
         </SelectComponent>
 
-        <textarea class="form-control mt-1" rows="5" @bind="text" maxlength="512" placeholder="Deal description"></textarea>
+        <textarea class="ui-form-control ui-mt-1" rows="5" @bind="text" maxlength="512" placeholder="Deal description"></textarea>
 
         <ButtonRowComponent Confirm="ConfirmOffer" ConfirmText="Offer Deal" ConfirmError="@Validation" />
 

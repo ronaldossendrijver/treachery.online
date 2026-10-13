@@ -1,0 +1,115 @@
+@inherits MapComponent
+
+<div @ref="Element" class="rail-inventory" role="group" aria-label="Card piles">
+    <div class="rail-card-piles">
+        @if (!Game.ResourceCardDeck!.IsEmpty)
+        {
+            var resourceCard = Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(Client.Player)
+                ? Client.CurrentSkin.GetImageUrl(Game.ResourceCardDeck.Top)
+                : Client.CurrentSkin.CardBack_ResourceCard_URL;
+            <RailCardPile Label="Spice Deck" Count="@Game.ResourceCardDeck.Items.Count" Src="@resourceCard" Popover="@IntelOfResourceCardPile()" />
+        }
+        @if (Game.LatestSpiceCardA != null)
+        {
+            <RailCardPile Label="Spice discard A" Count="@Game.ResourceCardDiscardPileA!.Items.Count" Src="@Client.CurrentSkin.GetImageUrl(Game.LatestSpiceCardA)" Popover="@IntelOfResourceDiscardPileA()" />
+        }
+        @if (Game.Applicable(Rule.IncreasedResourceFlow) && Game.LatestSpiceCardB != null)
+        {
+            <RailCardPile Label="Spice discard B" Count="@Game.ResourceCardDiscardPileB!.Items.Count" Src="@Client.CurrentSkin.GetImageUrl(Game.LatestSpiceCardB)" Popover="@IntelOfResourceDiscardPileB()" />
+        }
+        @if (Game is { SandTroutOccured: true, SandTrout: not null })
+        {
+            <RailCardPile Label="Sandtrout" Count="1" Src="@Client.CurrentSkin.GetImageUrl(Game.SandTrout)" Popover="@Client.CurrentSkin.GetPopup(Game.SandTrout)" />
+        }
+        <RailCardPile Label="Treachery deck" Count="@Game.TreacheryDeck!.Items.Count" Src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" Popover="@IntelOfTreacheryCardPile()" />
+        @if (!Game.TreacheryDiscardPile!.IsEmpty)
+        {
+            <RailCardPile Label="Treachery discard" Count="@Game.TreacheryDiscardPile.Items.Count" Src="@Client.CurrentSkin.GetImageUrl(Game.TreacheryDiscardPile.Top)" Popover="@IntelOfTreacheryDiscardPile()" />
+        }
+        @if (Game.WhiteCache.Count > 0)
+        {
+            <RailCardPile Label="Richese cards" Count="@Game.WhiteCache.Count" Src="@Client.CurrentSkin.CardBack_TreacheryCard_URL"
+                          BadgeImage="@Client.CurrentSkin.GetImageUrl(Faction.White)" Popover="@IntelOfWhiteCardPile()" />
+        }
+    </div>
+</div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await Browser.EnablePopovers(Element);
+        else
+            await Browser.RefreshPopovers(Element);
+    }
+
+    private static string Enc(string text) => System.Net.WebUtility.HtmlEncode(text);
+
+    private static string Intel(string title, int count, string unit, string? body = null, string? note = null) =>
+        $"<div class='pile-intel'><div class='pile-intel-head'><span class='pile-intel-title'>{Enc(title)}</span><span class='pile-intel-count'>{count} {Enc(count == 1 ? unit : unit + "s")}</span></div>"
+        + (note == null ? "" : $"<div class='pile-intel-note'>{Enc(note)}</div>")
+        + (body ?? "") + "</div>";
+
+    private static string Single(string src) => $"<img class='pile-intel-card' src='{src}' alt=''/>";
+
+    private static string Grid(IEnumerable<string> sources) =>
+        $"<div class='pile-intel-grid'>{string.Join("", sources.Select(src => $"<img src='{src}' alt=''/>"))}</div>";
+
+    private string IntelOfTreacheryCardPile() =>
+        Intel("Treachery deck", Game.TreacheryDeck!.Items.Count, "card");
+
+    private string IntelOfTreacheryDiscardPile()
+    {
+        if (Game.TreacheryDiscardPile is null) return "";
+
+        string? body = null;
+        if (Client.Player is { } player && Game.AssistedNoteKeepingEnabled(player))
+        {
+            var known = Game.KnownCards(player);
+            body = Grid(Game.TreacheryDiscardPile.Items.Select(card => known.Contains(card) ? Client.CurrentSkin.GetImageUrl(card) : Client.CurrentSkin.CardBack_TreacheryCard_URL));
+        }
+        else if (Game.TreacheryDiscardPile.Top != null)
+        {
+            body = Single(Client.CurrentSkin.GetImageUrl(Game.TreacheryDiscardPile.Top));
+        }
+
+        return Intel("Treachery discard", Game.TreacheryDiscardPile.Items.Count, "card", body);
+    }
+
+    private string GetCardImages<T>(IEnumerable<T> items) =>
+        Grid(items.Where(card => card != null).Select(card => Client.CurrentSkin.GetImageUrl(card!)));
+
+    private string IntelOfWhiteCardPile() =>
+        Intel($"{Client.CurrentSkin.Describe(Faction.White)} cards", Game.WhiteCache.Count, "card", Client.Faction == Faction.White ? GetCardImages(Game.WhiteCache) : null);
+
+    private string IntelOfResourceCardPile()
+    {
+        var title = $"{Client.CurrentSkin.Describe(Concept.Resource)} deck";
+        if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(Client.Player) && Game.ResourceCardDeck!.Top != null)
+            return Intel(title, Game.ResourceCardDeck.Items.Count, "card", Single(Client.CurrentSkin.GetImageUrl(Game.ResourceCardDeck.Top)), "Top card");
+
+        return Intel(title, Game.ResourceCardDeck!.Items.Count, "card");
+    }
+
+    private string IntelOfResourceDiscardPileA()
+    {
+        var pileName = Game.Applicable(Rule.IncreasedResourceFlow) ? " A" : "";
+        return ResourceDiscardIntel($"{Client.CurrentSkin.Describe(Concept.Resource)} discard{pileName}", Game.ResourceCardDiscardPileA!.Items, Game.LatestSpiceCardA);
+    }
+
+    private string IntelOfResourceDiscardPileB() =>
+        ResourceDiscardIntel($"{Client.CurrentSkin.Describe(Concept.Resource)} discard B", Game.ResourceCardDiscardPileB!.Items, Game.LatestSpiceCardB);
+
+    private string ResourceDiscardIntel(string title, IReadOnlyCollection<ResourceCard> items, ResourceCard? latest)
+    {
+        string? body = null;
+        if (latest != null)
+        {
+            body = Client.Player is { } player && Game.AssistedNoteKeepingEnabled(player)
+                ? GetCardImages(items)
+                : Single(Client.CurrentSkin.GetImageUrl(latest));
+        }
+
+        return Intel(title, items.Count, "card", body);
+    }
+}

@@ -8,20 +8,30 @@
 *@
 @inherits GameEventComponent<Donated>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsed="CollapseState.Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsed="CollapseState.NotCollapsed">
 
     <Header>Give @Client.CurrentSkin.Describe(Concept.Resource) to a faction</Header>
     <Body>
 
-        <SelectFromImageComponent @bind-Value="target" Values="Targets" Required="true" ImageWidth="40" />
+        @if (TargetFaction is Faction selectedFaction)
+        {
+            <div class="donation-selected-faction">
+                <img src="@Client.CurrentSkin.GetImageUrl(selectedFaction)" alt="" />
+                <span>Give to @Client.CurrentSkin.Describe(selectedFaction)</span>
+            </div>
+        }
+        else
+        {
+            <SelectFromImageComponent @bind-Value="target" Values="Targets" Required="true" ImageWidth="40" />
+        }
 
-        <div class="mt-1">
+        <div class="ui-mt-1">
             <SelectResourcesComponent @bind-Value="resources" Min="MinAmount" Max="MaxAmount" />
         </div>
 
         @if (Game.Applicable(Rule.CardsCanBeTraded))
         {
-            <div class="mt-1">
+            <div class="ui-mt-1">
                 <SelectFromImageComponent @bind-Value="card" Values="Player.TreacheryCards" Required="false" ImageWidth="80" />
             </div>
         }
@@ -54,7 +64,9 @@
     internal TreacheryCard? card;
     internal bool fromBank;
 
-    protected override Donated ConfirmedResult => new(Game, Faction) { Target = target, Resources = resources, Card = card, FromBank = fromBank };
+    [Parameter] public Faction? TargetFaction { get; set; }
+
+    protected override Donated ConfirmedResult => new(Game, Faction) { Target = TargetFaction ?? target, Resources = resources, Card = card, FromBank = fromBank };
 
     private IEnumerable<Faction> Targets
     {

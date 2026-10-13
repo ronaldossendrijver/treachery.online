@@ -1,0 +1,91 @@
+@inherits GameComponent
+
+<div class="ui-col ui-col-xs-auto ui-p-0">
+    <button class="ui-btn ui-btn-link ui-p-1 game-information-trigger" type="button"
+            data-dialog-target="#@Id" aria-haspopup="dialog"
+            aria-label="Game rules and timing" title="Game rules and timing">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" aria-hidden="true">
+            <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <path d="M7.25 7h1.5v4.5h-1.5zM8 4.25a.95.95 0 1 0 0 1.9.95.95 0 0 0 0-1.9" />
+        </svg>
+    </button>
+</div>
+
+<ModalComponent Id="@Id" Title="Game rules and timing" Size="dialog-wide" Scrolling="true">
+    <div class="game-information-content">
+        <section class="game-information-summary" aria-label="Game details">
+            <div>
+                <span class="eyebrow">RULESET</span>
+                <strong>@Game.Ruleset</strong>
+            </div>
+            <div>
+                <span class="eyebrow">GAME VERSION</span>
+                <strong>@Game.Version</strong>
+            </div>
+            <div>
+                <span class="eyebrow">DURATION</span>
+                <strong>@($"{Game.Duration.TotalHours:0.0} hours")</strong>
+            </div>
+            @if (Game.History.LastOrDefault() is { } lastEvent)
+            {
+                <div>
+                    <span class="eyebrow">LAST ACTIVITY</span>
+                    <strong>@lastEvent.Time.ToLocalTime().ToString("g")</strong>
+                </div>
+            }
+        </section>
+
+        <h3 class="game-information-heading">Applicable rules</h3>
+        @foreach (var group in ApplicableRuleGroups)
+        {
+            <section class="game-information-rule-group">
+                <h4>@group.Key</h4>
+                <ul>
+                    @foreach (var rule in group)
+                    {
+                        <li>@Client.CurrentSkin.Describe(rule)</li>
+                    }
+                </ul>
+            </section>
+        }
+
+        <h3 class="game-information-heading">Player time</h3>
+        <div class="game-information-table-wrap">
+            <table class="ui-table ui-table-sm game-information-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Player</th>
+                        <th scope="col">Bidding</th>
+                        <th scope="col">Ship &amp; Move</th>
+                        <th scope="col">Battle</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var player in Game.Players)
+                    {
+                        var bidding = Game.TimeSpent(player.Faction, MainPhase.Bidding);
+                        var shipment = Game.TimeSpent(player.Faction, MainPhase.ShipmentAndMove);
+                        var battle = Game.TimeSpent(player.Faction, MainPhase.Battle);
+                        <tr>
+                            <th scope="row">@Game.GetPlayerName(player)</th>
+                            <td>@FormatDuration(bidding)</td>
+                            <td>@FormatDuration(shipment)</td>
+                            <td>@FormatDuration(battle)</td>
+                            <td>@FormatDuration(bidding + shipment + battle)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</ModalComponent>
+
+@code {
+    private IEnumerable<IGrouping<RuleGroup, Rule>> ApplicableRuleGroups =>
+        Game.Rules
+            .GroupBy(Game.GetRuleGroup)
+            .Where(group => group.Key is not (RuleGroup.CoreBasic or RuleGroup.Bots or RuleGroup.None));
+
+    private static string FormatDuration(TimeSpan duration) => duration.ToString(@"h\:mm\:ss");
+}

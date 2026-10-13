@@ -10,80 +10,76 @@
 
 @if (Client.InGame)
 {
-    <div class="card mb-2 border-white">
-
-        <div class="card-header">Welcome to @(Client.GameName)</div>
-
-        <div class="card-body">
-
-            <div class="mt-1 mb-0"><strong>Maximum number of turns:</strong> @Settings.MaximumTurns</div>
-
-            <div class="mt-1 mb-0"><strong>Maximum number of players:</strong> @Settings.NumberOfPlayers</div>
-
-            <div class="mt-1 mb-0">
-                @foreach (var faction in Settings.AllowedFactionsInPlay)
-                {
-                    <FactionComponent Faction="@faction"/>
-                }
+    <div class="setup-layout">
+        <section class="lobby-panel setup-panel setup-settings">
+            <div class="lobby-panel-head">
+                <div>
+                    <span class="lobby-kicker">Welcome to</span>
+                    <h2 class="lobby-player-name">@(Client.GameName)</h2>
+                </div>
             </div>
-            
-            <JoinedPlayersPanel/>
-            
-            <label class="mt-1 mb-0 small">Core Game, Advanced Rules</label>
-            <ul class="mt-0 mb-1">
-                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvanced, Game.ExpansionLevel))
-                {
-                    <li class="small" style="@DetermineRuleClass(Settings.InitialRules.Contains(rule))">@Client.CurrentSkin.Describe(rule)</li>
-                }
-            </ul>
+            <div class="lobby-panel-body">
+                <dl class="lobby-details">
+                    <dt>Turns</dt>
+                    <dd>@Settings.MaximumTurns</dd>
+                    <dt>Players</dt>
+                    <dd>@Settings.NumberOfPlayers</dd>
+                </dl>
 
-            <label class="mt-1 mb-0 small">Core Game, Exceptions to Basic Rules</label>
-            <ul class="mt-0 mb-1">
-                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreBasicExceptions, Game.ExpansionLevel))
-                {
-                    <li class="small" style="@DetermineRuleClass(Settings.InitialRules.Contains(rule))">@Client.CurrentSkin.Describe(rule)</li>
-                }
-            </ul>
+                <div class="lobby-section-title">Factions in play <span>@Settings.AllowedFactionsInPlay.Count</span></div>
+                <div class="setup-factions">
+                    @foreach (var faction in Settings.AllowedFactionsInPlay)
+                    {
+                        <FactionComponent Faction="@faction" Diameter="40"/>
+                    }
+                </div>
 
-            <label class="mt-1 mb-0 small">Core Game, Exceptions to Advanced Rules</label>
-            <ul class="mt-0 mb-1">
-                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvancedExceptions, Game.ExpansionLevel))
-                {
-                    <li class="small" style="@DetermineRuleClass(Settings.InitialRules.Contains(rule))">@Client.CurrentSkin.Describe(rule)</li>
-                }
-            </ul>
+                <div class="setup-rules setup-rules-readonly">
+                    @foreach (var (title, group) in RuleGroups)
+                    {
+                        var rules = Game.GetRulesInGroup(group, Game.ExpansionLevel).ToArray();
+                        if (rules.Length > 0)
+                        {
+                            <fieldset class="setup-rule-group">
+                                <legend>@title</legend>
+                                <ul>
+                                    @foreach (var rule in rules)
+                                    {
+                                        <li class="@(Settings.InitialRules.Contains(rule) ? "is-on" : "")">@Client.CurrentSkin.Describe(rule)</li>
+                                    }
+                                </ul>
+                            </fieldset>
+                        }
+                    }
+                </div>
+            </div>
+        </section>
 
-            <label class="mt-1 mb-0 small">Ixians &amp; Tleilaxu Expansion</label>
-            <ul class="mt-0 mb-1">
-                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.ExpansionIxAndBtBasic, Game.ExpansionLevel))
-                {
-                    <li class="small" style="@DetermineRuleClass(Settings.InitialRules.Contains(rule))">@Client.CurrentSkin.Describe(rule)</li>
-                }
-            </ul>
-
-            <label class="mt-1 mb-0 small">Ixians &amp; Tleilaxu Expansion, Advanced Rules</label>
-            <ul class="mt-0 mb-1">
-                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.ExpansionIxAndBtAdvanced, Game.ExpansionLevel))
-                {
-                    <li class="small" style="@DetermineRuleClass(Settings.InitialRules.Contains(rule))">@Client.CurrentSkin.Describe(rule)</li>
-                }
-            </ul>
-
-            <label class="mt-1 mb-0 small">House Rules</label>
-            <ul class="mt-0 mb-1">
-                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.House, Game.ExpansionLevel))
-                {
-                    <li class="small" style="@DetermineRuleClass(Settings.InitialRules.Contains(rule))">@Client.CurrentSkin.Describe(rule)</li>
-                }
-            </ul>
-
-        </div>
+        <section class="lobby-panel setup-panel setup-players">
+            <div class="lobby-panel-head">
+                <div>
+                    <span class="lobby-kicker">Seats</span>
+                    <h2>Players</h2>
+                </div>
+            </div>
+            <div class="lobby-panel-body">
+                <JoinedPlayersPanel/>
+            </div>
+        </section>
     </div>
 }
 
 @code {
 
     private GameSettings Settings => Game.Settings;
-    
-    private static string DetermineRuleClass(bool applicable) => applicable ? "color:white" : "color:grey";
+
+    private static readonly (string, RuleGroup)[] RuleGroups =
+    [
+        ("Core Game, Advanced Rules", RuleGroup.CoreAdvanced),
+        ("Core Game, Exceptions to Basic Rules", RuleGroup.CoreBasicExceptions),
+        ("Core Game, Exceptions to Advanced Rules", RuleGroup.CoreAdvancedExceptions),
+        ("Ixians & Tleilaxu Expansion", RuleGroup.ExpansionIxAndBtBasic),
+        ("Ixians & Tleilaxu Expansion, Advanced Rules", RuleGroup.ExpansionIxAndBtAdvanced),
+        ("House Rules", RuleGroup.House)
+    ];
 }

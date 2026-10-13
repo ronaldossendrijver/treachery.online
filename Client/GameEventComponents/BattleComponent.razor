@@ -7,259 +7,297 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 @using System.Globalization
+@using Treachery.Client.MapComponents
 @inherits GameEventComponent<Battle>
 
 @{
-
     if (Game.CurrentBattle?.Territory is null) return;
-    
+
     var opponent = Game.CurrentBattle.OpponentOf(Faction);
     if (opponent is null) return;
+
+    var forceSupplier = Battle.DetermineForceSupplier(Game, Player);
+    var maxForces = Battle.MaxForces(Game, forceSupplier, false);
+    var maxSpecialForces = Battle.MaxForces(Game, forceSupplier, true);
+    var heroes = Battle.ValidBattleHeroes(Game, Player).ToList();
+    var heroRequired = !Game.Applicable(Rule.BattleWithoutLeader);
+    var weapons = Weapons.ToList();
+    var defenses = Defenses.ToList();
+
+    if (maxForces <= 0) Forces = 0;
+    if (maxSpecialForces <= 0) SpecialForces = 0;
+    if (heroes.Count == 0) Hero = null;
+    else if (Hero == null ? heroRequired : !heroes.Contains(Hero)) Hero = heroRequired ? heroes.First() : null;
+    if (weapons.Count == 0) Weapon = null;
+    if (defenses.Count == 0) Defense = null;
+
+    var mayUseMessiah = Player.MessiahAvailable && !Game.Prevented(FactionAdvantage.GreenUseMessiah);
+    if (!mayUseMessiah) Messiah = false;
+
+    var maxBanker = Battle.MaxBankerBoost(Game, Player, Hero);
+    if (maxBanker <= 0) BankerBonus = 0;
+
+    var mustPay = Forces + SpecialForces > 0 && Battle.MustPayForAnyForcesInBattle(Game, Player);
+    var maxTotalResources = 0;
+    var maxPaidByAlly = 0;
+    if (mustPay)
+    {
+        var maxResources = Battle.MaxResources(Game, Player, Forces, SpecialForces);
+        var maxAllyResources = Battle.MaxAllyResources(Game, Player, Forces, SpecialForces);
+        maxTotalResources = Math.Min(Forces + SpecialForces, maxResources + maxAllyResources);
+        maxPaidByAlly = Player.Ally == Faction.Brown ? Math.Min(maxAllyResources, Resources) : 0;
+        if (maxPaidByAlly <= 0) ResourcesFromAlly = 0;
+    }
+    else
+    {
+        Resources = 0;
+        ResourcesFromAlly = 0;
+    }
+
+    var skin = Client.CurrentSkin;
+    var plan = ConfirmedResult;
+    var opponentPlan = Frame.IsAggressor ? Game.DefenderPlan : Game.AggressorPlan;
 }
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" TimedEvent="Game.LatestEvent(typeof(BattleInitiated))">
+<BattleWheelCard Frame="Frame" LeftTitle="Battle plan" RightFlap="EndActions">
+<Wheel>
+<div class="bwl-face">
+    <div class="bwl-board">
+        <BattlePlan Plan="plan" ShowEntirePlan="true" OpponentPlan="opponentPlan" TraitorCalled="false" Facedanced="false" IsAggressor="Frame.IsAggressor" X="0" Y="0" />
 
-    <Header>
-        Fighting <Image Shown="opponent.Faction" Width="30" /> in @Name(Game.CurrentBattle.Territory).
-    </Header>
-
-    <Body>
-
-        <div class="mt-1">
-            Opponent forces: 
-            @if (opponent.ForcesIn(Game.CurrentBattle.Territory) > 0)
+        <button type="button" class="bwl-slot bwl-slot-leader @(_picker == Picker.Leader ? "is-active" : "") @(Hero == null ? "is-empty" : "")"
+                style="left:@Utilities.Px(skin.BattleScreenHeroX);top:@Utilities.Px(skin.BattleScreenHeroY);width:@Utilities.Px(skin.BattleWheelHeroWidth);height:@Utilities.Px(Hero is TreacheryCard ? skin.BattleWheelCardHeight : skin.BattleWheelHeroHeight)"
+                disabled="@(heroes.Count == 0)" title="@(Hero != null ? Name(Hero) + " · click to change" : "Choose your leader")" aria-label="Choose leader" @onclick="@(() => TogglePicker(Picker.Leader))">
+            @if (Hero == null)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageUrl(opponent.Faction)" width=30 height="30" alt="@Client.CurrentSkin.Describe(opponent.Force)"/>
-                <span>&nbsp;<strong>@opponent.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
+                <span class="bwl-slot-empty"><b>@(heroes.Count == 0 ? "–" : "+")</b>@(heroes.Count == 0 ? "No leader" : "Leader")</span>
             }
-            @if (opponent.HasAlly && opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory) > 0)
+        </button>
+
+        <button type="button" class="bwl-slot bwl-slot-card @(_picker == Picker.Weapon ? "is-active" : "") @(Weapon == null ? "is-empty" : "")"
+                style="left:@Utilities.Px(skin.BattleWheelCardX);top:@Utilities.Px(skin.BattleWheelCardY);width:@Utilities.Px(skin.BattleWheelCardWidth);height:@Utilities.Px(skin.BattleWheelCardHeight)"
+                disabled="@(weapons.Count == 0)" title="@(Weapon != null ? Name(Weapon) + " · click to change" : "Choose your weapon")" aria-label="Choose weapon" @onclick="@(() => TogglePicker(Picker.Weapon))">
+            @if (Weapon == null)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionForceImageUrl(opponent.Ally)" width=30 height="30" alt="@Client.CurrentSkin.Describe(opponent.Force)"/>
-                <span>&nbsp;<strong>@opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
+                <span class="bwl-slot-empty"><b>@(weapons.Count == 0 ? "–" : "+")</b>Weapon</span>
             }
-            @if (opponent.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
+        </button>
+
+        <button type="button" class="bwl-slot bwl-slot-card @(_picker == Picker.Defense ? "is-active" : "") @(Defense == null ? "is-empty" : "")"
+                style="left:@Utilities.Px(skin.BattleWheelCardX + 1.1f * skin.BattleWheelCardWidth);top:@Utilities.Px(skin.BattleWheelCardY);width:@Utilities.Px(skin.BattleWheelCardWidth);height:@Utilities.Px(skin.BattleWheelCardHeight)"
+                disabled="@(defenses.Count == 0)" title="@(Defense != null ? Name(Defense) + " · click to change" : "Choose your defense")" aria-label="Choose defense" @onclick="@(() => TogglePicker(Picker.Defense))">
+            @if (Defense == null)
             {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(opponent.Faction)" alt="@Client.CurrentSkin.Describe(opponent.SpecialForce)" width=30 height="30"/>
-                
-                @if (opponent.Faction != Faction.White) {
-
-                    <span>&nbsp;<strong>@opponent.SpecialForcesIn(Game.CurrentBattle.Territory)</strong></span>
-                }
+                <span class="bwl-slot-empty"><b>@(defenses.Count == 0 ? "–" : "+")</b>Defense</span>
             }
-            @if (opponent.HasAlly && opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
-            {
-                <img class="img-fluid ms-1" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(opponent.Ally)" alt="@Client.CurrentSkin.Describe(opponent.SpecialForce)" width=30 height="30"/>
-
-                @if (opponent.Ally != Faction.White)
-                {
-                    <span>&nbsp;<strong>@opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory)</strong></span>
-                }
-            }
-
-        </div>
-
-        @if (Game.CurrentPinkBattleContribution > 0 && !(Player.Faction == Faction.Pink || Player.Ally == Faction.Pink))
-        {
-            <div class="text-success mt-1"><Image Shown=Faction.Pink Width="30"/> forces contribute <strong>@Game.CurrentPinkBattleContribution</strong> to your opponents dial.</div>
-        }
-
-        @if (!Battle.ValidBattleHeroes(Game, opponent).Any())
-        {
-            <div class="text-warning mt-1">Your opponent has no leaders available for this battle!</div>
-        }
-
-        <div class="text-warning mt-1">
-            @if(Client.Faction == Game.CurrentBattle.Aggressor) {
-
-                <span>You are aggressor.</span>
-            }
-            else
-            {
-                <span>Aggressor: </span><FactionComponent Faction="@Game.CurrentBattle.Aggressor" Diameter="30"/>
-            }
-        </div>
-
-        @if (Game.CurrentVoice != null)
-        {
-            @if (Faction == Faction.Blue || Player.Ally == Faction.Blue)
-            {
-                <div class="text-success mt-1">Your opponent @(Game.CurrentVoice.Must? "must use" : "may not use") @Client.CurrentSkin.Describe(Game.CurrentVoice.Type).</div>
-            }
-            else
-            {
-                <div class="text-warning mt-1">You @(Game.CurrentVoice.Must? "must use" : "may not use") @Client.CurrentSkin.Describe(Game.CurrentVoice.Type).</div>
-            }
-        }
-
-        @if (Faction == Faction.Green || Player.Ally == Faction.Green)
-        {
-            var opponentBattlePlan = Game.CurrentBattle.Aggressor == Faction ? Game.DefenderPlan : Game.AggressorPlan;
-            if (Game.GreenKarma)
-            {
-                if (opponentBattlePlan != null)
-                {
-                    <div class="text-success mt-1">Enemy @PrescienceAspect.Dial: @GetTextForAspect(PrescienceAspect.Dial, opponentBattlePlan, true).</div>
-                    <Hoverable Class="text-success mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Weapon, opponentBattlePlan, true)>Enemy @PrescienceAspect.Weapon: @GetTextForAspect(PrescienceAspect.Weapon, opponentBattlePlan, true).</Hoverable>
-                    <Hoverable Class="text-success mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Defense, opponentBattlePlan, true)>Enemy @PrescienceAspect.Defense: @GetTextForAspect(PrescienceAspect.Defense, opponentBattlePlan, true).</Hoverable>
-                    <Hoverable Class="text-success mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Leader, opponentBattlePlan, true)>Enemy @PrescienceAspect.Leader: @GetTextForAspect(PrescienceAspect.Leader, opponentBattlePlan, true).</Hoverable>
-                }
-                else
-                {
-                    <div class="text-success mt-1">Opponent battle plan will be visible as soon as they confirm it.</div>
-                }
-            }
-            else
-            {
-                if (Game.CurrentPrescience != null) 
-                {
-                    if (opponentBattlePlan != null)
-                    {
-                        <Hoverable Class="text-success mt-1" Popover=@GetPopupForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan, false)>Enemy @Game.CurrentPrescience.Aspect: @GetTextForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan, false).</Hoverable>
-                    }
-                    else
-                    {
-                        <div class="text-success mt-1">Opponent @Game.CurrentPrescience.Aspect will be visible as soon as they confirm their battle plan.</div>
-                    }
-                }
-
-                if (Game.CurrentNexusPrescience != null)
-                {
-                    if (opponentBattlePlan != null)
-                    {
-                        <Hoverable Class="text-success mt-1" Popover=@GetPopupForAspect(Game.CurrentNexusPrescience.GreenPrescienceAspect, opponentBattlePlan, false)>Enemy @Game.CurrentNexusPrescience.GreenPrescienceAspect: @GetTextForAspect(Game.CurrentNexusPrescience.GreenPrescienceAspect, opponentBattlePlan, false).</Hoverable>
-                    }
-                    else
-                    {
-                        <div class="text-success mt-1">Opponent @Game.CurrentNexusPrescience.GreenPrescienceAspect will be visible as soon as they confirm their battle plan.</div>
-                    }
-                }
-            }
-        }
-
-        @if (Game.CurrentPinkBattleContribution > 0 && (Player.Faction == Faction.Pink || Player.Ally == Faction.Pink))
-        {
-            <div class="text-success mt-1"><FactionComponent Faction=Faction.Pink Diameter="20"/> forces contribute <strong>@Game.CurrentPinkBattleContribution</strong> to your dial.</div>
-        }
-
-        <div class="mt-1">
-
-            @{
-                var forceSupplier = Battle.DetermineForceSupplier(Game, Player);
-
-                if (Battle.MaxForces(Game, forceSupplier, false) > 0)
-                {
-                    <SelectForcesComponent @bind-Value="Forces" Min="0" Max="Battle.MaxForces(Game, forceSupplier, false)" Faction=@forceSupplier.Faction Special="false" /> <span>&nbsp;</span>
-                }
-                else {
-                
-                    Forces = 0;
-                }
-
-                if (Battle.MaxForces(Game, forceSupplier, true) > 0)
-                {
-                    <SelectForcesComponent @bind-Value="SpecialForces" Min="0" Max="Battle.MaxForces(Game, forceSupplier, true)" Faction=@forceSupplier.Faction Special="true" /> <span>&nbsp;</span>
-                }
-                else
-                {
-                    SpecialForces = 0;
-                }
-
-                if (Forces + SpecialForces > 0 && Battle.MustPayForAnyForcesInBattle(Game, Player))
-                {
-                    var maxResources = Battle.MaxResources(Game, Player, Forces, SpecialForces);
-                    var maxAllyResources = Battle.MaxAllyResources(Game, Player, Forces, SpecialForces);
-                    var maxTotalResources = Math.Min(Forces + SpecialForces, maxResources + maxAllyResources);
-
-                    <SelectResourcesComponent @bind-Value=@Resources Min=0 Max=@maxTotalResources Title=@Client.CurrentSkin.Format("{0} used to support forces", Concept.Resource)/> <span>&nbsp;</span>
-
-                    var maxPaidByAlly = Math.Min(maxAllyResources, Resources);
-
-                    @if (Player.Ally == Faction.Brown && maxPaidByAlly > 0)
-                    {
-                        <SelectResourcesFromFactionComponent @bind-Value=@ResourcesFromAlly Min=0 Max=@maxPaidByAlly Faction="Player.Ally" Title=@Client.CurrentSkin.Format("{0} paid by your ally", Concept.Resource) />
-                    }
-                    else
-                    {
-                        ResourcesFromAlly = 0;
-                    }
-                }
-                else
-                {
-                    Resources = 0;
-                    ResourcesFromAlly = 0;
-                }
-            }
-
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="bi bi-arrow-right" stroke="white" viewBox="0 0 16 16" style="vertical-align: super">
-                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
-            </svg>
-
-            <NumberComponent Value="ConfirmedResult.Dial(Game, opponent.Faction)" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
-
-        </div>
-
-        @if (Battle.ValidBattleHeroes(Game, Player).Any())
-        {
-            <SelectFromImageComponent Game="Game" @bind-Value="Hero" Values="Battle.ValidBattleHeroes(Game, Player)" Required="!Game.Applicable(Rule.BattleWithoutLeader)" ImageWidth="80"/>
-        }
-        else
-        {
-            Hero = null;
-        }
-
-        @if (Weapons.Any())
-        {
-            <SelectFromImageComponent @bind-Value="Weapon" Values="Weapons" Required="false" ImageWidth="80">
-                <Label>Weapon</Label>
-            </SelectFromImageComponent>
-        }
-        else
-        {
-            Weapon = null;
-        }
-
-        @if (Defenses.Any())
-        {
-            <SelectFromImageComponent @bind-Value="Defense" Values="Defenses" Required="false" ImageWidth="80">
-                <Label>Defense</Label>
-            </SelectFromImageComponent>
-        }
-        else
-        {
-            Defense = null;
-        }
-                
-        @if (Player.MessiahAvailable && !Game.Prevented(FactionAdvantage.GreenUseMessiah))
-        {
-            <div class="mt-2">
-                <RadioComponent @bind-Value="Messiah" Values="@([false,true])" ValueLabels="@(["No","Yes"])">
-                    <Label>Should <img class="img-fluid" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/> join the fight?</Label>
-                </RadioComponent>
+        </button>
+    </div>
+    @if (_picker != Picker.None)
+    {
+        <div class="bw-picker" role="listbox" aria-label="@PickerTitle">
+            <div class="bw-picker-head">
+                <span>@PickerTitle</span>
+                <button type="button" class="bw-picker-close" aria-label="Close" @onclick="@(() => _picker = Picker.None)">×</button>
             </div>
-        }
-        else
+            <div class="bw-picker-grid">
+                @switch (_picker)
+                {
+                    case Picker.Leader:
+                        @if (!heroRequired)
+                        {
+                            <button type="button" class="bw-option bw-option-none @(Hero == null ? "is-selected" : "")" @onclick="@(() => Pick(() => Hero = null))">None</button>
+                        }
+                        @foreach (var h in heroes)
+                        {
+                            <button type="button" class="bw-option @(Equals(Hero, h) ? "is-selected" : "")" @onclick="@(() => Pick(() => Hero = h))">
+                                <Image Shown="h" Game="Game" Width="64" NoShadow />
+                            </button>
+                        }
+                        break;
+
+                    case Picker.Weapon:
+                        <button type="button" class="bw-option bw-option-none @(Weapon == null ? "is-selected" : "")" @onclick="@(() => Pick(() => Weapon = null))">None</button>
+                        @foreach (var w in weapons.Where(w => w != null))
+                        {
+                            <button type="button" class="bw-option is-card @(Equals(Weapon, w) ? "is-selected" : "")" @onclick="@(() => Pick(() => Weapon = w))">
+                                <Image Shown="w" Width="64" NoShadow />
+                            </button>
+                        }
+                        break;
+
+                    case Picker.Defense:
+                        <button type="button" class="bw-option bw-option-none @(Defense == null ? "is-selected" : "")" @onclick="@(() => Pick(() => Defense = null))">None</button>
+                        @foreach (var d in defenses.Where(d => d != null))
+                        {
+                            <button type="button" class="bw-option is-card @(Equals(Defense, d) ? "is-selected" : "")" @onclick="@(() => Pick(() => Defense = d))">
+                                <Image Shown="d" Width="64" NoShadow />
+                            </button>
+                        }
+                        break;
+                }
+            </div>
+        </div>
+    }
+</div>
+</Wheel>
+<LeftFlap>
+
+    @StartActions
+
+    <div class="bw-plan">
+        <div class="bw-intel">
+
+            @if (Game.CurrentVoice != null)
+            {
+                @if (Faction == Faction.Blue || Player.Ally == Faction.Blue)
+                {
+                    <span class="bw-chip bw-power is-good"><FactionComponent Faction="Faction.Blue" Diameter="22" /> Voice: opponent @(Game.CurrentVoice.Must ? "must use" : "may not use") @Client.CurrentSkin.Describe(Game.CurrentVoice.Type)</span>
+                }
+                else
+                {
+                    <span class="bw-chip bw-power is-warn"><FactionComponent Faction="Faction.Blue" Diameter="22" /> Voice: you @(Game.CurrentVoice.Must ? "must use" : "may not use") @Client.CurrentSkin.Describe(Game.CurrentVoice.Type)</span>
+                }
+            }
+
+            @if (Faction == Faction.Green || Player.Ally == Faction.Green)
+            {
+                var opponentBattlePlan = Game.CurrentBattle.Aggressor == Faction ? Game.DefenderPlan : Game.AggressorPlan;
+                if (Game.GreenKarma)
+                {
+                    if (opponentBattlePlan != null)
+                    {
+                        foreach (var aspect in new[] { PrescienceAspect.Dial, PrescienceAspect.Leader, PrescienceAspect.Weapon, PrescienceAspect.Defense })
+                        {
+                            <Hoverable Class="bw-chip bw-power is-good" Popover="@GetPopupForAspect(aspect, opponentBattlePlan, true)"><FactionComponent Faction="Faction.Green" Diameter="22" /> Enemy @aspect: <strong>@GetTextForAspect(aspect, opponentBattlePlan, true)</strong></Hoverable>
+                        }
+                    }
+                    else
+                    {
+                        <span class="bw-chip bw-power is-good"><FactionComponent Faction="Faction.Green" Diameter="22" /> Enemy plan is revealed once confirmed</span>
+                    }
+                }
+                else
+                {
+                    foreach (var aspect in new[] { Game.CurrentPrescience?.Aspect, Game.CurrentNexusPrescience?.GreenPrescienceAspect })
+                    {
+                        if (aspect == null) continue;
+
+                        if (opponentBattlePlan != null)
+                        {
+                            <Hoverable Class="bw-chip bw-power is-good" Popover="@GetPopupForAspect(aspect.Value, opponentBattlePlan, false)"><FactionComponent Faction="Faction.Green" Diameter="22" /> Prescience · enemy @aspect: <strong>@GetTextForAspect(aspect.Value, opponentBattlePlan, false)</strong></Hoverable>
+                        }
+                        else
+                        {
+                            <span class="bw-chip bw-power is-good"><FactionComponent Faction="Faction.Green" Diameter="22" /> Prescience · enemy @aspect revealed once confirmed</span>
+                        }
+                    }
+                }
+            }
+
+            <span class="bw-chip">
+                <span>Opponent</span>
+                @if (opponent.ForcesIn(Game.CurrentBattle.Territory) > 0)
+                {
+                    <img src="@Client.CurrentSkin.GetFactionForceImageUrl(opponent.Faction)" alt="@Client.CurrentSkin.Describe(opponent.Force)" width="20" height="20" />
+                    <strong>@opponent.ForcesIn(Game.CurrentBattle.Territory)</strong>
+                }
+                @if (opponent.HasAlly && opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory) > 0)
+                {
+                    <img src="@Client.CurrentSkin.GetFactionForceImageUrl(opponent.Ally)" alt="@Client.CurrentSkin.Describe(opponent.AlliedPlayer.Force)" width="20" height="20" />
+                    <strong>@opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory)</strong>
+                }
+                @if (opponent.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
+                {
+                    <img src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(opponent.Faction)" alt="@Client.CurrentSkin.Describe(opponent.SpecialForce)" width="20" height="20" />
+                    @if (opponent.Faction != Faction.White)
+                    {
+                        <strong>@opponent.SpecialForcesIn(Game.CurrentBattle.Territory)</strong>
+                    }
+                }
+                @if (opponent.HasAlly && opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
+                {
+                    <img src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(opponent.Ally)" alt="@Client.CurrentSkin.Describe(opponent.AlliedPlayer.SpecialForce)" width="20" height="20" />
+                    @if (opponent.Ally != Faction.White)
+                    {
+                        <strong>@opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory)</strong>
+                    }
+                }
+            </span>
+
+            @if (!Battle.ValidBattleHeroes(Game, opponent).Any())
+            {
+                <span class="bw-chip is-good">Opponent has no leaders available</span>
+            }
+
+            @if (Game.CurrentPinkBattleContribution > 0)
+            {
+                var pinkOnOurSide = Player.Faction == Faction.Pink || Player.Ally == Faction.Pink;
+                <span class="bw-chip @(pinkOnOurSide ? "is-good" : "is-warn")">
+                    <FactionComponent Faction="Faction.Pink" Diameter="18" />
+                    +@Game.CurrentPinkBattleContribution to @(pinkOnOurSide ? "your" : "opponent's") dial
+                </span>
+            }
+
+
+        </div>
+
+        <div class="bw-controls">
+            @if (maxForces > 0)
+            {
+                <SelectForcesComponent @bind-Value="Forces" Min="0" Max="maxForces" Faction="@forceSupplier.Faction" Special="false" />
+            }
+            @if (maxSpecialForces > 0)
+            {
+                <SelectForcesComponent @bind-Value="SpecialForces" Min="0" Max="maxSpecialForces" Faction="@forceSupplier.Faction" Special="true" />
+            }
+            @if (mustPay)
+            {
+                <SelectResourcesComponent @bind-Value="Resources" Min="0" Max="maxTotalResources" Title="@Client.CurrentSkin.Format("{0} used to support forces", Concept.Resource)" />
+            }
+            @if (maxPaidByAlly > 0)
+            {
+                <SelectResourcesFromFactionComponent @bind-Value="ResourcesFromAlly" Min="0" Max="maxPaidByAlly" Faction="Player.Ally" Title="@Client.CurrentSkin.Format("{0} paid by your ally", Concept.Resource)" />
+            }
+            @if (maxBanker > 0)
+            {
+                <SelectResourcesComponent @bind-Value="BankerBonus" Min="0" Max="maxBanker" Title="@Client.CurrentSkin.Format("Boost {0} {1} with {2}", Client.CurrentSkin.Describe(LeaderSkill.Banker), Hero, Concept.Resource)" />
+            }
+        </div>
+
+        @if (mayUseMessiah)
         {
-            Messiah = false;
-        }
-        
-        @if (Battle.MaxBankerBoost(Game, Player, Hero) > 0)
-        {
-            <SelectResourcesComponent @bind-Value="BankerBonus" Min="0" Max="Battle.MaxBankerBoost(Game, Player, Hero)" Label="@Client.CurrentSkin.Format("Boost {0} {1} with {2}?", Client.CurrentSkin.Describe(LeaderSkill.Banker), Hero, Concept.Resource)"/>
-        }
-        else
-        {
-            BankerBonus = 0;
+            <label class="bw-toggle">
+                <input type="checkbox" @bind="Messiah" />
+                <img src="@Client.CurrentSkin.Messiah_URL" alt="" width="26" height="26" />
+                <span>Use @Client.CurrentSkin.Describe(Concept.Messiah)</span>
+            </label>
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Battle!" ConfirmError="@Validation" />
+        <div class="bw-confirm">
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Battle!" ConfirmError="@Validation" />
+        </div>
 
-    </Body>
+    </div>
 
-</GameEventComponentLayout>
+</LeftFlap>
+</BattleWheelCard>
 
 @code {
 
+    private enum Picker { None, Leader, Weapon, Defense }
+
+    private Picker _picker = Picker.None;
+
     protected override bool IsUrgent => true;
+
+    [Parameter, EditorRequired]
+    public BattleWheelFrame Frame { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment? StartActions { get; set; }
+
+    [Parameter]
+    public RenderFragment? EndActions { get; set; }
 
     internal int Forces { get; set; }
     internal int SpecialForces { get; set; }
@@ -271,10 +309,26 @@
     internal TreacheryCard? Weapon { get; set; }
     internal int BankerBonus { get; set; }
 
+    private string PickerTitle => _picker switch
+    {
+        Picker.Leader => "Choose your leader",
+        Picker.Weapon => "Choose your weapon",
+        Picker.Defense => "Choose your defense",
+        _ => ""
+    };
+
+    private void TogglePicker(Picker picker) => _picker = _picker == picker ? Picker.None : picker;
+
+    private void Pick(Action select)
+    {
+        select();
+        _picker = Picker.None;
+    }
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        
+
         if (Game.CurrentBattle?.PlanOf(Faction) == null)
         {
             var previousPlan = Game.CurrentBattle?.PreviousPlanOf(Faction);
@@ -299,7 +353,7 @@
         {
             Battle.DetermineForces(Game, Player, Forces, SpecialForces, Resources, out var forcesFull, out var forcesHalf, out var specialForcesFull, out var specialForcesHalf);
 
-            var result = new Battle(Game, Faction)
+            return new Battle(Game, Faction)
             {
                 Defense = Defense,
                 Forces = forcesFull,
@@ -312,8 +366,6 @@
                 Weapon = Weapon,
                 BankerBonus = BankerBonus
             };
-
-            return result;
         }
     }
 
@@ -343,9 +395,9 @@
         return "?";
     }
 
-    private IEnumerable<TreacheryCard?> Weapons 
+    private IEnumerable<TreacheryCard?> Weapons
         => Battle.ValidWeapons(Game, Player, Defense, Hero, Game.CurrentBattle?.Territory).OrderBy(Name);
 
-    private IEnumerable<TreacheryCard?> Defenses 
+    private IEnumerable<TreacheryCard?> Defenses
         => Battle.ValidDefenses(Game, Player, Weapon, Game.CurrentBattle?.Territory).OrderBy(Name);
 }

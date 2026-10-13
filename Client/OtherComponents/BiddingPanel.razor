@@ -9,13 +9,11 @@
 @inherits GameEventComponent<TBid>
 @typeparam TBid
 
-<div class="card p-1 mb-2 border-white" style="animation:fadeIn 1s;">
+<div class="ui-card ui-mb-2 bid-panel" style="animation:fadeIn 1s;">
 
-    <div class="card-body">
+    <div class="bid-panel-body">
 
-        <div class="row">
-
-            <div class="col align-top" style="flex:0 0 150px">
+            <div class="bid-lot">
 
                 @if (CardIsVisible) 
                 {
@@ -26,22 +24,24 @@
                     <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" width="150" alt="Card on sale"/>
                 }
 
-                <div style="position: absolute; top: 80px; left: 5px; width: 180px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
+                <div class="bid-lot-overlay">
 
-                    <div style="@AuctionDescriptionStyle">
+                    <div class="bid-lot-title" style="@AuctionDescriptionStyle">
                         @AuctionDescription
                     </div>
                             
                     @if (ShowCurrentBid)
                     {
-                        <img src="@Client.CurrentSkin.GetImageUrl(Game.CurrentBid!.Initiator)" width="36" style="vertical-align: top;" alt="@Name(Game.CurrentBid.Initiator)"/>
-                        <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSrc="@Client.CurrentSkin.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
+                        <div class="bid-lot-current">
+                            <img src="@Client.CurrentSkin.GetImageUrl(Game.CurrentBid!.Initiator)" width="36" alt="@Name(Game.CurrentBid.Initiator)"/>
+                            <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSrc="@Client.CurrentSkin.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
+                        </div>
                     }
                 </div>
 
             </div>
 
-            <div class="col align-top">
+            <div class="bid-controls">
 
                 @if (!Client.IsObserver && Client.Player is { Faction: not Faction.None })
                 {
@@ -58,7 +58,7 @@
 
                     @if (CanBid)
                     {
-                        <hr style="border-color:white" />
+                        <hr class="bid-divider" />
                     }
                 }
 
@@ -75,7 +75,7 @@
 
                     if (CanUseKarma)
                     {
-                        <div class="mt-1">
+                        <div class="ui-mt-1">
                             <SelectFromImageComponent @bind-Value="KarmaCard" Values="Bid.ValidKarmaCards(Game, Player)" Required="false" ImageWidth="80">
                                 <Label>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to bid without limit or win immediately? <InfoComponent Contents="@KarmaInfoMessage" /></Label>
                             </SelectFromImageComponent>
@@ -86,7 +86,7 @@
                         KarmaCard = null;
                     }
 
-                    <div class="mt-1">
+                    <div class="ui-mt-1">
 
                         @if (Player.Ally != Faction.None && MaxAllyBidAmount > 0)
                         {
@@ -131,8 +131,6 @@
                 }
 
             </div>
-
-        </div>
 
     </div>
 

@@ -110,7 +110,7 @@
                ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                Popover="@IntelOfWhiteCardPile()"/>
 
-        <MapImage X="@(x + cardWidth / 3)" Y="@(y + cardHeight / 8)" Diameter="@(cardWidth / 3)" Src="@Client.CurrentSkin.GetImageUrl(Faction.White)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
+        <MapImage X="@(x + cardWidth / 12)" Y="@(y + cardHeight / 16)" Diameter="@(cardWidth / 3)" Src="@Client.CurrentSkin.GetImageUrl(Faction.White)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
 
         <MapText ToShow="@Game.WhiteCache.Count.ToString()"
                  X="@(x + cardWidth / 2)" Y="@(y + cardHeight / 1.5f)"
@@ -138,11 +138,11 @@
         if (Client.Player is { } player && Game.AssistedNoteKeepingEnabled(player))
         {
             var known = Game.KnownCards(player);
-            result += "<div class=\"row row-cols-6 mt-1\">";
+            result += "<div class=\"ui-row ui-row-cols-6 ui-mt-1\">";
             foreach (var c in Game.TreacheryDiscardPile.Items)
             {
                 var imgUrl = known.Contains(c) ? Client.CurrentSkin.GetImageUrl(c) : Client.CurrentSkin.CardBack_TreacheryCard_URL;
-                result += $"<img src=\"{imgUrl}\" class=\"img-fluid p-1\"/>";
+                result += $"<img src=\"{imgUrl}\" class=\"ui-img-fluid ui-p-1\"/>";
             }
             result += "</div>";
 
@@ -157,11 +157,11 @@
 
     private string GetCardImages<T>(IEnumerable<T> items)
     {
-        var result = "<div class=\"row row-cols-6 mt-1\">";
+        var result = "<div class=\"ui-row ui-row-cols-6 ui-mt-1\">";
         foreach (var c in items)
         {
             if (c != null)
-                result += $"<img src=\"{Client.CurrentSkin.GetImageUrl(c)}\" class=\"img-fluid p-1\"/>";
+                result += $"<img src=\"{Client.CurrentSkin.GetImageUrl(c)}\" class=\"ui-img-fluid ui-p-1\"/>";
         }
         result += "</div>";
 
@@ -173,7 +173,7 @@
         var result = "";
         if (Game.WhiteCache.Count > 0)
         {
-            result += Client.CurrentSkin.Format("<h4>{0} cards: {1} on deck</h4>", Faction.White, Game.WhiteCache.Count);
+            result += Client.CurrentSkin.Format("<h4>Richese cards: {0} on deck</h4>", Game.WhiteCache.Count);
 
             if (Client.Faction == Faction.White)
             {

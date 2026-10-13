@@ -8,22 +8,22 @@
 *@
 @inherits GameComponent
 
-<div @ref="@_element" class="card mb-2">
+<div @ref="@_element" class="ui-card ui-mb-2">
 
-    <div class="card-header" @onclick="@(_ => _collapsed = !_collapsed)" style="cursor:pointer">
+    <div class="ui-card-header" @onclick="@(_ => _collapsed = !_collapsed)" style="cursor:pointer">
         Mentat: Notekeeping Assistant
         <CollapseButton Collapsed="@_collapsed" />
     </div>
 
     @if (!_collapsed) {
-        <div class="card-body">
+        <div class="ui-card-body">
 
-            <div class="mb-1">
+            <div class="ui-mb-1">
 
                 @foreach (var p in Players.Where(p => p != Client.Player))
                 {
-                    <button class="btn @ButtonStyle(p) p-1" @onclick="@(_ => Toggle(p))" data-bs-toggle="tooltip" title="@Client.CurrentSkin.Describe(p.Faction)">
-                        <img class="img-fluid" width="29" height="29" src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" alt="@Client.CurrentSkin.Describe(p.Faction)"/>
+                    <button class="ui-btn @ButtonStyle(p) ui-p-1" @onclick="@(_ => Toggle(p))" title="@Client.CurrentSkin.Describe(p.Faction)">
+                        <img class="ui-img-fluid" width="29" height="29" src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" alt="@Client.CurrentSkin.Describe(p.Faction)"/>
                     </button>
                 }
 
@@ -31,23 +31,23 @@
 
             @if (_shown is Player shown)
             {
-                <div class="row m-0">
+                <div class="ui-row ui-m-0">
 
                     <!-- Resources -->
-                    <div class="col col-auto ps-0">
-                        <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.Harvester_URL" title="@Client.CurrentSkin.Describe(Concept.Resource)" alt=""/><strong>&nbsp;@ResourcesText(shown)</strong>
+                    <div class="ui-col ui-col-auto ui-ps-0">
+                        <img class="ui-img-fluid ui-m-0 ui-p-0" width="24" height="24" src="@Client.CurrentSkin.Harvester_URL" title="@Client.CurrentSkin.Describe(Concept.Resource)" alt=""/><strong>&nbsp;@ResourcesText(shown)</strong>
                     </div>
 
                     <!-- Forces -->
-                    <div class="col col-auto ps-0">
-                        <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionForceImageUrl(shown.Faction)" title="@Client.CurrentSkin.Describe(shown.Force)" alt=""/><strong>&nbsp;@shown.ForcesInReserve</strong>
+                    <div class="ui-col ui-col-auto ui-ps-0">
+                        <img class="ui-img-fluid ui-m-0 ui-p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionForceImageUrl(shown.Faction)" title="@Client.CurrentSkin.Describe(shown.Force)" alt=""/><strong>&nbsp;@shown.ForcesInReserve</strong>
                     </div>
 
                     <!-- Special Forces -->
                     @if (shown.HasSpecialForces)
                     {
-                        <div class="col col-auto ps-0">
-                            <img class="img-fluid m-0 p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(shown.Faction)" title="@Client.CurrentSkin.Describe(shown.SpecialForce)" alt=""/><strong>&nbsp;@shown.SpecialForcesInReserve</strong>
+                        <div class="ui-col ui-col-auto ui-ps-0">
+                            <img class="ui-img-fluid ui-m-0 ui-p-0" width="24" height="24" src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(shown.Faction)" title="@Client.CurrentSkin.Describe(shown.SpecialForce)" alt=""/><strong>&nbsp;@shown.SpecialForcesInReserve</strong>
                         </div>
                     }
 
@@ -58,22 +58,22 @@
                 if (cards.Count > 0)
                 {
                     <div>Treachery cards</div>
-                    <div class="row row-cols-4 m-0">
+                    <div class="ui-row ui-row-cols-4 ui-m-0">
 
                         @foreach (var c in cards)
                         {
                             var isKnown = IsKnownCard(c);
-                            var popover = isKnown ? Client.CurrentSkin.GetPopup(c) : "<div class='p-1 small' style='color:black;background-color:white;border: 1px solid black;'>Unknown</div>";
+                            var popover = isKnown ? Client.CurrentSkin.GetPopup(c) : "<div class='ui-p-1 ui-small' style='color:black;background-color:white;border: 1px solid black;'>Unknown</div>";
 
-                            <Hoverable Class="card border-0 p-1" Popover=@popover>
+                            <Hoverable Class="ui-card ui-border-0 ui-p-1" Popover=@popover>
 
                                 @if (IsKnownCard(c))
                                 {
-                                    <img src="@Client.CurrentSkin.GetImageUrl(c)" class="img-fluid" alt="@Client.CurrentSkin.Describe(c)" />
+                                    <img src="@Client.CurrentSkin.GetImageUrl(c)" class="ui-img-fluid" alt="@Client.CurrentSkin.Describe(c)" />
                                 }
                                 else
                                 {
-                                    <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" class="img-fluid" alt="Unknown" />
+                                    <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" class="ui-img-fluid" alt="Unknown" />
                                 }
 
                             </Hoverable>
@@ -88,22 +88,22 @@
 
                 if (shown.RevealedTraitors.Count > 0)
                 {
-                    <div class="mt-1">@(shown.RevealedTraitors.Count > 1 ? "Revealed Traitors" : "Revealed Traitor")</div>
-                    <div class="row row-cols-4 m-0">
+                    <div class="ui-mt-1">@(shown.RevealedTraitors.Count > 1 ? "Revealed Traitors" : "Revealed Traitor")</div>
+                    <div class="ui-row ui-row-cols-4 ui-m-0">
                         @foreach (var c in shown.RevealedTraitors)
                         {
-                            <Image Class="img-fluid pe-1" Shown=@c Width=60/>
+                            <Image Class="ui-img-fluid ui-pe-1" Shown=@c Width=60/>
                         }
                     </div>
                 }
 
                 if (shown.RevealedFaceDancers.Count > 0)
                 {
-                    <div class="mt-1">Revealed Face Dancers</div>
-                    <div class="row row-cols-4 m-0">
+                    <div class="ui-mt-1">Revealed Face Dancers</div>
+                    <div class="ui-row ui-row-cols-4 ui-m-0">
                         @foreach (var c in shown.RevealedFaceDancers)
                         {
-                            <Image Class="img-fluid pe-1" Shown=@c Width=60/>
+                            <Image Class="ui-img-fluid ui-pe-1" Shown=@c Width=60/>
                         }
                     </div>
                 }
@@ -116,16 +116,16 @@
                     {
                         if (shown.MessiahAvailable)
                         {
-                            <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt=""/> is available.</div>
+                            <div><img class="ui-img-fluid ui-m-0 ui-p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt=""/> is available.</div>
                         }
                         else
                         {
-                            <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt=""/> is dead.</div>
+                            <div><img class="ui-img-fluid ui-m-0 ui-p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt=""/> is dead.</div>
                         }
                     }
                     else
                     {
-                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt=""/> available after <SimpleNumberComponent>@(7 - shown.TotalForcesKilledInBattle)</SimpleNumberComponent> more forces are killed.</div>
+                        <div><img class="ui-img-fluid ui-m-0 ui-p-0" width="32" height="32" src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt=""/> available after <SimpleNumberComponent>@(7 - shown.TotalForcesKilledInBattle)</SimpleNumberComponent> more forces are killed.</div>
                     }
                 }
             }
@@ -161,7 +161,7 @@
 
     private bool IsKnownCard(TreacheryCard c) => Client.Player?.KnownCards.Contains(c) ?? false;
 
-    private string ButtonStyle(object o) => o == _shown ? "btn-primary" : "btn-outline-primary";
+    private string ButtonStyle(object o) => o == _shown ? "ui-btn-primary" : "ui-btn-outline-primary";
 
     private string ResourcesText(Player p)
     {

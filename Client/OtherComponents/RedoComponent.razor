@@ -8,17 +8,17 @@
 *@
 @inherits GameComponent
 
-<div class="card p-1 mb-2" style="@(Game.RecentlyUndoneEventCount > 0 ? "" : "display: none;")">
-    <div class="card-header">Recently undone @Game.RecentlyUndoneEventCount event(s)</div>
-    <div class="card-body">
-        <div class="mb-2">
+<div class="ui-card ui-p-1 ui-mb-2" style="@(Game.RecentlyUndoneEventCount > 0 ? "" : "display: none;")">
+    <div class="ui-card-header">Recently undone @Game.RecentlyUndoneEventCount event(s)</div>
+    <div class="ui-card-body">
+        <div class="ui-mb-2">
             @foreach (var evt in Game.RecentlyUndoneEvents)
             {
-                <div class="small text-muted">@evt.GetShortMessage()?.ToString(Client.CurrentSkin)</div>
+                <div class="ui-small ui-text-muted">@evt.GetShortMessage()?.ToString(Client.CurrentSkin)</div>
             }
         </div>
-        <button class="btn btn-success me-2" @onclick="RestoreUndone">Restore</button>
-        <button class="btn btn-secondary" @onclick="DismissUndone">Dismiss</button>
+        <button class="ui-btn ui-btn-success ui-me-2" @onclick="RestoreUndone">Restore</button>
+        <button class="ui-btn ui-btn-secondary" @onclick="DismissUndone">Dismiss</button>
     </div>
 </div>
 

@@ -10,9 +10,9 @@
 @if (Game is null) return;
 
 <div>
-    <table class="table table-sm">
+    <table class="ui-table ui-table-sm">
         <thead>
-            <tr class="table-dark">
+            <tr class="ui-table-dark">
                 <th>Faction</th>
 
                 @if (ShowName)
@@ -79,10 +79,10 @@
 
             @foreach (var p in Players)
             {
-                <tr class ="table-dark">
+                <tr class="ui-table-dark">
 
                     <td>
-                        <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" alt="@Client.CurrentSkin.Describe(p.Faction)"/>
+                        <img class="ui-img-fluid ui-p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Faction)" alt="@Client.CurrentSkin.Describe(p.Faction)"/>
                     </td>
 
                     @if (ShowName)
@@ -95,11 +95,11 @@
                         <td>
                             @if (p.Ally != Faction.None)
                             {
-                                <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Ally)" alt="@Client.CurrentSkin.Describe(p.Ally)"/>
+                                <img class="ui-img-fluid ui-p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Ally)" alt="@Client.CurrentSkin.Describe(p.Ally)"/>
                             }
                             else if (p.Nexus != Faction.None)
                             {
-                                <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Nexus)" alt="@Client.CurrentSkin.Describe(p.Nexus)"/>
+                                <img class="ui-img-fluid ui-p-1" width=60 src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Nexus)" alt="@Client.CurrentSkin.Describe(p.Nexus)"/>
                                 <strong>*</strong>
                             }
                         </td>
@@ -112,7 +112,7 @@
                             {
                                 foreach (var c in p.TreacheryCards)
                                 {
-                                    <Image Shown=@c Class="img-fluid p-1" Width=80/>
+                                    <Image Shown=@c Class="ui-img-fluid ui-p-1" Width=80/>
                                 }
                             }
                             else
@@ -129,15 +129,15 @@
                             {
                                 @foreach (var c in p.Traitors)
                                 {
-                                    <Image Shown=@c Class="img-fluid p-1" Width=60 />
+                                    <Image Shown=@c Class="ui-img-fluid ui-p-1" Width=60 />
                                 }
                                 @foreach (var c in p.DiscardedTraitors)
                                 {
-                                    <Image Shown=@c Class="img-fluid p-1" Width=60 GreyedOut />
+                                    <Image Shown=@c Class="ui-img-fluid ui-p-1" Width=60 GreyedOut />
                                 }
                                 @foreach (var c in p.FaceDancers)
                                 {
-                                    <Image Shown=@c Class="img-fluid p-1" Width=60 />
+                                    <Image Shown=@c Class="ui-img-fluid ui-p-1" Width=60 />
                                 }
                             }
                             else
@@ -152,7 +152,7 @@
                         <td>
                             @foreach (var c in p.TechTokens)
                             {
-                                <Image Shown=@c Class="img-fluid p-1" Width=60 />
+                                <Image Shown=@c Class="ui-img-fluid ui-p-1" Width=60 />
                             }
                         </td>
                     }
@@ -191,14 +191,14 @@
 
                                     @if (p.ForcesIn(l) > 0)
                                     {
-                                        <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionForceImageUrl(p.Faction)' alt="@Client.CurrentSkin.Describe(p.Force)" /><strong>&nbsp;@p.ForcesIn(l)</strong>
+                                        <img class='ui-img-fluid ui-m-0 ui-p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionForceImageUrl(p.Faction)' alt="@Client.CurrentSkin.Describe(p.Force)" /><strong>&nbsp;@p.ForcesIn(l)</strong>
                                     }
 
                                     <span>&nbsp;</span>
 
                                     @if (p.SpecialForcesIn(l) > 0)
                                     {
-                                        <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionSpecialForceImageUrl(p.Faction)' alt="@Client.CurrentSkin.Describe(p.SpecialForce)" /><strong>&nbsp;@p.SpecialForcesIn(l)</strong>
+                                        <img class='ui-img-fluid ui-m-0 ui-p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionSpecialForceImageUrl(p.Faction)' alt="@Client.CurrentSkin.Describe(p.SpecialForce)" /><strong>&nbsp;@p.SpecialForcesIn(l)</strong>
                                     }
 
                                 </div>
@@ -212,12 +212,12 @@
                         <td>
                             @foreach (var c in p.Leaders.Where(l => Game.IsAlive(l)))
                             {
-                                <Image Class="img-fluid p-1" Width=60 Shown=@c />
+                                <Image Class="ui-img-fluid ui-p-1" Width=60 Shown=@c />
                             }
 
                             @if (Game.Applicable(Rule.GreenMessiah) && p is { Faction: Faction.Green, TotalForcesKilledInBattle: >= 7 } && Game.IsAlive(LeaderManager.Messiah))
                             {
-                                <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
+                                <img class="ui-img-fluid ui-p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
                             }
 
                         </td>
@@ -228,22 +228,22 @@
                         <td>
                             @if (p.ForcesKilled > 0)
                             {
-                                <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionForceImageUrl(p.Faction)' alt="@Client.CurrentSkin.Describe(p.Force)" /><strong>&nbsp;@p.ForcesKilled</strong>
+                                <img class='ui-img-fluid ui-m-0 ui-p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionForceImageUrl(p.Faction)' alt="@Client.CurrentSkin.Describe(p.Force)" /><strong>&nbsp;@p.ForcesKilled</strong>
                             }
 
                             @if (p.SpecialForcesKilled > 0)
                             {
-                                <img class='img-fluid m-0 p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionSpecialForceImageUrl(p.Faction)' alt="@Client.CurrentSkin.Describe(p.SpecialForce)" /><strong>&nbsp;@p.SpecialForcesKilled</strong>
+                                <img class='ui-img-fluid ui-m-0 ui-p-0' width='24' height='24' src='@Client.CurrentSkin.GetFactionSpecialForceImageUrl(p.Faction)' alt="@Client.CurrentSkin.Describe(p.SpecialForce)" /><strong>&nbsp;@p.SpecialForcesKilled</strong>
                             }
 
                             @foreach (var c in p.Leaders.Where(l => !Game.IsAlive(l)))
                             {
-                                <Image Shown=@c Class="img-fluid p-1" Width=60 />
+                                <Image Shown=@c Class="ui-img-fluid ui-p-1" Width=60 />
                             }
 
                             @if (p.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah) && !Game.MessiahIsAlive)
                             {
-                                <img class="img-fluid p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
+                                <img class="ui-img-fluid ui-p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
                             }
 
                         </td>

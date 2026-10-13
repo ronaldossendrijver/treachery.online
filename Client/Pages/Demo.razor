@@ -1,0 +1,206 @@
+@page "/demo"
+@using Treachery.Client.Pages
+
+<main class="demo-shell">
+    <header class="demo-page-header">
+        <div class="demo-heading">
+            <a class="demo-back-link" href="/" aria-label="Return to Treachery Online">←</a>
+            <div>
+                <div class="demo-kicker">INTERFACE PREVIEW</div>
+                <h1>Map-first game UI</h1>
+            </div>
+        </div>
+        <div class="device-switch" role="group" aria-label="Preview layout">
+            <button type="button" class="@(!_isPhone ?"is-selected" : "")" aria-pressed="@(!_isPhone)" @onclick="() => SetPhonePreview(false)">
+                <span aria-hidden="true">▱</span> Desktop / laptop
+            </button>
+            <button type="button" class="@(_isPhone ?"is-selected" : "")" aria-pressed="@_isPhone" @onclick="() => SetPhonePreview(true)">
+                <span aria-hidden="true">▯</span> Phone
+            </button>
+        </div>
+    </header>
+
+    <section class="preview-device @(_isPhone ?"phone-preview" : "desktop-preview")" aria-label="@(_isPhone ? "Phone" : "Desktop") game interface preview">
+        <div class="preview-topbar">
+            <div class="preview-brand"><span class="brand-mark">T</span><span>TREACHERY <span class="brand-muted">ONLINE</span></span></div>
+            <div class="preview-room"><span class="room-live-dot"></span> Sample table <span class="room-separator">/</span> 6 players</div>
+            <a class="preview-exit" href="/" aria-label="Leave demo">Exit demo <span aria-hidden="true">↗</span></a>
+        </div>
+
+        <div class="preview-workspace">
+            <section class="preview-map" aria-label="Sample Arrakis game map">
+                <div class="map-corner-label">
+                    <span class="eyebrow">THE IMPERIUM</span>
+                    <strong>ARRAKIS</strong>
+                </div>
+                <div class="map-art-frame">
+                    <img class="preview-map-art" src="art/map.svg" alt="Illustrated map of Arrakis" />
+                    <div class="preview-location location-arrakeen"><span></span>ARRAKEEN</div>
+                    <div class="preview-location location-carthag"><span></span>CARTHAG</div>
+                    <div class="preview-location location-sietch"><span></span>TUEK’S SIETCH</div>
+                    <div class="preview-token token-north">
+                        <img src="art/faction1.svg" alt="Atreides sample force" />
+                        <b>3</b>
+                    </div>
+                    <div class="preview-token token-east">
+                        <img src="art/faction5.svg" alt="Harkonnen sample force" />
+                        <b>5</b>
+                    </div>
+                    <div class="preview-token token-south">
+                        <img src="art/faction3.svg" alt="Fremen sample force" />
+                        <b>2</b>
+                    </div>
+                    <div class="map-compass" aria-hidden="true">N<span>✦</span></div>
+                    <div class="map-caption"><span>Cycle 04</span><i></i><span>Turn 3 of 10</span></div>
+                </div>
+            </section>
+
+            <aside class="preview-controls @( _demoSheetOpen ?"sheet-open" : "sheet-closed")" aria-label="Illustrative game controls">
+                <button class="preview-sheet-handle" type="button" aria-expanded="@_demoSheetOpen" @onclick="ToggleDemoSheet">
+                    <span class="preview-grip" aria-hidden="true"></span>
+                    <span class="preview-sheet-heading">Game controls</span>
+                    <span class="preview-sheet-toggle">@(_demoSheetOpen ? "Collapse" : "Expand")</span>
+                </button>
+                <div class="preview-controls-scroll">
+                    <div class="sample-callout"><span class="sample-dot"></span> SAMPLE STATE <span>— illustration only</span></div>
+
+                    <label class="phase-label" for="demo-phase">GAME PHASE</label>
+                    <select id="demo-phase" class="phase-select" @bind="_selectedPhase" @bind:after="ResetSampleAction">
+                        <option value="@DemoPhase.Bidding">Bidding</option>
+                        <option value="@DemoPhase.Shipment">Shipment / Ship &amp; Move</option>
+                        <option value="@DemoPhase.Battle">Battle</option>
+                    </select>
+
+                    <div class="phase-title-row">
+                        <div>
+                            <span class="eyebrow">TURN 03 <span class="phase-divider">/</span> SAMPLE ROUND</span>
+                            <h2>@PhaseTitle</h2>
+                        </div>
+                        <span class="phase-emblem" aria-hidden="true">@PhaseGlyph</span>
+                    </div>
+
+                    @if (_selectedPhase == DemoPhase.Bidding)
+                    {
+                        <section class="phase-panel">
+                            <div class="panel-heading"><span>Guild auction</span><span class="round-tag">LOT 04</span></div>
+                            <div class="auction-card-row">
+                                <img class="auction-card-back" src="art/faction1.svg" alt="Illustrative auction card" />
+                                <div><strong>Shield Wall</strong><span>Weapon · Treachery card</span></div>
+                                <span class="bid-status">OPEN</span>
+                            </div>
+                            <div class="bid-summary"><span>Your current bid</span><strong>@_sampleBid <small>spice</small></strong></div>
+                            <div class="bid-control" aria-label="Adjust sample bid">
+                                <button type="button" aria-label="Decrease bid" @onclick="() => ChangeBid(-1)">−</button>
+                                <input type="number" min="0" max="20" @bind="_sampleBid" aria-label="Sample spice bid" />
+                                <button type="button" aria-label="Increase bid" @onclick="() => ChangeBid(1)">+</button>
+                            </div>
+                            <div class="bid-hint"><span>Current high bid</span><strong>3 spice <span>·</span> Bene Gesserit</strong></div>
+                            <button type="button" class="sample-action" @onclick="StageSampleAction">@(_sampleActionStaged ? "Bid staged · sample" : "Place sample bid") <span aria-hidden="true">→</span></button>
+                            <p class="sample-note">Controls are illustrative. No bids are submitted.</p>
+                        </section>
+                    }
+                    else if (_selectedPhase == DemoPhase.Shipment)
+                    {
+                        <section class="phase-panel">
+                            <div class="panel-heading"><span>Shipment &amp; movement</span><span class="round-tag">GUILD RATE</span></div>
+                            <label class="control-label" for="shipment-mode">Shipment type</label>
+                            <select id="shipment-mode" class="control-select" @bind="_shipmentType">
+                                <option value="Standard">Standard shipment</option>
+                                <option value="Special">Special forces</option>
+                            </select>
+                            <label class="control-label" for="shipment-destination">Destination</label>
+                            <select id="shipment-destination" class="control-select" @bind="_destination">
+                                <option value="Arrakeen">Arrakeen · Stronghold</option>
+                                <option value="Carthag">Carthag · Stronghold</option>
+                                <option value="Tuek's Sietch">Tuek’s Sietch</option>
+                            </select>
+                            <div class="force-count-row"><label class="control-label" for="force-count">Forces to ship</label><strong>@_forceCount forces</strong></div>
+                            <input id="force-count" class="force-slider" type="range" min="1" max="10" @bind="_forceCount" @bind:event="oninput" />
+                            <div class="cost-summary"><span>Estimated spice cost</span><strong>@ShipmentCost <small>spice</small></strong></div>
+                            <button type="button" class="sample-action" @onclick="StageSampleAction">@(_sampleActionStaged ? "Shipment staged · sample" : "Preview sample shipment") <span aria-hidden="true">→</span></button>
+                            <p class="sample-note">Destination and cost update locally in this demo.</p>
+                        </section>
+                    }
+                    else
+                    {
+                        <section class="phase-panel battle-panel">
+                            <div class="panel-heading"><span>Battle plans</span><span class="round-tag">TUEK’S SIETCH</span></div>
+                            <div class="battle-matchup">
+                                <div><img src="art/faction1.svg" alt="" /><strong>Atreides</strong><span>3 forces</span></div>
+                                <b class="versus">VS</b>
+                                <div><img src="art/faction5.svg" alt="" /><strong>Harkonnen</strong><span>5 forces</span></div>
+                            </div>
+                            <div class="battle-wheels">
+                                <div class="battle-wheel-card">
+                                    <div class="battle-wheel"><img src="art/wheel.png" alt="Sample battle wheel" /><span>7</span></div>
+                                    <strong>Your dial</strong><small>7 spice · 3 forces</small>
+                                </div>
+                                <div class="battle-wheel-card">
+                                    <div class="battle-wheel opponent-wheel"><img src="art/wheel.png" alt="Opponent battle wheel" /><span>?</span></div>
+                                    <strong>Opponent dial</strong><small>Hidden until reveal</small>
+                                </div>
+                            </div>
+                            <div class="plan-options">
+                                <div><span>LEADER</span><strong>Thufir Hawat</strong></div>
+                                <div><span>WEAPON</span><strong>Projectile weapon</strong></div>
+                                <div><span>DEFENSE</span><strong>Shield</strong></div>
+                            </div>
+                            <button type="button" class="sample-action" @onclick="StageSampleAction">@(_sampleActionStaged ? "Plan ready · sample" : "Review sample plan") <span aria-hidden="true">→</span></button>
+                            <p class="sample-note">Sample battle plan · no game action is sent.</p>
+                        </section>
+                    }
+
+                    <div class="rail-footnote"><span class="footnote-mark">✦</span><span>THE SPICE MUST FLOW<br /><small>Choose your next move carefully.</small></span></div>
+                </div>
+            </aside>
+        </div>
+    </section>
+
+    <footer class="demo-footer">
+        <span><i class="footer-dot"></i> Static sample state</span>
+        <span>Switch device size or phase to explore the layout</span>
+        <ReportLayoutOptions />
+    </footer>
+</main>
+
+@code {
+    private enum DemoPhase { Bidding, Shipment, Battle }
+
+    private DemoPhase _selectedPhase = DemoPhase.Shipment;
+    private bool _isPhone;
+    private bool _demoSheetOpen = true;
+    private bool _sampleActionStaged;
+    private int _sampleBid = 4;
+    private int _forceCount = 4;
+    private string _destination = "Arrakeen";
+    private string _shipmentType = "Standard";
+
+    private string PhaseTitle => _selectedPhase switch
+    {
+        DemoPhase.Bidding => "Bidding",
+        DemoPhase.Shipment => "Shipment / Ship & Move",
+        DemoPhase.Battle => "Battle",
+        _ => string.Empty
+    };
+
+    private string PhaseGlyph => _selectedPhase switch
+    {
+        DemoPhase.Bidding => "↗",
+        DemoPhase.Shipment => "⌖",
+        DemoPhase.Battle => "⚔",
+        _ => "✦"
+    };
+
+    private int ShipmentCost => _forceCount * (_shipmentType == "Special" ? 2 : 1);
+
+    private void SetPhonePreview(bool phone)
+    {
+        _isPhone = phone;
+        _demoSheetOpen = !phone;
+    }
+
+    private void ToggleDemoSheet() => _demoSheetOpen = !_demoSheetOpen;
+    private void ResetSampleAction() => _sampleActionStaged = false;
+    private void StageSampleAction() => _sampleActionStaged = true;
+    private void ChangeBid(int change) => _sampleBid = Math.Clamp(_sampleBid + change, 0, 20);
+}

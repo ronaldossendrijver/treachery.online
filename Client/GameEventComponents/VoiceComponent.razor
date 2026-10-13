@@ -15,7 +15,7 @@
 
         @if (Game.CurrentBattle!.IsInvolved(Faction.Green))
         {
-            <div class="text-info small mb-2">Note: Voice should be used before Prescience.</div>
+            <div class="ui-text-info ui-small ui-mb-2">Note: Voice should be used before Prescience.</div>
         }
 
         <RadioComponent @bind-Value="_mustUse" Values="@(new[] {true,false})" ValueLabels="@(new[] {"Force the use of...","Deny the use of..."})" />

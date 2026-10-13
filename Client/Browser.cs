@@ -56,6 +56,77 @@ public class Browser(IJSRuntime jsRuntime)
         await JsInvoke("HideModal", modalId);
     }
 
+    public void RestoreDragPosition(ElementReference element, string key)
+    {
+        try
+        {
+            if (jsRuntime is IJSInProcessRuntime inProcess)
+                inProcess.InvokeVoid("RestoreDragPosition", element, key);
+        }
+        catch (Exception e)
+        {
+            Support.Log("Error invoking method: {0}", e.Message);
+        }
+    }
+
+    public record FxLoss(string Key, int From, int To);
+
+    // Synchronous so the effect starts before Blazor removes the killed tokens from the DOM.
+    public void Disintegrate(IEnumerable<FxLoss> losses)
+    {
+        try
+        {
+            if (jsRuntime is IJSInProcessRuntime inProcess)
+                inProcess.InvokeVoid("FxDisintegrate", System.Linq.Enumerable.ToArray(losses));
+        }
+        catch (Exception e)
+        {
+            Support.Log("Error invoking method: {0}", e.Message);
+        }
+    }
+
+    // Marks the button the user just clicked as busy until the matching EndBusy call.
+    public int BeginBusy()
+    {
+        try
+        {
+            if (jsRuntime is IJSInProcessRuntime inProcess)
+                return inProcess.Invoke<int>("UiBusyBegin");
+        }
+        catch (Exception e)
+        {
+            Support.Log("Error invoking method: {0}", e.Message);
+        }
+
+        return 0;
+    }
+
+    public void EndBusy(int token)
+    {
+        if (token == 0)
+            return;
+
+        try
+        {
+            if (jsRuntime is IJSInProcessRuntime inProcess)
+                inProcess.InvokeVoid("UiBusyEnd", token);
+        }
+        catch (Exception e)
+        {
+            Support.Log("Error invoking method: {0}", e.Message);
+        }
+    }
+
+    public async Task ScrollToEdge(ElementReference element, bool toEnd)
+    {
+        await JsInvoke("ScrollToEdge", element, toEnd);
+    }
+
+    public async Task Integrate(IEnumerable<string> keys, int delayMs)
+    {
+        await JsInvoke("FxIntegrate", System.Linq.Enumerable.ToArray(keys), delayMs);
+    }
+
     public async Task Save(string filename, string data)
     {
         await JsInvoke<object>("saveFile", filename, data);
@@ -108,6 +179,11 @@ public class Browser(IJSRuntime jsRuntime)
     public async Task StopSounds()
     {
         await JsInvoke("StopSounds", null, 0);
+    }
+
+    public async Task SetUiSoundVolume(float volume)
+    {
+        await JsInvoke("SetUiSoundVolume", CalculateVolume(volume));
     }
 
     private static float CalculateVolume(float volumeOnLinearScaleFrom0To100)

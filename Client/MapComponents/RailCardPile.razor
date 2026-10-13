@@ -1,0 +1,24 @@
+<button class="rail-pile-card" type="button" data-game-popover="@Popover" aria-label="@($"{Label}: {Count} cards")">
+    <span class="rail-pile-image">
+        <img src="@Src" alt="" />
+        @if (!string.IsNullOrEmpty(BadgeImage))
+        {
+            <img class="rail-pile-badge-image" src="@BadgeImage" alt="" />
+        }
+        else if (!string.IsNullOrEmpty(Badge))
+        {
+            <span class="rail-pile-badge">@Badge</span>
+        }
+        <span class="rail-pile-count">@Count</span>
+    </span>
+    <span class="rail-pile-label">@Label</span>
+</button>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    [Parameter] public int Count { get; set; }
+    [Parameter, EditorRequired] public string Src { get; set; } = "";
+    [Parameter] public string? Badge { get; set; }
+    [Parameter] public string? BadgeImage { get; set; }
+    [Parameter] public string Popover { get; set; } = "";
+}

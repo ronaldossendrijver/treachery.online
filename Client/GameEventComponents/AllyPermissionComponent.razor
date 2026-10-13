@@ -59,7 +59,7 @@
             <div>They own <strong>@ally.Resources</strong> @Client.CurrentSkin.Describe(Concept.Resource).</div>
         }
 
-        <div class="mt-1">
+        <div class="ui-mt-1">
             <SelectResourcesComponent @bind-Value="_spice" Min="0" Max="Player.Resources" OnChanged="SetEdited" Label="@WillingToPayLabel"/>
         </div>
 
@@ -79,8 +79,8 @@
         @switch (Faction)
         {
             case Faction.Red:
-                <div class="mt-1">
-                    <label class="mt-1 mb-0">How many revivals will you pay for them (currently: <strong>@(Game.RedWillPayForExtraRevival)</strong>)?</label>
+                <div class="ui-mt-1">
+                    <label class="ui-mt-1 ui-mb-0">How many revivals will you pay for them (currently: <strong>@(Game.RedWillPayForExtraRevival)</strong>)?</label>
                     <SelectForcesComponent @bind-Value="_emperorWillPayForExtraRevival" Min="0" Max="3" Faction="Player.Ally" Special="false" OnChanged="@SetEdited"/>
                 </div>
                 break;

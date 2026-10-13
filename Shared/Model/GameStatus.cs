@@ -80,6 +80,10 @@ public class GameStatus
     public Message GetMessage(Player? player, bool isHost)
         => WaitingForMe(player, isHost) ? DescriptionWhenAwaited : DescriptionWhenWaiting;
 
+    private static List<SequenceElement> OrangeHasTurn(Game game)
+        => game.ShipmentAndMoveSequence!.GetPlayersInSequence()
+            .Select(se => new SequenceElement { Player = se.Player, HasTurn = se.Player.Faction == Faction.Orange })
+            .ToList();
     public static GameStatus DetermineStatus(Game game, Player? me, bool isPlayer)
     {
         var result = game.CurrentPhase switch
@@ -348,12 +352,12 @@ public class GameStatus
             Phase.OrangeShip when game.OrangeMayDelay => Status(
                 Express("Please decide to ship now or delay your turn and let other factions go first."),
                 Express(Faction.Orange, " are deciding about taking their turn now..."),
-                game.ShipmentAndMoveSequence!.GetPlayersInSequence().ToList(), game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
+                OrangeHasTurn(game), game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
 
             Phase.OrangeShip when !game.OrangeMayDelay => Status(
                 Express("Please decide to ship forces or pass."),
                 Express(Faction.Orange, " are thinking about shipping forces..."),
-                game.ShipmentAndMoveSequence!.GetPlayersInSequence().ToList(), game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
+                OrangeHasTurn(game), game.FindMostRecentEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
 
             Phase.BlueAccompaniesNonOrangeShip or Phase.BlueAccompaniesOrangeShip => Status(game,
                 Express("Do you wish to accompany the latest shipment?"),

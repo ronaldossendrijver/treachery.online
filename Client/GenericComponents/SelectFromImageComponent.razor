@@ -10,7 +10,7 @@
 
 @if (Label != null)
 {
-    <label class="d-block mt-1 mb-0">@Label</label>
+    <label class="ui-d-block ui-mt-1 ui-mb-0">@Label</label>
 }
 
 <div>
@@ -19,7 +19,7 @@
         foreach (var valueToShow in Values)
         {
             <Image Shown=@valueToShow Game=Game
-                   Class="pe-1"
+                   Class="ui-pe-1"
                    OnClick="@(_ => Click(valueToShow))"
                    Darkened="@DetermineDarkened(valueToShow)"
                    Pointer

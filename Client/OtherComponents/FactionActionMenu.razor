@@ -1,0 +1,110 @@
+@using Treachery.Client.GameEventComponents
+@inherits GameComponent
+
+@if (SelectedFaction is Faction faction && faction != Faction.None && Game.Players.FirstOrDefault(player => player.Faction == faction) is { } player)
+{
+    var canGift = CanOfferGift(faction);
+    var activeTab = canGift ? _activeTab : InfoTab;
+    var idPrefix = $"map-faction-{faction}";
+
+    <section class="map-faction-actions" role="region" aria-label="@($"{Client.CurrentSkin.Describe(faction)} faction information and actions")"
+             style="@($"--map-faction-color:{Client.CurrentSkin.GetFactionColor(faction)}")">
+        <header class="map-faction-actions-header">
+            <img src="@Client.CurrentSkin.GetImageUrl(faction)" alt="" />
+            <div>
+                <h2>@Client.CurrentSkin.Describe(faction)</h2>
+                <span>@Game.GetPlayerName(player)</span>
+            </div>
+            <button class="icon-button" type="button" aria-label="Close faction menu" @onclick="OnClose">×</button>
+        </header>
+
+        <div class="map-faction-tabs" role="tablist" aria-label="@($"{Client.CurrentSkin.Describe(faction)} options")">
+            @if (canGift)
+            {
+                <button @ref="_giftTab" id="@($"{idPrefix}-tab-gift")" class="map-faction-tab @(activeTab == GiftTab ? "is-active" : "")" type="button" role="tab"
+                        aria-selected="@(activeTab == GiftTab ? "true" : "false")" aria-controls="@($"{idPrefix}-panel-gift")"
+                        tabindex="@(activeTab == GiftTab ? 0 : -1)"
+                        @onclick="@(() => SelectTab(GiftTab))" @onkeydown="@(e => OnTabKey(e, canGift))">Give spice</button>
+            }
+            <button @ref="_infoTab" id="@($"{idPrefix}-tab-info")" class="map-faction-tab @(activeTab == InfoTab ? "is-active" : "")" type="button" role="tab"
+                    aria-selected="@(activeTab == InfoTab ? "true" : "false")" aria-controls="@($"{idPrefix}-panel-info")"
+                    tabindex="@(activeTab == InfoTab ? 0 : -1)"
+                    @onclick="@(() => SelectTab(InfoTab))" @onkeydown="@(e => OnTabKey(e, canGift))">Faction info</button>
+        </div>
+
+        <div class="map-faction-actions-content">
+            @if (activeTab == GiftTab)
+            {
+                <div id="@($"{idPrefix}-panel-gift")" class="map-faction-gift" role="tabpanel" aria-labelledby="@($"{idPrefix}-tab-gift")">
+                    <DonatedComponent TargetFaction="faction" />
+                </div>
+            }
+            else
+            {
+                <div id="@($"{idPrefix}-panel-info")" role="tabpanel" aria-labelledby="@($"{idPrefix}-tab-info")">
+                    <div class="map-faction-leaders" aria-label="Faction leaders">
+                        @foreach (var leader in LeaderManager.Leaders.Where(leader => leader.Faction == faction))
+                        {
+                            <Image Shown="@leader" Game="Game" Width="48" />
+                        }
+                    </div>
+                    <div class="map-faction-rule-info">
+                        @((MarkupString)Client.CurrentSkin.GetFactionInfo_HTML(Game, faction))
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+}
+
+@code {
+    private const string GiftTab = "gift";
+    private const string InfoTab = "info";
+
+    [Parameter] public Faction? SelectedFaction { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private string _activeTab = GiftTab;
+    private Faction? _shownFaction;
+
+    protected override void OnParametersSet()
+    {
+        if (_shownFaction != SelectedFaction)
+        {
+            _shownFaction = SelectedFaction;
+            _activeTab = GiftTab;
+        }
+    }
+
+    private void SelectTab(string tab) => _activeTab = tab;
+
+    private ElementReference _giftTab;
+    private ElementReference _infoTab;
+    private bool _focusActiveTab;
+
+    private void OnTabKey(KeyboardEventArgs e, bool canGift)
+    {
+        if (!canGift || e.Key is not ("ArrowLeft" or "ArrowRight" or "Home" or "End")) return;
+
+        _activeTab = e.Key switch
+        {
+            "Home" => GiftTab,
+            "End" => InfoTab,
+            _ => _activeTab == GiftTab ? InfoTab : GiftTab
+        };
+        _focusActiveTab = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_focusActiveTab) return;
+        _focusActiveTab = false;
+        await (_activeTab == GiftTab ? _giftTab : _infoTab).FocusAsync();
+    }
+
+    private bool CanOfferGift(Faction faction) =>
+        !Client.IsObserver
+        && Client.Actions.Contains(typeof(Donated))
+        && Client.Player is { } player
+        && Donated.ValidTargets(Game, player).Contains(faction);
+}

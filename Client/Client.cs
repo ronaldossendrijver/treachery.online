@@ -410,7 +410,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     
     public async Task<Result<LoginInfo>> RequestCreateUser(string userName, string hashedPassword, string email, string playerName)
     {
-        var result = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestCreateUser), userName, hashedPassword, email, playerName);
+        var result = await WithBusyButton(() => _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestCreateUser), userName, hashedPassword, email, playerName));
 
         if (result.Success)
         {
@@ -424,7 +424,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public async Task<Result<LoginInfo>> RequestLogin(string userName, string hashedPassword)
     {
-        var result = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestLogin), Game.LatestVersion, userName, hashedPassword);
+        var result = await WithBusyButton(() => _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestLogin), Game.LatestVersion, userName, hashedPassword));
 
         if (result.Success)
         {
@@ -449,11 +449,11 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     }
 
     public async Task<VoidResult> RequestPasswordReset(string usernameOrEmail) 
-        => await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestPasswordReset), usernameOrEmail);
+        => await WithBusyButton(() => _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestPasswordReset), usernameOrEmail));
 
     public async Task<Result<LoginInfo>> RequestSetPassword(string userName, string passwordResetToken, string newHashedPassword)
     {
-        var result = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestSetPassword), userName, passwordResetToken, newHashedPassword);
+        var result = await WithBusyButton(() => _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.RequestSetPassword), userName, passwordResetToken, newHashedPassword));
 
         if (result.Success)
         {
@@ -1010,7 +1010,25 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     private async Task<Result<VoidContents>> Invoke(string hubMethod, params object?[] args) =>
         await Invoke<VoidContents>(hubMethod, args);
  
-    private async Task<Result<T>> Invoke<T>(string hubMethod, params object?[] args)
+    private async Task<T> WithBusyButton<T>(Func<Task<T>> action)
+    {
+        var token = Browser.BeginBusy();
+        try
+        {
+            return await action();
+        }
+        finally
+        {
+            Browser.EndBusy(token);
+        }
+    }
+
+    private async Task<Result<T>> Invoke<T>(string hubMethod, params object?[] args) =>
+        hubMethod is nameof(IGameHub.RequestHeartbeat) or nameof(IGameHub.RequestUpdateSettings)
+            ? await InvokeHub<T>(hubMethod, args)
+            : await WithBusyButton(() => InvokeHub<T>(hubMethod, args));
+
+    private async Task<Result<T>> InvokeHub<T>(string hubMethod, params object?[] args)
     {
         var result = args.Length switch
         {

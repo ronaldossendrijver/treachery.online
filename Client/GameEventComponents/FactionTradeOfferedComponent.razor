@@ -12,10 +12,12 @@
 
     <Header>Offer to trade factions</Header>
     <Body>
+    
+    <div>You're currently playing <FactionComponent Faction="@Faction"/>, do you wish to change factions?</div>
 
-        <SelectFromImageComponent @bind-Value="target" Values="FactionTradeOffered.ValidTargets(Game, Player)" Required="true" ImageWidth="40"/>
-        
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmText" ConfirmError="@Validation" />
+    <SelectFromImageComponent @bind-Value="_target" Values="FactionTradeOffered.ValidTargets(Game, Player)" Required="true" ImageWidth="40"/>
+
+    <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmText" ConfirmError="@Validation"/>
 
     </Body>
 
@@ -23,9 +25,9 @@
 
 @code {
 
-    private Faction target;
+    private Faction _target;
 
-    protected override FactionTradeOffered ConfirmedResult => new(Game, Faction) { Target = target };
+    protected override FactionTradeOffered ConfirmedResult => new(Game, Faction) { Target = _target };
 
-    private string ConfirmText => Game.Players.Any(p => p.Faction == target) ? Client.CurrentSkin.Format("Offer Trade with {0}", target) : Client.CurrentSkin.Format("Pick {0}", target);
+    private string ConfirmText => Game.Players.Any(p => p.Faction == _target) ? Client.CurrentSkin.Format("Offer Trade with {0}", _target) : Client.CurrentSkin.Format("Pick {0}", _target);
 }

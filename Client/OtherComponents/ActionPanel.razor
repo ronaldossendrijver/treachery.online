@@ -25,6 +25,7 @@
     <BlackMarketBiddingPanel CanBid="@Client.Actions.Contains(typeof(BlackMarketBid))" />
 }
 
+
 @foreach (var a in Client.Actions)
 {
     switch (a.Name)
@@ -33,10 +34,6 @@
             <EstablishPlayersComponent/>
             break;
             
-        case nameof(AutomationConfigured):
-            <AutomationConfiguredComponent/>
-            break;
-
         case nameof(FactionSelected):
             <FactionSelectedComponent/>
             break;
@@ -194,38 +191,26 @@
             break;
 
         case nameof(BattleClaimed):
-            var titleBattleClaimed = Faction == Faction.Pink 
-                ? Client.CurrentSkin.Format("Do you wish to fight in {0}? Otherwise, your ally will.", Game.BattleAboutToStart!.Territory) 
-                : Client.CurrentSkin.Format("Should {0} fight the battle in {1}?", Faction.Pink, Game.BattleAboutToStart!.Territory);
-            <YesNoActionComponent GameEventType="BattleClaimed" Title=@titleBattleClaimed Alert="true"/>
-            break;
-
         case nameof(Voice):
-            <VoiceComponent/>
-            break;
-
         case nameof(Prescience):
-            <PrescienceComponent/>
-            break;
-
+        case nameof(KarmaPrescience):
+        case nameof(ResidualPlayed):
         case nameof(Battle):
-            <BattleComponent/>
-            break;
-
         case nameof(BattleRevision):
-            <SimpleActionComponent GameEventType="BattleRevision" Title="Change your battle plan?" Alert="false" ConfirmLabel="Change Plan"/>
-            break;
-
         case nameof(TreacheryCalled):
-            <TreacheryCalledComponent/>
-            break;
-
+        case nameof(PoisonToothCancelled):
+        case nameof(PortableAntidoteUsed):
+        case nameof(Diplomacy):
+        case nameof(KarmaPinkDial):
         case nameof(FaceDancerRevealed):
-            <FaceDancerRevealedComponent/>
-            break;
-
+        case nameof(FaceDanced):
+        case nameof(RockWasMelted):
+        case nameof(Retreat):
+        case nameof(Captured):
         case nameof(BattleConcluded):
-            <BattleConcludedComponent/>
+        case nameof(AuditCancelled):
+        case nameof(Audited):
+            @* Handled on the battle wheels (BattlePlans) *@
             break;
 
         case nameof(LoserConcluded):
@@ -250,10 +235,6 @@
 
         case nameof(RaiseDeadPlayed):
             <RaiseDeadComponent BackgroundImage="@GetImage(TreacheryCardType.RaiseDead)"/>
-            break;
-
-        case nameof(Donated):
-            <DonatedComponent/>
             break;
 
         case nameof(ResourcesTransferred):
@@ -304,24 +285,12 @@
             <KarmaMonsterComponent BackgroundImage="@GetImage(TreacheryCardType.Karma)"/>
             break;
 
-        case nameof(KarmaPrescience):
-            <SimpleActionComponent GameEventType="KarmaPrescience" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Client.CurrentSkin.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Karma)"/>
-            break;
-
-        case nameof(KarmaPinkDial):
-            <SimpleActionComponent GameEventType="KarmaPinkDial" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Client.CurrentSkin.Format("Use {0} to add the difference between the leader discs to your dial", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Karma)"/>
-            break;
-
         case nameof(KarmaWhiteBuy):
             <KarmaWhiteBuyComponent BackgroundImage="@GetImage(TreacheryCardType.Karma)"/>
             break;
 
         case nameof(Karma):
             <KarmaComponent BackgroundImage="@GetImage(TreacheryCardType.Karma)"/>
-            break;
-
-        case nameof(FaceDanced):
-            <FaceDancedComponent/>
             break;
 
         case nameof(FaceDancerReplaced):
@@ -384,10 +353,6 @@
             <SimpleActionComponent GameEventType="HarvesterPlayed" BackgroundImage="@GetImage(TreacheryCardType.Harvester)" Title="@DescribeCard(TreacheryCardType.Harvester)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Harvester)"/>
             break;
 
-        case nameof(PoisonToothCancelled):
-            <SimpleActionComponent GameEventType="PoisonToothCancelled" BackgroundImage="@GetImage(TreacheryCardType.PoisonTooth)" Title="Cancel Poison Tooth?" Alert="false" ConfirmLabel="Cancel"/>
-            break;
-
         case nameof(ReplacedCardWon):
             <ReplacedCardWonComponent/>
             break;
@@ -398,10 +363,6 @@
 
         case nameof(HideSecrets):
             <SimpleActionComponent GameEventType="HideSecrets" Title="Hide your secret info (like cards and traitors) from other players at the end of the game?" ConfirmLabel = "Yes" Alert = "true" Dismissable = "true" DismissLabel = "No" />
-            break;
-
-        case nameof(DealOffered):
-            <DealOfferedComponent/>
             break;
 
         case nameof(Discarded):
@@ -443,14 +404,6 @@
 
         case nameof(KarmaBrownDiscard):
             <KarmaBrownDiscardComponent BackgroundImage="@GetImage(TreacheryCardType.Karma)"/>
-            break;
-
-        case nameof(AuditCancelled):
-            <AuditCancelledComponent/>
-            break;
-
-        case nameof(Audited):
-            <AuditedComponent/>
             break;
 
         case nameof(ResourcesAudited):
@@ -499,23 +452,12 @@
                                    ConfirmLabel="Reveal"/>
             break;
 
-        case nameof(ResidualPlayed):
-            <SimpleActionComponent GameEventType="ResidualPlayed"
-                                   BackgroundImage="@GetImage(TreacheryCardType.Residual)"
-                                   Title="@Client.CurrentSkin.Format("Use {0} to kill a random available opponent leader?", TreacheryCardType.Residual)"
-                                   ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Residual)"/>
-            break;
-
         case nameof(FlightUsed):
             <FlightUsedComponent/>
             break;
 
         case nameof(FlightDiscoveryUsed):
             <SimpleActionComponent GameEventType="FlightDiscoveryUsed" Title=@Client.CurrentSkin.Format("Use your {0} Discovery Token to gain extra movement speed?", DiscoveryToken.Flight) Alert="false" ConfirmLabel="Yes"/>
-            break;
-
-        case nameof(RockWasMelted):
-            <RockWasMeltedComponent/>
             break;
 
         case nameof(DistransUsed):
@@ -541,23 +483,8 @@
             <JuicePlayedComponent/>
             break;
 
-        case nameof(PortableAntidoteUsed):
-            <SimpleActionComponent GameEventType="PortableAntidoteUsed"
-                                   BackgroundImage="@GetImage(TreacheryCardType.PortableAntidote)"
-                                   Title="@Client.CurrentSkin.Format("Use your {0}?", TreacheryCardType.PortableAntidote)"
-                                   ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.PortableAntidote)"/>
-            break;
-
         case nameof(Bureaucracy):
             <YesNoActionComponent GameEventType="Bureaucracy" BackgroundImage="@Client.CurrentSkin.GetImageUrl(LeaderSkill.Bureaucrat)" Title="@Client.CurrentSkin.Format("Use your {0} skill?", LeaderSkill.Bureaucrat)" Alert="true"/>
-            break;
-
-        case nameof(Captured):
-            <YesNoActionComponent GameEventType="Captured" Title="Do you wish to capture a random leader from your opponent?" Alert="true" ForFaction="Faction.Black"/>
-            break;
-
-        case nameof(Diplomacy):
-            <DiplomacyComponent/>
             break;
 
         case nameof(SwitchedSkilledLeader):
@@ -582,29 +509,15 @@
             <HMSAdvantageChosenComponent/>
             break;
 
-        case nameof(Retreat):
-            <RetreatComponent/>
-            break;
-
         case nameof(Planetology):
             <PlanetologyComponent/>
             break;
     }
 }
 
-@if (DealAccepted.CurrentDeals(Game).Any() || (!Client.IsObserver && Client.Player is { } dealPlayer && (DealAccepted.AcceptableDeals(Game, dealPlayer).Any() || DealAccepted.CancellableDeals(Game, dealPlayer).Any())))
-{
-    <DealComponent/>
-}
-
 @if (!Client.IsObserver && Game.AssistedNoteKeepingEnabled(Player))
 {
     <NoteComponent/>
-}
-
-@if (!Client.IsObserver && Client.CurrentPhase >= Phase.SelectingTraitors && Client.Faction is Faction.Green)
-{
-    <TrackerComponent/>
 }
 
 @if (Game.CurrentMainPhase != MainPhase.Ended && Client.Actions.Contains(typeof(PlayerReplaced)))

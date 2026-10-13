@@ -18,7 +18,7 @@
             <SelectResourcesFromFactionComponent @bind-Value="amounts[faction]" Min="0" Max="Player.Resources" Faction="faction" OnChanged="e => StateHasChanged()" />
         }
 
-        <div class="text-info small">Your contributions to opponent bids will flow back to you <i>at the end</i> of the bidding phase.</div>
+        <div class="ui-text-info ui-small">Your contributions to opponent bids will flow back to you <i>at the end</i> of the bidding phase.</div>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Support" ConfirmError="@Validation" />
 

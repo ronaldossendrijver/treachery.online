@@ -1,0 +1,71 @@
+.report-options-launcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 30px;
+    padding: 4px 9px;
+    border: 1px solid rgba(193, 167, 108, 0.28);
+    border-radius: 6px;
+    background: rgba(193, 167, 108, 0.08);
+    color: #d8c48f;
+    cursor: pointer;
+    font-size: 0.65rem;
+}
+
+.report-options-launcher:hover { border-color: #c1a76c; background: rgba(193, 167, 108, 0.16); }
+.report-options-launcher span { color: #e2a55f; }
+
+.report-layout-dialog {
+    width: min(1180px, calc(100vw - 32px));
+    max-width: none;
+    max-height: min(90dvh, 900px);
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid rgba(200, 177, 122, 0.48);
+    border-radius: 14px;
+    background: #282723;
+    color: #efe8d6;
+    box-shadow: 0 26px 80px rgba(0, 0, 0, 0.58);
+}
+
+.report-layout-dialog::backdrop { background: rgba(9, 9, 8, 0.8); backdrop-filter: blur(4px); }
+.report-layout-shell { display: flex; flex-direction: column; max-height: min(90dvh, 900px); }
+.report-layout-header { display: flex; flex: 0 0 auto; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 18px 21px 14px; border-bottom: 1px solid rgba(220, 205, 164, 0.18); }
+.report-options-kicker { color: #c1a76c; font-size: 0.62rem; font-weight: 850; letter-spacing: 0.15em; }
+.report-layout-header h2 { margin: 4px 0; font-size: 1.2rem; }
+.report-layout-header p { margin: 0; color: #c9c0ab; font-size: 0.78rem; }
+.report-layout-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; padding: 15px; overflow: auto; }
+.report-layout-option { min-width: 0; padding: 10px; border: 1px solid rgba(220, 205, 164, 0.17); border-radius: 9px; background: rgba(255, 255, 255, 0.025); }
+.report-layout-option-selected { border-color: rgba(193, 167, 108, 0.68); background: linear-gradient(145deg, rgba(193, 167, 108, 0.11), rgba(255, 255, 255, 0.025)); box-shadow: inset 0 0 0 1px rgba(193, 167, 108, 0.12); }
+.report-layout-option h3 { margin: 10px 0 5px; color: #ead5a0; font-size: 0.83rem; }
+.report-layout-option p { min-height: 4.5em; margin: 0 0 8px; color: #c9c0ab; font-size: 0.7rem; line-height: 1.45; }
+.report-option-tag { display: inline-block; padding: 4px 6px; border-radius: 4px; background: rgba(193, 167, 108, 0.12); color: #d9c58f; font-size: 0.58rem; font-weight: 750; }
+.report-option-preview, .report-mock-preview { position: relative; height: 166px; overflow: hidden; border: 1px solid rgba(220, 205, 164, 0.22); border-radius: 6px; background: #211f1c; }
+.report-mock-map { position: absolute; inset: 0 32% 0 0; display: grid; place-items: center; color: #887a5b; background: radial-gradient(ellipse at center, #4b4537, #252421 68%); font-family: Georgia, serif; font-size: 0.67rem; letter-spacing: 0.16em; }
+.report-mock-map i { position: absolute; width: 7px; height: 7px; border: 1px solid #f3ca7c; border-radius: 50%; background: #d58a42; }
+.report-mock-map i:nth-of-type(1) { top: 30%; left: 38%; }
+.report-mock-map i:nth-of-type(2) { top: 49%; left: 67%; }
+.report-mock-map i:nth-of-type(3) { top: 71%; left: 47%; }
+.report-mock-rail { position: absolute; inset: 0 0 0 auto; display: flex; flex-direction: column; gap: 6px; width: 32%; padding: 10px 6px; background: #302e29; }
+.report-mock-rail b, .report-mock-action { padding: 6px 4px; border: 1px solid rgba(220, 205, 164, 0.15); border-radius: 3px; color: #c9c0ab; font-size: 0.49rem; text-align: center; }
+.report-mock-dock { position: absolute; right: 36%; bottom: 7px; left: 7px; display: grid; gap: 4px; padding: 7px; border: 1px solid rgba(193, 167, 108, 0.48); border-radius: 5px; background: rgba(34, 32, 28, 0.94); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35); }
+.report-mock-dock strong, .report-mock-feed strong, .report-mock-modal strong { display: flex; justify-content: space-between; color: #e9d7ae; font-size: 0.57rem; }
+.report-mock-dock small, .report-mock-feed small, .report-mock-modal small { overflow: hidden; color: #c9c0ab; font-size: 0.48rem; text-overflow: ellipsis; white-space: nowrap; }
+.report-mock-preview { display: flex; flex-direction: column; gap: 5px; padding: 7px; }
+.report-mock-status { flex: 0 0 24px; padding: 5px; border-radius: 3px; background: #e8dba6; color: #343025; font-size: 0.53rem; font-weight: 850; text-align: center; }
+.report-mock-player { flex: 0 0 25px; padding: 6px; border: 1px solid rgba(193, 167, 108, 0.42); border-radius: 3px; color: #e9d7ae; font-size: 0.51rem; text-align: center; }
+.report-mock-feed { display: grid; flex: 1 1 auto; gap: 4px; padding: 6px; border: 1px solid rgba(193, 167, 108, 0.4); border-radius: 3px; background: #252421; }
+.report-mock-feed strong span { color: #a79f8d; font-size: 0.45rem; }
+.report-mock-action { flex: 0 0 23px; }
+.report-mock-toolbar { display: flex; align-items: center; gap: 6px; height: 31px; padding: 4px 7px; border-bottom: 1px solid rgba(220, 205, 164, 0.18); color: #c9c0ab; font-size: 0.65rem; }
+.report-mock-report-button { position: relative; color: #e9d7ae; }
+.report-mock-report-button i { position: absolute; top: -5px; right: -7px; display: grid; place-items: center; width: 11px; height: 11px; border-radius: 50%; background: #d58a42; color: #211f1c; font-size: 0.45rem; font-style: normal; }
+.report-mock-modal { position: absolute; top: 44px; right: 10%; left: 10%; display: grid; gap: 9px; padding: 10px; border: 1px solid rgba(193, 167, 108, 0.6); border-radius: 6px; background: #302e29; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.52); }
+.report-layout-footer { padding: 10px 17px; border-top: 1px solid rgba(220, 205, 164, 0.14); color: #a7a08f; font-size: 0.67rem; }
+
+@media (max-width: 760px) {
+    .report-layout-options { grid-template-columns: minmax(0, 1fr); }
+    .report-layout-option p { min-height: 0; }
+    .report-layout-dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 20px); }
+    .report-layout-shell { max-height: calc(100dvh - 20px); }
+}

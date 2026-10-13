@@ -1,0 +1,326 @@
+@*
+ * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
+ * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
+ * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+*@
+@inherits MapComponent
+
+@* Purely decorative ambience: small local gusts of fine sand and the ripples of unseen worms travelling beneath open sand. *@
+<svg class="sand-ambience" width="@Client.CurrentSkin.MapDimensions.X" height="@Client.CurrentSkin.MapDimensions.Y"
+     viewBox="0 0 @Client.CurrentSkin.MapDimensions.X @Client.CurrentSkin.MapDimensions.Y" aria-hidden="true" focusable="false" pointer-events="none">
+
+    <defs>
+        <clipPath id="sandAmbienceClip">
+            @foreach (var territory in SandTerritories)
+            {
+                <path d="@Client.CurrentSkin.GetTerritoryBorder(territory)"/>
+            }
+        </clipPath>
+        @foreach (var gust in _gusts)
+        {
+            <mask id="@gust.ClipId" maskUnits="userSpaceOnUse" x="@Round(gust.X - GustRadius)" y="@Round(gust.Y - GustRadius)" width="@Round(2 * GustRadius)" height="@Round(2 * GustRadius)">
+                <circle cx="@Round(gust.X)" cy="@Round(gust.Y)" r="@Round(GustRadius)" fill="url(#sandGustFade)"/>
+            </mask>
+        }
+        <radialGradient id="sandGustFade">
+            <stop offset="0.35" stop-color="#fff"/>
+            <stop offset="1" stop-color="#000"/>
+        </radialGradient>
+    </defs>
+
+    <g clip-path="url(#sandAmbienceClip)">
+
+        @foreach (var gust in _gusts)
+        {
+            <g mask="url(#@gust.ClipId)">
+                <g transform="@gust.Transform">
+                    <image href="art/sand-gust.svg?v=1" x="0" y="@Round(-GustHeight / 2)" width="@Round(GustWidth)" height="@Round(GustHeight)" opacity="0" preserveAspectRatio="none">
+                        <animateTransform attributeName="transform" type="translate" dur="@gust.Duration" begin="@gust.Begin" repeatCount="indefinite"
+                                          values="@gust.TranslateValues" keyTimes="0;@GustTravel;1" calcMode="linear"/>
+                        <animate attributeName="opacity" dur="@gust.Duration" begin="@gust.Begin" repeatCount="indefinite"
+                                 values="0;0.85;0.85;0;0" keyTimes="@GustOpacityKeyTimes"/>
+                    </image>
+                </g>
+            </g>
+        }
+
+        @foreach (var worm in _worms)
+        {
+            <g opacity="0">
+                <animate attributeName="opacity" dur="@worm.Duration" begin="@worm.Begin" repeatCount="indefinite"
+                         values="0;0;1;1;0;0" keyTimes="@worm.OpacityKeyTimes"/>
+
+                @foreach (var trail in WormTrails)
+                {
+                    <path d="@worm.Path" pathLength="1000" fill="none" stroke="@trail.Color" stroke-width="@trail.Width"
+                          stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="@($"{trail.Length} 3000")" stroke-dashoffset="@trail.Length">
+                        <animate attributeName="stroke-dashoffset" dur="@worm.Duration" begin="@worm.Begin" repeatCount="indefinite"
+                                 values="@($"{trail.Length};{trail.Length};{trail.Length - 1000};{trail.Length - 1000}")" keyTimes="@worm.MotionKeyTimes" calcMode="linear"/>
+                    </path>
+                }
+            </g>
+        }
+    </g>
+</svg>
+
+@code {
+
+    private const double GustWidth = 54;
+    private const double GustHeight = 18;
+    private const double GustRadius = 24;
+    private const string GustTravel = "0.6";
+    private const string GustOpacityKeyTimes = "0;0.12;0.3;0.6;1";
+    private const double WormStep = 4;
+    private const double WormMargin = 5;
+
+    private sealed record Gust(string ClipId, double X, double Y, string Transform, string Duration, string Begin, string TranslateValues);
+
+    private sealed record Worm(string Path, string Duration, string Begin, string MotionKeyTimes, string OpacityKeyTimes);
+
+    private sealed record Trail(string Color, string Width, int Length);
+
+    // A shadowed groove with a faint pale crest, tapering behind the unseen worm.
+    private static readonly Trail[] WormTrails =
+    [
+        new("rgba(122, 78, 34, 0.3)", "2.6", 75),
+        new("rgba(255, 249, 232, 0.45)", "0.7", 55)
+    ];
+
+    private List<Gust> _gusts = [];
+    private List<Worm> _worms = [];
+    private Dictionary<Territory, List<List<(double X, double Y)>>> _shapes = [];
+    private object? _builtFor;
+    private object? _renderedFor;
+
+    private IEnumerable<Territory> SandTerritories => Game.Map.Territories(false).Where(IsSand);
+
+    private static bool IsSand(Territory t) => !t.IsProtectedFromWorm && !t.IsHomeworld && !t.IsDiscovery && !t.IsStronghold;
+
+    protected override void OnParametersSet()
+    {
+        var key = (Game.Map, Client.CurrentSkin);
+        if (!Equals(_builtFor, key))
+        {
+            _builtFor = key;
+            _shapes = SandTerritories.ToDictionary(t => t, t => ParsePolygons(Client.CurrentSkin.GetTerritoryBorder(t)));
+            BuildGusts();
+            BuildWorms();
+        }
+    }
+
+    // The animations are self-running SVG; only re-render when the map or skin changes.
+    protected override bool ShouldRender() => Client.InGame && !Equals(_renderedFor, _builtFor);
+
+    protected override void OnAfterRender(bool firstRender) => _renderedFor = _builtFor;
+
+    private void BuildGusts()
+    {
+        var random = new Random(4711);
+
+        // Sample a grid over every sand territory so gusts can be placed anywhere they fully fit.
+        var points = _shapes
+            .Where(entry => entry.Value.Any(p => p.Count > 0))
+            .SelectMany(entry =>
+            {
+                var all = entry.Value.SelectMany(p => p).ToList();
+                var (minX, maxX, minY, maxY) = (all.Min(p => p.X), all.Max(p => p.X), all.Min(p => p.Y), all.Max(p => p.Y));
+                var grid = new List<(Territory Territory, double X, double Y)>();
+                for (var x = minX + GustRadius; x <= maxX - GustRadius; x += 12)
+                for (var y = minY + GustRadius; y <= maxY - GustRadius; y += 12)
+                    grid.Add((entry.Key, x, y));
+                return grid;
+            })
+            .OrderBy(_ => random.Next())
+            .ToList();
+
+        _gusts = [];
+        foreach (var (territory, x, y) in points)
+        {
+            if (_gusts.Count == 16) break;
+
+            var center = (X: x, Y: y);
+            if (!FitsWithin(territory, center.X, center.Y, GustRadius * 0.7)) continue;
+            if (_gusts.Any(g => Math.Abs(g.X - center.X) + Math.Abs(g.Y - center.Y) < 42)) continue;
+
+            var index = _gusts.Count;
+            var angle = -25 + random.NextDouble() * 50 + (random.Next(2) == 0 ? 0 : 180);
+            // Half the cycle of before at the same travel speed: gusts recur twice as often.
+            var seconds = 0.75 * (19 + random.NextDouble() * 16);
+            var begin = 1 + index * 3.25 + random.NextDouble() * 2;
+            _gusts.Add(new Gust(
+                $"sandGustClip{index}",
+                center.X,
+                center.Y,
+                Inv($"translate({Round(center.X)} {Round(center.Y)}) rotate({Math.Round(angle)})"),
+                Inv($"{Math.Round(seconds, 1)}s"),
+                Inv($"{Math.Round(begin, 1)}s"),
+                Inv($"{Round(-GustRadius - GustWidth)} 0;{Round(GustRadius)} 0;{Round(GustRadius)} 0")));
+        }
+    }
+
+    private void BuildWorms()
+    {
+        var map = Game.Map;
+        var skin = Client.CurrentSkin;
+        var starts = map.Locations(false)
+            .Where(l => l is not DiscoveredLocation && l != map.HiddenMobileStronghold && l.Visible && IsSand(l.Territory))
+            .Select(l => skin.GetCenter(l, map))
+            .Where(p => IsClearSand(p.X, p.Y))
+            .ToList();
+
+        _worms = [];
+        if (starts.Count == 0) return;
+
+        var random = new Random(1965);
+        var configs = new[] { (Speed: 2.5, Idle: 34.0, Begin: 6.0), (Speed: 2.0, Idle: 47.0, Begin: 31.0), (Speed: 2.2, Idle: 40.0, Begin: 18.0), (Speed: 2.7, Idle: 52.0, Begin: 44.0) };
+
+        foreach (var config in configs)
+        {
+            var route = Enumerable.Range(0, 16)
+                .Select(_ => Wander(starts[random.Next(starts.Count)], random))
+                .MaxBy(r => r.Count)!;
+
+            if (route.Count < 8) continue;
+
+            var length = (route.Count - 1) * WormStep;
+            var travel = length / config.Speed;
+            var total = travel + config.Idle;
+            var start = config.Idle / total * 0.5;
+            var end = start + travel / total;
+            var points = route.Where((_, i) => i % 3 == 0 || i == route.Count - 1).ToList();
+
+            _worms.Add(new Worm(
+                SmoothPath(points),
+                Inv($"{Math.Round(total, 1)}s"),
+                Inv($"{config.Begin}s"),
+                Inv($"0;{Math.Round(start, 4)};{Math.Round(end, 4)};1"),
+                Inv($"0;{Math.Round(start, 4)};{Math.Round(start + 0.02, 4)};{Math.Round(end - 0.02, 4)};{Math.Round(end + 0.01, 4)};1")));
+        }
+    }
+
+    // A meandering walk that keeps its heading where it can and turns away whenever rock, strongholds or the map edge lie ahead.
+    private List<(double X, double Y)> Wander(PointD from, Random random)
+    {
+        var points = new List<(double X, double Y)> { (from.X, from.Y) };
+        var heading = random.NextDouble() * 2 * Math.PI;
+        var drift = 0d;
+
+        for (var step = 0; step < 90; step++)
+        {
+            drift = Math.Clamp(drift + (random.NextDouble() - 0.5) * 0.12, -0.12, 0.12);
+            var (x, y) = points[^1];
+            var found = false;
+
+            foreach (var deflection in new[] { 0, 0.25, -0.25, 0.5, -0.5, 0.8, -0.8, 1.1, -1.1 })
+            {
+                var angle = heading + drift + deflection;
+                var nx = x + Math.Cos(angle) * WormStep;
+                var ny = y + Math.Sin(angle) * WormStep;
+                if (!IsClearSand(nx, ny) || points.Skip(Math.Max(0, points.Count - 40)).SkipLast(3).Any(p => Math.Abs(p.X - nx) + Math.Abs(p.Y - ny) < WormStep * 2)) continue;
+
+                points.Add((nx, ny));
+                heading = angle;
+                found = true;
+                break;
+            }
+
+            if (!found) break;
+        }
+
+        return points;
+    }
+
+    private bool IsClearSand(double x, double y)
+    {
+        if (!InSand(x, y)) return false;
+
+        for (var i = 0; i < 8; i++)
+        {
+            var a = i * Math.PI / 4;
+            if (!InSand(x + Math.Cos(a) * WormMargin, y + Math.Sin(a) * WormMargin)) return false;
+        }
+
+        return true;
+    }
+
+    private bool InSand(double x, double y) => _shapes.Values.Any(polygons => Contains(polygons, x, y));
+
+    private bool FitsWithin(Territory territory, double x, double y, double radius)
+    {
+        if (!_shapes.TryGetValue(territory, out var polygons) || !Contains(polygons, x, y)) return false;
+
+        for (var i = 0; i < 12; i++)
+        {
+            var a = i * Math.PI / 6;
+            if (!Contains(polygons, x + Math.Cos(a) * radius, y + Math.Sin(a) * radius)) return false;
+        }
+
+        return true;
+    }
+
+    private static bool Contains(List<List<(double X, double Y)>> polygons, double x, double y)
+    {
+        var inside = false;
+        foreach (var polygon in polygons)
+        {
+            for (int i = 0, j = polygon.Count - 1; i < polygon.Count; j = i++)
+            {
+                var (xi, yi) = polygon[i];
+                var (xj, yj) = polygon[j];
+                if (yi > y != yj > y && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside;
+            }
+        }
+
+        return inside;
+    }
+
+    // Territory borders are absolute M/L/Z polygons.
+    private static List<List<(double X, double Y)>> ParsePolygons(string d)
+    {
+        var result = new List<List<(double X, double Y)>>();
+        List<(double X, double Y)>? current = null;
+        var numbers = new List<double>();
+
+        foreach (System.Text.RegularExpressions.Match token in System.Text.RegularExpressions.Regex.Matches(d, @"[MmLlZz]|-?\d*\.?\d+(?:[eE][-+]?\d+)?"))
+        {
+            var value = token.Value;
+            if (value is "M" or "m")
+            {
+                current = [];
+                result.Add(current);
+            }
+            else if (value is not ("L" or "l" or "Z" or "z"))
+            {
+                numbers.Add(double.Parse(value, System.Globalization.CultureInfo.InvariantCulture));
+                if (numbers.Count == 2)
+                {
+                    current?.Add((numbers[0], numbers[1]));
+                    numbers.Clear();
+                }
+            }
+        }
+
+        return result.Where(p => p.Count > 2).ToList();
+    }
+
+    // Catmull-Rom spline through the points, expressed as cubic Béziers.
+    private static string SmoothPath(List<(double X, double Y)> p)
+    {
+        var d = Inv($"M {Round(p[0].X)},{Round(p[0].Y)}");
+        for (var i = 0; i < p.Count - 1; i++)
+        {
+            var p0 = p[Math.Max(0, i - 1)];
+            var p1 = p[i];
+            var p2 = p[i + 1];
+            var p3 = p[Math.Min(p.Count - 1, i + 2)];
+            d += Inv($" C {Round(p1.X + (p2.X - p0.X) / 6)},{Round(p1.Y + (p2.Y - p0.Y) / 6)} {Round(p2.X - (p3.X - p1.X) / 6)},{Round(p2.Y - (p3.Y - p1.Y) / 6)} {Round(p2.X)},{Round(p2.Y)}");
+        }
+
+        return d;
+    }
+
+    private static string Inv(FormattableString s) => FormattableString.Invariant(s);
+}

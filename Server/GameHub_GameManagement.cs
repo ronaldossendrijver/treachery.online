@@ -236,8 +236,15 @@ public partial class GameHub
         }
       
         await AddToGroup(gameId, user.Id, Context.ConnectionId);
+
+        var resumedByHost = game.Game.IsHost(user.Id);
+        if (resumedByHost)
+            game.LastActivity = DateTimeOffset.Now;
         
         await PersistGameIfNeeded(game);
+
+        if (resumedByHost)
+            UpdateServerStatusIfNeeded(true);
         
         if (game.Game.NumberOfSeatedPlayers == 1)
             ScheduleBotEvent(game);

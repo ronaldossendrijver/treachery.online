@@ -8,16 +8,16 @@
 *@
 @inherits GameComponent;
 
-<ModalComponent Id="@Id" Title="Card and Token Reference" Size="modal-xl">
+<ModalComponent Id="@Id" Title="Card and Token Reference" Size="dialog-wide">
 
     <h5>Treachery Cards</h5>
-    <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
+    <div class="ui-row ui-row-cols-3 ui-row-cols-md-6 ui-ms-1 ui-me-1">
 
         @foreach (var v in TreacheryCardManager.GetCardsInPlay(Game))
         {
-            <div class="card">
-                <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
-                    <img src="@Client.CurrentSkin.GetImageUrl(v)" class="card-img" alt="@Name(v)">
+            <div class="ui-card">
+                <Hoverable Class="ui-card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
+                    <img src="@Client.CurrentSkin.GetImageUrl(v)" class="ui-card-img" alt="@Name(v)">
                 </Hoverable>
             </div>
         }
@@ -26,14 +26,14 @@
 
     @if (Game.IsPlaying(Faction.White))
     {
-        <h5 class="mt-2">@Client.CurrentSkin.Describe(Faction.White) Cards</h5>
-        <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
+        <h5 class="ui-mt-2">@Client.CurrentSkin.Describe(Faction.White) Cards</h5>
+        <div class="ui-row ui-row-cols-3 ui-row-cols-md-6 ui-ms-1 ui-me-1">
 
             @foreach (var v in TreacheryCardManager.GetWhiteCards())
             {
-                <div class="card">
-                    <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
-                        <img src="@Client.CurrentSkin.GetImageUrl(v)" class="card-img" alt="@Name(v)">
+                <div class="ui-card">
+                    <Hoverable Class="ui-card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
+                        <img src="@Client.CurrentSkin.GetImageUrl(v)" class="ui-card-img" alt="@Name(v)">
                     </Hoverable>
                 </div>
             }
@@ -41,14 +41,14 @@
         </div>
     }
 
-    <h5 class="mt-2">@Client.CurrentSkin.Describe(Concept.Resource) Cards</h5>
-    <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
+    <h5 class="ui-mt-2">@Client.CurrentSkin.Describe(Concept.Resource) Cards</h5>
+    <div class="ui-row ui-row-cols-3 ui-row-cols-md-6 ui-ms-1 ui-me-1">
 
         @foreach (var v in Map.GetResourceCardsInPlay(Game))
         {
-            <div class="card">
-                <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
-                    <img src="@Client.CurrentSkin.GetImageUrl(v)" class="card-img" alt="@Name(v)">
+            <div class="ui-card">
+                <Hoverable Class="ui-card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
+                    <img src="@Client.CurrentSkin.GetImageUrl(v)" class="ui-card-img" alt="@Name(v)">
                 </Hoverable>
             </div>
         }
@@ -57,14 +57,14 @@
 
     @if (Game.Applicable(Rule.LeaderSkills))
     {
-        <h5 class="mt-2">Leader Skill Cards</h5>
-        <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
+        <h5 class="ui-mt-2">Leader Skill Cards</h5>
+        <div class="ui-row ui-row-cols-3 ui-row-cols-md-6 ui-ms-1 ui-me-1">
 
             @foreach (var v in Enumerations.GetValuesExceptDefault(LeaderSkill.None))
             {
-                <div class="card">
-                    <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
-                        <img src="@Client.CurrentSkin.GetImageUrl(v)" class="card-img" alt="@Name(v)">
+                <div class="ui-card">
+                    <Hoverable Class="ui-card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
+                        <img src="@Client.CurrentSkin.GetImageUrl(v)" class="ui-card-img" alt="@Name(v)">
                     </Hoverable>
                 </div>
             }
@@ -74,14 +74,14 @@
 
     @if (Game.Applicable(Rule.StrongholdBonus))
     {
-        <h5 class="mt-2">Stronghold Cards</h5>
-        <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
+        <h5 class="ui-mt-2">Stronghold Cards</h5>
+        <div class="ui-row ui-row-cols-3 ui-row-cols-md-6 ui-ms-1 ui-me-1">
 
             @foreach (var v in Enumerations.GetValuesExceptDefault(StrongholdAdvantage.None))
             {
-                <div class="card">
-                    <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
-                        <img src="@Client.CurrentSkin.GetImageUrl(v)" class="card-img" alt="@Name(v)">
+                <div class="ui-card">
+                    <Hoverable Class="ui-card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
+                        <img src="@Client.CurrentSkin.GetImageUrl(v)" class="ui-card-img" alt="@Name(v)">
                     </Hoverable>
                 </div>
             }
@@ -91,14 +91,14 @@
 
     @if (Game.Applicable(Rule.NexusCards))
     {
-        <h5 class="mt-2">Nexus Cards</h5>
-        <div class="row row-cols-3 row-cols-md-6 ms-1 me-1">
+        <h5 class="ui-mt-2">Nexus Cards</h5>
+        <div class="ui-row ui-row-cols-3 ui-row-cols-md-6 ui-ms-1 ui-me-1">
 
             @foreach (var n in Enumerations.GetValuesExceptDefault(Nexus.None))
             {
-                <div class="card">
-                    <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetNexusCardPopup(n)>
-                        <img src="@Client.CurrentSkin.GetImageUrl(n)" class="card-img" alt="@Name(n)">
+                <div class="ui-card">
+                    <Hoverable Class="ui-card-img-top" Popover=@Client.CurrentSkin.GetNexusCardPopup(n)>
+                        <img src="@Client.CurrentSkin.GetImageUrl(n)" class="ui-card-img" alt="@Name(n)">
                     </Hoverable>
                 </div>
             }
@@ -108,14 +108,14 @@
 
     @if (Game.Applicable(Rule.Homeworlds))
     {
-        <h5 class="mt-2">Homeworld Cards</h5>
-        <div class="row row-cols-2 row-cols-md-3 ms-1 me-1">
+        <h5 class="ui-mt-2">Homeworld Cards</h5>
+        <div class="ui-row ui-row-cols-2 ui-row-cols-md-3 ui-ms-1 ui-me-1">
 
             @foreach (var w in Game.Map.Homeworlds)
             {
-                <div class="card">
-                    <Hoverable Class="card-img-top" Popover=@Client.CurrentSkin.GetPopup(w)>
-                        <img src="@Client.CurrentSkin.GetHomeworldCardImageUrl(w.World)" class="card-img" alt="@Name(w)">
+                <div class="ui-card">
+                    <Hoverable Class="ui-card-img-top" Popover=@Client.CurrentSkin.GetPopup(w)>
+                        <img src="@Client.CurrentSkin.GetHomeworldCardImageUrl(w.World)" class="ui-card-img" alt="@Name(w)">
                     </Hoverable>
                 </div>
             }
@@ -125,15 +125,15 @@
 
     @if (Game.IsPlaying(Faction.Pink))
     {
-        <h5 class="mt-2">Ambassador Tokens</h5>
-        <div class="row row-cols-6 row-cols-md-12 ms-1 me-1">
+        <h5 class="ui-mt-2">Ambassador Tokens</h5>
+        <div class="ui-row ui-row-cols-6 ui-row-cols-md-12 ui-ms-1 ui-me-1">
 
             @foreach (var t in Enumerations.GetValuesExceptDefault(Ambassador.None))
             {
                 if (t != Ambassador.Cyan)
                 {
-                    <div class="card">
-                        <img src="@Client.CurrentSkin.GetImageUrl(t)" class="card-img" title=@Client.CurrentSkin.GetAmbassadorDescription(t) alt="@Name(t)">
+                    <div class="ui-card">
+                        <img src="@Client.CurrentSkin.GetImageUrl(t)" class="ui-card-img" title=@Client.CurrentSkin.GetAmbassadorDescription(t) alt="@Name(t)">
                     </div>
                 }
             }
@@ -143,7 +143,7 @@
 
     @if (Game.IsPlaying(Faction.Cyan))
     {
-        <h5 class="mt-2">Terror Tokens</h5>
+        <h5 class="ui-mt-2">Terror Tokens</h5>
         <div>
 
             <ul>
@@ -158,7 +158,7 @@
 
     @if (Game.Applicable(Rule.DiscoveryTokens))
     {
-        <h5 class="mt-2">Discovery Tokens</h5>
+        <h5 class="ui-mt-2">Discovery Tokens</h5>
         <div>
 
             <ul>

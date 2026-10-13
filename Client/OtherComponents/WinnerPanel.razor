@@ -8,21 +8,47 @@
 *@
 @inherits GameComponent;
 
-<div class="card p-1 mb-2 border-light" style="animation:fadeIn 3s;">
-    <div class="card-header">Victory!</div>
-    <div class="card-body">
+@{
+    var iWon = Player != null && Game.Winners.Any(w => w.Faction == Player.Faction);
+    var method = Game.WinMethod != WinMethod.None ? Client.CurrentSkin.Describe(Game.WinMethod) : null;
+}
 
-        @foreach (var w in Game.Winners)
+<section class="victory-panel @(iWon ? "is-mine" : "")" aria-label="Victory">
+    <div class="victory-rays" aria-hidden="true"></div>
+    <div class="victory-sparks" aria-hidden="true">
+        @for (var i = 0; i < 14; i++)
         {
-            <h1 class="h1">
-                <img width="72" src="@Client.CurrentSkin.GetImageUrl(w.Faction)" alt="@Client.CurrentSkin.Describe(w.Faction)"/> @w.Name</h1>
+            <span style="--i:@i"></span>
+        }
+    </div>
+
+    <div class="victory-content">
+        <div class="victory-eyebrow">Turn @Game.CurrentTurn · The struggle for Arrakis is over</div>
+        <h2 class="victory-title">@(iWon ? "Victory is yours!" : "Victory!")</h2>
+        <div class="victory-rule" aria-hidden="true"><span></span></div>
+
+        <div class="victory-winners">
+            @foreach (var w in Game.Winners)
+            {
+                <div class="victory-winner">
+                    <div class="victory-emblem">
+                        <img src="@Client.CurrentSkin.GetImageUrl(w.Faction)" alt="@Client.CurrentSkin.Describe(w.Faction)" width="84" height="84" />
+                    </div>
+                    <div class="victory-name">@w.Name</div>
+                    <div class="victory-faction">@Client.CurrentSkin.Describe(w.Faction)</div>
+                </div>
+            }
+        </div>
+
+        @if (method != null)
+        {
+            <div class="victory-method">Won by @method</div>
         }
 
         @if (!Game.Applicable(Rule.DisableEndOfGameReport))
         {
-            <button class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#storyModal">Read the story of this game...</button>
+            <button class="ui-btn ui-btn-primary victory-story" data-dialog-target="#storyModal">Read the story of this game…</button>
             <StoryComponent Id="storyModal" Game="Client.Game" />
         }
-
     </div>
-</div>
+</section>

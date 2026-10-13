@@ -90,7 +90,7 @@
                     {
                         YellowFromTerritory ??= validSources.First();
 
-                        <div class="mt-1 mb-1">
+                        <div class="ui-mt-1 ui-mb-1">
                             <SelectComponent T=Territory OnChanged="StateHasChanged" ButtonHint="ClickHintButton.Lmb" ModifierHint="ClickHintModifier.Ctrl" @bind-Value="YellowFromTerritory" Values="validSources">
                                 <Label>From</Label>
                             </SelectComponent>
@@ -148,7 +148,7 @@
                     var validTargets = AmbassadorActivated.ValidOrangeTargets(Game, Player).ToArray();
                     if (validTargets.Any())
                     {
-                        <div class="mt-1 mb-1">
+                        <div class="ui-mt-1 ui-mb-1">
                             <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="YellowOrOrangeToLocation" Values="validTargets.OrderByDescending(l => l.IsStronghold).ThenBy(Name)">
                                 <Label>To</Label>
                             </SelectComponent>

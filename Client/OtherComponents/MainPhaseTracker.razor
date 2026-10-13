@@ -1,0 +1,27 @@
+@inherits GameComponent
+
+<section class="main-phase-tracker" aria-label="Main phase sequence">
+    @if (Game.CurrentMainPhase == MainPhase.Setup)
+    {
+        <span class="main-phase-setup" aria-current="step">Setting Up</span>
+    }
+    else
+    {
+        <ol class="main-phase-list">
+            @{
+                var phases = Enumerations.GetValues<MainPhase>()
+                    .Where(phase => phase is >= MainPhase.Storm and <= MainPhase.Contemplate)
+                    .ToArray();
+            }
+            @foreach (var phase in phases)
+            {
+                var isCurrent = phase == Game.CurrentMainPhase;
+                var phaseName = phase == MainPhase.Charity ? "Charity" : Client.CurrentSkin.Describe(phase);
+                <li class="main-phase-step @(isCurrent ? "is-current" : "")"
+                    aria-current="@(isCurrent ? "step" : null)">
+                    @phaseName
+                </li>
+            }
+        </ol>
+    }
+</section>
