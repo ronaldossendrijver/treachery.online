@@ -9,85 +9,68 @@
 @inherits GameEventComponent<TBid>
 @typeparam TBid
 
-<div class="ui-card ui-mb-2 bid-panel" style="animation:fadeIn 1s;">
+<div class="ui-card ui-mb-2 game-event-card bid-panel @(CanBid ? "is-urgent" : "")" style="animation:fadeIn 1s;">
+
+    <div class="ui-card-header game-event-header bid-panel-header">
+        <div class="game-event-title bid-panel-title">
+            <span class="bid-panel-eyebrow">@(IsSilentAuction ? "Silent auction" : "Auction")</span>
+            <span>@AuctionDescription</span>
+        </div>
+        @if (ShowCurrentBid)
+        {
+            <div class="bid-current" title="Highest bid">
+                <img src="@Client.CurrentSkin.GetImageUrl(Game.CurrentBid!.Initiator)" width="28" height="28" alt="@Name(Game.CurrentBid.Initiator)"/>
+                <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="30" SymbolSrc="@Client.CurrentSkin.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
+            </div>
+        }
+        else if (!IsSilentAuction)
+        {
+            <span class="bid-current is-empty">No bids yet</span>
+        }
+    </div>
 
     <div class="bid-panel-body">
 
-            <div class="bid-lot">
+        <div class="bid-lot">
+            @if (CardIsVisible)
+            {
+                <Image Shown=@Game.CardsOnAuction!.Top Width="112" />
+            }
+            else
+            {
+                <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" width="112" alt="Card on sale"/>
+            }
+        </div>
 
-                @if (CardIsVisible) 
+        <div class="bid-controls">
+
+            @if (CanBid)
+            {
+                if (CanUseRedSecretAlly)
                 {
-                    <Image Shown=@Game.CardsOnAuction!.Top Width="150" />
+                    <CheckboxComponent @bind-Value=@UseRedSecretAlly>Use your Nexus card to get this card for free?</CheckboxComponent>
                 }
-                else 
+                else
                 {
-                    <img src="@Client.CurrentSkin.CardBack_TreacheryCard_URL" width="150" alt="Card on sale"/>
+                    UseRedSecretAlly = false;
                 }
 
-                <div class="bid-lot-overlay">
-
-                    <div class="bid-lot-title" style="@AuctionDescriptionStyle">
-                        @AuctionDescription
+                if (CanUseKarma)
+                {
+                    <div class="bid-karma">
+                        <SelectFromImageComponent @bind-Value="KarmaCard" Values="Bid.ValidKarmaCards(Game, Player)" Required="false" ImageWidth="64">
+                            <Label>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to bid without limit or win immediately? <InfoComponent Contents="@KarmaInfoMessage" /></Label>
+                        </SelectFromImageComponent>
                     </div>
-                            
-                    @if (ShowCurrentBid)
-                    {
-                        <div class="bid-lot-current">
-                            <img src="@Client.CurrentSkin.GetImageUrl(Game.CurrentBid!.Initiator)" width="36" alt="@Name(Game.CurrentBid.Initiator)"/>
-                            <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSrc="@Client.CurrentSkin.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
-                        </div>
-                    }
-                </div>
-
-            </div>
-
-            <div class="bid-controls">
-
-                @if (!Client.IsObserver && Client.Player is { Faction: not Faction.None })
+                }
+                else
                 {
-                    <CheckboxComponent @bind-Value="@Client.AutoPass" OnChanged="AutoPassChanged">Auto-pass</CheckboxComponent>
-                    @if (Client.AutoPass)
-                    {
-                        <SelectResourcesComponent @bind-Value="@Client.BidAutoPassThreshold" Min="0" Max="50" Label="When above:" />
-
-                        @if (ShowRepeatAutoPass)
-                        {
-                            <CheckboxComponent @bind-Value="@Client.KeepAutoPassSetting">Repeat auto-pass every round</CheckboxComponent>
-                        }
-                    }
-
-                    @if (CanBid)
-                    {
-                        <hr class="bid-divider" />
-                    }
+                    KarmaCard = null;
                 }
 
-                @if (CanBid)
-                {
-                    if (CanUseRedSecretAlly)
-                    {
-                        <CheckboxComponent @bind-Value=@UseRedSecretAlly>Use your Nexus card to get this card for free?</CheckboxComponent>
-                    }
-                    else
-                    {
-                        UseRedSecretAlly = false;
-                    }
-
-                    if (CanUseKarma)
-                    {
-                        <div class="ui-mt-1">
-                            <SelectFromImageComponent @bind-Value="KarmaCard" Values="Bid.ValidKarmaCards(Game, Player)" Required="false" ImageWidth="80">
-                                <Label>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to bid without limit or win immediately? <InfoComponent Contents="@KarmaInfoMessage" /></Label>
-                            </SelectFromImageComponent>
-                        </div>
-                    }
-                    else
-                    {
-                        KarmaCard = null;
-                    }
-
-                    <div class="ui-mt-1">
-
+                <div class="bid-amounts">
+                    <span class="bid-amounts-label">Your bid</span>
+                    <div class="bid-amounts-pickers">
                         @if (Player.Ally != Faction.None && MaxAllyBidAmount > 0)
                         {
                             <SelectResourcesFromFactionComponent @bind-Value="Amount" Min="0" Max="MaxBidAmount" Faction="Faction" />
@@ -103,39 +86,63 @@
                         {
                             <SelectResourcesFromFactionComponent @bind-Value="RedContributionAmount" Min="0" Max="Game.SpiceForBidsRedCanPay(Faction)" Faction="Faction.Red" />
                         }
-
                     </div>
+                </div>
+            }
+            else if (!Client.IsObserver && Client.Player is { Faction: not Faction.None })
+            {
+                <span class="bid-waiting">Waiting for other bidders…</span>
+            }
 
-                    @if (IsSilentAuction)
+            @if (!Client.IsObserver && Client.Player is { Faction: not Faction.None })
+            {
+                <div class="bid-autopass @(Client.AutoPass ? "is-on" : "")">
+                    <CheckboxComponent @bind-Value="@Client.AutoPass" OnChanged="AutoPassChanged">Auto-pass</CheckboxComponent>
+                    @if (Client.AutoPass)
                     {
-                        @if (KarmaCard != null)
+                        <SelectResourcesComponent @bind-Value="@Client.BidAutoPassThreshold" Min="0" Max="50" Label="when above" />
+
+                        @if (ShowRepeatAutoPass)
                         {
-                            <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError=@Validation Other="Other" OtherText="Win immediately" Alignment="justify-content-start" />
+                            <CheckboxComponent @bind-Value="@Client.KeepAutoPassSetting">Repeat every round</CheckboxComponent>
                         }
-                        else
-                        {
-                            <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError=@Validation Alignment="justify-content-start" />
-                        }
+                    }
+                </div>
+            }
+
+        </div>
+
+        @if (CanBid)
+        {
+            <div class="game-event-actions bid-actions">
+                @if (IsSilentAuction)
+                {
+                    @if (KarmaCard != null)
+                    {
+                        <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError=@Validation Other="Other" OtherText="Win immediately" />
                     }
                     else
                     {
-                        @if (KarmaCard != null)
-                        {
-                            <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError=@Validation Pass="Pass" PassText="Pass" Other="Other" OtherText="Win immediately" Alignment="justify-content-start" />
-                        }
-                        else
-                        {
-                            <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError=@Validation Pass="Pass" PassText="Pass" Alignment="justify-content-start" />
-                        }
+                        <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError=@Validation />
                     }
                 }
-
+                else
+                {
+                    @if (KarmaCard != null)
+                    {
+                        <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError=@Validation Pass="Pass" PassText="Pass" Other="Other" OtherText="Win immediately" />
+                    }
+                    else
+                    {
+                        <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError=@Validation Pass="Pass" PassText="Pass" />
+                    }
+                }
             </div>
+        }
 
     </div>
 
 </div>
-
 
 @code {
 
@@ -229,5 +236,4 @@
 
     private bool IsSilentAuction => Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent;
 
-    private static string AuctionDescriptionStyle => $"font-size: 22px; font-weight: bold; {Support.TextBorder(2, "black")}";
 }

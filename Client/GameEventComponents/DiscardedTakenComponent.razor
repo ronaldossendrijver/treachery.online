@@ -15,7 +15,7 @@
 
         <SelectFromImageComponent @bind-Value="card" Values="DiscardedTaken.ValidCards(Game, Player)" Required="true" ImageWidth="80" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.TakeDiscarded)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
 
     </Body>
 

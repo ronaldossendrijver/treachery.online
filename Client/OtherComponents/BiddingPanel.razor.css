@@ -2,58 +2,95 @@
     padding: 0;
 }
 
+.bid-panel-header {
+    min-height: 44px;
+}
+
+.bid-panel-title {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+    font-family: Georgia, "Palatino Linotype", serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #f4e3b8;
+}
+
+.bid-panel-eyebrow {
+    color: var(--brass-bright);
+    font-family: "Segoe UI", sans-serif;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.bid-current {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px 3px 3px;
+    border: 1px solid rgba(213, 138, 66, 0.55);
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(213, 138, 66, 0.28), rgba(213, 138, 66, 0.08));
+    box-shadow: 0 0 12px rgba(213, 138, 66, 0.18);
+}
+
+.bid-current img {
+    border-radius: 50%;
+}
+
+.bid-current.is-empty {
+    padding: 4px 10px;
+    border-style: dashed;
+    border-color: rgba(220, 205, 164, 0.3);
+    background: transparent;
+    box-shadow: none;
+    color: var(--ivory-muted);
+    font-size: 0.75rem;
+}
+
 .bid-panel-body {
     display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 14px 18px;
-    padding: 14px 16px;
+    align-items: stretch;
+    gap: 14px;
+    padding: 12px 12px 12px 14px;
 }
 
 .bid-lot {
     position: relative;
-    flex: 0 0 150px;
-    width: 150px;
+    flex: 0 0 112px;
+    align-self: flex-start;
+    width: 112px;
     line-height: 0;
+    transform: rotate(-2deg);
+}
+
+.bid-lot::before {
+    position: absolute;
+    inset: -5px;
+    border-radius: 11px;
+    background: radial-gradient(closest-side, rgba(213, 138, 66, 0.4), transparent);
+    filter: blur(6px);
+    content: "";
 }
 
 .bid-lot > ::deep img,
 .bid-lot > img {
+    position: relative;
     display: block;
-    width: 150px;
+    width: 112px;
     height: auto;
+    border: 1px solid rgba(236, 216, 168, 0.6);
     border-radius: 8px;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
-}
-
-.bid-lot-overlay {
-    position: absolute;
-    top: 26%;
-    right: 0;
-    left: 0;
-    display: grid;
-    justify-items: center;
-    gap: 4px;
-    line-height: 1.2;
-    text-align: center;
-    filter: drop-shadow(2px 2px 2px black);
-    pointer-events: none;
-}
-
-.bid-lot-title {
-    padding: 0 6px;
-}
-
-.bid-lot-current {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
 }
 
 .bid-controls {
-    display: grid;
-    flex: 1 1 220px;
-    align-content: start;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
     gap: 10px;
     min-width: 0;
 }
@@ -62,13 +99,78 @@
     margin: 0;
 }
 
-.bid-controls ::deep .ui-mt-1 {
-    margin-top: 0;
+.bid-amounts {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 10px;
+    border: 1px solid rgba(220, 205, 164, 0.16);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.18);
 }
 
-.bid-divider {
-    width: 100%;
-    margin: 2px 0;
-    border: 0;
-    border-top: 1px solid rgba(200, 177, 122, 0.35);
+.bid-amounts-label {
+    color: var(--ivory-muted);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.bid-amounts-pickers {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
+}
+
+.bid-waiting {
+    color: var(--ivory-muted);
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.bid-autopass {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 12px;
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(220, 205, 164, 0.18);
+    color: var(--ivory-muted);
+    font-size: 0.8rem;
+}
+
+.bid-autopass.is-on {
+    color: var(--ivory);
+}
+
+.bid-autopass ::deep label {
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+.bid-actions {
+    align-self: flex-end;
+}
+
+@container game-event (max-width: 420px) {
+    .bid-panel-body {
+        flex-wrap: wrap;
+    }
+
+    .bid-lot {
+        flex-basis: 84px;
+        width: 84px;
+    }
+
+    .bid-lot > ::deep img,
+    .bid-lot > img {
+        width: 84px;
+    }
+
+    .bid-actions {
+        flex-basis: 100%;
+    }
 }

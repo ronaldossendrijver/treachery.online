@@ -9,6 +9,7 @@
 @using System.Globalization
 @using Treachery.Client.MapComponents
 @inherits GameEventComponent<Battle>
+@implements BattlePlanPicker.ITarget
 
 @{
     if (Game.CurrentBattle?.Territory is null) return;
@@ -23,6 +24,10 @@
     var heroRequired = !Game.Applicable(Rule.BattleWithoutLeader);
     var weapons = Weapons.ToList();
     var defenses = Defenses.ToList();
+    _heroes = heroes;
+    _weapons = weapons;
+    _defenses = defenses;
+    _heroRequired = heroRequired;
 
     if (maxForces <= 0) Forces = 0;
     if (maxSpecialForces <= 0) SpecialForces = 0;
@@ -92,6 +97,31 @@
             }
         </button>
     </div>
+        @if (maxForces > 0 || maxSpecialForces > 0 || mustPay || maxPaidByAlly > 0 || maxBanker > 0)
+        {
+        <div class="bwl-forces" role="group" aria-label="Forces and spice dialled">
+            @if (maxForces > 0)
+            {
+                <SelectForcesComponent @bind-Value="Forces" Min="0" Max="maxForces" Faction="@forceSupplier.Faction" Special="false" />
+            }
+            @if (maxSpecialForces > 0)
+            {
+                <SelectForcesComponent @bind-Value="SpecialForces" Min="0" Max="maxSpecialForces" Faction="@forceSupplier.Faction" Special="true" />
+            }
+            @if (mustPay)
+            {
+                <SelectResourcesComponent @bind-Value="Resources" Min="0" Max="maxTotalResources" Title="@Client.CurrentSkin.Format("{0} used to support forces", Concept.Resource)" />
+            }
+            @if (maxPaidByAlly > 0)
+            {
+                <SelectResourcesFromFactionComponent @bind-Value="ResourcesFromAlly" Min="0" Max="maxPaidByAlly" Faction="Player.Ally" Title="@Client.CurrentSkin.Format("{0} paid by your ally", Concept.Resource)" />
+            }
+            @if (maxBanker > 0)
+            {
+                <SelectResourcesComponent @bind-Value="BankerBonus" Min="0" Max="maxBanker" Title="@Client.CurrentSkin.Format("Boost {0} {1} with {2}", Client.CurrentSkin.Describe(LeaderSkill.Banker), Hero, Concept.Resource)" />
+            }
+        </div>
+        }
     @if (_picker != Picker.None)
     {
         <div class="bw-picker" role="listbox" aria-label="@PickerTitle">
@@ -241,29 +271,6 @@
 
         </div>
 
-        <div class="bw-controls">
-            @if (maxForces > 0)
-            {
-                <SelectForcesComponent @bind-Value="Forces" Min="0" Max="maxForces" Faction="@forceSupplier.Faction" Special="false" />
-            }
-            @if (maxSpecialForces > 0)
-            {
-                <SelectForcesComponent @bind-Value="SpecialForces" Min="0" Max="maxSpecialForces" Faction="@forceSupplier.Faction" Special="true" />
-            }
-            @if (mustPay)
-            {
-                <SelectResourcesComponent @bind-Value="Resources" Min="0" Max="maxTotalResources" Title="@Client.CurrentSkin.Format("{0} used to support forces", Concept.Resource)" />
-            }
-            @if (maxPaidByAlly > 0)
-            {
-                <SelectResourcesFromFactionComponent @bind-Value="ResourcesFromAlly" Min="0" Max="maxPaidByAlly" Faction="Player.Ally" Title="@Client.CurrentSkin.Format("{0} paid by your ally", Concept.Resource)" />
-            }
-            @if (maxBanker > 0)
-            {
-                <SelectResourcesComponent @bind-Value="BankerBonus" Min="0" Max="maxBanker" Title="@Client.CurrentSkin.Format("Boost {0} {1} with {2}", Client.CurrentSkin.Describe(LeaderSkill.Banker), Hero, Concept.Resource)" />
-            }
-        </div>
-
         @if (mayUseMessiah)
         {
             <label class="bw-toggle">
@@ -323,6 +330,80 @@
     {
         select();
         _picker = Picker.None;
+    }
+
+    private List<IHero> _heroes = [];
+    private List<TreacheryCard?> _weapons = [];
+    private List<TreacheryCard?> _defenses = [];
+    private bool _heroRequired;
+
+    public bool IsPicked(object item) => Equals(Hero, item) || Equals(Weapon, item) || Equals(Defense, item);
+
+    public bool IsPickable(object item) => IsPicked(item) || item switch
+    {
+        TreacheryCard card => _heroes.Contains(card) || _weapons.Contains(card) || _defenses.Contains(card),
+        IHero hero => _heroes.Contains(hero),
+        _ => false
+    };
+
+    public void Pick(object item)
+    {
+        if (Equals(Hero, item))
+        {
+            if (!_heroRequired) Hero = null;
+        }
+        else if (Equals(Weapon, item))
+        {
+            Weapon = null;
+        }
+        else if (Equals(Defense, item))
+        {
+            Defense = null;
+        }
+        else if (item is IHero hero && _heroes.Contains(hero))
+        {
+            Hero = hero;
+        }
+        else if (item is TreacheryCard card)
+        {
+            var asWeapon = _weapons.Contains(card);
+            var asDefense = _defenses.Contains(card);
+
+            if (asWeapon && asDefense)
+            {
+                if (card.IsWeapon) Weapon = card;
+                else if (card.IsDefense) Defense = card;
+                else if (Weapon == null) Weapon = card;
+                else Defense = card;
+            }
+            else if (asWeapon)
+            {
+                Weapon = card;
+            }
+            else if (asDefense)
+            {
+                Defense = card;
+            }
+        }
+
+        _picker = Picker.None;
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        BattlePlanPicker.Register(this, PickerSignature);
+    }
+
+    private string PickerSignature =>
+        string.Join(",", _heroes.Select(GetId)) + "|" + string.Join(",", _weapons.Select(GetId)) + "|" + string.Join(",", _defenses.Select(GetId))
+        + "|" + GetId(Hero) + "|" + GetId(Weapon) + "|" + GetId(Defense);
+
+    public override void Dispose()
+    {
+        BattlePlanPicker.Unregister(this);
+        base.Dispose();
     }
 
     protected override void OnInitialized()

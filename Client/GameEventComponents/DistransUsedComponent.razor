@@ -19,7 +19,7 @@
             <SelectFromImageComponent @bind-Value="card" Values="DistransUsed.ValidCards(Player)" Required="true" ImageWidth="80" />
         </div>
         
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Distrans)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
 
     </Body>
 

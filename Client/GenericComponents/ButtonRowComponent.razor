@@ -7,37 +7,51 @@
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
 
-<div class="ui-button-row @Alignment">
+@using Microsoft.AspNetCore.Components.Sections
 
-    @if (Other.HasDelegate)
-    {
-        <button class="ui-btn ui-btn-primary" @onclick="Other" disabled=@Disabled>@OtherText</button>
-    }
-
-    @if (Pass.HasDelegate)
-    {
-        <button class="ui-btn ui-btn-primary ui-btn-pass" @onclick="Pass" disabled=@Disabled>@PassText</button>
-    }
-
-    @if (Confirm.HasDelegate)
-    {
-        if (ConfirmError != null)
-        {
-            <span class="ui-d-inline-block" tabindex="0" data-toggle="tooltip" data-delay="0" title=@ConfirmError.ToString(Client.CurrentSkin)>
-                <button class="ui-btn ui-btn-primary ui-btn-confirm" disabled=@true>@ConfirmText</button>
-            </span>
-        }
-        else
-        {
-            <button class="ui-btn ui-btn-primary ui-btn-confirm" @onclick="Confirm" disabled=@Disabled>@ConfirmText</button>
-        }
-        
-    }
-
-</div>
-
-
+@if (ActionsSection != null)
+{
+    <SectionContent SectionId="ActionsSection">@Buttons</SectionContent>
+}
+else
+{
+    @Buttons
+}
 @code {
+
+    [CascadingParameter(Name = "GameEventActions")]
+    public object? ActionsSection { get; set; }
+
+    private RenderFragment Buttons => __builder =>
+    {
+        <div class="ui-button-row @Alignment">
+
+            @if (Other.HasDelegate)
+            {
+                <button class="ui-btn ui-btn-primary ui-btn-other" @onclick="Other" disabled=@Disabled>@OtherText</button>
+            }
+
+            @if (Pass.HasDelegate)
+            {
+                <button class="ui-btn ui-btn-primary ui-btn-pass" @onclick="Pass" disabled=@Disabled>@PassText</button>
+            }
+
+            @if (Confirm.HasDelegate)
+            {
+                if (ConfirmError != null)
+                {
+                    <span class="ui-d-inline-block ui-btn-confirm-wrap" tabindex="0" data-toggle="tooltip" data-delay="0" title=@ConfirmError.ToString(Client.CurrentSkin)>
+                        <button class="ui-btn ui-btn-primary ui-btn-confirm" disabled=@true>@ConfirmText</button>
+                    </span>
+                }
+                else
+                {
+                    <button class="ui-btn ui-btn-primary ui-btn-confirm" @onclick="Confirm" disabled=@Disabled>@ConfirmText</button>
+                }
+            }
+
+        </div>
+    };
 
     [Parameter]
     public EventCallback Confirm { get; set; }

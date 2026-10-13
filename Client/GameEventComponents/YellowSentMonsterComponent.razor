@@ -15,7 +15,7 @@
 
         <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="Target" Values="YellowSentMonster.ValidTargets(Game).OrderBy(Name)"/>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Appear in {0}", Target)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
 
     </Body>
 

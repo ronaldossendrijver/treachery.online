@@ -491,3 +491,214 @@
 window.ScrollToEdge = function (element, toEnd) {
     if (element) element.scrollTop = toEnd ? element.scrollHeight : 0;
 };
+
+// Top-down spice blow: cinnamon dust erupts from the sand, rains back down and settles, then fades away.
+(function () {
+    'use strict';
+
+    const DURATION = 2900;
+    const COLORS = [[196, 98, 45], [172, 80, 36], [214, 136, 72], [229, 171, 112], [146, 64, 30], [205, 118, 58]];
+    let audio = null;
+
+    const clamp = v => Math.max(0, Math.min(1, v));
+    const smooth = v => { v = clamp(v); return v * v * (3 - 2 * v); };
+    const easeOut = v => 1 - Math.pow(1 - clamp(v), 3);
+    const pick = list => list[Math.floor(Math.random() * list.length)];
+    const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${Math.max(0, a).toFixed(3)})`;
+
+    function blow(cx, cy, size) {
+        const dpr = window.devicePixelRatio || 1;
+        const reach = Math.max(34, size * 2.6);
+        const half = reach * 1.7;
+        const canvas = document.createElement('canvas');
+        canvas.setAttribute('aria-hidden', 'true');
+        canvas.style.cssText = `position:fixed;left:${cx - half}px;top:${cy - half}px;width:${half * 2}px;height:${half * 2}px;pointer-events:none;z-index:1540;`;
+        canvas.width = Math.round(half * 2 * dpr);
+        canvas.height = Math.round(half * 2 * dpr);
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        const o = half * dpr;
+        const u = dpr;
+
+        const puffs = Array.from({ length: 20 }, (_, i) => ({
+            angle: (i / 20) * Math.PI * 2 + (Math.random() - 0.5) * 0.5,
+            dist: reach * (0.3 + Math.random() * 0.65),
+            r0: size * (0.18 + Math.random() * 0.18),
+            r1: size * (0.55 + Math.random() * 0.6),
+            delay: Math.random() * 0.12,
+            alpha: 0.45 + Math.random() * 0.3,
+            color: pick(COLORS)
+        }));
+
+        const grains = Array.from({ length: 130 }, () => ({
+            angle: Math.random() * Math.PI * 2,
+            dist: reach * (0.15 + Math.pow(Math.random(), 0.7) * 1.05),
+            r: 0.8 + Math.random() * 2.1,
+            lift: 0.4 + Math.random() * 0.9,
+            flight: 0.3 + Math.random() * 0.3,
+            delay: Math.random() * 0.1,
+            color: pick(COLORS)
+        }));
+
+        const start = performance.now();
+        function frame(now) {
+            const t = (now - start) / DURATION;
+            if (t >= 1 || !canvas.isConnected) { canvas.remove(); return; }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const fadeAll = 1 - smooth((t - 0.72) / 0.28);
+
+            // Spice settling on the sand
+            const stainR = reach * (0.25 + 0.75 * easeOut(t / 0.55)) * u;
+            const stain = ctx.createRadialGradient(o, o, 0, o, o, stainR);
+            stain.addColorStop(0, rgba([168, 74, 32], 0.42 * fadeAll));
+            stain.addColorStop(0.65, rgba([196, 98, 45], 0.22 * fadeAll));
+            stain.addColorStop(1, rgba([196, 98, 45], 0));
+            ctx.fillStyle = stain;
+            ctx.beginPath(); ctx.arc(o, o, stainR, 0, Math.PI * 2); ctx.fill();
+
+            // Shock ring across the sand
+            if (t < 0.32) {
+                const k = t / 0.32;
+                ctx.strokeStyle = rgba([255, 214, 160], 0.55 * (1 - k));
+                ctx.lineWidth = (5 - 4 * k) * u;
+                ctx.beginPath(); ctx.arc(o, o, reach * (0.2 + 1.1 * easeOut(k)) * u, 0, Math.PI * 2); ctx.stroke();
+            }
+
+            // Grains thrown up towards the viewer, then raining back down
+            for (const g of grains) {
+                const k = clamp((t - g.delay) / g.flight);
+                if (k <= 0) continue;
+                const d = g.dist * easeOut(k) * u;
+                const h = 4 * k * (1 - k) * g.lift;
+                const x = o + Math.cos(g.angle) * d;
+                const y = o + Math.sin(g.angle) * d;
+                const r = g.r * (1 + h * 1.6) * u;
+                const a = (k < 1 ? 1 : 0.85) * fadeAll;
+                if (h > 0.02) {
+                    ctx.fillStyle = rgba([40, 18, 6], 0.22 * a * (1 - h * 0.4));
+                    ctx.beginPath(); ctx.arc(x + h * 7 * u, y + h * 9 * u, g.r * u, 0, Math.PI * 2); ctx.fill();
+                }
+                ctx.fillStyle = rgba(g.color, a);
+                ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+            }
+
+            // Billowing dust clouds, lit from the top-left
+            for (const p of puffs) {
+                const k = clamp((t - p.delay) / 0.8);
+                if (k <= 0) continue;
+                const d = p.dist * easeOut(k) * u;
+                const r = (p.r0 + (p.r1 - p.r0) * easeOut(k)) * u;
+                const a = p.alpha * smooth(k / 0.12) * (1 - smooth((t - 0.35) / 0.55));
+                if (a <= 0.002) continue;
+                const x = o + Math.cos(p.angle) * d;
+                const y = o + Math.sin(p.angle) * d;
+                const body = ctx.createRadialGradient(x, y, 0, x, y, r);
+                body.addColorStop(0, rgba(p.color, a));
+                body.addColorStop(0.55, rgba(p.color, a * 0.6));
+                body.addColorStop(1, rgba(p.color, 0));
+                ctx.fillStyle = body;
+                ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+                const hx = x - r * 0.25, hy = y - r * 0.28;
+                const light = ctx.createRadialGradient(hx, hy, 0, hx, hy, r * 0.6);
+                light.addColorStop(0, rgba([246, 206, 152], a * 0.45));
+                light.addColorStop(1, rgba([246, 206, 152], 0));
+                ctx.fillStyle = light;
+                ctx.beginPath(); ctx.arc(hx, hy, r * 0.6, 0, Math.PI * 2); ctx.fill();
+            }
+
+            // Hot core of the eruption
+            if (t < 0.4) {
+                const k = t / 0.4;
+                const cr = size * (0.6 + 1.2 * easeOut(k)) * u;
+                const core = ctx.createRadialGradient(o, o, 0, o, o, cr);
+                core.addColorStop(0, rgba([255, 226, 170], 0.85 * (1 - k)));
+                core.addColorStop(0.4, rgba([226, 140, 70], 0.6 * (1 - k)));
+                core.addColorStop(1, rgba([196, 98, 45], 0));
+                ctx.fillStyle = core;
+                ctx.beginPath(); ctx.arc(o, o, cr, 0, Math.PI * 2); ctx.fill();
+            }
+
+            requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+    }
+
+    function noise(ac, seconds) {
+        const buffer = ac.createBuffer(1, Math.ceil(ac.sampleRate * seconds), ac.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+        const src = ac.createBufferSource();
+        src.buffer = buffer;
+        return src;
+    }
+
+    function eruptionSound(volume) {
+        try {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) return;
+            audio = audio || new AC();
+            if (audio.state === 'suspended') audio.resume();
+            const ac = audio;
+            const now = ac.currentTime;
+            const master = ac.createGain();
+            master.gain.value = Math.min(1, volume) * 0.8;
+            master.connect(ac.destination);
+
+            // Low rumble from below the sand
+            const rumble = ac.createOscillator();
+            rumble.type = 'sine';
+            rumble.frequency.setValueAtTime(70, now);
+            rumble.frequency.exponentialRampToValueAtTime(32, now + 1.4);
+            const rumbleGain = ac.createGain();
+            rumbleGain.gain.setValueAtTime(0.0001, now);
+            rumbleGain.gain.exponentialRampToValueAtTime(0.7, now + 0.05);
+            rumbleGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.5);
+            rumble.connect(rumbleGain).connect(master);
+            rumble.start(now);
+            rumble.stop(now + 1.6);
+
+            // Whoosh of the spice column
+            const blast = noise(ac, 2.2);
+            const band = ac.createBiquadFilter();
+            band.type = 'bandpass';
+            band.Q.value = 0.8;
+            band.frequency.setValueAtTime(260, now);
+            band.frequency.exponentialRampToValueAtTime(1500, now + 0.18);
+            band.frequency.exponentialRampToValueAtTime(320, now + 1.9);
+            const blastGain = ac.createGain();
+            blastGain.gain.setValueAtTime(0.0001, now);
+            blastGain.gain.exponentialRampToValueAtTime(0.9, now + 0.06);
+            blastGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.1);
+            blast.connect(band).connect(blastGain).connect(master);
+            blast.start(now);
+
+            // Sand pattering back down
+            const patter = noise(ac, 1.6);
+            const high = ac.createBiquadFilter();
+            high.type = 'highpass';
+            high.frequency.value = 2600;
+            const patterGain = ac.createGain();
+            patterGain.gain.setValueAtTime(0.0001, now + 0.5);
+            patterGain.gain.exponentialRampToValueAtTime(0.14, now + 0.85);
+            patterGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.0);
+            patter.connect(high).connect(patterGain).connect(master);
+            patter.start(now + 0.5);
+        } catch (e) {
+            console.debug('Spice blow sound failed', e);
+        }
+    }
+
+    window.FxSpiceBlow = function (keys, volume) {
+        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let shown = false;
+        for (const key of keys || []) {
+            const el = document.querySelector(`[data-fx-key="${CSS.escape(key)}"]`);
+            if (!el) continue;
+            const rect = el.getBoundingClientRect();
+            if (rect.width <= 0 || rect.height <= 0) continue;
+            shown = true;
+            if (!reduceMotion) blow(rect.left + rect.width / 2, rect.top + rect.height / 2, Math.max(rect.width, rect.height));
+        }
+        if (shown && volume > 0) eruptionSound(volume);
+    };
+})();

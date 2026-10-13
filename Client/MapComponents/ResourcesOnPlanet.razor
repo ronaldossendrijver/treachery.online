@@ -20,7 +20,7 @@
                 Y="@(spiceLocation.Y - Client.CurrentSkin.RESOURCETOKEN_RADIUS)" 
                 Width=@(Client.CurrentSkin.RESOURCETOKEN_RADIUS * 2) 
                 Height="@(Client.CurrentSkin.RESOURCETOKEN_RADIUS * 2)" 
-                Src="@Client.CurrentSkin.Harvester_URL" 
+                Src="@Client.CurrentSkin.Harvester_URL" data-fx-key="@($"spice-{l.Id}")" 
                 ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
 
             <MapText ToShow="@Game.ResourcesOnPlanet[l].ToString()"
@@ -45,5 +45,26 @@
                      BorderWidth="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="#646464DD"
                      Align="@TextAlignment.Center"/>
         }
+    }
+}
+
+@code {
+
+    private Game? _spiceSnapshotGame;
+    private Dictionary<int, int> _spiceSnapshot = [];
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!Client.InGame) return;
+
+        var spice = Game.ResourcesOnPlanet.Where(r => r.Value > 0).ToDictionary(r => r.Key.Id, r => r.Value);
+        var erupted = ReferenceEquals(_spiceSnapshotGame, Game)
+            ? spice.Where(s => s.Value > _spiceSnapshot.GetValueOrDefault(s.Key)).Select(s => $"spice-{s.Key}").ToList()
+            : [];
+
+        _spiceSnapshotGame = Game;
+        _spiceSnapshot = spice;
+
+        if (erupted.Count > 0) await Browser.SpiceBlow(erupted, Client.CurrentEffectVolume);
     }
 }

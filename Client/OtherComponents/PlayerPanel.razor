@@ -41,7 +41,7 @@
                                 <div class="player-panel-figures">
                                     @foreach (var leader in shownPlayer.Leaders.Where(leader => Game.IsAlive(leader)))
                                     {
-                                        <span class="player-panel-figure-slot"><Image Src="@Client.CurrentSkin.GetImageUrl(leader)" Highlighted="@Game.IsSkilled(leader)" Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(leader, Game)" /></span>
+                                        <span class="player-panel-figure-slot @PickClass(leader)" aria-label="@PickTitle(leader)" @onclick="@(() => PickForBattle(leader))"><Image Src="@Client.CurrentSkin.GetImageUrl(leader)" Highlighted="@Game.IsSkilled(leader)" Class="player-panel-figure" Width="48" Popover="@Client.CurrentSkin.GetPopup(leader, Game)" /></span>
                                     }
                                     @foreach (var leader in shownPlayer.Leaders.Where(leader => !Game.IsAlive(leader)))
                                     {
@@ -94,7 +94,8 @@
                                         <div class="player-card-hand" aria-label="Treachery cards in hand" style="--hand-count:@CardsInHand.Count">
                                             @for (var i = 0; i < CardsInHand.Count; i++)
                                             {
-                                                <span class="player-hand-card @(i > 0 ? "player-hand-card-overlap" : "")"
+                                                var card = CardsInHand[i];
+                                                <span class="player-hand-card @(i > 0 ? "player-hand-card-overlap" : "") @PickClass(card)" aria-label="@PickTitle(card)" @onclick="@(() => PickForBattle(card))"
                                                       style="@HandCardStyle(i, CardsInHand.Count)">
                                                     <Image Shown="@CardsInHand[i]" Game="Game" Class="player-hand-image" />
                                                 </span>
@@ -209,6 +210,39 @@
     }
 
     private void ToggleCollapsed() => _collapsed = !_collapsed;
+
+    private bool IsOwnPanel => ShownPlayer != null && Client.Player != null && ShownPlayer == Client.Player;
+
+    private string PickClass(object item)
+    {
+        if (!IsOwnPanel || !BattlePlanPicker.IsPickable(item)) return "";
+        return BattlePlanPicker.IsPicked(item) ? "is-battle-pickable is-battle-picked" : "is-battle-pickable";
+    }
+
+    private string? PickTitle(object item)
+    {
+        if (!IsOwnPanel || !BattlePlanPicker.IsPickable(item)) return null;
+        return BattlePlanPicker.IsPicked(item) ? $"Remove {Name(item)} from your battle plan" : $"Use {Name(item)} in your battle plan";
+    }
+
+    private void PickForBattle(object item)
+    {
+        if (IsOwnPanel) BattlePlanPicker.Pick(item);
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        BattlePlanPicker.Changed += OnBattlePlanPickerChanged;
+    }
+
+    private void OnBattlePlanPickerChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public override void Dispose()
+    {
+        BattlePlanPicker.Changed -= OnBattlePlanPickerChanged;
+        base.Dispose();
+    }
 
     private RenderFragment ResourceStrip(Player shownPlayer) => __builder =>
     {

@@ -483,16 +483,6 @@
             <YesNoActionComponent GameEventType="Bureaucracy" BackgroundImage="@Client.CurrentSkin.GetImageUrl(LeaderSkill.Bureaucrat)" Title="@Client.CurrentSkin.Format("Use your {0} skill?", LeaderSkill.Bureaucrat)" Alert="true"/>
             break;
 
-        case nameof(SwitchedSkilledLeader):
-            var skilledLeader = SwitchedSkilledLeader.SwitchableLeader(Game, Player!);
-            var titleSwitchedSkilledLeader = Client.CurrentSkin.Format("Place {0} {1} your player shield?", skilledLeader, Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of");
-            var confirmLabel = Client.CurrentSkin.Format("Put {0} shield", Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of");
-
-            <SimpleActionComponent GameEventType="SwitchedSkilledLeader"
-                                   BackgroundImage="@Client.CurrentSkin.GetImageUrl(Game.Skill(skilledLeader))" Title=@titleSwitchedSkilledLeader
-                                   ConfirmLabel=@confirmLabel/>
-            break;
-
         case nameof(Thought):
             <ThoughtComponent/>
             break;

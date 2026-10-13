@@ -744,6 +744,14 @@ svg {
 .player-hand-card:hover { z-index: 30 !important; transform: translateY(-10px) rotate(0deg) scale(1.08); filter: drop-shadow(0 0 6px rgba(214, 125, 44, 0.45)); }
 .player-hand-card img { display: block; width: var(--hand-w); max-width: none; height: var(--hand-h); object-fit: cover; border: 1px solid rgba(236, 216, 168, 0.72); border-radius: 5px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6); }
 .player-panel-nexus { display: grid; flex: 0 0 auto; justify-items: center; gap: 2px; color: #cdbb8b; font-size: 0.57rem; }
+/* Leaders and cards that can be clicked to put them into the battle plan being edited */
+.is-battle-pickable { cursor: pointer; }
+.player-panel-figure-slot.is-battle-pickable::after { position: absolute; inset: -2px; border: 1px dashed rgba(241, 196, 120, 0.75); border-radius: 50%; content: ""; pointer-events: none; }
+.player-hand-card.is-battle-pickable img { border-color: rgba(241, 196, 120, 0.95); box-shadow: 0 0 0 1px rgba(241, 196, 120, 0.35), 0 0 10px rgba(214, 125, 44, 0.5), 0 4px 10px rgba(0, 0, 0, 0.6); }
+.player-panel-figure-slot.is-battle-picked::after { border: 2px solid #f1c478; box-shadow: 0 0 10px rgba(241, 196, 120, 0.8); }
+.player-hand-card.is-battle-picked { transform: translateY(-8px) rotate(0deg); }
+.player-hand-card.is-battle-picked img { border: 2px solid #f1c478; box-shadow: 0 0 14px rgba(241, 196, 120, 0.85), 0 4px 10px rgba(0, 0, 0, 0.6); }
+.player-hand-card.is-battle-picked::after { position: absolute; top: -7px; right: -5px; z-index: 2; display: grid; width: 18px; height: 18px; place-items: center; border-radius: 50%; background: #f1c478; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); color: #2a1606; font-size: 0.7rem; font-weight: 800; content: "✓"; }
 .player-panel-nexus img { width: 38px; height: 54px; object-fit: contain; }
 .player-panel-faction-details { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 12px; color: #eee4cd; font-size: 0.7rem; line-height: 1.4; }
 .player-panel-faction-details > span, .player-panel-faction-note { display: inline-flex; align-items: center; gap: 5px; min-width: 0; }
@@ -1294,6 +1302,17 @@ svg {
     animation: locIntelIn 140ms ease-out;
 }
 .game-popover.is-media { padding: 6px; border-color: rgba(215, 175, 104, 0.4); }
+/* Treachery card popover: a framed card, with an optional description panel below */
+.game-popover:has(> .card-popover) { padding: 0; overflow: visible; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
+.game-popover > .card-popover { display: flex; flex-direction: column; align-items: center; gap: 0; width: 300px; max-width: calc(100vw - 24px); }
+.card-popover-frame { position: relative; width: 100%; padding: 5px; border: 1px solid rgba(215, 175, 104, 0.7); border-radius: 16px; background: linear-gradient(160deg, #4a4033, #1f1c18); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 236, 196, 0.18); }
+.game-popover .card-popover-frame img { display: block; width: 100%; max-height: calc(100dvh - 220px); border-radius: 11px; }
+.card-popover-info { position: relative; width: calc(100% - 16px); margin-top: -2px; padding: 10px 12px 11px; border: 1px solid rgba(215, 175, 104, 0.45); border-top: 0; border-radius: 0 0 12px 12px; background: radial-gradient(120% 90% at 0% 0%, rgba(218, 144, 68, 0.16), transparent 60%), linear-gradient(180deg, rgba(38, 35, 30, 0.98), rgba(22, 21, 19, 0.98)); box-shadow: 0 14px 30px rgba(0, 0, 0, 0.55); }
+.card-popover-info::before { position: absolute; top: 0; right: 14px; left: 14px; height: 1px; background: linear-gradient(90deg, transparent, rgba(215, 175, 104, 0.7), transparent); content: ""; }
+.card-popover-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin-bottom: 6px; }
+.card-popover-name { margin-right: auto; color: #f3dba4; font-family: Georgia, "Palatino Linotype", serif; font-size: 0.95rem; font-weight: 700; }
+.card-popover-tag { padding: 1px 7px; border: 1px solid rgba(213, 138, 66, 0.55); border-radius: 999px; background: rgba(213, 138, 66, 0.14); color: #f0c58c; font-size: 0.64rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.game-popover .card-popover-info p { margin: 0; color: #eadfc6; font-size: 0.8rem; line-height: 1.45; }
 .game-popover img { max-width: 100%; height: auto; max-height: calc(100dvh - 48px); object-fit: contain; vertical-align: middle; }
 .game-popover > * + * { margin-top: 8px; }
 .game-popover p { margin: 0 0 6px; }
@@ -1312,6 +1331,12 @@ svg {
 .game-popover .pile-intel-card { display: block; width: 190px; max-height: min(290px, calc(100dvh - 90px)); margin: 0 auto; border-radius: 8px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.55); }
 .pile-intel-grid { display: grid; grid-template-columns: repeat(auto-fill, 52px); gap: 5px; max-width: 290px; }
 .game-popover .pile-intel-grid img { width: 52px; height: auto; border-radius: 4px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); }
+.game-popover:has(> .pile-intel.is-large) { max-width: min(960px, calc(100vw - 24px)); }
+.pile-intel.is-large { max-width: min(900px, calc(100vw - 48px)); }
+.pile-intel.is-large .pile-intel-title { font-size: 0.8rem; }
+.pile-intel.is-large .pile-intel-count { font-size: 0.86rem; }
+.pile-intel.is-large .pile-intel-grid { grid-template-columns: repeat(auto-fill, 156px); gap: 10px; max-width: min(870px, calc(100vw - 60px)); }
+.game-popover .pile-intel.is-large .pile-intel-grid img { width: 156px; max-height: none; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55); }
 @media (prefers-reduced-motion: reduce) { .game-popover { animation: none; } }
 
 .game-popover:has(> .loc-intel) {
@@ -1722,9 +1747,6 @@ button.communications-user:hover { background: rgba(255, 255, 255, 0.045); }
 
 /* ---- Shared game action (GameEventComponent) layout ---- */
 .game-event-body { line-height: 1.45; }
-.game-event-body > :where(div, p, table, ul, ol, fieldset, section, h5, h6, form) { margin-top: 0; margin-bottom: 0; }
-.game-event-body > :where(div, p, table, ul, ol, fieldset, section, h5, h6, form) + :where(div, p, table, ul, ol, fieldset, section, h5, h6, form) { margin-top: 0.7rem; }
-.game-event-body > :where(div, p) > label:first-child,
 .game-event-body .ui-select-field > label { display: block; margin: 0 0 0.3rem; color: var(--ivory-muted); font-size: 0.8rem; font-weight: 650; letter-spacing: 0.01em; }
 .game-event-body .ui-form-check { margin: 0.15rem 0; }
 .game-event-body .ui-form-check-label { color: var(--ivory); }
@@ -1732,7 +1754,39 @@ button.communications-user:hover { background: rgba(255, 255, 255, 0.045); }
 .game-event-body .ui-table-sm td, .game-event-body .ui-table-sm th { padding: 0.2rem 0.35rem; vertical-align: middle; }
 
 .ui-button-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 0.8rem; }
-.game-event-body > .ui-button-row { padding-top: 0.7rem; border-top: 1px solid var(--line); }
+.game-event-content > .ui-button-row { padding-top: 0.7rem; border-top: 1px solid var(--line); }
+
+/* Game event cards: compact header, content on the left, action buttons stacked on the right */
+.game-event-card { container: game-event / inline-size; border-color: rgba(220, 205, 164, 0.16); background: linear-gradient(180deg, rgba(56, 52, 45, 0.96), rgba(42, 40, 36, 0.97)); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 240, 210, 0.05); }
+.game-event-card > .game-event-header { display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 0.45rem 0.7rem; border-bottom: 1px solid rgba(220, 205, 164, 0.12); border-radius: 8px 8px 0 0; background: linear-gradient(180deg, rgba(255, 240, 210, 0.04), transparent); color: #f1e2bd; font-size: 0.9rem; line-height: 1.3; letter-spacing: 0.01em; }
+.game-event-title { flex: 1 1 auto; min-width: 0; }
+.game-event-header > .ui-btn-link { flex: 0 0 auto; min-height: 0; margin-left: auto; opacity: 0.7; }
+.game-event-header > .ui-btn-link:hover { opacity: 1; }
+.game-event-card.is-compact > .game-event-header { border-bottom: 0; padding-top: 0.4rem; padding-bottom: 0.4rem; }
+.game-event-card > .game-event-body { display: flex; align-items: flex-end; gap: 12px; padding: 0.6rem 0.7rem 0.65rem; }
+.game-event-content { flex: 1 1 auto; min-width: 0; }
+.game-event-content:empty { display: none; }
+.game-event-content > :where(div, p, table, ul, ol, fieldset, section, h5, h6, form) { margin-top: 0; margin-bottom: 0; }
+.game-event-content > :where(div, p, table, ul, ol, fieldset, section, h5, h6, form) + :where(div, p, table, ul, ol, fieldset, section, h5, h6, form) { margin-top: 0.6rem; }
+.game-event-content > :where(div, p) > label:first-child { display: block; margin: 0 0 0.3rem; color: var(--ivory-muted); font-size: 0.8rem; font-weight: 650; letter-spacing: 0.01em; }
+.game-event-actions { display: flex; flex: 0 0 auto; flex-direction: column; align-items: stretch; gap: 6px; margin-left: auto; }
+.game-event-actions:empty { display: none; }
+.game-event-actions > * { margin: 0 !important; }
+.game-event-actions .ui-button-row { flex-direction: column-reverse; flex-wrap: nowrap; align-items: stretch; gap: 6px; margin: 0; padding: 0; border: 0; }
+.game-event-actions .ui-btn { min-width: 96px; max-width: 190px; min-height: 32px; padding: 0.32rem 0.8rem; font-size: 0.86rem; line-height: 1.2; white-space: normal; text-align: center; }
+.game-event-actions .ui-btn-confirm-wrap { display: flex; }
+.game-event-actions .ui-btn-confirm-wrap > .ui-btn { flex: 1 1 auto; }
+.game-event-actions .ui-btn-pass, .game-event-actions .ui-btn-other { border-color: rgba(220, 205, 164, 0.22); background: rgba(255, 240, 210, 0.07); color: var(--ivory); box-shadow: none; }
+.game-event-actions .ui-btn-pass:not(:disabled):hover, .game-event-actions .ui-btn-other:not(:disabled):hover { background: rgba(255, 240, 210, 0.14); }
+.game-event-header > .game-event-actions { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-end; font-size: 0.8rem; font-weight: 400; }
+.game-event-header > .game-event-actions .ui-button-row { flex-direction: row; flex-wrap: wrap; justify-content: flex-end; }
+.game-event-header > .game-event-actions .ui-btn { min-width: 64px; min-height: 30px; padding: 0.26rem 0.7rem; }
+@container game-event (max-width: 340px) {
+    .game-event-card > .game-event-body { flex-direction: column; align-items: stretch; }
+    .game-event-body > .game-event-actions .ui-button-row { flex-direction: row; flex-wrap: wrap; justify-content: flex-end; }
+    .game-event-card.is-compact > .game-event-header { flex-wrap: wrap; }
+    .game-event-card.is-compact .game-event-title { flex-basis: 100%; }
+}
 .ui-btn.ui-btn-confirm { min-width: 92px; border-color: rgba(240, 200, 130, 0.55); background: linear-gradient(180deg, #e0a35d, #b9702e); color: #1d1913; box-shadow: 0 2px 8px rgba(213, 138, 66, 0.25), inset 0 1px 0 rgba(255, 240, 210, 0.35); }
 .ui-btn.ui-btn-confirm:hover:not(:disabled) { background: linear-gradient(180deg, #eab06c, #c37a35); box-shadow: 0 3px 12px rgba(213, 138, 66, 0.4), inset 0 1px 0 rgba(255, 240, 210, 0.4); }
 .ui-btn.ui-btn-confirm:disabled { border-color: var(--line); background: #4a4438; color: #b9b09c; box-shadow: none; }
@@ -1823,6 +1877,12 @@ select.ui-form-select option { background: #23211d; color: var(--ivory); }
 .bwl-face > .bw-picker .bw-picker-grid { justify-content: center; }
 @keyframes bw-picker-in { from { opacity: 0; transform: translate(-50%, -46%) scale(0.97); } }
 
+/* Forces and spice dialled sit on the wheel, just left of the dial indicator */
+.bwl-forces { position: absolute; z-index: 3; top: calc(var(--bwl-face) * 0.012); left: calc(var(--bwl-off) + var(--bwl-face) * 0.43); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 8px 8px 10px; border: 1px solid #b8925a; border-radius: 14px; background: radial-gradient(120% 80% at 25% 12%, rgba(255, 251, 235, 0.7), transparent 55%), linear-gradient(165deg, #efe0bb 0%, #e2ca98 55%, #d4b57d 100%); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55), inset 0 0 0 3px rgba(239, 224, 187, 0.65), inset 0 0 0 4px rgba(184, 146, 90, 0.7), inset 0 0 18px rgba(126, 82, 34, 0.28); color: #3a2814; pointer-events: auto; transform: translateX(-100%); animation: bw-forces-in 0.22s ease-out; }
+.bwl-forces::after { position: absolute; top: clamp(10px, calc(var(--bwl-face) * 0.068 - 6px), calc(100% - 22px)); right: -7px; width: 12px; height: 12px; border-top: 1px solid #b8925a; border-right: 1px solid #b8925a; background: #e2ca98; content: ""; transform: rotate(45deg); }
+.bwl-forces > div { display: flex; align-items: center; }
+@keyframes bw-forces-in { from { opacity: 0; transform: translateX(calc(-100% + 8px)); } }
+
 /* Parchment flaps slide out from behind the wheel whenever a decision is due */
 .bwl-flap { position: relative; z-index: 1; display: flex; flex: 0 0 auto; width: var(--bwl-flap); max-height: calc(100cqh - 52px - var(--bwl-face) * 0.08); margin-top: calc(44px + var(--bwl-face) * 0.08); filter: drop-shadow(0 14px 20px rgba(0, 0, 0, 0.55)) drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35)); pointer-events: auto; }
 .bwl-flap.is-left { margin-right: -34px; transform: rotate(-1.4deg); transform-origin: right top; animation: bwl-shove-left 0.5s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
@@ -1869,10 +1929,13 @@ select.ui-form-select option { background: #23211d; color: var(--ivory); }
 .bwl-flap .game-event-card.is-urgent::after { display: none; }
 .bwl-flap .game-event-card > .ui-card-header { padding: 0 0 6px !important; border-bottom: 0; background: transparent !important; color: #4a2c10 !important; font-family: Georgia, "Palatino Linotype", serif; font-size: 0.84rem; }
 .bwl-flap .game-event-card.is-urgent > .ui-card-header { padding-left: 16px !important; }
-.bwl-flap .game-event-card > .ui-card-header { display: flex; align-items: center; gap: 8px; cursor: default; }
+.bwl-flap .game-event-card > .ui-card-header { display: flex; align-items: center; gap: 8px; min-height: 0; border-radius: 0; cursor: default; }
 .bwl-flap .game-event-card.is-urgent > .ui-card-header::before { left: 2px; }
 .bwl-flap .game-event-body { padding: 0 !important; background: transparent !important; color: var(--ivory) !important; }
-.bwl-flap .game-event-body > .ui-button-row { margin-top: 0.55rem; padding-top: 0; border-top: 0; }
+.bwl-flap .game-event-body > .game-event-actions { margin-top: 0.55rem; }
+.bwl-flap .game-event-card > .game-event-body { gap: 0; }
+.bwl-flap .ui-btn-other { border-color: rgba(110, 72, 34, 0.45); background: rgba(110, 72, 34, 0.14); color: #3a2814; box-shadow: none; }
+.bwl-flap .ui-btn-other:not(:disabled):hover { background: rgba(110, 72, 34, 0.24); }
 .bwl-flap select.ui-form-select, .bwl-flap .ui-form-control { border-color: rgba(110, 72, 34, 0.4); background-color: rgba(255, 250, 235, 0.62); box-shadow: inset 0 1px 2px rgba(110, 72, 34, 0.2); color: #3a2814; }
 .bwl-flap select.ui-form-select option { background: #f3e6c6; color: #3a2814; }
 .bwl-flap .ui-btn-secondary { border-color: rgba(110, 72, 34, 0.4); background: rgba(110, 72, 34, 0.16); color: #3a2814; }

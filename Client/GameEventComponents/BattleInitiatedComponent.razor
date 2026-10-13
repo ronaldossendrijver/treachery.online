@@ -19,7 +19,7 @@
 
         <SelectComponent @bind-Value="@Territory" Values="@Battles.Where(b => b.Faction == Opponent).Select(b => b.Territory)" />
                     
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Initiate Battle" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
 
     </Body>
 
