@@ -109,7 +109,7 @@
 </div>
 @if (hidden)
 {
-    <button type="button" class="battle-wheel-pill" @onclick="@(() => BattleWheelState.Hidden = false)" aria-label="Show the battle wheels">
+    <button type="button" class="battle-wheel-pill @(actions.Count > 0 ? "is-urgent" : "")" @onclick="@(() => BattleWheelState.Hidden = false)" aria-label="Show the battle wheels">
         <img src="@Client.CurrentSkin.BattleScreen_URL" alt="" />
         <span>Show battle wheel@(cards.Count > 1 ? "s" : "")</span>
         @if (actions.Count > 0)

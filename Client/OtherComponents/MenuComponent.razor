@@ -64,45 +64,25 @@
     {
             @if (Game.NumberOfBots > 0)
             {
-                <div class="ui-col ui-col-xs-auto ui-p-0">
-                    @if (Game.Participation.BotsSpeed == 0)
+                <div class="ui-col ui-col-xs-auto ui-p-0 menu-dropdown-anchor">
+                    <button class="ui-btn ui-btn-link ui-p-1" type="button" @onclick="_ => SetVisible(Speed)" aria-label="Bot speed" title="Bot speed: @SpeedLabel(Game.Participation.BotsSpeed)"
+                            aria-haspopup="listbox" aria-expanded="@(IsVisible(Speed) ? "true" : "false")" aria-controls="menu-speed-dropdown">
+                        @SpeedIcon(Game.Participation.BotsSpeed)
+                    </button>
+                    @if (IsVisible(Speed))
                     {
-                        <a class="ui-btn ui-btn-link ui-p-1" @onclick="@(_ => Client.RequestSetBotSpeed(1))" title="Bots are paused">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
-                                <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z" />
-                            </svg>
-                        </a>
-                    }
-                    else if (Game.Participation.BotsSpeed == 1)
-                    {
-                        <a class="ui-btn ui-btn-link ui-p-1" @onclick="@(_ => Client.RequestSetBotSpeed(2))" title="Bots at normal speed">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
-                                <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z" />
-                            </svg>
-                        </a>
-                    }
-                    else if (Game.Participation.BotsSpeed == 2)
-                    {
-                        <a class="ui-btn ui-btn-link ui-p-1" @onclick="@(_ => Client.RequestSetBotSpeed(4))" title="Bots at higher speed">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
-                                <path d="M7.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696z"/>
-                                <path d="M15.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C8.713 12.69 8 12.345 8 11.692V4.308c0-.653.713-.998 1.233-.696z"/>
-                            </svg>
-                        </a>
-                    }
-                    else
-                    {
-                        <a class="ui-btn ui-btn-link ui-p-1" @onclick="@(_ => Client.RequestSetBotSpeed(0))" title="Bots at highest speed">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="" viewBox="0 0 16 16">
-                                <!-- Left triangle -->
-                                <path d="M0 1.5 L0 14.5 L5.333 8 Z"/>
-                                <!-- Middle triangle -->
-                                <path d="M5.333 1.5 L5.333 14.5 L10.667 8 Z"/>
-                                <!-- Right triangle -->
-                                <path d="M10.667 1.5 L10.667 14.5 L16 8 Z"/>
-                            </svg>
-
-                        </a>
+                        <div id="menu-speed-dropdown" class="menu-dropdown menu-dropdown-speed" role="listbox" aria-label="Bot speed">
+                            <div class="menu-dropdown-title">Bot speed</div>
+                            @foreach (var speed in BotSpeeds)
+                            {
+                                var selected = Game.Participation.BotsSpeed == speed;
+                                <button type="button" role="option" aria-selected="@(selected ? "true" : "false")" class="menu-speed-option @(selected ? "is-selected" : "")"
+                                        @onclick="@(() => SelectSpeed(speed))">
+                                    @SpeedIcon(speed)
+                                    <span>@SpeedLabel(speed)</span>
+                                </button>
+                            }
+                        </div>
                     }
                 </div>
             }
@@ -243,6 +223,32 @@
     private const string Volume = "volume";
     private const string Players = "players";
     private const string File = "file";
+    private const string Speed = "speed";
+
+    // Bot delay is divided by the speed; 0 pauses the bots.
+    private static readonly int[] BotSpeeds = [0, 1, 2, 4];
+
+    private static string SpeedLabel(int speed) => speed switch
+    {
+        0 => "Paused",
+        1 => "Normal",
+        2 => "Fast",
+        _ => "Fastest"
+    };
+
+    private static RenderFragment SpeedIcon(int speed) => speed switch
+    {
+        0 => @<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z" /></svg>,
+        1 => @<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z" /></svg>,
+        2 => @<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M7.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696z"/><path d="M15.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C8.713 12.69 8 12.345 8 11.692V4.308c0-.653.713-.998 1.233-.696z"/></svg>,
+        _ => @<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 1.5 L0 14.5 L5.333 8 Z"/><path d="M5.333 1.5 L5.333 14.5 L10.667 8 Z"/><path d="M10.667 1.5 L10.667 14.5 L16 8 Z"/></svg>
+    };
+
+    private async Task SelectSpeed(int speed)
+    {
+        Visible = null;
+        if (speed != Game.Participation.BotsSpeed) await Client.RequestSetBotSpeed(speed);
+    }
 
     private bool CanManageGame => Game.EventCount > 0 && Client.IsHost && !Client.IsObserver;
     private bool CanSave => Game.EventCount > 0 && (Client.IsHost || Client.ServerInfo != null && Client.UserName == Client.ServerInfo.AdminName);

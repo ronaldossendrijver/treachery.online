@@ -147,6 +147,53 @@
     <div class="bw-plan">
         <div class="bw-intel">
 
+            @if (Game.CurrentVoice != null)
+            {
+                @if (Faction == Faction.Blue || Player.Ally == Faction.Blue)
+                {
+                    <span class="bw-chip bw-power is-good"><FactionComponent Faction="Faction.Blue" Diameter="22" /> Voice: opponent @(Game.CurrentVoice.Must ? "must use" : "may not use") @Client.CurrentSkin.Describe(Game.CurrentVoice.Type)</span>
+                }
+                else
+                {
+                    <span class="bw-chip bw-power is-warn"><FactionComponent Faction="Faction.Blue" Diameter="22" /> Voice: you @(Game.CurrentVoice.Must ? "must use" : "may not use") @Client.CurrentSkin.Describe(Game.CurrentVoice.Type)</span>
+                }
+            }
+
+            @if (Faction == Faction.Green || Player.Ally == Faction.Green)
+            {
+                var opponentBattlePlan = Game.CurrentBattle.Aggressor == Faction ? Game.DefenderPlan : Game.AggressorPlan;
+                if (Game.GreenKarma)
+                {
+                    if (opponentBattlePlan != null)
+                    {
+                        foreach (var aspect in new[] { PrescienceAspect.Dial, PrescienceAspect.Leader, PrescienceAspect.Weapon, PrescienceAspect.Defense })
+                        {
+                            <Hoverable Class="bw-chip bw-power is-good" Popover="@GetPopupForAspect(aspect, opponentBattlePlan, true)"><FactionComponent Faction="Faction.Green" Diameter="22" /> Enemy @aspect: <strong>@GetTextForAspect(aspect, opponentBattlePlan, true)</strong></Hoverable>
+                        }
+                    }
+                    else
+                    {
+                        <span class="bw-chip bw-power is-good"><FactionComponent Faction="Faction.Green" Diameter="22" /> Enemy plan is revealed once confirmed</span>
+                    }
+                }
+                else
+                {
+                    foreach (var aspect in new[] { Game.CurrentPrescience?.Aspect, Game.CurrentNexusPrescience?.GreenPrescienceAspect })
+                    {
+                        if (aspect == null) continue;
+
+                        if (opponentBattlePlan != null)
+                        {
+                            <Hoverable Class="bw-chip bw-power is-good" Popover="@GetPopupForAspect(aspect.Value, opponentBattlePlan, false)"><FactionComponent Faction="Faction.Green" Diameter="22" /> Prescience · enemy @aspect: <strong>@GetTextForAspect(aspect.Value, opponentBattlePlan, false)</strong></Hoverable>
+                        }
+                        else
+                        {
+                            <span class="bw-chip bw-power is-good"><FactionComponent Faction="Faction.Green" Diameter="22" /> Prescience · enemy @aspect revealed once confirmed</span>
+                        }
+                    }
+                }
+            }
+
             <span class="bw-chip">
                 <span>Opponent</span>
                 @if (opponent.ForcesIn(Game.CurrentBattle.Territory) > 0)
@@ -191,52 +238,6 @@
                 </span>
             }
 
-            @if (Game.CurrentVoice != null)
-            {
-                @if (Faction == Faction.Blue || Player.Ally == Faction.Blue)
-                {
-                    <span class="bw-chip is-good">Voice: opponent @(Game.CurrentVoice.Must ? "must use" : "may not use") @Client.CurrentSkin.Describe(Game.CurrentVoice.Type)</span>
-                }
-                else
-                {
-                    <span class="bw-chip is-warn">Voice: you @(Game.CurrentVoice.Must ? "must use" : "may not use") @Client.CurrentSkin.Describe(Game.CurrentVoice.Type)</span>
-                }
-            }
-
-            @if (Faction == Faction.Green || Player.Ally == Faction.Green)
-            {
-                var opponentBattlePlan = Game.CurrentBattle.Aggressor == Faction ? Game.DefenderPlan : Game.AggressorPlan;
-                if (Game.GreenKarma)
-                {
-                    if (opponentBattlePlan != null)
-                    {
-                        foreach (var aspect in new[] { PrescienceAspect.Dial, PrescienceAspect.Leader, PrescienceAspect.Weapon, PrescienceAspect.Defense })
-                        {
-                            <Hoverable Class="bw-chip is-good" Popover="@GetPopupForAspect(aspect, opponentBattlePlan, true)">Enemy @aspect: <strong>@GetTextForAspect(aspect, opponentBattlePlan, true)</strong></Hoverable>
-                        }
-                    }
-                    else
-                    {
-                        <span class="bw-chip is-good">Enemy plan is revealed once confirmed</span>
-                    }
-                }
-                else
-                {
-                    foreach (var aspect in new[] { Game.CurrentPrescience?.Aspect, Game.CurrentNexusPrescience?.GreenPrescienceAspect })
-                    {
-                        if (aspect == null) continue;
-
-                        if (opponentBattlePlan != null)
-                        {
-                            <Hoverable Class="bw-chip is-good" Popover="@GetPopupForAspect(aspect.Value, opponentBattlePlan, false)">Prescience · enemy @aspect: <strong>@GetTextForAspect(aspect.Value, opponentBattlePlan, false)</strong></Hoverable>
-                        }
-                        else
-                        {
-                            <span class="bw-chip is-good">Prescience · enemy @aspect revealed once confirmed</span>
-                        }
-                    }
-                }
-            }
 
         </div>
 
@@ -268,7 +269,7 @@
             <label class="bw-toggle">
                 <input type="checkbox" @bind="Messiah" />
                 <img src="@Client.CurrentSkin.Messiah_URL" alt="" width="26" height="26" />
-                <span>@Client.CurrentSkin.Describe(Concept.Messiah) joins the fight</span>
+                <span>Use @Client.CurrentSkin.Describe(Concept.Messiah)</span>
             </label>
         }
 

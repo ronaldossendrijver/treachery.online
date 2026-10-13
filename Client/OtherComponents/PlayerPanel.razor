@@ -128,7 +128,7 @@
                                             <img src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt="" />
                                             @if (shownPlayer.TotalForcesKilledInBattle >= 7)
                                             {
-                                                @(shownPlayer.MessiahAvailable ? "Messiah available" : "Messiah has been killed")
+                                                @(shownPlayer.MessiahAvailable ? $"{Client.CurrentSkin.Describe(Concept.Messiah)} available" : $"{Client.CurrentSkin.Describe(Concept.Messiah)} has been killed")
                                             }
                                             else
                                             {

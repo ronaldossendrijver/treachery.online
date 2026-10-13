@@ -9,7 +9,7 @@
 
 <div class="ui-card @Width @Border ui-mb-2 game-event-card @(IsUrgent ? "is-urgent" : "")" style="@BackgroundStyle ;animation:fadeIn 1s;">
 
-    @if (Collapsible)
+    @if (Collapsible && !NotCollapsible)
     {
         <div class="ui-card-header" style="@HeaderStyle;cursor:pointer;" @onclick=@(_ => CollapsedInternal = !CollapsedInternal)>
 
@@ -18,8 +18,12 @@
 
         </div>
     }
+    else if (NotCollapsible && Header != null)
+    {
+        <div class="ui-card-header" style="@HeaderStyle">@Header</div>
+    }
 
-    @if (!_collapsedInternal) 
+    @if (NotCollapsible || !_collapsedInternal)
     {
         <div class="ui-card-body game-event-body" style="@BodyStyle">
             <ErrorLoggingBoundary @ref=_errorBoundary>
@@ -70,6 +74,9 @@
 
     [Parameter]
     public bool Collapsible { get; set; } = true;
+
+    [CascadingParameter(Name = "GameEventsNotCollapsible")]
+    public bool NotCollapsible { get; set; }
 
     [Parameter]
     public CollapseState Collapsed { get; set; }

@@ -378,8 +378,8 @@ public class Skin : IDescriber
             SubscriptionType.DontParticipate => "no",
             SubscriptionType.MaybeAsPlayer => "maybe",
             SubscriptionType.CertainAsPlayer => "yes",
-            SubscriptionType.MaybeAsHost => "maybe*",
-            SubscriptionType.CertainAsHost => "yes*",
+            SubscriptionType.MaybeAsHost => "maybe (can be host)",
+            SubscriptionType.CertainAsHost => "yes (as host)",
             _ => "unknown"
         };
     }

@@ -29,12 +29,6 @@
             <stop offset="0.35" stop-color="#fff"/>
             <stop offset="1" stop-color="#000"/>
         </radialGradient>
-        <radialGradient id="sandWormHeave" cx="0.42" cy="0.38" r="0.7">
-            <stop offset="0" stop-color="#fff3d8" stop-opacity="0.95"/>
-            <stop offset="0.5" stop-color="#e6c48d" stop-opacity="0.92"/>
-            <stop offset="0.85" stop-color="#a87443" stop-opacity="0.6"/>
-            <stop offset="1" stop-color="#8a5a2b" stop-opacity="0"/>
-        </radialGradient>
     </defs>
 
     <g clip-path="url(#sandAmbienceClip)">
@@ -67,15 +61,6 @@
                                  values="@($"{trail.Length};{trail.Length};{trail.Length - 1000};{trail.Length - 1000}")" keyTimes="@worm.MotionKeyTimes" calcMode="linear"/>
                     </path>
                 }
-
-                <g>
-                    <animateMotion dur="@worm.Duration" begin="@worm.Begin" repeatCount="indefinite" rotate="auto" path="@worm.Path"
-                                   keyPoints="0;0;1;1" keyTimes="@worm.MotionKeyTimes" calcMode="linear"/>
-                    @* No worm is shown: only the sand heaving and rippling above it as it passes. *@
-                    <g transform="scale(0.5)">
-                        <ellipse cx="0" cy="0" rx="12" ry="7" fill="url(#sandWormHeave)" opacity="0.35"/>
-                    </g>
-                </g>
             </g>
         }
     </g>
