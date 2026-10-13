@@ -4,7 +4,9 @@
 @if (SelectedFaction is Faction faction && faction != Faction.None && Game.Players.FirstOrDefault(player => player.Faction == faction) is { } player)
 {
     var canGift = CanOfferGift(faction);
-    var activeTab = canGift ? _activeTab : InfoTab;
+    var canManageAlliance = CanManageAlliance(faction);
+    var tabs = AvailableTabs(canGift, canManageAlliance);
+    var activeTab = tabs.Contains(_activeTab) ? _activeTab : tabs[0];
     var idPrefix = $"map-faction-{faction}";
 
     <section class="map-faction-actions" role="region" aria-label="@($"{Client.CurrentSkin.Describe(faction)} faction information and actions")"
@@ -24,12 +26,19 @@
                 <button @ref="_giftTab" id="@($"{idPrefix}-tab-gift")" class="map-faction-tab @(activeTab == GiftTab ? "is-active" : "")" type="button" role="tab"
                         aria-selected="@(activeTab == GiftTab ? "true" : "false")" aria-controls="@($"{idPrefix}-panel-gift")"
                         tabindex="@(activeTab == GiftTab ? 0 : -1)"
-                        @onclick="@(() => SelectTab(GiftTab))" @onkeydown="@(e => OnTabKey(e, canGift))">Give spice</button>
+                        @onclick="@(() => SelectTab(GiftTab))" @onkeydown="@(e => OnTabKey(e, tabs, activeTab))">Give spice</button>
+            }
+            @if (canManageAlliance)
+            {
+                <button @ref="_allianceTab" id="@($"{idPrefix}-tab-alliance")" class="map-faction-tab @(activeTab == AllianceTab ? "is-active" : "")" type="button" role="tab"
+                        aria-selected="@(activeTab == AllianceTab ? "true" : "false")" aria-controls="@($"{idPrefix}-panel-alliance")"
+                        tabindex="@(activeTab == AllianceTab ? 0 : -1)"
+                        @onclick="@(() => SelectTab(AllianceTab))" @onkeydown="@(e => OnTabKey(e, tabs, activeTab))">Alliance</button>
             }
             <button @ref="_infoTab" id="@($"{idPrefix}-tab-info")" class="map-faction-tab @(activeTab == InfoTab ? "is-active" : "")" type="button" role="tab"
                     aria-selected="@(activeTab == InfoTab ? "true" : "false")" aria-controls="@($"{idPrefix}-panel-info")"
                     tabindex="@(activeTab == InfoTab ? 0 : -1)"
-                    @onclick="@(() => SelectTab(InfoTab))" @onkeydown="@(e => OnTabKey(e, canGift))">Faction info</button>
+                    @onclick="@(() => SelectTab(InfoTab))" @onkeydown="@(e => OnTabKey(e, tabs, activeTab))">Faction info</button>
         </div>
 
         <div class="map-faction-actions-content">
@@ -37,6 +46,13 @@
             {
                 <div id="@($"{idPrefix}-panel-gift")" class="map-faction-gift" role="tabpanel" aria-labelledby="@($"{idPrefix}-tab-gift")">
                     <DonatedComponent TargetFaction="faction" />
+                </div>
+            }
+            else if (activeTab == AllianceTab)
+            {
+                <div id="@($"{idPrefix}-panel-alliance")" class="map-faction-gift map-faction-alliance" role="tabpanel" aria-labelledby="@($"{idPrefix}-tab-alliance")">
+                    <h3 class="map-faction-panel-title">Manage your alliance</h3>
+                    <AllyPermissionComponent />
                 </div>
             }
             else
@@ -59,6 +75,7 @@
 
 @code {
     private const string GiftTab = "gift";
+    private const string AllianceTab = "alliance";
     private const string InfoTab = "info";
 
     [Parameter] public Faction? SelectedFaction { get; set; }
@@ -79,18 +96,30 @@
     private void SelectTab(string tab) => _activeTab = tab;
 
     private ElementReference _giftTab;
+    private ElementReference _allianceTab;
     private ElementReference _infoTab;
     private bool _focusActiveTab;
 
-    private void OnTabKey(KeyboardEventArgs e, bool canGift)
+    private static List<string> AvailableTabs(bool canGift, bool canManageAlliance)
     {
-        if (!canGift || e.Key is not ("ArrowLeft" or "ArrowRight" or "Home" or "End")) return;
+        var result = new List<string>();
+        if (canGift) result.Add(GiftTab);
+        if (canManageAlliance) result.Add(AllianceTab);
+        result.Add(InfoTab);
+        return result;
+    }
 
+    private void OnTabKey(KeyboardEventArgs e, List<string> tabs, string activeTab)
+    {
+        if (tabs.Count < 2 || e.Key is not ("ArrowLeft" or "ArrowRight" or "Home" or "End")) return;
+
+        var index = tabs.IndexOf(activeTab);
         _activeTab = e.Key switch
         {
-            "Home" => GiftTab,
-            "End" => InfoTab,
-            _ => _activeTab == GiftTab ? InfoTab : GiftTab
+            "Home" => tabs[0],
+            "End" => tabs[^1],
+            "ArrowLeft" => tabs[(index - 1 + tabs.Count) % tabs.Count],
+            _ => tabs[(index + 1) % tabs.Count]
         };
         _focusActiveTab = true;
     }
@@ -99,7 +128,12 @@
     {
         if (!_focusActiveTab) return;
         _focusActiveTab = false;
-        await (_activeTab == GiftTab ? _giftTab : _infoTab).FocusAsync();
+        await (_activeTab switch
+        {
+            GiftTab => _giftTab,
+            AllianceTab => _allianceTab,
+            _ => _infoTab
+        }).FocusAsync();
     }
 
     private bool CanOfferGift(Faction faction) =>
@@ -107,4 +141,10 @@
         && Client.Actions.Contains(typeof(Donated))
         && Client.Player is { } player
         && Donated.ValidTargets(Game, player).Contains(faction);
+
+    private bool CanManageAlliance(Faction faction) =>
+        !Client.IsObserver
+        && Client.Actions.Contains(typeof(AllyPermission))
+        && Client.Player is { } player
+        && player.Ally == faction;
 }

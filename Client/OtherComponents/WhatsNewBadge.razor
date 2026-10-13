@@ -1,0 +1,134 @@
+@*
+ * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
+ * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
+ * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+*@
+
+@if (_loaded && !_dismissed)
+{
+    <div class="whats-new @(_open ? "is-open" : "") @(_suppressed ? "is-suppressed" : "")"
+         @onmouseleave="@(() => _suppressed = false)" @onfocusout="@(() => _suppressed = false)" @onkeydown="OnKeyDown">
+        <button class="whats-new-trigger" type="button" aria-expanded="@(_open ? "true" : "false")" aria-controls="whats-new-popover"
+                @onclick="Toggle">
+            <span class="whats-new-dot" aria-hidden="true"></span>
+            Changes in this version
+        </button>
+
+        <div id="whats-new-popover" class="whats-new-popover" role="region" aria-label="Changes in this version" tabindex="0">
+            <header class="whats-new-header">
+                <span class="eyebrow">What's new</span>
+                <h2>Updated game design</h2>
+                <p>Most controls have moved onto the map. Here is where to find things.</p>
+            </header>
+
+            <section class="whats-new-section">
+                <h3>On the map</h3>
+                <ul>
+                    <li>
+                        <strong>Give spice to another player:</strong> click that player's faction logo on the map and use the <em>Give spice</em> tab.
+                        The <em>Faction info</em> tab next to it shows their leaders and faction details.
+                    </li>
+                    <li>
+                        <strong>Manage your alliance:</strong> click your ally's faction logo on the map and use the <em>Alliance</em> tab.
+                        It's no longer in the action panel.
+                    </li>
+                    <li>
+                        <strong>Game menu:</strong> at the top right of the map. It holds Players, Notes, Automation, Skin, Music and sound, Bot speed, Undo, Help, Game info, Fullscreen, File and Exit.
+                        <ul>
+                            <li><strong>Players:</strong> the player list and opening or closing seats are in the <em>Players</em> dropdown.</li>
+                            <li><strong>Notes (Atreides only):</strong> the card tracker has its own button with the Atreides logo.</li>
+                            <li><strong>Automation:</strong> managing automatic actions is now a menu button that opens a dialog. It's no longer in the action panel.</li>
+                            <li><strong>Bot speed:</strong> a dropdown that shows the current speed.</li>
+                            <li><strong>Saving and loading:</strong> under <em>File</em>.</li>
+                            <li><strong>Game info:</strong> rules and timing settings are behind the info button.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Tanks:</strong> at the top left of the map. Hover over (or tap) the <em>TANKS</em> badge to see what each faction has there.</li>
+                    <li><strong>Card piles:</strong> on the right edge of the map. Hover over a pile for details.</li>
+                    <li>
+                        <strong>Chat and deals:</strong> <em>Messages &amp; Players</em> and <em>Deals</em> are at the bottom right of the map.
+                        Making a deal offer is now inside the Deals dialog. A number on the Deals button shows how many deals there are.
+                    </li>
+                    <li><strong>Game report:</strong> at the bottom left of the map. It can be expanded or collapsed.</li>
+                    <li>
+                        <strong>Battles:</strong> every battle decision is now made on the battle wheel itself.
+                        <ul>
+                            <li>Pick your leader, weapon and defense on the wheel.</li>
+                            <li>
+                                Actions taken at the start of a battle (Voice, Prescience and so on) appear on a parchment flap on the left of the wheel.
+                                Actions taken after the battle (Traitor, Face Dancer, Retreat and so on) appear on the right.
+                            </li>
+                            <li>Wheels can be dragged or hidden. While a wheel is hidden and you have something to do, a glowing <em>Show battle wheel</em> button appears.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="whats-new-section">
+                <h3>In the right panel</h3>
+                <ul>
+                    <li>
+                        <strong>Turn and phase:</strong> shown at the top. Hover over the phase name to see the order of all phases.
+                        Whose turn it is appears next to it, with a clear <em>YOUR TURN</em> marker.
+                    </li>
+                    <li><strong>Your faction:</strong> your leaders, traitors or Face Dancers, cards and faction details are grouped at the bottom of the panel.</li>
+                </ul>
+            </section>
+
+            <section class="whats-new-section">
+                <h3>On a phone</h3>
+                <p>The map fills the screen. The controls are in a bottom sheet you can show or hide.</p>
+            </section>
+        </div>
+
+        <button class="whats-new-close" type="button" aria-label="Close changes in this version" title="Don't show again" @onclick="Dismiss">×</button>
+    </div>
+}
+
+@code {
+    // Change this value when the list of changes is updated, so the badge is shown again to everyone.
+    private const string ChangesVersion = "map-first-ui-1";
+    private const string DismissedSetting = "treachery.online;setting.whatsnew.dismissed";
+
+    private bool _loaded;
+    private bool _dismissed;
+    private bool _open;
+    private bool _suppressed;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _dismissed = await Browser.LoadStringSetting(DismissedSetting) == ChangesVersion;
+        }
+        catch (Exception)
+        {
+            _dismissed = false;
+        }
+
+        _loaded = true;
+    }
+
+    private void Toggle()
+    {
+        _open = !_open;
+        _suppressed = !_open;
+    }
+
+    private void OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key != "Escape") return;
+        _open = false;
+        _suppressed = true;
+    }
+
+    private async Task Dismiss()
+    {
+        _dismissed = true;
+        _open = false;
+        await Browser.SaveStringSetting(DismissedSetting, ChangesVersion);
+    }
+}

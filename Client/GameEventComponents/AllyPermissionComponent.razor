@@ -8,9 +8,7 @@
 *@
 @inherits GameEventComponent<AllyPermission>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsed="CollapseState.Collapsed">
-
-    <Header>Manage your Alliance with &nbsp;<FactionComponent Faction="@Player.Ally"></FactionComponent></Header>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" Collapsible="false" Collapsed="CollapseState.NotCollapsed">
 
     <Body>
 
