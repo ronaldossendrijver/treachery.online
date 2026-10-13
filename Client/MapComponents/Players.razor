@@ -6,6 +6,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
  * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 *@
+
 @inherits MapComponent
 
 <div @ref="@Element">
@@ -275,7 +276,7 @@
     private string ReservesTooltip(Battalion b)
     {
         var skin = Client.CurrentSkin;
-        var forceName = skin.ForceName_STR.TryGetValue(b.Faction, out var fn) ? fn : "forces";
+        var forceName = skin.ForceName_STR.GetValueOrDefault(b.Faction, "forces");
         var specialName = skin.SpecialForceName_STR.TryGetValue(b.Faction, out var sn) && sn != "-" ? sn : "special forces";
         var parts = new List<string>();
         if (b.AmountOfForces > 0 || b.AmountOfSpecialForces == 0) parts.Add($"{b.AmountOfForces} {forceName}");
@@ -302,10 +303,9 @@
 
     private PointD Pos(float positionOnCircle, float radiusOfToken = 0) {
 
-        var mapradius = 1.06f * Client.CurrentSkin.MapRadius;
+        var mapRadius = 1.06f * Client.CurrentSkin.MapRadius;
         return new PointD(
-            X = Client.CurrentSkin.PlanetCenter.X + (float)(Math.Cos(positionOnCircle) * mapradius) - radiusOfToken, 
-            Y = Client.CurrentSkin.PlanetCenter.Y + (float)(Math.Sin(positionOnCircle) * mapradius) - radiusOfToken);
+            X = Client.CurrentSkin.PlanetCenter.X + (float)(Math.Cos(positionOnCircle) * mapRadius) - radiusOfToken, 
+            Y = Client.CurrentSkin.PlanetCenter.Y + (float)(Math.Sin(positionOnCircle) * mapRadius) - radiusOfToken);
     }
-    
 }

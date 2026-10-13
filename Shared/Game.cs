@@ -33,7 +33,7 @@ public partial class Game
     public List<Rule> AllRules { get; internal set; } = [];
     public List<GameEvent> History { get; } = [];
     public List<Moment> Moments { get; } = [];
-    public int RecentlyUndoneEventCount { get; set; }
+    public int RecentlyUndoneEventCount { get; private set; }
     public List<GameEvent> RecentlyUndoneEvents { get; } = [];
     private Game? PreviousGameState { get; set; }
     public int CurrentTurn { get; private set; }
@@ -174,10 +174,10 @@ public partial class Game
         var result = new Game(Version, Participation);
         
         // Replay all current history
-        for (var i = 0; i < History.Count; i++)
+        foreach (var evt in History)
         {
-            History[i].Initialize(result);
-            History[i].Execute(false, false);
+            evt.Initialize(result);
+            evt.Execute(false, false);
         }
 
         // Add back the recently undone events to history and execute them

@@ -384,7 +384,7 @@ public partial class Game
         winnerPlan.Player.Resources += opponentUndialedForces;
     }
 
-    internal void DetermineHowToProceedAfterRevealingBattlePlans()
+    private void DetermineHowToProceedAfterRevealingBattlePlans()
     {
         if (Auditee != null && !BrownLeaderWasRevealedAsTraitor)
         {
