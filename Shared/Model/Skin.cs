@@ -1654,6 +1654,12 @@ public class Skin : IDescriber
 
     private static void FixValue<T>(ref T toFix, T donor)
     {
+        if (toFix is string s && string.IsNullOrEmpty(s))
+        {
+            toFix = donor;
+            return;
+        }
+        
         if (toFix == null || toFix.Equals(default(T))) toFix = donor;
     }
 

@@ -43,7 +43,7 @@
                                 <div class="lobby-game-name">@av.Name</div>
                                 <div class="lobby-game-meta">
                                     @PlayerChips(av, showMax, showBots)
-                                    @if (av.HasDetails && av.Phase == Phase.AwaitingPlayers)
+                                    @if (av is { HasDetails: true, Phase: Phase.AwaitingPlayers })
                                     {
                                         <span>@Name(av.Ruleset), @av.MaxTurns turns, not yet started</span>
                                     }
@@ -52,10 +52,6 @@
                                         <span>@Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)</span>
                                     }
                                 </div>
-                                @if (av.HasDetails && av.Phase != Phase.AwaitingPlayers)
-                                {
-                                    @Factions(av.FactionsInPlay)
-                                }
                             </div>
                             <div class="lobby-game-actions">
                                 @if (av.RequiresLoad && !av.YouAreIn(Client.UserId!.Value))
@@ -162,10 +158,6 @@
                                         <span>@Name(av.Ruleset), Turn @av.Turn: @Name(av.MainPhase)</span>
                                     }
                                 </div>
-                                @if (av.HasDetails && av.Phase != Phase.AwaitingPlayers)
-                                {
-                                    @Factions(av.FactionsInPlay)
-                                }
                             </div>
                             <div class="lobby-game-actions">
                                 @if (av.RequiresLoad && !av.YouAreIn(Client.UserId!.Value))
