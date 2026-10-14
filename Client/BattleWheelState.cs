@@ -32,11 +32,11 @@ public static class BattleWheelState
     public static readonly Type[] ActionTypes =
     [
         typeof(BattleClaimed), typeof(SwitchedSkilledLeader),
-        typeof(Voice), typeof(Prescience),
+        typeof(Voice), typeof(Prescience), typeof(KarmaPrescience), typeof(ResidualPlayed),
         typeof(Battle), typeof(BattleRevision),
-        typeof(TreacheryCalled), typeof(Diplomacy),
+        typeof(TreacheryCalled), typeof(PoisonToothCancelled), typeof(PortableAntidoteUsed), typeof(Diplomacy), typeof(KarmaPinkDial),
         typeof(FaceDancerRevealed), typeof(FaceDanced),
-        typeof(Retreat), typeof(Captured), typeof(BattleConcluded),
+        typeof(RockWasMelted), typeof(Retreat), typeof(Captured), typeof(BattleConcluded),
         typeof(AuditCancelled), typeof(Audited)
     ];
 
