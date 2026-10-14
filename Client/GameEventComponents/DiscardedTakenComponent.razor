@@ -25,11 +25,6 @@
 
     private TreacheryCard? card;
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        BackgroundImage = GetImage(TreacheryCardType.TakeDiscarded);
-    }
 
     protected override DiscardedTaken ConfirmedResult => new(Game, Faction) { Card = card };
 }

@@ -30,27 +30,11 @@
                                        ConfirmLabel="@(behind ? "Behind shield" : "In front of shield")" />
                 break;
             case nameof(Prescience): <PrescienceComponent /> break;
-            case nameof(KarmaPrescience):
-                <SimpleActionComponent GameEventType="KarmaPrescience" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Client.CurrentSkin.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Karma)" />
-                break;
-            case nameof(ResidualPlayed):
-                <SimpleActionComponent GameEventType="ResidualPlayed" BackgroundImage="@GetImage(TreacheryCardType.Residual)" Title="@Client.CurrentSkin.Format("Use {0} to kill a random available opponent leader?", TreacheryCardType.Residual)" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Residual)" />
-                break;
             case nameof(BattleRevision): <SimpleActionComponent GameEventType="BattleRevision" Title="Change your battle plan?" Alert="false" ConfirmLabel="Change Plan" /> break;
             case nameof(TreacheryCalled): <TreacheryCalledComponent /> break;
-            case nameof(PoisonToothCancelled):
-                <SimpleActionComponent GameEventType="PoisonToothCancelled" BackgroundImage="@GetImage(TreacheryCardType.PoisonTooth)" Title="Cancel Poison Tooth?" Alert="false" ConfirmLabel="Cancel" />
-                break;
-            case nameof(PortableAntidoteUsed):
-                <SimpleActionComponent GameEventType="PortableAntidoteUsed" BackgroundImage="@GetImage(TreacheryCardType.PortableAntidote)" Title="@Client.CurrentSkin.Format("Use your {0}?", TreacheryCardType.PortableAntidote)" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.PortableAntidote)" />
-                break;
             case nameof(Diplomacy): <DiplomacyComponent /> break;
-            case nameof(KarmaPinkDial):
-                <SimpleActionComponent GameEventType="KarmaPinkDial" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Client.CurrentSkin.Format("Use {0} to add the difference between the leader discs to your dial", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Karma)" />
-                break;
             case nameof(FaceDancerRevealed): <FaceDancerRevealedComponent /> break;
             case nameof(FaceDanced): <FaceDancedComponent /> break;
-            case nameof(RockWasMelted): <RockWasMeltedComponent /> break;
             case nameof(Retreat): <RetreatComponent /> break;
             case nameof(Captured):
                 <YesNoActionComponent GameEventType="Captured" Title="Do you wish to capture a random leader from your opponent?" Alert="true" ForFaction="Faction.Black" />

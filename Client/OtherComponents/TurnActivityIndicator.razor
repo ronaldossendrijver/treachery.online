@@ -4,8 +4,9 @@
 {
     if (status.WaitingForMe(Client.Player, Client.IsHost))
     {
-        <div class="turn-activity turn-activity-personal" role="img" aria-label="Your turn">
-            <span class="turn-activity-label">YOUR TURN</span>
+        var continueGame = status.WaitingForHost && Client.IsHost;
+        <div class="turn-activity turn-activity-personal @(continueGame ? "turn-activity-continue" : "")" role="img" aria-label="@(continueGame ? "Continue the game" : "Your turn")">
+            <span class="turn-activity-label">@(continueGame ? "CONTINUE THE GAME" : "YOUR TURN")</span>
             @if (Client.Player is { Faction: not Faction.None } player)
             {
                 <span class="turn-activity-logo turn-activity-personal-logo">

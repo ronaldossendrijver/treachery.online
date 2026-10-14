@@ -30,11 +30,6 @@
     private Faction target;
     private TreacheryCard? card;
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        BackgroundImage = GetImage(TreacheryCardType.Distrans);
-    }
 
     protected override DistransUsed ConfirmedResult => new(Game, Faction) { Target = target, Card = card };
 }

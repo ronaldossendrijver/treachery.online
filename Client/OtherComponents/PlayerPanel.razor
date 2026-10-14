@@ -1,4 +1,5 @@
-﻿@inherits GameComponent
+﻿@using Treachery.Client.GameEventComponents
+@inherits GameComponent
 
 @if (Client.CurrentPhase >= Phase.TradingFactions && ShownPlayer is { } shownPlayer)
 {
@@ -95,12 +96,69 @@
                                             @for (var i = 0; i < CardsInHand.Count; i++)
                                             {
                                                 var card = CardsInHand[i];
-                                                <span class="player-hand-card @(i > 0 ? "player-hand-card-overlap" : "") @PickClass(card)" aria-label="@PickTitle(card)" @onclick="@(() => PickForBattle(card))"
-                                                      style="@HandCardStyle(i, CardsInHand.Count)">
+                                                var canUseCard = CanUseCard(card);
+                                                <button type="button" class="player-hand-card @(i > 0 ? "player-hand-card-overlap" : "") @PickClass(card) @(canUseCard ? "is-card-use-available" : "")"
+                                                        aria-label="@(canUseCard ? $"Use {Name(card)}" : PickTitle(card))"
+                                                        title="@(canUseCard ? $"Use {Name(card)}" : PickTitle(card))"
+                                                        data-dialog-target="@(canUseCard ? $"#{CardUseDialogId(card)}" : null)"
+                                                        @onclick="@(() => HandleCardClick(card))"
+                                                        style="@HandCardStyle(i, CardsInHand.Count)">
                                                     <Image Shown="@CardsInHand[i]" Game="Game" Class="player-hand-image" />
-                                                </span>
+                                                </button>
                                             }
                                         </div>
+                                    }
+                                    @foreach (var card in CardsInHand.Where(CanUseCard))
+                                    {
+                                        <ModalComponent Id="@CardUseDialogId(card)" Title="@($"Use {Name(card)}")" Size="dialog-large">
+                                            <div class="card-use-dialog">
+                                                <img class="card-use-dialog-image" src="@Client.CurrentSkin.GetImageUrl(card)" alt="@Name(card)" />
+                                                <div class="card-use-dialog-actions">
+                                                    @foreach (var action in ActionsForCard(card))
+                                                    {
+                                                        switch (action.Name)
+                                                        {
+                                                            case nameof(ThumperPlayed): <SimpleActionComponent GameEventType="ThumperPlayed" Title="@Client.CurrentSkin.Format("Use {0}?", TreacheryCardType.Thumper)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Thumper)" /> break;
+                                                            case nameof(RaiseDeadPlayed): <RaiseDeadComponent /> break;
+                                                            case nameof(Karma): <KarmaComponent SelectedCard="card" /> break;
+                                                            case nameof(KarmaHandSwapInitiated): <KarmaHandSwapInitiatedComponent /> break;
+                                                            case nameof(KarmaShipmentPrevention): <KarmaShipmentPreventionComponent /> break;
+                                                            case nameof(KarmaRevivalPrevention): <KarmaRevivalPreventionComponent /> break;
+                                                            case nameof(KarmaHandSwap): <KarmaHandSwapComponent /> break;
+                                                            case nameof(KarmaFreeRevival): <KarmaFreeRevivalComponent /> break;
+                                                            case nameof(KarmaHmsMovement): <KarmaHmsMovementComponent /> break;
+                                                            case nameof(KarmaMonster): <KarmaMonsterComponent /> break;
+                                                            case nameof(KarmaWhiteBuy): <KarmaWhiteBuyComponent /> break;
+                                                            case nameof(KarmaBrownDiscard): <KarmaBrownDiscardComponent SelectedCard="card" /> break;
+                                                            case nameof(KarmaPrescience): <SimpleActionComponent GameEventType="KarmaPrescience" Title="@Client.CurrentSkin.Format("Use {0} to see the entire enemy battle plan?", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Karma)" /> break;
+                                                            case nameof(KarmaPinkDial): <SimpleActionComponent GameEventType="KarmaPinkDial" Title="@Client.CurrentSkin.Format("Use {0} to add the difference between the leader discs to your dial?", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Karma)" /> break;
+                                                            case nameof(StormSpellPlayed): <StormSpellPlayedComponent /> break;
+                                                            case nameof(MetheorPlayed): <SimpleActionComponent GameEventType="MetheorPlayed" Title="@Client.CurrentSkin.Format("Use {0}?", TreacheryCardType.Metheor)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Metheor)" /> break;
+                                                            case nameof(Caravan): <CaravanComponent /> break;
+                                                            case nameof(ClairVoyancePlayed): <ClairVoyancePlayedComponent /> break;
+                                                            case nameof(AmalPlayed): <SimpleActionComponent GameEventType="AmalPlayed" Title="@Client.CurrentSkin.Format("Use {0}?", TreacheryCardType.Amal)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Amal)" /> break;
+                                                            case nameof(RecruitsPlayed): <SimpleActionComponent GameEventType="RecruitsPlayed" Title="@Client.CurrentSkin.Format("Use {0}?", TreacheryCardType.Recruits)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Recruits)" /> break;
+                                                            case nameof(HarvesterPlayed): <SimpleActionComponent GameEventType="HarvesterPlayed" Title="@Client.CurrentSkin.Format("Use {0}?", TreacheryCardType.Harvester)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Harvester)" /> break;
+                                                            case nameof(DiscardedSearchedAnnounced): <SimpleActionComponent GameEventType="DiscardedSearchedAnnounced" Title="@Client.CurrentSkin.Format("Use {0} to pay 2 and search and take a card from the treachery discard pile?", TreacheryCardType.SearchDiscarded)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.SearchDiscarded)" /> break;
+                                                            case nameof(DiscardedSearched): <DiscardedSearchedComponent /> break;
+                                                            case nameof(DiscardedTaken): <DiscardedTakenComponent /> break;
+                                                            case nameof(DistransUsed): <DistransUsedComponent /> break;
+                                                            case nameof(FlightUsed): <FlightUsedComponent /> break;
+                                                            case nameof(JuicePlayed): <JuicePlayedComponent /> break;
+                                                            case nameof(ResidualPlayed): <SimpleActionComponent GameEventType="ResidualPlayed" Title="@Client.CurrentSkin.Format("Use {0} to kill a random available opponent leader?", TreacheryCardType.Residual)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Residual)" /> break;
+                                                            case nameof(PoisonToothCancelled): <SimpleActionComponent GameEventType="PoisonToothCancelled" Title="@Client.CurrentSkin.Format("Cancel {0}?", TreacheryCardType.PoisonTooth)" Alert="false" ConfirmLabel="Cancel" /> break;
+                                                            case nameof(PortableAntidoteUsed): <SimpleActionComponent GameEventType="PortableAntidoteUsed" Title="@Client.CurrentSkin.Format("Use your {0}?", TreacheryCardType.PortableAntidote)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.PortableAntidote)" /> break;
+                                                            case nameof(RockWasMelted): <RockWasMeltedComponent /> break;
+                                                            case nameof(BrownExtraMove): <SimpleActionComponent GameEventType="BrownExtraMove" Title="@($"Use {Name(card)} to be able to move your forces one extra territory?")" Alert="false" ConfirmLabel="@($"Use {Name(card)}")" /> break;
+                                                            case nameof(BrownMovePrevention): <BrownMovePreventionComponent /> break;
+                                                            case nameof(BrownKarmaPrevention): <BrownKarmaPreventionComponent /> break;
+                                                            case nameof(BrownFreeRevivalPrevention): <BrownFreeRevivalPreventionComponent /> break;
+                                                            case nameof(BrownRemoveForce): <BrownRemoveForceComponent /> break;
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </ModalComponent>
                                     }
                                     @if (shownPlayer.Nexus != Faction.None)
                                     {
@@ -192,6 +250,32 @@
                 cards.Add(setAsideCard);
             return cards;
         }
+    }
+
+    private static readonly HashSet<Type> KarmaActionTypes =
+    [
+        typeof(KarmaHandSwapInitiated), typeof(KarmaShipmentPrevention), typeof(KarmaRevivalPrevention), typeof(KarmaHandSwap),
+        typeof(KarmaFreeRevival), typeof(KarmaHmsMovement), typeof(KarmaMonster), typeof(KarmaWhiteBuy), typeof(KarmaBrownDiscard),
+        typeof(KarmaPrescience), typeof(KarmaPinkDial)
+    ];
+
+    private bool CanUseCard(TreacheryCard card) => ActionsForCard(card).Any();
+
+    private IEnumerable<Type> ActionsForCard(TreacheryCard card)
+    {
+        if (!IsOwnPanel || ShownPlayer is null || !ShownPlayer.TreacheryCards.Contains(card)) return [];
+
+        var validKarmaCards = Karma.ValidKarmaCards(Game, ShownPlayer).ToList();
+        return Client.Actions.Where(action =>
+            action == typeof(Karma) ? validKarmaCards.Contains(card) :
+            KarmaActionTypes.Contains(action) ? validKarmaCards.FirstOrDefault() == card :
+            CardActions.CardUsedBy(action, Game, ShownPlayer) == card);
+    }
+    private string CardUseDialogId(TreacheryCard card) => $"{Id}-card-use-{card.Id}";
+
+    private void HandleCardClick(TreacheryCard card)
+    {
+        if (!CanUseCard(card)) PickForBattle(card);
     }
 
     private bool HasFactionInformation =>
