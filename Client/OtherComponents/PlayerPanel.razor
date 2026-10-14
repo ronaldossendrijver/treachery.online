@@ -15,7 +15,7 @@
 
         @if (!_collapsed || !ShowHeader)
         {
-            <div class="player-panel-body">
+            <div class="player-panel-body" style="@BodyStyle">
                 @if (!ShowHeader)
                 {
                     <div class="player-panel-identity">
@@ -239,7 +239,10 @@
     private bool _collapsed = true;
 
     private string FactionThemeStyle =>
-        $"--player-faction-color:{Client.CurrentSkin.GetFactionColor(ShownPlayer!.Faction)};--player-faction-image:url('{Client.CurrentSkin.GetImageUrl(ShownPlayer.Faction)}')";
+        $"--player-faction-color:{Client.CurrentSkin.GetFactionColor(ShownPlayer!.Faction)}";
+
+    private string BodyStyle =>
+        $"background-image:linear-gradient(rgba(27, 26, 24, 0.86), rgba(27, 26, 24, 0.94)), url('{Client.CurrentSkin.GetImageUrl(ShownPlayer!.Faction)}')";
 
     private List<TreacheryCard> CardsInHand
     {

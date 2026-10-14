@@ -714,7 +714,7 @@ svg {
 .player-panel-heading img, .player-panel-identity img { width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.65)); }
 .player-panel-heading > span:nth-child(2), .player-panel-identity span { flex: 1; font-size: 0.88rem; font-weight: 850; letter-spacing: 0.025em; }
 .player-panel-collapse-icon { color: var(--brass-bright); font-size: 1.1rem; }
-.player-panel-body { position: relative; min-height: 0; padding: 8px; background-image: linear-gradient(rgba(27, 26, 24, 0.86), rgba(27, 26, 24, 0.94)), var(--player-faction-image); background-position: center, center; background-size: cover, 230px 230px; background-repeat: no-repeat; }
+.player-panel-body { position: relative; min-height: 0; padding: 8px; background-position: center, center; background-size: cover, 230px 230px; background-repeat: no-repeat; }
 .player-panel-identity { display: flex; align-items: center; gap: 8px; margin: -8px -8px 7px; padding: 6px 10px; border-bottom: 1px solid color-mix(in srgb, var(--player-faction-color) 38%, transparent); background: linear-gradient(90deg, color-mix(in srgb, var(--player-faction-color) 22%, transparent), rgba(9, 9, 8, 0.45) 70%); }
 .player-panel-identity > span { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .player-panel-content { color: #f3ead5; text-align: left; }
@@ -755,10 +755,8 @@ svg {
 .player-hand-card.is-battle-picked { transform: translateY(-8px) rotate(0deg); }
 .player-hand-card.is-battle-picked img { border: 2px solid #f1c478; box-shadow: 0 0 14px rgba(241, 196, 120, 0.85), 0 4px 10px rgba(0, 0, 0, 0.6); }
 .player-hand-card.is-battle-picked::after { position: absolute; top: -7px; right: -5px; z-index: 2; display: grid; width: 18px; height: 18px; place-items: center; border-radius: 50%; background: #f1c478; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); color: #2a1606; font-size: 0.7rem; font-weight: 800; content: "✓"; }
-.player-hand-card.is-card-use-available img { border-color: #ffbd68; box-shadow: 0 0 0 2px rgba(255, 158, 70, 0.75), 0 0 16px rgba(255, 128, 31, 0.75), 0 4px 10px rgba(0, 0, 0, 0.6); }
-.player-hand-card.is-card-use-available { animation: cardUsePulse 1.8s ease-in-out infinite; }
+.player-hand-card.is-card-use-available img { border-color: rgba(255, 189, 104, 0.9); box-shadow: 0 0 0 1px rgba(255, 158, 70, 0.45), 0 0 8px rgba(255, 128, 31, 0.4), 0 4px 10px rgba(0, 0, 0, 0.6); }
 .player-hand-card.is-card-use-available:focus-visible { outline: 2px solid #ffbd68; outline-offset: 4px; }
-@keyframes cardUsePulse { 50% { filter: drop-shadow(0 0 8px rgba(255, 158, 70, 0.85)); } }
 .card-use-dialog { display: grid; grid-template-columns: minmax(140px, 0.35fr) minmax(0, 1fr); align-items: start; gap: 14px; }
 .card-use-dialog-image { position: sticky; top: 0; width: 100%; max-height: min(68vh, 620px); object-fit: contain; border: 1px solid rgba(236, 216, 168, 0.72); border-radius: 6px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55); }
 .card-use-dialog-actions { min-width: 0; }
