@@ -13,7 +13,7 @@
     <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to discard any cards from your hand to gain 3 @Client.CurrentSkin.Describe(Concept.Resource) each</Header>
     <Body>
     
-    @if (Karma.ValidKarmaCards(Game, Player).Count() > 1)
+    @if (SelectedCard is null && Karma.ValidKarmaCards(Game, Player).Count() > 1)
     {
         <SelectFromImageComponent @bind-Value="@CardToUse" Values="@Karma.ValidKarmaCards(Game, Player)" T="TreacheryCard" OnChanged="@ChangeCardToUse" ImageWidth="80">
             <Label>@Name(TreacheryCardType.Karma) card to use</Label>
@@ -21,7 +21,7 @@
     }
     else
     {
-        CardToUse = Karma.ValidKarmaCards(Game, Player).FirstOrDefault();
+        CardToUse = SelectedCard ?? Karma.ValidKarmaCards(Game, Player).FirstOrDefault();
     }
 
     <SelectFromImageComponent Selected="SelectedCards" Values="@Player.TreacheryCards.Where(c => c != CardToUse)" T="TreacheryCard" OnChanged="StateHasChanged" ImageWidth="80">
@@ -41,6 +41,8 @@
     private TreacheryCard? CardToUse { get; set; }
 
     private List<TreacheryCard> SelectedCards { get; set; } = [];
+
+    [Parameter] public TreacheryCard? SelectedCard { get; set; }
 
     protected override KarmaBrownDiscard ConfirmedResult => new(Game, Faction) { CardToUse = CardToUse, Cards = SelectedCards };
 

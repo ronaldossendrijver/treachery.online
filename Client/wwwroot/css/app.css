@@ -552,6 +552,9 @@ svg {
 .turn-activity-personal-logo::after { position: absolute; inset: -4px; border: 2px solid rgba(255, 158, 70, 0.9); border-radius: 50%; box-shadow: 0 0 16px rgba(255, 128, 31, 0.95), 0 0 30px rgba(222, 92, 20, 0.6); content: ""; animation: turnRing 1.2s ease-out infinite; }
 .turn-activity-personal-logo .turn-activity-faction { position: relative; filter: drop-shadow(0 0 12px rgba(255, 150, 54, 1)); }
 .turn-activity-label { color: #ffe3a7; text-align: right; text-shadow: 0 0 10px rgba(255, 134, 38, 1), 0 0 22px rgba(232, 108, 24, 0.85); animation: turnHeartbeat 1.2s ease-in-out infinite; }
+.turn-activity-continue .turn-activity-personal-logo, .turn-activity-continue .turn-activity-label { animation: none; }
+.turn-activity-continue .turn-activity-personal-logo::before, .turn-activity-continue .turn-activity-personal-logo::after { display: none; }
+.turn-activity-continue .turn-activity-label { color: #d8c9a5; text-shadow: none; }
 .turn-activity-other .turn-activity-logo { --turn-logo: 48px; margin-right: 4px; }
 .turn-activity-grid { display: grid; grid-template-columns: repeat(var(--turn-grid-columns, 2), var(--turn-grid-size, 28px)); grid-auto-rows: var(--turn-grid-size, 28px); gap: 4px; justify-content: end; align-content: center; flex: 0 0 auto; height: 62px; }
 .turn-activity-grid-item { --turn-logo: var(--turn-grid-size, 28px); }
@@ -738,7 +741,7 @@ svg {
 .player-panel-owned-content { display: flex; flex: 1 1 auto; align-items: center; justify-content: center; gap: 7px; min-height: 0; container-type: inline-size; }
 .player-panel-empty-hand { color: var(--ivory-muted); font-size: 0.68rem; }
 .player-card-hand { --hand-w: 72px; --hand-h: 101px; display: flex; flex: 1 1 auto; align-items: flex-end; justify-content: center; min-width: 0; padding: 4px 4px 2px; overflow: visible; }
-.player-hand-card { position: relative; flex: 0 0 var(--hand-w); width: var(--hand-w); transform: rotate(var(--hand-angle)); transform-origin: 50% 100%; transition: transform 150ms ease, filter 150ms ease; }
+.player-hand-card { position: relative; flex: 0 0 var(--hand-w); width: var(--hand-w); padding: 0; border: 0; background: none; color: inherit; cursor: pointer; transform: rotate(var(--hand-angle)); transform-origin: 50% 100%; transition: transform 150ms ease, filter 150ms ease; }
 /* Overlap just enough so all cards (max 8) fit in the available width; never spread wider than a small gap */
 .player-hand-card-overlap { margin-left: clamp(calc(var(--hand-w) * -0.78), calc((100cqi - 12px - var(--hand-count, 1) * var(--hand-w)) / max(var(--hand-count, 1) - 1, 1)), 4px); }
 .player-hand-card:hover { z-index: 30 !important; transform: translateY(-10px) rotate(0deg) scale(1.08); filter: drop-shadow(0 0 6px rgba(214, 125, 44, 0.45)); }
@@ -752,6 +755,14 @@ svg {
 .player-hand-card.is-battle-picked { transform: translateY(-8px) rotate(0deg); }
 .player-hand-card.is-battle-picked img { border: 2px solid #f1c478; box-shadow: 0 0 14px rgba(241, 196, 120, 0.85), 0 4px 10px rgba(0, 0, 0, 0.6); }
 .player-hand-card.is-battle-picked::after { position: absolute; top: -7px; right: -5px; z-index: 2; display: grid; width: 18px; height: 18px; place-items: center; border-radius: 50%; background: #f1c478; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); color: #2a1606; font-size: 0.7rem; font-weight: 800; content: "✓"; }
+.player-hand-card.is-card-use-available img { border-color: #ffbd68; box-shadow: 0 0 0 2px rgba(255, 158, 70, 0.75), 0 0 16px rgba(255, 128, 31, 0.75), 0 4px 10px rgba(0, 0, 0, 0.6); }
+.player-hand-card.is-card-use-available { animation: cardUsePulse 1.8s ease-in-out infinite; }
+.player-hand-card.is-card-use-available:focus-visible { outline: 2px solid #ffbd68; outline-offset: 4px; }
+@keyframes cardUsePulse { 50% { filter: drop-shadow(0 0 8px rgba(255, 158, 70, 0.85)); } }
+.card-use-dialog { display: grid; grid-template-columns: minmax(140px, 0.35fr) minmax(0, 1fr); align-items: start; gap: 14px; }
+.card-use-dialog-image { position: sticky; top: 0; width: 100%; max-height: min(68vh, 620px); object-fit: contain; border: 1px solid rgba(236, 216, 168, 0.72); border-radius: 6px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55); }
+.card-use-dialog-actions { min-width: 0; }
+@media (max-width: 560px) { .card-use-dialog { grid-template-columns: minmax(0, 1fr); } .card-use-dialog-image { position: static; width: min(180px, 55%); max-height: 40vh; margin: 0 auto; } }
 .player-panel-nexus img { width: 38px; height: 54px; object-fit: contain; }
 .player-panel-faction-details { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 12px; color: #eee4cd; font-size: 0.7rem; line-height: 1.4; }
 .player-panel-faction-details > span, .player-panel-faction-note { display: inline-flex; align-items: center; gap: 5px; min-width: 0; }
@@ -1489,11 +1500,11 @@ svg {
 .fx-overlay { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1550; }
 .sand-ambience { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
 .storm-swirl { transform-box: view-box; animation: storm-swirl linear infinite; }
-.storm-swirl-fast { animation-duration: 48s; }
-.storm-swirl-slow { animation-duration: 84s; animation-direction: reverse; }
+.storm-swirl-fast { animation-duration: 240s; }
+.storm-swirl-slow { animation-duration: 420s; animation-direction: reverse; }
 @keyframes storm-swirl { to { transform: rotate(-360deg); } }
 /* Reduced motion: keep a slow, gentle drift so the storm still reads as alive */
-@media (prefers-reduced-motion: reduce) { .storm-swirl.storm-swirl-fast { animation-duration: 150s !important; } .storm-swirl.storm-swirl-slow { animation-duration: 240s !important; } }
+@media (prefers-reduced-motion: reduce) { .storm-swirl.storm-swirl-fast { animation-duration: 750s !important; } .storm-swirl.storm-swirl-slow { animation-duration: 1200s !important; } }
 .map-stage img[role="button"]:focus-visible { border-radius: 50%; outline: 3px solid var(--spice); outline-offset: 2px; }
 .map-faction-actions-header { display: flex; flex: 0 0 auto; align-items: center; gap: 10px; padding: 9px 11px; border-bottom: 1px solid var(--line); background: linear-gradient(90deg, color-mix(in srgb, var(--map-faction-color) 18%, transparent), transparent); }
 .map-faction-actions-header > img { width: 34px; height: 34px; object-fit: contain; }

@@ -1,4 +1,4 @@
-﻿@*
+@*
  * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
@@ -34,7 +34,7 @@
 
     protected override Faction IsFactionSpecific => Faction.Brown;
 
-    protected override string Background => BrownRemoveForce.CardToUse(Player) != null ? Client.CurrentSkin.GetImageUrl(BrownRemoveForce.CardToUse(Player)) : Client.CurrentSkin.GetImageUrl(Nexus.Brown);
+    protected override string Background => BrownRemoveForce.CardToUse(Player) != null ? "" : Client.CurrentSkin.GetImageUrl(Nexus.Brown);
 
     private Location? _location;
     private Faction _target;

@@ -13,7 +13,10 @@
     <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to prevent a faction from using one of their advantages</Header>
     <Body>
 
-        <SelectFromImageComponent @bind-Value="card" Values="Karma.ValidKarmaCards(Game, Player)" Required="true" ImageWidth="80" />
+        @if (SelectedCard is null)
+        {
+            <SelectFromImageComponent @bind-Value="card" Values="Karma.ValidKarmaCards(Game, Player)" Required="true" ImageWidth="80" />
+        }
 
         <SelectComponent @bind-Value="prevented" Values="Karma.ValidFactionAdvantages(Game, Player)">
             <Label>Advantage to prevent <InfoComponent Contents="@InfoMessage" /></Label>
@@ -29,6 +32,15 @@
 
     private TreacheryCard? card;
     private FactionAdvantage prevented;
+
+    [Parameter] public TreacheryCard? SelectedCard { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        if (SelectedCard is not null && Karma.ValidKarmaCards(Game, Player).Contains(SelectedCard))
+            card = SelectedCard;
+    }
 
     protected override Karma ConfirmedResult => new(Game, Faction) { Card = card, Prevented = prevented };
 

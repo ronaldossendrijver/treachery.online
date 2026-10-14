@@ -95,11 +95,8 @@
             break;
 
         case nameof(StormSpellPlayed):
-            <StormSpellPlayedComponent BackgroundImage="@GetImage(TreacheryCardType.StormSpell)"/>
-            break;
-
         case nameof(MetheorPlayed):
-            <SimpleActionComponent GameEventType="MetheorPlayed" BackgroundImage="@GetImage(TreacheryCardType.Metheor)" Title="@DescribeCard(TreacheryCardType.Metheor)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Metheor)"/>
+            @* Played by clicking the card in the player panel *@
             break;
 
         case nameof(TakeLosses):
@@ -183,7 +180,7 @@
             break;
 
         case nameof(Caravan):
-            <CaravanComponent BackgroundImage="@GetImage(TreacheryCardType.Caravan)"/>
+            @* Played by clicking the card in the player panel *@
             break;
 
         case nameof(BattleInitiated):
@@ -234,7 +231,6 @@
             break;
 
         case nameof(RaiseDeadPlayed):
-            <RaiseDeadComponent BackgroundImage="@GetImage(TreacheryCardType.RaiseDead)"/>
             break;
 
         case nameof(ResourcesTransferred):
@@ -246,7 +242,7 @@
             break;
 
         case nameof(ClairVoyancePlayed):
-            <ClairVoyancePlayedComponent BackgroundImage="@GetImage(TreacheryCardType.Clairvoyance)"/>
+            @* Played by clicking the card in the player panel *@
             break;
 
         case nameof(ClairVoyanceAnswered):
@@ -254,39 +250,15 @@
             break;
 
         case nameof(KarmaHandSwapInitiated):
-            <KarmaHandSwapInitiatedComponent BackgroundImage="@GetImage(TreacheryCardType.Karma)"/>
-            break;
-
         case nameof(KarmaShipmentPrevention):
-            <KarmaShipmentPreventionComponent BackgroundImage="@GetImage(TreacheryCardType.Karma)"/>
-            break;
-
         case nameof(KarmaRevivalPrevention):
-            <KarmaRevivalPreventionComponent BackgroundImage="@GetImage(TreacheryCardType.Karma)"/>
-            break;
-
         case nameof(KarmaHandSwap):
-            <KarmaHandSwapComponent BackgroundImage="@GetImage(TreacheryCardType.Karma)"/>
-            break;
-
         case nameof(KarmaFreeRevival):
-            <KarmaFreeRevivalComponent BackgroundImage="@GetImage(TreacheryCardType.Karma)"/>
-            break;
-
         case nameof(KarmaHmsMovement):
-            <KarmaHmsMovementComponent BackgroundImage="@GetImage(TreacheryCardType.Karma)"/>
-            break;
-
         case nameof(KarmaMonster):
-            <KarmaMonsterComponent BackgroundImage="@GetImage(TreacheryCardType.Karma)"/>
-            break;
-
         case nameof(KarmaWhiteBuy):
-            <KarmaWhiteBuyComponent BackgroundImage="@GetImage(TreacheryCardType.Karma)"/>
-            break;
-
         case nameof(Karma):
-            <KarmaComponent BackgroundImage="@GetImage(TreacheryCardType.Karma)"/>
+        case nameof(KarmaBrownDiscard):
             break;
 
         case nameof(FaceDancerReplaced):
@@ -314,11 +286,8 @@
             break;
 
         case nameof(AmalPlayed):
-            <SimpleActionComponent GameEventType="AmalPlayed" BackgroundImage="@GetImage(TreacheryCardType.Amal)" Title="@DescribeCard(TreacheryCardType.Amal)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Amal)"/>
-            break;
-
         case nameof(RecruitsPlayed):
-            <SimpleActionComponent GameEventType="RecruitsPlayed" BackgroundImage="@GetImage(TreacheryCardType.Recruits)" Title="@DescribeCard(TreacheryCardType.Recruits)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Play {0}", TreacheryCardType.Recruits)"/>
+            @* Played by clicking the card in the player panel *@
             break;
 
         case nameof(WhiteAnnouncesBlackMarket):
@@ -346,7 +315,7 @@
             break;
 
         case nameof(HarvesterPlayed):
-            <SimpleActionComponent GameEventType="HarvesterPlayed" BackgroundImage="@GetImage(TreacheryCardType.Harvester)" Title="@DescribeCard(TreacheryCardType.Harvester)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Harvester)"/>
+            @* Played by clicking the card in the player panel *@
             break;
 
         case nameof(ReplacedCardWon):
@@ -354,7 +323,6 @@
             break;
 
         case nameof(ThumperPlayed):
-            <SimpleActionComponent GameEventType="ThumperPlayed" BackgroundImage="@GetImage(TreacheryCardType.Thumper)" Title="@DescribeCard(TreacheryCardType.Thumper)" Alert="false" ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.Thumper)"/>
             break;
 
         case nameof(HideSecrets):
@@ -398,34 +366,27 @@
             <CardTradedComponent/>
             break;
 
-        case nameof(KarmaBrownDiscard):
-            <KarmaBrownDiscardComponent BackgroundImage="@GetImage(TreacheryCardType.Karma)"/>
-            break;
-
         case nameof(ResourcesAudited):
             <ResourcesAuditedComponent/>
             break;
 
-        case nameof(BrownExtraMove):
-            var cardToUse = BrownExtraMove.CardToUse(Client.Player!);
-            var titleBrownExtraMove = Client.CurrentSkin.Format("Use {0} to be able to move your forces one extra territory?", cardToUse != null ? Name(cardToUse) : "Nexus Cunning");
-            var background = cardToUse != null ? Client.CurrentSkin.GetImageUrl(cardToUse) : Client.CurrentSkin.GetImageUrl(Nexus.Brown);
-            <SimpleActionComponent GameEventType="BrownExtraMove" BackgroundImage=@background Title=@titleBrownExtraMove Alert="false"/>
+        case nameof(BrownExtraMove) when !UsesCardInHand(a):
+            <SimpleActionComponent GameEventType="BrownExtraMove" BackgroundImage="@Client.CurrentSkin.GetImageUrl(Nexus.Brown)" Title="Use Nexus Cunning to be able to move your forces one extra territory?" Alert="false"/>
             break;
 
-        case nameof(BrownMovePrevention):
+        case nameof(BrownMovePrevention) when !UsesCardInHand(a):
             <BrownMovePreventionComponent/>
             break;
 
-        case nameof(BrownKarmaPrevention):
+        case nameof(BrownKarmaPrevention) when !UsesCardInHand(a):
             <BrownKarmaPreventionComponent/>
             break;
 
-        case nameof(BrownFreeRevivalPrevention):
+        case nameof(BrownFreeRevivalPrevention) when !UsesCardInHand(a):
             <BrownFreeRevivalPreventionComponent/>
             break;
 
-        case nameof(BrownRemoveForce):
+        case nameof(BrownRemoveForce) when !UsesCardInHand(a):
             <BrownRemoveForceComponent/>
             break;
 
@@ -449,34 +410,22 @@
             break;
 
         case nameof(FlightUsed):
-            <FlightUsedComponent/>
+            @* Played by clicking the card in the player panel *@
             break;
 
         case nameof(FlightDiscoveryUsed):
             <SimpleActionComponent GameEventType="FlightDiscoveryUsed" Title=@Client.CurrentSkin.Format("Use your {0} Discovery Token to gain extra movement speed?", DiscoveryToken.Flight) Alert="false" ConfirmLabel="Yes"/>
             break;
 
-        case nameof(DistransUsed):
-            <DistransUsedComponent/>
-            break;
-
-        case nameof(DiscardedTaken):
-            <DiscardedTakenComponent/>
-            break;
-
-        case nameof(DiscardedSearchedAnnounced):
-            <SimpleActionComponent GameEventType="DiscardedSearchedAnnounced"
-                                   BackgroundImage="@GetImage(TreacheryCardType.SearchDiscarded)"
-                                   Title="@Client.CurrentSkin.Format("Use {0} to pay 2 and search and take a card from the treachery discard pile?", TreacheryCardType.SearchDiscarded)"
-                                   ConfirmLabel="@Client.CurrentSkin.Format("Use {0}", TreacheryCardType.SearchDiscarded)"/>
-            break;
-
         case nameof(DiscardedSearched):
             <DiscardedSearchedComponent/>
             break;
 
+        case nameof(DistransUsed):
+        case nameof(DiscardedTaken):
+        case nameof(DiscardedSearchedAnnounced):
         case nameof(JuicePlayed):
-            <JuicePlayedComponent/>
+            @* Played by clicking the card in the player panel *@
             break;
 
         case nameof(Bureaucracy):
@@ -504,4 +453,9 @@
 @if (Game.CurrentMainPhase != MainPhase.Ended && Client.Actions.Contains(typeof(PlayerReplaced)))
 {
     <PlayerReplacedComponent/>
+}
+
+@code {
+
+    private bool UsesCardInHand(Type action) => Client.Player is { } player && CardActions.CardUsedBy(action, Game, player) != null;
 }
