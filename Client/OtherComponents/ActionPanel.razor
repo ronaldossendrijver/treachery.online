@@ -417,10 +417,13 @@
             <SimpleActionComponent GameEventType="FlightDiscoveryUsed" Title=@Client.CurrentSkin.Format("Use your {0} Discovery Token to gain extra movement speed?", DiscoveryToken.Flight) Alert="false" ConfirmLabel="Yes"/>
             break;
 
+        case nameof(DiscardedSearched):
+            <DiscardedSearchedComponent/>
+            break;
+
         case nameof(DistransUsed):
         case nameof(DiscardedTaken):
         case nameof(DiscardedSearchedAnnounced):
-        case nameof(DiscardedSearched):
         case nameof(JuicePlayed):
             @* Played by clicking the card in the player panel *@
             break;
