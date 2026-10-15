@@ -96,6 +96,8 @@
         var hullWidth = HullViewBoxWidth * scale;
         var hullHeight = HullViewBoxHeight * scale;
         var hullStyle = $"left:{Px(hullX)};top:{Px(hullY)};width:{Px(hullWidth)};height:{Px(hullHeight)};";
+        var targetSize = 0.32 * skin.FORCETOKEN_RADIUS;
+        var targetStyle = $"left:{Px(tip.X - 0.5 * targetSize)};top:{Px(tip.Y - 0.5 * targetSize)};width:{Px(targetSize)};height:{Px(targetSize)};";
 
         var away = new PointD(Math.Cos(angle), Math.Sin(angle));
         var eye = new PointD(tip.X + 1.25 * skin.PlayerTokenRadius * away.X, tip.Y + 1.25 * skin.PlayerTokenRadius * away.Y);
@@ -103,40 +105,49 @@
 
         <div class="hms-hover @(_showHms ? "" : "is-hidden")" style="@rotation">
 
-            <div class="hms-ground-shadow" style="@origin" aria-hidden="true">
-                <img src="@skin.HMS_URL" style="@hullStyle" alt=""/>
-            </div>
-
-            <div class="hms-float" style="@origin">
-
-                <div class="hms-craft" style="@origin">
-                    <MapImage class="hms-hull" X=@hullX Y=@hullY Width=@hullWidth Height=@hullHeight
-                        Src="@skin.HMS_URL"
-                        Opacity="@(_showHms ? 0.85f : 0.3f)"
-                        Popover=@Intel(hms)
-                        OnClick=@(e => OnClick(e, hms)) />
-
-                    @if (_showHms && Client.Status != null && Client.Status.HighlightedTerritories.Contains(hms.Territory))
-                    {
-                        <Circle X="@(tip.X - skin.HmsBodyDistance)" Y="tip.Y" Radius="@(1.05 * skin.HmsBodyRadius)"
-                            FillColor="@skin.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
-                    }
+            <div class="hms-ground-shadow hms-layer" style="@origin" aria-hidden="true">
+                <div class="hms-sway hms-layer" style="@origin">
+                    <div class="hms-craft hms-layer" style="@origin">
+                        <img src="@skin.HMS_URL" style="@hullStyle" alt=""/>
+                    </div>
                 </div>
-
-                @{ StrongholdTokens(hms, tokens.X - 0.5 * skin.PlayerTokenRadius, tokens.Y - 0.5 * skin.PlayerTokenRadius, _showHms ? 1f : 0.2f); }
-
-                @if (_showHms)
-                {
-                    <ForcesInLocation Location=@hms Battalions=@forceLocations Diameter=@(1.5f * skin.FORCETOKEN_RADIUS) />
-                }
-
-                <MapImage X="@(eye.X - 0.5 * skin.FORCETOKEN_RADIUS)" Y="@(eye.Y - 0.5 * skin.FORCETOKEN_RADIUS)"
-                   Diameter="@(skin.FORCETOKEN_RADIUS)"
-                   Src="@(_showHms ? skin.Eye_URL : skin.EyeSlash_URL)"
-                   ShadowColor="black" ShadowX="1" ShadowY="1" ShadowBlur="0"
-                   OnClick="@(OnShowHmsClick)"
-                   Popover="@(_showHms ? "Hide HMS" : "Show HMS")" PopoverAsTooltip="true"/>
             </div>
+
+            <div class="hms-float hms-layer" style="@origin">
+                <div class="hms-sway hms-layer" style="@origin">
+
+                    <div class="hms-craft hms-layer" style="@origin">
+                        <MapImage class="hms-hull" X=@hullX Y=@hullY Width=@hullWidth Height=@hullHeight
+                            Src="@skin.HMS_URL"
+                            Opacity="@(_showHms ? 0.85f : 0.3f)"
+                            Popover=@Intel(hms)
+                            OnClick=@(e => OnClick(e, hms)) />
+
+                        @if (_showHms && Client.Status != null && Client.Status.HighlightedTerritories.Contains(hms.Territory))
+                        {
+                            <Circle X="@(tip.X - skin.HmsBodyDistance)" Y="tip.Y" Radius="@(1.05 * skin.HmsBodyRadius)"
+                                FillColor="@skin.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
+                        }
+                    </div>
+
+                    @{ StrongholdTokens(hms, tokens.X - 0.5 * skin.PlayerTokenRadius, tokens.Y - 0.5 * skin.PlayerTokenRadius, _showHms ? 1f : 0.2f); }
+
+                    @if (_showHms)
+                    {
+                        <ForcesInLocation Location=@hms Battalions=@forceLocations Diameter=@(1.5f * skin.FORCETOKEN_RADIUS) />
+                    }
+
+                    <MapImage X="@(eye.X - 0.5 * skin.FORCETOKEN_RADIUS)" Y="@(eye.Y - 0.5 * skin.FORCETOKEN_RADIUS)"
+                       Diameter="@(skin.FORCETOKEN_RADIUS)"
+                       Src="@(_showHms ? skin.Eye_URL : skin.EyeSlash_URL)"
+                       ShadowColor="black" ShadowX="1" ShadowY="1" ShadowBlur="0"
+                       OnClick="@(OnShowHmsClick)"
+                       Popover="@(_showHms ? "Hide HMS" : "Show HMS")" PopoverAsTooltip="true"/>
+                </div>
+            </div>
+
+            @* Marks the exact point (the location center) the HMS points at. *@
+            <div class="hms-target" style="@targetStyle" aria-hidden="true"></div>
         </div>
     }
 }
