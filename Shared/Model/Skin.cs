@@ -556,27 +556,47 @@ public class Skin : IDescriber
         return $"<div class='card-popover'>{image}<div class='card-popover-info'><div class='card-popover-heading'><span class='card-popover-name'>{Describe(c)}</span>{tags}</div><p>{text}</p></div></div>";
     }
 
-    public string GetPopup(IHero h)
-    {
-        return GetImageHoverHtml(GetImageUrl(h));
-    }
+    public string GetPopup(IHero h) => GetHeroPopup(h, null);
 
-    public string GetPopup(IHero? h, Game g)
-    {
-        if (h == null) return "";
-
-        var skill = g.Skill(h);
-
-        if (skill == LeaderSkill.None)
-        {
-            return GetImageHoverHtml(GetImageUrl(h));
-        }
-
-        return GetPopup(h as Leader, skill);
-    }
+    public string GetPopup(IHero? h, Game g) => h == null ? "" : GetHeroPopup(h, g);
 
     public string GetPopup(Leader? l, LeaderSkill s)
-        => l == null ? "" : $"<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{GetImageUrl(s)}' width=300/><img src='{GetImageUrl(l)}' width=120 style='position:absolute;right:6px;bottom:6px;width:40%;filter:drop-shadow(-2px 2px 2px black);'/></div>";
+        => l == null ? "" : GetHeroPopup(l, null, s);
+
+    private string GetHeroPopup(IHero h, Game? g, LeaderSkill? skillOverride = null)
+    {
+        if (h is TreacheryCard card) return GetPopup(card);
+
+        static string Encode(string s) => System.Net.WebUtility.HtmlEncode(s);
+
+        var skill = skillOverride ?? g?.Skill(h) ?? LeaderSkill.None;
+        var color = h.Faction != Faction.None ? GetFactionColor(h.Faction) : "#c1a76c";
+
+        var faction = h.Faction != Faction.None
+            ? $"<div class='hero-popover-faction'><img src='{GetImageUrl(h.Faction)}' alt=''/><span>{Encode(Describe(h.Faction))}</span></div>"
+            : "";
+
+        var stats = $"<div class='hero-popover-stats'><span class='hero-popover-stat'><b>{h.Value}</b>strength</span>" +
+                    (h.CostToRevive != h.Value && h.CostToRevive > 0 ? $"<span class='hero-popover-stat'><b>{h.CostToRevive}</b>revival</span>" : "") +
+                    "</div>";
+
+        var status = "";
+        if (g != null && g.LeaderState.TryGetValue(h, out var state))
+        {
+            status = state.Alive
+                ? (g.IsInFrontOfShield(h) ? "<span class='hero-popover-status is-front'>In front of shield</span>" : "")
+                : "<span class='hero-popover-status is-dead'>In the tanks</span>";
+        }
+
+        var skillPart = skill != LeaderSkill.None
+            ? $"<div class='hero-popover-skill'><div class='hero-popover-skill-label'>Skill · <strong>{Encode(Describe(skill))}</strong></div><img src='{GetImageUrl(skill)}' alt='{Encode(Describe(skill))}'/></div>"
+            : "";
+
+        return $"<div class='hero-popover' style='--hero-color:{color}'>" +
+               $"<div class='hero-popover-main'><div class='hero-popover-disc'><img src='{GetImageUrl(h)}' alt=''/></div>" +
+               $"<div class='hero-popover-info'><div class='hero-popover-name'>{Encode(Describe(h))}</div>{faction}{stats}{status}</div></div>" +
+               $"{skillPart}</div>";
+    }
     
     public string GetPopup(StrongholdAdvantage adv)
         => GetImageHoverHtml(GetImageUrl(adv));
