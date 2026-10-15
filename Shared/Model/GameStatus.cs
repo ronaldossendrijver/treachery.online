@@ -513,8 +513,8 @@ public class GameStatus
             /* Mentat */
 
             Phase.Extortion => Status(
-                Express("You may proceed when done waiting for players to avoid future {0} by {1}", TerrorType.Extortion, Faction.Cyan),
-                Express("Players may pay {0} to avoid future {1} by {2}...", Concept.Resource, TerrorType.Extortion, Faction.Cyan)),
+                Express("You may proceed when done waiting for players to avoid future ", TerrorType.Extortion, " by ", Faction.Cyan),
+                Express("Players may pay ", Concept.Resource, " to avoid future ", TerrorType.Extortion, " by ", Faction.Cyan, "...")),
 
             Phase.ReplacingFaceDancer => Status(game,
                 "You may replace an unrevealed Face Dancer with a new one from the Traitor Deck.",
