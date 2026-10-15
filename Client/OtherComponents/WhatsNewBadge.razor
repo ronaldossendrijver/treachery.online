@@ -75,6 +75,16 @@
                         Whose turn it is appears next to it, with a clear <em>YOUR TURN</em> marker.
                     </li>
                     <li><strong>Your faction:</strong> your leaders, traitors or Face Dancers, cards and faction details are grouped at the bottom of the panel.</li>
+                    <li>
+                        <strong>Playing treachery cards:</strong> click the card in your hand in the player panel.
+                        A card you can play now glows, wiggles and shows a <em>PLAY</em> label. Clicking it opens a small window to use it.
+                        This works for Thumper, Harvester, Weather Control, Family Atomics, Tleilaxu Ghola, Hajr, Amal, Recruits, Truthtrance,
+                        Juice of Sapho, Distrans, Ornithopter, Residual Poison, Portable Snooper, Poison Tooth, Stone Burner, Nullentropy and Semuta Drug.
+                    </li>
+                    <li>
+                        <strong>Battle plan:</strong> while making your battle plan, you can also click a leader or card in your player panel to add it to the plan.
+                        Click it again (or the <em>×</em> on it) to remove it.
+                    </li>
                 </ul>
             </section>
 
@@ -90,7 +100,7 @@
 
 @code {
     // Change this value when the list of changes is updated, so the badge is shown again to everyone.
-    private const string ChangesVersion = "map-first-ui-1";
+    private const string ChangesVersion = "map-first-ui-2";
     private const string DismissedSetting = "treachery.online;setting.whatsnew.dismissed";
 
     private bool _loaded;
