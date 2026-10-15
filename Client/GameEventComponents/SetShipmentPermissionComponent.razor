@@ -10,83 +10,68 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Manage shipment permissions</Header>
+    <Header>Shipment permissions</Header>
     <Body>
 
         @if (Game.ShipmentPermissions.Any())
         {
-            <table class="ui-table ui-table-sm">
-
-                <thead>
-                    <tr class="ui-table-dark">
-                        <th scope="col">Faction</th>
-                        <th scope="col">Cross planet</th>
-                        <th scope="col">To (own) homeworld</th>
-                        <th scope="col">At half price</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
+            <div class="ev-section">
+                <div class="ev-label">Granted</div>
+                <ul class="ev-list">
                     @foreach (var kvp in Game.ShipmentPermissions)
                     {
-                        <tr class="ui-table-dark">
-                            <td><img width=24 src="@Client.CurrentSkin.GetImageUrl(kvp.Key)" /></td>
-                            <td>@((kvp.Value & ShipmentPermission.Cross) == ShipmentPermission.Cross ? "Yes" : "No")</td>
-                            <td>@((kvp.Value & ShipmentPermission.ToHomeworld) == ShipmentPermission.ToHomeworld ? "Yes" : "No")</td>
-                            <td>@((kvp.Value & ShipmentPermission.OrangeRate) == ShipmentPermission.OrangeRate ? "Yes" : "No")</td>
-                            <td>
-                                <button class="ui-btn ui-btn-primary ui-btn-sm" @onclick="e => Revoke(kvp.Key)">Revoke</button>
-                            </td>
-                        </tr>
+                        <li class="ev-row">
+                            <Image Shown="@kvp.Key" Width="26" PopoverAsTooltip />
+                            <span class="ev-pills">
+                                @foreach (var (permission, label, description) in Permissions)
+                                {
+                                    <span class="ev-pill @(kvp.Value.HasFlag(permission) ? "is-on" : "")" title="@description">@label</span>
+                                }
+                            </span>
+                            <button type="button" class="ev-remove" title="Revoke all permissions of @Client.CurrentSkin.Describe(kvp.Key)" aria-label="Revoke" @onclick="e => Revoke(kvp.Key)">&times;</button>
+                        </li>
                     }
-
-                </tbody>
-
-            </table>
+                </ul>
+            </div>
         }
 
-        <div class="ui-mt-2">
-            <SelectFromImageComponent Values="@SetShipmentPermission.ValidTargets(Game, Player)" Selected="@targets" Required="true" ImageWidth="40" T="Faction" OnChanged="StateHasChanged">
-                <Label>Set permissions for:</Label>
-            </SelectFromImageComponent>
+        <div class="ev-section">
+            <div class="ev-label">Grant to</div>
+            <SelectFromImageComponent Values="@SetShipmentPermission.ValidTargets(Game, Player)" Selected="@targets" Required="true" ImageWidth="32" T="Faction" OnChanged="StateHasChanged" />
+            <div class="ev-pills ev-toggles" role="group" aria-label="Permissions to grant">
+                @foreach (var (permission, label, description) in Permissions)
+                {
+                    var on = _permission.HasFlag(permission);
+                    <button type="button" class="ev-pill ev-toggle @(on ? "is-on" : "")" aria-pressed="@(on ? "true" : "false")" title="@description" @onclick="() => Toggle(permission)">@label</button>
+                }
+            </div>
         </div>
 
-        <div class="ui-mt-1">
-            <CheckboxComponent @bind-Value="@_crossPermission">Allow cross planet shipments</CheckboxComponent>
-            <CheckboxComponent @bind-Value="@_homeworldPermission">Allow shipment to (own) homeworld</CheckboxComponent>
-            <CheckboxComponent @bind-Value="@_discountPermission">May ship at half price</CheckboxComponent>
-        </div>
-
-        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Grant" ConfirmError="@Validation" />
 
     </Body>
 
 </GameEventComponentLayout>
-
 @code {
 
+    private static readonly (ShipmentPermission Permission, string Label, string Description)[] Permissions =
+    [
+        (ShipmentPermission.Cross, "Cross planet", "Allow cross planet shipments"),
+        (ShipmentPermission.ToHomeworld, "To homeworld", "Allow shipment to (own) homeworld"),
+        (ShipmentPermission.OrangeRate, "Half price", "May ship at half price")
+    ];
+
     internal List<Faction> targets = new();
-    internal bool _crossPermission;
-    internal bool _homeworldPermission;
-    internal bool _discountPermission;
+    internal ShipmentPermission _permission = ShipmentPermission.None;
 
     protected override Faction IsFactionSpecific => Faction.Orange;
 
-    protected override SetShipmentPermission ConfirmedResult => new(Game, Faction) { Factions = targets.ToArray(), Permission = GetPermissions() };
+    protected override SetShipmentPermission ConfirmedResult => new(Game, Faction) { Factions = targets.ToArray(), Permission = _permission };
+
+    private void Toggle(ShipmentPermission permission) => _permission ^= permission;
 
     private async Task Revoke(Faction f)
     {
         await Request(new SetShipmentPermission(Game, Faction) { Factions = new[] { f }, Permission = ShipmentPermission.None });
-    }
-
-    private ShipmentPermission GetPermissions()
-    {
-        var result = ShipmentPermission.None;
-        if (_crossPermission) result |= ShipmentPermission.Cross;
-        if (_homeworldPermission) result |= ShipmentPermission.ToHomeworld;
-        if (_discountPermission) result |= ShipmentPermission.OrangeRate;
-        return result;
     }
 }

@@ -337,9 +337,7 @@ internal static class HistoricalComponentDriver
             {
                 var c = Expect<SetShipmentPermissionComponent>(component);
                 c.targets = shipmentPermission.Factions.ToList();
-                c._crossPermission = shipmentPermission.Permission.HasFlag(ShipmentPermission.Cross);
-                c._homeworldPermission = shipmentPermission.Permission.HasFlag(ShipmentPermission.ToHomeworld);
-                c._discountPermission = shipmentPermission.Permission.HasFlag(ShipmentPermission.OrangeRate);
+                c._permission = shipmentPermission.Permission;
                 return;
             }
 

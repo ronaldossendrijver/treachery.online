@@ -10,12 +10,13 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Which factions may have their revival limit increased to 5?</Header>
+    <Header>Increased revival limit</Header>
     <Body>
 
-        <SelectFromImageComponent Selected="factions" Values="SetIncreasedRevivalLimits.ValidTargets(Game, Player)" T="Faction" OnChanged="StateHasChanged" Required="true" ImageWidth="40" />
+        <div class="ev-label">Factions that may revive up to 5 forces</div>
+        <SelectFromImageComponent Selected="factions" Values="SetIncreasedRevivalLimits.ValidTargets(Game, Player)" T="Faction" OnChanged="StateHasChanged" Required="true" ImageWidth="36" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Save" ConfirmError="@Validation" />
 
     </Body>
 

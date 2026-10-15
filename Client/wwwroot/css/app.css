@@ -1562,6 +1562,20 @@ svg {
 @keyframes storm-swirl { to { transform: rotate(-360deg); } }
 /* Reduced motion: keep a slow, gentle drift so the storm still reads as alive */
 @media (prefers-reduced-motion: reduce) { .storm-swirl.storm-swirl-fast { animation-duration: 750s !important; } .storm-swirl.storm-swirl-slow { animation-duration: 1200s !important; } }
+/* Hidden Mobile Stronghold: floats in the sky above everything else on the planet (but within the map's stacking context, so never above panels) */
+.hms-hover { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.hms-hover > div { position: absolute; inset: 0; pointer-events: none; }
+.hms-ground-shadow { transform: translate(7px, 11px) rotate(var(--hms-rotation)); animation: hms-shadow 5s ease-in-out infinite; }
+.hms-ground-shadow img { position: absolute; opacity: 0.32; filter: brightness(0) blur(2.5px); }
+.hms-float { animation: hms-bob 5s ease-in-out infinite; }
+.hms-hover > .hms-float > .hms-craft { transform: rotate(var(--hms-rotation)); animation: hms-sway 9s ease-in-out infinite; }
+.hms-hull { filter: drop-shadow(0 0 1.5px rgba(0, 0, 0, 0.75)); transition: opacity 180ms ease; }
+.hms-hover:not(.is-hidden) .hms-hull:hover { opacity: 0.4 !important; }
+.hms-hover.is-hidden .hms-ground-shadow img { opacity: 0.1; }
+@keyframes hms-bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -3px; } }
+@keyframes hms-sway { 0%, 100% { rotate: -2.5deg; } 50% { rotate: 2.5deg; } }
+@keyframes hms-shadow { 0%, 100% { translate: 0 0; opacity: 1; } 50% { translate: 1px 2px; opacity: 0.75; } }
+@media (prefers-reduced-motion: reduce) { .hms-ground-shadow, .hms-float, .hms-hover > .hms-float > .hms-craft { animation: none; } }
 .map-stage img[role="button"]:focus-visible { border-radius: 50%; outline: 3px solid var(--spice); outline-offset: 2px; }
 .map-faction-actions-header { display: flex; flex: 0 0 auto; align-items: center; gap: 10px; padding: 9px 11px; border-bottom: 1px solid var(--line); background: linear-gradient(90deg, color-mix(in srgb, var(--map-faction-color) 18%, transparent), transparent); }
 .map-faction-actions-header > img { width: 34px; height: 34px; object-fit: contain; }
@@ -1849,6 +1863,30 @@ button.communications-user:hover { background: rgba(255, 255, 255, 0.045); }
 .game-event-header > .game-event-actions { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-end; font-size: 0.8rem; font-weight: 400; }
 .game-event-header > .game-event-actions .ui-button-row { flex-direction: row; flex-wrap: wrap; justify-content: flex-end; }
 .game-event-header > .game-event-actions .ui-btn { min-width: 64px; min-height: 30px; padding: 0.26rem 0.7rem; }
+/* Compact event-component building blocks */
+.ev-section { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+.ev-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--brass); }
+.ev-note { font-size: 0.78rem; font-style: italic; color: var(--ivory-muted); }
+.ev-list, .ev-chips { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; }
+.ev-list { flex-direction: column; }
+.ev-chips { flex-wrap: wrap; }
+.ev-row, .ev-chip { display: flex; align-items: center; gap: 6px; padding: 2px 4px 2px 3px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 240, 210, 0.05); }
+.ev-row { border-radius: 8px; }
+.ev-chip.is-denied { opacity: 0.75; }
+.ev-chip.is-denied img { filter: grayscale(1); }
+.ev-chip-text { font-size: 0.78rem; color: var(--ivory-muted); }
+.ev-chip-price { min-width: 22px; padding: 0 6px; border-radius: 999px; background: var(--spice); color: #1b1208; font-weight: 700; font-size: 0.8rem; text-align: center; }
+.ev-pills { display: flex; flex-wrap: wrap; gap: 4px; flex: 1 1 auto; }
+.ev-pill { padding: 1px 8px; border: 1px solid var(--line); border-radius: 999px; font-size: 0.72rem; line-height: 1.5; color: var(--ivory-muted); background: transparent; opacity: 0.45; }
+.ev-pill.is-on { opacity: 1; color: var(--ivory); border-color: var(--brass); background: rgba(201, 162, 92, 0.18); }
+.ev-toggles { margin-top: 2px; }
+.ev-toggle { cursor: pointer; opacity: 0.75; transition: background-color .15s, border-color .15s, opacity .15s; }
+.ev-toggle:hover { opacity: 1; border-color: var(--brass-bright); }
+.ev-toggle.is-on::before { content: "\2713\00a0"; }
+.ev-toggle:focus-visible, .ev-remove:focus-visible { outline: 2px solid var(--brass-bright); outline-offset: 1px; }
+.ev-remove { flex: 0 0 auto; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 240, 210, 0.08); color: var(--ivory-muted); font-size: 0.95rem; line-height: 20px; text-align: center; cursor: pointer; }
+.ev-remove:hover { background: rgba(200, 60, 40, 0.55); color: var(--ivory); }
+@media (prefers-reduced-motion: reduce) { .ev-toggle { transition: none; } }
 @container game-event (max-width: 340px) {
     .game-event-card > .game-event-body { flex-direction: column; align-items: stretch; }
     .game-event-body > .game-event-actions .ui-button-row { flex-direction: row; flex-wrap: wrap; justify-content: flex-end; }

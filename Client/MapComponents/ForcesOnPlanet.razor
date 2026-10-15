@@ -9,16 +9,11 @@
 @inherits MapComponent
 
 @{
-    foreach (var stronghold in Game.Map.Strongholds)
+    void StrongholdTokens(Location stronghold, double x, double y, float opacity)
     {
-        var center = Client.CurrentSkin.GetCenter(stronghold, Game.Map);
-        var x = Equals(stronghold, Game.Map.HiddenMobileStronghold) ? center.X - 1.6f * Client.CurrentSkin.PlayerTokenRadius : center.X - 2.2f * Client.CurrentSkin.PlayerTokenRadius;
-        var y = center.Y - Client.CurrentSkin.PlayerTokenRadius;
-
         if (Game.StrongholdOwnership.TryGetValue(stronghold, out var owner))
         {
-            var opacity = Equals(stronghold, Game.Map.HiddenMobileStronghold) && !_showHms ? 0.2f : 1f;
-            <MapImage X=x Y=y Diameter=@Client.CurrentSkin.PlayerTokenRadius Src="@Client.CurrentSkin.GetFactionTableImageUrl(Game.StrongholdOwnership[stronghold])"
+            <MapImage X=x Y=y Diameter=@Client.CurrentSkin.PlayerTokenRadius Src="@Client.CurrentSkin.GetFactionTableImageUrl(owner)"
                Opacity=opacity Popover=@Client.CurrentSkin.GetPopup(stronghold.Advantage, owner)/>
 
             y += Client.CurrentSkin.PlayerTokenRadius;
@@ -28,7 +23,7 @@
         {
             var popover = Client.Faction == Faction.Cyan ? Client.CurrentSkin.Format("{0} - {1}", terr, Client.CurrentSkin.GetTerrorTypeDescription(terr)) : "Terror";
             <MapImage X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Client.CurrentSkin.PlayerTokenRadius Src=@Client.CurrentSkin.GetFactionTableImageUrl(Faction.Cyan)
-                ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover PopoverAsTooltip="true"/>
+                Opacity=opacity ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover PopoverAsTooltip="true"/>
 
             y += Client.CurrentSkin.PlayerTokenRadius;
         }
@@ -38,48 +33,24 @@
         {
             var popover = $"{Client.CurrentSkin.Describe(ambassador)} Ambassador - {Client.CurrentSkin.GetAmbassadorDescription(ambassador)}";
             <MapImage X=x Y=y Diameter=@Client.CurrentSkin.PlayerTokenRadius Src=@Client.CurrentSkin.GetImageUrl(ambassador)
-            ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover PopoverAsTooltip="true"/>
+                Opacity=opacity ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover PopoverAsTooltip="true"/>
         }
+    }
+
+    foreach (var stronghold in Game.Map.Strongholds.Where(s => s is not HiddenMobileStronghold))
+    {
+        var center = Client.CurrentSkin.GetCenter(stronghold, Game.Map);
+        StrongholdTokens(stronghold, center.X - 2.2f * Client.CurrentSkin.PlayerTokenRadius, center.Y - Client.CurrentSkin.PlayerTokenRadius, 1f);
     }
 
     var forceLocations = Game.ForcesOnPlanetExcludingEmptyLocations();
 
-    foreach (var location in Game.Map.Locations(false).Where(l => l.Visible).OrderBy(l => Client.CurrentSkin.GetCenter(l, Game.Map).Y))
+    foreach (var location in Game.Map.Locations(false).Where(l => l.Visible && l is not HiddenMobileStronghold).OrderBy(l => Client.CurrentSkin.GetCenter(l, Game.Map).Y))
     {
         var pos = Client.CurrentSkin.GetCenter(location, Game.Map);
-        var showForces = true;
         float forceDiameter = 2 * Client.CurrentSkin.FORCETOKEN_RADIUS;
 
-        if (location is HiddenMobileStronghold)
-        {
-            if (!_showHms) showForces = false;
-            forceDiameter = 1.5f * Client.CurrentSkin.FORCETOKEN_RADIUS;
-
-            <MapImage 
-               X="@(pos.X - 0.7f * Client.CurrentSkin.HmsRadius)"
-               Y="@(pos.Y - Client.CurrentSkin.HmsRadius)"
-               Width=@(Client.CurrentSkin.HmsRadius + Math.Abs(Client.CurrentSkin.HmsDx)) Height="@(2 * Client.CurrentSkin.HmsRadius)"
-               Src="@Client.CurrentSkin.HMS_URL"
-               ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="5" ShadowY="5" ShadowBlur="1"
-               Opacity="@(_showHms ? 1f : 0.3f)"
-               Popover=@Intel(location)
-               OnClick=@(e => OnClick(e, location)) />
-
-            @if (_showHms && Client.Status != null && Client.Status.HighlightedTerritories.Contains(location.Territory))
-            {
-                <Circle X="pos.X + 0.3f * Client.CurrentSkin.HmsRadius" Y="pos.Y" Radius="0.85f * Client.CurrentSkin.HmsRadius"
-                    FillColor="@Client.CurrentSkin.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
-            }
-
-            <MapImage X="@(pos.X - 0.4f * Client.CurrentSkin.HmsRadius + Math.Abs(Client.CurrentSkin.HmsDx))"
-               Y="@(pos.Y - 0.18f * Client.CurrentSkin.HmsRadius)"
-               Diameter="@(Client.CurrentSkin.FORCETOKEN_RADIUS)"
-               Src="@(_showHms ? Client.CurrentSkin.Eye_URL : Client.CurrentSkin.EyeSlash_URL)"
-               ShadowColor="black" ShadowX="1" ShadowY="1" ShadowBlur="0"
-               OnClick="@(OnShowHmsClick)"
-               Popover="@(_showHms ? "Hide HMS" : "Show HMS")" PopoverAsTooltip="true"/>
-        }
-        else if (location is DiscoveredLocation ds)
+        if (location is DiscoveredLocation ds)
         {
             forceDiameter = 1.5f * Client.CurrentSkin.FORCETOKEN_RADIUS;
 
@@ -105,10 +76,68 @@
                 Opacity="0.9f" ShadowX=1 ShadowY=1 />
         }
 
-        if (showForces)
-        {
-            <ForcesInLocation Location=@location Battalions=@forceLocations Diameter=@forceDiameter />
-        }
+        <ForcesInLocation Location=@location Battalions=@forceLocations Diameter=@forceDiameter />
+    }
+
+    var hms = Game.Map.HiddenMobileStronghold;
+    if (hms.Visible && hms.AttachedToLocation != null)
+    {
+        var skin = Client.CurrentSkin;
+        var tip = skin.GetHmsTip(hms, Game.Map);
+        var angle = skin.GetHmsAngle(hms, Game.Map);
+        var body = skin.GetCenter(hms, Game.Map);
+        var origin = $"transform-origin:{Px(tip.X)} {Px(tip.Y)};";
+        var rotation = FormattableString.Invariant($"--hms-rotation:{Round(angle * 180 / Math.PI - 180)}deg;");
+
+        // The hull image is laid out so that its tip lies exactly on the point the HMS points at.
+        var scale = 3.0 * skin.PlayerTokenRadius / HullViewBoxHeight;
+        var hullX = tip.X - HullTipX * scale;
+        var hullY = tip.Y - HullTipY * scale;
+        var hullWidth = HullViewBoxWidth * scale;
+        var hullHeight = HullViewBoxHeight * scale;
+        var hullStyle = $"left:{Px(hullX)};top:{Px(hullY)};width:{Px(hullWidth)};height:{Px(hullHeight)};";
+
+        var away = new PointD(Math.Cos(angle), Math.Sin(angle));
+        var eye = new PointD(tip.X + 1.25 * skin.PlayerTokenRadius * away.X, tip.Y + 1.25 * skin.PlayerTokenRadius * away.Y);
+        var tokens = new PointD(body.X + 1.7 * skin.PlayerTokenRadius * away.X, body.Y + 1.7 * skin.PlayerTokenRadius * away.Y);
+
+        <div class="hms-hover @(_showHms ? "" : "is-hidden")" style="@rotation">
+
+            <div class="hms-ground-shadow" style="@origin" aria-hidden="true">
+                <img src="@skin.HMS_URL" style="@hullStyle" alt=""/>
+            </div>
+
+            <div class="hms-float" style="@origin">
+
+                <div class="hms-craft" style="@origin">
+                    <MapImage class="hms-hull" X=@hullX Y=@hullY Width=@hullWidth Height=@hullHeight
+                        Src="@skin.HMS_URL"
+                        Opacity="@(_showHms ? 0.85f : 0.3f)"
+                        Popover=@Intel(hms)
+                        OnClick=@(e => OnClick(e, hms)) />
+
+                    @if (_showHms && Client.Status != null && Client.Status.HighlightedTerritories.Contains(hms.Territory))
+                    {
+                        <Circle X="@(tip.X - skin.HmsBodyDistance)" Y="tip.Y" Radius="@(1.05 * skin.HmsBodyRadius)"
+                            FillColor="@skin.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
+                    }
+                </div>
+
+                @{ StrongholdTokens(hms, tokens.X - 0.5 * skin.PlayerTokenRadius, tokens.Y - 0.5 * skin.PlayerTokenRadius, _showHms ? 1f : 0.2f); }
+
+                @if (_showHms)
+                {
+                    <ForcesInLocation Location=@hms Battalions=@forceLocations Diameter=@(1.5f * skin.FORCETOKEN_RADIUS) />
+                }
+
+                <MapImage X="@(eye.X - 0.5 * skin.FORCETOKEN_RADIUS)" Y="@(eye.Y - 0.5 * skin.FORCETOKEN_RADIUS)"
+                   Diameter="@(skin.FORCETOKEN_RADIUS)"
+                   Src="@(_showHms ? skin.Eye_URL : skin.EyeSlash_URL)"
+                   ShadowColor="black" ShadowX="1" ShadowY="1" ShadowBlur="0"
+                   OnClick="@(OnShowHmsClick)"
+                   Popover="@(_showHms ? "Hide HMS" : "Show HMS")" PopoverAsTooltip="true"/>
+            </div>
+        </div>
     }
 }
 
@@ -164,6 +193,12 @@
 
     private bool _showHms = true;
     private bool _dirty;
+
+    // Geometry of the HMS hull image (hms.svg): its viewBox size and the position of its tip within that viewBox.
+    private const double HullViewBoxWidth = 67;
+    private const double HullViewBoxHeight = 46;
+    private const double HullTipX = 64.1;
+    private const double HullTipY = 22.7;
 
     [Parameter]
     public EventCallback<LocationEventArgs> OnLocationClick { get; set; }
