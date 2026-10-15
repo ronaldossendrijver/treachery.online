@@ -110,9 +110,22 @@
                                             @if (hasNexus)
                                             {
                                                 var nexus = shownPlayer.Nexus.ToNexus();
-                                                <span class="player-hand-card player-hand-nexus @(CardsInHand.Count > 0 ? "player-hand-card-overlap" : "")" style="@HandCardStyle(CardsInHand.Count, handCount)">
-                                                    <Image Src="@Client.CurrentSkin.GetImageUrl(nexus)" Popover="@Client.CurrentSkin.GetNexusCardPopup(nexus)" Class="player-hand-image" />
-                                                </span>
+                                                if (CanPlayNexus)
+                                                {
+                                                    <button type="button" class="player-hand-card player-hand-nexus is-card-use-available @(CardsInHand.Count > 0 ? "player-hand-card-overlap" : "")"
+                                                            aria-label="@($"Use {Name(nexus)}")"
+                                                            title="@($"Use {Name(nexus)}")"
+                                                            data-dialog-target="#@NexusUseDialogId"
+                                                            style="@HandCardStyle(CardsInHand.Count, handCount)">
+                                                        <Image Src="@Client.CurrentSkin.GetImageUrl(nexus)" Class="player-hand-image" />
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <span class="player-hand-card player-hand-nexus @(CardsInHand.Count > 0 ? "player-hand-card-overlap" : "")" style="@HandCardStyle(CardsInHand.Count, handCount)">
+                                                        <Image Src="@Client.CurrentSkin.GetImageUrl(nexus)" Popover="@Client.CurrentSkin.GetNexusCardPopup(nexus)" Class="player-hand-image" />
+                                                    </span>
+                                                }
                                             }
                                         </div>
                                     }
@@ -172,6 +185,26 @@
                                                             case nameof(BrownRemoveForce): <BrownRemoveForceComponent /> break;
                                                         }
                                                     }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (CanPlayNexus)
+                                    {
+                                        var nexusCard = shownPlayer.Nexus.ToNexus();
+                                        <div class="card-use-window" id="@NexusUseDialogId" popover="manual" role="dialog" aria-labelledby="@($"{NexusUseDialogId}-title")" data-draggable="card-use-window">
+                                            <header class="card-use-window-header" data-drag-handle title="Drag to move">
+                                                <span class="card-use-window-grip" aria-hidden="true">⠿</span>
+                                                <div class="card-use-window-heading">
+                                                    <span class="card-use-window-eyebrow">Play Nexus card</span>
+                                                    <h2 id="@($"{NexusUseDialogId}-title")">@Name(nexusCard)</h2>
+                                                </div>
+                                                <button type="button" class="icon-button card-use-window-close" data-dialog-close aria-label="Close without playing">×</button>
+                                            </header>
+                                            <div class="card-use-dialog">
+                                                <img class="card-use-dialog-image" src="@Client.CurrentSkin.GetImageUrl(nexusCard)" alt="@Name(nexusCard)" />
+                                                <div class="card-use-dialog-actions">
+                                                    <NexusPlayedComponent />
                                                 </div>
                                             </div>
                                         </div>
@@ -283,6 +316,10 @@
             CardActions.CardUsedBy(action, Game, ShownPlayer) == card);
     }
     private string CardUseDialogId(TreacheryCard card) => $"{Id}-card-use-{card.Id}";
+
+    private bool CanPlayNexus => IsOwnPanel && ShownPlayer!.Nexus != Faction.None && Client.Actions.Contains(typeof(NexusPlayed));
+
+    private string NexusUseDialogId => $"{Id}-nexus-use";
 
     private void HandleCardClick(TreacheryCard card)
     {

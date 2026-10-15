@@ -10,7 +10,7 @@
 
 @if (Client.Game != null && Client.Status != null && _time > 0)
 {
-    <div style="position:absolute;left:@Support.Px(_windowX);top:@Support.Px(_windowY);width:@Support.Px(_flashWidth);overflow:hidden;animation:fadeInFadeOut @(_time)ms;z-index:1000;" @onclick=@Hide>
+    <div @key="_flashId" style="position:fixed;left:@Support.Px(_windowX);top:@Support.Px(_windowY);width:@Support.Px(_flashWidth);overflow:hidden;animation:fadeInFadeOut @(_time)ms forwards;z-index:1560;cursor:pointer;" @onclick=@Hide>
 
         @foreach (var img in Client.Status.FlashInfo)
         {
@@ -40,75 +40,65 @@
     private int _flashWidth = 500;
     private int _cardWidth = 100;
     private int _time;
+    private int _flashId;
     private int _afterEventId = -1;
     private Dimensions _dimensions = new() { Width = 640, Height = 480 };
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) await DetectFlash();
+    }
+
+    protected override void Redraw() => _ = InvokeAsync(DetectFlash);
+
+    // Called whenever the game is updated: starts a new flash when the latest event produced something to show.
+    private async Task DetectFlash()
+    {
+        if (Client.Game == null || Game.EventCount == _afterEventId)
+        {
+            StateHasChanged();
+            return;
+        }
+
+        _afterEventId = Game.EventCount;
+
+        if (Client.Status == null || !Client.Status.FlashInfo.Any(i => i.ToShow != null))
+        {
+            StateHasChanged();
+            return;
+        }
+
+        var currentDimensions = await Browser.GetWindowDimensions();
+        if (currentDimensions != null) _dimensions = currentDimensions;
+
+        ApplyDimensions();
+        _time = 5000 + Client.Status.FlashInfo.Count() * 1000;
+        var flashId = ++_flashId;
+        StateHasChanged();
+
+        await Task.Delay(_time);
+        if (flashId == _flashId) Hide();
+    }
+
     private void ApplyDimensions()
     {
-        var nrOfItems = Client.Status != null ? Client.Status.FlashInfo.Count() : 0;
+        var nrOfItems = Client.Status != null ? Client.Status.FlashInfo.Count(i => i.ToShow != null) : 0;
         
         if (_dimensions.Height > _dimensions.Width)
         {
             //phone-like screen
 
             _cardWidth = (int)(0.3f * _dimensions.Width);
-
-            if (nrOfItems <= 3)
-            {
-                _windowY = (int)(0.5f * (_dimensions.Height - 1.41f * _cardWidth));
-            }
-            else
-            {
-                _windowY = (int)(0.5f * (_dimensions.Height - 2 * 1.41f * _cardWidth));
-            }
+            _windowY = (int)(0.5f * (_dimensions.Height - (nrOfItems <= 3 ? 1 : 2) * 1.41f * _cardWidth));
         }
         else
         {
             _cardWidth = (int)(0.15f * _dimensions.Width);
-
-            if (nrOfItems <= 4)
-            {
-                _windowY = (int)(0.5f * (_dimensions.Height - 1.41f * _cardWidth));
-            }
-            else
-            {
-                _windowY = (int)(0.5f * (_dimensions.Height - 2 * 1.41f * _cardWidth));
-            }
+            _windowY = (int)(0.5f * (_dimensions.Height - (nrOfItems <= 4 ? 1 : 2) * 1.41f * _cardWidth));
         }
 
         _flashWidth = nrOfItems * (ItemWidth + 20);
         _windowX = (int)(0.5f * (_dimensions.Width - _flashWidth));
-
-        if (Game.EventCount != _afterEventId)
-        {
-            _afterEventId = Game.EventCount;
-
-            if (Client.Status != null && Client.Status.FlashInfo.Any())
-            {
-                _time = 5000 + Client.Status.FlashInfo.Count() * 1000;
-            }
-        }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstDraw)
-    {
-        if (firstDraw)
-        {
-            var currentDimensions = await Browser.GetWindowDimensions();
-            if (currentDimensions != null)
-            {
-                _dimensions = currentDimensions;
-                ApplyDimensions();
-                StateHasChanged();
-            }
-            
-            return;
-        }
-        
-        if (_time > 0)
-        {
-            await Task.Delay(_time).ContinueWith(_ => Hide());
-        }
     }
 
     private void Hide()
@@ -122,4 +112,3 @@
 
     private int ItemWidth => (int)(SpacingX * _cardWidth);
 }
-

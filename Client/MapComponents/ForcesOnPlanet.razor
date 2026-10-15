@@ -100,10 +100,9 @@
         var targetStyle = $"left:{Px(tip.X - 0.5 * targetSize)};top:{Px(tip.Y - 0.5 * targetSize)};width:{Px(targetSize)};height:{Px(targetSize)};";
 
         var away = new PointD(Math.Cos(angle), Math.Sin(angle));
-        var eye = new PointD(tip.X + 1.25 * skin.PlayerTokenRadius * away.X, tip.Y + 1.25 * skin.PlayerTokenRadius * away.Y);
         var tokens = new PointD(body.X + 1.7 * skin.PlayerTokenRadius * away.X, body.Y + 1.7 * skin.PlayerTokenRadius * away.Y);
 
-        <div class="hms-hover @(_showHms ? "" : "is-hidden")" style="@rotation">
+        <div class="hms-hover" style="@rotation">
 
             <div class="hms-ground-shadow hms-layer" style="@origin" aria-hidden="true">
                 <div class="hms-sway hms-layer" style="@origin">
@@ -119,30 +118,20 @@
                     <div class="hms-craft hms-layer" style="@origin">
                         <MapImage class="hms-hull" X=@hullX Y=@hullY Width=@hullWidth Height=@hullHeight
                             Src="@skin.HMS_URL"
-                            Opacity="@(_showHms ? 0.85f : 0.3f)"
+                            Opacity="0.85f"
                             Popover=@Intel(hms)
                             OnClick=@(e => OnClick(e, hms)) />
 
-                        @if (_showHms && Client.Status != null && Client.Status.HighlightedTerritories.Contains(hms.Territory))
+                        @if (Client.Status != null && Client.Status.HighlightedTerritories.Contains(hms.Territory))
                         {
                             <Circle X="@(tip.X - skin.HmsBodyDistance)" Y="tip.Y" Radius="@(1.05 * skin.HmsBodyRadius)"
                                 FillColor="@skin.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
                         }
                     </div>
 
-                    @{ StrongholdTokens(hms, tokens.X - 0.5 * skin.PlayerTokenRadius, tokens.Y - 0.5 * skin.PlayerTokenRadius, _showHms ? 1f : 0.2f); }
+                    @{ StrongholdTokens(hms, tokens.X - 0.5 * skin.PlayerTokenRadius, tokens.Y - 0.5 * skin.PlayerTokenRadius, 1f); }
 
-                    @if (_showHms)
-                    {
-                        <ForcesInLocation Location=@hms Battalions=@forceLocations Diameter=@(1.5f * skin.FORCETOKEN_RADIUS) />
-                    }
-
-                    <MapImage X="@(eye.X - 0.5 * skin.FORCETOKEN_RADIUS)" Y="@(eye.Y - 0.5 * skin.FORCETOKEN_RADIUS)"
-                       Diameter="@(skin.FORCETOKEN_RADIUS)"
-                       Src="@(_showHms ? skin.Eye_URL : skin.EyeSlash_URL)"
-                       ShadowColor="black" ShadowX="1" ShadowY="1" ShadowBlur="0"
-                       OnClick="@(OnShowHmsClick)"
-                       Popover="@(_showHms ? "Hide HMS" : "Show HMS")" PopoverAsTooltip="true"/>
+                    <ForcesInLocation Location=@hms Battalions=@forceLocations Diameter=@(1.5f * skin.FORCETOKEN_RADIUS) />
                 </div>
             </div>
 
@@ -158,7 +147,7 @@
     protected override bool ShouldRender()
     {
         if (Client.InGame) DetectKilledForces();
-        return Client.InGame && (CheckAndResetDirty() || _situation.RequiresUpdate(Client));
+        return Client.InGame && _situation.RequiresUpdate(Client);
     }
 
     private Game? _forcesSnapshotGame;
@@ -202,9 +191,6 @@
         _killedSnapshot = killed;
     }
 
-    private bool _showHms = true;
-    private bool _dirty;
-
     // Geometry of the HMS hull image (hms.svg): its viewBox size and the position of its tip within that viewBox.
     private const double HullViewBoxWidth = 67;
     private const double HullViewBoxHeight = 46;
@@ -217,19 +203,5 @@
     private async Task OnClick(MouseEventArgs e, Location l)
     {
         await OnLocationClick.InvokeAsync(new LocationEventArgs { Location = l, AltKey = e.AltKey, CtrlKey = e.CtrlKey, ShiftKey = e.ShiftKey });
-    }
-
-    private bool CheckAndResetDirty()
-    {
-        var result = _dirty;
-        _dirty = false;
-        return result;
-    }
-
-    private void OnShowHmsClick(MouseEventArgs e)
-    {
-        _showHms = !_showHms;
-        _dirty = true;
-        StateHasChanged();
     }
 }

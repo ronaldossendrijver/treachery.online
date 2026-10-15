@@ -507,6 +507,9 @@ svg {
 }
 
 .planetmap-overlays { width: 100%; height: 100%; }
+/* Host for map-bound effects (e.g. spice blows); kept empty by Blazor so scripts can add canvases to it */
+.map-fx-layer { position: absolute; inset: 0; z-index: 50; overflow: visible; pointer-events: none; }
+.map-fx-layer canvas { position: absolute; pointer-events: none; }
 #mapimg { z-index: 1; }
 
 .game-rail {
@@ -769,6 +772,7 @@ svg {
 .player-hand-card:hover { z-index: 30 !important; transform: translateY(-10px) rotate(0deg) scale(1.08); filter: drop-shadow(0 0 6px rgba(214, 125, 44, 0.45)); }
 .player-hand-card img { display: block; width: var(--hand-w); max-width: none; height: var(--hand-h); object-fit: cover; border: 1px solid rgba(236, 216, 168, 0.72); border-radius: 5px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6); }
 .player-hand-nexus { display: block; cursor: help; }
+.player-hand-nexus.is-card-use-available { cursor: pointer; }
 .player-hand-nexus:focus-within { z-index: 30 !important; }
 /* Leaders and cards that can be clicked to put them into the battle plan being edited */
 .is-battle-pickable { cursor: pointer; }
@@ -1571,11 +1575,8 @@ svg {
 .hms-float { animation: hms-bob 5s ease-in-out infinite; }
 .hms-ground-shadow { scale: 1.1; animation: hms-shadow 5s ease-in-out infinite; }
 .hms-ground-shadow img { position: absolute; opacity: 0.32; filter: brightness(0) blur(2.5px); }
-.hms-hull { filter: drop-shadow(0 0 1.5px rgba(0, 0, 0, 0.75)); transition: opacity 180ms ease; }
-.hms-hover:not(.is-hidden) .hms-hull:hover { opacity: 0.4 !important; }
-.hms-hover.is-hidden .hms-ground-shadow img { opacity: 0.1; }
+.hms-hull { filter: drop-shadow(0 0 1.5px rgba(0, 0, 0, 0.75)); }
 .hms-target { position: absolute; border-radius: 50%; background: #fff6d8; box-shadow: 0 0 0 1px rgba(30, 20, 5, 0.85), 0 0 4px 1px rgba(255, 236, 170, 0.9); pointer-events: none; }
-.hms-hover.is-hidden .hms-target { opacity: 0.5; }
 @keyframes hms-bob { 0%, 100% { scale: 1; } 50% { scale: 1.035; } }
 @keyframes hms-sway { 0%, 100% { rotate: -2.5deg; } 50% { rotate: 2.5deg; } }
 @keyframes hms-shadow { 0%, 100% { scale: 1.1; opacity: 1; } 50% { scale: 1.13; opacity: 0.75; } }
