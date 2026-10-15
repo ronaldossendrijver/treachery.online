@@ -732,6 +732,7 @@ svg {
 .player-panel-traitors { padding-left: 10px; border-left: 1px solid color-mix(in srgb, var(--player-faction-color) 28%, transparent); }
 .player-panel-owned { grid-area: owned; }
 .player-panel-faction-info { grid-area: faction; }
+.player-panel-sections-no-faction { grid-template-areas: "people people" "owned owned"; }
 .player-panel-figures { display: flex; flex: 1 1 auto; flex-wrap: nowrap; align-items: center; gap: 4px; min-height: 0; }
 .player-panel-figure-slot { display: block; position: relative; flex: 0 1 var(--figure-size); width: var(--figure-size); min-width: 0; height: var(--figure-size); }
 .player-panel-figure-slot:last-child { flex-shrink: 0; }
@@ -746,7 +747,8 @@ svg {
 .player-hand-card-overlap { margin-left: clamp(calc(var(--hand-w) * -0.78), calc((100cqi - 12px - var(--hand-count, 1) * var(--hand-w)) / max(var(--hand-count, 1) - 1, 1)), 4px); }
 .player-hand-card:hover { z-index: 30 !important; transform: translateY(-10px) rotate(0deg) scale(1.08); filter: drop-shadow(0 0 6px rgba(214, 125, 44, 0.45)); }
 .player-hand-card img { display: block; width: var(--hand-w); max-width: none; height: var(--hand-h); object-fit: cover; border: 1px solid rgba(236, 216, 168, 0.72); border-radius: 5px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6); }
-.player-panel-nexus { display: grid; flex: 0 0 auto; justify-items: center; gap: 2px; color: #cdbb8b; font-size: 0.57rem; }
+.player-hand-nexus { display: block; cursor: help; }
+.player-hand-nexus:focus-within { z-index: 30 !important; }
 /* Leaders and cards that can be clicked to put them into the battle plan being edited */
 .is-battle-pickable { cursor: pointer; }
 .player-panel-figure-slot.is-battle-pickable::after { position: absolute; inset: -2px; border: 1px dashed rgba(241, 196, 120, 0.75); border-radius: 50%; content: ""; pointer-events: none; }
@@ -754,21 +756,50 @@ svg {
 .player-panel-figure-slot.is-battle-picked::after { border: 2px solid #f1c478; box-shadow: 0 0 10px rgba(241, 196, 120, 0.8); }
 .player-hand-card.is-battle-picked { transform: translateY(-8px) rotate(0deg); }
 .player-hand-card.is-battle-picked img { border: 2px solid #f1c478; box-shadow: 0 0 14px rgba(241, 196, 120, 0.85), 0 4px 10px rgba(0, 0, 0, 0.6); }
-.player-hand-card.is-battle-picked::after { position: absolute; top: -7px; right: -5px; z-index: 2; display: grid; width: 18px; height: 18px; place-items: center; border-radius: 50%; background: #f1c478; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); color: #2a1606; font-size: 0.7rem; font-weight: 800; content: "✓"; }
+.player-hand-card.is-battle-picked::after { position: absolute; top: -7px; right: -5px; z-index: 2; display: grid; width: 18px; height: 18px; place-items: center; border-radius: 50%; background: #f1c478; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); color: #2a1606; font-size: 0.7rem; font-weight: 800; content: "âœ“"; }
 .player-hand-card.is-card-use-available img { border-color: rgba(255, 189, 104, 0.9); box-shadow: 0 0 0 1px rgba(255, 158, 70, 0.45), 0 0 8px rgba(255, 128, 31, 0.4), 0 4px 10px rgba(0, 0, 0, 0.6); }
 .player-hand-card.is-card-use-available:focus-visible { outline: 2px solid #ffbd68; outline-offset: 4px; }
-.card-use-dialog { display: grid; grid-template-columns: minmax(140px, 0.35fr) minmax(0, 1fr); align-items: start; gap: 14px; }
-.card-use-dialog-image { position: sticky; top: 0; width: 100%; max-height: min(68vh, 620px); object-fit: contain; border: 1px solid rgba(236, 216, 168, 0.72); border-radius: 6px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55); }
-.card-use-dialog-actions { min-width: 0; }
-@media (max-width: 560px) { .card-use-dialog { grid-template-columns: minmax(0, 1fr); } .card-use-dialog-image { position: static; width: min(180px, 55%); max-height: 40vh; margin: 0 auto; } }
-.player-panel-nexus img { width: 38px; height: 54px; object-fit: contain; }
+/* Floating, draggable, non-blocking window for playing a treachery card (opened from the player panel hand) */
+.card-use-window {
+    --drag-x: 0px;
+    --drag-y: 0px;
+    position: fixed;
+    inset: auto;
+    top: calc(96px + var(--drag-y));
+    left: calc(50vw - 260px + var(--drag-x));
+    width: min(520px, calc(100vw - 24px));
+    max-height: min(80dvh, 760px);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid rgba(213, 138, 66, 0.55);
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(57, 54, 47, 0.97), rgba(33, 31, 28, 0.97));
+    color: var(--ivory);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 22px 54px rgba(0, 0, 0, 0.6), 0 0 26px rgba(213, 138, 66, 0.16);
+}
+.card-use-window:popover-open { display: flex; flex-direction: column; animation: uiDialogIn 210ms cubic-bezier(0.2, 0.8, 0.3, 1.1); }
+.card-use-window.is-dragging { box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 30px 70px rgba(0, 0, 0, 0.7), 0 0 34px rgba(213, 138, 66, 0.3); }
+.card-use-window-header { display: flex; flex: 0 0 auto; align-items: center; gap: 10px; padding: 8px 8px 8px 10px; border-bottom: 1px solid rgba(213, 138, 66, 0.3); background: linear-gradient(90deg, rgba(213, 138, 66, 0.22), rgba(213, 138, 66, 0.04)); cursor: grab; touch-action: none; user-select: none; }
+.card-use-window.is-dragging .card-use-window-header { cursor: grabbing; }
+.card-use-window-grip { color: rgba(239, 232, 214, 0.45); font-size: 1rem; line-height: 1; }
+.card-use-window-heading { display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; line-height: 1.15; }
+.card-use-window-eyebrow { color: var(--spice); font-size: 0.6rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; }
+.card-use-window-heading h2 { margin: 0; overflow: hidden; color: #f4e2b4; font-size: 1rem; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.card-use-window-close { width: 30px; height: 30px; flex: 0 0 auto; font-size: 1.15rem; }
+.card-use-window-close:hover { border-color: rgba(213, 138, 66, 0.7); background: rgba(213, 138, 66, 0.18); }
+.card-use-dialog { display: grid; grid-template-columns: 120px minmax(0, 1fr); align-items: start; gap: 12px; min-height: 0; padding: 12px; overflow: auto; scrollbar-width: thin; }
+.card-use-dialog-image { position: sticky; top: 0; display: block; width: 100%; height: auto; border: 1px solid rgba(236, 216, 168, 0.72); border-radius: 7px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.55); }
+.card-use-dialog-actions { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.card-use-dialog-actions > * { margin: 0 !important; }
+@media (max-width: 560px) { .card-use-dialog { grid-template-columns: minmax(0, 1fr); } .card-use-dialog-image { position: static; width: min(140px, 50%); margin: 0 auto; } }
+@media (prefers-reduced-motion: reduce) { .card-use-window:popover-open { animation: none; } }
 .player-panel-faction-details { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 12px; color: #eee4cd; font-size: 0.7rem; line-height: 1.4; }
 .player-panel-faction-details > span, .player-panel-faction-note { display: inline-flex; align-items: center; gap: 5px; min-width: 0; }
 .player-panel-faction-details img { flex: 0 0 auto; width: 25px; height: 25px; object-fit: contain; }
 .player-panel-faction-details svg { flex: 0 0 auto; vertical-align: middle; }
 .player-panel-faction-note > span { display: block; min-width: 0; }
 .player-panel-faction-note > span svg { display: inline-block; margin: -0.2em 1px 0; vertical-align: middle; }
-.player-panel-faction-empty { color: #a9a18f; font-style: italic; }
 .sheet-handle, .mobile-game-topbar { display: none; }
 .cursor-hand { cursor: pointer; }
 
@@ -1412,7 +1443,7 @@ svg {
 .status-menu { position: relative; display: inline-block; }
 .status-menu > summary { list-style: none; cursor: pointer; }
 .status-menu > summary::-webkit-details-marker { display: none; }
-.status-menu > summary::after { content: "⌄"; margin-left: 8px; color: currentColor; }
+.status-menu > summary::after { content: "âŒ„"; margin-left: 8px; color: currentColor; }
 .status-menu-options { position: absolute; z-index: 50; top: calc(100% + 5px); right: 0; min-width: 190px; margin: 0; padding: 5px; list-style: none; border: 1px solid var(--line); border-radius: 8px; background: #292722; box-shadow: var(--shadow); }
 .status-menu-options button { width: 100%; padding: 8px 10px; border: 0; border-radius: 5px; background: transparent; color: var(--ivory); text-align: left; cursor: pointer; }
 .status-menu-options button:hover { background: var(--charcoal-raised); }

@@ -129,8 +129,8 @@
             window.clearTimeout(gamePopoverHideTimer);
             HideGamePopover();
 
-            // Inside a modal dialog (top layer) the popover must live in the dialog to appear above it.
-            const host = trigger.closest('dialog[open]') || document.body;
+            // Inside a modal dialog or floating window (top layer) the popover must live in it to appear above it.
+            const host = trigger.closest('dialog[open], [popover]') || document.body;
             const popover = document.createElement('div');
             popover.className = 'game-popover';
             popover.setAttribute('role', 'tooltip');
@@ -442,12 +442,27 @@
                 const target = opener.dataset.dialogTarget || '';
                 const dialog = target.startsWith('#') ? document.getElementById(target.slice(1)) : document.querySelector(target);
                 if (dialog instanceof HTMLDialogElement && !dialog.open) dialog.showModal();
+                else if (dialog && dialog.hasAttribute('popover')) ShowFloatingWindow(dialog);
                 return;
             }
 
             const closer = event.target.closest('[data-dialog-close]');
-            if (closer) closer.closest('dialog')?.close();
+            if (closer) {
+                const floating = closer.closest('[popover]');
+                if (floating) floating.hidePopover();
+                else closer.closest('dialog')?.close();
+            }
         });
+
+        // Non-blocking floating windows ([popover="manual"]): only one per draggable group is shown, at its last dragged position.
+        function ShowFloatingWindow(win) {
+            const group = win.dataset.draggable;
+            if (group) document.querySelectorAll(`[popover][data-draggable="${CSS.escape(group)}"]`).forEach(other => {
+                if (other !== win && other.matches(':popover-open')) other.hidePopover();
+            });
+            if (!win.matches(':popover-open')) win.showPopover();
+            if (group) RestoreDragPosition(win, group);
+        }
 
         document.addEventListener('click', event => {
             if (event.target instanceof HTMLDialogElement && event.target.open) event.target.close();
@@ -465,15 +480,26 @@
 
         document.addEventListener('keydown', event => {
             if (event.key === 'Escape') CloseMenuDropdowns(null);
+            if (event.key === 'Escape' && !document.querySelector('dialog[open]')) {
+                document.querySelectorAll('[popover][data-draggable]').forEach(win => { if (win.matches(':popover-open')) win.hidePopover(); });
+            }
         });
 
-        // Draggable floating panels: [data-draggable="key"] moved by its [data-drag-handle], kept inside its offset parent.
+        // Draggable floating panels: [data-draggable="key"] moved by its [data-drag-handle], kept inside its offset parent (or the viewport).
         const dragPositions = {};
         let activeDrag = null;
 
         function clampDrag(el, x, y) {
             const parent = el.offsetParent;
-            if (!parent) return { x, y };
+            if (!parent) {
+                if (getComputedStyle(el).position !== 'fixed') return { x, y };
+                const rect = el.getBoundingClientRect();
+                const baseLeft = rect.left - (parseFloat(el.style.getPropertyValue('--drag-x')) || 0);
+                const baseTop = rect.top - (parseFloat(el.style.getPropertyValue('--drag-y')) || 0);
+                const minX = -baseLeft, maxX = window.innerWidth - rect.width - baseLeft;
+                const minY = -baseTop, maxY = window.innerHeight - 48 - baseTop;
+                return { x: Math.min(Math.max(x, minX), Math.max(minX, maxX)), y: Math.min(Math.max(y, minY), Math.max(minY, maxY)) };
+            }
             const baseLeft = el.offsetLeft;
             const baseTop = el.offsetTop;
             const maxX = parent.clientWidth - el.offsetWidth - baseLeft, minX = -baseLeft;
