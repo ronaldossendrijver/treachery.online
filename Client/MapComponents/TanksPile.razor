@@ -148,7 +148,7 @@
                     ? Client.CurrentSkin.GetFactionFaceDownImageUrl(faction)
                     : Client.CurrentSkin.GetImageUrl(leader);
                 var name = hidden ? $"Face-down {factionName} leader" : Client.CurrentSkin.Describe(leader);
-                var popover = hidden ? TextPopover(name) : LeaderPopover(name, Client.CurrentSkin.GetPopup(leader, Game));
+                var popover = hidden ? TextPopover(name) : Client.CurrentSkin.GetPopup(leader, Game);
                 leaders.Add(new PileItem($"{faction}-l-{leader.Id}", src, $"{name} in the tanks", popover, true, true, color, factionAngle + 0.5 * Math.PI, leaderIndex));
                 parts.Add(name);
                 leaderNames.Add(name);
@@ -229,8 +229,6 @@
     private static string TextPopover(string text) =>
         $"<div style='padding:4px 6px;font-weight:700'>{System.Net.WebUtility.HtmlEncode(text)}</div>";
 
-    private static string LeaderPopover(string name, string details) =>
-        $"<div style='padding:2px 4px 6px;font-weight:800;font-size:1.05em'>{System.Net.WebUtility.HtmlEncode(name)}</div>{details}";
 
     private string ForceName(Player player, bool special, int amount)
     {
