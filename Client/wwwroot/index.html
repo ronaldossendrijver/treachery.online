@@ -521,7 +521,7 @@
 
         document.addEventListener('pointerdown', event => {
             const handle = event.target.closest('[data-drag-handle]');
-            if (!handle || event.button > 0 || event.target.closest('button, a, input, select, textarea, .bw-picker')) return;
+            if (!handle || event.button > 0 || event.target.closest('button, a, input, select, textarea, .bw-picker, .bwl-forces, .number-picker-component')) return;
             const el = handle.closest('[data-draggable]');
             if (!el) return;
             activeDrag = {
@@ -545,6 +545,31 @@
             activeDrag.el.classList.remove('is-dragging');
             activeDrag = null;
         }
+
+        // Usable treachery cards wiggle 3s after becoming highlighted, then each following wiggle comes 1s later than the previous gap.
+        const cardWiggles = new Map();
+        const cardWiggleFrames = [
+            { transform: 'rotate(0deg)' }, { transform: 'rotate(-4deg)' }, { transform: 'rotate(3.5deg)' },
+            { transform: 'rotate(-2.5deg)' }, { transform: 'rotate(1.5deg)' }, { transform: 'rotate(0deg)' }
+        ];
+        setInterval(() => {
+            const now = Date.now();
+            const highlighted = new Set(document.querySelectorAll('.player-hand-card.is-card-use-available'));
+            cardWiggles.forEach((_, el) => { if (!highlighted.has(el)) cardWiggles.delete(el); });
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            highlighted.forEach(el => {
+                let state = cardWiggles.get(el);
+                if (!state) {
+                    cardWiggles.set(el, { gap: 3000, next: now + 3000 });
+                    return;
+                }
+                if (now < state.next) return;
+                const img = el.querySelector('img');
+                if (img && !el.matches(':hover')) img.animate(cardWiggleFrames, { duration: 960, easing: 'ease-in-out' });
+                state.gap += 1000;
+                state.next = now + state.gap;
+            });
+        }, 200);
 
         document.addEventListener('pointerup', endDrag);
         document.addEventListener('pointercancel', endDrag);
