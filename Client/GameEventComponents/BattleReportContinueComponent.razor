@@ -1,0 +1,57 @@
+@*
+ * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
+ * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
+ * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+*@
+@inherits GameEventComponent<EndPhase>
+
+@*
+    Lets the host end the battle from the battle wheel once its outcome has been reviewed. Automatic continuation is
+    performed by the status panel; this control shares its Auto switch.
+*@
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
+
+    <Header>@(Game.NextPlayerToBattle != null ? "Proceed to the next battle" : "End the battle phase")</Header>
+
+    <Body>
+        <div>Review the battle outcome, then continue when everyone is ready.</div>
+        @{ var error = Validation; }
+        <div class="continue-split @(AutoContinueState.On ? "is-auto" : "")" role="group" aria-label="Continue">
+            <button type="button" class="continue-split-main" disabled="@(AutoContinueState.On || error != null)"
+                    title="@(error?.ToString(Client.CurrentSkin))" @onclick="Confirm">
+                @(AutoContinueState.On ? "Continuing automatically…" : "Continue")
+            </button>
+            <button type="button" class="continue-split-auto" role="switch" aria-checked="@(AutoContinueState.On ? "true" : "false")"
+                    title="@(AutoContinueState.On ? "Stop continuing automatically" : "Continue automatically from now on")"
+                    @onclick="@(() => AutoContinueState.On = !AutoContinueState.On)">
+                <span class="continue-split-switch" aria-hidden="true"></span>
+                <span>Auto</span>
+            </button>
+        </div>
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override bool IsUrgent => true;
+
+    protected override EndPhase ConfirmedResult => new(Game, Faction);
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        AutoContinueState.Changed += OnAutoContinueChanged;
+    }
+
+    public override void Dispose()
+    {
+        AutoContinueState.Changed -= OnAutoContinueChanged;
+        base.Dispose();
+    }
+
+    private void OnAutoContinueChanged() => InvokeAsync(StateHasChanged);
+}

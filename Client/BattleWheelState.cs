@@ -44,7 +44,7 @@ public static class BattleWheelState
     public static readonly HashSet<Type> AfterBattleTypes =
     [
         typeof(Captured), typeof(AuditCancelled), typeof(Audited), typeof(Retreat), typeof(BattleConcluded),
-        typeof(FaceDancerRevealed), typeof(FaceDanced)
+        typeof(FaceDancerRevealed), typeof(FaceDanced), typeof(EndPhase)
     ];
 }
 

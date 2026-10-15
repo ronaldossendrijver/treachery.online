@@ -63,7 +63,7 @@
 
     [Parameter] public bool CanEndPhase { get; set; }
 
-    private bool AutoConfirm { get; set; }
+    private static bool AutoConfirm { get => AutoContinueState.On; set => AutoContinueState.On = value; }
     private int TicksPassed { get; set; }
     private bool TimeLimitSet { get; set; }
     private int TimeLimit { get; set; } = 20;
@@ -71,6 +71,7 @@
     protected override async Task OnInitializedAsync()
     {
         Client.RefreshHandler += CheckAutoContinueCancelled;
+        AutoContinueState.Changed += OnAutoContinueChanged;
         await StartRedrawCycleAsync(1000);
     }
 
@@ -106,6 +107,12 @@
     }
 
     private void ToggleAutoConfirm() => AutoConfirm = !AutoConfirm;
+
+    private void OnAutoContinueChanged()
+    {
+        TicksPassed = 0;
+        InvokeAsync(StateHasChanged);
+    }
 
     private void EnableOrDisableTimer(bool value)
     {
@@ -170,6 +177,7 @@
     public override void Dispose()
     {
         Client.RefreshHandler -= CheckAutoContinueCancelled;
+        AutoContinueState.Changed -= OnAutoContinueChanged;
         base.Dispose();
     }
 }
