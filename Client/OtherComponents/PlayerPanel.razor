@@ -35,7 +35,7 @@
                         {
                             @ResourceStrip(shownPlayer)
                         }
-                        <div class="player-panel-sections">
+                        <div class="player-panel-sections @(HasFactionInformation ? "" : "player-panel-sections-no-faction")">
                             <section class="player-panel-section player-panel-people" style="--figure-count:@FigureCount(shownPlayer)">
                               <div class="player-panel-group player-panel-leaders">
                                 <h3>Leaders</h3>
@@ -86,13 +86,14 @@
                             <section class="player-panel-section player-panel-owned">
                                 <h3>Cards</h3>
                                 <div class="player-panel-owned-content">
-                                    @if (CardsInHand.Count == 0)
+                                    @{ var hasNexus = shownPlayer.Nexus != Faction.None; var handCount = CardsInHand.Count + (hasNexus ? 1 : 0); }
+                                    @if (handCount == 0)
                                     {
                                         <span class="player-panel-empty-hand">No treachery cards</span>
                                     }
                                     else
                                     {
-                                        <div class="player-card-hand" aria-label="Treachery cards in hand" style="--hand-count:@CardsInHand.Count">
+                                        <div class="player-card-hand" aria-label="Cards in hand" style="--hand-count:@handCount">
                                             @for (var i = 0; i < CardsInHand.Count; i++)
                                             {
                                                 var card = CardsInHand[i];
@@ -102,15 +103,30 @@
                                                         title="@(canUseCard ? $"Use {Name(card)}" : PickTitle(card))"
                                                         data-dialog-target="@(canUseCard ? $"#{CardUseDialogId(card)}" : null)"
                                                         @onclick="@(() => HandleCardClick(card))"
-                                                        style="@HandCardStyle(i, CardsInHand.Count)">
+                                                        style="@HandCardStyle(i, handCount)">
                                                     <Image Shown="@CardsInHand[i]" Game="Game" Class="player-hand-image" />
                                                 </button>
+                                            }
+                                            @if (hasNexus)
+                                            {
+                                                var nexus = shownPlayer.Nexus.ToNexus();
+                                                <span class="player-hand-card player-hand-nexus @(CardsInHand.Count > 0 ? "player-hand-card-overlap" : "")" style="@HandCardStyle(CardsInHand.Count, handCount)">
+                                                    <Image Src="@Client.CurrentSkin.GetImageUrl(nexus)" Popover="@Client.CurrentSkin.GetNexusCardPopup(nexus)" Class="player-hand-image" />
+                                                </span>
                                             }
                                         </div>
                                     }
                                     @foreach (var card in CardsInHand.Where(CanUseCard))
                                     {
-                                        <ModalComponent Id="@CardUseDialogId(card)" Title="@($"Use {Name(card)}")" Size="dialog-large">
+                                        <div class="card-use-window" id="@CardUseDialogId(card)" popover="manual" role="dialog" aria-labelledby="@($"{CardUseDialogId(card)}-title")" data-draggable="card-use-window">
+                                            <header class="card-use-window-header" data-drag-handle title="Drag to move">
+                                                <span class="card-use-window-grip" aria-hidden="true">⠿</span>
+                                                <div class="card-use-window-heading">
+                                                    <span class="card-use-window-eyebrow">Play card</span>
+                                                    <h2 id="@($"{CardUseDialogId(card)}-title")">@Name(card)</h2>
+                                                </div>
+                                                <button type="button" class="icon-button card-use-window-close" data-dialog-close aria-label="Close without playing">×</button>
+                                            </header>
                                             <div class="card-use-dialog">
                                                 <img class="card-use-dialog-image" src="@Client.CurrentSkin.GetImageUrl(card)" alt="@Name(card)" />
                                                 <div class="card-use-dialog-actions">
@@ -158,18 +174,13 @@
                                                     }
                                                 </div>
                                             </div>
-                                        </ModalComponent>
-                                    }
-                                    @if (shownPlayer.Nexus != Faction.None)
-                                    {
-                                        <div class="player-panel-nexus">
-                                            <Image Width="38" Src="@Client.CurrentSkin.GetFactionFaceDownImageUrl(shownPlayer.Nexus)" Popover="@Client.CurrentSkin.GetNexusCardPopup(shownPlayer.Nexus.ToNexus())" />
-                                            <span>Nexus</span>
                                         </div>
                                     }
                                 </div>
                             </section>
 
+                            @if (HasFactionInformation)
+                            {
                             <section class="player-panel-section player-panel-faction-info">
                                 <h3>Faction information</h3>
                                 <div class="player-panel-faction-details">
@@ -208,12 +219,9 @@
                                     {
                                         <Hoverable Popover="@Client.CurrentSkin.GetPopup(Game.ResourceCardDeck.Top!)">Resource deck top: <strong>@Name(Game.ResourceCardDeck.Top)</strong></Hoverable>
                                     }
-                                    @if (!HasFactionInformation)
-                                    {
-                                        <span class="player-panel-faction-empty">No additional faction intel</span>
-                                    }
                                 </div>
                             </section>
+                            }
                         </div>
                     </div>
                 }
@@ -288,7 +296,7 @@
             || (player.Faction == Faction.Pink && Client.CurrentPhase > Phase.BluePredicting)
             || (player.Faction == Faction.Cyan && Client.CurrentPhase > Phase.BluePredicting)
             || Client.CurrentPhase > Phase.DiallingStorm && Game.HasStormPrescience(Player)
-            || Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(Player));
+            || Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(Player) && !Game.ResourceCardDeck!.IsEmpty);
 
     private static string HandCardStyle(int index, int count)
     {
