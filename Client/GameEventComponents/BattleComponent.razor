@@ -172,6 +172,38 @@
 </Wheel>
 <LeftFlap>
 
+    <div class="bw-intel bw-opponent">
+        <span class="bw-chip">
+            <span>Opponent</span>
+            @if (opponent.ForcesIn(Game.CurrentBattle.Territory) > 0)
+            {
+                <img src="@Client.CurrentSkin.GetFactionForceImageUrl(opponent.Faction)" alt="@Client.CurrentSkin.Describe(opponent.Force)" width="20" height="20" />
+                <strong>@opponent.ForcesIn(Game.CurrentBattle.Territory)</strong>
+            }
+            @if (opponent.HasAlly && opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory) > 0)
+            {
+                <img src="@Client.CurrentSkin.GetFactionForceImageUrl(opponent.Ally)" alt="@Client.CurrentSkin.Describe(opponent.AlliedPlayer.Force)" width="20" height="20" />
+                <strong>@opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory)</strong>
+            }
+            @if (opponent.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
+            {
+                <img src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(opponent.Faction)" alt="@Client.CurrentSkin.Describe(opponent.SpecialForce)" width="20" height="20" />
+                @if (opponent.Faction != Faction.White)
+                {
+                    <strong>@opponent.SpecialForcesIn(Game.CurrentBattle.Territory)</strong>
+                }
+            }
+            @if (opponent.HasAlly && opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
+            {
+                <img src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(opponent.Ally)" alt="@Client.CurrentSkin.Describe(opponent.AlliedPlayer.SpecialForce)" width="20" height="20" />
+                @if (opponent.Ally != Faction.White)
+                {
+                    <strong>@opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory)</strong>
+                }
+            }
+        </span>
+    </div>
+
     @StartActions
 
     <div class="bw-plan">
@@ -224,35 +256,6 @@
                 }
             }
 
-            <span class="bw-chip">
-                <span>Opponent</span>
-                @if (opponent.ForcesIn(Game.CurrentBattle.Territory) > 0)
-                {
-                    <img src="@Client.CurrentSkin.GetFactionForceImageUrl(opponent.Faction)" alt="@Client.CurrentSkin.Describe(opponent.Force)" width="20" height="20" />
-                    <strong>@opponent.ForcesIn(Game.CurrentBattle.Territory)</strong>
-                }
-                @if (opponent.HasAlly && opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory) > 0)
-                {
-                    <img src="@Client.CurrentSkin.GetFactionForceImageUrl(opponent.Ally)" alt="@Client.CurrentSkin.Describe(opponent.AlliedPlayer.Force)" width="20" height="20" />
-                    <strong>@opponent.AlliedPlayer.ForcesIn(Game.CurrentBattle.Territory)</strong>
-                }
-                @if (opponent.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
-                {
-                    <img src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(opponent.Faction)" alt="@Client.CurrentSkin.Describe(opponent.SpecialForce)" width="20" height="20" />
-                    @if (opponent.Faction != Faction.White)
-                    {
-                        <strong>@opponent.SpecialForcesIn(Game.CurrentBattle.Territory)</strong>
-                    }
-                }
-                @if (opponent.HasAlly && opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
-                {
-                    <img src="@Client.CurrentSkin.GetFactionSpecialForceImageUrl(opponent.Ally)" alt="@Client.CurrentSkin.Describe(opponent.AlliedPlayer.SpecialForce)" width="20" height="20" />
-                    @if (opponent.Ally != Faction.White)
-                    {
-                        <strong>@opponent.AlliedPlayer.SpecialForcesIn(Game.CurrentBattle.Territory)</strong>
-                    }
-                }
-            </span>
 
             @if (!Battle.ValidBattleHeroes(Game, opponent).Any())
             {
@@ -267,7 +270,6 @@
                     +@Game.CurrentPinkBattleContribution to @(pinkOnOurSide ? "your" : "opponent's") dial
                 </span>
             }
-
 
         </div>
 

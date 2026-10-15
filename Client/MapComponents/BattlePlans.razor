@@ -16,7 +16,7 @@
 @{
     var actions = BattleWheelState.ActionTypes.Where(a => Client.Actions.Contains(a)).ToList();
     var battle = Game.CurrentBattle;
-    var inBattle = Game.CurrentMainPhase == MainPhase.Battle && Game.CurrentPhase != Phase.BattleReport && battle != null;
+    var inBattle = Game.CurrentMainPhase == MainPhase.Battle && battle != null;
     var cards = new List<WheelCard>();
 
     if (inBattle)
