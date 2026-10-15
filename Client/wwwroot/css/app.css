@@ -640,7 +640,25 @@ svg {
 .game-status-message img, .game-status-message svg { vertical-align: middle; margin-top: -0.15em; }
 .game-status-message > div { display: inline-block; vertical-align: middle; }
 .game-status-message span { vertical-align: middle; }
-.game-status-options { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 14px; padding-top: 7px; border-top: 1px solid var(--line); color: var(--ivory-muted); }
+.game-status-options { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 14px; color: var(--ivory-muted); }
+/* Continue button with an attached "Auto" toggle segment */
+.continue-split { display: inline-flex; align-self: center; align-items: stretch; overflow: hidden; border: 1px solid rgba(240, 200, 130, 0.55); border-radius: 8px; box-shadow: 0 2px 8px rgba(213, 138, 66, 0.25); transition: box-shadow 160ms ease; }
+.continue-split:hover { box-shadow: 0 3px 12px rgba(213, 138, 66, 0.4); }
+.continue-split > button { display: inline-flex; align-items: center; border: 0; color: #1d1913; font-weight: 750; cursor: pointer; transition: background 160ms ease, color 160ms ease; }
+.continue-split-main { min-width: 104px; justify-content: center; padding: 0.42rem 1rem; background: linear-gradient(180deg, #e0a35d, #b9702e); box-shadow: inset 0 1px 0 rgba(255, 240, 210, 0.35); font-size: 0.95rem; }
+.continue-split-main:hover:not(:disabled) { background: linear-gradient(180deg, #eab06c, #c37a35); }
+.continue-split-main:disabled { opacity: 1; background: #4a4438; color: #b9b09c; }
+.continue-split-auto { gap: 6px; padding: 0 10px 0 9px; border-left: 1px solid rgba(29, 25, 19, 0.45) !important; background: linear-gradient(180deg, #c98c4b, #9f5f26); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.continue-split-auto:hover { background: linear-gradient(180deg, #d5975a, #ab6a2e); }
+.continue-split-switch { position: relative; width: 22px; height: 12px; border-radius: 999px; background: rgba(29, 25, 19, 0.45); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.45); transition: background 160ms ease; }
+.continue-split-switch::after { position: absolute; top: 2px; left: 2px; width: 8px; height: 8px; border-radius: 50%; background: #f3dcb4; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); content: ""; transition: transform 160ms ease; }
+.continue-split.is-auto { border-color: rgba(240, 200, 130, 0.85); }
+.continue-split.is-auto .continue-split-main { background: linear-gradient(90deg, #4a4438 0%, #5b4b35 50%, #4a4438 100%); background-size: 200% 100%; color: #f2d7a6; font-size: 0.85rem; font-style: italic; animation: continueAutoShimmer 2.4s linear infinite; }
+.continue-split.is-auto .continue-split-auto { background: linear-gradient(180deg, #f0b670, #cf8237); }
+.continue-split.is-auto .continue-split-switch { background: #2e5a32; }
+.continue-split.is-auto .continue-split-switch::after { background: #fff4df; transform: translateX(10px); }
+@keyframes continueAutoShimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@media (prefers-reduced-motion: reduce) { .continue-split.is-auto .continue-split-main { animation: none; } }
 /* Desktop: the status panel hangs directly from the turn/phase bar like a drawer tab. */
 @media (min-width: 761px) {
     .game-rail-content > .game-status-panel {

@@ -23,30 +23,34 @@
             <ExpressionComponent Game=Game Expression=@Client.Status.GetMessage(Client.Player!, Client.IsHost).Expression Size="20"/>
         </div>
 
-        @if (!AutoConfirm && CanEndPhase)
+        @if (AutoConfirm || CanEndPhase)
         {
-            <ButtonRowComponent Confirm="Confirm" ConfirmText="Continue" ConfirmError=@Validation/>
+            var error = Validation;
+            <div class="continue-split @(AutoConfirm ? "is-auto" : "")" role="group" aria-label="Continue">
+                <button type="button" class="continue-split-main" disabled="@(AutoConfirm || !CanEndPhase || error != null)"
+                        title="@(error?.ToString(Client.CurrentSkin))" @onclick="Confirm">
+                    @(AutoConfirm ? "Continuing automatically…" : "Continue")
+                </button>
+                <button type="button" class="continue-split-auto" role="switch" aria-checked="@(AutoConfirm ? "true" : "false")"
+                        title="@(AutoConfirm ? "Stop continuing automatically" : "Continue automatically from now on")"
+                        @onclick="ToggleAutoConfirm">
+                    <span class="continue-split-switch" aria-hidden="true"></span>
+                    <span>Auto</span>
+                </button>
+            </div>
         }
 
-        @if (AutoConfirm || CanEndPhase || Client.IsHost && Game.CurrentMainPhase == MainPhase.Bidding && Game.Players.Count(p => !p.IsBot) > 1)
+        @if (Client.IsHost && Game.CurrentMainPhase == MainPhase.Bidding && Game.Players.Count(p => !p.IsBot) > 1)
         {
             <div class="game-status-options">
-                @if (AutoConfirm || CanEndPhase)
-                {
-                    <CheckboxComponent Class="game-status-checkbox" @bind-Value=AutoConfirm>Continue automatically</CheckboxComponent>
-                }
-
-                @if (Client.IsHost && Game.CurrentMainPhase == MainPhase.Bidding && Game.Players.Count(p => !p.IsBot) > 1)
-                {
-                    <div class="game-status-timer">
-                        <CheckboxComponent Class="game-status-checkbox" @bind-Value="@TimeLimitSet" OnChanged=EnableOrDisableTimer>Time limit</CheckboxComponent>
-                        @if (TimeLimitSet)
-                        {
-                            <span>(seconds)</span>
-                            <SelectNumberComponent Disabled=@(!TimeLimitSet) @bind-Value=@TimeLimit OnChanged=@UpdateTimer Min="10" Max="600" StepUp="TimerStepUp" StepDown="TimerStepDown" Size="30"/>
-                        }
-                    </div>
-                }
+                <div class="game-status-timer">
+                    <CheckboxComponent Class="game-status-checkbox" @bind-Value="@TimeLimitSet" OnChanged=EnableOrDisableTimer>Time limit</CheckboxComponent>
+                    @if (TimeLimitSet)
+                    {
+                        <span>(seconds)</span>
+                        <SelectNumberComponent Disabled=@(!TimeLimitSet) @bind-Value=@TimeLimit OnChanged=@UpdateTimer Min="10" Max="600" StepUp="TimerStepUp" StepDown="TimerStepDown" Size="30"/>
+                    }
+                </div>
             </div>
         }
     }
@@ -100,6 +104,8 @@
 
         _previousPhase = Game.CurrentPhase;
     }
+
+    private void ToggleAutoConfirm() => AutoConfirm = !AutoConfirm;
 
     private void EnableOrDisableTimer(bool value)
     {
