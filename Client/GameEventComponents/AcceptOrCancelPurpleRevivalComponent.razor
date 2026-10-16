@@ -10,60 +10,53 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Manage Revival Requests</Header>
+    <Header>Early revival requests</Header>
 
     <Body>
 
         @if (Game.CurrentRevivalRequests.Any())
         {
-            @if (Game.CurrentRevivalRequests.Any(req => req.Player.IsBot))
-            {
-                <div class="ui-text-warning ui-mb-1">Bots are awaiting your decision before starting to revive...</div>
-            }
-            
-            <div>Early revival requests:</div>
-            <SelectFromImageComponent Game=Game Required=true @bind-Value=@OfferHero Values=@Game.CurrentRevivalRequests.Select(req => req.Hero) ImageWidth="80"/>
+            <div class="ev-section">
+                <div class="ev-label">Requested</div>
+                <SelectFromImageComponent Game=Game Required=true @bind-Value=@OfferHero Values=@Game.CurrentRevivalRequests.Select(req => req.Hero) ImageWidth="56"/>
+                @if (Game.CurrentRevivalRequests.Any(req => req.Player.IsBot))
+                {
+                    <div class="ev-note">Bots are waiting for your decision before they revive.</div>
+                }
+            </div>
+
             <SelectResourcesComponent @bind-Value="Price" Min=0 Max=50 Label="Price" />
-            <ButtonRowComponent Alignment="" Pass="Pass" PassText="Deny all" Confirm="Confirm" ConfirmText=@OfferLabel Other=Other OtherText=@DenyLabel ConfirmError=@Validation />
+
+            <ButtonRowComponent Pass="Pass" PassText="Deny all" Confirm="Confirm" ConfirmText=@OfferLabel Other=Other OtherText="Deny" ConfirmError=@Validation />
         }
 
-        @if (CurrentRevivalOfferValues.Any())
+        @if (Game.EarlyRevivalsOffers.Any())
         {
-            if (Game.CurrentRevivalRequests.Any())
-            {
-                <hr style="border-color:white" />
-            }
-
-            <div>Existing early revival offers:</div>
-            <table class="ui-table ui-table-sm">
-                <tbody>
+            <div class="ev-section">
+                <div class="ev-label">Your offers</div>
+                <ul class="ev-chips">
                     @foreach (var kvp in Game.EarlyRevivalsOffers)
                     {
-                        <tr class="ui-table-dark">
-                            <td><Image Shown=@kvp.Key Width="32"/></td>
-                            <td>
-                                @if (kvp.Value == int.MaxValue)
-                                {
-                                    <span>Denied</span>
-                                }
-                                else
-                                {
-                                    <SimpleNumberComponent Size=22>@kvp.Value</SimpleNumberComponent>
-                                }
-                            </td>
-                            <td>
-                                <button class="ui-btn ui-btn-primary ui-btn-sm" @onclick="_ => Cancel(kvp.Key)">Cancel</button>
-                            </td>
-                        </tr>
+                        <li class="ev-chip @(kvp.Value == int.MaxValue ? "is-denied" : "")">
+                            <Image Shown=@kvp.Key Width="28" Game=Game />
+                            @if (kvp.Value == int.MaxValue)
+                            {
+                                <span class="ev-chip-text">Denied</span>
+                            }
+                            else
+                            {
+                                <span class="ev-chip-price" title="Price">@kvp.Value</span>
+                            }
+                            <button type="button" class="ev-remove" title="Cancel this offer" aria-label="Cancel offer" @onclick="_ => Cancel(kvp.Key)">&times;</button>
+                        </li>
                     }
-                </tbody>
-            </table>
+                </ul>
+            </div>
         }
 
     </Body>
 
 </GameEventComponentLayout>
-
 @code {
 
     protected override bool IsUrgent => Game.CurrentRevivalRequests.Any();
@@ -84,9 +77,5 @@
         await Request(new AcceptOrCancelPurpleRevival(Game, Faction) { Cancel = true, Hero = hero });
     }
 
-    private IEnumerable<IHero> CurrentRevivalOfferValues => Game.EarlyRevivalsOffers.Select(kvp => kvp.Key);
-
-    private string OfferLabel => Client.CurrentSkin.Format("Offer {0} for {1}", OfferHero, Price); 
-
-    private string DenyLabel => Client.CurrentSkin.Format("Deny revival of {0}", OfferHero); 
+    private string OfferLabel => Client.CurrentSkin.Format("Offer for {0}", Price);
 }

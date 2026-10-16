@@ -226,10 +226,9 @@ public class Skin : IDescriber
         {
             if (hms.AttachedToLocation != null)
             {
-                var dX = hms.AttachedToLocation.Territory == map.RockOutcroppings ? 22 : 0;
-                var dY = hms.AttachedToLocation.Territory == map.RockOutcroppings ? -10 : 0;
-                var attachedToCenter = GetCenter(hms.AttachedToLocation, map);
-                return new PointD(attachedToCenter.X + (int)HmsDx + dX, attachedToCenter.Y + dY);
+                var tip = GetHmsTip(hms, map);
+                var angle = GetHmsAngle(hms, map);
+                return new PointD(tip.X + HmsBodyDistance * Math.Cos(angle), tip.Y + HmsBodyDistance * Math.Sin(angle));
             }
 
             return new PointD((int)HmsDx, (int)HmsDx);
@@ -252,6 +251,101 @@ public class Skin : IDescriber
     public float HmsDx => -3 * PlayerTokenRadius;
 
     public float HmsRadius => 1.5f * PlayerTokenRadius;
+
+    // Distance between the point the HMS points at (its tip) and the center of its round body.
+    public double HmsBodyDistance => 2.7 * PlayerTokenRadius;
+
+    public double HmsBodyRadius => 1.2 * PlayerTokenRadius;
+
+    /// <summary>
+    /// The point on the map the HMS points at.
+    /// </summary>
+    public PointD GetHmsTip(HiddenMobileStronghold hms, Map map)
+    {
+        return hms.AttachedToLocation != null ? GetCenter(hms.AttachedToLocation, map) : new PointD((int)HmsDx, (int)HmsDx);
+    }
+
+    private readonly Dictionary<int, double> _hmsAngleCache = [];
+
+    /// <summary>
+    /// Direction (in radians, 0 = east, clockwise) from the HMS tip towards its body. The HMS is rotated around its tip
+    /// so that its body covers as little as possible of the things drawn on the map below it.
+    /// </summary>
+    public double GetHmsAngle(HiddenMobileStronghold hms, Map map)
+    {
+        if (hms.AttachedToLocation == null) return Math.PI;
+
+        lock (_hmsAngleCache)
+        {
+            if (_hmsAngleCache.TryGetValue(hms.AttachedToLocation.Id, out var cached)) return cached;
+        }
+
+        var tip = GetHmsTip(hms, map);
+        var obstacles = new List<(PointD Point, double Radius)>();
+
+        foreach (var l in map.Locations(false).Where(l => l is not HiddenMobileStronghold && l is not DiscoveredLocation && !Equals(l, hms.AttachedToLocation)))
+        {
+            if (LocationCenter_Point.TryGetValue(l.Id, out var center)) obstacles.Add((center, 1.5 * FORCETOKEN_RADIUS));
+            if (l.SpiceBlowAmount != 0 && LocationSpice_Point.TryGetValue(l.Id, out var spice)) obstacles.Add((spice, FORCETOKEN_RADIUS));
+        }
+
+        foreach (var stronghold in map.Strongholds.Where(s => s is not HiddenMobileStronghold && LocationCenter_Point.ContainsKey(s.Id)))
+        {
+            var center = LocationCenter_Point[stronghold.Id];
+            obstacles.Add((new PointD(center.X - 1.7 * PlayerTokenRadius, center.Y - 0.5 * PlayerTokenRadius), 0.5 * PlayerTokenRadius));
+            obstacles.Add((new PointD(center.X - 1.7 * PlayerTokenRadius, center.Y + 0.5 * PlayerTokenRadius), 0.5 * PlayerTokenRadius));
+        }
+
+        var bestAngle = Math.PI;
+        var bestScore = double.MaxValue;
+        const int steps = 8;
+        const double step = Math.PI / 12;
+
+        for (var i = -steps; i <= steps; i++)
+        {
+            var angle = Math.PI + i * step;
+            var cos = Math.Cos(angle);
+            var sin = Math.Sin(angle);
+
+            (PointD Point, double Radius)[] parts =
+            [
+                (new PointD(tip.X + HmsBodyDistance * cos, tip.Y + HmsBodyDistance * sin), HmsBodyRadius),
+                (new PointD(tip.X + 1.5 * PlayerTokenRadius * cos, tip.Y + 1.5 * PlayerTokenRadius * sin), 0.6 * PlayerTokenRadius),
+                (new PointD(tip.X + 0.8 * PlayerTokenRadius * cos, tip.Y + 0.8 * PlayerTokenRadius * sin), 0.35 * PlayerTokenRadius)
+            ];
+
+            // Slight preference for the classic orientation (body west of the tip)
+            var score = 4.0 * Math.Abs(i);
+
+            foreach (var part in parts)
+            {
+                foreach (var obstacle in obstacles)
+                {
+                    var overlap = part.Radius + obstacle.Radius - Distance(part.Point, obstacle.Point);
+                    if (overlap > 0) score += overlap * overlap;
+                }
+            }
+
+            // Keep the body above the planet, away from the player tokens around it
+            var outside = Distance(parts[0].Point, PlanetCenter) + HmsBodyRadius - PlanetRadius;
+            if (outside > 0) score += 2 * outside * outside;
+
+            if (score < bestScore)
+            {
+                bestScore = score;
+                bestAngle = angle;
+            }
+        }
+
+        lock (_hmsAngleCache)
+        {
+            _hmsAngleCache[hms.AttachedToLocation.Id] = bestAngle;
+        }
+
+        return bestAngle;
+    }
+
+    private static double Distance(PointD a, PointD b) => Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
 
     public PointD GetSpiceLocation(Location location)
     {
@@ -462,27 +556,47 @@ public class Skin : IDescriber
         return $"<div class='card-popover'>{image}<div class='card-popover-info'><div class='card-popover-heading'><span class='card-popover-name'>{Describe(c)}</span>{tags}</div><p>{text}</p></div></div>";
     }
 
-    public string GetPopup(IHero h)
-    {
-        return GetImageHoverHtml(GetImageUrl(h));
-    }
+    public string GetPopup(IHero h) => GetHeroPopup(h, null);
 
-    public string GetPopup(IHero? h, Game g)
-    {
-        if (h == null) return "";
-
-        var skill = g.Skill(h);
-
-        if (skill == LeaderSkill.None)
-        {
-            return GetImageHoverHtml(GetImageUrl(h));
-        }
-
-        return GetPopup(h as Leader, skill);
-    }
+    public string GetPopup(IHero? h, Game g) => h == null ? "" : GetHeroPopup(h, g);
 
     public string GetPopup(Leader? l, LeaderSkill s)
-        => l == null ? "" : $"<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{GetImageUrl(s)}' width=300/><img src='{GetImageUrl(l)}' width=120 style='position:absolute;right:6px;bottom:6px;width:40%;filter:drop-shadow(-2px 2px 2px black);'/></div>";
+        => l == null ? "" : GetHeroPopup(l, null, s);
+
+    private string GetHeroPopup(IHero h, Game? g, LeaderSkill? skillOverride = null)
+    {
+        if (h is TreacheryCard card) return GetPopup(card);
+
+        static string Encode(string s) => System.Net.WebUtility.HtmlEncode(s);
+
+        var skill = skillOverride ?? g?.Skill(h) ?? LeaderSkill.None;
+        var color = h.Faction != Faction.None ? GetFactionColor(h.Faction) : "#c1a76c";
+
+        var faction = h.Faction != Faction.None
+            ? $"<div class='hero-popover-faction'><img src='{GetImageUrl(h.Faction)}' alt=''/><span>{Encode(Describe(h.Faction))}</span></div>"
+            : "";
+
+        var stats = $"<div class='hero-popover-stats'><span class='hero-popover-stat'><b>{h.Value}</b>strength</span>" +
+                    (h.CostToRevive != h.Value && h.CostToRevive > 0 ? $"<span class='hero-popover-stat'><b>{h.CostToRevive}</b>revival</span>" : "") +
+                    "</div>";
+
+        var status = "";
+        if (g != null && g.LeaderState.TryGetValue(h, out var state))
+        {
+            status = state.Alive
+                ? (g.IsInFrontOfShield(h) ? "<span class='hero-popover-status is-front'>In front of shield</span>" : "")
+                : "<span class='hero-popover-status is-dead'>In the tanks</span>";
+        }
+
+        var skillPart = skill != LeaderSkill.None
+            ? $"<div class='hero-popover-skill'><div class='hero-popover-skill-label'>Skill · <strong>{Encode(Describe(skill))}</strong></div><img src='{GetImageUrl(skill)}' alt='{Encode(Describe(skill))}'/></div>"
+            : "";
+
+        return $"<div class='hero-popover' style='--hero-color:{color}'>" +
+               $"<div class='hero-popover-main'><div class='hero-popover-disc'><img src='{GetImageUrl(h)}' alt=''/></div>" +
+               $"<div class='hero-popover-info'><div class='hero-popover-name'>{Encode(Describe(h))}</div>{faction}{stats}{status}</div></div>" +
+               $"{skillPart}</div>";
+    }
     
     public string GetPopup(StrongholdAdvantage adv)
         => GetImageHoverHtml(GetImageUrl(adv));

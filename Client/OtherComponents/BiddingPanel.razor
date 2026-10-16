@@ -97,15 +97,17 @@
             @if (!Client.IsObserver && Client.Player is { Faction: not Faction.None })
             {
                 <div class="bid-autopass @(Client.AutoPass ? "is-on" : "")">
-                    <CheckboxComponent @bind-Value="@Client.AutoPass" OnChanged="AutoPassChanged">Auto-pass</CheckboxComponent>
-                    @if (Client.AutoPass)
-                    {
-                        <SelectResourcesComponent @bind-Value="@Client.BidAutoPassThreshold" Min="0" Max="50" Label="when above" />
-
-                        @if (ShowRepeatAutoPass)
+                    <div class="bid-autopass-main">
+                        <CheckboxComponent @bind-Value="@Client.AutoPass" OnChanged="AutoPassChanged">@(Client.AutoPass ? "Auto-pass when bid exceeds" : "Auto-pass")</CheckboxComponent>
+                        @if (Client.AutoPass)
                         {
-                            <CheckboxComponent @bind-Value="@Client.KeepAutoPassSetting">Repeat every round</CheckboxComponent>
+                            <SelectResourcesComponent @bind-Value="@Client.BidAutoPassThreshold" Min="0" Max="50" Class="bid-autopass-threshold" Title="Automatically pass when the bid to beat is higher than this amount" />
                         }
+                    </div>
+
+                    @if (Client.AutoPass && ShowRepeatAutoPass)
+                    {
+                        <CheckboxComponent @bind-Value="@Client.KeepAutoPassSetting" Class="bid-autopass-repeat">Keep for remaining cards</CheckboxComponent>
                     }
                 </div>
             }

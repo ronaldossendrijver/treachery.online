@@ -9,42 +9,55 @@
 
 <ModalComponent Id="@Id" Title="Credits">
 
-    <table class="ui-table-borderless ui-text-center">
-        <tbody>
-            <tr>
-                <td style="width: 50%" class="ui-p-2 ui-text-end ui-align-text-top">Game Development</td>
-                <td style="width: 50%" class="ui-p-2 ui-text-start ui-align-text-top ui-fw-bold">Ronald Ossendrijver, <a href="mailto:admin@treachery.online" target="_blank">admin@treachery.online</a></td>
-            </tr>
-            <tr>
-                <td style="width: 50%" class="ui-p-2 ui-text-end ui-align-text-top">Design &amp; Artwork</td>
-                <td style="width: 50%" class="ui-p-2 ui-text-start ui-align-text-top ui-fw-bold">Ilya Baranovsky, Reinier de Graaf &amp; Piper</td>
-            </tr>
-            <tr>
-                <td style="width: 50%" class="ui-p-2 ui-text-end ui-align-text-top">Leader &amp; Treachery Card Artwork</td>
-                <td style="width: 50%" class="ui-p-2 ui-text-start ui-align-text-top ui-fw-bold">Avalon Hill</td>
-            </tr>
-            <tr>
-                <td style="width: 50%" class="ui-p-2 ui-text-end ui-align-text-top">Music</td>
-                <td style="width: 50%" class="ui-p-2 ui-text-start ui-align-text-top ui-fw-bold">St&eacute;phane Picq & Philippe Ulrich</td>
-            </tr>
-            <tr>
-                <td style="width: 50%" class="ui-p-2 ui-text-end ui-align-text-top">Donations</td>
-                <td style="width: 50%" class="ui-p-2 ui-text-start ui-align-text-top ui-fw-bold">
-                    Andries, Stuart, Eamon, Adriaan, Luca, Valerio, Richard, Peter, Patrick, Vladislav, <strong>Derek</strong>, Darren, Doug, Aaron, Marko, Daniel, Erik, Shea, Justin, Lee, Marko, Aaron W.,
-                    Tom, Nathan, Denis, Jason, Stefan, Eliot, Dean, Chris, Sebastian, Brian, Nikita, Andreas, Klaude, Robert, Frederic, Howard, Francis, Marc, Andr&eacute;, Kenny, William, 
-                    Jean-Fran&ccedil;ois, Jorge, MelonNinja, Donovan, <strong>Ken-Yu</strong>, Peter, John, Maxwell, Dominic, Conquer Today, Duane, Michael, Rodrigo, Salvatore, André,
-                    Petr, Oliver, Sam, Vytautas, Erik, Marcel, Justin, Dimitris, Jerry, Sheehan, Graydon, Jerrod, <strong>Jennifer</strong>, <strong>Thomas</strong>, Robert, Seth, Daniel, Bradley, <strong>Christian</strong>,
-                    Nathaniel, Andrew, Thomas, Damien, Finn, <strong>Stanko</strong>, <strong>Jack</strong>, <strong>André</strong>, <strong>Jeffrey</strong>, David, Richard, <strong>Nicolai</strong>, Caspar, Ryan, Stuart, 
-                    <strong>André</strong>, Rowan, Dirk, Michael, Dale, Ace_xD (Nico), Johaney, Kev, Alexander, Tyler, BigDave, Qaanaaq, Gurr, Damian, Delta, RaiderOfTwix, 
-                    rochesta, Alan, aioio wololo, <strong>mystyr_e</strong>, dr.doom, Georgina, <strong>MilesofPurple</strong>, William, 
-                    Owlorbs, <strong>Emo_Duck</strong>, <strong>Jake</strong>, usr_rusty, <strong>Tristan</strong>, frike0, <strong>Ben (oo7ben)</strong>, karpverse
+    <div class="credits">
 
-                </td>
-            </tr>
-        </tbody>
-    </table>
+        <div class="credits-hero">
+            <span class="credits-eyebrow">treachery.online</span>
+            <p class="credits-tagline">Made possible by the people below. Thank you!</p>
+        </div>
 
-    <a href="https://ko-fi.com/N4N618W4XV" target="_blank"><img height="36" style="border:0;height:36px;" src="https://storage.ko-fi.com/cdn/kofi2.png?v=6" alt="Donate" /></a>
+        <dl class="credits-roles">
+            <div class="credits-role">
+                <dt>Game development</dt>
+                <dd>
+                    Ronald Ossendrijver
+                    <a class="credits-mail" href="mailto:admin@treachery.online" target="_blank">admin@treachery.online</a>
+                </dd>
+            </div>
+            <div class="credits-role">
+                <dt>Design &amp; artwork</dt>
+                <dd>Ilya Baranovsky, Reinier de Graaf &amp; Piper</dd>
+            </div>
+            <div class="credits-role">
+                <dt>Leader &amp; treachery card artwork</dt>
+                <dd>Avalon Hill</dd>
+            </div>
+            <div class="credits-role">
+                <dt>Music</dt>
+                <dd>St&eacute;phane Picq &amp; Philippe Ulrich</dd>
+            </div>
+        </dl>
+
+        <section class="credits-donors" aria-labelledby="@($"{Id}-donors")">
+            <header class="credits-donors-header">
+                <h3 id="@($"{Id}-donors")">Donations</h3>
+                <span class="credits-donors-legend"><span class="credits-star" aria-hidden="true">★</span> generous supporter</span>
+            </header>
+            <ul class="credits-donor-list">
+                @foreach (var donor in Donors)
+                {
+                    var major = donor.StartsWith('*');
+                    <li class="credits-donor @(major ? "is-major" : "")" title="@(major ? "Generous supporter" : null)">@(major ? donor[1..] : donor)</li>
+                }
+            </ul>
+        </section>
+
+        <div class="credits-footer">
+            <span>Enjoying the game? Support its development:</span>
+            <a href="https://ko-fi.com/N4N618W4XV" target="_blank"><img height="36" src="https://storage.ko-fi.com/cdn/kofi2.png?v=6" alt="Donate on Ko-fi" /></a>
+        </div>
+
+    </div>
 
 </ModalComponent>
 
@@ -52,4 +65,17 @@
 
     [Parameter]
     public string Id { get; set; } = "";
+
+    // Names starting with * are highlighted as generous supporters.
+    private static readonly string[] Donors =
+    [
+        "Andries", "Stuart", "Eamon", "Adriaan", "Luca", "Valerio", "Richard", "Peter", "Patrick", "Vladislav", "*Derek", "Darren", "Doug", "Aaron", "Marko", "Daniel", "Erik", "Shea", "Justin", "Lee", "Marko", "Aaron W.",
+        "Tom", "Nathan", "Denis", "Jason", "Stefan", "Eliot", "Dean", "Chris", "Sebastian", "Brian", "Nikita", "Andreas", "Klaude", "Robert", "Frederic", "Howard", "Francis", "Marc", "André", "Kenny", "William",
+        "Jean-François", "Jorge", "MelonNinja", "Donovan", "*Ken-Yu", "Peter", "John", "Maxwell", "Dominic", "Conquer Today", "Duane", "Michael", "Rodrigo", "Salvatore", "André",
+        "Petr", "Oliver", "Sam", "Vytautas", "Erik", "Marcel", "Justin", "Dimitris", "Jerry", "Sheehan", "Graydon", "Jerrod", "*Jennifer", "*Thomas", "Robert", "Seth", "Daniel", "Bradley", "*Christian",
+        "Nathaniel", "Andrew", "Thomas", "Damien", "Finn", "*Stanko", "*Jack", "*André", "*Jeffrey", "David", "Richard", "*Nicolai", "Caspar", "Ryan", "Stuart",
+        "*André", "Rowan", "Dirk", "Michael", "Dale", "Ace_xD (Nico)", "Johaney", "Kev", "Alexander", "Tyler", "BigDave", "Qaanaaq", "Gurr", "Damian", "Delta", "RaiderOfTwix",
+        "rochesta", "Alan", "aioio wololo", "*mystyr_e", "dr.doom", "Georgina", "*MilesofPurple", "William",
+        "Owlorbs", "*Emo_Duck", "*Jake", "usr_rusty", "*Tristan", "frike0", "*Ben (oo7ben)", "karpverse"
+    ];
 }

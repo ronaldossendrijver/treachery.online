@@ -31,11 +31,11 @@
         <img src="@BehindNumberSrc" style="position: absolute; left: @BehindNumberImageOffsetX; top:@BehindNumberImageOffsetY; width: @BehindNumberImageSize;" alt="@Value"/>
     }
 
-    <span @onclick="@(async e => await Click(e))" style="cursor: pointer; position: absolute; left: @NumberBoxOffsetX; top:@NumberBoxOffsetY; width: @NumberBoxSize; font-size: @NumberFontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap;">@Value</span>
+    <span @onclick="@(async e => await Click(e))" aria-disabled="@(CanIncrease || CanDecrease ? "false" : "true")" style="cursor: pointer; position: absolute; left: @NumberBoxOffsetX; top:@NumberBoxOffsetY; width: @NumberBoxSize; font-size: @NumberFontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap;">@Value</span>
 
     <svg 
-        @onclick="@(async e => await Increase())"
-        xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" 
+        @onclick="@(async _ => await Increase())"
+        aria-disabled="@(CanIncrease ? "false" : "true")"
         height="@ArrowSize" 
         viewBox="0 0 16 16"
         class="arrow-up @ArrowUpClass"
@@ -44,8 +44,8 @@
     </svg>
 
     <svg 
-        @onclick="@(async e => await Decrease())"
-        xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" 
+        @onclick="@(async _ => await Decrease())"
+        aria-disabled="@(CanDecrease ? "false" : "true")"
         height="@ArrowSize" viewBox="0 0 16 16" 
         class="arrow-down @ArrowDownClass"
         style="left: @ArrowOffsetX; width: @ArrowSize; filter: @ArrowDownClass; fill: @DecreaseArrowColor">
@@ -138,7 +138,7 @@
 
     private async Task Increase()
     {
-        if (!Disabled && Value < Max)
+        if (CanIncrease)
         {
             await SetValue(Value + StepUp);
             await OnUp.InvokeAsync();
@@ -147,7 +147,7 @@
 
     private async Task Decrease() {
 
-        if (!Disabled && Value > Min)
+        if (CanDecrease)
         {
             await SetValue(Value - StepDown);
             await OnDown.InvokeAsync();
@@ -166,6 +166,10 @@
         }
     }
 
+    private bool CanIncrease => !Disabled && Value < Max;
+
+    private bool CanDecrease => !Disabled && Value > Min;
+
     private bool MayIncrease => !Disabled && Value + StepUp <= Max;
 
     private bool MayDecrease => !Disabled && Value - StepDown >= Min;
@@ -178,9 +182,9 @@
 
     private bool DrawNumberBackground => NumberBackgroundFillColor != null || NumberBackgroundBorderColor != null;
 
-    private string IncreaseArrowColor => !Disabled && Value < Max ? ArrowColor : DisabledColor;
+    private string IncreaseArrowColor => CanIncrease ? ArrowColor : DisabledColor;
 
-    private string DecreaseArrowColor => !Disabled && Value > Min ? ArrowColor : DisabledColor;
+    private string DecreaseArrowColor => CanDecrease ? ArrowColor : DisabledColor;
 
     private string NumberBoxSize
     {

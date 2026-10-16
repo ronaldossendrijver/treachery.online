@@ -12,15 +12,15 @@
 {
     <div class="volume-settings ui-small">
         <label for="musicVolume">Music</label>
-        <input id="musicVolume" class="ui-form-range" type="range" min="0" max="100" step="1" @bind="@DesiredMusicVolume" @bind:event="oninput" @onchange="@AdjustVolume"/>
+        <input id="musicVolume" class="ui-form-range" type="range" min="0" max="100" step="1" @bind="@DesiredMusicVolume" @bind:event="oninput" @bind:after="@AdjustVolume"/>
         <output for="musicVolume">@Math.Round(DesiredMusicVolume)</output>
 
         <label for="effectVolume">Sound effects</label>
-        <input id="effectVolume" class="ui-form-range" type="range" min="0" max="100" step="1" @bind="@DesiredEffectVolume" @bind:event="oninput" @onchange="@AdjustVolume" />
+        <input id="effectVolume" class="ui-form-range" type="range" min="0" max="100" step="1" @bind="@DesiredEffectVolume" @bind:event="oninput" @bind:after="@AdjustVolume" />
         <output for="effectVolume">@Math.Round(DesiredEffectVolume)</output>
 
         <label for="chatVolume">Chat notifications</label>
-        <input id="chatVolume" class="ui-form-range" type="range" min="0" max="100" step="1" @bind="@DesiredChatVolume" @bind:event="oninput" @onchange="@AdjustVolume" />
+        <input id="chatVolume" class="ui-form-range" type="range" min="0" max="100" step="1" @bind="@DesiredChatVolume" @bind:event="oninput" @bind:after="@AdjustVolume" />
         <output for="chatVolume">@Math.Round(DesiredChatVolume)</output>
     </div>
 
@@ -37,6 +37,7 @@
     private string CurrentSoundtrack { get; set; } = "";
     private float CurrentMusicVolume { get; set; } = -1;
     private float CurrentUiSoundVolume { get; set; } = -1;
+    private bool _settingsLoaded;
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,6 +46,9 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!_settingsLoaded)
+            return;
+
         if (Math.Abs(CurrentUiSoundVolume - DesiredEffectVolume) > 0.001f)
         {
             CurrentUiSoundVolume = DesiredEffectVolume;
@@ -56,10 +60,13 @@
 
     private async Task UpdateMusicAndSound()
     {
-        if (!Client.InGame)
+        if (!_settingsLoaded || !Client.InGame)
             return;
         
-        var soundtrackToPlay = DetermineSoundtrack();
+        Client.CurrentEffectVolume = DesiredEffectVolume;
+        Client.CurrentChatVolume = DesiredChatVolume;
+
+        var soundtrackToPlay = DesiredMusicVolume <= 4 ? "" : DetermineSoundtrack();
 
         if (CurrentSoundtrack != soundtrackToPlay)
         {
@@ -69,25 +76,22 @@
             }
 
             CurrentSoundtrack = soundtrackToPlay;
-            await Browser.PlaySound(soundtrackToPlay, DesiredMusicVolume, true);
+            CurrentMusicVolume = DesiredMusicVolume;
+
+            if (soundtrackToPlay != "")
+            {
+                await Browser.PlaySound(soundtrackToPlay, DesiredMusicVolume, true);
+            }
         }
         else if (Math.Abs(CurrentMusicVolume - DesiredMusicVolume) > 0.001f)
         {
             CurrentMusicVolume = DesiredMusicVolume;
 
-            if (DesiredMusicVolume <= 4)
-            {
-                await Browser.StopSounds();
-                CurrentSoundtrack = "";
-            }
-            else
+            if (soundtrackToPlay != "")
             {
                 await Browser.ChangeSoundVolume(soundtrackToPlay, DesiredMusicVolume);
             }
         }
-
-        Client.CurrentEffectVolume = DesiredEffectVolume;
-        Client.CurrentChatVolume = DesiredChatVolume;
     }
 
     private string DetermineSoundtrack()
@@ -110,27 +114,44 @@
         };
     }
 
+    private const string MusicVolumeKey = "treachery.online;setting.music";
+    private const string EffectVolumeKey = "treachery.online;setting.effect";
+    private const string ChatVolumeKey = "treachery.online;setting.chatvolume";
+    private const float DefaultVolume = 50;
+
     private async Task AdjustVolume()
     {
-        await Browser.SaveSetting("treachery.online;setting.music", DesiredMusicVolume);
-        await Browser.SaveSetting("treachery.online;setting.effect", DesiredEffectVolume);
-        await Browser.SaveSetting("treachery.online;setting.chatvolume", DesiredChatVolume);
+        await SaveVolume(MusicVolumeKey, DesiredMusicVolume);
+        await SaveVolume(EffectVolumeKey, DesiredEffectVolume);
+        await SaveVolume(ChatVolumeKey, DesiredChatVolume);
+    }
+
+    private async Task SaveVolume(string key, float value)
+    {
+        await Browser.SaveStringSetting(key, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+    }
+
+    private async Task<float> LoadVolume(string key)
+    {
+        try
+        {
+            var stored = await Browser.LoadStringSetting(key);
+            if (float.TryParse(stored, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var value))
+                return Math.Clamp(value, 0, 100);
+        }
+        catch (Exception)
+        {
+            //Fall back to default
+        }
+
+        return DefaultVolume;
     }
 
     private async Task LoadSettings()
     {
-        try
-        {
-            DesiredMusicVolume = await Browser.LoadSetting<float>("treachery.online;setting.music");
-            if (DesiredMusicVolume == 0) DesiredMusicVolume = 50;
-            DesiredEffectVolume = await Browser.LoadSetting<float>("treachery.online;setting.effect");
-            if (DesiredEffectVolume == 0) DesiredEffectVolume = 50;
-            DesiredChatVolume = await Browser.LoadSetting<float>("treachery.online;setting.chatvolume");
-            if (DesiredChatVolume == 0) DesiredChatVolume = 50;
-        }
-        catch (Exception)
-        {
-            //Do nothing
-        }
+        DesiredMusicVolume = await LoadVolume(MusicVolumeKey);
+        DesiredEffectVolume = await LoadVolume(EffectVolumeKey);
+        DesiredChatVolume = await LoadVolume(ChatVolumeKey);
+        _settingsLoaded = true;
     }
 }

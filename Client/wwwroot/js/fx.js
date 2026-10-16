@@ -506,16 +506,19 @@ window.ScrollToEdge = function (element, toEnd) {
     const pick = list => list[Math.floor(Math.random() * list.length)];
     const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${Math.max(0, a).toFixed(3)})`;
 
-    function blow(cx, cy, size) {
-        const dpr = window.devicePixelRatio || 1;
-        const reach = Math.max(34, size * 2.6);
+    // cx, cy and size are in the coordinate space of host; scale converts that space to screen pixels.
+    function blow(host, cx, cy, size, scale) {
+        const dpr = (window.devicePixelRatio || 1) * scale;
+        const reach = Math.max(34 / scale, size * 2.6);
         const half = reach * 1.7;
         const canvas = document.createElement('canvas');
         canvas.setAttribute('aria-hidden', 'true');
-        canvas.style.cssText = `position:fixed;left:${cx - half}px;top:${cy - half}px;width:${half * 2}px;height:${half * 2}px;pointer-events:none;z-index:1540;`;
+        canvas.style.cssText = host === document.body
+            ? `position:fixed;left:${cx - half}px;top:${cy - half}px;width:${half * 2}px;height:${half * 2}px;pointer-events:none;z-index:1540;`
+            : `position:absolute;left:${cx - half}px;top:${cy - half}px;width:${half * 2}px;height:${half * 2}px;pointer-events:none;`;
         canvas.width = Math.round(half * 2 * dpr);
         canvas.height = Math.round(half * 2 * dpr);
-        document.body.appendChild(canvas);
+        host.appendChild(canvas);
         const ctx = canvas.getContext('2d');
         const o = half * dpr;
         const u = dpr;
@@ -697,7 +700,18 @@ window.ScrollToEdge = function (element, toEnd) {
             const rect = el.getBoundingClientRect();
             if (rect.width <= 0 || rect.height <= 0) continue;
             shown = true;
-            if (!reduceMotion) blow(rect.left + rect.width / 2, rect.top + rect.height / 2, Math.max(rect.width, rect.height));
+            if (reduceMotion) continue;
+            // Draw inside the map so the effect is clipped by the map and stays below panels on top of it.
+            const layer = el.closest('#planetmap_inner')?.querySelector(':scope > .map-fx-layer');
+            const layerRect = layer?.getBoundingClientRect();
+            if (layer && layer.offsetWidth > 0 && layerRect.width > 0) {
+                const scale = layerRect.width / layer.offsetWidth;
+                const cx = (rect.left + rect.width / 2 - layerRect.left) / scale;
+                const cy = (rect.top + rect.height / 2 - layerRect.top) / scale;
+                blow(layer, cx, cy, Math.max(rect.width, rect.height) / scale, scale);
+            } else {
+                blow(document.body, rect.left + rect.width / 2, rect.top + rect.height / 2, Math.max(rect.width, rect.height), 1);
+            }
         }
         if (shown && volume > 0) eruptionSound(volume);
     };
