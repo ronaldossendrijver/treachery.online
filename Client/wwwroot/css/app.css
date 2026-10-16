@@ -1919,6 +1919,12 @@ button.communications-user:hover { background: rgba(255, 255, 255, 0.045); }
 .ui-button-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 0.8rem; }
 .game-event-content > .ui-button-row { padding-top: 0.7rem; border-top: 1px solid var(--line); }
 
+/* Pass-only buttons: a line on top retracts right-to-left until the event is passed automatically; paused while hovered */
+.ui-btn-autopass { position: relative; overflow: hidden; }
+.ui-btn-autopass::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #211e18; transform-origin: left center; animation: ui-autopass-countdown var(--autopass-duration, 20s) linear forwards; pointer-events: none; }
+.ui-btn-autopass.is-paused::before { animation-play-state: paused; background: #7a3f12; }
+@keyframes ui-autopass-countdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
 /* Game event cards: compact header, content on the left, action buttons stacked on the right */
 .game-event-card { container: game-event / inline-size; border-color: rgba(220, 205, 164, 0.16); background: linear-gradient(180deg, rgba(56, 52, 45, 0.96), rgba(42, 40, 36, 0.97)); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 240, 210, 0.05); }
 .game-event-card > .game-event-header { display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 0.45rem 0.7rem; border-bottom: 1px solid rgba(220, 205, 164, 0.12); border-radius: 8px 8px 0 0; background: linear-gradient(180deg, rgba(255, 240, 210, 0.04), transparent); color: #f1e2bd; font-size: 0.9rem; line-height: 1.3; letter-spacing: 0.01em; }
