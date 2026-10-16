@@ -104,6 +104,11 @@
             noise(1250, 1.6, t, 0.045, 0.7);
             tone("sine", 320, 190, t, 0.06, 0.3);
             noise(1900, 2.2, t + 0.035, 0.03, 0.3);
+        },
+        denied(t) {
+            tone("square", 150, 135, t, 0.06, 0.07);
+            tone("square", 120, 105, t + 0.075, 0.08, 0.07);
+            noise(500, 1, t, 0.03, 0.15);
         }
     };
 
@@ -174,10 +179,32 @@
         if (el && !isDisabled(el)) ripple(el, event);
     }, { capture: true, passive: true });
 
+    // Disabled targets get a distinct "denied" sound. Natively disabled controls don't receive click events,
+    // so this is detected on pointerdown; the click handler covers browsers that don't dispatch pointer events to them.
+    let lastDenied = null;
+    let lastDeniedAt = 0;
+
+    function playDenied(el) {
+        if (el === lastDenied && performance.now() - lastDeniedAt < 1000) return;
+        lastDenied = el;
+        lastDeniedAt = performance.now();
+        play("denied");
+    }
+
+    document.addEventListener("pointerdown", event => {
+        if (event.button !== 0 || !(event.target instanceof Element)) return;
+        const el = findTarget(event.target);
+        if (el && isDisabled(el)) playDenied(el);
+    }, { capture: true, passive: true });
+
     document.addEventListener("click", event => {
         if (!(event.target instanceof Element)) return;
         const el = findTarget(event.target);
-        if (!el || isDisabled(el) || el.matches("select")) return;
+        if (!el || el.matches("select")) return;
+        if (isDisabled(el)) {
+            playDenied(el);
+            return;
+        }
         const kind = classify(el);
         play(kind);
         if (kind === "select" && el.tagName === "IMG" && !el.closest("#planetmap")) pop(el);
