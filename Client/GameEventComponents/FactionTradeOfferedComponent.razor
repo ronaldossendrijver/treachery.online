@@ -13,7 +13,9 @@
     <Header>Offer to trade factions</Header>
     <Body>
     
-    <div>You're currently playing <FactionComponent Faction="@Faction"/>, do you wish to change factions?</div>
+    <div>You're playing <FactionComponent Faction="@Faction"/></div>
+    
+    <div>Trade factions?</div>
 
     <SelectFromImageComponent @bind-Value="_target" Values="FactionTradeOffered.ValidTargets(Game, Player)" Required="true" ImageWidth="40"/>
 
