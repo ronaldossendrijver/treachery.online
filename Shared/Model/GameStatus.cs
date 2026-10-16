@@ -735,7 +735,7 @@ public class GameStatus
                 case PortableAntidoteUsed: Flash(result, latestEvent, TreacheryCardType.PortableAntidote); break;
                 case RockWasMelted: Flash(result, latestEvent, TreacheryCardType.Rockmelter); break;
                 case DiscardedTaken: Flash(result, latestEvent, TreacheryCardType.TakeDiscarded); break;
-                case DiscardedSearched: Flash(result, latestEvent, TreacheryCardType.SearchDiscarded); break;
+                case DiscardedSearchedAnnounced or DiscardedSearched: Flash(result, latestEvent, TreacheryCardType.SearchDiscarded); break;
                 case JuicePlayed: Flash(result, latestEvent, TreacheryCardType.Juice); break;
                 case RecruitsPlayed: Flash(result, latestEvent, TreacheryCardType.Recruits); break;
                 
@@ -747,14 +747,18 @@ public class GameStatus
                 case Thought: Flash(result, latestEvent, LeaderSkill.Thinker); break;
 
                 //Show Event description
-                case WhiteSpecifiesAuction or BlueBattleAnnouncement or Voice or Prescience or GreyRemovedCardFromAuction or 
-                    BrownDiscarded or CardTraded or BrownEconomics or SwitchedSkilledLeader or BrownRemoveForce or BrownMovePrevention or BrownFreeRevivalPrevention or BrownKarmaPrevention:
+                case WhiteSpecifiesAuction or BlueBattleAnnouncement or Voice or Prescience or GreyRemovedCardFromAuction or AllianceBroken or CardTraded or SwitchedSkilledLeader or 
+                    BrownDiscarded or BrownEconomics or BrownRemoveForce or BrownMovePrevention or BrownFreeRevivalPrevention or BrownKarmaPrevention or
+                    AmbassadorPlaced or TerrorPlanted or Audited or Donated or ExtortionPrevented or FlightDiscoveryUsed or DealAccepted or
+                    MulliganPerformed or NexusCardDrawn or YellowRidesMonster:
                 case WhiteAnnouncesBlackMarket { Passed: false }:
                 case GreySwappedCardOnBid { Passed: false }:
                 case ReplacedCardWon { Passed: false }:
                 case FaceDancerReplaced { Passed: false }: 
                 case DiscoveryRevealed { Passed: false }:
                 case DiscoveryEntered { Passed: false }:
+                case TerrorRevealed { Passed: false }:
+                case AmbassadorActivated { Passed: false }: 
                     Flash(result, latestEvent); break;
 
                 //Show Faction
@@ -778,8 +782,6 @@ public class GameStatus
                     Flash(result, Message.Express("Ally with", aa.Initiator), aa.Player.Ally);
                     break;
                 }
-                case TerrorPlanted { Passed: false } tp: Flash(result, latestEvent.GetMessage(), tp.Initiator); break;
-                case AmbassadorPlaced amb: Flash(result, latestEvent.GetMessage(), amb.Initiator); break;
 
                 //Show Nexus card played
                 case NexusPlayed np: Flash(result, Message.Express(np.Initiator, " play a Nexus card"), np.Faction.ToNexus()); break;
@@ -858,11 +860,6 @@ public class GameStatus
     private static void Flash<T>(ICollection<FlashInfo> flashes, Message message, T toShow)
     {
         flashes.Add(new FlashInfo { Message = message, ToShow = toShow});
-    }
-    
-    private static void Flash<T>(ICollection<FlashInfo> flashes, GameEvent evt, T toShow)
-    {
-        flashes.Add(new FlashInfo { Message = evt.GetMessage(), ToShow = toShow});
     }
 
     private static void Flash(IList<FlashInfo> flashes, GameEvent? e)
