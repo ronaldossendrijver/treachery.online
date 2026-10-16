@@ -132,9 +132,9 @@
 
 .bid-autopass {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
     margin-top: auto;
     padding-top: 8px;
     border-top: 1px dashed rgba(220, 205, 164, 0.18);
@@ -149,6 +149,28 @@
 .bid-autopass ::deep label {
     margin: 0;
     font-size: 0.8rem;
+}
+
+.bid-autopass-main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    min-height: 36px;
+}
+
+.bid-autopass-main ::deep .ui-form-check {
+    margin: 0;
+}
+
+.bid-autopass-main ::deep .bid-autopass-threshold {
+    display: inline-flex;
+    align-items: center;
+}
+
+.bid-autopass ::deep .bid-autopass-repeat {
+    margin: 0 0 0 1.5em;
+    opacity: 0.85;
 }
 
 .bid-actions {

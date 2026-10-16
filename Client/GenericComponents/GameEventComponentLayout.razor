@@ -137,7 +137,7 @@
         {
             _parametersSet = true;
 
-            if (Collapsed == CollapseState.None)
+            if (Collapsed is CollapseState.None or CollapseState.CollapsedByDefault)
             {
                 if (CollapsedType != null && SavedCollapsedStateValues.TryGetValue(CollapsedType, out var storedValue))
                 {
@@ -145,7 +145,7 @@
                 }
                 else
                 {
-                    _collapsedInternal = false;
+                    _collapsedInternal = Collapsed == CollapseState.CollapsedByDefault;
                 }
             }
             else
