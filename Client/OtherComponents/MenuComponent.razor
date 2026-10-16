@@ -253,7 +253,7 @@
     }
 
     private bool CanManageGame => Game.EventCount > 0 && Client.IsHost && !Client.IsObserver;
-    private bool CanSave => Game.EventCount > 0 && (Client.IsHost || Client.ServerInfo != null && Client.UserName == Client.ServerInfo.AdminName);
+    private bool CanSave => Game.EventCount > 0 && Client.IsHost;
     private bool CanLoad => CanManageGame;
 
     private const int MaxSaveGameSize = 4194304;

@@ -5,5 +5,6 @@ public enum CollapseState
 
     None = 0,
     Collapsed = 10,
-    NotCollapsed = 20
+    NotCollapsed = 20,
+    CollapsedByDefault = 30
 }
