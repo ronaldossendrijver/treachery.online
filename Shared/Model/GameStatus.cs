@@ -708,6 +708,12 @@ public class GameStatus
             Flash(result, Message.Express(g.BattleWinner, " win!"), g.BattleWinner);
             return result;
         }
+        
+        if (g.CurrentPhase == Phase.BattleConclusion && g.BattleWinner != Faction.None)
+        {
+            Flash(result, Message.Express(g.BattleWinner, " win!"), g.BattleWinner);
+            return result;
+        }
 
         var latestEvent = g.History.LastOrDefault();
 
@@ -731,7 +737,8 @@ public class GameStatus
                 case DiscardedTaken: Flash(result, latestEvent, TreacheryCardType.TakeDiscarded); break;
                 case DiscardedSearched: Flash(result, latestEvent, TreacheryCardType.SearchDiscarded); break;
                 case JuicePlayed: Flash(result, latestEvent, TreacheryCardType.Juice); break;
-
+                case RecruitsPlayed: Flash(result, latestEvent, TreacheryCardType.Recruits); break;
+                
                 //Show Leader skill used
                 case Retreat or Diplomacy: Flash(result, latestEvent, LeaderSkill.Diplomat); break;
                 case Bureaucracy { Passed: false }: Flash(result, latestEvent, LeaderSkill.Bureaucrat); break;
@@ -740,16 +747,39 @@ public class GameStatus
                 case Thought: Flash(result, latestEvent, LeaderSkill.Thinker); break;
 
                 //Show Event description
-                case WhiteSpecifiesAuction or BlueBattleAnnouncement or Voice or Prescience or GreyRemovedCardFromAuction or BrownDiscarded or CardTraded or BrownEconomics or SwitchedSkilledLeader:
+                case WhiteSpecifiesAuction or BlueBattleAnnouncement or Voice or Prescience or GreyRemovedCardFromAuction or 
+                    BrownDiscarded or CardTraded or BrownEconomics or SwitchedSkilledLeader or BrownRemoveForce or BrownMovePrevention or BrownFreeRevivalPrevention or BrownKarmaPrevention:
                 case WhiteAnnouncesBlackMarket { Passed: false }:
                 case GreySwappedCardOnBid { Passed: false }:
                 case ReplacedCardWon { Passed: false }:
                 case FaceDancerReplaced { Passed: false }: 
+                case DiscoveryRevealed { Passed: false }:
+                case DiscoveryEntered { Passed: false }:
                     Flash(result, latestEvent); break;
 
                 //Show Faction
                 case EstablishPlayers when g.CurrentPhase != Phase.SelectingFactions && isPlayer: Flash(result, myFaction); break;
                 case FactionTradeOffered fto when (fto.Initiator == myFaction || fto.Target == myFaction) && g.CurrentTradeOffers.All(t => t.Initiator != myFaction): Flash(result, myFaction); break;
+                case AllianceOffered { Player.HasAlly: true } ao:
+                {
+                    Flash(result, Message.Express("Ally with", ao.Player.Ally), ao.Initiator);
+                    Flash(result, Message.Express("Ally with", ao.Initiator), ao.Player.Ally);
+                    break;
+                }
+                case AllianceByTerror { Passed: false } at:
+                {
+                    Flash(result, Message.Express("Ally with", at.Player.Ally), at.Initiator);
+                    Flash(result, Message.Express("Ally with", at.Initiator), at.Player.Ally);
+                    break;
+                }
+                case AllianceByAmbassador { Passed: false } aa:
+                {
+                    Flash(result, Message.Express("Ally with", aa.Player.Ally), aa.Initiator);
+                    Flash(result, Message.Express("Ally with", aa.Initiator), aa.Player.Ally);
+                    break;
+                }
+                case TerrorPlanted { Passed: false } tp: Flash(result, latestEvent.GetMessage(), tp.Initiator); break;
+                case AmbassadorPlaced amb: Flash(result, latestEvent.GetMessage(), amb.Initiator); break;
 
                 //Show Nexus card played
                 case NexusPlayed np: Flash(result, Message.Express(np.Initiator, " play a Nexus card"), np.Faction.ToNexus()); break;
@@ -828,6 +858,11 @@ public class GameStatus
     private static void Flash<T>(ICollection<FlashInfo> flashes, Message message, T toShow)
     {
         flashes.Add(new FlashInfo { Message = message, ToShow = toShow});
+    }
+    
+    private static void Flash<T>(ICollection<FlashInfo> flashes, GameEvent evt, T toShow)
+    {
+        flashes.Add(new FlashInfo { Message = evt.GetMessage(), ToShow = toShow});
     }
 
     private static void Flash(IList<FlashInfo> flashes, GameEvent? e)
