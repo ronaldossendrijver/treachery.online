@@ -56,29 +56,38 @@ internal static class HistoricalComponentDriver
             },
             _ => null
         };
-        var rendered = test.RenderContext.Render<DynamicComponent>(parameters =>
+        var rendered = test.RenderContext.Render<CascadingValue<bool>>(parameters =>
         {
-            parameters.Add(component => component.Type, componentType);
-            if (componentParameters != null)
+            parameters.Add(value => value.Name, "GameEventsNotCollapsible");
+            parameters.Add(value => value.Value, true);
+            parameters.Add(value => value.IsFixed, true);
+            parameters.Add(value => value.ChildContent, builder =>
             {
-                parameters.Add(component => component.Parameters, componentParameters);
-            }
+                builder.OpenComponent<DynamicComponent>(0);
+                builder.AddAttribute(1, nameof(DynamicComponent.Type), componentType);
+                if (componentParameters != null)
+                {
+                    builder.AddAttribute(2, nameof(DynamicComponent.Parameters), componentParameters);
+                }
+                builder.CloseComponent();
+            });
         });
-        if (rendered.Instance.Instance is not IComponent component)
+        var dynamicComponent = rendered.FindComponent<DynamicComponent>();
+        if (dynamicComponent.Instance.Instance is not IComponent component)
         {
             throw new InvalidOperationException($"Could not instantiate {componentType.Name}.");
         }
 
         ApplyHistoricalValues(component, historicalEvent);
-        RefreshComponent(rendered, component);
-        if (rendered.Instance.Instance is not IComponent renderedComponent)
+        RefreshComponent(dynamicComponent, component);
+        if (dynamicComponent.Instance.Instance is not IComponent renderedComponent)
         {
             throw new InvalidOperationException($"Could not re-render {componentType.Name}.");
         }
 
         ApplyHistoricalValues(renderedComponent, historicalEvent);
-        RefreshComponent(rendered, renderedComponent);
-        return rendered;
+        RefreshComponent(dynamicComponent, renderedComponent);
+        return dynamicComponent;
     }
 
     private static BattleWheelFrame CreateBattleFrame(Game game, Battle battle)

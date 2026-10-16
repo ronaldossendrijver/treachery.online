@@ -34,9 +34,8 @@
     <span @onclick="@(async e => await Click(e))" aria-disabled="@(CanIncrease || CanDecrease ? "false" : "true")" style="cursor: pointer; position: absolute; left: @NumberBoxOffsetX; top:@NumberBoxOffsetY; width: @NumberBoxSize; font-size: @NumberFontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap;">@Value</span>
 
     <svg 
-        @onclick="@(async e => await Increase())"
+        @onclick="@(async _ => await Increase())"
         aria-disabled="@(CanIncrease ? "false" : "true")"
-        xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" 
         height="@ArrowSize" 
         viewBox="0 0 16 16"
         class="arrow-up @ArrowUpClass"
@@ -45,9 +44,8 @@
     </svg>
 
     <svg 
-        @onclick="@(async e => await Decrease())"
+        @onclick="@(async _ => await Decrease())"
         aria-disabled="@(CanDecrease ? "false" : "true")"
-        xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" 
         height="@ArrowSize" viewBox="0 0 16 16" 
         class="arrow-down @ArrowDownClass"
         style="left: @ArrowOffsetX; width: @ArrowSize; filter: @ArrowDownClass; fill: @DecreaseArrowColor">

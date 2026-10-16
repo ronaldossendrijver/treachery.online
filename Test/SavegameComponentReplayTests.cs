@@ -151,12 +151,6 @@ public sealed class SavegameComponentReplayTests
             return;
         }
 
-        if (rendered.FindAll(".ui-card-body").Count == 0 &&
-            rendered.FindAll(".ui-card-header").Count > 0)
-        {
-            rendered.Find(".ui-card-header").Click();
-        }
-
         var postRenderHistoricalValidation = historicalEvent.Validate();
         Assert.IsNull(
             postRenderHistoricalValidation,
@@ -186,8 +180,7 @@ public sealed class SavegameComponentReplayTests
                 0,
                 offerIndex,
                 $"{context}: the historical revival offer was not rendered.");
-            var cancelButton = rendered.FindAll("button")
-                .Where(button => button.TextContent.Trim() == "Cancel")
+            var cancelButton = rendered.FindAll("button[aria-label='Cancel offer']")
                 .ElementAt(offerIndex);
             Assert.IsFalse(
                 cancelButton.HasAttribute("disabled"),
@@ -229,7 +222,7 @@ public sealed class SavegameComponentReplayTests
                 _ => buttonRow!.Instance.ConfirmText
             }
         };
-        var availableButtons = buttonRow?.FindAll("button") ?? rendered.FindAll("button");
+        var availableButtons = rendered.FindAll("button");
         var matchingButtons = availableButtons
             .Where(button => button.TextContent.Trim() == buttonText)
             .ToArray();

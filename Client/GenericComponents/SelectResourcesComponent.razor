@@ -14,7 +14,12 @@
         <label class="ui-me-1">@Label</label>
     }
     
-    <NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" OnChanged="@Notify" Min="Min" Max="Max" Title="@Title" 
+    <NumberPickerComponent Disabled="@Disabled" 
+                           @bind-Value="Value" 
+                           OnChanged="@Notify" 
+                           Min="Min" 
+                           Max="Max" 
+                           Title="@Title" 
         SymbolSrc="@Client.CurrentSkin.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" />
     
 </div>
