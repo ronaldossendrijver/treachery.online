@@ -101,7 +101,7 @@ public class DealOffered : GameEvent
             (To.Length == 0 || To.Contains(acceptedDeal.Initiator));
     }
 
-    public static IEnumerable<DealType> GetStandardDealTypes(Game g, Player p)
+    public static IEnumerable<DealType> GetStandardDealTypes(Game g, Player? p)
     {
         var result = new List<DealType>
         {
@@ -109,6 +109,8 @@ public class DealOffered : GameEvent
             DealType.ForfeitBattle,
             DealType.TellDiscardedTraitors
         };
+
+        if (p == null) return result;
 
         switch (p.Faction)
         {
