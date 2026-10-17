@@ -489,8 +489,8 @@ svg {
 
 /* Static shadow under the planet. A drop-shadow filter on #planetmap would be re-blurred on the GPU every frame while anything on the map animates. */
 .planetmap-shadow { position: absolute; border-radius: 50%; box-shadow: 0 12px 22px rgba(0, 0, 0, 0.4); pointer-events: none; }
-/* Keep the filter-heavy map artwork and the continuously animating sand ambience on their own GPU layers,
-   so the animation never forces the map artwork to be rasterized again. */
+/* Keep the filter-heavy map artwork and the (slowly repainting) worm trails on their own GPU layers,
+   so the trails never force the map artwork to be rasterized again. */
 #planetmap_inner > .planetmap-art, .sand-ambience { will-change: opacity; }
 
 .planetmap-overlays { width: 100%; height: 100%; }
@@ -1571,9 +1571,12 @@ svg {
 .map-report-empty { padding: 6px 0; color: var(--ivory-muted); text-align: center; }
 .planet-location:focus { outline: none; }
 .planet-location:focus-visible > path { stroke: var(--spice); stroke-width: 3; }
-.storm-clouds { pointer-events: none; animation: storm-appear 0.8s ease-out both; }
+/* Storm clouds: the mask and shadow are static images; the cloud textures rotate on the compositor only */
+.storm-clouds { position: absolute; pointer-events: none; animation: storm-appear 0.8s ease-out both; }
 @keyframes storm-appear { from { opacity: 0; } to { opacity: 1; } }
-.storm-clouds { filter: drop-shadow(0 0 6px rgba(40, 42, 50, 0.35)); }
+.storm-clouds-shadow, .storm-clouds-mask { position: absolute; inset: 0; width: 100%; height: 100%; }
+.storm-clouds-mask { overflow: hidden; -webkit-mask: var(--storm-mask) 0 0 / 100% 100% no-repeat; mask: var(--storm-mask) 0 0 / 100% 100% no-repeat; }
+.storm-clouds img { max-width: none; user-select: none; pointer-events: none; }
 .fx-overlay { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1550; }
 
 /* Flash: briefly shows played cards, revealed traitors, spice blows etc. in the center of the screen */
@@ -1645,7 +1648,17 @@ svg {
     .flash-item, .flash-item-frame::after { animation: none; }
 }
 .sand-ambience { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
-.storm-swirl { transform-box: view-box; animation: storm-swirl linear infinite; }
+/* Sand gusts: a static radial fade (rasterized once) over a streak that only slides and fades, so it runs on the compositor.
+   The travel (-(GustRadius + GustWidth) to GustRadius) and timings mirror SandAnimations.razor. */
+.sand-gusts { position: absolute; inset: 0; pointer-events: none; }
+.sand-gust { position: absolute; -webkit-mask-image: radial-gradient(circle closest-side, #000 35%, transparent 100%); mask-image: radial-gradient(circle closest-side, #000 35%, transparent 100%); }
+.sand-gust > img { position: absolute; max-width: none; opacity: 0; user-select: none; pointer-events: none; animation: sand-gust linear infinite backwards; }
+@keyframes sand-gust {
+    0% { transform: translateX(-78px); opacity: 0; }
+    12%, 30% { opacity: 0.85; }
+    60%, 100% { transform: translateX(24px); opacity: 0; }
+}
+.storm-swirl { position: absolute; animation: storm-swirl linear infinite; }
 .storm-swirl-fast { animation-duration: 240s; }
 .storm-swirl-slow { animation-duration: 420s; animation-direction: reverse; }
 @keyframes storm-swirl { to { transform: rotate(-360deg); } }
