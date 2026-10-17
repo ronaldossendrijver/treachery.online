@@ -11,19 +11,22 @@
 
 @if (!string.IsNullOrEmpty(Src) && Src.Length >= 3 && Src[^3..].ToUpper() == "SVG")
 {
-    <object style="@Style;color-scheme: light only;" type="image/svg+xml" data=@Src>
+    <object class="@Class" style="@Style;color-scheme: light only;" type="image/svg+xml" data=@Src>
         
     </object>
 }
 else if (!string.IsNullOrEmpty(Src)) 
 {
-    <img style="@Style" src=@Src alt="Map"/>
+    <img class="@Class" style="@Style" src=@Src alt="Map"/>
 }
 
 @code 
 {
     [Parameter]
     public string? Src { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
 
     private string Style => $"position:absolute;left:{Px(X)};top:{Px(Y)};width:{Px(Width)};height:{Px(Height)};pointer-events:none";
 }
