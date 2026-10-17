@@ -31,11 +31,11 @@
                 {
                     <DealComponent />
                 }
-                @if (!Client.IsObserver && Client.Actions.Contains(typeof(DealOffered)))
+                @if (CanOfferDeal)
                 {
                     <DealOfferedComponent />
                 }
-                @if (DealCount == 0 && (Client.IsObserver || !Client.Actions.Contains(typeof(DealOffered))))
+                @if (DealCount == 0 && !CanOfferDeal)
                 {
                     <p class="deals-empty">There are no current or pending deals.</p>
                 }
@@ -54,5 +54,8 @@
             : 0);
 
     private bool ShowLauncher =>
-        Client.InGame && (DealCount > 0 || !Client.IsObserver && Client.Actions.Contains(typeof(DealOffered)));
+        Client.InGame && (DealCount > 0 || CanOfferDeal);
+
+    private bool CanOfferDeal =>
+        !Client.IsObserver && Client.Player != null && Client.Actions.Contains(typeof(DealOffered));
 }
