@@ -84,6 +84,7 @@ public class GameStatus
         => game.ShipmentAndMoveSequence!.GetPlayersInSequence()
             .Select(se => new SequenceElement { Player = se.Player, HasTurn = se.Player.Faction == Faction.Orange })
             .ToList();
+    
     public static GameStatus DetermineStatus(Game game, Player? me, bool isPlayer)
     {
         var result = game.CurrentPhase switch
@@ -708,12 +709,6 @@ public class GameStatus
             Flash(result, Message.Express(g.BattleWinner, " win!"), g.BattleWinner);
             return result;
         }
-        
-        if (g.CurrentPhase == Phase.BattleConclusion && g.BattleWinner != Faction.None)
-        {
-            Flash(result, Message.Express(g.BattleWinner, " win!"), g.BattleWinner);
-            return result;
-        }
 
         var latestEvent = g.History.LastOrDefault();
 
@@ -749,8 +744,7 @@ public class GameStatus
                 //Show Event description
                 case WhiteSpecifiesAuction or BlueBattleAnnouncement or Voice or Prescience or GreyRemovedCardFromAuction or AllianceBroken or CardTraded or SwitchedSkilledLeader or 
                     BrownDiscarded or BrownEconomics or BrownRemoveForce or BrownMovePrevention or BrownFreeRevivalPrevention or BrownKarmaPrevention or
-                    AmbassadorPlaced or TerrorPlanted or Audited or Donated or ExtortionPrevented or FlightDiscoveryUsed or DealAccepted or
-                    MulliganPerformed or NexusCardDrawn or YellowRidesMonster:
+                    AmbassadorPlaced or TerrorPlanted or Audited or Donated or ExtortionPrevented or FlightDiscoveryUsed or DealAccepted or YellowRidesMonster or CharityClaimed:
                 case WhiteAnnouncesBlackMarket { Passed: false }:
                 case GreySwappedCardOnBid { Passed: false }:
                 case ReplacedCardWon { Passed: false }:
@@ -759,6 +753,8 @@ public class GameStatus
                 case DiscoveryEntered { Passed: false }:
                 case TerrorRevealed { Passed: false }:
                 case AmbassadorActivated { Passed: false }: 
+                case NexusCardDrawn { Passed: false }:
+                case MulliganPerformed { Passed: false }:
                     Flash(result, latestEvent); break;
 
                 //Show Faction
@@ -766,20 +762,20 @@ public class GameStatus
                 case FactionTradeOffered fto when (fto.Initiator == myFaction || fto.Target == myFaction) && g.CurrentTradeOffers.All(t => t.Initiator != myFaction): Flash(result, myFaction); break;
                 case AllianceOffered { Player.HasAlly: true } ao:
                 {
-                    Flash(result, Message.Express("Ally with", ao.Player.Ally), ao.Initiator);
-                    Flash(result, Message.Express("Ally with", ao.Initiator), ao.Player.Ally);
+                    Flash(result, Message.Express("Ally with ", ao.Player.Ally), ao.Initiator);
+                    Flash(result, Message.Express("Ally with ", ao.Initiator), ao.Player.Ally);
                     break;
                 }
                 case AllianceByTerror { Passed: false } at:
                 {
-                    Flash(result, Message.Express("Ally with", at.Player.Ally), at.Initiator);
-                    Flash(result, Message.Express("Ally with", at.Initiator), at.Player.Ally);
+                    Flash(result, Message.Express("Ally with ", at.Player.Ally), at.Initiator);
+                    Flash(result, Message.Express("Ally with ", at.Initiator), at.Player.Ally);
                     break;
                 }
                 case AllianceByAmbassador { Passed: false } aa:
                 {
-                    Flash(result, Message.Express("Ally with", aa.Player.Ally), aa.Initiator);
-                    Flash(result, Message.Express("Ally with", aa.Initiator), aa.Player.Ally);
+                    Flash(result, Message.Express("Ally with ", aa.Player.Ally), aa.Initiator);
+                    Flash(result, Message.Express("Ally with ", aa.Initiator), aa.Player.Ally);
                     break;
                 }
 

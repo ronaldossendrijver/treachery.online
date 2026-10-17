@@ -62,8 +62,6 @@ public class RequestPurpleRevival : GameEvent
     {
         var existingRequest = Game.CurrentRevivalRequests.FirstOrDefault(r => r.Hero == Hero);
         if (existingRequest != null) Game.CurrentRevivalRequests.Remove(existingRequest);
-
-        Log();
         Game.CurrentRevivalRequests.Add(this);
     }
 

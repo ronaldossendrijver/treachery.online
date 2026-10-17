@@ -107,6 +107,18 @@
 
             @if (Revival.ValidRevivalHeroes(Game, Player).Any())
             {
+                foreach (var request in Game.CurrentRevivalRequests.Where(r => r.Player == Player && r.Hero != null))
+                {
+                    var offer = request.Hero != null ? Game.EarlyRevivalsOffers.GetValueOrDefault(request.Hero) : -1;
+                    if (offer >= 0)
+                    {
+                        <div class="ui-mt-1 ui-text-info"><FactionComponent Faction="@Faction.Purple" Diameter="20"/> offer <Image Shown="@request.Hero"/> for <SimpleNumberComponent>@offer</SimpleNumberComponent></div>
+                    }
+                    else
+                    {
+                        <div class="ui-mt-1 ui-text-info">You requested <FactionComponent Faction="@Faction.Purple" Diameter="20"/> revival of <Image Shown="@request.Hero"/></div>
+                    }
+                }
                 <SelectFromImageComponent Game="Game" @bind-Value="Hero" Values="Revival.ValidRevivalHeroes(Game, Player)" Required="false" ImageWidth="80"/>                
             }
             else
