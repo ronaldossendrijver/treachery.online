@@ -1153,6 +1153,7 @@ svg {
 .setup-seat-table th { padding: 8px 10px; border-bottom: 1px solid rgba(193, 167, 108, 0.25); color: var(--brass-bright); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em; text-align: left; text-transform: uppercase; }
 .setup-seat-table td { padding: 8px 10px; border-bottom: 1px solid rgba(193, 167, 108, 0.08); vertical-align: middle; }
 .setup-seat-confirm { margin-top: 14px; }
+.setup-seat-waiting { margin: 0; color: var(--ivory); font-style: italic; text-align: center; }
 
 @media (max-width: 1023px) {
     .setup-layout { grid-template-columns: 1fr; }
@@ -1619,6 +1620,8 @@ svg {
 .flash-item.is-round .flash-item-frame { width: 80%; padding: 6px; border-radius: 50%; }
 .flash-item.is-round .flash-item-frame img { aspect-ratio: 1; border-radius: 50%; }
 .flash-caption { max-width: calc(var(--w) + 48px); padding: 7px 12px; border: 1px solid rgba(215, 175, 104, 0.4); border-radius: 10px; background: rgba(12, 11, 9, 0.7); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45); color: #f3e6c4; font-family: Georgia, "Palatino Linotype", serif; font-size: 0.95rem; font-weight: 600; line-height: 1.35; text-align: center; overflow-wrap: anywhere; }
+.flash-caption img, .flash-caption svg, .flash-caption > div, .flash-caption span { vertical-align: middle; }
+.flash-caption img, .flash-caption svg { margin-top: -0.15em; }
 .flash-timer { position: absolute; right: 0; bottom: 0; left: 0; height: 3px; background: linear-gradient(90deg, #d58a42, #f3c27a); box-shadow: 0 0 8px rgba(243, 194, 122, 0.7); transform-origin: left center; animation: flashTimer var(--flash-duration) linear forwards; }
 @keyframes flashPanelIn { from { opacity: 0; transform: scale(0.92) translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes flashPanelOut { to { opacity: 0; transform: scale(0.97) translateY(-8px); } }
