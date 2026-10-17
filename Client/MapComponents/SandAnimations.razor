@@ -9,6 +9,17 @@
 @inherits MapComponent
 
 @* Purely decorative ambience: small local gusts of fine sand and the ripples of unseen worms travelling beneath open sand. *@
+
+@* Gusts are HTML layers: a static radial fade mask, with the streak sliding and fading on the compositor only. *@
+<div class="sand-gusts" aria-hidden="true">
+    @foreach (var gust in _gusts)
+    {
+        <div class="sand-gust" style="@gust.Style">
+            <img src="art/sand-gust.svg?v=1" alt="" draggable="false" style="@gust.AnimationStyle"/>
+        </div>
+    }
+</div>
+
 <svg class="sand-ambience" width="@Client.CurrentSkin.MapDimensions.X" height="@Client.CurrentSkin.MapDimensions.Y"
      viewBox="0 0 @Client.CurrentSkin.MapDimensions.X @Client.CurrentSkin.MapDimensions.Y" aria-hidden="true" focusable="false" pointer-events="none">
 
@@ -19,66 +30,42 @@
                 <path d="@Client.CurrentSkin.GetTerritoryBorder(territory)"/>
             }
         </clipPath>
-        @foreach (var gust in _gusts)
-        {
-            <mask id="@gust.ClipId" maskUnits="userSpaceOnUse" x="@Round(gust.X - GustRadius)" y="@Round(gust.Y - GustRadius)" width="@Round(2 * GustRadius)" height="@Round(2 * GustRadius)">
-                <circle cx="@Round(gust.X)" cy="@Round(gust.Y)" r="@Round(GustRadius)" fill="url(#sandGustFade)"/>
-            </mask>
-        }
-        <radialGradient id="sandGustFade">
-            <stop offset="0.35" stop-color="#fff"/>
-            <stop offset="1" stop-color="#000"/>
-        </radialGradient>
     </defs>
+
+    @* CSS (not SMIL) animations: their value only changes in visible steps, so the trails are not repainted on every frame. *@
+    <style>@_wormStyles</style>
 
     <g clip-path="url(#sandAmbienceClip)">
 
-        @foreach (var gust in _gusts)
-        {
-            <g mask="url(#@gust.ClipId)">
-                <g transform="@gust.Transform">
-                    <image href="art/sand-gust.svg?v=1" x="0" y="@Round(-GustHeight / 2)" width="@Round(GustWidth)" height="@Round(GustHeight)" opacity="0" preserveAspectRatio="none">
-                        <animateTransform attributeName="transform" type="translate" dur="@gust.Duration" begin="@gust.Begin" repeatCount="indefinite"
-                                          values="@gust.TranslateValues" keyTimes="0;@GustTravel;1" calcMode="linear"/>
-                        <animate attributeName="opacity" dur="@gust.Duration" begin="@gust.Begin" repeatCount="indefinite"
-                                 values="0;0.85;0.85;0;0" keyTimes="@GustOpacityKeyTimes"/>
-                    </image>
-                </g>
-            </g>
-        }
-
         @foreach (var worm in _worms)
         {
-            <g opacity="0">
-                <animate attributeName="opacity" dur="@worm.Duration" begin="@worm.Begin" repeatCount="indefinite"
-                         values="0;0;1;1;0;0" keyTimes="@worm.OpacityKeyTimes"/>
-
-                @foreach (var trail in WormTrails)
+            <g opacity="0" style="@worm.Style">
+                @foreach (var trail in worm.Trails)
                 {
                     <path d="@worm.Path" pathLength="1000" fill="none" stroke="@trail.Color" stroke-width="@trail.Width"
-                          stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="@($"{trail.Length} 3000")" stroke-dashoffset="@trail.Length">
-                        <animate attributeName="stroke-dashoffset" dur="@worm.Duration" begin="@worm.Begin" repeatCount="indefinite"
-                                 values="@($"{trail.Length};{trail.Length};{trail.Length - 1000};{trail.Length - 1000}")" keyTimes="@worm.MotionKeyTimes" calcMode="linear"/>
-                    </path>
+                          stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="@($"{trail.Length} 3000")" stroke-dashoffset="@trail.Length" style="@trail.Style"/>
                 }
             </g>
         }
     </g>
 </svg>
-
 @code {
 
+    // The sand-gust keyframes in app.css slide the streak from -(GustRadius + GustWidth) to GustRadius: keep them in sync.
     private const double GustWidth = 54;
     private const double GustHeight = 18;
     private const double GustRadius = 24;
-    private const string GustTravel = "0.6";
-    private const string GustOpacityKeyTimes = "0;0.12;0.3;0.6;1";
     private const double WormStep = 4;
     private const double WormMargin = 5;
+    // Trail updates per second while a worm travels; it moves only about a pixel per second.
+    private const double WormStepsPerSecond = 10;
 
-    private sealed record Gust(string ClipId, double X, double Y, string Transform, string Duration, string Begin, string TranslateValues);
+    // The streak's travel and fade (the sand-gust keyframes in app.css) are expressed in these dimensions.
+    private sealed record Gust(double X, double Y, string Style, string AnimationStyle);
 
-    private sealed record Worm(string Path, string Duration, string Begin, string MotionKeyTimes, string OpacityKeyTimes);
+    private sealed record Worm(string Path, string Style, List<WormTrail> Trails);
+
+    private sealed record WormTrail(string Color, string Width, int Length, string Style);
 
     private sealed record Trail(string Color, string Width, int Length);
 
@@ -91,6 +78,7 @@
 
     private List<Gust> _gusts = [];
     private List<Worm> _worms = [];
+    private string _wormStyles = "";
     private Dictionary<Territory, List<List<(double X, double Y)>>> _shapes = [];
     private object? _builtFor;
     private object? _renderedFor;
@@ -111,7 +99,7 @@
         }
     }
 
-    // The animations are self-running SVG; only re-render when the map or skin changes.
+    // The animations are self-running CSS; only re-render when the map or skin changes.
     protected override bool ShouldRender() => Client.InGame && !Equals(_renderedFor, _builtFor);
 
     protected override void OnAfterRender(bool firstRender) => _renderedFor = _builtFor;
@@ -151,13 +139,10 @@
             var seconds = 0.75 * (19 + random.NextDouble() * 16);
             var begin = 1 + index * 3.25 + random.NextDouble() * 2;
             _gusts.Add(new Gust(
-                $"sandGustClip{index}",
                 center.X,
                 center.Y,
-                Inv($"translate({Round(center.X)} {Round(center.Y)}) rotate({Math.Round(angle)})"),
-                Inv($"{Math.Round(seconds, 1)}s"),
-                Inv($"{Math.Round(begin, 1)}s"),
-                Inv($"{Round(-GustRadius - GustWidth)} 0;{Round(GustRadius)} 0;{Round(GustRadius)} 0")));
+                Inv($"left:{Px(center.X - GustRadius)};top:{Px(center.Y - GustRadius)};width:{Px(2 * GustRadius)};height:{Px(2 * GustRadius)};transform:rotate({Math.Round(angle)}deg)"),
+                Inv($"left:{Px(GustRadius)};top:{Px(GustRadius - GustHeight / 2)};width:{Px(GustWidth)};height:{Px(GustHeight)};animation-duration:{Math.Round(seconds, 1)}s;animation-delay:{Math.Round(begin, 1)}s")));
         }
     }
 
@@ -172,9 +157,11 @@
             .ToList();
 
         _worms = [];
+        _wormStyles = "";
         if (starts.Count == 0) return;
 
         var random = new Random(1965);
+        var styles = new System.Text.StringBuilder();
         var configs = new[] { (Speed: 1.25, Idle: 34.0, Begin: 6.0), (Speed: 1.0, Idle: 47.0, Begin: 31.0), (Speed: 1.1, Idle: 40.0, Begin: 18.0), (Speed: 1.35, Idle: 52.0, Begin: 44.0) };
 
         foreach (var config in configs)
@@ -192,14 +179,27 @@
             var end = start + travel / total;
             var points = route.Where((_, i) => i % 3 == 0 || i == route.Count - 1).ToList();
 
-            _worms.Add(new Worm(
-                SmoothPath(points),
-                Inv($"{Math.Round(total, 1)}s"),
-                Inv($"{config.Begin}s"),
-                Inv($"0;{Math.Round(start, 4)};{Math.Round(end, 4)};1"),
-                Inv($"0;{Math.Round(start, 4)};{Math.Round(start + 0.02, 4)};{Math.Round(end - 0.02, 4)};{Math.Round(end + 0.01, 4)};1")));
+            // Same timing as the former SMIL animations: hidden, fade in, travel, fade out, hidden.
+            var index = _worms.Count;
+            var timing = Inv($"animation-duration:{Math.Round(total, 1)}s;animation-delay:{config.Begin}s");
+            var steps = Math.Max(2, (int)Math.Round(travel * WormStepsPerSecond));
+            var trails = WormTrails.Select((trail, t) =>
+            {
+                var name = $"sand-worm-{index}-{t}";
+                styles.Append(Inv($"@keyframes {name} {{ 0%, {Percent(start)} {{ stroke-dashoffset: {trail.Length}px; animation-timing-function: steps({steps}, jump-none); }} {Percent(end)}, 100% {{ stroke-dashoffset: {trail.Length - 1000}px; }} }}\n"));
+                return new WormTrail(trail.Color, trail.Width, trail.Length, $"animation-name:{name};{timing}");
+            }).ToList();
+
+            var fade = $"sand-worm-{index}";
+            styles.Append(Inv($"@keyframes {fade} {{ 0%, {Percent(start)} {{ opacity: 0; }} {Percent(start + 0.02)}, {Percent(end - 0.02)} {{ opacity: 1; }} {Percent(end + 0.01)}, 100% {{ opacity: 0; }} }}\n"));
+
+            _worms.Add(new Worm(SmoothPath(points), $"animation-name:{fade};{timing}", trails));
         }
+
+        _wormStyles = styles.ToString();
     }
+
+    private static string Percent(double fraction) => Inv($"{Math.Round(fraction * 100, 2)}%");
 
     // A meandering walk that keeps its heading where it can and turns away whenever rock, strongholds or the map edge lie ahead.
     private List<(double X, double Y)> Wander(PointD from, Random random)
