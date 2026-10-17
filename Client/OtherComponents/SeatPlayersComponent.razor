@@ -11,6 +11,12 @@
 <div class="lobby-panel setup-panel setup-seating">
     <div class="lobby-panel-head"><div><span class="lobby-kicker">Seating</span><h2>Assign seats to players</h2></div></div>
     <div class="lobby-panel-body">
+        @if (!Client.IsHost)
+        {
+            <p class="setup-seat-waiting">The host is assigning players to faction seats...</p>
+        }
+        else
+        {
         <table class="setup-seat-table">
             <thead>
             <tr>
@@ -63,7 +69,8 @@
             </tbody>
         </table>
         <button class="ui-btn ui-btn-primary setup-seat-confirm" disabled="@(SeatedPlayers.ContainsValue(-1))" @onclick="@AssignSeats">Confirm</button>
-    </div>
+                }
+            </div>
 </div>
 
 @code {

@@ -96,7 +96,7 @@ else if (Client.Game.CurrentPhase is Phase.AwaitingPlayers || Client.PlayersNeed
             <div class="lobby-greeting">
                 <span class="lobby-kicker">@(seating ? "Seating" : Client.IsHost ? "Game setup" : "Awaiting players")</span>
                 <h1><span class="lobby-player-name">@Client.GameName</span></h1>
-                <p>@(seating ? "Assign every player to a seat around the planet." : Client.IsHost ? "Choose the rules and factions, wait for players to join, then start the game." : "The host is preparing the game. It starts as soon as all seats are filled.")</p>
+                <p>@(seating ? (Client.IsHost ? "Assign every player to a seat around the planet." : "Every player will be assigned a seat around the planet.") : Client.IsHost ? "Choose the rules and factions, wait for players to join, then start the game." : "The host is preparing the game. It starts as soon as all seats are filled.")</p>
             </div>
         </header>
         <main class="setup-main">
