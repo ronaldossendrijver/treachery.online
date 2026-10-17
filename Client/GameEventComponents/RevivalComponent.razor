@@ -109,7 +109,7 @@
             {
                 foreach (var request in Game.CurrentRevivalRequests.Where(r => r.Player == Player && r.Hero != null))
                 {
-                    var offer = request.Hero != null ? Game.EarlyRevivalsOffers.GetValueOrDefault(request.Hero) : -1;
+                    var offer = request.Hero != null ? Game.EarlyRevivalsOffers.GetValueOrDefault(request.Hero, -1) : -1;
                     if (offer >= 0)
                     {
                         <div class="ui-mt-1 ui-text-info"><FactionComponent Faction="@Faction.Purple" Diameter="20"/> offer <Image Shown="@request.Hero" Width="20"/> for <SimpleNumberComponent Size="20">@offer</SimpleNumberComponent></div>
