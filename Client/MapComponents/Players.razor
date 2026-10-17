@@ -244,8 +244,8 @@
 
             foreach (var marker in homeworldMarkers)
             {
-                <MapImage X=@marker.X Y=@marker.Y Diameter=@(0.85f * Client.CurrentSkin.PlayerTokenRadius)
-                          Src="@marker.Src" ShadowColor="#000000CC" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="1"
+                <MapImage X=@marker.X Y=@marker.Y Diameter=@(0.7f * Client.CurrentSkin.PlayerTokenRadius)
+                          Src="@marker.Src" ShadowColor="#000000CC" ShadowX="1f" ShadowY="1f" ShadowBlur="0.5f"
                           Popover="@marker.Label" PopoverAsTooltip="true" />
             }
 
