@@ -17,7 +17,9 @@
          data-map-radius="@Client.CurrentSkin.MapRadius"
          data-player-token-radius="@Client.CurrentSkin.PlayerTokenRadius">
 
-        <BackgroundImage X="0" Y="0" Width="@Client.CurrentSkin.MapDimensions.X" Height="@Client.CurrentSkin.MapDimensions.Y" Src="@Client.CurrentSkin.Map_URL"/>
+        <div class="planetmap-shadow" style="left:@Px(Client.CurrentSkin.PlanetCenter.X - Client.CurrentSkin.MapRadius); top:@Px(Client.CurrentSkin.PlanetCenter.Y - Client.CurrentSkin.MapRadius); width:@Px(2 * Client.CurrentSkin.MapRadius); height:@Px(2 * Client.CurrentSkin.MapRadius);"></div>
+
+        <BackgroundImage Class="planetmap-art" X="0" Y="0" Width="@Client.CurrentSkin.MapDimensions.X" Height="@Client.CurrentSkin.MapDimensions.Y" Src="@Client.CurrentSkin.Map_URL"/>
 
         @if (Game.CurrentPhase > Phase.AwaitingPlayers)
         {
