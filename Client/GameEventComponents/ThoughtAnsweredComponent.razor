@@ -13,6 +13,11 @@
     <Header>Select which card (if any) to show in response to your opponent's @Client.CurrentSkin.Describe(LeaderSkill.Thinker) question</Header>
     <Body>
 
+        @if (Game.CurrentThought != null)
+        {
+            <div class="ui-font-italic ui-mb-1">@Game.CurrentThought.GetMessage().ToString(Client.CurrentSkin)</div>
+        }
+
         <SelectFromImageComponent @bind-Value="card" Values="ThoughtAnswered.ValidCards(Game, Player)" Required="true" ImageWidth="80" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@Client.CurrentSkin.Format("Show {0}", card)" ConfirmError="@Validation" />

@@ -36,14 +36,14 @@ public static class BattleWheelState
         typeof(Battle), typeof(BattleRevision),
         typeof(TreacheryCalled), typeof(PoisonToothCancelled), typeof(PortableAntidoteUsed), typeof(Diplomacy), typeof(KarmaPinkDial),
         typeof(FaceDancerRevealed), typeof(FaceDanced),
-        typeof(RockWasMelted), typeof(Retreat), typeof(Captured), typeof(BattleConcluded),
+        typeof(RockWasMelted), typeof(Retreat), typeof(Captured), typeof(BattleConcluded), typeof(LoserConcluded),
         typeof(AuditCancelled), typeof(Audited)
     ];
 
     /// <summary>Decisions taken once the battle is resolved; these appear on the right-hand flap of the wheel.</summary>
     public static readonly HashSet<Type> AfterBattleTypes =
     [
-        typeof(Captured), typeof(AuditCancelled), typeof(Audited), typeof(Retreat), typeof(BattleConcluded),
+        typeof(Captured), typeof(AuditCancelled), typeof(Audited), typeof(Retreat), typeof(BattleConcluded), typeof(LoserConcluded),
         typeof(FaceDancerRevealed), typeof(FaceDanced)
     ];
 }

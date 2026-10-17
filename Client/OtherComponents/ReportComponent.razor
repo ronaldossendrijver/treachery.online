@@ -16,7 +16,6 @@
         <header class="map-report-header">
             <button class="map-report-toggle" type="button" aria-expanded="@(!_isCollapsed && _isExpanded)" @onclick="ToggleExpanded">
                 <span class="map-report-title">@Client.CurrentSkin.Describe(Game.CurrentReport.About) report</span>
-                <span class="map-report-count" aria-label="@($"{messages.Count} report entries")">@messages.Count</span>
                 <span class="map-report-chevron" aria-hidden="true">@(_isExpanded ? "⌄" : "⌃")</span>
             </button>
             @if (!_isCollapsed && _isExpanded && messages.Count > 1)
@@ -59,7 +58,7 @@
                     foreach (var latest in messages)
                     {
                         <div class="@MessageClass(latest)">
-                            <ExpressionComponent Expression="@latest.Expression" Game="@Game" Size="16" />
+                            <ExpressionComponent Expression="@latest.Expression" Game="@Game" Size="13" />
                         </div>
                     }
                 }
@@ -77,7 +76,7 @@
                     foreach (var message in messages)
                     {
                         <div class="@MessageClass(message)">
-                            <ExpressionComponent Expression="@message.Expression" Game="@Game" Size="16" />
+                            <ExpressionComponent Expression="@message.Expression" Game="@Game" Size="13" />
                         </div>
                     }
                 }

@@ -45,15 +45,20 @@
 
     private static string Enc(string text) => System.Net.WebUtility.HtmlEncode(text);
 
-    private static string Intel(string title, int count, string unit, string? body = null, string? note = null, bool large = false) =>
+    private static string Intel(string title, int count, string unit, string? body = null, string? note = null, bool large = true) =>
         $"<div class='pile-intel{(large ? " is-large" : "")}'><div class='pile-intel-head'><span class='pile-intel-title'>{Enc(title)}</span><span class='pile-intel-count'>{count} {Enc(count == 1 ? unit : unit + "s")}</span></div>"
         + (note == null ? "" : $"<div class='pile-intel-note'>{Enc(note)}</div>")
         + (body ?? "") + "</div>";
 
     private static string Single(string src) => $"<img class='pile-intel-card' src='{src}' alt=''/>";
 
-    private static string Grid(IEnumerable<string> sources) =>
-        $"<div class='pile-intel-grid'>{string.Join("", sources.Select(src => $"<img src='{src}' alt=''/>"))}</div>";
+    private static string Grid(IEnumerable<string> sources)
+    {
+        var list = sources.ToList();
+        var cols = Math.Max(1, Math.Min(list.Count, Math.Max(5, (int)Math.Ceiling(Math.Sqrt(list.Count * 1.5)))));
+        var rows = Math.Max(1, (int)Math.Ceiling(list.Count / (double)cols));
+        return $"<div class='pile-intel-grid' style='--cols:{cols};--rows:{rows}'>{string.Join("", list.Select(src => $"<img src='{src}' alt=''/>"))}</div>";
+    }
 
     private string IntelOfTreacheryCardPile() =>
         Intel("Treachery deck", Game.TreacheryDeck!.Items.Count, "card");
@@ -80,7 +85,7 @@
         Grid(items.Where(card => card != null).Select(card => Client.CurrentSkin.GetImageUrl(card!)));
 
     private string IntelOfWhiteCardPile() =>
-        Intel($"{Client.CurrentSkin.Describe(Faction.White)} cards", Game.WhiteCache.Count, "card", Client.Faction == Faction.White ? GetCardImages(Game.WhiteCache) : null, large: true);
+        Intel($"{Client.CurrentSkin.Describe(Faction.White)} cards", Game.WhiteCache.Count, "card", Client.Faction == Faction.White ? GetCardImages(Game.WhiteCache) : null);
 
     private string IntelOfResourceCardPile()
     {

@@ -8,39 +8,43 @@
 *@
 @inherits GameComponent;
 
-@if (Client.Game != null && Client.Status != null && _time > 0 && Items.Count > 0)
+@if (Client.Game != null && _flashes.Count > 0)
 {
+    var totalCount = _flashes.Sum(f => f.Items.Count);
     <div class="flash-stage" aria-live="polite">
-        <div @key="_flashId" class="flash-panel" role="button" tabindex="0" title="Click to dismiss"
-             style="--flash-duration:@(_time)ms;--flash-count:@Items.Count"
-             @onclick="Hide" @onkeydown="OnKeyDown">
-            <div class="flash-items">
-                @for (var i = 0; i < Items.Count; i++)
-                {
-                    var item = Items[i];
-                    <figure class="flash-item @(IsRound(item.ToShow!) ? "is-round" : "is-card")" style="--flash-index:@i">
-                        <div class="flash-item-frame">
-                            <img src="@Client.CurrentSkin.GetImageUrl(item.ToShow!)" alt="@Name(item.ToShow)" />
-                        </div>
-                        @if (item.Message != null)
-                        {
-                            <figcaption class="flash-caption"><ExpressionComponent Game="Game" Expression="@item.Message.Expression" Size="20" /></figcaption>
-                        }
-                    </figure>
-                }
+        @foreach (var flash in _flashes)
+        {
+            <div @key="flash.Id" class="flash-panel" role="button" tabindex="0" title="Click to dismiss"
+                 style="--flash-duration:@(flash.Time)ms;--flash-count:@totalCount"
+                 @onclick="() => Hide(flash)" @onkeydown="e => OnKeyDown(e, flash)">
+                <div class="flash-items">
+                    @for (var i = 0; i < flash.Items.Count; i++)
+                    {
+                        var item = flash.Items[i];
+                        <figure class="flash-item @(IsRound(item.ToShow!) ? "is-round" : "is-card")" style="--flash-index:@i">
+                            <div class="flash-item-frame">
+                                <img src="@Client.CurrentSkin.GetImageUrl(item.ToShow!)" alt="@Name(item.ToShow)" />
+                            </div>
+                            @if (item.Message != null)
+                            {
+                                <figcaption class="flash-caption"><ExpressionComponent Game="Game" Expression="@item.Message.Expression" Size="20" /></figcaption>
+                            }
+                        </figure>
+                    }
+                </div>
+                <div class="flash-timer" aria-hidden="true"></div>
             </div>
-            <div class="flash-timer" aria-hidden="true"></div>
-        </div>
+        }
     </div>
 }
 
 @code {
 
-    private int _time;
+    private sealed record ActiveFlash(int Id, List<FlashInfo> Items, int Time);
+
+    private readonly List<ActiveFlash> _flashes = [];
     private int _flashId;
     private int _afterEventId = -1;
-
-    private List<FlashInfo> Items => Client.Status?.FlashInfo.Where(i => i.ToShow != null).ToList() ?? [];
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -50,9 +54,17 @@
     protected override void Redraw() => _ = InvokeAsync(DetectFlash);
 
     // Called whenever the game is updated: starts a new flash when the latest event produced something to show.
+    // Each flash keeps a snapshot of its items and its own timer, so later game updates never cut it short.
     private async Task DetectFlash()
     {
-        if (Client.Game == null || Game.EventCount == _afterEventId)
+        if (Client.Game == null)
+        {
+            _flashes.Clear();
+            StateHasChanged();
+            return;
+        }
+
+        if (Game.EventCount == _afterEventId)
         {
             StateHasChanged();
             return;
@@ -60,31 +72,30 @@
 
         _afterEventId = Game.EventCount;
 
-        var count = Items.Count;
-        if (count == 0)
+        var items = Client.Status?.FlashInfo.Where(i => i.ToShow != null).ToList() ?? [];
+        if (items.Count == 0)
         {
             StateHasChanged();
             return;
         }
 
-        _time = 5000 + count * 1000;
-        var flashId = ++_flashId;
+        var flash = new ActiveFlash(++_flashId, items, 5000 + items.Count * 1000);
+        _flashes.Add(flash);
         StateHasChanged();
 
-        await Task.Delay(_time);
-        if (flashId == _flashId) Hide();
+        await Task.Delay(flash.Time);
+        Hide(flash);
     }
 
     private static bool IsRound(object toShow) => toShow is Treachery.Shared.Faction or Leader or Messiah;
 
-    private void OnKeyDown(KeyboardEventArgs e)
+    private void OnKeyDown(KeyboardEventArgs e, ActiveFlash flash)
     {
-        if (e.Key is "Enter" or " " or "Escape") Hide();
+        if (e.Key is "Enter" or " " or "Escape") Hide(flash);
     }
 
-    private void Hide()
+    private void Hide(ActiveFlash flash)
     {
-        _time = 0;
-        StateHasChanged();
+        if (_flashes.Remove(flash)) StateHasChanged();
     }
 }
