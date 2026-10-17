@@ -813,6 +813,9 @@ svg {
 .player-panel-faction-details img { flex: 0 0 auto; width: 25px; height: 25px; object-fit: contain; }
 .player-panel-faction-details svg { flex: 0 0 auto; vertical-align: middle; }
 .player-panel-faction-note > span { display: block; min-width: 0; }
+.player-panel-terror { flex: 1 1 100%; min-width: 0; }
+.player-panel-terror-list { display: flex; flex-wrap: wrap; gap: 2px 8px; margin: 2px 0 0; padding: 0; list-style: none; }
+.player-panel-terror-list > li { min-width: 0; overflow-wrap: anywhere; }
 .player-panel-faction-note > span svg { display: inline-block; margin: -0.2em 1px 0; vertical-align: middle; }
 .sheet-handle, .mobile-game-topbar { display: none; }
 .cursor-hand { cursor: pointer; }

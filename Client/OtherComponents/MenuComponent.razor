@@ -181,11 +181,11 @@
                     <div class="menu-dropdown-actions">
                         @if (CanSave)
                         {
-                            <button class="ui-btn ui-btn-primary" type="button" @onclick="Save">Export...</button>
+                            <button class="ui-btn ui-btn-primary" type="button" @onclick="Save">Save to file...</button>
                         }
                         @if (CanLoad)
                         {
-                            <label class="ui-btn ui-btn-primary" for="fileInput" @onclick="ClearValidationErrors">Import...</label>
+                            <label class="ui-btn ui-btn-primary" for="fileInput" @onclick="ClearValidationErrors">Load from file...</label>
                         }
                     </div>
                     @if (_loadValidationError != "")

@@ -246,7 +246,15 @@
                                     @if (shownPlayer.Faction == Faction.Cyan && Client.CurrentPhase > Phase.BluePredicting)
                                     {
                                         var textBorder = $"color:white;{Support.TextBorder(1, "#289caa")}";
-                                        <span>Available terror: <ExpressionComponent Game="Game" Size="24" Expression="@Expression.Express(Game.UnplacedTerrorTokens)" TextBorder="@textBorder" /></span>
+                                        <div class="player-panel-terror">
+                                            <div>Available terror:</div>
+                                            <ul class="player-panel-terror-list">
+                                                @foreach (var terror in Game.UnplacedTerrorTokens)
+                                                {
+                                                    <li><RichText Shown="@terror" Game="Game" Style="@textBorder" /></li>
+                                                }
+                                            </ul>
+                                        </div>
                                     }
                                     @if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(Player) && !Game.ResourceCardDeck!.IsEmpty)
                                     {
