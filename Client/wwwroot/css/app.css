@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     color-scheme: dark;
     --charcoal: #242321;
     --charcoal-soft: #302e29;
@@ -1419,8 +1419,11 @@ svg {
 .pile-intel.is-large { max-width: min(900px, calc(100vw - 48px)); }
 .pile-intel.is-large .pile-intel-title { font-size: 0.8rem; }
 .pile-intel.is-large .pile-intel-count { font-size: 0.86rem; }
-.pile-intel.is-large .pile-intel-grid { grid-template-columns: repeat(auto-fill, 156px); gap: 10px; max-width: min(870px, calc(100vw - 60px)); }
-.game-popover .pile-intel.is-large .pile-intel-grid img { width: 156px; max-height: none; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55); }
+.pile-intel.is-large .pile-intel-grid {
+    --card-w: min(156px, calc((min(870px, 100vw - 60px) - (var(--cols, 5) - 1) * 10px) / var(--cols, 5)), calc((100dvh - 110px - (var(--rows, 1) - 1) * 10px) / var(--rows, 1) / 1.45));
+    grid-template-columns: repeat(var(--cols, 5), var(--card-w)); gap: 10px; max-width: min(870px, calc(100vw - 60px));
+}
+.game-popover .pile-intel.is-large .pile-intel-grid img { width: var(--card-w); max-height: none; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55); }
 @media (prefers-reduced-motion: reduce) { .game-popover { animation: none; } }
 
 .game-popover:has(> .loc-intel) {
@@ -1482,6 +1485,9 @@ svg {
 .dialog-wide { width: min(94vw, 1100px); }
 .dialog-large { width: min(92vw, 850px); }
 .dialog-small { width: min(90vw, 420px); }
+.card-picker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 6px; }
+.card-picker-grid > .ui-card { margin: 0; min-width: 0; }
+.card-picker-grid .ui-card-img, .card-picker-grid svg { display: block; width: 100%; height: auto; }
 .icon-button { display: inline-grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 1px solid var(--line); border-radius: 7px; background: transparent; color: var(--ivory); cursor: pointer; font-size: 1.3rem; }
 
 .status-menu { position: relative; display: inline-block; }
@@ -1551,23 +1557,21 @@ svg {
 .map-report-panel.is-collapsed .map-report-header { border-bottom: 0; }
 .map-report-panel.is-collapsed .map-report-chevron { display: none; }
 .map-report-sort { display: grid; flex: 0 0 34px; place-items: center; width: 34px; height: 34px; border: 0; border-inline-start: 1px solid rgba(220, 205, 164, 0.14); background: transparent; color: var(--ivory-muted); cursor: pointer; }
-.map-report-latest, .map-report-messages { --report-line: 1.4rem; display: grid; align-content: start; gap: 0; min-height: calc(5 * var(--report-line) + 12px); padding: 4px 9px 6px; overflow: auto; color: #e8e1d0; font-size: 0.64rem; line-height: 1.3; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(214, 177, 102, 0.7) rgba(255, 255, 255, 0.06); }
-.map-report-latest { max-height: calc(5 * var(--report-line) + 12px); overflow-y: scroll; }
+.map-report-latest, .map-report-messages { --report-line: 1.4rem; display: grid; align-content: start; gap: 0; min-height: calc(10 * var(--report-line) + 12px); padding: 4px 9px 6px; overflow: auto; color: #e8e1d0; font-size: 0.64rem; line-height: 1.3; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(214, 177, 102, 0.7) rgba(255, 255, 255, 0.06); }
+.map-report-latest { max-height: calc(10 * var(--report-line) + 12px); overflow-y: scroll; }
 .map-report-latest:focus-visible { outline: 2px solid var(--brass-bright); outline-offset: -2px; }
 .map-report-latest::-webkit-scrollbar, .map-report-messages::-webkit-scrollbar { width: 8px; }
 .map-report-latest::-webkit-scrollbar-thumb, .map-report-messages::-webkit-scrollbar-thumb { border-radius: 4px; background: rgba(214, 177, 102, 0.6); }
 .map-report-latest::-webkit-scrollbar-track, .map-report-messages::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
 .map-report-messages { flex: 1 1 auto; min-height: 0; max-height: none; }
-.map-report-message { position: relative; min-width: 0; padding: 2px 0 2px 11px; border-bottom: 1px dashed rgba(220, 205, 164, 0.09); overflow-wrap: anywhere; line-height: 19px; }
+.map-report-message { position: relative; min-width: 0; padding: 2px 0; border-bottom: 1px dashed rgba(220, 205, 164, 0.09); overflow-wrap: anywhere; line-height: 19px; }
 .map-report-message:last-child { border-bottom: 0; }
-.map-report-message::before { position: absolute; top: 10px; left: 2px; width: 4px; height: 4px; border-radius: 50%; background: var(--brass-bright); opacity: 0.7; content: ""; }
-.map-report-message img { width: auto !important; max-height: 17px; }
-.map-report-message svg text { font-size: 11px; font-weight: 700; stroke-width: 0.3px; }
+.map-report-message img { width: auto !important; max-height: 14px; }
+.map-report-message svg text { font-size: 9px; font-weight: 700; stroke-width: 0.3px; }
 .map-report-message img, .map-report-message svg, .map-report-message > div { vertical-align: middle; }
 .map-report-message > div { display: inline-block !important; line-height: 0; }
-.map-report-message > div > div { line-height: 17px; }
-.map-report-message-private { margin: 1px -8px; padding-right: 8px; padding-left: 19px; border-bottom-color: transparent; border-left: 2px solid var(--spice); background: linear-gradient(90deg, rgba(213, 138, 66, 0.14), transparent 85%); font-style: italic; }
-.map-report-message-private::before { left: 8px; background: var(--spice); opacity: 1; }
+.map-report-message > div > div { line-height: 14px; }
+.map-report-message-private { margin: 1px -8px; padding-right: 8px; padding-left: 8px; border-bottom-color: transparent; border-left: 2px solid var(--spice); background: linear-gradient(90deg, rgba(213, 138, 66, 0.14), transparent 85%); font-style: italic; }
 .map-report-empty { padding: 6px 0; color: var(--ivory-muted); text-align: center; }
 .planet-location:focus { outline: none; }
 .planet-location:focus-visible > path { stroke: var(--spice); stroke-width: 3; }
@@ -1580,7 +1584,7 @@ svg {
 .fx-overlay { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1550; }
 
 /* Flash: briefly shows played cards, revealed traitors, spice blows etc. in the center of the screen */
-.flash-stage { position: fixed; inset: 0; z-index: 1560; display: grid; place-items: center; padding: 16px; pointer-events: none; }
+.flash-stage { position: fixed; inset: 0; z-index: 1560; display: flex; flex-wrap: wrap; align-items: center; align-content: center; justify-content: center; gap: 16px; padding: 16px; pointer-events: none; }
 .flash-panel {
     position: relative;
     max-width: min(1100px, 94vw);
@@ -1859,10 +1863,10 @@ button.communications-user:hover { background: rgba(255, 255, 255, 0.045); }
     .map-report-toggle { padding: 3px 8px; }
     .map-report-collapse, .map-report-sort { flex-basis: 30px; width: 30px; height: 30px; }
     .map-report-latest, .map-report-messages { --report-line: 1.2rem; min-height: 0; padding: 4px 8px; font-size: 0.6rem; }
-    .map-report-latest { max-height: calc(2 * var(--report-line) + 8px); }
+    .map-report-latest { max-height: calc(4 * var(--report-line) + 8px); }
     .map-report-messages { max-height: none; }
     .map-report-message { line-height: 16px; }
-    .map-report-message img { max-height: 15px; }
+    .map-report-message img { max-height: 12px; }
     /* Compact tanks: tokens huddle in a small heap; tapping it shows the grouped contents */
     .tanks-pile-heap { width: calc(var(--pile-w) * 0.34); height: calc(var(--pile-h) * 0.5); min-width: 54px; min-height: 44px; }
     .tanks-token { pointer-events: none; transform: translate(calc(var(--x) * 0.3), calc(var(--y) * 0.45)) rotate(var(--rot)) scale(0.6); }
@@ -1954,7 +1958,7 @@ button.communications-user:hover { background: rgba(255, 255, 255, 0.045); }
 .game-event-header > .ui-btn-link { flex: 0 0 auto; min-height: 0; margin-left: auto; opacity: 0.7; }
 .game-event-header > .ui-btn-link:hover { opacity: 1; }
 .game-event-card.is-compact > .game-event-header { border-bottom: 0; padding-top: 0.4rem; padding-bottom: 0.4rem; }
-.game-event-card > .game-event-body { display: flex; align-items: flex-end; gap: 12px; padding: 0.6rem 0.7rem 0.65rem; }
+.game-event-card > .game-event-body { display: flex; align-items: flex-end; gap: 12px; padding: 0.6rem 0.7rem 0.65rem; font-size: 0.9rem; font-weight: 400; }
 .game-event-content { flex: 1 1 auto; min-width: 0; }
 .game-event-content:empty { display: none; }
 .game-event-content > :where(div, p, table, ul, ol, fieldset, section, h5, h6, form) { margin-top: 0; margin-bottom: 0; }

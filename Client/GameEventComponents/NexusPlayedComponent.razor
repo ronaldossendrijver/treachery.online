@@ -252,12 +252,6 @@
 
     internal Location? PurpleOrYellowLocation;
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        BackgroundImage = Client.CurrentSkin.GetImageUrl(Player.Nexus.ToNexus());
-    }
-
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)

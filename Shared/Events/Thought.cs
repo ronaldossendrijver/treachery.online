@@ -71,7 +71,7 @@ public class Thought : GameEvent
 
     public override Message GetMessage()
     {
-        return Message.Express(Initiator, " use their ", LeaderSkill.Thinker, " skill to ask a question");
+        return Message.Express(Initiator, " use their ", LeaderSkill.Thinker, " skill to ask if their opponent has a ", Card);
     }
 
     #endregion Execution
