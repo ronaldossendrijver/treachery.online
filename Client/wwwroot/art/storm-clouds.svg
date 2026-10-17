@@ -11,14 +11,20 @@
     <feDiffuseLighting in="softHeight" surfaceScale="16" diffuseConstant="1.15" lighting-color="#f3f1ec" result="lit">
       <feDistantLight azimuth="235" elevation="38"/>
     </feDiffuseLighting>
-    <!-- Coverage: a gentle ramp that rarely saturates -->
+    <!-- Stretch the lit relief from dusty brown shadows to pale highlights, so it stands out against the sand -->
+    <feComponentTransfer in="lit" result="tinted">
+      <feFuncR type="table" tableValues="0.18 0.40 0.70 0.97"/>
+      <feFuncG type="table" tableValues="0.15 0.35 0.64 0.94"/>
+      <feFuncB type="table" tableValues="0.12 0.29 0.56 0.88"/>
+    </feComponentTransfer>
+    <!-- Coverage: a gentle ramp; relief comes from the lighting, so saturation here does not create flat patches -->
     <feColorMatrix in="noise" type="matrix" values="
       0 0 0 0 1
       0 0 0 0 1
       0 0 0 0 1
-      2.2 0 0 0 -0.72" result="shape"/>
+      3.0 0 0 0 -0.62" result="shape"/>
     <feGaussianBlur in="shape" stdDeviation="1.5" result="softShape"/>
-    <feComposite in="lit" in2="softShape" operator="in"/>
+    <feComposite in="tinted" in2="softShape" operator="in"/>
   </filter>
   <rect width="600" height="600" filter="url(#clouds)"/>
 </svg>
