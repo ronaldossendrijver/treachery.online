@@ -1579,7 +1579,7 @@ svg {
 .storm-clouds { position: absolute; pointer-events: none; animation: storm-appear 0.8s ease-out both; }
 @keyframes storm-appear { from { opacity: 0; } to { opacity: 1; } }
 .storm-clouds-shadow, .storm-clouds-mask { position: absolute; inset: 0; width: 100%; height: 100%; }
-.storm-clouds-mask { overflow: hidden; -webkit-mask: var(--storm-mask) 0 0 / 100% 100% no-repeat; mask: var(--storm-mask) 0 0 / 100% 100% no-repeat; }
+.storm-clouds-mask { opacity: 0.68; overflow: hidden; -webkit-mask: var(--storm-mask) 0 0 / 100% 100% no-repeat; mask: var(--storm-mask) 0 0 / 100% 100% no-repeat; }
 .storm-clouds img { max-width: none; user-select: none; pointer-events: none; }
 .fx-overlay { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1550; }
 
