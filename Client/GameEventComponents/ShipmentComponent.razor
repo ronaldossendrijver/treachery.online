@@ -245,7 +245,7 @@
         KarmaCard = null;
     }
 
-    <div class="ui-mt-1 ui-text-end">Total cost of shipment: <NumberComponent Value="@Cost" SymbolSrc="@Client.CurrentSkin.Harvester_URL" Size="20" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center"/></div>
+    <div class="ui-mt-1 ui-text-end">Total cost of shipment: <ResourcesComponent Value="@Cost"/></div>
 
     @if (ShipmentType is ShipmentType.ShipmentNormal && Faction != Faction.Yellow && Game.PreventedFromShipping(Faction))
     {

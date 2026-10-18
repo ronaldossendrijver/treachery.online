@@ -1,0 +1,10 @@
+﻿<NumberComponent Value="@Value" SymbolSrc="@Client.CurrentSkin.Harvester_URL" Size="@Size" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center"/>
+
+@code 
+{
+    [Parameter] 
+    public int Value { get; set; }
+
+    [Parameter] 
+    public int Size { get; set; } = 20;
+}

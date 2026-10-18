@@ -105,15 +105,16 @@
                 Location = null;
             }
 
-            @if (Revival.ValidRevivalHeroes(Game, Player).Any())
+            foreach (var request in Game.CurrentRevivalRequests.Where(r => r.Player == Player && r.Hero != null))
             {
-                foreach (var request in Game.CurrentRevivalRequests.Where(r => r.Player == Player && r.Hero != null))
-                {
-                    <div class="ui-mt-1 ui-text-info">You requested <FactionComponent Faction="@Faction.Purple" Diameter="20"/> revival of <Image Shown="@request.Hero"/></div>
-                }
+                <div class="ui-mt-1 ui-text-info">You requested <FactionComponent Faction="@Faction.Purple" Diameter="20"/> revival of <Image Shown="@request.Hero"/></div>
+            }
+            
+            if (Revival.ValidRevivalHeroes(Game, Player).Any())
+            {
                 foreach (var offer in Game.EarlyRevivalsOffers.Where(offer => offer.Key.Faction == Faction))
                 {
-                    <div class="ui-mt-1 ui-text-info"><FactionComponent Faction="@Faction.Purple" Diameter="20"/> offer <Image Shown="@offer.Key" Width="20"/> for <SimpleNumberComponent Size="20">@offer</SimpleNumberComponent></div>
+                    <div class="ui-mt-1 ui-text-info"><FactionComponent Faction="@Faction.Purple" Diameter="20"/> offer <Image Shown="@offer.Key" Width="20"/> for <ResourcesComponent Value="@offer.Value" Size="20"/></div>
                 }
                 
                 <SelectFromImageComponent Game="Game" @bind-Value="Hero" Values="Revival.ValidRevivalHeroes(Game, Player)" Required="false" ImageWidth="80"/>                

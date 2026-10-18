@@ -20,7 +20,7 @@
         {
             <div class="bid-current" title="Highest bid">
                 <img src="@Client.CurrentSkin.GetImageUrl(Game.CurrentBid!.Initiator)" width="28" height="28" alt="@Name(Game.CurrentBid.Initiator)"/>
-                <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="30" SymbolSrc="@Client.CurrentSkin.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
+                <ResourcesComponent Value="Game.CurrentBid.TotalAmount" Size="30"/>
             </div>
         }
         else if (!IsSilentAuction)
