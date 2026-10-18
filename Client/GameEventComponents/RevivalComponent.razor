@@ -135,11 +135,11 @@
                 AssignSkill = false;
             }
 
-            <div class="ui-mt-1 ui-text-end">Revival cost for you: <SimpleNumberComponent>@(CostOfRevival.TotalCostForPlayer)</SimpleNumberComponent></div>
+            <div class="ui-mt-1 ui-text-end">Revival cost for you: <ResourcesComponent Value="@CostOfRevival.TotalCostForPlayer" Size="20"/></div>
 
             if (Player.Ally == Faction.Red)
             {
-                <div class="ui-mt-1 ui-text-end">Revival cost for @Client.CurrentSkin.Describe(Faction.Red): <SimpleNumberComponent>@(CostOfRevival.CostForEmperor)</SimpleNumberComponent></div>
+                <div class="ui-mt-1 ui-text-end">Revival cost for @Client.CurrentSkin.Describe(Faction.Red): <ResourcesComponent Value="@CostOfRevival.CostForEmperor" Size="20"/></div>
             }
 
             <ButtonRowComponent Confirm="Confirm" ConfirmText="Revive" ConfirmError=@Validation />
