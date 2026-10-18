@@ -15,7 +15,7 @@
 
     protected Player Player => Client.Player!;
 
-    protected Faction Faction => Client.Faction!.Value;
+    protected Faction Faction => Client.Faction ?? Faction.None;
 
     protected string Id => field ??= Guid.NewGuid().ToString();
 
