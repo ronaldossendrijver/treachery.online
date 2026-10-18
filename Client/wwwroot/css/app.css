@@ -1939,7 +1939,7 @@ button.communications-user:hover { background: rgba(255, 255, 255, 0.045); }
 .game-event-body .ui-select-field > label { display: block; margin: 0 0 0.3rem; color: var(--ivory-muted); font-size: 0.8rem; font-weight: 650; letter-spacing: 0.01em; }
 .game-event-body .ui-form-check { margin: 0.15rem 0; }
 .game-event-body .ui-form-check-label { color: var(--ivory); }
-.game-event-body img { vertical-align: middle; }
+.game-event-body img, .game-event-body svg { vertical-align: middle; }
 .game-event-body .ui-table-sm td, .game-event-body .ui-table-sm th { padding: 0.2rem 0.35rem; vertical-align: middle; }
 
 .ui-button-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 0.8rem; }

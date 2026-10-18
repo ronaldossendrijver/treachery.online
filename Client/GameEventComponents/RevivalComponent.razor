@@ -107,7 +107,7 @@
 
             foreach (var request in Game.CurrentRevivalRequests.Where(r => r.Player == Player && r.Hero != null))
             {
-                <div class="ui-mt-1 ui-text-info">You requested <FactionComponent Faction="@Faction.Purple" Diameter="20"/> revival of <Image Shown="@request.Hero"/></div>
+                <div class="ui-mt-1 ui-text-info">You requested <FactionComponent Faction="@Faction.Purple" Diameter="20"/> revival of <Image Shown="@request.Hero" Width="20"/></div>
             }
             
             if (Revival.ValidRevivalHeroes(Game, Player).Any())
