@@ -169,7 +169,10 @@
             }
         }
 
-        var killed = Game.Players.ToDictionary(p => p.Faction, p => p.ForcesKilled + p.SpecialForcesKilled);
+        var killed = Game.Players
+            .Where(p => p.Faction != Faction.None)
+            .GroupBy(p => p.Faction)
+            .ToDictionary(g => g.Key, g => g.Sum(p => p.ForcesKilled + p.SpecialForcesKilled));
 
         if (ReferenceEquals(_forcesSnapshotGame, Game))
         {
