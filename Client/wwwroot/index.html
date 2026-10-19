@@ -449,18 +449,38 @@
             const closer = event.target.closest('[data-dialog-close]');
             if (closer) {
                 const floating = closer.closest('[popover]');
-                if (floating) floating.hidePopover();
+                if (floating) HidePopoverWindow(floating);
                 else closer.closest('dialog')?.close();
             }
         });
+
+        // Browsers without the Popover API (e.g. Chrome < 114) toggle the is-popover-open class instead (see app.css).
+        const popoverSupported = typeof HTMLElement !== 'undefined' && HTMLElement.prototype.hasOwnProperty('popover');
+        if (!popoverSupported) document.documentElement.classList.add('no-popover-api');
+
+        function IsPopoverOpen(win) {
+            return popoverSupported ? win.matches(':popover-open') : win.classList.contains('is-popover-open');
+        }
+
+        function ShowPopoverWindow(win) {
+            if (IsPopoverOpen(win)) return;
+            if (popoverSupported) win.showPopover();
+            else win.classList.add('is-popover-open');
+        }
+
+        function HidePopoverWindow(win) {
+            if (!IsPopoverOpen(win)) return;
+            if (popoverSupported) win.hidePopover();
+            else win.classList.remove('is-popover-open');
+        }
 
         // Non-blocking floating windows ([popover="manual"]): only one per draggable group is shown, at its last dragged position.
         function ShowFloatingWindow(win) {
             const group = win.dataset.draggable;
             if (group) document.querySelectorAll(`[popover][data-draggable="${CSS.escape(group)}"]`).forEach(other => {
-                if (other !== win && other.matches(':popover-open')) other.hidePopover();
+                if (other !== win) HidePopoverWindow(other);
             });
-            if (!win.matches(':popover-open')) win.showPopover();
+            ShowPopoverWindow(win);
             if (group) RestoreDragPosition(win, group);
         }
 
@@ -481,7 +501,7 @@
         document.addEventListener('keydown', event => {
             if (event.key === 'Escape') CloseMenuDropdowns(null);
             if (event.key === 'Escape' && !document.querySelector('dialog[open]')) {
-                document.querySelectorAll('[popover][data-draggable]').forEach(win => { if (win.matches(':popover-open')) win.hidePopover(); });
+                document.querySelectorAll('[popover][data-draggable]').forEach(HidePopoverWindow);
             }
         });
 
