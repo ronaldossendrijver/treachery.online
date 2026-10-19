@@ -46,6 +46,10 @@
 else 
 {
     <div class="lobby-screen admin-screen">
+        @{
+            var filteredGames = FilteredGames.ToList();
+            var now = DateTimeOffset.Now;
+        }
         <div class="lobby-ambient" aria-hidden="true"></div>
         <header class="lobby-header">
             <video class="lobby-logo" autoplay muted loop playsinline preload="auto" poster="art/planet.png" aria-hidden="true" tabindex="-1">
@@ -62,7 +66,7 @@ else
                 <section class="lobby-panel">
                     <div class="lobby-panel-head">
                         <div>
-                            <span class="lobby-kicker">@FilteredGames.Count() shown</span>
+                            <span class="lobby-kicker">@filteredGames.Count shown</span>
                             <h2>Running games</h2>
                         </div>
                     </div>
@@ -94,10 +98,10 @@ else
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach (var av in FilteredGames)
+                                @foreach (var av in filteredGames)
                                 {
-                                    var idle = av.LastActivity != null && DateTimeOffset.Now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20;
-                                    <tr class="@(idle ? "is-idle" : "")">
+                                    var idle = av.LastActivity != null && now.Subtract((DateTimeOffset)av.LastActivity).TotalMinutes > 20;
+                                    <tr @key="av.GameId" class="@(idle ? "is-idle" : "")">
                                         <td data-label="Game" class="admin-strong">@av.Name</td>
                                         <td data-label="Creator">@av.CreatorUsername</td>
                                         <td data-label="Created">@av.CreationDate.LocalDateTime</td>
@@ -115,7 +119,7 @@ else
                                 }
                                 </tbody>
                             </table>
-                            @if (!FilteredGames.Any())
+                            @if (filteredGames.Count == 0)
                             {
                                 <p class="admin-empty">No games match these filters.</p>
                             }
@@ -145,107 +149,13 @@ else
                             </label>
                             <button class="ui-btn ui-btn-primary admin-filter-btn" @onclick="LoadErrorLog">Filter</button>
                         </div>
-                        <div class="admin-table-wrap">
-                            <table class="admin-table admin-error-table">
-                                <thead>
-                                <tr>
-                                    <th>Time</th>
-                                    <th>Version</th>
-                                    <th>Source</th>
-                                    <th>Savegame</th>
-                                    <th>User</th>
-                                    <th class="admin-wide-col">Message</th>
-                                    <th class="admin-wide-col">Details</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @foreach (var error in Client.ErrorLogs)
-                                {
-                                    <tr>
-                                        <td data-label="Time">@error.OccurredAt.LocalDateTime</td>
-                                        <td data-label="Version">@(error.GameVersion?.ToString() ?? "Unknown")</td>
-                                        <td data-label="Source">@error.Source</td>
-                                        <td data-label="Savegame">
-                                            @if (error.HasGameSnapshot)
-                                            {
-                                                <button class="ui-btn ui-btn-secondary ui-btn-sm" title="Download savegame at the time of this bot decision"
-                                                        @onclick="@(() => DownloadBotDecisionGame(error))">
-                                                    Download
-                                                </button>
-                                            }
-                                        </td>
-                                        <td data-label="User">@(error.Username ?? error.UserId?.ToString() ?? "")</td>
-                                        <td data-label="Message" class="admin-copy admin-wide-col" title="Click to copy error message"
-                                            @onclick="@(() => Browser.CopyToClipboard(error.Message))">@error.Message</td>
-                                        <td data-label="Details" class="admin-wide-col">
-                                            <details class="admin-details">
-                                                <summary>View</summary>
-                                                <pre class="admin-copy" title="Click to copy error details"
-                                                     @onclick="@(() => CopyErrorDetails(error))">@error.Details</pre>
-                                                <div class="admin-copy" title="Click to copy browser/session info"
-                                                     @onclick="@(() => Browser.CopyToClipboard(error.UserAgent ?? string.Empty))">@error.UserAgent</div>
-                                            </details>
-                                        </td>
-                                    </tr>
-                                }
-                                </tbody>
-                            </table>
-                            @if (!Client.ErrorLogs.Any())
-                            {
-                                <p class="admin-empty">No errors logged in this period.</p>
-                            }
-                        </div>
+                        <AdminErrorLogComponent Logs="@Client.ErrorLogs" OnDownload="@DownloadBotDecisionGame"/>
                     </div>
                 </section>
 
                 @if (Client.AdminInfo != null)
                 {
-                    <section class="lobby-panel">
-                        <div class="lobby-panel-head">
-                            <div>
-                                <span class="lobby-kicker">@Client.AdminInfo.Users.Count accounts</span>
-                                <h2>Users</h2>
-                            </div>
-                        </div>
-                        <div class="lobby-panel-body">
-                            <div class="admin-stats">
-                                <div><strong>@Client.AdminInfo.UsersByUserTokenCount</strong><span>Users by token</span></div>
-                                <div><strong>@Client.AdminInfo.GamesByGameIdCount</strong><span>Games by id</span></div>
-                                <div><strong>@Client.AdminInfo.Users.Count</strong><span>Total users</span></div>
-                                <div><strong>@Client.AdminInfo.ConnectionInfoByUserIdCount</strong><span>Connections</span></div>
-                            </div>
-                            <div class="admin-table-wrap">
-                                <table class="admin-table">
-                                    <thead>
-                                    <tr>
-                                        <th>Id</th>
-                                        <th>Username</th>
-                                        <th>Email</th>
-                                        <th>Last login</th>
-                                        <th class="admin-actions-col">Actions</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach (var av in Client.AdminInfo.Users)
-                                    {
-                                        <tr>
-                                            <td data-label="Id">@av.Id</td>
-                                            <td data-label="Username" class="admin-strong">@av.Username</td>
-                                            <td data-label="Email">@av.Email</td>
-                                            <td data-label="Last login">
-                                                @if (av.LastLogin != default)
-                                                {
-                                                    @av.LastLogin.LocalDateTime
-                                                }
-                                            </td>
-                                            <td data-label="Actions" class="admin-actions"><button class="ui-btn ui-btn-secondary ui-btn-sm" @onclick="@(_ => DeleteUser(av))">Delete</button></td>
-                                        </tr>
-                                    }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </section>
+                    <AdminUsersComponent Info="@Client.AdminInfo" OnDelete="@DeleteUser"/>
                 }
             </div>
 
@@ -268,7 +178,7 @@ else
                         <div class="lobby-section-title">Persisted data</div>
                         <div class="lobby-form-actions">
                             <button class="ui-btn ui-btn-secondary" @onclick="@PersistState">Persist data</button>
-                            <button class="ui-btn ui-btn-secondary" @onclick="@RestoreState">Restore data</button>
+                            <button class="ui-btn ui-btn-danger" @onclick="@RestoreState">Restore data</button>
                         </div>
                     </div>
                 </section>
@@ -331,8 +241,7 @@ else
 }
 @code {
 
-    private readonly CancellationTokenSource _errorLogRefreshCancellation = new();
-    private bool _errorLogRefreshStarted;
+    private bool _errorLogLoaded;
     private DateTimeOffset MaintenanceDate { get; set; }
     private const string DateTimeInputFormat = "yyyy-MM-ddTHH:mm";
     private static readonly string[] DateTimeInputParseFormats = ["yyyy-MM-ddTHH:mm", "yyyy-MM-ddTHH:mm:ss", "yyyy-MM-ddTHH:mm:ss.FFFFFFF"];
@@ -359,7 +268,7 @@ else
     {
         Client.RefreshHandler += StateHasChanged;
         Client.IsAdmin = true;
-        GameTimeFromInput = FormatDateTimeInput(DateTime.Now.AddDays(-3));
+        GameTimeFromInput = FormatDateTimeInput(DateTime.Now.AddHours(-24));
         ApplyGameFilter();
         ErrorLogVersion = Game.LatestVersion;
         ErrorLogFromInput = FormatDateTimeInput(DateTime.Now.AddDays(-31));
@@ -370,16 +279,14 @@ else
     public void Dispose()
     {
         Client.RefreshHandler -= StateHasChanged;
-        _errorLogRefreshCancellation.Cancel();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (Client.LoggedIn && !_errorLogRefreshStarted)
+        if (Client.LoggedIn && !_errorLogLoaded)
         {
-            _errorLogRefreshStarted = true;
+            _errorLogLoaded = true;
             await RefreshErrorLog(false);
-            _ = RefreshErrorLogPeriodically(_errorLogRefreshCancellation.Token);
         }
     }
 
@@ -429,27 +336,6 @@ else
             ? result
             : null;
 
-    private async Task RefreshErrorLogPeriodically(CancellationToken cancellationToken)
-    {
-        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
-        try
-        {
-            while (await timer.WaitForNextTickAsync(cancellationToken))
-                await InvokeAsync(() => RefreshErrorLog(false));
-        }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-        {
-        }
-    }
-    private async Task CopyErrorDetails(ErrorLogInfo error)
-    {
-        var contents = error.Details;
-        if (!string.IsNullOrWhiteSpace(error.UserAgent))
-            contents += $"{Environment.NewLine}User agent: {error.UserAgent}";
-
-        await Browser.CopyToClipboard(contents);
-    }
-    
     private async Task PersistState()
     {
         Messages.Add(await Client.AdminPersistState());
@@ -458,6 +344,9 @@ else
     
     private async Task RestoreState()
     {
+        if (!await Browser.Confirm("Restore persisted data? This replaces the current server state."))
+            return;
+
         Messages.Add(await Client.AdminRestoreState());
         StateHasChanged();
     }
@@ -488,6 +377,9 @@ else
     
     private async Task DeleteUser(UserInfo av)
     {
+        if (!await Browser.Confirm($"Delete user {av.Username} (id {av.Id})? This cannot be undone."))
+            return;
+
         Messages.Add(await Client.AdminDeleteUser(av.Id));
         StateHasChanged();
     }

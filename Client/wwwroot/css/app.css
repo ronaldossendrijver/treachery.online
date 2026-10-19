@@ -1194,6 +1194,7 @@ svg {
 .admin-table tbody tr:hover { background: rgba(213, 138, 66, 0.07); }
 .admin-table tr.is-idle td { color: rgba(201, 192, 171, 0.55); }
 .admin-strong { color: var(--ivory); font-weight: 600; }
+.admin-table td.admin-nowrap { white-space: nowrap; }
 .admin-actions, .admin-actions-col { text-align: right !important; white-space: nowrap; }
 .admin-actions { display: flex; justify-content: flex-end; gap: 6px; }
 .admin-error-table { table-layout: fixed; min-width: 860px; }

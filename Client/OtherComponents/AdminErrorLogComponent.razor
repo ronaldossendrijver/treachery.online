@@ -1,0 +1,94 @@
+@*
+ * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
+ * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
+ * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+*@
+
+<div class="admin-table-wrap">
+    <table class="admin-table admin-error-table">
+        <thead>
+        <tr>
+            <th>Time</th>
+            <th>Version</th>
+            <th>Source</th>
+            <th>Savegame</th>
+            <th>User</th>
+            <th class="admin-wide-col">Message</th>
+            <th class="admin-wide-col">Details</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var error in Logs)
+        {
+            <tr>
+                <td data-label="Time">@error.OccurredAt.LocalDateTime</td>
+                <td data-label="Version">@(error.GameVersion?.ToString() ?? "Unknown")</td>
+                <td data-label="Source">@error.Source</td>
+                <td data-label="Savegame">
+                    @if (error.HasGameSnapshot)
+                    {
+                        <button class="ui-btn ui-btn-secondary ui-btn-sm" title="Download savegame at the time of this bot decision"
+                                @onclick="@(() => OnDownload.InvokeAsync(error))">
+                            Download
+                        </button>
+                    }
+                </td>
+                <td data-label="User">@(error.Username ?? error.UserId?.ToString() ?? "")</td>
+                <td data-label="Message" class="admin-copy admin-wide-col" title="Click to copy error message"
+                    @onclick="@(() => Browser.CopyToClipboard(error.Message))">@error.Message</td>
+                <td data-label="Details" class="admin-wide-col">
+                    <details class="admin-details">
+                        <summary>View</summary>
+                        <pre class="admin-copy" title="Click to copy error details"
+                             @onclick="@(() => CopyErrorDetails(error))">@error.Details</pre>
+                        <div class="admin-copy" title="Click to copy browser/session info"
+                             @onclick="@(() => Browser.CopyToClipboard(error.UserAgent ?? string.Empty))">@error.UserAgent</div>
+                    </details>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    @if (Logs.Length == 0)
+    {
+        <p class="admin-empty">No errors logged in this period.</p>
+    }
+</div>
+
+@code {
+
+    [Parameter, EditorRequired] public ErrorLogInfo[] Logs { get; set; } = [];
+    [Parameter] public EventCallback<ErrorLogInfo> OnDownload { get; set; }
+
+    private ErrorLogInfo[]? _renderedLogs;
+    private bool _dirty;
+
+    protected override void OnParametersSet()
+    {
+        if (ReferenceEquals(Logs, _renderedLogs))
+            return;
+
+        _renderedLogs = Logs;
+        _dirty = true;
+    }
+
+    // Only re-render when a new error log was retrieved; avoids re-rendering on every server heartbeat.
+    protected override bool ShouldRender()
+    {
+        var result = _dirty;
+        _dirty = false;
+        return result;
+    }
+
+    private async Task CopyErrorDetails(ErrorLogInfo error)
+    {
+        var contents = error.Details;
+        if (!string.IsNullOrWhiteSpace(error.UserAgent))
+            contents += $"{Environment.NewLine}User agent: {error.UserAgent}";
+
+        await Browser.CopyToClipboard(contents);
+    }
+}
