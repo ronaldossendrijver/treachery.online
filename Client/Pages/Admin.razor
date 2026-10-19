@@ -126,7 +126,6 @@ else
                 <section class="lobby-panel">
                     <div class="lobby-panel-head">
                         <div>
-                            <span class="lobby-kicker">Up to 500 entries · kept 30 days · refreshes every 30s</span>
                             <h2>Error log</h2>
                         </div>
                     </div>
@@ -153,7 +152,6 @@ else
                                     <th>Time</th>
                                     <th>Version</th>
                                     <th>Source</th>
-                                    <th>Game</th>
                                     <th>Savegame</th>
                                     <th>User</th>
                                     <th class="admin-wide-col">Message</th>
@@ -167,7 +165,6 @@ else
                                         <td data-label="Time">@error.OccurredAt.LocalDateTime</td>
                                         <td data-label="Version">@(error.GameVersion?.ToString() ?? "Unknown")</td>
                                         <td data-label="Source">@error.Source</td>
-                                        <td data-label="Game">@error.GameId</td>
                                         <td data-label="Savegame">
                                             @if (error.HasGameSnapshot)
                                             {
@@ -264,7 +261,7 @@ else
                     </div>
                     <div class="lobby-panel-body admin-controls">
                         <div class="lobby-section-title">Info</div>
-                        <button class="ui-btn ui-btn-primary" @onclick="@GetAdminInfo">Get admin info</button>
+                        <button class="ui-btn ui-btn-primary" @onclick="@GetAdminInfo">Get users</button>
                         <div class="lobby-section-title">Maintenance window</div>
                         <div class="admin-maintenance">
                             <DateTimePicker @bind-Value="@MaintenanceDate"/>
