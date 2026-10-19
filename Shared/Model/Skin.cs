@@ -245,7 +245,9 @@ public class Skin : IDescriber
             return new PointD(-4 * FORCETOKEN_RADIUS, -4 * FORCETOKEN_RADIUS);
         }
 
-        return LocationCenter_Point[location.Id];
+        if (LocationCenter_Point.TryGetValue(location.Id, out var center)) return center;
+        if (DefaultSkin.Default.LocationCenter_Point.TryGetValue(location.Id, out var donorCenter)) return donorCenter;
+        return PlanetCenter;
     }
 
     public float HmsDx => -3 * PlayerTokenRadius;
