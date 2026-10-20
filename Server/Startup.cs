@@ -33,6 +33,12 @@ public class Startup
         services.AddDbContext<TreacheryContext>();
         services.AddScoped<ErrorLogService>();
         services.AddScoped<ErrorLoggingHubFilter>();
+        services.AddHttpContextAccessor();
+        services.AddSingleton<ILoggerProvider, SignalRProtocolErrorLoggingLoggerProvider>();
+        services.AddLogging(logging =>
+            logging.AddFilter<SignalRProtocolErrorLoggingLoggerProvider>(
+                "Microsoft.AspNetCore.SignalR.HubConnectionHandler",
+                LogLevel.Debug));
         services.AddSingleton<GameInfoSummaryCache>();
         services.AddHostedService<GameInfoBackfillService>();
         services.AddHostedService<ErrorLogCleanupService>();
