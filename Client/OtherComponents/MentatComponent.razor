@@ -8,168 +8,170 @@
 *@
 @inherits GameComponent;
 
-<ModalComponent Id="@Id" Title="Card and Token Reference" Size="dialog-wide">
+<ModalComponent Id="@Id" Title="Cards and Tokens" Size="dialog-wide" Scrolling="true">
 
-    <h5>Treachery Cards</h5>
-    <div class="ui-row ui-row-cols-3 ui-row-cols-md-6 ui-ms-1 ui-me-1">
+    <div class="ref-modal">
 
-        @foreach (var v in TreacheryCardManager.GetCardsInPlay(Game))
-        {
-            <div class="ui-card">
-                <Hoverable Class="ui-card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
-                    <img src="@Client.CurrentSkin.GetImageUrl(v)" class="ui-card-img" alt="@Name(v)">
-                </Hoverable>
+        <section class="ref-section">
+            <h3 class="ref-section-title">Treachery Cards</h3>
+            <div class="ref-grid">
+                @foreach (var v in TreacheryCardManager.GetCardsInPlay(Game))
+                {
+                    <Hoverable Class="ref-item" Popover=@Client.CurrentSkin.GetPopup(v)>
+                        <img src="@Client.CurrentSkin.GetImageUrl(v)" alt="@Name(v)" loading="lazy">
+                    </Hoverable>
+                }
             </div>
+        </section>
+
+        @if (Game.IsPlaying(Faction.White))
+        {
+            <section class="ref-section">
+                <h3 class="ref-section-title">@Client.CurrentSkin.Describe(Faction.White) Cards</h3>
+                <div class="ref-grid">
+                    @foreach (var v in TreacheryCardManager.GetWhiteCards())
+                    {
+                        <Hoverable Class="ref-item" Popover=@Client.CurrentSkin.GetPopup(v)>
+                            <img src="@Client.CurrentSkin.GetImageUrl(v)" alt="@Name(v)" loading="lazy">
+                        </Hoverable>
+                    }
+                </div>
+            </section>
+        }
+
+        <section class="ref-section">
+            <h3 class="ref-section-title">@Client.CurrentSkin.Describe(Concept.Resource) Cards</h3>
+            <div class="ref-grid">
+                @foreach (var v in Map.GetResourceCardsInPlay(Game))
+                {
+                    <Hoverable Class="ref-item" Popover=@Client.CurrentSkin.GetPopup(v)>
+                        <img src="@Client.CurrentSkin.GetImageUrl(v)" alt="@Name(v)" loading="lazy">
+                    </Hoverable>
+                }
+            </div>
+        </section>
+
+        @if (Game.Applicable(Rule.LeaderSkills))
+        {
+            <section class="ref-section">
+                <h3 class="ref-section-title">Leader Skill Cards</h3>
+                <div class="ref-grid">
+                    @foreach (var v in Enumerations.GetValuesExceptDefault(LeaderSkill.None))
+                    {
+                        <Hoverable Class="ref-item" Popover=@Client.CurrentSkin.GetPopup(v)>
+                            <img src="@Client.CurrentSkin.GetImageUrl(v)" alt="@Name(v)" loading="lazy">
+                        </Hoverable>
+                    }
+                </div>
+            </section>
+        }
+
+        @if (Game.Applicable(Rule.StrongholdBonus))
+        {
+            <section class="ref-section">
+                <h3 class="ref-section-title">Stronghold Cards</h3>
+                <div class="ref-grid">
+                    @foreach (var v in Enumerations.GetValuesExceptDefault(StrongholdAdvantage.None))
+                    {
+                        <Hoverable Class="ref-item" Popover=@Client.CurrentSkin.GetPopup(v)>
+                            <img src="@Client.CurrentSkin.GetImageUrl(v)" alt="@Name(v)" loading="lazy">
+                        </Hoverable>
+                    }
+                </div>
+            </section>
+        }
+
+        @if (Game.Applicable(Rule.NexusCards))
+        {
+            <section class="ref-section">
+                <h3 class="ref-section-title">Nexus Cards</h3>
+                <div class="ref-grid">
+                    @foreach (var n in Enumerations.GetValuesExceptDefault(Nexus.None))
+                    {
+                        <Hoverable Class="ref-item" Popover=@Client.CurrentSkin.GetNexusCardPopup(n)>
+                            <img src="@Client.CurrentSkin.GetImageUrl(n)" alt="@Name(n)" loading="lazy">
+                        </Hoverable>
+                    }
+                </div>
+            </section>
+        }
+
+        @if (Game.Applicable(Rule.Homeworlds))
+        {
+            <section class="ref-section">
+                <h3 class="ref-section-title">Homeworld Cards</h3>
+                <div class="ref-grid ref-grid-wide">
+                    @foreach (var w in Game.Map.Homeworlds)
+                    {
+                        <Hoverable Class="ref-item" Popover=@Client.CurrentSkin.GetPopup(w)>
+                            <img src="@Client.CurrentSkin.GetHomeworldCardImageUrl(w.World)" alt="@Name(w)" loading="lazy">
+                        </Hoverable>
+                    }
+                </div>
+            </section>
+        }
+
+        @if (Game.IsPlaying(Faction.Pink))
+        {
+            <section class="ref-section">
+                <h3 class="ref-section-title">Ambassador Tokens</h3>
+                <ul class="ref-token-list">
+                    @foreach (var t in Enumerations.GetValuesExceptDefault(Ambassador.None).Where(t => t != Ambassador.Cyan))
+                    {
+                        <li class="ref-token">
+                            <img class="ref-token-img" src="@Client.CurrentSkin.GetImageUrl(t)" alt="" loading="lazy">
+                            <div>
+                                <strong>@Name(t)</strong>
+                                <span>@Client.CurrentSkin.GetAmbassadorDescription(t)</span>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </section>
+        }
+
+        @if (Game.IsPlaying(Faction.Cyan))
+        {
+            <section class="ref-section">
+                <h3 class="ref-section-title">Terror Tokens</h3>
+                <ul class="ref-token-list">
+                    @foreach (var t in Enumerations.GetValuesExceptDefault(TerrorType.None))
+                    {
+                        <li class="ref-token">
+                            <div>
+                                <strong>@Name(t)</strong>
+                                <span>@Client.CurrentSkin.GetTerrorTypeDescription(t)</span>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </section>
+        }
+
+        @if (Game.Applicable(Rule.DiscoveryTokens))
+        {
+            <section class="ref-section">
+                <h3 class="ref-section-title">Discovery Tokens</h3>
+                <ul class="ref-token-list">
+                    @foreach (var t in Enumerations.GetValuesExceptDefault(DiscoveryToken.None))
+                    {
+                        var img = Client.CurrentSkin.GetImageUrl(t);
+                        <li class="ref-token">
+                            @if (!string.IsNullOrEmpty(img))
+                            {
+                                <img class="ref-token-img" src="@img" alt="" loading="lazy">
+                            }
+                            <div>
+                                <strong>@Name(t)</strong>
+                                <span>@Client.CurrentSkin.GetDiscoveryTokenDescription(t)</span>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </section>
         }
 
     </div>
-
-    @if (Game.IsPlaying(Faction.White))
-    {
-        <h5 class="ui-mt-2">@Client.CurrentSkin.Describe(Faction.White) Cards</h5>
-        <div class="ui-row ui-row-cols-3 ui-row-cols-md-6 ui-ms-1 ui-me-1">
-
-            @foreach (var v in TreacheryCardManager.GetWhiteCards())
-            {
-                <div class="ui-card">
-                    <Hoverable Class="ui-card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
-                        <img src="@Client.CurrentSkin.GetImageUrl(v)" class="ui-card-img" alt="@Name(v)">
-                    </Hoverable>
-                </div>
-            }
-
-        </div>
-    }
-
-    <h5 class="ui-mt-2">@Client.CurrentSkin.Describe(Concept.Resource) Cards</h5>
-    <div class="ui-row ui-row-cols-3 ui-row-cols-md-6 ui-ms-1 ui-me-1">
-
-        @foreach (var v in Map.GetResourceCardsInPlay(Game))
-        {
-            <div class="ui-card">
-                <Hoverable Class="ui-card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
-                    <img src="@Client.CurrentSkin.GetImageUrl(v)" class="ui-card-img" alt="@Name(v)">
-                </Hoverable>
-            </div>
-        }
-
-    </div>
-
-    @if (Game.Applicable(Rule.LeaderSkills))
-    {
-        <h5 class="ui-mt-2">Leader Skill Cards</h5>
-        <div class="ui-row ui-row-cols-3 ui-row-cols-md-6 ui-ms-1 ui-me-1">
-
-            @foreach (var v in Enumerations.GetValuesExceptDefault(LeaderSkill.None))
-            {
-                <div class="ui-card">
-                    <Hoverable Class="ui-card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
-                        <img src="@Client.CurrentSkin.GetImageUrl(v)" class="ui-card-img" alt="@Name(v)">
-                    </Hoverable>
-                </div>
-            }
-
-        </div>
-    }
-
-    @if (Game.Applicable(Rule.StrongholdBonus))
-    {
-        <h5 class="ui-mt-2">Stronghold Cards</h5>
-        <div class="ui-row ui-row-cols-3 ui-row-cols-md-6 ui-ms-1 ui-me-1">
-
-            @foreach (var v in Enumerations.GetValuesExceptDefault(StrongholdAdvantage.None))
-            {
-                <div class="ui-card">
-                    <Hoverable Class="ui-card-img-top" Popover=@Client.CurrentSkin.GetPopup(v)>
-                        <img src="@Client.CurrentSkin.GetImageUrl(v)" class="ui-card-img" alt="@Name(v)">
-                    </Hoverable>
-                </div>
-            }
-
-        </div>
-    }
-
-    @if (Game.Applicable(Rule.NexusCards))
-    {
-        <h5 class="ui-mt-2">Nexus Cards</h5>
-        <div class="ui-row ui-row-cols-3 ui-row-cols-md-6 ui-ms-1 ui-me-1">
-
-            @foreach (var n in Enumerations.GetValuesExceptDefault(Nexus.None))
-            {
-                <div class="ui-card">
-                    <Hoverable Class="ui-card-img-top" Popover=@Client.CurrentSkin.GetNexusCardPopup(n)>
-                        <img src="@Client.CurrentSkin.GetImageUrl(n)" class="ui-card-img" alt="@Name(n)">
-                    </Hoverable>
-                </div>
-            }
-
-        </div>
-    }
-
-    @if (Game.Applicable(Rule.Homeworlds))
-    {
-        <h5 class="ui-mt-2">Homeworld Cards</h5>
-        <div class="ui-row ui-row-cols-2 ui-row-cols-md-3 ui-ms-1 ui-me-1">
-
-            @foreach (var w in Game.Map.Homeworlds)
-            {
-                <div class="ui-card">
-                    <Hoverable Class="ui-card-img-top" Popover=@Client.CurrentSkin.GetPopup(w)>
-                        <img src="@Client.CurrentSkin.GetHomeworldCardImageUrl(w.World)" class="ui-card-img" alt="@Name(w)">
-                    </Hoverable>
-                </div>
-            }
-
-        </div>
-    }
-
-    @if (Game.IsPlaying(Faction.Pink))
-    {
-        <h5 class="ui-mt-2">Ambassador Tokens</h5>
-        <div class="ui-row ui-row-cols-6 ui-row-cols-md-12 ui-ms-1 ui-me-1">
-
-            @foreach (var t in Enumerations.GetValuesExceptDefault(Ambassador.None))
-            {
-                if (t != Ambassador.Cyan)
-                {
-                    <div class="ui-card">
-                        <img src="@Client.CurrentSkin.GetImageUrl(t)" class="ui-card-img" title=@Client.CurrentSkin.GetAmbassadorDescription(t) alt="@Name(t)">
-                    </div>
-                }
-            }
-
-        </div>
-    }
-
-    @if (Game.IsPlaying(Faction.Cyan))
-    {
-        <h5 class="ui-mt-2">Terror Tokens</h5>
-        <div>
-
-            <ul>
-                @foreach (var t in Enumerations.GetValuesExceptDefault(TerrorType.None))
-                {
-                    <li><strong>@Name(t) -</strong> @Client.CurrentSkin.GetTerrorTypeDescription(t)</li>
-                }
-            </ul>
-
-        </div>
-    }
-
-    @if (Game.Applicable(Rule.DiscoveryTokens))
-    {
-        <h5 class="ui-mt-2">Discovery Tokens</h5>
-        <div>
-
-            <ul>
-            @foreach (var t in Enumerations.GetValuesExceptDefault(DiscoveryToken.None))
-            {
-                <li><strong>@Name(t) -</strong> @Client.CurrentSkin.GetDiscoveryTokenDescription(t)</li>
-            }
-            </ul>
-
-        </div>
-    }
 
 </ModalComponent>
 
