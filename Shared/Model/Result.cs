@@ -62,5 +62,6 @@ public enum ErrorType
     InvalidEmail,
     EmailTooLong,
     InvalidPasswordHash,
-    GameNameTooLong
+    GameNameTooLong,
+    ConnectionUnavailable
 }
