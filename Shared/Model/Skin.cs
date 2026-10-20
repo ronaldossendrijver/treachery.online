@@ -1084,6 +1084,7 @@ public class Skin : IDescriber
             ErrorType.EmailTooLong => "E-mail address must be 254 characters or less",
             ErrorType.InvalidPasswordHash => "Invalid password hash; submit a SHA-256 hash",
             ErrorType.GameNameTooLong => "Game name must be 128 characters or less",
+            ErrorType.ConnectionUnavailable => "Connection unavailable. Please wait for the server to reconnect.",
             
             _ => throw new ArgumentOutOfRangeException(nameof(e), e, null)
         };
