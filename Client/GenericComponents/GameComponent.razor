@@ -80,14 +80,6 @@
     }
 
     private bool _timerCycleStarted;
-    protected void StartTimerCycle(int interval)
-    {
-        if (!_timerCycleStarted && interval > 0)
-        {
-            _timerCycleStarted = true;
-            _ = Task.Delay(interval).ContinueWith(_ => ContinueTimerCycle(interval));
-        }
-    }
 
     protected async Task StartTimerCycleAsync(int interval)
     {
@@ -95,15 +87,6 @@
         {
             _timerCycleStarted = true;
             await Task.Delay(interval).ContinueWith(_ => ContinueTimerCycleAsync(interval));
-        }
-    }
-
-    private void ContinueTimerCycle(int interval)
-    {
-        if (_timerCycleStarted)
-        {
-            Cycle();
-            _ = Task.Delay(interval).ContinueWith(_ => ContinueTimerCycle(interval));
         }
     }
 
@@ -116,19 +99,9 @@
         }
     }
 
-    protected virtual void Cycle()
-    {
-
-    }
-
     protected virtual async Task CycleAsync()
     {
         await Task.CompletedTask;
-    }
-
-    protected IEnumerable<string> GetLabels<T>(IEnumerable<T> items, string labelIfNull = "")
-    {
-        return items.Select(i => i != null ? Name(i) : labelIfNull);
     }
 
     protected string Name(object? o)
@@ -157,4 +130,3 @@
         return Client.CurrentSkin.Describe(value);
     }
 }
-

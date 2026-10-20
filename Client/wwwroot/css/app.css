@@ -1493,7 +1493,7 @@ svg {
 .status-menu { position: relative; display: inline-block; }
 .status-menu > summary { list-style: none; cursor: pointer; }
 .status-menu > summary::-webkit-details-marker { display: none; }
-.status-menu > summary::after { content: "âŒ„"; margin-left: 8px; color: currentColor; }
+.status-menu > summary::after { content: "\2304"; margin-left: 8px; color: currentColor; }
 .status-menu-options { position: absolute; z-index: 50; top: calc(100% + 5px); right: 0; min-width: 190px; margin: 0; padding: 5px; list-style: none; border: 1px solid var(--line); border-radius: 8px; background: #292722; box-shadow: var(--shadow); }
 .status-menu-options button { width: 100%; padding: 8px 10px; border: 0; border-radius: 5px; background: transparent; color: var(--ivory); text-align: left; cursor: pointer; }
 .status-menu-options button:hover { background: var(--charcoal-raised); }
