@@ -156,22 +156,26 @@
         }
 
         document.addEventListener('pointerover', event => {
+            if (!(event.target instanceof Element)) return;
             const trigger = event.target.closest(gamePopoverSelector);
             if (trigger) ShowGamePopover(trigger);
         });
 
         document.addEventListener('pointerout', event => {
+            if (!(event.target instanceof Element)) return;
             if (event.target.closest(gamePopoverSelector)) {
                 gamePopoverHideTimer = window.setTimeout(HideGamePopover, 120);
             }
         });
 
         document.addEventListener('focusin', event => {
+            if (!(event.target instanceof Element)) return;
             const trigger = event.target.closest(gamePopoverSelector);
             if (trigger) ShowGamePopover(trigger);
         });
 
         document.addEventListener('focusout', event => {
+            if (!(event.target instanceof Element)) return;
             if (event.target.closest(gamePopoverSelector)) HideGamePopover();
         });
 
@@ -434,6 +438,7 @@
         }
 
         document.addEventListener('click', event => {
+            if (!(event.target instanceof Element)) return;
             const menuOption = event.target.closest('.status-menu-options button');
             if (menuOption) menuOption.closest('details').open = false;
 
@@ -494,6 +499,7 @@
         }
 
         document.addEventListener('pointerdown', event => {
+            if (!(event.target instanceof Element)) return;
             if (event.target.closest('dialog[open]')) return;
             CloseMenuDropdowns(event.target.closest('.game-menu-toolbar .menu-dropdown-anchor'));
         }, true);
@@ -540,6 +546,7 @@
         }
 
         document.addEventListener('pointerdown', event => {
+            if (!(event.target instanceof Element)) return;
             const handle = event.target.closest('[data-drag-handle]');
             if (!handle || event.button > 0 || event.target.closest('button, a, input, select, textarea, .bw-picker, .bwl-forces, .number-picker-component')) return;
             const el = handle.closest('[data-draggable]');
