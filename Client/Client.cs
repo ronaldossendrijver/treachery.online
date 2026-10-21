@@ -9,6 +9,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Threading;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -1048,6 +1049,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             return result;
         }
         catch (InvalidOperationException) when (!IsConnected)
+        {
+            return ConnectionUnavailable<T>();
+        }
+        catch (WebSocketException)
         {
             return ConnectionUnavailable<T>();
         }
