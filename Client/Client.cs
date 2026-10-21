@@ -676,7 +676,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         if (!LoggedIn) return "Not logged in";
         if (!InGame) return "Not in game";
         
-        return CurrentSkin.Describe((await Invoke(nameof(IGameHub.SetTimer), UserToken, Game, value)).Error);
+        return CurrentSkin.Describe((await Invoke(nameof(IGameHub.SetTimer), UserToken, GameId, value)).Error);
     }
 
     public async Task<string?> RequestGameEvent<T>(T gameEvent) where T : GameEvent
