@@ -245,7 +245,9 @@ public class Skin : IDescriber
             return new PointD(-4 * FORCETOKEN_RADIUS, -4 * FORCETOKEN_RADIUS);
         }
 
-        return LocationCenter_Point[location.Id];
+        if (LocationCenter_Point.TryGetValue(location.Id, out var center)) return center;
+        if (DefaultSkin.Default.LocationCenter_Point.TryGetValue(location.Id, out var donorCenter)) return donorCenter;
+        return PlanetCenter;
     }
 
     public float HmsDx => -3 * PlayerTokenRadius;
@@ -1082,6 +1084,7 @@ public class Skin : IDescriber
             ErrorType.EmailTooLong => "E-mail address must be 254 characters or less",
             ErrorType.InvalidPasswordHash => "Invalid password hash; submit a SHA-256 hash",
             ErrorType.GameNameTooLong => "Game name must be 128 characters or less",
+            ErrorType.ConnectionUnavailable => "Connection unavailable. Please wait for the server to reconnect.",
             
             _ => throw new ArgumentOutOfRangeException(nameof(e), e, null)
         };

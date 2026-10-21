@@ -35,14 +35,14 @@
                 Values=@([true, false]) 
                 ValueLabels="@(["Yes","No"])">
                 <Label>
-                    <div>Execute an assassination mission by revealing <Image Shown=@assassinated Popover=@Client.CurrentSkin.GetPopup(assassinated, Game) Class="img-float" Width="50"/> as your traitor?</div>
+                    <div>Execute an assassination mission by revealing <Image Shown=@assassinated Popover=@Client.CurrentSkin.GetPopup(assassinated, Game) Class="img-float" Width="30"/> as your traitor?</div>
                     @if (reward == null)
                     {
                         <div>You will not collect spice as this leader is in the tanks.</div>
                     }
                     else
                     {
-                        <div>You will collect @Payment.Of(reward.Value).</div>
+                        <div>You will collect <ResourcesComponent Size="20" Value="@Payment.Of(reward.Value).Amount"/></div>
                     }
                 </Label>
             </RadioComponent>

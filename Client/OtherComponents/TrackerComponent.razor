@@ -252,11 +252,11 @@
         return LeaderManager.HeroLookup.Find(Info!.GetSelectedTraitor(f, nr));
     }
 
-    private void SetSelectedTraitor(Faction f, int nr, IHero hero)
+    private void SetSelectedTraitor(Faction f, int nr, IHero? hero)
     {
         if (Shown is Player p && f == p.Faction)
         {
-            Info!.ChangeSelectedTraitor(f, nr, hero.Id);
+            Info!.ChangeSelectedTraitor(f, nr, hero?.Id);
         }
     }
 
@@ -265,9 +265,9 @@
         return LeaderManager.HeroLookup.Find(Info!.GetDiscardedTraitor(nr));
     }
 
-    private void SetDiscardedTraitor(int nr, IHero hero)
+    private void SetDiscardedTraitor(int nr, IHero? hero)
     {
-        Info!.ChangeDiscardedTraitor(nr, hero.Id);
+        Info!.ChangeDiscardedTraitor(nr, hero?.Id);
     }
 
     Faction _currentlyPickedFaction = Faction.None;

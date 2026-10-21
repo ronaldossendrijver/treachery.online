@@ -156,6 +156,11 @@ public class Browser(IJSRuntime jsRuntime)
         return await JsInvoke<bool>("CopyToClipboard", text);
     }
 
+    public async Task<bool> Confirm(string message)
+    {
+        return await JsInvoke<bool>("confirm", message);
+    }
+
     public async Task SetPlanetMapScale()
     {
         await JsInvoke("SetPlanetMapScale");

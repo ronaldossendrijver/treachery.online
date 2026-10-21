@@ -1,0 +1,83 @@
+@*
+ * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
+ * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
+ * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+*@
+
+<section class="lobby-panel">
+    <div class="lobby-panel-head">
+        <div>
+            <span class="lobby-kicker">@Info.Users.Count accounts</span>
+            <h2>Users</h2>
+        </div>
+    </div>
+    <div class="lobby-panel-body">
+        <div class="admin-stats">
+            <div><strong>@Info.UsersByUserTokenCount</strong><span>Users by token</span></div>
+            <div><strong>@Info.GamesByGameIdCount</strong><span>Games by id</span></div>
+            <div><strong>@Info.Users.Count</strong><span>Total users</span></div>
+            <div><strong>@Info.ConnectionInfoByUserIdCount</strong><span>Connections</span></div>
+        </div>
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Last login</th>
+                    <th class="admin-actions-col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in _rows)
+                {
+                    var user = row.User;
+                    <tr @key="user.Id">
+                        <td data-label="Id">@user.Id</td>
+                        <td data-label="Username" class="admin-strong">@user.Username</td>
+                        <td data-label="Email">@user.Email</td>
+                        <td data-label="Last login" class="admin-nowrap">@row.LastLogin</td>
+                        <td data-label="Actions" class="admin-actions">
+                            <button class="ui-btn ui-btn-danger ui-btn-sm" @onclick="@(() => OnDelete.InvokeAsync(user))">Delete</button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+@code {
+
+    [Parameter, EditorRequired] public AdminInfo Info { get; set; } = null!;
+    [Parameter] public EventCallback<UserInfo> OnDelete { get; set; }
+
+    private AdminInfo? _renderedInfo;
+    private bool _dirty;
+    private (UserInfo User, string LastLogin)[] _rows = [];
+
+    protected override void OnParametersSet()
+    {
+        if (ReferenceEquals(Info, _renderedInfo))
+            return;
+
+        _renderedInfo = Info;
+        _rows = Info.Users
+            .Select(u => (u, u.LastLogin != default ? u.LastLogin.LocalDateTime.ToString("yyyy-MM-dd HH:mm") : string.Empty))
+            .ToArray();
+        _dirty = true;
+    }
+
+    // Only re-render when a new AdminInfo was retrieved; avoids re-rendering a large user list on every server heartbeat.
+    protected override bool ShouldRender()
+    {
+        var result = _dirty;
+        _dirty = false;
+        return result;
+    }
+}

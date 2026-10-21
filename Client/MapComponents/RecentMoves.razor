@@ -19,7 +19,7 @@
         {
             if (move.To is null) continue;
             
-            foreach (var origin in move.ForceLocations.Keys)
+            foreach (var origin in move.ForceLocations.Keys.Where(l => l is not Homeworld))
             {
                 var path = Map.FindFirstShortestPath(origin, move.To, false, move.Initiator, Game);
 

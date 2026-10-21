@@ -9,6 +9,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Threading;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -675,7 +676,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         if (!LoggedIn) return "Not logged in";
         if (!InGame) return "Not in game";
         
-        return CurrentSkin.Describe((await Invoke(nameof(IGameHub.SetTimer), UserToken, Game, value)).Error);
+        return CurrentSkin.Describe((await Invoke(nameof(IGameHub.SetTimer), UserToken, GameId, value)).Error);
     }
 
     public async Task<string?> RequestGameEvent<T>(T gameEvent) where T : GameEvent
@@ -1030,7 +1031,36 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     private async Task<Result<T>> InvokeHub<T>(string hubMethod, params object?[] args)
     {
-        var result = args.Length switch
+        if (!IsConnected)
+            return ConnectionUnavailable<T>();
+
+        try
+        {
+            var result = await InvokeHubCore<T>(hubMethod, args);
+
+            if (result is { Success: false, Error: ErrorType.UserNotFound } && StoredPassword != null && UserName != null)
+            {
+                if ((await RequestLogin(UserName, StoredPassword)).Success)
+                {
+                    result = await InvokeHubCore<T>(hubMethod, args);
+                }
+            }
+
+            return result;
+        }
+        catch (InvalidOperationException) when (!IsConnected)
+        {
+            return ConnectionUnavailable<T>();
+        }
+        catch (WebSocketException)
+        {
+            return ConnectionUnavailable<T>();
+        }
+    }
+
+    private async Task<Result<T>> InvokeHubCore<T>(string hubMethod, object?[] args)
+    {
+        return args.Length switch
         {
             0 => await _connection.InvokeAsync<Result<T>>(hubMethod),
             1 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0]),
@@ -1042,28 +1072,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             7 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3], args[4], args[5], args[6]),
             _ => throw new ArgumentException("Too many arguments")
         };
-        
-        if (result is { Success: false, Error: ErrorType.UserNotFound } && StoredPassword != null && UserName != null)
-        {
-            if ((await RequestLogin(UserName, StoredPassword)).Success)
-            {
-                result = args.Length switch
-                {
-                    0 => await _connection.InvokeAsync<Result<T>>(hubMethod),
-                    1 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0]),
-                    2 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1]),
-                    3 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2]),
-                    4 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3]),
-                    5 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3], args[4]),
-                    6 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3], args[4], args[5]),
-                    7 => await _connection.InvokeAsync<Result<T>>(hubMethod, args[0], args[1], args[2], args[3], args[4], args[5], args[6]),
-                    _ => throw new ArgumentException("Too many arguments")
-                };
-            }
-        }
-
-        return result;
     }
+
+    private static Result<T> ConnectionUnavailable<T>() =>
+        new() { Error = ErrorType.ConnectionUnavailable };
 
     private UserStatus GetUserStatus(int? userId) =>
         userId != null && RecentlySeenUsers.TryGetValue(userId.Value, out var user) ? user.Status : Shared.UserStatus.None;

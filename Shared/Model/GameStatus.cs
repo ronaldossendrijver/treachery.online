@@ -704,17 +704,15 @@ public class GameStatus
             return result;
         }
 
-        if (g.CurrentPhase == Phase.BattleConclusion && g.BattleWinner != Faction.None)
-        {
-            Flash(result, Message.Express(g.BattleWinner, " win!"), g.BattleWinner);
-            return result;
-        }
-
         var latestEvent = g.History.LastOrDefault();
 
         if (latestEvent != null)
             switch (latestEvent)
             {
+                //Battle winner
+                case TreacheryCalled when (g is { AggressorTraitorAction: not null, DefenderTraitorAction: not null }):
+                    Flash(result, Message.Express(g.BattleWinner, " win!"), g.BattleWinner); break;
+                
                 //Show treachery card played
                 case RaiseDeadPlayed: Flash(result, latestEvent, TreacheryCardType.RaiseDead); break;
                 case MetheorPlayed: Flash(result, latestEvent, TreacheryCardType.Metheor); break;
