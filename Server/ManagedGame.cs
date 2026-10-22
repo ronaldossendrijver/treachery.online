@@ -1,8 +1,6 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿namespace Treachery.Server;
 
-namespace Treachery.Shared;
+using Bots;
 
 public class ManagedGame
 {

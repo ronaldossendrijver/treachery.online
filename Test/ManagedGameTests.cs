@@ -11,7 +11,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Treachery.Shared;
+using Treachery.Server;
 
 namespace Treachery.Test;
 
