@@ -122,6 +122,11 @@ public class Browser(IJSRuntime jsRuntime)
         await JsInvoke("ScrollToEdge", element, toEnd);
     }
 
+    public async Task InitReportResize(ElementReference panel)
+    {
+        await JsInvoke("InitReportResize", panel);
+    }
+
     public async Task SpiceBlow(IEnumerable<string> keys, float volume)
     {
         await JsInvoke("FxSpiceBlow", System.Linq.Enumerable.ToArray(keys), CalculateVolume(volume));
