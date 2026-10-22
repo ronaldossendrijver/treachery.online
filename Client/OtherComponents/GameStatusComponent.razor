@@ -10,7 +10,7 @@
 
 <div class="ui-card ui-p-0 ui-mb-2 game-status-panel @(Client.Status?.WaitingForMe(Player, Client.IsHost) == true ? "is-mine" : "")">
 
-    <div class="ui-card-body ui-bg-transparent ui-border-bottom-0 game-status-panel-body">
+    <div class="ui-card-body ui-bg-transparent ui-border-bottom-0 game-status-panel-body @(Client.Status?.TimedEvent != null ? "has-clock" : "")">
 
     @if (Client.Status != null) {
 
@@ -19,8 +19,8 @@
             <div class="game-status-clock" aria-label="Time elapsed">@TimerText(Client.Status.TimedEvent)</div>
         }
 
-        <div class="ui-text-center game-status-message">
-            <ExpressionComponent Game=Game Expression=@Client.Status.GetMessage(Client.Player!, Client.IsHost).Expression Size="20"/>
+        <div class="ui-text-center game-status-message @MessageClass" title="@(_messageExpanded ? "Click to collapse" : "Click to show the full message")" @onclick="ToggleMessageExpanded">
+            <ExpressionComponent Game=Game Expression=@Client.Status.GetMessage(Client.Player!, Client.IsHost).Expression Size="16"/>
         </div>
 
         @if (AutoConfirm || CanEndPhase)
@@ -106,6 +106,16 @@
     }
 
     private void ToggleAutoConfirm() => AutoConfirm = !AutoConfirm;
+
+    private bool _messageExpanded;
+
+    private void ToggleMessageExpanded() => _messageExpanded = !_messageExpanded;
+
+    // When it is my turn and an action component is shown, the status message mostly repeats the action header.
+    private bool ActionAwaitsMe =>
+        Client.Status?.WaitingForMe(Player, Client.IsHost) == true && Client.Actions.Any(a => a != typeof(EndPhase));
+
+    private string MessageClass => _messageExpanded ? "is-expanded" : ActionAwaitsMe ? "is-condensed" : "";
 
     private void EnableOrDisableTimer(bool value)
     {

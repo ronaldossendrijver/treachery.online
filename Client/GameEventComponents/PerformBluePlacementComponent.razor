@@ -10,8 +10,10 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Place one peaceful advisor in any territory of your choice. If you are alone in the territory, it is flipped to a fighter.</Header>
+    <Header>Place an advisor</Header>
     <Body>
+
+        <div class="ev-note">Place one advisor in any territory. If you are alone there, it becomes a fighter.</div>
 
         <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="Target" Values="PerformBluePlacement.ValidLocations(Game)">
             <Label>To</Label>

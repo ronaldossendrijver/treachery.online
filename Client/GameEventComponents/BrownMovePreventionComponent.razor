@@ -10,9 +10,11 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @ToUse to prevent the current player from moving forces into a territory you occupy?</Header>
+    <Header>Use @ToUse to block movement?</Header>
 
     <Body>
+
+        <div class="ev-note">Prevent the current player from moving forces into a territory you occupy.</div>
 
         <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="_territory" Values="BrownMovePrevention.ValidTerritories(Player)">
             <Label>Territory</Label>

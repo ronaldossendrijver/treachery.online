@@ -10,8 +10,10 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Choose your faction. If you don't, it will be assigned at random.</Header>
+    <Header>Choose your faction</Header>
     <Body>
+
+        <div class="ev-note">If you don't, it will be assigned at random.</div>
 
         <SelectFromImageComponent @bind-Value="_faction" Values="FactionSelected.ValidFactions(Game)" Required="true" ImageWidth="40" />
         <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />

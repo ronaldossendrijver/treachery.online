@@ -10,8 +10,10 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to discard any cards from your hand to gain 3 @Client.CurrentSkin.Describe(Concept.Resource) each</Header>
+    <Header>@Client.CurrentSkin.Describe(TreacheryCardType.Karma): discard cards</Header>
     <Body>
+
+        <div class="ev-note">Discard any cards from your hand to gain 3 @Client.CurrentSkin.Describe(Concept.Resource) each.</div>
     
     @if (SelectedCard is null && Karma.ValidKarmaCards(Game, Player).Count() > 1)
     {

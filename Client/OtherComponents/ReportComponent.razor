@@ -10,17 +10,29 @@
 
 @{
     var messages = MessagesInOrder.ToList();
+    var reports = AllReports;
+    var index = DisplayedIndex(reports);
+    var isHistory = index < reports.Count - 1;
+    var title = DisplayedReport is { } shown ? $"{(isHistory ? $"T{shown.Turn} · " : "")}{Client.CurrentSkin.Describe(shown.About)} log" : "Log";
 
-
-    <section class="map-report-panel @(_isCollapsed ? "is-collapsed" : "")" aria-label="@($"{Client.CurrentSkin.Describe(Game.CurrentReport.About)} report")">
+    <section class="map-report-panel @(_isCollapsed ? "is-collapsed" : "") @(_isExpanded ? "is-expanded" : "") @(isHistory ? "is-history" : "")" aria-label="@title" @ref="_panelElement">
+        <div class="map-report-resize map-report-resize-y" data-resize="y" aria-hidden="true" title="Drag to resize, double-click to reset"></div>
+        <div class="map-report-resize map-report-resize-x" data-resize="x" aria-hidden="true" title="Drag to resize, double-click to reset"></div>
+        <div class="map-report-resize map-report-resize-xy" data-resize="xy" aria-hidden="true" title="Drag to resize, double-click to reset"></div>
         <header class="map-report-header">
             <button class="map-report-toggle" type="button" aria-expanded="@(!_isCollapsed && _isExpanded)" @onclick="ToggleExpanded">
-                <span class="map-report-title">@Client.CurrentSkin.Describe(Game.CurrentReport.About) report</span>
+                <span class="map-report-title" title="@title">@title</span>
                 <span class="map-report-chevron" aria-hidden="true">@(_isExpanded ? "⌄" : "⌃")</span>
             </button>
+            @if (!_isCollapsed && reports.Count > 1)
+            {
+                <button class="map-report-nav" type="button" aria-label="Previous log" title="Previous log" disabled="@(index <= 0)" @onclick="() => Show(reports, index - 1)">‹</button>
+                <button class="map-report-nav" type="button" aria-label="Next log" title="@(isHistory ? "Next log" : "Latest log")" disabled="@(!isHistory)" @onclick="() => Show(reports, index + 1)">›</button>
+                <button class="map-report-nav" type="button" aria-label="Latest log" title="Latest log" disabled="@(!isHistory)" @onclick="() => Show(reports, reports.Count - 1)">»</button>
+            }
             @if (!_isCollapsed && _isExpanded && messages.Count > 1)
             {
-                <button class="map-report-sort" type="button" aria-label="@(SortDescending ? "Sort report oldest first" : "Sort report newest first")" title="@(SortDescending ? "Oldest first" : "Newest first")" @onclick="ChangeSortOrder">
+                <button class="map-report-sort" type="button" aria-label="@(SortDescending ? "Sort log oldest first" : "Sort log newest first")" title="@(SortDescending ? "Oldest first" : "Newest first")" @onclick="ChangeSortOrder">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
                         @if (SortDescending)
                         {
@@ -33,7 +45,7 @@
                     </svg>
                 </button>
             }
-            <button class="map-report-collapse" type="button" aria-label="@(_isCollapsed ? "Show report" : "Hide report")" title="@(_isCollapsed ? "Show report" : "Hide report")" aria-expanded="@(!_isCollapsed)" @onclick="ToggleCollapsed">
+            <button class="map-report-collapse" type="button" aria-label="@(_isCollapsed ? "Show log" : "Hide log")" title="@(_isCollapsed ? "Show log" : "Hide log")" aria-expanded="@(!_isCollapsed)" @onclick="ToggleCollapsed">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     @if (_isCollapsed)
                     {
@@ -52,13 +64,13 @@
         }
         else if (!_isExpanded)
         {
-            <div class="map-report-latest" aria-label="Report entries" tabindex="0" @ref="_latestElement">
+            <div class="map-report-latest" aria-label="Log entries" tabindex="0" @ref="_latestElement">
                 @if (messages.Count > 0)
                 {
                     foreach (var latest in messages)
                     {
                         <div class="@MessageClass(latest)">
-                            <ExpressionComponent Expression="@latest.Expression" Game="@Game" Size="13" />
+                            <ExpressionComponent Expression="@latest.Expression" Game="@Game" Size="15" />
                         </div>
                     }
                 }
@@ -76,7 +88,7 @@
                     foreach (var message in messages)
                     {
                         <div class="@MessageClass(message)">
-                            <ExpressionComponent Expression="@message.Expression" Game="@Game" Size="13" />
+                            <ExpressionComponent Expression="@message.Expression" Game="@Game" Size="15" />
                         </div>
                     }
                 }
@@ -104,9 +116,9 @@
         get
         {
 
-            if (Report is null) return [];
+            if (DisplayedReport is not { } report) return [];
             
-            var messagesAscending = Report.Messages.Where(m => m.Target == Faction.None || m.Target == Client.Faction);
+            var messagesAscending = report.Messages.Where(m => m.Target == Faction.None || m.Target == Client.Faction);
 
             if (SortDescending)
             {
@@ -115,6 +127,38 @@
 
             return messagesAscending;
         }
+    }
+
+    private Report? _selectedReport;
+
+    private Report? DisplayedReport => _selectedReport ?? Report;
+
+    private List<Report> AllReports
+    {
+        get
+        {
+            var result = Game.PreviousReports.ToList();
+            if (Report is not null) result.Add(Report);
+            return result;
+        }
+    }
+
+    private int DisplayedIndex(List<Report> reports)
+    {
+        var index = _selectedReport is null ? -1 : reports.IndexOf(_selectedReport);
+        if (index < 0)
+        {
+            _selectedReport = null;
+            index = reports.Count - 1;
+        }
+
+        return index;
+    }
+
+    private void Show(List<Report> reports, int index)
+    {
+        if (index < 0 || index >= reports.Count) return;
+        _selectedReport = index == reports.Count - 1 ? null : reports[index];
     }
 
     private void ChangeSortOrder()
@@ -137,7 +181,9 @@
 
     private void ToggleCollapsed() => _isCollapsed = !_isCollapsed;
 
+    private ElementReference _panelElement;
     private ElementReference _latestElement;
+    private Report? _scrolledReport;
     private int _scrolledCount = -1;
     private bool _scrolledDescending;
     private bool _wasCompact;
@@ -145,10 +191,14 @@
     // Keep the newest entries in view in the compact panel; older ones remain reachable by scrolling.
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender) await Browser.InitReportResize(_panelElement);
+
         var compact = !_isCollapsed && !_isExpanded;
-        var count = Report?.Messages.Count ?? 0;
-        if (compact && (!_wasCompact || count != _scrolledCount || SortDescending != _scrolledDescending))
+        var shown = DisplayedReport;
+        var count = shown?.Messages.Count ?? 0;
+        if (compact && (!_wasCompact || shown != _scrolledReport || count != _scrolledCount || SortDescending != _scrolledDescending))
         {
+            _scrolledReport = shown;
             _scrolledCount = count;
             _scrolledDescending = SortDescending;
             await Browser.ScrollToEdge(_latestElement, !SortDescending);

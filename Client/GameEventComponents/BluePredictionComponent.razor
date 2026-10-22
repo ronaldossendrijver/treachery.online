@@ -10,7 +10,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Predict which faction will win the game.</Header>
+    <Header>Predict the winner</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="toWin" Values="BluePrediction.ValidTargets(Game, Player)" Required="true" ImageWidth="40" />

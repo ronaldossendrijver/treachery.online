@@ -246,10 +246,13 @@
             <ClairVoyanceAnsweredComponent BackgroundImage="@GetImage(TreacheryCardType.Clairvoyance)"/>
             break;
 
+        case nameof(KarmaHandSwap):
+            <KarmaHandSwapComponent/>
+            break;
+
         case nameof(KarmaHandSwapInitiated):
         case nameof(KarmaShipmentPrevention):
         case nameof(KarmaRevivalPrevention):
-        case nameof(KarmaHandSwap):
         case nameof(KarmaFreeRevival):
         case nameof(KarmaHmsMovement):
         case nameof(KarmaMonster):

@@ -10,8 +10,10 @@
 
 <GameEventComponentLayout Compact="true" IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Do you wish to get the card no faction bid on for free or should it be removed from the game?</Header>
+    <Header>Keep the unsold card?</Header>
     <Body>
+
+        <div class="ev-note">Take the card nobody bid on for free, or remove it from the game.</div>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Get for free" ConfirmError="@Validation" Pass="Pass" PassText="Remove from game" />
 

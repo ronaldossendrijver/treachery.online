@@ -41,7 +41,9 @@ public partial class Game
     public MainPhaseMoment CurrentMoment { get; private set; } = MainPhaseMoment.None;
     public Phase CurrentPhase { get; private set; } = Phase.None;
     public List<Faction> HasActedOrPassed { get; } = [];
-    public Report CurrentReport { get; internal set; } = new(MainPhase.None);
+    public Report CurrentReport { get; private set; } = new(MainPhase.None);
+    private readonly List<Report> _previousReports = [];
+    public IReadOnlyList<Report> PreviousReports => _previousReports;
     public Deck<TreacheryCard>? TreacheryDeck { get; internal set; }
     public Deck<TreacheryCard>? TreacheryDiscardPile { get; internal set; }
     public List<TreacheryCard> RemovedTreacheryCards { get; } = [];
@@ -284,11 +286,17 @@ public partial class Game
     {
         CurrentMainPhase = phase;
         CurrentMoment = MainPhaseMoment.Start;
-        if (clearReport) CurrentReport = new Report(phase);
+        if (clearReport) StartNewReport(phase);
         CurrentKarmaPrevention = null;
         CurrentJuice = null;
         BureaucratWasUsedThisPhase = false;
         BankerWasUsedThisPhase = false;
+    }
+
+    internal void StartNewReport(MainPhase phase)
+    {
+        if (CurrentReport.Messages.Count > 0) _previousReports.Add(CurrentReport);
+        CurrentReport = new Report(phase, CurrentTurn);
     }
 
     internal void MainPhaseMiddle()
