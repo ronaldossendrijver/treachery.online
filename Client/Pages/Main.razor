@@ -158,7 +158,8 @@ else
             </button>
             <div class="rail-topbar">
                 <div class="rail-phase-info">
-                    <span class="eyebrow">TURN @Client.Game.CurrentTurn</span>
+                    <span class="eyebrow rail-turn">TURN @Client.Game.CurrentTurn</span>
+                    <span class="rail-phase-separator" aria-hidden="true">·</span>
                     <span class="main-phase-hover" tabindex="0" aria-describedby="main-phase-sequence-popover">
                         <strong>@Client.CurrentSkin.Describe(Client.Game.CurrentMainPhase)</strong>
                         <span id="main-phase-sequence-popover" class="main-phase-popover" role="tooltip">
