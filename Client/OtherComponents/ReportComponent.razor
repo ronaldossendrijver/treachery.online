@@ -28,11 +28,8 @@
             {
                 <button class="map-report-nav" type="button" aria-label="Previous log" title="Previous log" disabled="@(index <= 0)" @onclick="() => Show(reports, index - 1)">‹</button>
                 <button class="map-report-nav" type="button" aria-label="Next log" title="@(isHistory ? "Next log" : "Latest log")" disabled="@(!isHistory)" @onclick="() => Show(reports, index + 1)">›</button>
-                                @if (isHistory)
-                                {
-                                    <button class="map-report-nav" type="button" aria-label="Latest log" title="Latest log" @onclick="() => Show(reports, reports.Count - 1)">»</button>
-                                }
-                            }
+                <button class="map-report-nav" type="button" aria-label="Latest log" title="Latest log" disabled="@(!isHistory)" @onclick="() => Show(reports, reports.Count - 1)">»</button>
+            }
             @if (!_isCollapsed && _isExpanded && messages.Count > 1)
             {
                 <button class="map-report-sort" type="button" aria-label="@(SortDescending ? "Sort log oldest first" : "Sort log newest first")" title="@(SortDescending ? "Oldest first" : "Newest first")" @onclick="ChangeSortOrder">

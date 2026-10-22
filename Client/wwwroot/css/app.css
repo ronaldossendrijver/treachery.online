@@ -624,12 +624,12 @@ svg {
 .game-information-rule-group ul { display: grid; gap: 6px; margin: 0; padding-left: 18px; color: var(--ivory-muted); font-size: 0.8rem; line-height: 1.45; }
 .game-information-table-wrap { max-width: 100%; overflow-x: auto; }
 .game-information-table { min-width: 560px; margin: 0; }
-.game-status-panel { position: relative; flex: 0 0 auto; min-height: 40px; margin: 0 !important; overflow: hidden; border: 1px solid rgba(201, 162, 90, 0.22); border-left: 3px solid rgba(201, 162, 90, 0.45); background: radial-gradient(120% 90% at 0% 0%, rgba(201, 162, 90, 0.08), transparent 60%), linear-gradient(180deg, rgba(46, 43, 37, 0.96), rgba(31, 29, 26, 0.98)); color: var(--ivory); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04); animation: fadeIn 1s; transition: border-color 300ms ease; }
+.game-status-panel { position: relative; display: flex; flex: 0 0 auto; flex-direction: column; min-height: 40px; margin: 0 !important; overflow: hidden; border: 1px solid rgba(201, 162, 90, 0.22); border-left: 3px solid rgba(201, 162, 90, 0.45); background: radial-gradient(120% 90% at 0% 0%, rgba(201, 162, 90, 0.08), transparent 60%), linear-gradient(180deg, rgba(46, 43, 37, 0.96), rgba(31, 29, 26, 0.98)); color: var(--ivory); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04); animation: fadeIn 1s; transition: border-color 300ms ease; }
 .game-status-panel.is-mine { border-left-color: var(--spice); background: radial-gradient(120% 90% at 0% 0%, rgba(214, 125, 44, 0.14), transparent 62%), linear-gradient(180deg, rgba(48, 42, 34, 0.97), rgba(31, 29, 26, 0.98)); }
 .game-status-clock { position: absolute; top: 6px; right: 8px; z-index: 1; padding: 1px 7px; border: 1px solid rgba(201, 162, 90, 0.3); border-radius: 999px; background: rgba(0, 0, 0, 0.3); color: var(--ivory-muted); display: inline-flex; align-items: center; height: 20px; line-height: 1; font-family: system-ui, "Segoe UI", sans-serif; font-size: 0.68rem; font-variant-numeric: lining-nums tabular-nums; font-weight: 700; letter-spacing: 0.04em; }
 .game-status-clock:empty { display: none; }
 .game-status-panel.is-mine .game-status-clock { border-color: rgba(214, 125, 44, 0.6); color: #f2b47a; }
-.game-status-panel-body { display: flex; flex-direction: column; justify-content: safe center; gap: 5px; padding: 6px 10px; overflow: hidden; }
+.game-status-panel-body { display: flex; flex: 1 1 auto; flex-direction: column; justify-content: safe center; gap: 5px; padding: 6px 10px; overflow: hidden; }
 .game-status-panel-body.has-clock { padding-right: 58px; }
 .game-status-panel-body > * { flex: 0 0 auto; }
 .game-status-message { display: -webkit-box; overflow: hidden; color: #efe8d6; font-size: 0.8rem; font-weight: 600; line-height: 1.3; text-wrap: balance; cursor: pointer; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
@@ -683,7 +683,7 @@ svg {
             linear-gradient(180deg, rgba(30, 26, 21, 0.98), rgba(20, 18, 16, 0.99));
         box-shadow: 0 10px 22px rgba(0, 0, 0, 0.4), inset 0 -2px 0 rgba(214, 125, 44, 0.55);
     }
-    .game-rail-content > .game-status-panel .game-status-panel-body { padding: 6px 12px 8px; }
+    .game-rail-content > .game-status-panel .game-status-panel-body { padding: 7px 12px; }
     .game-rail-content > .game-status-panel .game-status-panel-body.has-clock { padding-right: 58px; }
     /* Keep a reasonable share of the rail for game actions; the whole rail content scrolls on very short screens. */
     .game-rail-content { overflow-y: auto; }
@@ -1616,7 +1616,6 @@ svg {
 .map-report-resize-y { top: 0; right: 10px; left: 0; height: 5px; cursor: ns-resize; }
 .map-report-resize-x { top: 10px; right: 0; bottom: 0; width: 5px; cursor: ew-resize; }
 .map-report-resize-xy { top: 0; right: 0; width: 10px; height: 10px; cursor: nesw-resize; }
-.map-report-resize-xy::after { position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; border-top: 1.5px solid rgba(243, 194, 122, 0.6); border-right: 1.5px solid rgba(243, 194, 122, 0.6); border-top-right-radius: 3px; content: ""; }
 .map-report-panel.is-collapsed .map-report-resize-y, .map-report-panel.is-collapsed .map-report-resize-xy, .map-report-panel.is-expanded .map-report-resize-y, .map-report-panel.is-expanded .map-report-resize-xy { display: none; }
 .map-report-dock.is-resizing, .map-report-dock.is-resizing * { user-select: none; }
 .map-report-dock[data-sized] .map-report-panel:not(.is-collapsed):not(.is-expanded) { height: var(--report-h); }
