@@ -153,7 +153,6 @@
                                                             case nameof(KarmaHandSwapInitiated): <KarmaHandSwapInitiatedComponent /> break;
                                                             case nameof(KarmaShipmentPrevention): <KarmaShipmentPreventionComponent /> break;
                                                             case nameof(KarmaRevivalPrevention): <KarmaRevivalPreventionComponent /> break;
-                                                            case nameof(KarmaHandSwap): <KarmaHandSwapComponent /> break;
                                                             case nameof(KarmaFreeRevival): <KarmaFreeRevivalComponent /> break;
                                                             case nameof(KarmaHmsMovement): <KarmaHmsMovementComponent /> break;
                                                             case nameof(KarmaMonster): <KarmaMonsterComponent /> break;
@@ -305,7 +304,7 @@
 
     private static readonly HashSet<Type> KarmaActionTypes =
     [
-        typeof(KarmaHandSwapInitiated), typeof(KarmaShipmentPrevention), typeof(KarmaRevivalPrevention), typeof(KarmaHandSwap),
+        typeof(KarmaHandSwapInitiated), typeof(KarmaShipmentPrevention), typeof(KarmaRevivalPrevention),
         typeof(KarmaFreeRevival), typeof(KarmaHmsMovement), typeof(KarmaMonster), typeof(KarmaWhiteBuy), typeof(KarmaBrownDiscard),
         typeof(KarmaPrescience), typeof(KarmaPinkDial)
     ];
