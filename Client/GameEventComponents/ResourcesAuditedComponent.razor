@@ -10,9 +10,11 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Force a faction to reveal the amount of @Name(Concept.Resource), weapons and defenses?</Header>
+    <Header>Force a reveal?</Header>
 
     <Body>
+
+        <div class="ev-note">Force a faction to reveal their @Name(Concept.Resource), weapons and defenses.</div>
         <SelectFromImageComponent @bind-Value="target" Values="@ResourcesAudited.ValidFactions(Game, Player)" Required="true" ImageWidth="40" />
         <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
     </Body>

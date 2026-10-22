@@ -10,9 +10,11 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @ToUse to force a player to send 1 force to their reserves?</Header>
+    <Header>Use @ToUse to remove a force?</Header>
 
     <Body>
+
+        <div class="ev-note">Force a player to send 1 force to their reserves.</div>
 
         <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="_location" Values="BrownRemoveForce.ValidLocations(Game)">
             <Label>From</Label>

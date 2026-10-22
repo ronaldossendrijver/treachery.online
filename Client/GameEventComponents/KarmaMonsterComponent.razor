@@ -10,8 +10,10 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to make @Client.CurrentSkin.Describe(Concept.Monster) appear in a territory of choice</Header>
+    <Header>@Client.CurrentSkin.Describe(TreacheryCardType.Karma): summon @Client.CurrentSkin.Describe(Concept.Monster)</Header>
     <Body>
+
+        <div class="ev-note">Make it appear in a territory of your choice.</div>
 
         <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="Target" Values="KarmaMonster.ValidTargets(Game).OrderBy(t => Name(t))">
             <Label>Territory</Label>

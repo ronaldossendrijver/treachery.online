@@ -10,8 +10,10 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>You may discard surplus duplicate cards for 3 and @Client.CurrentSkin.Describe(TreacheryCardType.Useless) cards for 2 @Client.CurrentSkin.Describe(Concept.Resource) each</Header>
+    <Header>Discard surplus cards?</Header>
     <Body>
+
+        <div class="ev-note">Duplicates earn 3, @Client.CurrentSkin.Describe(TreacheryCardType.Useless) cards earn 2 @Client.CurrentSkin.Describe(Concept.Resource) each.</div>
 
         <SelectFromImageComponent @bind-Value="card" Values="BrownDiscarded.ValidCards(Player)" Required="true" ImageWidth="80" />
 

@@ -10,8 +10,10 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to prevent a faction from using one of their advantages</Header>
+    <Header>@Client.CurrentSkin.Describe(TreacheryCardType.Karma): cancel an advantage</Header>
     <Body>
+
+        <div class="ev-note">Prevent a faction from using one of their advantages.</div>
 
         @if (SelectedCard is null)
         {

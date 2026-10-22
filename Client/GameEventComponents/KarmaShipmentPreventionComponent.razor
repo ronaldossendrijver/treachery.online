@@ -10,7 +10,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to prevent shipment</Header>
+    <Header>@Client.CurrentSkin.Describe(TreacheryCardType.Karma): prevent shipment</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="target" Values="KarmaShipmentPrevention.GetValidTargets(Game, Player)" Required="true" ImageWidth="40">

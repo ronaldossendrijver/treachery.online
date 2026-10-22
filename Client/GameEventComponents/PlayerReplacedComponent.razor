@@ -10,7 +10,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()" Collapsed="CollapseState.Collapsed">
 
-    <Header>Replace a player with a Bot (or vice versa)</Header>
+    <Header>Replace a player or bot</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="_toReplace" Values="PlayerReplaced.ValidTargets(Game)" Required="true" ImageWidth="40" />

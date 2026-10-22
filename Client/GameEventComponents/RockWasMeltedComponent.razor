@@ -10,8 +10,10 @@
 
 <GameEventComponentLayout Compact="true" IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Rockmelter) to kill or to reduce leader strength to zero?</Header>
+    <Header>@Client.CurrentSkin.Describe(TreacheryCardType.Rockmelter): kill or reduce?</Header>
     <Body>
+
+        <div class="ev-note">Kill, or reduce leader strength to zero.</div>
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Kill" ConfirmError="@Validation" Other="Other" OtherText="Reduce to 0"/>
     </Body>
 

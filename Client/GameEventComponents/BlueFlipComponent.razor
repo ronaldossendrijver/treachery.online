@@ -10,7 +10,7 @@
 
 <GameEventComponentLayout Compact="true" IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Choose to be fighters or advisors in @Name(BlueFlip.GetTerritory(Game)).</Header>
+    <Header>Fighters or advisors in @Name(BlueFlip.GetTerritory(Game))?</Header>
     <Body>
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Fighters" ConfirmError="@Validation" Other="Other" OtherText="Advisors"/>
     </Body>

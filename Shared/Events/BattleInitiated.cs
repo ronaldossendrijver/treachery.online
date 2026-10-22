@@ -216,7 +216,7 @@ public class BattleInitiated : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        Game.CurrentReport = new Report(MainPhase.Battle);
+        Game.StartNewReport(MainPhase.Battle);
         Log();
         Game.BattleAboutToStart = this;
 

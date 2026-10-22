@@ -11,8 +11,10 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>You may retreat from the battle any number of undialed forces to an adjacent empty non-stronghold territory</Header>
+    <Header>Retreat undialed forces?</Header>
     <Body>
+
+        <div class="ev-note">Retreat any number of undialed forces to an adjacent empty non-stronghold territory.</div>
 
         <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="target" Values="Retreat.ValidTargets(Game, Player)">
             <Label>To</Label>

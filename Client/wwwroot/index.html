@@ -124,9 +124,41 @@
             }
         }
 
+        function PlaceGamePopover(popover, trigger) {
+            const bounds = trigger.getBoundingClientRect();
+            const popupBounds = popover.getBoundingClientRect();
+            const left = Math.min(window.innerWidth - popupBounds.width - 12, Math.max(12, bounds.left + (bounds.width - popupBounds.width) / 2));
+            const top = bounds.top > popupBounds.height + 12 ? bounds.top - popupBounds.height - 10 : Math.max(12, Math.min(window.innerHeight - popupBounds.height - 12, bounds.bottom + 10));
+            popover.style.left = `${left}px`;
+            popover.style.top = `${top}px`;
+        }
+
+        function SetGamePopoverContent(popover, trigger, content) {
+            popover.gameContent = content;
+            popover.innerHTML = content;
+            popover.classList.toggle('is-media', !popover.textContent.trim());
+            // Images are measured before they load; re-place once they have their real size.
+            popover.querySelectorAll('img').forEach(img => {
+                if (!img.complete) img.addEventListener('load', () => { if (activeGamePopover === popover) PlaceGamePopover(popover, trigger); }, { once: true });
+            });
+        }
+
         function ShowGamePopover(trigger) {
             if (!trigger || !trigger.dataset.gamePopover) return;
             window.clearTimeout(gamePopoverHideTimer);
+
+            const content = trigger.dataset.gamePopover;
+
+            // Re-renders (e.g. every heartbeat) and pointer moves within the trigger must not re-create the open popover:
+            // that would replay its entry animation and reload its images, which shows as blinking.
+            if (activeGamePopover && activeGamePopoverTrigger === trigger && activeGamePopover.isConnected) {
+                if (activeGamePopover.gameContent !== content) {
+                    SetGamePopoverContent(activeGamePopover, trigger, content);
+                    PlaceGamePopover(activeGamePopover, trigger);
+                }
+                return;
+            }
+
             HideGamePopover();
 
             // Inside a modal dialog or floating window (top layer) the popover must live in it to appear above it.
@@ -134,23 +166,9 @@
             const popover = document.createElement('div');
             popover.className = 'game-popover';
             popover.setAttribute('role', 'tooltip');
-            popover.innerHTML = trigger.dataset.gamePopover;
-            if (!popover.textContent.trim()) popover.classList.add('is-media');
+            SetGamePopoverContent(popover, trigger, content);
             host.appendChild(popover);
-
-            const place = () => {
-                const bounds = trigger.getBoundingClientRect();
-                const popupBounds = popover.getBoundingClientRect();
-                const left = Math.min(window.innerWidth - popupBounds.width - 12, Math.max(12, bounds.left + (bounds.width - popupBounds.width) / 2));
-                const top = bounds.top > popupBounds.height + 12 ? bounds.top - popupBounds.height - 10 : Math.max(12, Math.min(window.innerHeight - popupBounds.height - 12, bounds.bottom + 10));
-                popover.style.left = `${left}px`;
-                popover.style.top = `${top}px`;
-            };
-            place();
-            // Images are measured before they load; re-place once they have their real size.
-            popover.querySelectorAll('img').forEach(img => {
-                if (!img.complete) img.addEventListener('load', () => { if (activeGamePopover === popover) place(); }, { once: true });
-            });
+            PlaceGamePopover(popover, trigger);
             activeGamePopover = popover;
             activeGamePopoverTrigger = trigger;
         }

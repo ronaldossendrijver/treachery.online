@@ -878,9 +878,17 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         ActiveGamesWithOpenSeats = ActiveGames.Where(g => g.CanBeJoined).ToArray();
         ActiveGamesWithoutOpenSeats = ActiveGames.Where(g => !g.CanBeJoined).ToArray();
         ScheduledGames = status.ScheduledGames;
+        var usersChanged = RecentlySeenUsersChanged(status.RecentlySeenUsers);
         RecentlySeenUsers = status.RecentlySeenUsers.ToDictionary(x => x.Id, x => x);
-        Refresh(nameof(HandleUpdatedServerStatus));
+
+        // In a game, only seen users are shown; re-rendering the whole game on every heartbeat is costly and makes open popovers flicker.
+        if (!InGame || usersChanged)
+            Refresh(nameof(HandleUpdatedServerStatus));
     }
+
+    private bool RecentlySeenUsersChanged(LoggedInUserInfo[] users) =>
+        users.Length != RecentlySeenUsers.Count ||
+        users.Any(u => !RecentlySeenUsers.TryGetValue(u.Id, out var known) || known.Name != u.Name || known.Status != u.Status);
 
     private async Task<Message?> LoadGame(GameInitInfo initInfo)
     {
