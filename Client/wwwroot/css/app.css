@@ -1612,6 +1612,15 @@ svg {
 .map-report-message > div > div { line-height: 16px; }
 .map-report-message-private { margin: 1px -8px; padding-right: 8px; padding-left: 8px; border-bottom-color: transparent; border-left: 2px solid var(--spice); background: linear-gradient(90deg, rgba(213, 138, 66, 0.14), transparent 85%); font-style: italic; }
 .map-report-empty { padding: 6px 0; color: var(--ivory-muted); text-align: center; }
+.map-report-resize { position: absolute; z-index: 2; touch-action: none; }
+.map-report-resize-y { top: 0; right: 10px; left: 0; height: 5px; cursor: ns-resize; }
+.map-report-resize-x { top: 10px; right: 0; bottom: 0; width: 5px; cursor: ew-resize; }
+.map-report-resize-xy { top: 0; right: 0; width: 10px; height: 10px; cursor: nesw-resize; }
+.map-report-resize-xy::after { position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; border-top: 1.5px solid rgba(243, 194, 122, 0.6); border-right: 1.5px solid rgba(243, 194, 122, 0.6); border-top-right-radius: 3px; content: ""; }
+.map-report-panel.is-collapsed .map-report-resize-y, .map-report-panel.is-collapsed .map-report-resize-xy, .map-report-panel.is-expanded .map-report-resize-y, .map-report-panel.is-expanded .map-report-resize-xy { display: none; }
+.map-report-dock.is-resizing, .map-report-dock.is-resizing * { user-select: none; }
+.map-report-dock[data-sized] .map-report-panel:not(.is-collapsed):not(.is-expanded) { height: var(--report-h); }
+.map-report-dock[data-sized] .map-report-panel:not(.is-expanded) .map-report-latest { flex: 1 1 auto; min-height: 0; max-height: none; }
 .planet-location:focus { outline: none; }
 .planet-location:focus-visible > path { stroke: var(--spice); stroke-width: 3; }
 /* Storm clouds: the mask and shadow are static images; the cloud textures rotate on the compositor only */

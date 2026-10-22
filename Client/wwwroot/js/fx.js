@@ -492,6 +492,66 @@ window.ScrollToEdge = function (element, toEnd) {
     if (element) element.scrollTop = toEnd ? element.scrollHeight : 0;
 };
 
+// Lets the user resize the (bottom-left anchored) report panel by dragging its top edge, right edge or top-right corner.
+window.InitReportResize = function (panel) {
+    const dock = panel && panel.closest('.map-report-dock');
+    if (!dock || dock.dataset.resizeInit) return;
+    dock.dataset.resizeInit = '1';
+
+    const KEY = 'treachery.reportSize';
+    const MIN_W = 180, MIN_H = 60, MARGIN = 14;
+
+    const bounds = () => {
+        const parent = dock.offsetParent || document.body;
+        return { w: parent.clientWidth - dock.offsetLeft - MARGIN, h: dock.offsetTop + dock.offsetHeight - MARGIN };
+    };
+
+    const apply = (size) => {
+        if (size && size.w) dock.style.width = size.w + 'px'; else dock.style.removeProperty('width');
+        if (size && size.h) { dock.style.setProperty('--report-h', size.h + 'px'); dock.dataset.sized = '1'; }
+        else { dock.style.removeProperty('--report-h'); delete dock.dataset.sized; }
+    };
+
+    try { apply(JSON.parse(localStorage.getItem(KEY))); } catch { }
+
+    dock.addEventListener('pointerdown', (e) => {
+        const handle = e.target.closest('.map-report-resize');
+        if (!handle || e.button !== 0) return;
+        e.preventDefault();
+        const mode = handle.dataset.resize;
+        const content = dock.querySelector('.map-report-panel');
+        const startX = e.clientX, startY = e.clientY;
+        const startW = dock.offsetWidth, startH = content ? content.offsetHeight : dock.offsetHeight;
+        const max = bounds();
+        const size = {};
+        try { Object.assign(size, JSON.parse(localStorage.getItem(KEY)) || {}); } catch { }
+        handle.setPointerCapture(e.pointerId);
+        dock.classList.add('is-resizing');
+
+        const move = (ev) => {
+            if (mode !== 'y') size.w = Math.round(Math.max(MIN_W, Math.min(max.w, startW + ev.clientX - startX)));
+            if (mode !== 'x') size.h = Math.round(Math.max(MIN_H, Math.min(max.h, startH - (ev.clientY - startY))));
+            apply(size);
+        };
+        const end = () => {
+            handle.removeEventListener('pointermove', move);
+            handle.removeEventListener('pointerup', end);
+            handle.removeEventListener('pointercancel', end);
+            dock.classList.remove('is-resizing');
+            try { localStorage.setItem(KEY, JSON.stringify(size)); } catch { }
+        };
+        handle.addEventListener('pointermove', move);
+        handle.addEventListener('pointerup', end);
+        handle.addEventListener('pointercancel', end);
+    });
+
+    dock.addEventListener('dblclick', (e) => {
+        if (!e.target.closest('.map-report-resize')) return;
+        apply(null);
+        try { localStorage.removeItem(KEY); } catch { }
+    });
+};
+
 // Top-down spice blow: cinnamon dust erupts from the sand, rains back down and settles, then fades away.
 (function () {
     'use strict';
