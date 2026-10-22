@@ -256,7 +256,13 @@
                 || isExpectedMediaFetchAbort(error);
         }
 
-        function playSound(sound) {
+        // Safari never reloads an audio element after a failed fetch (e.g. while the tab was suspended);
+        // such an element keeps rejecting play() with MediaError code 4, so it must be replaced.
+        function hasMediaError(sound) {
+            return sound.error != null;
+        }
+
+        function playSound(sound, onMediaError) {
             const playbackCallStack = new Error().stack || "Unavailable";
             const enrichError = error => {
                 const errorName = error && error.name;
@@ -271,28 +277,44 @@
                 enriched.name = errorName || "Error";
                 return enriched;
             };
+            const handleError = error => {
+                if (isExpectedPlaybackInterruption(error)) return;
+                if (hasMediaError(sound) && onMediaError && onMediaError()) return;
+                throw enrichError(error);
+            };
             let playPromise;
             try {
                 playPromise = sound.play();
             } catch (error) {
-                if (!isExpectedPlaybackInterruption(error)) throw enrichError(error);
+                handleError(error);
                 return;
             }
 
             if (playPromise) {
-                playPromise.catch(error => {
-                    if (!isExpectedPlaybackInterruption(error)) throw enrichError(error);
-                });
+                playPromise.catch(handleError);
             }
         }
 
-        function PlaySound(file, fadeTime, volume, loop) {
+        function PlaySound(file, fadeTime, volume, loop, isRetry) {
 
             let sound = currentSounds.get(file);
+            if (sound != null && hasMediaError(sound)) {
+                sound.pause();
+                currentSounds.delete(file);
+                sound = null;
+            }
+
+            const retryWithFreshElement = () => {
+                if (currentSounds.get(file) === sound) currentSounds.delete(file);
+                if (isRetry) return false;
+                PlaySound(file, fadeTime, volume, loop, true);
+                return true;
+            };
+
             if (sound != null)
             {
                 sound.currentTime = 0;
-                playSound(sound);
+                playSound(sound, retryWithFreshElement);
             }
             else
             {
@@ -319,7 +341,7 @@
                     sound.volume = volume;
                 }
 
-                playSound(sound);
+                playSound(sound, retryWithFreshElement);
             }
         }
 
