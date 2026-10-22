@@ -472,17 +472,17 @@ public partial class GameHub
         if (speed == 0) return 0;
         
         if (e is AllyPermission or DealOffered or SetShipmentPermission)
-            return 800 / speed;
+            return 1000 / speed;
 
         if (e is Bid)
-            return 1600 / speed;
+            return 2000 / speed;
 
         if (phase is MainPhase.Resurrection or MainPhase.Charity)
-            return 2400 / speed;
+            return 3000 / speed;
         
         if (phase is MainPhase.ShipmentAndMove or MainPhase.Battle)
-            return 9600 / speed;
+            return 12000 / speed;
         
-        return 4800 / speed;
+        return 6400 / speed;
     }
 }
