@@ -1916,18 +1916,12 @@ button.communications-user:hover { background: rgba(255, 255, 255, 0.045); }
     .map-report-messages { max-height: none; }
     .map-report-message { line-height: 18px; }
     .map-report-message img { max-height: 12px; }
-    /* Compact tanks: tokens huddle in a small heap; tapping it shows the grouped contents */
-    .tanks-pile-heap { width: calc(var(--pile-w) * 0.34); height: calc(var(--pile-h) * 0.5); min-width: 54px; min-height: 44px; }
-    .tanks-token { pointer-events: none; transform: translate(calc(var(--x) * 0.3), calc(var(--y) * 0.45)) rotate(var(--rot)) scale(0.6); }
-    .tanks-pile-summary { position: absolute; z-index: 1000; inset: -4px; display: block; padding: 0; border: 0; border-radius: 50%; background: transparent; cursor: pointer; }
-    .tanks-pile-summary:focus-visible { outline: 2px solid var(--brass-bright); outline-offset: 1px; }
     .game-rail-content { display: block; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(214, 177, 102, 0.7) rgba(255, 255, 255, 0.06); }
     .game-rail-content > .game-status-panel { margin-bottom: 8px !important; }
     .game-rail-scroll { overflow: visible; }
     .game-rail-footer { margin-top: 8px; }
     .map-top-overlays { top: 52px; right: 6px; left: 6px; }
     .map-menu-dock { max-width: 100%; }
-    .map-tanks-dock { zoom: 0.68; }
     .map-menu-dock { width: 100%; }
     .map-menu-dock .game-menu-toolbar { flex-wrap: nowrap; justify-content: space-between; gap: 1px; padding: 2px; }
     .map-menu-dock .game-menu-toolbar > .ui-col:not(dialog .ui-col) { flex: 1 1 0; justify-content: center; min-width: 0; max-width: 34px; }
@@ -1946,6 +1940,15 @@ button.communications-user:hover { background: rgba(255, 255, 255, 0.045); }
     .whats-new-trigger { padding: 4px 3px 4px 9px; font-size: 0.66rem; }
     .whats-new-popover { max-height: calc(100dvh - 190px); font-size: 0.76rem; }
     .communications-launcher { right: 12px; bottom: max(72px, calc(env(safe-area-inset-bottom) + 12px)); min-height: 42px; }
+}
+
+/* Compact tanks on narrow screens and short ones (phones in landscape): tokens huddle in a small heap; tapping it shows the grouped contents */
+@media (max-width: 760px), (max-height: 600px) {
+    .tanks-pile-heap { width: calc(var(--pile-w) * 0.34); height: calc(var(--pile-h) * 0.5); min-width: 54px; min-height: 44px; }
+    .tanks-token { pointer-events: none; transform: translate(calc(var(--x) * 0.3), calc(var(--y) * 0.45)) rotate(var(--rot)) scale(0.6); }
+    .tanks-pile-summary { position: absolute; z-index: 1000; inset: -4px; display: block; padding: 0; border: 0; border-radius: 50%; background: transparent; cursor: pointer; }
+    .tanks-pile-summary:focus-visible { outline: 2px solid var(--brass-bright); outline-offset: 1px; }
+    .map-tanks-dock { zoom: 0.68; }
 }
 
 @media (max-width: 620px) {
