@@ -10,7 +10,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Select where to make @Client.CurrentSkin.Describe(Concept.Monster) appear</Header>
+    <Header>Place @Client.CurrentSkin.Describe(Concept.Monster)</Header>
     <Body>
 
         <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="Target" Values="YellowSentMonster.ValidTargets(Game).OrderBy(Name)"/>

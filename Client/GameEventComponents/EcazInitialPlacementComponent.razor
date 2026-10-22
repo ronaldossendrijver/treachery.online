@@ -10,8 +10,10 @@
 @implements IDisposable
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
-    <Header>Choose the Imperial Basin sector for your 6 starting forces.</Header>
+    <Header>Place your starting forces</Header>
     <Body>
+
+        <div class="ev-note">Choose the Imperial Basin sector for your 6 starting forces.</div>
         <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="target" Values="EcazInitialPlacement.ValidLocations(Game)">
             <Label>Sector</Label>
         </SelectComponent>

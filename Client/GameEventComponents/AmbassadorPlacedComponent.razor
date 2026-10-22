@@ -10,8 +10,10 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>You may now place an Ambassador Token in a Stronghold</Header>
+    <Header>Place an Ambassador?</Header>
     <Body>
+
+        <div class="ev-note">Place an Ambassador token in a stronghold.</div>
 
         <SelectFromImageComponent @bind-Value="_ambassador" Values="@AmbassadorPlaced.ValidAmbassadors(Player)" PopupsAsTooltip="true" Required="true">
             <Label>Which ambassador?</Label>

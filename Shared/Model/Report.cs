@@ -9,9 +9,11 @@
 
 namespace Treachery.Shared;
 
-public class Report(MainPhase about)
+public class Report(MainPhase about, int turn = 0)
 {
     public MainPhase About { private set; get; } = about;
+
+    public int Turn { get; } = turn;
 
     public readonly LinkedList<Message> Messages = [];
 

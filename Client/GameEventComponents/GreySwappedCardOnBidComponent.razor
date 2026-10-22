@@ -10,8 +10,10 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Swap the next card on auction with a card from your hand? You can do this once per Bidding round.</Header>
+    <Header>Swap the next card on auction?</Header>
     <Body>
+
+        <div class="ev-note">Swap it with a card from your hand. You can do this once per Bidding round.</div>
         <SelectFromImageComponent @bind-Value="card" Values="Player.TreacheryCards" ImageWidth="80" />
         <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
     </Body>

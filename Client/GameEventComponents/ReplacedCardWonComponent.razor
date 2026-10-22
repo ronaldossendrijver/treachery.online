@@ -10,8 +10,10 @@
 
 <GameEventComponentLayout Compact="true" IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Replace the card you just won by discarding it and drawing a new card from the Treachery Card deck?</Header>
+    <Header>Replace the card you won?</Header>
     <Body>
+
+        <div class="ev-note">Discard it and draw a new card from the Treachery deck.</div>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError="@Validation" Pass="Pass" PassText="No" />
 

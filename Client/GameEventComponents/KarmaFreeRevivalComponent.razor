@@ -10,7 +10,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to revive forces or a leader</Header>
+    <Header>@Client.CurrentSkin.Describe(TreacheryCardType.Karma): revive forces or a leader</Header>
     <Body>
 
         @if (KarmaFreeRevival.ValidMaxAmount(Player, false) > 0)

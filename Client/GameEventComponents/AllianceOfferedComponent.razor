@@ -11,7 +11,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Offer a faction to form an Alliance</Header>
+    <Header>Offer an alliance</Header>
 
     <Body>
         <SelectFromImageComponent @bind-Value="_target" Values="@AllianceOffered.ValidTargets(Game, Player)" Required="true" ImageWidth="40"/>

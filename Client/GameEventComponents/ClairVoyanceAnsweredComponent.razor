@@ -12,7 +12,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>@Client.CurrentSkin.Describe(Game.LatestClairvoyance.Initiator) questions you with @Client.CurrentSkin.Describe(TreacheryCardType.Clairvoyance)!</Header>
+    <Header>@Client.CurrentSkin.Describe(TreacheryCardType.Clairvoyance) from @Client.CurrentSkin.Describe(Game.LatestClairvoyance.Initiator)!</Header>
     <Body>
 
         <div class="ui-font-italic">@Game.LatestClairvoyance.GetQuestion().ToString(Client.CurrentSkin)</div>

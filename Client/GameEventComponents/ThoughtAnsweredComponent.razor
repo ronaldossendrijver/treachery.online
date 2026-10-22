@@ -10,8 +10,10 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Select which card (if any) to show in response to your opponent's @Client.CurrentSkin.Describe(LeaderSkill.Thinker) question</Header>
+    <Header>Answer the @Client.CurrentSkin.Describe(LeaderSkill.Thinker) question</Header>
     <Body>
+
+        <div class="ev-note">Select which card (if any) to show your opponent.</div>
 
         @if (Game.CurrentThought != null)
         {

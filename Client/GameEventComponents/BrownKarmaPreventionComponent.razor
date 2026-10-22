@@ -10,9 +10,11 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Use @ToUse to prevent a faction from playing @Client.CurrentSkin.Describe(TreacheryCardType.Karma) this phase?</Header>
+    <Header>Use @ToUse to block @Client.CurrentSkin.Describe(TreacheryCardType.Karma)?</Header>
 
     <Body>
+
+        <div class="ev-note">Prevent a faction from playing @Client.CurrentSkin.Describe(TreacheryCardType.Karma) this phase.</div>
         <SelectFromImageComponent @bind-Value="_target" Values="Game.PlayersOtherThan(Player)" Required="true" ImageWidth="40" />
         <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
     </Body>

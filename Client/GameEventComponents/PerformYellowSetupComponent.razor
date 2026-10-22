@@ -10,8 +10,10 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Distribute @(10 - Forces.Sum(fl => fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces)) forces on @Client.CurrentSkin.Describe(Game.Map.SietchTabr), @Client.CurrentSkin.Describe(Game.Map.FalseWallSouth), and @Client.CurrentSkin.Describe(Game.Map.FalseWallWest).</Header>
+    <Header>Place @(10 - Forces.Sum(fl => fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces)) starting forces</Header>
     <Body>
+
+        <div class="ev-note">Distribute them on @Client.CurrentSkin.Describe(Game.Map.SietchTabr), @Client.CurrentSkin.Describe(Game.Map.FalseWallSouth) and @Client.CurrentSkin.Describe(Game.Map.FalseWallWest).</div>
 
         <ForceSelectionComponent Game="Game" Player="Player" OnChanged="@StateHasChanged" Forces="Forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="true" FixedMaxForces="10" FixedMaxSpecialForces="@(Player.HasSpecialForces ? 10 : 0)" AllowMultipleTerritories="true" />
 

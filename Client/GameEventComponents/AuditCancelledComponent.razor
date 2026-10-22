@@ -10,8 +10,10 @@
 
 <GameEventComponentLayout Compact="true" IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Do you wish to pay @Client.CurrentSkin.Describe(Faction.Brown) @AuditCancelled.Cost(Game) @Client.CurrentSkin.Describe(Concept.Resource) to cancel a scheduled audit of @AuditCancelled.GetNumberOfCardsThatMayBeAudited(Game) of your treachery cards?</Header>
+    <Header>Cancel the audit of your cards?</Header>
     <Body>
+
+        <div class="ev-note">Costs @AuditCancelled.Cost(Game) @Client.CurrentSkin.Describe(Concept.Resource), paid to @Client.CurrentSkin.Describe(Faction.Brown). Otherwise @AuditCancelled.GetNumberOfCardsThatMayBeAudited(Game) of your cards will be audited.</div>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError="@Validation" Pass="Pass" PassText="No" />
 

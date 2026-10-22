@@ -10,8 +10,10 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>Select which advantage of another stronghold you control to use for the @Client.CurrentSkin.Describe(Game.Map.HiddenMobileStronghold)</Header>
+    <Header>Choose @Client.CurrentSkin.Describe(Game.Map.HiddenMobileStronghold) advantage</Header>
     <Body>
+
+        <div class="ev-note">Use an advantage of another stronghold you control.</div>
 
         <SelectFromImageComponent @bind-Value="advantage" Values="HMSAdvantageChosen.ValidAdvantages(Game, Player)" ImageWidth="100" Required="true"/>
 
