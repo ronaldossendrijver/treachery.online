@@ -59,6 +59,8 @@ public partial class ClassicBot
 
     private GreyRemovedCardFromAuction DetermineGreyRemovedCardFromAuction()
     {
+        if (Game.CardsOnAuction == null || !Game.CardsOnAuction.Items.Any()) return null;
+        
         TreacheryCard? toBeRemoved = null;
         if (Player.TreacheryCards.Any(c => c.Type == TreacheryCardType.ProjectileAndPoison)) toBeRemoved = Game.CardsOnAuction.Items.FirstOrDefault(c => c.Type == TreacheryCardType.ShieldAndAntidote);
         if (toBeRemoved == null && Player.TreacheryCards.All(c => c.Type != TreacheryCardType.ShieldAndAntidote)) toBeRemoved = Game.CardsOnAuction.Items.FirstOrDefault(c => c.Type == TreacheryCardType.ProjectileAndPoison);
@@ -90,12 +92,13 @@ public partial class ClassicBot
 
         if (card != null && CardQuality(card, Player) <= 2)
             return new GreySwappedCardOnBid(Game, Faction) { Passed = false, Card = card };
+        
         return new GreySwappedCardOnBid(Game, Faction) { Passed = true };
     }
 
     private GreySelectedStartingCard DetermineGreySelectedStartingCard()
     {
-        var cards = Game.StartingTreacheryCards.Items;
+        var cards = Game.StartingTreacheryCards!.Items;
 
         var card = cards.FirstOrDefault(c => c.Type == TreacheryCardType.ProjectileAndPoison);
         card ??= cards.FirstOrDefault(c => c.Type == TreacheryCardType.ShieldAndAntidote);
@@ -119,7 +122,7 @@ public partial class ClassicBot
 
     private PerformHmsMovement DeterminePerformHmsMovement()
     {
-        var currentLocation = Game.Map.HiddenMobileStronghold.AttachedToLocation;
+        var currentLocation = Game.Map.HiddenMobileStronghold.AttachedToLocation!;
 
         var richestAdjacentSpiceLocation = PerformHmsMovement.ValidLocations(Game).Where(l => !Equals(l, currentLocation) && ResourcesIn(l) > 0).HighestOrDefault(l => ResourcesIn(l));
         if (richestAdjacentSpiceLocation != null) return new PerformHmsMovement(Game, Faction) { Passed = false, Target = richestAdjacentSpiceLocation };
@@ -177,6 +180,8 @@ public partial class ClassicBot
     private TakeLosses DetermineTakeLosses()
     {
         var losses = TakeLosses.LossesToTake(Game);
+        if (losses == null) return null;
+        
         var normalForces = Math.Min(losses.Amount, TakeLosses.ValidMaxForceAmount(Game, Player));
         var specialForces = losses.Amount - normalForces;
         var normalForcesToRemain = Math.Min(losses.ForcesToRemain, TakeLosses.ValidMaxForceAmount(Game, Player) - normalForces);
@@ -235,14 +240,15 @@ public partial class ClassicBot
         {
             var strength = battalionsToMove.Sum(forcesAtLocation => forcesAtLocation.Value.AmountOfForces + forcesAtLocation.Value.AmountOfSpecialForces * 2) + forcesFromReserves + specialForcesFromReserves * 2;
 
-            target ??= validLocations.Where(l => Game.ResourcesOnPlanet.ContainsKey(l) && TotalMaxDialOfOpponents(l.Territory) < strength).HighestOrDefault(l => Game.ResourcesOnPlanet[l]);
+            target = validLocations.Where(l => Game.ResourcesOnPlanet.ContainsKey(l) && TotalMaxDialOfOpponents(l.Territory) < strength).HighestOrDefault(l => Game.ResourcesOnPlanet[l]);
             target ??= validLocations.Where(l => !Equals(l, Game.Map.SietchTabr) && l.IsStronghold && TotalMaxDialOfOpponents(l.Territory) < strength).LowestOrDefault(l => TotalMaxDialOfOpponents(l.Territory));
         }
 
         target ??= Game.Map.PolarSink;
 
-        if (target != null && battalionsToMove.Values.Sum(b => b.TotalAmountOfForces) + forcesFromReserves + specialForcesFromReserves > 0)
+        if (battalionsToMove.Values.Sum(b => b.TotalAmountOfForces) + forcesFromReserves + specialForcesFromReserves > 0)
             return new YellowRidesMonster(Game, Faction) { Passed = false, ForceLocations = new Dictionary<Location, Battalion>(battalionsToMove), To = target, ForcesFromReserves = forcesFromReserves, SpecialForcesFromReserves = specialForcesFromReserves };
+        
         return new YellowRidesMonster(Game, Faction) { Passed = true };
     }
 
@@ -387,11 +393,15 @@ public partial class ClassicBot
 
         VoicePlan = null;
 
-        if (Game.CurrentBattle.IsAggressorOrDefender(Player))
+        if (Game.CurrentBattle!.IsAggressorOrDefender(Player))
         {
             VoicePlan = BestVoice(Game.CurrentBattle, Player, Game.CurrentBattle.OpponentOf(Faction));
-            LogInfo(VoicePlan.Voice.GetMessage());
-            return VoicePlan.Voice;
+
+            if (VoicePlan?.Voice != null)
+            {
+                LogInfo(VoicePlan.Voice.GetMessage());
+                return VoicePlan.Voice;
+            }
         }
 
         return null;
@@ -448,7 +458,6 @@ public partial class ClassicBot
                 }
                 else if (cardsPlayerHasOrMightHave.Any(c => c.Type == TreacheryCardType.ShieldAndAntidote))
                 {
-                    must = false;
                     type = TreacheryCardType.ShieldAndAntidote;
                 }
             }
@@ -462,7 +471,6 @@ public partial class ClassicBot
                 }
                 else if (cardsPlayerHasOrMightHave.Any(c => c.IsShield))
                 {
-                    must = false;
                     type = TreacheryCardType.Shield;
                 }
             }
@@ -476,8 +484,6 @@ public partial class ClassicBot
                 }
                 else
                 {
-                    must = false;
-
                     if (!knownOpponentDefenses.Any(d => d.IsProjectileDefense && d.Type != TreacheryCardType.WeirdingWay)
                         && knownOpponentDefenses.Any(d => d.Type == TreacheryCardType.WeirdingWay)
                         && knownOpponentWeapons.Any(d => d.IsWeapon)
@@ -500,22 +506,18 @@ public partial class ClassicBot
                 }
                 else if (!Game.Applicable(Rule.BlueVoiceMustNameSpecialCards) && cardsPlayerHasOrMightHave.Any(c => c.IsPoisonDefense))
                 {
-                    must = false;
                     type = TreacheryCardType.PoisonDefense;
                 }
                 else if (cardsPlayerHasOrMightHave.Any(c => c.Type == TreacheryCardType.ShieldAndAntidote))
                 {
-                    must = false;
                     type = TreacheryCardType.ShieldAndAntidote;
                 }
                 else if (cardsPlayerHasOrMightHave.Any(c => c.Type == TreacheryCardType.Chemistry))
                 {
-                    must = false;
                     type = TreacheryCardType.Chemistry;
                 }
                 else if (cardsPlayerHasOrMightHave.Any(c => c.Type == TreacheryCardType.Antidote))
                 {
-                    must = false;
                     type = TreacheryCardType.Antidote;
                 }
             }
@@ -654,7 +656,7 @@ public partial class ClassicBot
                     : TreacheryCardType.Projectile;
             }
 
-            LogInfo("Remaining category: {0} {1}", must ? "must use" : "may not use", type);
+            LogInfo("Remaining category: {0} {1} may not use", type);
         }
 
         var voice = new Voice(Game, p.Faction) { Must = must, Type = type };
@@ -678,7 +680,9 @@ public partial class ClassicBot
 
     protected virtual Prescience? DeterminePrescience()
     {
-        var opponent = Game.CurrentBattle.OpponentOf(Faction);
+        var opponent = Game.CurrentBattle!.OpponentOf(Faction);
+        
+        if (opponent == null) return null;
 
         if (Voice.MayUseVoice(Game, opponent))
             if (Game.CurrentVoice == null && Game.CurrentBattle.PlanOf(opponent) == null)
@@ -742,7 +746,7 @@ public partial class ClassicBot
     {
         if (FaceDanced.MayCallFaceDancer(Game, Player))
         {
-            var faceDancer = Player.FaceDancers.FirstOrDefault(f => Game.WinnerHero.IsFaceDancer(f));
+            var faceDancer = Player.FaceDancers.FirstOrDefault(f => Game.WinnerHero!.IsFaceDancer(f));
             var faceDancedHeroIsLivingLeader = faceDancer is Leader && Game.IsAlive(faceDancer);
 
             if ((FaceDanced.MaximumNumberOfForces(Game, Player) > 0 || faceDancedHeroIsLivingLeader) && Game.BattleWinner != Ally)
@@ -834,6 +838,7 @@ public partial class ClassicBot
         if (requestToHandle != null)
         {
             var hero = requestToHandle.Hero;
+            if (hero is null) return null;
 
             int price;
             if (requestToHandle.Initiator == Ally)
@@ -868,7 +873,7 @@ public partial class ClassicBot
     {
         if (Game.CurrentBattle == null || !Game.CurrentBattle.IsAggressorOrDefender(Player)) return null;
         
-        var opponent = Game.CurrentBattle.OpponentOf(Player);
+        var opponent = Game.CurrentBattle.OpponentOf(Player)!;
 
         if (opponent.TreacheryCards.Any(tc => !Player.KnownCards.Contains(tc)) && 
             ResourcesAudited.ValidFactions(Game, Player).Contains(opponent.Faction)) return new ResourcesAudited(Game, Faction) { Target = opponent.Faction };
@@ -894,36 +899,36 @@ public partial class ClassicBot
         var opponents = WinningOpponentsIWishToAttack(20, true);
 
         var stronghold = Game.Map.Carthag;
-        var opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold).TotalAmountOfForces == 1);
+        var opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold)?.TotalAmountOfForces == 1);
 
         if (opponentWithOneBattalionInStronghold == null)
         {
             stronghold = Game.Map.Arrakeen;
-            opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold).TotalAmountOfForces == 1);
+            opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold)?.TotalAmountOfForces == 1);
         }
 
         if (opponentWithOneBattalionInStronghold == null)
         {
             stronghold = Game.Map.TueksSietch;
-            opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold).TotalAmountOfForces == 1);
+            opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold)?.TotalAmountOfForces == 1);
         }
 
         if (opponentWithOneBattalionInStronghold == null)
         {
             stronghold = Game.Map.SietchTabr;
-            opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold).TotalAmountOfForces == 1);
+            opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold)?.TotalAmountOfForces == 1);
         }
 
         if (opponentWithOneBattalionInStronghold == null)
         {
             stronghold = Game.Map.HabbanyaSietch;
-            opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold).TotalAmountOfForces == 1);
+            opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold)?.TotalAmountOfForces == 1);
         }
 
         if (opponentWithOneBattalionInStronghold == null)
         {
             stronghold = Game.Map.HiddenMobileStronghold;
-            opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold).TotalAmountOfForces == 1);
+            opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold)?.TotalAmountOfForces == 1);
         }
 
         if (opponentWithOneBattalionInStronghold != null) return new BrownRemoveForce(Game, Faction) { Location = stronghold, Target = opponentWithOneBattalionInStronghold.Faction, SpecialForce = opponentWithOneBattalionInStronghold.SpecialForcesIn(stronghold) > 0 };
@@ -1022,7 +1027,7 @@ public partial class ClassicBot
             (t != TerrorType.SneakAttack || TerrorRevealed.ValidSneakAttackTargets(Game, Player).Any()) &&
             (t != TerrorType.Atomics || mayUseAtomics)).RandomOrDefault();
         var cardInSabotage = Player.TreacheryCards.FirstOrDefault(c => c.IsUseless);
-        var victim = Game.GetPlayer(TerrorRevealed.GetVictim(Game));
+        var victim = Game.GetPlayer(TerrorRevealed.GetVictim(Game))!;
 
         var offerAlliance = TerrorRevealed.MayOfferAlliance(Game) && PlayerStanding(victim) > 1.5f * PlayerStanding(Player);
 
@@ -1104,7 +1109,7 @@ public partial class ClassicBot
                 return PassAmbassadorActivated();
 
             case Ambassador.Pink:
-                var offerAlliance = AmbassadorActivated.AllianceCanBeOffered(Game, Player) && PlayerStanding(victimPlayer) > 0.33 * PlayerStanding(Player);
+                var offerAlliance = AmbassadorActivated.AllianceCanBeOffered(Game, Player) && victimPlayer != null &&  PlayerStanding(victimPlayer) > 0.33 * PlayerStanding(Player);
                 var takeVidal = !offerAlliance && AmbassadorActivated.VidalCanBeTaken(Game, Player);
                 var offerVidal = offerAlliance && AmbassadorActivated.VidalCanBeOfferedToNewAlly(Game, Player) &&
                                  HeroesForBattle(Game, Player, true).Count() >= 3 &&

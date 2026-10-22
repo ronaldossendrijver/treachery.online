@@ -81,7 +81,7 @@ public class TreacheryCard(int id, int skinId, TreacheryCardType type, Rule[] ru
 
     public bool IsGreen => !(IsWeapon || IsDefense || IsUseless || IsMercenary);
 
-    public bool CounteredBy(TreacheryCard defense, TreacheryCard combinedWithWeapon)
+    public bool CounteredBy(TreacheryCard defense, TreacheryCard? combinedWithWeapon)
     {
         if (Type == TreacheryCardType.MirrorWeapon)
             return combinedWithWeapon == null || combinedWithWeapon.CounteredBy(defense, combinedWithWeapon);

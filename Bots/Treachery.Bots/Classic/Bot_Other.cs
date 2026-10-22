@@ -26,6 +26,7 @@ public partial class ClassicBot
     private DiscoveryEntered DetermineDiscoveryEntered()
     {
         var to = DiscoveryEntered.ValidTargets(Game, Player).FirstOrDefault();
+        if (to == null) return null;
         var battalionsToMove = DiscoveryEntered.ValidSources(Player, to).ToDictionary(l => l, l => Player.BattalionIn(l));
         return new DiscoveryEntered(Game, Faction) { ForceLocations = new Dictionary<Location, Battalion>(battalionsToMove), To = to };
     }
@@ -72,7 +73,7 @@ public partial class ClassicBot
 
     private DivideResources DetermineDivideResources()
     {
-        var spiceIWant = Math.Max(0, DivideResources.GetResourcesToBeDivided(Game).Amount - Resources);
+        var spiceIWant = Math.Max(0, DivideResources.GetResourcesToBeDivided(Game)?.Amount - Resources ?? 0);
         return new DivideResources(Game, Faction) { PortionToFirstPlayer = spiceIWant };
     }
 
@@ -86,9 +87,9 @@ public partial class ClassicBot
 
     private DivideResourcesAccepted DetermineDivideResourcesAccepted()
     {
-        var tbd = DivideResources.GetResourcesToBeDivided(Game);
+        var tbd = DivideResources.GetResourcesToBeDivided(Game)!;
 
-        var iGetWhenAgreed = DivideResources.GainedByOtherFaction(tbd, true, Game.CurrentDivisionProposal.PortionToFirstPlayer);
+        var iGetWhenAgreed = DivideResources.GainedByOtherFaction(tbd, true, Game.CurrentDivisionProposal!.PortionToFirstPlayer);
         var iGetWhenDenied = DivideResources.GainedByOtherFaction(tbd, false, Game.CurrentDivisionProposal.PortionToFirstPlayer);
 
         var accepted = iGetWhenAgreed >= iGetWhenDenied || Resources >= Player.AlliedResources;
@@ -150,7 +151,7 @@ public partial class ClassicBot
                 break;
 
             case Faction.Black:
-                if (Game.CurrentBattle.IsInvolved(Player)) return result;
+                if (Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(Player)) return result;
                 break;
 
             case Faction.Yellow:
@@ -159,8 +160,8 @@ public partial class ClassicBot
                 break;
 
             case Faction.Red:
-                if ((Game is { CurrentMainPhase: MainPhase.Bidding, CurrentBid: not null } && Game.CurrentBid.Player.Ally == Faction.Red && Game.CurrentBid.TotalAmount > 5 && !Game.Prevented(FactionAdvantage.RedReceiveBid)) ||
-                    (Game.CurrentMainPhase == MainPhase.Battle && IsWinningOrIsOpponentInBattle(Faction.Red) && Game.GetPlayer(Faction.Red).SpecialForcesIn(Game.CurrentBattle.Territory) >= 3)) return result;
+                if ((Game is { CurrentMainPhase: MainPhase.Bidding, CurrentBid: { Player.Ally: Faction.Red, TotalAmount: > 5 } } && !Game.Prevented(FactionAdvantage.RedReceiveBid)) ||
+                    (Game is { CurrentMainPhase: MainPhase.Battle, CurrentBattle: not null } && IsWinningOrIsOpponentInBattle(Faction.Red) && Game.GetPlayer(Faction.Red)!.SpecialForcesIn(Game.CurrentBattle.Territory) >= 3)) return result;
                 break;
 
             case Faction.Orange:
@@ -174,7 +175,7 @@ public partial class ClassicBot
             case Faction.Grey: return result;
 
             case Faction.Purple:
-                if (Game.CurrentBattle.IsInvolved(Player)) return result;
+                if (Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(Player)) return result;
                 break;
 
             case Faction.Brown:
@@ -184,7 +185,7 @@ public partial class ClassicBot
                 break;
 
             case Faction.White:
-                var white = Game.GetPlayer(Faction.White);
+                var white = Game.GetPlayer(Faction.White)!;
                 if (white.Has(Game.CardJustWon))
                 {
                     if (CardQuality(Game.CardJustWon, white) > 2) return result;
@@ -210,10 +211,10 @@ public partial class ClassicBot
 
             case Faction.Cyan:
                 if ((Faction == Faction.Orange && Game is { CurrentPhase: Phase.OrangeShip, OrangeMayDelay: false }) ||
-                    (Faction != Faction.Orange && Game.CurrentPhase == Phase.NonOrangeShip && Game.ShipmentAndMoveSequence.CurrentPlayer == Player))
+                    (Faction != Faction.Orange && Game.CurrentPhase == Phase.NonOrangeShip && Game.ShipmentAndMoveSequence!.CurrentPlayer == Player))
                 {
                     var shipment = DetermineShipment();
-                    if (Game.TerrorIn(shipment.To.Territory).Any())
+                    if (shipment.To != null && Game.TerrorIn(shipment.To.Territory).Any())
                     {
                         result.CyanTerritory = shipment.To.Territory;
                         return result;
@@ -231,9 +232,9 @@ public partial class ClassicBot
         Territory? result = null;
         var territoriesWithPinkAndPinkAlly = NexusPlayed.ValidPinkTerritories(Game).Where(t => t.IsStronghold || Game.IsSpecialStronghold(t)).ToList();
 
-        if (territoriesWithPinkAndPinkAlly.Count == 0) return result;
+        if (territoriesWithPinkAndPinkAlly.Count == 0) return null;
         
-        var pink = Game.GetPlayer(Faction.Pink);
+        var pink = Game.GetPlayer(Faction.Pink)!;
 
         if (territoriesWithPinkAndPinkAlly.Count >= 2) result = territoriesWithPinkAndPinkAlly.HighestOrDefault(t => pink.AnyForcesIn(t));
 
@@ -258,7 +259,7 @@ public partial class ClassicBot
 
                 if (Game.CurrentPrescience != null)
                 {
-                    var opponent = Game.CurrentBattle.OpponentOf(Faction);
+                    var opponent = Game.CurrentBattle!.OpponentOf(Faction)!;
 
                     if (!(Voice.MayUseVoice(Game, opponent) && Game.CurrentVoice == null && Game.CurrentBattle.PlanOf(opponent) == null))
                         if (Game.CurrentBattle.IsAggressorOrDefender(Player))
@@ -280,7 +281,7 @@ public partial class ClassicBot
                 break;
 
             case Faction.Red:
-                if (Player.ForcesIn(Game.CurrentBattle.Territory) >= 4) return result;
+                if (Game.CurrentBattle != null && Player.ForcesIn(Game.CurrentBattle.Territory) >= 4) return result;
                 break;
 
             case Faction.Orange:
@@ -294,7 +295,7 @@ public partial class ClassicBot
                 break;
 
             case Faction.Grey:
-                if (Player.ForcesIn(Game.CurrentBattle.Territory) >= 3) return result;
+                if (Game.CurrentBattle != null && Player.ForcesIn(Game.CurrentBattle.Territory) >= 3) return result;
                 break;
 
             case Faction.Purple:
@@ -316,8 +317,8 @@ public partial class ClassicBot
         {
             case Faction.Green:
 
-                var opponent = Game.CurrentBattle.OpponentOf(Faction);
-                if (!(Voice.MayUseVoice(Game, opponent) && Game.CurrentVoice == null && Game.CurrentBattle.PlanOf(opponent) == null))
+                var opponent = Game.CurrentBattle?.OpponentOf(Faction);
+                if (opponent != null && !(Voice.MayUseVoice(Game, opponent) && Game.CurrentVoice == null && Game.CurrentBattle.PlanOf(opponent) == null))
                     if (Game.CurrentBattle.IsAggressorOrDefender(Player))
                     {
                         var maxDial = MaxDial(Game, Player, Game.CurrentBattle.Territory, opponent);
@@ -396,10 +397,13 @@ public partial class ClassicBot
                 }
                 else if (Game.CurrentMainPhase == MainPhase.Battle)
                 {
-                    var auditee = Game.CurrentBattle.OpponentOf(Player);
-                    var recentBattlePlan = Game.CurrentBattle.PlanOf(auditee);
+                    var auditee = Game.CurrentBattle?.OpponentOf(Player);
+                    if (auditee == null) break;
+                    
+                    var recentBattlePlan = Game.CurrentBattle?.PlanOf(auditee);
+                    if (recentBattlePlan == null) break;
+                    
                     var auditableCards = auditee.TreacheryCards.Where(c => c != recentBattlePlan.Weapon && c != recentBattlePlan.Defense && c != recentBattlePlan.Hero);
-
                     if (auditableCards.Any(c => !Player.KnownCards.Contains(c))) return result;
                 }
                 break;
@@ -408,7 +412,7 @@ public partial class ClassicBot
                 if (Game is { CurrentPhase: Phase.BattlePhase, CurrentBattle: not null } && Game.CurrentBattle.IsAggressorOrDefender(Player))
                 {
                     var opp = Game.CurrentBattle.OpponentOf(Player);
-                    if (opp.Faction != Faction.Purple && opp.UnrevealedTraitors.Any())
+                    if (opp != null && opp.Faction != Faction.Purple && opp.UnrevealedTraitors.Any())
                     {
                         result.PinkFaction = opp.Faction;
                         return result;
@@ -466,7 +470,7 @@ public partial class ClassicBot
             .OrderByDescending(p => Math.Min(p.ForcesInReserve + p.SpecialForcesInReserve, p.Resources + (p.AlliedPlayer != null ? p.AlliedResources : 0)))
             .FirstOrDefault();
 
-        if (winningOpponentThatCanShipMost != null && Game.ShipmentAndMoveSequence.CurrentPlayer == winningOpponentThatCanShipMost) return new KarmaShipmentPrevention(Game, Faction) { Target = winningOpponentThatCanShipMost.Faction };
+        if (winningOpponentThatCanShipMost != null && Game.ShipmentAndMoveSequence!.CurrentPlayer == winningOpponentThatCanShipMost) return new KarmaShipmentPrevention(Game, Faction) { Target = winningOpponentThatCanShipMost.Faction };
 
         return null;
     }
@@ -504,8 +508,8 @@ public partial class ClassicBot
     {
         if (Game.CurrentTurn > 1 &&
             (
-                (Game.CurrentPhase == Phase.HarvesterA && ResourcesIn(Game.LatestSpiceCardA.Location) > 6) ||
-                (Game.CurrentPhase == Phase.HarvesterB && ResourcesIn(Game.LatestSpiceCardB.Location) > 6)
+                (Game.CurrentPhase == Phase.HarvesterA && ResourcesIn(Game.LatestSpiceCardA!.Location) > 6) ||
+                (Game.CurrentPhase == Phase.HarvesterB && ResourcesIn(Game.LatestSpiceCardB!.Location) > 6)
             ))
             return new HarvesterPlayed(Game, Faction);
         
@@ -531,16 +535,16 @@ public partial class ClassicBot
         var waitForPrescienceOrVoice = false;
         if (imInBattle)
         {
-            var opponent = Game.CurrentBattle!.OpponentOf(Player);
-            waitForPrescienceOrVoice = Prescience.MayUsePrescience(Game, opponent) ||
-                                       Voice.MayUseVoice(Game, opponent);
+            var opponent = Game.CurrentBattle?.OpponentOf(Player);
+            waitForPrescienceOrVoice = opponent != null && (Prescience.MayUsePrescience(Game, opponent) ||
+                                       Voice.MayUseVoice(Game, opponent));
         }  
 
         if (imInBattle && !waitForPrescienceOrVoice && Game.LatestClairvoyanceBattle != Game.CurrentBattle)
         {
-            var opponent = Game.CurrentBattle!.OpponentOf(Player);
+            var opponent = Game.CurrentBattle?.OpponentOf(Player);
 
-            if (NrOfUnknownOpponentCards(Game, Player, opponent) > 0)
+            if (opponent != null && NrOfUnknownOpponentCards(Game, Player, opponent) > 0)
             {
                 LogInfo("Start using Clairvoyance against " + opponent);
 
@@ -584,9 +588,11 @@ public partial class ClassicBot
         return new ClairVoyancePlayed(Game, Faction) { Target = opponent, Question = question, QuestionParameter1 = cardType.ToString() };
     }
 
-    protected virtual ClairVoyanceAnswered DetermineClairVoyanceAnswered()
+    protected virtual ClairVoyanceAnswered DetermineClairvoyanceAnswered()
     {
-        LogInfo("DetermineClairVoyanceAnswered() {0}", Game.LatestClairvoyance.Question);
+        if (Game.LatestClairvoyance?.Question is null) return null;
+        
+        LogInfo("DetermineClairvoyanceAnswered() {0}", Game.LatestClairvoyance.Question);
 
         var answer = ClairVoyanceAnswer.Unknown;
 
@@ -599,7 +605,7 @@ public partial class ClassicBot
                     {
                         var plan = Game.CurrentBattle.PlanOf(Player) ?? DetermineBattlePlan(true);
                         LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
-                        answer = Answer(plan.Defense != null && ClairVoyanceAnswered.IsQuestionedBy(false, plan.Defense.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
+                        answer = Answer(plan.Defense != null && Game.LatestClairvoyance.Parameter1 != null && ClairVoyanceAnswered.IsQuestionedBy(false, plan.Defense.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
                     }
                     break;
 
@@ -608,12 +614,12 @@ public partial class ClassicBot
                     {
                         var plan = Game.CurrentBattle.PlanOf(Player) ?? DetermineBattlePlan(true);
                         LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
-                        answer = Answer(plan.Weapon != null && ClairVoyanceAnswered.IsQuestionedBy(true, plan.Weapon.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
+                        answer = Answer(plan.Weapon != null && Game.LatestClairvoyance.Parameter1 != null && ClairVoyanceAnswered.IsQuestionedBy(true, plan.Weapon.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
                     }
                     break;
 
                 case ClairvoyanceQuestion.CardTypeInBattle:
-                    if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(Player))
+                    if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(Player) && Game.LatestClairvoyance.Parameter1 != null)
                     {
                         var plan = Game.CurrentBattle.PlanOf(Player);
                         plan ??= DetermineBattlePlan(true);
@@ -629,16 +635,17 @@ public partial class ClassicBot
                     break;
 
                 case ClairvoyanceQuestion.DialOfMoreThanXInBattle:
-                    if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(Player))
+                    if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(Player) && Game.LatestClairvoyance.Parameter1 != null)
                     {
                         var plan = Game.CurrentBattle.PlanOf(Player) ?? DetermineBattlePlan(true);
                         LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
-                        answer = Answer(plan.Dial(Game, Game.CurrentBattle.OpponentOf(Player).Faction) > (float)Game.LatestClairvoyance.Parameter1);
+                        var opponent = Game.CurrentBattle.OpponentOf(Player);
+                        answer = Answer(opponent != null && plan.Dial(Game, opponent.Faction) > (float)Game.LatestClairvoyance.Parameter1);
                     }
                     break;
 
                 case ClairvoyanceQuestion.LeaderInBattle:
-                    if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(Player))
+                    if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(Player) && Game.LatestClairvoyance.Parameter1 != null)
                     {
                         var plan = Game.CurrentBattle.PlanOf(Player) ?? DetermineBattlePlan(true);
                         LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
@@ -651,15 +658,15 @@ public partial class ClassicBot
                     break;
 
                 case ClairvoyanceQuestion.LeaderAsFacedancer:
-                    answer = Answer(Player.FaceDancers.Any(f => f.IsFaceDancer((IHero)Game.LatestClairvoyance.Parameter1)));
+                    answer = Answer(Game.LatestClairvoyance.Parameter1 != null && Player.FaceDancers.Any(f => f.IsFaceDancer((IHero)Game.LatestClairvoyance.Parameter1)));
                     break;
 
                 case ClairvoyanceQuestion.LeaderAsTraitor:
-                    answer = Answer(Player.Traitors.Any(f => f.IsTraitor((IHero)Game.LatestClairvoyance.Parameter1)));
+                    answer = Answer(Game.LatestClairvoyance.Parameter1 != null && Player.Traitors.Any(f => f.IsTraitor((IHero)Game.LatestClairvoyance.Parameter1)));
                     break;
 
                 case ClairvoyanceQuestion.Prediction:
-                    answer = Answer(Player.PredictedFaction == (Faction)Game.LatestClairvoyance.Parameter1 && Player.PredictedTurn == (int)Game.LatestClairvoyance.Parameter2);
+                    answer = Answer(Game.LatestClairvoyance.Parameter1 != null && Player.PredictedFaction == (Faction)Game.LatestClairvoyance.Parameter1 && Game.LatestClairvoyance.Parameter2 != null && Player.PredictedTurn == (int)Game.LatestClairvoyance.Parameter2);
                     break;
 
                 case ClairvoyanceQuestion.WillAttackX:
@@ -965,6 +972,7 @@ public partial class ClassicBot
         if (p.Ally != Faction.Red) return;
 
         var red = g.GetPlayer(Faction.Red);
+        if (red == null) return;
 
         var potentialMaximumByRed = p.Ally == Faction.Red && (g.Version < 113 || !g.Prevented(FactionAdvantage.RedLetAllyReviveExtraForces)) ? Revival.ValidMaxRevivalsByRed(g, p) : 0;
 
@@ -993,7 +1001,7 @@ public partial class ClassicBot
             forces + 1 <= p.ForcesKilled &&
             forces + 1 <= maxForces &&
             specialForces + forces + 1 <= potentialMaximumByRed &&
-            Revival.DetermineCostOfForcesForRed(g, red, p.Faction, forces + 1, specialForces) <= red.Resources)
+            Revival.DetermineCostOfForcesForRed(g, red, p.Faction, forces + 1, specialForces) <= red.Resources) 
             forces++;
     }
 
@@ -1025,12 +1033,13 @@ public partial class ClassicBot
     private JuicePlayed? DetermineJuicePlayed()
     {
         if (Game is { CurrentMainPhase: MainPhase.ShipmentAndMove, CurrentMoment: MainPhaseMoment.Start } 
-            && Faction != Faction.Orange 
+            && Faction != Faction.Orange
+            && Game.ShipmentAndMoveSequence != null
             && Game.ShipmentAndMoveSequence.GetPlayersInSequence().LastOrDefault()?.Player != Player)
             return new JuicePlayed(Game, Faction) { Type = JuiceType.GoLast };
         
         if (Game is { CurrentMainPhase: MainPhase.Battle, CurrentMoment: MainPhaseMoment.Start } 
-            && Battle.BattlesToBeFought(Game, Player).Any()) 
+            && Battle.BattlesToBeFought(Game, Player).Count != 0) 
             return new JuicePlayed(Game, Faction) { Type = JuiceType.GoLast };
 
         return null;
@@ -1043,7 +1052,9 @@ public partial class ClassicBot
 
     private Diplomacy? DetermineDiplomacy()
     {
-        var opponentPlan = Game.CurrentBattle.PlanOfOpponent(Player);
+        var opponentPlan = Game.CurrentBattle?.PlanOfOpponent(Player);
+        if (opponentPlan?.Defense == null) return null;
+        
         if (opponentPlan.Weapon != null && opponentPlan.Weapon.CounteredBy(opponentPlan.Defense, null)) return new Diplomacy(Game, Faction) { Card = Diplomacy.ValidCards(Game, Player).First() };
 
         return null;

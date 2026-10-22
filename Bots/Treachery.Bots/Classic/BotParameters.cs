@@ -49,7 +49,7 @@ public class BotParameters
         Battle_DialShortageThresholdForThrowing = 3
     };
 
-    public static readonly BotParameters GreenParameters = new()
+    private static readonly BotParameters GreenParameters = new()
     {
         Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
         Bidding_ResourcesToKeepWhenCardIsntPerfect = 4,
@@ -67,7 +67,7 @@ public class BotParameters
         Battle_DialShortageThresholdForThrowing = 3
     };
 
-    public static readonly BotParameters YellowParameters = new()
+    private static readonly BotParameters YellowParameters = new()
     {
         Bidding_ResourcesToKeepWhenCardIsPerfect = 0,
         Bidding_ResourcesToKeepWhenCardIsntPerfect = 0,
@@ -85,7 +85,7 @@ public class BotParameters
         Battle_DialShortageThresholdForThrowing = 4
     };
 
-    public static readonly BotParameters RedParameters = new()
+    private static readonly BotParameters RedParameters = new()
     {
         Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
         Bidding_ResourcesToKeepWhenCardIsntPerfect = 6,
@@ -103,7 +103,7 @@ public class BotParameters
         Battle_DialShortageThresholdForThrowing = 3
     };
 
-    public static readonly BotParameters OrangeParameters = new()
+    private static readonly BotParameters OrangeParameters = new()
     {
         Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
         Bidding_ResourcesToKeepWhenCardIsntPerfect = 8,
@@ -121,7 +121,7 @@ public class BotParameters
         Battle_DialShortageThresholdForThrowing = 6
     };
 
-    public static readonly BotParameters BlueParameters = new()
+    private static readonly BotParameters BlueParameters = new()
     {
         Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
         Bidding_ResourcesToKeepWhenCardIsntPerfect = 7,
@@ -139,7 +139,7 @@ public class BotParameters
         Battle_DialShortageThresholdForThrowing = 6
     };
 
-    public static readonly BotParameters GreyParameters = new()
+    private static readonly BotParameters GreyParameters = new()
     {
         Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
         Bidding_ResourcesToKeepWhenCardIsntPerfect = 5,
@@ -157,7 +157,7 @@ public class BotParameters
         Battle_DialShortageThresholdForThrowing = 4
     };
 
-    public static readonly BotParameters PurpleParameters = new()
+    private static readonly BotParameters PurpleParameters = new()
     {
         Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
         Bidding_ResourcesToKeepWhenCardIsntPerfect = 5,
@@ -211,7 +211,7 @@ public class BotParameters
         Battle_DialShortageThresholdForThrowing = 6
     };
 
-    public static readonly BotParameters PinkParameters = new()
+    private static readonly BotParameters PinkParameters = new()
     {
         Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
         Bidding_ResourcesToKeepWhenCardIsntPerfect = 5,
@@ -229,7 +229,7 @@ public class BotParameters
         Battle_DialShortageThresholdForThrowing = 3
     };
 
-    public static readonly BotParameters CyanParameters = new()
+    private static readonly BotParameters CyanParameters = new()
     {
         Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
         Bidding_ResourcesToKeepWhenCardIsntPerfect = 5,

@@ -611,7 +611,7 @@ public partial class ClassicBot
                 return 1;
             }
 
-            mostEffectiveDefense = availableDefenses.FirstOrDefault(d => opponentPlan.Weapon.CounteredBy(d, chosenWeapon!));
+            mostEffectiveDefense = availableDefenses.FirstOrDefault(d => opponentPlan.Weapon.CounteredBy(d, chosenWeapon));
             return mostEffectiveDefense != null ? 1 : 0;
         }
 
@@ -683,7 +683,7 @@ public partial class ClassicBot
             if (def == bestDefenseAgainstUnknownCards) defenseQuality.Count(def);
 
             foreach (var knownWeapon in knownEnemyWeapons)
-                if (knownWeapon.CounteredBy(def, chosenWeapon!))
+                if (knownWeapon.CounteredBy(def, chosenWeapon))
                 {
                     LogInfo("potentialWeapon " + knownWeapon + " is countered by " + def);
                     defenseQuality.Count2(def);
@@ -692,10 +692,10 @@ public partial class ClassicBot
 
         mostEffectiveDefense = defenseQuality.Highest;
 
-        if (mostEffectiveDefense is null) return knownEnemyWeapons.Any() ? 0 : 1;
+        if (mostEffectiveDefense is null) return knownEnemyWeapons.Length != 0 ? 0 : 1;
 
         var defenseToCheck = mostEffectiveDefense;
-        if (knownEnemyWeapons.Any(w => !w.CounteredBy(defenseToCheck, chosenWeapon!))) return 0;
+        if (knownEnemyWeapons.Any(w => !w.CounteredBy(defenseToCheck, chosenWeapon))) return 0;
 
         return 1 - ChanceOfAnUnknownOpponentCardKillingMyLeader(game, player, unknownCards, defenseToCheck, opponent, chosenWeapon);
     }
@@ -731,12 +731,12 @@ public partial class ClassicBot
 
     private static float NumberOfUnknownWeaponsThatCouldKillMeWithPlayerDefense(IEnumerable<TreacheryCard> unknownCards, TreacheryCard? defense, TreacheryCard? chosenWeapon)
     {
-        return unknownCards.Count(c => c.IsWeapon && (defense == null || !c.CounteredBy(defense, chosenWeapon!)));
+        return unknownCards.Count(c => c.IsWeapon && (defense == null || !c.CounteredBy(defense, chosenWeapon)));
     }
 
     private static float NumberOfUnknownDefensesThatCouldCounterPlayerWeapon(IEnumerable<TreacheryCard> unknownCards, TreacheryCard? weapon)
     {
-        return unknownCards.Count(c => c.IsDefense && (weapon == null || weapon.CounteredBy(c, null!)));
+        return unknownCards.Count(c => c.IsDefense && (weapon == null || weapon.CounteredBy(c, null)));
     }
 
     private ClairVoyanceQandA? RulingWeaponClairvoyanceForPlayerBattle => Game is { LatestClairvoyance: not null, LatestClairvoyanceQnA: not null } && Game.LatestClairvoyanceQnA.Answer.Initiator == Faction && Game.LatestClairvoyanceBattle != null && Game.LatestClairvoyanceBattle == Game.CurrentBattle &&
@@ -777,7 +777,7 @@ public partial class ClassicBot
             if (prescience == PrescienceAspect.Defense)
             {
                 enemyCanDefendPoisonTooth = opponentPlan.Defense is { IsNonAntidotePoisonDefense: true };
-                mostEffectiveWeapon = availableWeapons.FirstOrDefault(w => opponentPlan.Defense == null || !w.CounteredBy(opponentPlan.Defense, null!));
+                mostEffectiveWeapon = availableWeapons.FirstOrDefault(w => opponentPlan.Defense == null || !w.CounteredBy(opponentPlan.Defense, null));
 
                 return mostEffectiveWeapon != null ? 1f : 0f;
             }
@@ -825,7 +825,7 @@ public partial class ClassicBot
 
         var unknownOpponentCards = OpponentCardsUnknownToPlayer(game, player, opponent);
 
-        mostEffectiveWeapon = usefulWeapons.Where(w => !knownEnemyDefenses.Any(defense => w.CounteredBy(defense, null!))).RandomOrDefault();
+        mostEffectiveWeapon = usefulWeapons.Where(w => !knownEnemyDefenses.Any(defense => w.CounteredBy(defense, null))).RandomOrDefault();
 
         if (mostEffectiveWeapon != null)
         {
@@ -1125,7 +1125,7 @@ public partial class ClassicBot
         var myPlan = currentBattle.PlanOf(Player);
         var portableAntidote = Player.TreacheryCards.FirstOrDefault(c => c.IsPortableAntidote);
 
-        if (myPlan is { Defense: null } && opponentPlan?.Weapon is { } opponentWeapon && portableAntidote is { } antidote && opponentWeapon.CounteredBy(antidote, myPlan.Weapon!)) return new PortableAntidoteUsed(Game, Faction);
+        if (myPlan is { Defense: null } && opponentPlan?.Weapon is { } opponentWeapon && portableAntidote is { } antidote && opponentWeapon.CounteredBy(antidote, myPlan.Weapon)) return new PortableAntidoteUsed(Game, Faction);
 
         return null;
     }

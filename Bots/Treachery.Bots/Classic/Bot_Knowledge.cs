@@ -93,7 +93,7 @@ public partial class ClassicBot
     private static List<TreacheryCard> CardsPlayerHasOrMightHave(Game game, Player player)
     {
         var known = game.KnownCards(player).ToList();
-        var result = new List<TreacheryCard>(player.TreacheryCards.Where(c => known.Contains(c)));
+        var result = new List<TreacheryCard>(player.TreacheryCards.Where(known.Contains));
 
         var playerHasUnknownCards = player.TreacheryCards.Any(c => !known.Contains(c));
         if (playerHasUnknownCards) result.AddRange(CardsUnknownToPlayer(game, player));
@@ -104,7 +104,7 @@ public partial class ClassicBot
     private static List<TreacheryCard> KnownCardsHeldByOtherPlayer(Game game, Player player, Player otherPlayer)
     {
         var known = game.KnownCards(player).ToList();
-        return otherPlayer.TreacheryCards.Where(c => known.Contains(c)).ToList();
+        return [.. otherPlayer.TreacheryCards.Where(known.Contains)];
     }
 
     private int CardQuality(TreacheryCard cardToRate, Player? forWhom)
@@ -113,7 +113,7 @@ public partial class ClassicBot
         if (forWhom != null && forWhom != Player)
         {
             var myKnownCards = Game.KnownCards(Player).ToList();
-            cardsToTakeIntoAccount = forWhom.TreacheryCards.Where(c => myKnownCards.Contains(c)).ToList();
+            cardsToTakeIntoAccount = [.. forWhom.TreacheryCards.Where(myKnownCards.Contains)];
         }
 
         cardsToTakeIntoAccount.Remove(cardToRate);
@@ -307,10 +307,10 @@ public partial class ClassicBot
     private bool ProbablySafeFromMonster(Territory t) 
         => Game.CurrentTurn == Game.MaximumTurns 
            || Game.ProtectedFromMonster(Player) 
-           || t != Require(Game.LatestSpiceCardA).Location.Territory 
+           || t != Require(Game.LatestSpiceCardA).Location?.Territory 
            || Game.SandTroutOccured 
            || !Game.HasResourceDeckPrescience(Player) 
-           || Game.ResourceCardDeck.Top is { IsShaiHulud: false };
+           || Game.ResourceCardDeck?.Top is { IsShaiHulud: false };
 
     #endregion
 
@@ -322,9 +322,6 @@ public partial class ClassicBot
 
     private static List<Player> OccupyingOpponentsIn(Game game, Player player, Territory t) 
         => game.Players.Where(p => p.Faction != player.Faction && p.Faction != player.Ally && p.Occupies(t)).ToList();
-
-    private static List<Player> OccupyingOpponentsIn(Game game, Player player, Location l) 
-        => OccupyingOpponentsIn(game, player, l.Territory);
 
     protected virtual bool InStorm(Location l) 
         => l.Sector == Game.SectorInStorm;

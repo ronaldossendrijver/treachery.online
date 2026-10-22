@@ -94,7 +94,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
             Do(DetermineFactionTradeOffered, ref action, events) ||
             Do(DetermineSkillAssigned, ref action, events) ||
             Do(DetermineStormDialled, ref action, events) ||
-            Do(DetermineClairVoyanceAnswered, ref action, events) ||
+            Do(DetermineClairvoyanceAnswered, ref action, events) ||
             Do(DetermineTraitorsSelected, ref action, events) ||
             Do(DetermineStormSpellPlayed, ref action, events) ||
             Do(DetermineTestingStationUsed, ref action, events) ||

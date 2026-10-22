@@ -76,10 +76,10 @@ public partial class ClassicBot
         var winning = IAmWinning;
         LogInfo("DetermineMove(). AllIn: {0}, Winning: {1}.", LastTurn, winning);
 
-        if (DecidedShipmentAction == ShipmentDecision.StrongholdNearResources && Player.ForcesInLocations.ContainsKey(DecidedShipment!.To))
+        if (DecidedShipmentAction == ShipmentDecision.StrongholdNearResources && DecidedShipment?.To != null && Player.ForcesInLocations.TryGetValue(DecidedShipment.To, out Battalion value))
         {
             LogInfo("Move to spice");
-            var toMove = Player.ForcesInLocations[DecidedShipment.To].Take(DecidedShipment.ForceAmount + DecidedShipment.SpecialForceAmount, Faction == Faction.Grey);
+            var toMove = value.Take(DecidedShipment.ForceAmount + DecidedShipment.SpecialForceAmount, Faction == Faction.Grey);
 
             if (FinalDestination != null && WithinRange(DecidedShipment.To, FinalDestination, toMove))
             {
@@ -344,7 +344,7 @@ public partial class ClassicBot
             if (!LastTurn && WithinRange(location, Game.Map.PolarSink, battalion))
             {
                 result = Game.Map.PolarSink;
-                if (result != null) return Log("Suitable - Polar Sink nearby?", result);
+                return Log("Suitable - Polar Sink nearby?", result);
             }
 
             if (!Equals(location, Game.Map.PolarSink))
@@ -354,7 +354,7 @@ public partial class ClassicBot
             }
         }
 
-        if (!mustMove) return result;
+        if (!mustMove) return null;
         
         result = PlacementEvent.ValidTargets(Game, Player, location, battalion).FirstOrDefault(l => AllyDoesntBlock(l.Territory) && !Equals(l, location));
         LogInfo("Suitable - any location without my ally: {0}", result);
