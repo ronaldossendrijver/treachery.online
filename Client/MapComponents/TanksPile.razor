@@ -112,7 +112,7 @@
             var color = Client.CurrentSkin.GetFactionColor(faction);
             var factionName = Client.CurrentSkin.Describe(faction);
             var parts = new List<string>();
-            var leaderNames = new List<string>();
+            var leaderTokens = new List<(string Src, string Name)>();
 
             var forcesPopover = player.ForcesKilled + player.SpecialForcesKilled > 0 ? ForcePopover(player) : string.Empty;
             // Each faction spirals out from its own fixed angle, so tokens keep their place when the tanks change.
@@ -151,7 +151,7 @@
                 var popover = hidden ? TextPopover(name) : Client.CurrentSkin.GetPopup(leader, Game);
                 leaders.Add(new PileItem($"{faction}-l-{leader.Id}", src, $"{name} in the tanks", popover, true, true, color, factionAngle + 0.5 * Math.PI, leaderIndex));
                 parts.Add(name);
-                leaderNames.Add(name);
+                leaderTokens.Add((Game.LeaderState[leader].IsFaceDownDead ? Client.CurrentSkin.GetImageUrl(faction) : src, name));
             }
 
             if (faction == Faction.Green && !Game.MessiahIsAlive)
@@ -159,7 +159,7 @@
                 var messiah = Client.CurrentSkin.Describe(Concept.Messiah);
                 leaders.Add(new PileItem("messiah", Client.CurrentSkin.Messiah_URL, $"{messiah} in the tanks", TextPopover(messiah), true, true, color, factionAngle + 0.5 * Math.PI, player.Leaders.Count));
                 parts.Add(messiah);
-                leaderNames.Add(messiah);
+                leaderTokens.Add((Client.CurrentSkin.Messiah_URL, messiah));
             }
 
             pieceCount += player.ForcesKilled + player.SpecialForcesKilled + player.Leaders.Count(leader => !Game.IsAlive(leader))
@@ -168,7 +168,7 @@
             if (parts.Count > 0)
             {
                 summaries.Add($"{factionName}: {string.Join(", ", parts)}");
-                summaryRows.Add(SummaryRow(player, leaderNames));
+                summaryRows.Add(SummaryRow(player, leaderTokens));
             }
         }
 
@@ -253,7 +253,7 @@
         return $"<div style='padding:2px 4px'><div style='font-weight:800;margin-bottom:6px'>{name} in the tanks</div><div style='display:grid;gap:6px'>{string.Join("", rows)}</div></div>";
     }
 
-    private string SummaryRow(Player player, List<string> leaderNames)
+    private string SummaryRow(Player player, List<(string Src, string Name)> leaderTokens)
     {
         var faction = player.Faction;
         int forces = player.ForcesKilled, specialForces = player.SpecialForcesKilled;
@@ -263,10 +263,16 @@
             counts.Add($"<span class='tanks-summary-count' title='{System.Net.WebUtility.HtmlEncode(ForceName(player, false, forces))}'><img src='{Client.CurrentSkin.GetFactionForceImageUrl(faction)}' alt=''/>{forces} <small>{System.Net.WebUtility.HtmlEncode(ForceName(player, false, forces))}</small></span>");
         if (specialForces > 0)
             counts.Add($"<span class='tanks-summary-count' title='{System.Net.WebUtility.HtmlEncode(ForceName(player, true, specialForces))}'><img src='{Client.CurrentSkin.GetFactionSpecialForceImageUrl(faction)}' alt=''/>{specialForces} <small>{System.Net.WebUtility.HtmlEncode(ForceName(player, true, specialForces))}</small></span>");
-        var leaders = leaderNames.Count == 0 ? string.Empty
-            : $"<div class='tanks-summary-leaders'>{string.Join(", ", leaderNames.Select(System.Net.WebUtility.HtmlEncode))}</div>";
+        var leaders = leaderTokens.Count == 0 ? string.Empty
+            : $"<div class='tanks-summary-leaders'>{string.Join("", leaderTokens.Select(l => LeaderToken(l.Src, l.Name)))}</div>";
 
         return $"<div class='tanks-summary-row'><img class='tanks-summary-logo' src='{Client.CurrentSkin.GetImageUrl(faction)}' alt=''/><div><div class='tanks-summary-head'><strong>{name}</strong>{string.Join("", counts)}</div>{leaders}</div></div>";
+    }
+
+    private static string LeaderToken(string src, string name)
+    {
+        var encoded = System.Net.WebUtility.HtmlEncode(name);
+        return $"<img src='{src}' alt='{encoded}' title='{encoded}'/>";
     }
 
     private static string ForceRow(string src, int amount, string kind) =>

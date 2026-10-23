@@ -725,7 +725,8 @@ svg {
 .tanks-summary-count { display: inline-flex; align-items: center; gap: 3px; color: #f0dfb5; font-size: 0.78rem; font-weight: 800; }
 .tanks-summary-count img { width: 20px; height: 20px; object-fit: contain; }
 .tanks-summary-count small { color: var(--ivory-muted); font-size: 0.68rem; font-weight: 600; }
-.tanks-summary-leaders { margin-top: 2px; color: var(--ivory-muted); font-size: 0.72rem; line-height: 1.3; }
+.tanks-summary-leaders { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.tanks-summary-leaders img { width: 40px; height: 40px; object-fit: contain; filter: drop-shadow(-1px 1px 1px rgba(0, 0, 0, 0.7)); }
 .tanks-pile-caption { display: inline-flex; align-items: center; gap: 6px; padding: 2px 9px; border: 1px solid rgba(200, 177, 122, 0.3); border-radius: 999px; background: rgba(25, 24, 21, 0.82); color: var(--brass-bright); font: inherit; font-size: 0.6rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; cursor: help; }
 .tanks-pile-caption:hover, .tanks-pile-caption:focus-visible { border-color: rgba(214, 177, 102, 0.75); background: rgba(45, 41, 33, 0.95); outline: none; }
 .tanks-pile-caption strong { color: var(--ivory); letter-spacing: 0; }
@@ -1473,6 +1474,7 @@ svg {
 .loc-intel-chip-good { border-color: rgba(140, 190, 120, 0.5); background: rgba(100, 150, 80, 0.14); color: #c7e4b5; }
 .loc-intel-chip-accent { border-color: rgba(215, 175, 104, 0.6); background: rgba(215, 175, 104, 0.14); color: #f1d9a4; }
 .loc-intel-chip-spice { border-color: rgba(232, 140, 54, 0.7); background: rgba(218, 120, 40, 0.22); color: #ffcc94; }
+.loc-intel-chip-faction { border-color: color-mix(in srgb, var(--chip-color) 75%, transparent); background: color-mix(in srgb, var(--chip-color) 22%, transparent); color: color-mix(in srgb, var(--chip-color) 45%, #ffffff); }
 .loc-intel-notes { display: grid; gap: 4px; margin: 0; padding: 0 0 0 16px; color: #cbbfa6; font-size: 0.78rem; line-height: 1.35; }
 .loc-intel-notes li::marker { color: var(--brass, #c8b17a); }
 .loc-intel-occupants { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 9px; border-top: 1px solid rgba(200, 177, 122, 0.2); }
