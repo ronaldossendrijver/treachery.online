@@ -87,8 +87,7 @@
                        Popover=@Client.CurrentSkin.Format("{0} Reserves", homeworld.Faction) PopoverAsTooltip="true"/>
                 }
 
-                if (Client.Status!.HighlightedTerritories.Contains(homeworld.Territory))
-                {
+                if (Client.Status?.HighlightedTerritories.Contains(homeworld.Territory)                 == true)                {
                     <Circle X=@(homeworldXy.X + Client.CurrentSkin.PlayerTokenRadius) Y=@(homeworldXy.Y + Client.CurrentSkin.PlayerTokenRadius) Radius=@Client.CurrentSkin.PlayerTokenRadius 
                             FillColor="@Client.CurrentSkin.HIGHLIGHT_OVERLAY_COLOR" StrokeWidth="1" StrokeColor="red"/>
                 }
