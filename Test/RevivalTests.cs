@@ -37,6 +37,27 @@ public class RevivalTests
     }
 
     [TestMethod]
+    public void NonPurplePlayerCanReviveForcesAfterRevivingLeaderInSameTurn()
+    {
+        var game = new Game();
+        var player = new Player(game, Faction.Black)
+        {
+            Resources = 100,
+            ForcesKilled = 5
+        };
+        game.Players.Add(player);
+        game.LeaderRevivalsThisTurn[player.Faction] = 1;
+
+        var revival = new Revival(game, player.Faction)
+        {
+            Hero = null,
+            AmountOfForces = 1
+        };
+
+        Assert.IsNull(revival.Validate());
+    }
+
+    [TestMethod]
     public void AutoClaimedSpecialForcePreventsManualRevivalOfAnotherSpecialForce()
     {
         var game = new Game();
