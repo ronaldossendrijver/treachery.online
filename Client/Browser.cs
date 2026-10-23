@@ -77,7 +77,7 @@ public class Browser(IJSRuntime jsRuntime)
         try
         {
             if (jsRuntime is IJSInProcessRuntime inProcess)
-                inProcess.InvokeVoid("FxDisintegrate", System.Linq.Enumerable.ToArray(losses));
+                inProcess.InvokeVoid("FxDisintegrate", (object)System.Linq.Enumerable.ToArray(losses));
         }
         catch (Exception e)
         {
