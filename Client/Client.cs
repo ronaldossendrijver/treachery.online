@@ -167,13 +167,13 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public async Task ExitGame()
     {
-        await SendHeartbeatAndGetServerStatus();
         Game = null;
         GameName = null;
         GameId = null;
         Status = null;
         Actions = [];
         _ = Browser.StopSounds();
+        await SendHeartbeatAndGetServerStatus();
         Refresh(nameof(ExitGame));
     }
     
@@ -929,7 +929,11 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
         var player = Player;
         if (player is null && !IsObserver)
+        {
+            // E.g. a game that is still awaiting players: there is no player yet, but the setup screen must be shown.
+            Refresh(nameof(PerformPostEventTasks));
             return;
+        }
 
         Status = GameStatus.DetermineStatus(Game, player, player != null);
         Actions = player is null ? [] : Game.GetApplicableEvents(player, IsHost);
