@@ -149,6 +149,9 @@
             if (isStronghold)
                 result += Chip("accent", "Victory point");
 
+            if (territory == Game.AtomicsAftermath)
+                result += $"<span class='loc-intel-chip loc-intel-chip-faction' style='--chip-color: {skin.GetFactionColor(Faction.Cyan)}' title='No shipping here'>Atomics aftermath</span>";
+
             result += territory.IsProtectedFromWorm
                 ? Chip("good", skin.Format("Safe from {0}", Concept.Monster))
                 : Chip("bad", skin.Format("Exposed to {0}", Concept.Monster));
@@ -166,9 +169,6 @@
 
             if (intelligenceLocation is DiscoveredLocation dl)
                 notes.Add(skin.Format("{0}.", skin.GetDiscoveryTokenDescription(dl.Discovery)));
-
-            if (territory == Game.AtomicsAftermath)
-                notes.Add("<strong>Atomics aftermath:</strong> no shipping here.");
 
             if (Equals(intelligenceLocation, Game.Map.Arrakeen) || Equals(intelligenceLocation, Game.Map.Carthag))
             {
