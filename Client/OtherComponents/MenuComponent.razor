@@ -8,6 +8,11 @@
 *@
 @inherits GameComponent
 
+@if (!Client.InGame)
+{
+    return;
+}
+
 <div class="ui-row ui-m-0 game-menu-toolbar">
 
     @if (Game.EventCount > 0)
