@@ -25,7 +25,6 @@
 
     private object? _renderedKey;
 
-    // Only the storm sector, skin or map affect this layer, so it skips re-rendering on every other game event.
     protected override bool ShouldRender()
     {
         if (!Client.InGame || Client.Game == null) return false;
@@ -45,7 +44,6 @@
 
     private double CenterY => ScaleY * Client.CurrentSkin.PlanetCenter.Y;
 
-    // Large enough that the rotating square texture always covers the storm wedge.
     private double CloudSize => 2.3 * ScaleX * Client.CurrentSkin.PlanetRadius;
 
     private sealed record StormLayerData(string Style, string MaskStyle, string ShadowSrc, string SlowStyle, string FastStyle);
@@ -53,8 +51,6 @@
     private StormLayerData? _stormLayer;
     private object? _stormLayerKey;
 
-    // The storm overlay is confined to the bounding box of its clip wedge. Its ragged mask and its shadow are static
-    // SVG images (rasterized once); only the two cloud textures move, as compositor-driven rotations.
     private StormLayerData StormLayer(int sector)
     {
         var key = (sector, Client.CurrentSkin, Game.Map);
@@ -80,15 +76,17 @@
         var y1 = Math.Ceiling(Math.Min(skin.MapDimensions.Y, outline.Max(p => p.Y) + padding));
         var (w, h) = (x1 - x0, y1 - y0);
 
-        var defs = FormattableString.Invariant($"""
-            <defs>
-            <filter id='e' x='-25%' y='-25%' width='150%' height='150%'><feTurbulence type='fractalNoise' baseFrequency='0.03' numOctaves='2' seed='5' result='n'/><feDisplacementMap in='SourceGraphic' in2='n' scale='26' xChannelSelector='R' yChannelSelector='G' result='r'/><feGaussianBlur in='r' stdDeviation='5'/></filter>
-            <filter id='p' x='-10%' y='-10%' width='120%' height='120%'><feGaussianBlur stdDeviation='1.5'/></filter>
-            <filter id='s'><feGaussianBlur stdDeviation='3'/></filter>
-            <clipPath id='c' clipPathUnits='userSpaceOnUse'><path d='{StormWedge(sector, 6, 1.12)}'/></clipPath>
-            <mask id='m' maskUnits='userSpaceOnUse' x='{x0}' y='{y0}' width='{w}' height='{h}'><path d='{StormWedge(sector)}' fill='#fff' filter='url(#e)'/><path d='{StormWedge(sector, 0, 0.98)}' fill='#fff'/><path d='{skin.GetTerritoryBorder(Game.Map.PolarSink.Territory)}' fill='#000' filter='url(#p)'/></mask>
-            </defs>
-            """);
+        // Note: no raw string literal here; the Razor tokenizer does not understand them and starts parsing the svg as markup.
+        var defs = string.Concat(
+            "<defs>",
+            "<filter id='e' x='-25%' y='-25%' width='150%' height='150%'><feTurbulence type='fractalNoise' baseFrequency='0.03' numOctaves='2' seed='5' result='n'/><feDisplacementMap in='SourceGraphic' in2='n' scale='26' xChannelSelector='R' yChannelSelector='G' result='r'/><feGaussianBlur in='r' stdDeviation='5'/></filter>",
+            "<filter id='p' x='-10%' y='-10%' width='120%' height='120%'><feGaussianBlur stdDeviation='1.5'/></filter>",
+            "<filter id='s'><feGaussianBlur stdDeviation='3'/></filter>",
+            FormattableString.Invariant($"<clipPath id='c' clipPathUnits='userSpaceOnUse'><path d='{StormWedge(sector, 6, 1.12)}'/></clipPath>"),
+            FormattableString.Invariant($"<mask id='m' maskUnits='userSpaceOnUse' x='{x0}' y='{y0}' width='{w}' height='{h}'>"),
+            FormattableString.Invariant($"<path d='{StormWedge(sector)}' fill='#fff' filter='url(#e)'/><path d='{StormWedge(sector, 0, 0.98)}' fill='#fff'/>"),
+            $"<path d='{skin.GetTerritoryBorder(Game.Map.PolarSink.Territory)}' fill='#000' filter='url(#p)'/></mask>",
+            "</defs>");
         var shape = FormattableString.Invariant($"x='{x0}' y='{y0}' width='{w}' height='{h}' clip-path='url(#c)' mask='url(#m)'");
         string Svg(string body) => "data:image/svg+xml," + Uri.EscapeDataString(FormattableString.Invariant(
             $"<svg xmlns='http://www.w3.org/2000/svg' width='{w}' height='{h}' viewBox='{x0} {y0} {w} {h}'>{defs}{body}</svg>"));
