@@ -13,7 +13,7 @@
     foreach (var p in Game.Players)
     {
         var position = PlayerTokenPosition(Game, p.Seat);
-        if (!Client.Status!.PlayerShouldBeHighlighted(p))
+        if (Client.Status?.PlayerShouldBeHighlighted(p) != true)
         {
             var y = position.Y + Client.CurrentSkin.PlayerTokenRadius;
             var bidText = "";
