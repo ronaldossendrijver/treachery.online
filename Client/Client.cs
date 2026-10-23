@@ -708,7 +708,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
     public async Task SendGlobalChatMessage(GlobalChatMessage message)
     {
-        if (!LoggedIn || !InGame) return;
+        if (!LoggedIn) return;
         
         await Invoke(nameof(IGameHub.SendGlobalChatMessage), UserToken, message);
     }
