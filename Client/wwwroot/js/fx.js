@@ -207,7 +207,7 @@
 
         for (const [key, history] of memory) {
             while (history.length > 1 && now - history[1].time > HISTORY_MS) history.shift();
-            if (now - history[history.length - 1].time > HISTORY_MS) memory.delete(key);
+            if (history.length === 0 || now - history[history.length - 1].time > HISTORY_MS) memory.delete(key);
         }
     }
 
@@ -426,7 +426,7 @@
                     scatter(entry);
                 }
             }, BEAM_WAIT_MS);
-            history.length = 0;
+            memory.delete(item.key);
         }
     };
 
