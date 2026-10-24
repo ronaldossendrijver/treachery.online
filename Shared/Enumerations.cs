@@ -615,6 +615,7 @@ public enum Rule
     YellowBot = 1006,
     GreyBot = 1007,
     BotsCannotAlly = 1008,
+    AdvancedBots = 1016,
     //BrownBot = 1009,
     //WhiteBot = 1013,
 

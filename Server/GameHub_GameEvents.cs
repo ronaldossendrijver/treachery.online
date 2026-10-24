@@ -462,7 +462,7 @@ public partial class GameHub
             return bot;
         }
         
-        bot = BotFactory.Create(BotType.Basic, game.Game, player);
+        bot = BotFactory.Create(BotFactory.BotTypeFor(game.Game), game.Game, player);
         game.Bots.Add(player.Faction, bot);
         return bot;
     }

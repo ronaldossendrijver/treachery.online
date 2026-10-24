@@ -1,4 +1,6 @@
-﻿namespace Treachery.Server;
+﻿using Treachery.Bots;
+
+namespace Treachery.Server;
 
 public partial class GameHub
 {
@@ -12,6 +14,7 @@ public partial class GameHub
         {
             AdminName = Configuration["GameAdminUsername"] ?? "admin",
             ScheduledMaintenance = MaintenanceDate,
+            AdvancedBotsAvailable = BotFactory.IsAvailable(BotType.Advanced),
         };
 
         return Success(result);
