@@ -30,7 +30,7 @@ public class FaceDancerReplacedTests
         purple.FaceDancers.Add(deadLeader);
         game.LeaderState[deadLeader].Kill(game);
 
-        var bot = new ClassicBot(game, purple, BotParameters.GetDefaultParameters(Faction.Purple));
+        var bot = new BasicBot(game, purple, BotParameters.GetDefaultParameters(Faction.Purple));
         var action = bot.DetermineLowPriorityInPhaseAction(new List<System.Type> { typeof(FaceDancerReplaced) });
 
         Assert.IsInstanceOfType<FaceDancerReplaced>(action);

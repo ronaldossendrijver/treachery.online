@@ -432,7 +432,7 @@ public abstract class GameSimulationTestBase
                     ? parameters.GetValueOrDefault(p.Faction, BotParameters.GetDefaultParameters(p.Faction))
                     : BotParameters.GetDefaultParameters(p.Faction);
 
-                bots.Add(p.Faction, new ClassicBot(game, p, prs));
+                bots.Add(p.Faction, BotFactory.Create(BotType.Basic, game, p, prs));
             }
 
             while (game.CurrentPhase != Phase.GameEnded)

@@ -11,24 +11,30 @@
 
  namespace Treachery.Bots;
 
-public partial class ClassicBot(Game game, Player player, BotParameters param) : IBot
+public partial class BasicBot(Game game, Player player, BotParameters param) : IBot
 {
-    private const bool LogBotInfo = false;
-    private readonly ConcurrentQueue<InvalidBotDecision> _invalidDecisions = new();
+    protected const bool LogBotInfo = false;
+    protected readonly ConcurrentQueue<InvalidBotDecision> _invalidDecisions = new();
+
+    public static bool LogErrorsToConsole { get; set; } = true;
+
+    public static bool CaptureGameStateOnInvalidDecision { get; set; } = true;
+
+    public int ExceptionCount { get; protected set; }
     
-    private Game Game { get; set; } = game;
+    protected virtual Game Game { get; set; } = game;
 
-    private Player Player { get; set; } = player;
+    protected virtual Player Player { get; set; } = player;
     
-    private BotParameters Param { get; } = param;
+    protected virtual BotParameters Param { get; } = param;
 
-    private Faction Faction => Player.Faction;
+    protected virtual Faction Faction => Player.Faction;
 
-    private Faction Ally => Player.Ally;
+    protected virtual Faction Ally => Player.Ally;
 
-    private Player? AlliedPlayer => Player.AlliedPlayer;
+    protected virtual Player? AlliedPlayer => Player.AlliedPlayer;
 
-    private int Resources => Player.Resources;
+    protected virtual int Resources => Player.Resources;
     
     #region PublicInterface
     
@@ -38,7 +44,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
         Player = player;
     }
 
-    public GameEvent? DetermineHighestPriorityInPhaseAction(List<Type> events)
+    public virtual GameEvent? DetermineHighestPriorityInPhaseAction(List<Type> events)
     {
         GameEvent? action = null;
 
@@ -51,7 +57,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
         return null;
     }
 
-    public GameEvent? DetermineHighPriorityInPhaseAction(List<Type> events)
+    public virtual GameEvent? DetermineHighPriorityInPhaseAction(List<Type> events)
     {
         GameEvent? action = null;
 
@@ -60,7 +66,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
         return null;
     }
 
-    public GameEvent? DetermineMiddlePriorityInPhaseAction(List<Type> events)
+    public virtual GameEvent? DetermineMiddlePriorityInPhaseAction(List<Type> events)
     {
         GameEvent? action = null;
 
@@ -86,7 +92,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
         return null;
     }
 
-    public GameEvent? DetermineLowPriorityInPhaseAction(List<Type> events)
+    public virtual GameEvent? DetermineLowPriorityInPhaseAction(List<Type> events)
     {
         GameEvent? action = null;
 
@@ -206,7 +212,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
     }
 
 
-    public GameEvent? DetermineEndPhaseAction(List<Type> events)
+    public virtual GameEvent? DetermineEndPhaseAction(List<Type> events)
     {
         GameEvent? action = null;
 
@@ -216,12 +222,12 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
         return null;
     }
 
-    private EndPhase DetermineEndPhase()
+    protected virtual EndPhase DetermineEndPhase()
     {
         return new EndPhase(Game, Faction);
     }
 
-    private bool Do<T>(Func<T> method, ref GameEvent? action, IEnumerable<Type> allowedActions) where T : GameEvent?
+    protected virtual bool Do<T>(Func<T> method, ref GameEvent? action, IEnumerable<Type> allowedActions) where T : GameEvent?
     {
         if (typeof(T) == typeof(GameEvent)) throw new ArgumentException("Illegally typed method: " + method);
 
@@ -233,6 +239,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
             }
             catch (Exception e)
             {
+                ExceptionCount++;
                 LogError("--error occured -->" + e);
             }
 
@@ -249,7 +256,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
                         action.GetType().Name,
                         action.GetMessage()?.ToString() ?? string.Empty,
                         error.ToString(),
-                        GameState.GetStateAsString(Game)));
+                        CaptureGameStateOnInvalidDecision ? GameState.GetStateAsString(Game) : string.Empty));
                 }
                 else
                 {
@@ -275,7 +282,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
 
     #region SupportMethods
 
-    private static void LogInfo(string msg, params object?[] pars)
+    protected static void LogInfo(string msg, params object?[] pars)
     {
         #pragma warning disable CS0162 // Unreachable code detected
         // ReSharper disable HeuristicUnreachableCode
@@ -291,7 +298,7 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
         #pragma warning restore CS0162 // Unreachable code detected
     }
 
-    private static void LogInfo(Message? message)
+    protected static void LogInfo(Message? message)
     {
         #pragma warning disable CS0162 // Unreachable code detected
         // ReSharper disable HeuristicUnreachableCode
@@ -309,8 +316,9 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
         #pragma warning restore CS0162 // Unreachable code detected
     }
     
-    private static void LogError(string msg, params object?[] pars)
+    protected static void LogError(string msg, params object?[] pars)
     {
+        if (LogErrorsToConsole)
         {
             if (Message.DefaultDescriber != null)
                 Console.WriteLine(Message.DefaultDescriber.Format(msg, pars));
@@ -319,9 +327,9 @@ public partial class ClassicBot(Game game, Player player, BotParameters param) :
         }
     }
 
-    private readonly LoggedRandom _random = new();
+    protected readonly LoggedRandom _random = new();
 
-    private int D(int amount, int sides)
+    protected virtual int D(int amount, int sides)
     {
         if (amount == 0 || sides == 0) return 0;
 

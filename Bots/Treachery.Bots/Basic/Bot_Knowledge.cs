@@ -1,4 +1,4 @@
-﻿﻿#nullable disable
+﻿#nullable disable
 #pragma warning disable CS8632
 
 /*
@@ -14,23 +14,23 @@ namespace Treachery.Bots;
 
 using Shared.Model;
 
-public partial class ClassicBot
+public partial class BasicBot
 {
     #region GeneralInformation
 
-    private int MaxExpectedStormMoves => Game.HasStormPrescience(Player) ? Game.NextStormMoves : Param.Shipment_ExpectedStormMovesWhenUnknown;
+    protected virtual int MaxExpectedStormMoves => Game.HasStormPrescience(Player) ? Game.NextStormMoves : Param.Shipment_ExpectedStormMovesWhenUnknown;
 
     protected virtual bool MayFlipToAdvisors => Faction == Faction.Blue && Game.Applicable(Rule.BlueAdvisors);
 
-    private Dictionary<Location, Battalion> ForcesOnPlanet => Player.ForcesOnPlanet;
+    protected virtual Dictionary<Location, Battalion> ForcesOnPlanet => Player.ForcesOnPlanet;
 
-    private List<Player> Others => Game.Players.Where(p => p.Faction != Faction).ToList();
+    protected virtual List<Player> Others => Game.Players.Where(p => p.Faction != Faction).ToList();
 
-    private List<Player> Opponents => Game.Players.Where(p => p.Faction != Faction && p.Faction != Ally).ToList();
+    protected virtual List<Player> Opponents => Game.Players.Where(p => p.Faction != Faction && p.Faction != Ally).ToList();
 
-    private List<Player> MeAndMyAlly => Game.Players.Where(p => p.Faction == Faction || p.Faction == Ally).ToList();
+    protected virtual List<Player> MeAndMyAlly => Game.Players.Where(p => p.Faction == Faction || p.Faction == Ally).ToList();
 
-    private bool WinWasPredictedByMeThisTurn(Faction opponentFaction)
+    protected virtual bool WinWasPredictedByMeThisTurn(Faction opponentFaction)
     {
         var ally = Require(Game.GetPlayer(opponentFaction)).Ally;
         return Faction == Faction.Blue && Game.CurrentTurn == Player.PredictedTurn 
@@ -45,52 +45,52 @@ public partial class ClassicBot
 
     protected virtual int NrOfNonWinningPlayersToShipAndMoveIncludingMe => Game.Players.Count(p => !Game.MeetsNormalVictoryCondition(p, true)) - Game.HasActedOrPassed.Count;
 
-    private bool IAmWinning => Game.MeetsNormalVictoryCondition(Player, true);
+    protected virtual bool IAmWinning => Game.MeetsNormalVictoryCondition(Player, true);
 
-    private bool OpponentsAreWinning => Opponents.Any(o => Game.MeetsNormalVictoryCondition(o, true));
+    protected virtual bool OpponentsAreWinning => Opponents.Any(o => Game.MeetsNormalVictoryCondition(o, true));
 
     protected bool IsWinning(Player p)
     {
         return Game.MeetsNormalVictoryCondition(p, true);
     }
 
-    private bool IsWinning(Faction f)
+    protected virtual bool IsWinning(Faction f)
     {
         return Game.MeetsNormalVictoryCondition(Require(Game.GetPlayer(f)), true);
     }
 
-    private Prescience? MyPrescience => Game.CurrentPrescience != null && (Game.CurrentPrescience.Initiator == Faction || Game.CurrentPrescience.Initiator == Ally) ? Game.CurrentPrescience : null;
+    protected virtual Prescience? MyPrescience => Game.CurrentPrescience != null && (Game.CurrentPrescience.Initiator == Faction || Game.CurrentPrescience.Initiator == Ally) ? Game.CurrentPrescience : null;
 
-    private static ClairVoyanceQandA? MyClairvoyanceAboutEnemyDefenseInCurrentBattle(Game game, Player player) =>
+    protected static ClairVoyanceQandA? MyClairvoyanceAboutEnemyDefenseInCurrentBattle(Game game, Player player) =>
         game is { LatestClairvoyance: not null, LatestClairvoyanceQnA: not null } &&
         game.LatestClairvoyanceBattle == game.CurrentBattle &&
         (game.LatestClairvoyance.Initiator == player.Faction || game.LatestClairvoyance.Initiator == player.Ally) &&
         game.LatestClairvoyance.Question is ClairvoyanceQuestion.CardTypeAsDefenseInBattle or ClairvoyanceQuestion.CardTypeInBattle ? game.LatestClairvoyanceQnA : null;
 
-    private static ClairVoyanceQandA? PlayerClairvoyanceAboutEnemyWeaponInCurrentBattle(Game game, Player player) =>
+    protected static ClairVoyanceQandA? PlayerClairvoyanceAboutEnemyWeaponInCurrentBattle(Game game, Player player) =>
         game is { LatestClairvoyance: not null, LatestClairvoyanceQnA: not null } &&
         game.LatestClairvoyanceBattle == game.CurrentBattle &&
         (game.LatestClairvoyance.Initiator == player.Faction || game.LatestClairvoyance.Initiator == player.Ally) &&
         game.LatestClairvoyance.Question is ClairvoyanceQuestion.CardTypeAsWeaponInBattle or ClairvoyanceQuestion.CardTypeInBattle ? game.LatestClairvoyanceQnA : null;
 
-    private Voice? MyVoice => Game.CurrentVoice != null && (Faction == Faction.Blue || Ally == Faction.Blue) ? Game.CurrentVoice : null;
+    protected virtual Voice? MyVoice => Game.CurrentVoice != null && (Faction == Faction.Blue || Ally == Faction.Blue) ? Game.CurrentVoice : null;
 
-    private bool MayUseUselessAsKarma => Faction == Faction.Blue && Game.Applicable(Rule.BlueWorthlessAsKarma);
+    protected virtual bool MayUseUselessAsKarma => Faction == Faction.Blue && Game.Applicable(Rule.BlueWorthlessAsKarma);
 
     #endregion
 
     #region CardKnowledge
 
-    private static List<TreacheryCard> CardsUnknownToPlayer(Game game, Player player) 
+    protected static List<TreacheryCard> CardsUnknownToPlayer(Game game, Player player) 
         => TreacheryCardManager.GetCardsInPlay(game).Where(c => !game.KnownCards(player).Contains(c)).ToList();
 
-    private static List<TreacheryCard> OpponentCardsUnknownToPlayer(Game game, Player player, Player opponent) 
+    protected static List<TreacheryCard> OpponentCardsUnknownToPlayer(Game game, Player player, Player opponent) 
         => opponent.TreacheryCards.Where(c => !game.KnownCards(player).Contains(c)).ToList();
 
-    private static bool IsKnownTo(Game game, Player player, TreacheryCard card) 
+    protected static bool IsKnownTo(Game game, Player player, TreacheryCard card) 
         => game.KnownCards(player).Contains(card);
 
-    private static List<TreacheryCard> CardsPlayerHasOrMightHave(Game game, Player player)
+    protected static List<TreacheryCard> CardsPlayerHasOrMightHave(Game game, Player player)
     {
         var known = game.KnownCards(player).ToList();
         var result = new List<TreacheryCard>(player.TreacheryCards.Where(known.Contains));
@@ -101,13 +101,13 @@ public partial class ClassicBot
         return result;
     }
 
-    private static List<TreacheryCard> KnownCardsHeldByOtherPlayer(Game game, Player player, Player otherPlayer)
+    protected static List<TreacheryCard> KnownCardsHeldByOtherPlayer(Game game, Player player, Player otherPlayer)
     {
         var known = game.KnownCards(player).ToList();
         return [.. otherPlayer.TreacheryCards.Where(known.Contains)];
     }
 
-    private int CardQuality(TreacheryCard cardToRate, Player? forWhom)
+    protected virtual int CardQuality(TreacheryCard cardToRate, Player? forWhom)
     {
         var cardsToTakeIntoAccount = new List<TreacheryCard>(Player.TreacheryCards);
         if (forWhom != null && forWhom != Player)
@@ -186,7 +186,7 @@ public partial class ClassicBot
 
     #region LocationInformation
 
-    private bool IsStronghold(Location l)
+    protected virtual bool IsStronghold(Location l)
     {
         return
             l.IsStronghold ||
@@ -197,17 +197,17 @@ public partial class ClassicBot
                                             || (dl.Discovery == DiscoveryToken.Shrine && Player.Has(TreacheryCardType.Clairvoyance))));
     }
 
-    private bool NotOccupiedByOthers(Location l)
+    protected virtual bool NotOccupiedByOthers(Location l)
     {
         return NotOccupiedByOthers(l.Territory);
     }
 
-    private bool NotOccupiedByOthers(Territory t)
+    protected virtual bool NotOccupiedByOthers(Territory t)
     {
         return Game.NrOfOccupantsExcludingFaction(t, Faction) == 0 && AllyDoesntBlock(t);
     }
 
-    private bool NotOccupied(Territory t)
+    protected virtual bool NotOccupied(Territory t)
     {
         return !Game.IsOccupied(t);
     }
@@ -217,12 +217,12 @@ public partial class ClassicBot
         return !Game.IsOccupied(l.Territory);
     }
 
-    private bool Vacant(Location l)
+    protected virtual bool Vacant(Location l)
     {
         return Vacant(l.Territory);
     }
 
-    private bool Vacant(Territory t)
+    protected virtual bool Vacant(Territory t)
     {
         return !Game.AnyForcesIn(t);
     }
@@ -265,12 +265,12 @@ public partial class ClassicBot
     }
 
 
-    private bool IDontHaveAdvisorsIn(Location l)
+    protected virtual bool IDontHaveAdvisorsIn(Location l)
     {
         return Faction != Faction.Blue || Player.SpecialForcesIn(l.Territory) == 0;
     }
 
-    private bool AllyDoesntBlock(Territory t)
+    protected virtual bool AllyDoesntBlock(Territory t)
     {
         return Ally is Faction.None or Faction.Pink ||
                Faction is Faction.Pink ||
@@ -281,7 +281,7 @@ public partial class ClassicBot
                 AlliedPlayer.SpecialForcesIn(t) > 0);
     }
 
-    private bool AllyDoesntBlock(Location l)
+    protected virtual bool AllyDoesntBlock(Location l)
     {
         return AllyDoesntBlock(l.Territory);
     }
@@ -304,7 +304,7 @@ public partial class ClassicBot
     protected virtual bool WithinDistance(Location from, Location to, int distance) 
         => Game.Map.FindNeighbours(from, distance, false, Faction, Game).Contains(to);
 
-    private bool ProbablySafeFromMonster(Territory t) 
+    protected virtual bool ProbablySafeFromMonster(Territory t) 
         => Game.CurrentTurn == Game.MaximumTurns 
            || Game.ProtectedFromMonster(Player) 
            || t != Require(Game.LatestSpiceCardA).Location?.Territory 
@@ -316,11 +316,11 @@ public partial class ClassicBot
 
     #region PlanetaryForceInformation
 
-    private static Player? OccupyingOpponentIn(Game game, Player player, Territory t) =>
+    protected static Player? OccupyingOpponentIn(Game game, Player player, Territory t) =>
         game.Players.Where(p => p.Faction != player.Faction && p.Faction != player.Ally && p.Occupies(t))
             .HighestOrDefault(p => MaxDial(game, p, t, player));
 
-    private static List<Player> OccupyingOpponentsIn(Game game, Player player, Territory t) 
+    protected static List<Player> OccupyingOpponentsIn(Game game, Player player, Territory t) 
         => game.Players.Where(p => p.Faction != player.Faction && p.Faction != player.Ally && p.Occupies(t)).ToList();
 
     protected virtual bool InStorm(Location l) 
@@ -351,7 +351,7 @@ public partial class ClassicBot
         }
     }
 
-    private bool MayFleeOutOf(Location l)
+    protected virtual bool MayFleeOutOf(Location l)
     {
         return !IsStronghold(l) || !(IAmWinning || OpponentsAreWinning);
     }
@@ -424,17 +424,17 @@ public partial class ClassicBot
         .Select(x => new BattalionInLocation(x.Key, x.Value))
         .HighestOrDefault(locationWithBattalion => locationWithBattalion.Battalion.TotalAmountOfForces);
 
-    private Location? BestSafeAndNearbyResources(Location location, Battalion b, bool mayFight = false)
+    protected virtual Location? BestSafeAndNearbyResources(Location location, Battalion b, bool mayFight = false)
     {
         return Game.ResourcesOnPlanet.Where(l => IsSafeAndNearby(location, l.Key, b, mayFight)).HighestOrDefault(r => r.Value).Key;
     }
 
-    private Location? BestSafeAndNearbyDiscovery(Location location, Battalion b, bool mayFight = false)
+    protected virtual Location? BestSafeAndNearbyDiscovery(Location location, Battalion b, bool mayFight = false)
     {
         return Game.DiscoveriesOnPlanet.Keys.FirstOrDefault(l => IsSafeAndNearby(location, l, b, mayFight));
     }
 
-    private List<Battalion> NearbyBattalionsOutsideStrongholds(Location l)
+    protected virtual List<Battalion> NearbyBattalionsOutsideStrongholds(Location l)
     {
         return ForcesOnPlanet.Where(kvp => !kvp.Key.IsStronghold && WithinRange(kvp.Key, l, kvp.Value))
             .Select(kvp => kvp.Value).ToList();
@@ -455,7 +455,7 @@ public partial class ClassicBot
 
     #region DestinationsOfMovement
 
-    private List<Location> ValidMovementLocations(Location from, Battalion battalion)
+    protected virtual List<Location> ValidMovementLocations(Location from, Battalion battalion)
     {
         var forbidden = Game.Deals.Where(deal => deal.BoundFaction == Faction && deal.Type == DealType.DontShipOrMoveTo).Select(deal => deal.GetParameter1<Territory>(Game));
         return PlacementEvent.ValidTargets(Game, Player, from, battalion).Where(l => !forbidden.Contains(l.Territory)).ToList();
@@ -502,18 +502,18 @@ public partial class ClassicBot
         ).LowestOrDefault(l => TotalMaxDialOfOpponents(l.Territory));
     }
 
-    private bool IsWinningOpponent(Player p) 
+    protected virtual bool IsWinningOpponent(Player p) 
         => p != Player && p.Faction != Ally && Game.MeetsNormalVictoryCondition(p, true);
 
-    private bool IsWinningOpponent(Faction f) 
+    protected virtual bool IsWinningOpponent(Faction f) 
         => IsWinningOpponent(Game.GetPlayer(f));
 
-    private bool IsAlmostWinningOpponent(Player opponent) =>
+    protected virtual bool IsAlmostWinningOpponent(Player opponent) =>
         opponent != Player && opponent != AlliedPlayer &&
         Game.NumberOfVictoryPoints(opponent, true) + 1 >= Game.ThresholdForWin(opponent) &&
         (CanShip(Game, opponent) || (opponent.HasAlly && CanShip(Game, opponent.AlliedPlayer)) || opponent.TechTokens.Count >= 2);
 
-    private List<Player> WinningOpponentsIWishToAttack(int maximumChallengedStrongholds, bool includeBots)
+    protected virtual List<Player> WinningOpponentsIWishToAttack(int maximumChallengedStrongholds, bool includeBots)
     {
         return Game.Players.Where(p =>
             (includeBots || !p.IsBot || !p.AllyIsBot) && IsWinningOpponent(p) &&
@@ -521,7 +521,7 @@ public partial class ClassicBot
             !WinWasPredictedByMeThisTurn(p.Faction)).ToList();
     }
 
-    private List<Player> AlmostWinningOpponentsIWishToAttack(int maximumChallengedStrongholds, bool includeBots)
+    protected virtual List<Player> AlmostWinningOpponentsIWishToAttack(int maximumChallengedStrongholds, bool includeBots)
     {
         return Game.Players.Where(p =>
             (includeBots || !p.IsBot || !p.AllyIsBot) && IsAlmostWinningOpponent(p) &&
@@ -530,7 +530,7 @@ public partial class ClassicBot
     }
 
 
-    private Location? WinnableNearbyStronghold(Location from, Battalion battalion)
+    protected virtual Location? WinnableNearbyStronghold(Location from, Battalion battalion)
     {
         var enemyWeakStrongholds = ValidMovementLocations(from, battalion).Where(to =>
                 IsStronghold(to) &&
@@ -563,7 +563,7 @@ public partial class ClassicBot
 
     protected virtual bool IMustPayForForcesInBattle => Battle.MustPayForAnyForcesInBattle(Game, Player);
 
-    private static float MaxDial(Game game, Player player, Territory t, Player? opponent, bool ignoreSpiceDialing = false)
+    protected static float MaxDial(Game game, Player player, Territory t, Player? opponent, bool ignoreSpiceDialing = false)
     {
         var countForcesForWhite = 0;
         if (player.Faction == Faction.White && player.SpecialForcesIn(t) > 0) 
@@ -580,10 +580,10 @@ public partial class ClassicBot
             opponent?.Faction ?? Faction.Black);
     }
 
-    private static float MaxDial(Game game, int resources, Battalion battalion, Faction opponent) 
+    protected static float MaxDial(Game game, int resources, Battalion battalion, Faction opponent) 
         => MaxDial(game, resources, battalion.AmountOfForces, battalion.AmountOfSpecialForces, game.GetPlayer(battalion.Faction), opponent);
 
-    private static float MaxDial(Game game, int resources, int forces, int specialForces, Player p, Faction opponentFaction)
+    protected static float MaxDial(Game game, int resources, int forces, int specialForces, Player p, Faction opponentFaction)
     {
         var spice = Battle.MustPayForAnyForcesInBattle(game, p) ? resources : 99;
 
@@ -604,7 +604,7 @@ public partial class ClassicBot
     protected virtual float TotalMaxDialOfOpponents(Territory t) 
         => Opponents.Sum(o => MaxDial(Game, o, t, Player));
 
-    private bool IWillBeAggressorAgainst(Player? opponent)
+    protected virtual bool IWillBeAggressorAgainst(Player? opponent)
     {
         if (opponent == null) return false;
 
@@ -621,12 +621,12 @@ public partial class ClassicBot
         return false;
     }
 
-    private static bool CanShip(Game game, Player player) 
+    protected static bool CanShip(Game game, Player player) 
         => game.CurrentMainPhase < MainPhase.ShipmentAndMove || (game.CurrentMainPhase == MainPhase.ShipmentAndMove && !game.HasActedOrPassed.Contains(player.Faction));
 
     protected virtual int NrOfBattlesToFight => Battle.BattlesToBeFought(Game, Player).Count;
 
-    private static float MaxReinforcedDialTo(Game game, Player player, Player opponent, Territory to)
+    protected static float MaxReinforcedDialTo(Game game, Player player, Player opponent, Territory to)
     {
         //if (player == null || to == null) return 0;
 
@@ -674,34 +674,34 @@ public partial class ClassicBot
 
     #region BattleInformation_WeaponsAndDefenses
 
-    private static List<TreacheryCard> KnownOpponentWeapons(Game game, Player player, Player opponent) 
+    protected static List<TreacheryCard> KnownOpponentWeapons(Game game, Player player, Player opponent) 
         => opponent.TreacheryCards.Where(c => c.IsWeapon && game.KnownCards(player).Contains(c)).ToList();
 
-    private static List<TreacheryCard> KnownOpponentCards(Game game, Player player, Player opponent) 
+    protected static List<TreacheryCard> KnownOpponentCards(Game game, Player player, Player opponent) 
         => opponent.TreacheryCards.Where(c => game.KnownCards(player).Contains(c)).ToList();
 
-    private static List<TreacheryCard> KnownOpponentDefenses(Game game, Player player, Player opponent) 
+    protected static List<TreacheryCard> KnownOpponentDefenses(Game game, Player player, Player opponent) 
         => opponent.TreacheryCards.Where(c => c.IsDefense && game.KnownCards(player).Contains(c)).ToList();
 
-    private static List<TreacheryCard> Defenses(Game game, Player player, TreacheryCard? usingThisWeapon, Territory? territory) 
+    protected static List<TreacheryCard> Defenses(Game game, Player player, TreacheryCard? usingThisWeapon, Territory? territory) 
         => Battle.ValidDefenses(game, player, usingThisWeapon, territory).ToList();
 
-    private static List<TreacheryCard> Weapons(Game game, Player player, TreacheryCard? usingThisDefense, IHero? usingThisHero, Territory? territory) 
+    protected static List<TreacheryCard> Weapons(Game game, Player player, TreacheryCard? usingThisDefense, IHero? usingThisHero, Territory? territory) 
         => Battle.ValidWeapons(game, player, usingThisDefense, usingThisHero, territory).ToList();
 
-    private static TreacheryCard? UselessAsWeapon(Game game, Player player, TreacheryCard? usingThisDefense) 
+    protected static TreacheryCard? UselessAsWeapon(Game game, Player player, TreacheryCard? usingThisDefense) 
         => Weapons(game, player, usingThisDefense, null, null).FirstOrDefault(c => c.Type == TreacheryCardType.Useless);
 
-    private static TreacheryCard? UselessAsDefense(Game game, Player player, TreacheryCard? usingThisWeapon) 
+    protected static TreacheryCard? UselessAsDefense(Game game, Player player, TreacheryCard? usingThisWeapon) 
         => Defenses(game, player, usingThisWeapon, null).LastOrDefault(c => c.Type == TreacheryCardType.Useless);
 
-    private static bool MayPlayNoWeapon(Game game, Player player, TreacheryCard? usingThisDefense) 
+    protected static bool MayPlayNoWeapon(Game game, Player player, TreacheryCard? usingThisDefense) 
         => Battle.ValidWeapons(game, player, usingThisDefense, null, null, true).Contains(null);
 
-    private static bool MayPlayNoDefense(Game game, Player player, TreacheryCard? usingThisWeapon) 
+    protected static bool MayPlayNoDefense(Game game, Player player, TreacheryCard? usingThisWeapon) 
         => Battle.ValidDefenses(game, player, usingThisWeapon, null, true).Contains(null);
 
-    private static int CountDifferentWeaponTypes(List<TreacheryCard> cards)
+    protected static int CountDifferentWeaponTypes(List<TreacheryCard> cards)
     {
         var result = 0;
         if (cards.Any(card => card.IsProjectileWeapon && card.Type != TreacheryCardType.ProjectileAndPoison)) result++;
@@ -713,7 +713,7 @@ public partial class ClassicBot
         return result;
     }
 
-    private static int CountDifferentDefenseTypes(List<TreacheryCard> cards)
+    protected static int CountDifferentDefenseTypes(List<TreacheryCard> cards)
     {
         var result = 0;
         if (cards.Any(card => card.IsProjectileDefense && card.Type != TreacheryCardType.ShieldAndAntidote)) result++;

@@ -28,6 +28,17 @@
             </SelectComponent>
         }
 
+        @if (type == DealType.ForfeitBattle)
+        {
+            <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="territory" Values="ForfeitTerritories">
+                <Label>Battle in which territory</Label>
+            </SelectComponent>
+
+            <SelectComponent @bind-Value="loser" Values="PossibleLosers">
+                <Label>Who forfeits the battle</Label>
+            </SelectComponent>
+        }
+
         <SelectComponent @bind-Value="until" Values="ApplicableEndPhases">
             <Label>Until</Label>
         </SelectComponent>
@@ -48,13 +59,51 @@
     internal DealType type;
     internal string text = "";
     internal Phase until;
+    internal Territory? territory;
+    internal Faction loser;
 
     private void OnChangeFactions()
     {
         StateHasChanged();
     }
 
-    protected override DealOffered ConfirmedResult => new(Game, Faction) { To = to.Count >= Game.Players.Count - 1 ? Array.Empty<Faction>() : to.ToArray(), Price = price, Benefit = benefit, Type = type, Text = text, EndPhase = until };
+    protected override DealOffered ConfirmedResult => new(Game, Faction)
+    {
+        To = to.Count >= Game.Players.Count - 1 ? Array.Empty<Faction>() : to.ToArray(),
+        Price = price,
+        Benefit = benefit,
+        Type = type,
+        Text = text,
+        EndPhase = until,
+        DealParameter1 = type == DealType.ForfeitBattle ? territory?.Id.ToString() : null,
+        DealParameter2 = type == DealType.ForfeitBattle ? loser.ToString() : null
+    };
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Client.OnLocationSelected += HandleLocationSelected;
+        }
+    }
+
+    private void HandleLocationSelected(object? sender, Location l)
+    {
+        if (type == DealType.ForfeitBattle)
+        {
+            SetIfValid(ref territory, ForfeitTerritories, l.Territory);
+        }
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        Client.OnLocationSelected -= HandleLocationSelected;
+    }
+
+    private IEnumerable<Territory> ForfeitTerritories => Game.Map.Territories(true).OrderByDescending(t => t.IsStronghold).ThenBy(t => Client.CurrentSkin.Describe(t));
+
+    private IEnumerable<Faction> PossibleLosers => new[] { Faction }.Concat(to.Count > 0 ? to : Game.PlayersOtherThan(Player).Where(p => p != Player.Ally));
 
     private async Task ConfirmOffer()
     {
@@ -71,6 +120,7 @@
                 DealType.ShareStormPrescience => new[] { Phase.TurnConcluded },
                 DealType.ShareBiddingPrescience => new[] { Phase.Bidding, Phase.BiddingReport },
                 DealType.ShareResourceDeckPrescience => new[] { Phase.TurnConcluded },
+                DealType.ForfeitBattle => new[] { Phase.TurnConcluded },
                 _ => new[] { Phase.TurnConcluded, Phase.GameEnded }
             };
         }

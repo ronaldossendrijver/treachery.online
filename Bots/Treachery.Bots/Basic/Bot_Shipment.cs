@@ -9,11 +9,11 @@
 
 namespace Treachery.Bots;
 
-public partial class ClassicBot
+public partial class BasicBot
 {
-    private ShipmentDecision DecidedShipmentAction { get; set; }
-    private Shipment? DecidedShipment { get; set; }
-    private Location? FinalDestination { get; set; }
+    protected virtual ShipmentDecision DecidedShipmentAction { get; set; }
+    protected virtual Shipment? DecidedShipment { get; set; }
+    protected virtual Location? FinalDestination { get; set; }
 
     protected virtual Shipment DetermineShipment()
     {
@@ -69,7 +69,7 @@ public partial class ClassicBot
         return Require(DecidedShipment);
     }
 
-    private bool WillLeaveMyHomeDefenseless(int shippedAmountOfForces, int shippedAmountOfSpecialForces)
+    protected virtual bool WillLeaveMyHomeDefenseless(int shippedAmountOfForces, int shippedAmountOfSpecialForces)
     {
         if (Game.Applicable(Rule.Homeworlds))
             if ((Faction != Faction.Red && Player.ForcesInReserve + Player.SpecialForcesInReserve - shippedAmountOfForces - shippedAmountOfSpecialForces <= 3) ||
@@ -386,7 +386,7 @@ public partial class ClassicBot
         }
     }
 
-    private bool MakeStormShipmentSurvivable(Location target, ref int forces, ref int specialForces)
+    protected virtual bool MakeStormShipmentSurvivable(Location target, ref int forces, ref int specialForces)
     {
         if (!Game.IsInStorm(target)) return true;
         if (Faction != Faction.Yellow ||
@@ -428,7 +428,7 @@ public partial class ClassicBot
         }
     }
 
-    private bool VacantAndValid(Location location)
+    protected virtual bool VacantAndValid(Location location)
     {
         return VacantAndSafeFromStorm(location) &&
                ValidShipmentLocations(false).Where(l => l.IsStronghold).Contains(location);
@@ -621,7 +621,7 @@ public partial class ClassicBot
         return shortage;
     }
 
-    private float DetermineForcesInShipment(float dialNeeded, Location location,
+    protected virtual float DetermineForcesInShipment(float dialNeeded, Location location,
         int forcesAvailable, int specialForcesAvailable, out int forces, out int specialForces,
         int maxUnsupportedForces, bool preferSpecialForces, float normalStrength, float specialStrength, int spiceAvailable, float noSpiceForForceModifier, int costPerForceInBattle)
     {
@@ -680,7 +680,7 @@ public partial class ClassicBot
         return dialNeeded;
     }
 
-    private Battalion? FindOneTroopThatCanSafelyMove(Location from, Location to)
+    protected virtual Battalion? FindOneTroopThatCanSafelyMove(Location from, Location to)
     {
         if (Player.ForcesInLocations.ContainsKey(from) && from.Sector != Game.SectorInStorm && NotOccupiedByOthers(from.Territory))
         {
@@ -695,17 +695,17 @@ public partial class ClassicBot
         return null;
     }
 
-    private void DoShipment(ShipmentDecision decision, int nrOfForces, int nrOfSpecialForces, int noFieldValue, int cunningNoFieldValue, Location destination, bool useKarma, bool useAllyResources)
+    protected virtual void DoShipment(ShipmentDecision decision, int nrOfForces, int nrOfSpecialForces, int noFieldValue, int cunningNoFieldValue, Location destination, bool useKarma, bool useAllyResources)
     {
         DoShipment(decision, destination, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, null, useKarma, useAllyResources);
     }
 
-    private void DoShipment(ShipmentDecision decision, Attack attack, bool useKarma, bool useAllyResources)
+    protected virtual void DoShipment(ShipmentDecision decision, Attack attack, bool useKarma, bool useAllyResources)
     {
         DoShipment(decision, attack.Location, attack.ForcesToShip, attack.SpecialForcesToShip, attack.NoFieldValue, attack.CunningNoFieldValue, null, useKarma, useAllyResources);
     }
 
-    private void DoShipment(ShipmentDecision decision, Location destination, int nrOfForces, int nrOfSpecialForces, int noFieldValue, int cunningNoFieldValue, 
+    protected virtual void DoShipment(ShipmentDecision decision, Location destination, int nrOfForces, int nrOfSpecialForces, int noFieldValue, int cunningNoFieldValue, 
         Location? destinationForMove, bool useKarma, bool useAllyResources)
     {
         if (!WillLeaveMyHomeDefenseless(nrOfForces, nrOfSpecialForces))
@@ -726,7 +726,7 @@ public partial class ClassicBot
         }
     }
 
-    private Shipment ConstructShipment(int nrOfForces, int nrOfSpecialForces, int noFieldValue, int cunningNoFieldValue, Location location, bool useKarma, bool useAllyResources)
+    protected virtual Shipment ConstructShipment(int nrOfForces, int nrOfSpecialForces, int noFieldValue, int cunningNoFieldValue, Location location, bool useKarma, bool useAllyResources)
     {
         var nrOfSmuggledForces = 0;
         var nrOfSmuggledSpecialForces = 0;
@@ -758,7 +758,7 @@ public partial class ClassicBot
     }
 
 
-    private Battalion SampleBattalion(Location l)
+    protected virtual Battalion SampleBattalion(Location l)
     {
         if (Faction == Faction.Blue && Player.SpecialForcesIn(l.Territory) > 0)
             //Forces shipped by BG into a territory with advisors must become advisors
@@ -766,15 +766,15 @@ public partial class ClassicBot
         return new Battalion(Faction, 1, 1, l);
     }
 
-    private IEnumerable<Location> ValidShipmentLocations(bool fromPlanet, bool secretAlly = false)
+    protected virtual IEnumerable<Location> ValidShipmentLocations(bool fromPlanet, bool secretAlly = false)
     {
         var forbidden = Game.Deals.Where(deal => deal.BoundFaction == Faction && deal.Type == DealType.DontShipOrMoveTo).Select(deal => deal.GetParameter1<Territory>(Game));
         return Shipment.ValidShipmentLocations(Game, Player, fromPlanet, secretAlly).Where(l => !forbidden.Contains(l.Territory));
     }
 
-    private IEnumerable<KeyValuePair<Location, Battalion>> ForceLocationsOutsideStrongholds => ForcesOnPlanet.Where(f => !f.Key.IsStronghold);
+    protected virtual IEnumerable<KeyValuePair<Location, Battalion>> ForceLocationsOutsideStrongholds => ForcesOnPlanet.Where(f => !f.Key.IsStronghold);
 
-    private Location? RichestLocationNearShippableStrongholdFarFromExistingForces => Game.ResourcesOnPlanet.Where(kvp =>
+    protected virtual Location? RichestLocationNearShippableStrongholdFarFromExistingForces => Game.ResourcesOnPlanet.Where(kvp =>
             !ForceLocationsOutsideStrongholds.Any(looseForce => WithinRange(looseForce.Key, kvp.Key, looseForce.Value)) &&
             ValidShipmentLocations(false).Any(sh => sh.IsStronghold && WithinRange(sh, kvp.Key, SampleBattalion(sh))) &&
             Player.AnyForcesIn(kvp.Key) == 0 &&
@@ -784,7 +784,7 @@ public partial class ClassicBot
             ProbablySafeFromMonster(kvp.Key.Territory))
         .HighestOrDefault(kvp => kvp.Value).Key;
 
-    private int DetermineForcesNeededForCollection(Location location)
+    protected virtual int DetermineForcesNeededForCollection(Location location)
     {
         if (Game.ResourcesOnPlanet.TryGetValue(location, out var value))
             return (int)Math.Ceiling((float)value / Game.ResourceCollectionRate(Player));
@@ -807,20 +807,20 @@ public partial class ClassicBot
         shipment.AllyContributionAmount = Math.Min(shipment.DetermineCostToInitiator(Game), Game.ResourcesYourAllyCanPay(Player));
     }
 
-    private class Attack
+    protected class Attack
     {
-        internal required Location Location { get; init; }
-        internal Player? Opponent { get; init; }
-        internal float DialNeeded { get; init; }
-        internal int ForcesToShip { get; init; }
-        internal int SpecialForcesToShip { get; init; }
-        internal int NoFieldValue { get; init; }
-        internal int CunningNoFieldValue { get; init; }
-        internal float ShortageForShipment { get; init; }
-        internal bool HasForces => ForcesToShip > 0 || SpecialForcesToShip > 0;
+        public required Location Location { get; init; }
+        public Player? Opponent { get; init; }
+        public float DialNeeded { get; init; }
+        public int ForcesToShip { get; init; }
+        public int SpecialForcesToShip { get; init; }
+        public int NoFieldValue { get; init; }
+        public int CunningNoFieldValue { get; init; }
+        public float ShortageForShipment { get; init; }
+        public bool HasForces => ForcesToShip > 0 || SpecialForcesToShip > 0;
     }
 
-    private Attack ConstructAttack(Location location, int extraForces, int minResourcesToKeep, int maxUnsupportedForces)
+    protected virtual Attack ConstructAttack(Location location, int extraForces, int minResourcesToKeep, int maxUnsupportedForces)
     {
         var opponent = OccupyingOpponentIn(Game, Player, location.Territory);
 
@@ -858,7 +858,7 @@ public partial class ClassicBot
         };
     }
 
-    private float MaxPotentialForceShortage(bool takeReinforcementsIntoAccount, Location s)
+    protected virtual float MaxPotentialForceShortage(bool takeReinforcementsIntoAccount, Location s)
     {
         var opponents = OccupyingOpponentsIn(Game, Player, s.Territory);
 
@@ -878,22 +878,22 @@ public partial class ClassicBot
         return maxDialOfOpponents + maxReinforcedDial - MaxDial(Game, Player, s.Territory, opponents.FirstOrDefault());
     }
 
-    private bool RedVersusYellow(Player opponent)
+    protected virtual bool RedVersusYellow(Player opponent)
     {
         return Faction == Faction.Red && opponent.Faction == Faction.Yellow;
     }
 
-    private int UnlockedForcesInPolarSink(Location location) 
+    protected virtual int UnlockedForcesInPolarSink(Location location) 
         => Equals(location, Game.Map.Arrakeen) || Equals(location, Game.Map.Carthag) 
             ? Player.AnyForcesIn(Game.Map.PolarSink) 
             : 0;
 
-    private static float DeterminePenalty(Player? opponent)
+    protected static float DeterminePenalty(Player? opponent)
         => opponent is { IsBot: true } && (!opponent.HasAlly || Require(opponent.AlliedPlayer).IsBot)
             ? BotParameters.PenaltyForAttackingBots
             : 0;
 
-    private void DoZeroNoFieldShipment(ShipmentDecision action, Location location)
+    protected virtual void DoZeroNoFieldShipment(ShipmentDecision action, Location location)
     {
         var shipment = new Shipment(Game, Faction)
         {
@@ -919,7 +919,7 @@ public partial class ClassicBot
         }
     }
 
-    private bool OpponentIsSuitableForTraitorLure(Player? opponent)
+    protected virtual bool OpponentIsSuitableForTraitorLure(Player? opponent)
     {
         if (opponent == null) return false;
 
@@ -927,7 +927,7 @@ public partial class ClassicBot
                && (KnownOpponentWeapons(Game, Player, opponent).Count == 0 || Player.Has(TreacheryCardType.Mercenary));
     }
 
-    private bool OpponentIsSuitableForUselessCardDumpAttack(Player? opponent)
+    protected virtual bool OpponentIsSuitableForUselessCardDumpAttack(Player? opponent)
     {
         if (opponent == null) return false;
 

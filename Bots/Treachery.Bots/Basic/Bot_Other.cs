@@ -1,4 +1,4 @@
-﻿﻿#nullable disable
+﻿#nullable disable
 #pragma warning disable CS8632
 
 /*
@@ -12,9 +12,9 @@
 
 namespace Treachery.Bots;
 
-public partial class ClassicBot
+public partial class BasicBot
 {
-    private ResourcesTransferred? DetermineResourcesTransferred()
+    protected virtual ResourcesTransferred? DetermineResourcesTransferred()
     {
         var amount = ResourcesTransferred.MaxAmount(Player);
         if (Resources - amount > 15 && Player.AlliedResources < Resources) 
@@ -23,7 +23,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private DiscoveryEntered DetermineDiscoveryEntered()
+    protected virtual DiscoveryEntered DetermineDiscoveryEntered()
     {
         var to = DiscoveryEntered.ValidTargets(Game, Player).FirstOrDefault();
         if (to == null) return null;
@@ -31,12 +31,12 @@ public partial class ClassicBot
         return new DiscoveryEntered(Game, Faction) { ForceLocations = new Dictionary<Location, Battalion>(battalionsToMove), To = to };
     }
 
-    private DiscoveryRevealed DetermineDiscoveryRevealed()
+    protected virtual DiscoveryRevealed DetermineDiscoveryRevealed()
     {
         return new DiscoveryRevealed(Game, Faction) { Location = DiscoveryRevealed.GetLocations(Game, Player).First() };
     }
 
-    private TestingStationUsed? DetermineTestingStationUsed()
+    protected virtual TestingStationUsed? DetermineTestingStationUsed()
     {
         var currentStormEnd = (Game.SectorInStorm + Game.NextStormMoves) % Map.NumberOfSectors;
         var locationsInSector = Game.Map.Locations(false).Where(l => l.Sector == currentStormEnd && !l.IsProtectedFromStorm).ToList();
@@ -71,13 +71,13 @@ public partial class ClassicBot
         return null;
     }
 
-    private DivideResources DetermineDivideResources()
+    protected virtual DivideResources DetermineDivideResources()
     {
         var spiceIWant = Math.Max(0, DivideResources.GetResourcesToBeDivided(Game)?.Amount - Resources ?? 0);
         return new DivideResources(Game, Faction) { PortionToFirstPlayer = spiceIWant };
     }
 
-    private CardGiven DetermineCardGiven()
+    protected virtual CardGiven DetermineCardGiven()
     {
         return new CardGiven(Game, Faction)
         {
@@ -85,7 +85,7 @@ public partial class ClassicBot
         };
     }
 
-    private DivideResourcesAccepted DetermineDivideResourcesAccepted()
+    protected virtual DivideResourcesAccepted DetermineDivideResourcesAccepted()
     {
         var tbd = DivideResources.GetResourcesToBeDivided(Game)!;
 
@@ -97,20 +97,20 @@ public partial class ClassicBot
         return new DivideResourcesAccepted(Game, Faction) { Passed = !accepted };
     }
 
-    private Discarded DetermineDiscarded()
+    protected virtual Discarded DetermineDiscarded()
     {
         var worstCard = Player.TreacheryCards.OrderBy(c => CardQuality(c, null)).First();
         return new Discarded(Game, Faction) { Card = worstCard };
     }
 
-    private TraitorDiscarded DetermineTraitorDiscarded()
+    protected virtual TraitorDiscarded DetermineTraitorDiscarded()
     {
         var worstTraitor = DetermineWorstTraitor();
         worstTraitor ??= Player.Traitors.LowestOrDefault(t => t.Value);
         return new TraitorDiscarded(Game, Faction) { Traitor = worstTraitor };
     }
 
-    private IHero? DetermineWorstTraitor()
+    protected virtual IHero? DetermineWorstTraitor()
     {
         var result = Player.Traitors.Where(t => Player.RevealedTraitors.Contains(t)).HighestOrDefault(t => t.Value);
 
@@ -122,7 +122,7 @@ public partial class ClassicBot
         return result;
     }
 
-    private NexusPlayed? DetermineNexusPlayed()
+    protected virtual NexusPlayed? DetermineNexusPlayed()
     {
         var result = new NexusPlayed(Game, Faction) { Faction = Player.Nexus };
 
@@ -134,13 +134,13 @@ public partial class ClassicBot
             : DetermineNexusPlayed_Betrayal(result);
     }
 
-    private bool IWishToAttack(int maxNumberOfContestedStrongholds, Faction f)
+    protected virtual bool IWishToAttack(int maxNumberOfContestedStrongholds, Faction f)
     {
         return AlmostWinningOpponentsIWishToAttack(maxNumberOfContestedStrongholds, true).Select(p => p.Faction)
             .Contains(f);
     }
 
-    private NexusPlayed? DetermineNexusPlayed_Betrayal(NexusPlayed result)
+    protected virtual NexusPlayed? DetermineNexusPlayed_Betrayal(NexusPlayed result)
     {
         if (Ally == result.Faction) return null;
         
@@ -227,7 +227,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private Territory? DetermineTerritoryToRemovePinkFrom()
+    protected virtual Territory? DetermineTerritoryToRemovePinkFrom()
     {
         Territory? result = null;
         var territoriesWithPinkAndPinkAlly = NexusPlayed.ValidPinkTerritories(Game).Where(t => t.IsStronghold || Game.IsSpecialStronghold(t)).ToList();
@@ -244,14 +244,14 @@ public partial class ClassicBot
         return result;
     }
 
-    private bool IsWinningOrIsOpponentInBattle(Faction faction)
+    protected virtual bool IsWinningOrIsOpponentInBattle(Faction faction)
     {
         return faction != Ally && Game.CurrentBattle != null &&
                ((Game.CurrentBattle.IsInvolved(faction) && IsWinning(faction)) ||
                 Game.CurrentBattle.OpponentOf(faction) == Player);
     }
 
-    private NexusPlayed? DetermineNexusPlayed_Cunning(NexusPlayed result)
+    protected virtual NexusPlayed? DetermineNexusPlayed_Cunning(NexusPlayed result)
     {
         switch (Player.Nexus)
         {
@@ -311,7 +311,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private NexusPlayed? DetermineNexusPlayed_SecretAlly(NexusPlayed result)
+    protected virtual NexusPlayed? DetermineNexusPlayed_SecretAlly(NexusPlayed result)
     {
         switch (Player.Nexus)
         {
@@ -424,7 +424,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private CharityClaimed? DetermineCharityClaimed()
+    protected virtual CharityClaimed? DetermineCharityClaimed()
     {
         if (!(Game.EconomicsStatus == BrownEconomicsStatus.Cancel || Game.EconomicsStatus == BrownEconomicsStatus.CancelFlipped))
             return new CharityClaimed(Game, Faction);
@@ -432,7 +432,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private KarmaFreeRevival? DetermineKarmaFreeRevival()
+    protected virtual KarmaFreeRevival? DetermineKarmaFreeRevival()
     {
         var specialForcesThatCanBeRevived = Math.Min(3, Revival.ValidMaxRevivals(Game, Player, true, false));
 
@@ -445,7 +445,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private KarmaHandSwap DetermineKarmaHandSwap()
+    protected virtual KarmaHandSwap DetermineKarmaHandSwap()
     {
         var toReturn = new List<TreacheryCard>();
         foreach (var c in Player.TreacheryCards.OrderBy(c => CardQuality(c, Player)))
@@ -458,7 +458,7 @@ public partial class ClassicBot
         return new KarmaHandSwap(Game, Faction) { ReturnedCards = toReturn };
     }
 
-    private KarmaShipmentPrevention? DetermineKarmaShipmentPrevention()
+    protected virtual KarmaShipmentPrevention? DetermineKarmaShipmentPrevention()
     {
         if (Game.CurrentPhase != Phase.NonOrangeShip) return null;
         
@@ -475,7 +475,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private KarmaHandSwapInitiated? DetermineKarmaHandSwapInitiated()
+    protected virtual KarmaHandSwapInitiated? DetermineKarmaHandSwapInitiated()
     {
         if (Game.CurrentPhase != Phase.BiddingReport) return null;
 
@@ -577,13 +577,13 @@ public partial class ClassicBot
         return null;
     }
 
-    private bool OpponentMayNotUse(TreacheryCardType type, bool asWeapon)
+    protected virtual bool OpponentMayNotUse(TreacheryCardType type, bool asWeapon)
     {
         var voice = MyVoice;
         return voice is { MayNot: true } && Voice.IsVoicedBy(Game, asWeapon, false, type, voice.Type);
     }
 
-    private ClairVoyancePlayed UseClairvoyanceInBattle(Faction opponent, ClairvoyanceQuestion question, TreacheryCardType cardType)
+    protected virtual ClairVoyancePlayed UseClairvoyanceInBattle(Faction opponent, ClairvoyanceQuestion question, TreacheryCardType cardType)
     {
         return new ClairVoyancePlayed(Game, Faction) { Target = opponent, Question = question, QuestionParameter1 = cardType.ToString() };
     }
@@ -682,14 +682,14 @@ public partial class ClassicBot
         return new ClairVoyanceAnswered(Game, Faction) { Answer = answer };
     }
 
-    private bool Covers(TreacheryCardType typeToCheck, object coveredByType)
+    protected virtual bool Covers(TreacheryCardType typeToCheck, object coveredByType)
     {
         return
             ClairVoyanceAnswered.IsQuestionedBy(true, typeToCheck, (TreacheryCardType)coveredByType) ||
             ClairVoyanceAnswered.IsQuestionedBy(false, typeToCheck, (TreacheryCardType)coveredByType);
     }
 
-    private ClairVoyanceAnswer Answer(bool value)
+    protected virtual ClairVoyanceAnswer Answer(bool value)
     {
         return value ? ClairVoyanceAnswer.Yes : ClairVoyanceAnswer.No;
     }
@@ -845,7 +845,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private DistransUsed? DetermineDistransUsed()
+    protected virtual DistransUsed? DetermineDistransUsed()
     {
         if (Game.CurrentPhase != Phase.WaitingForNextBiddingRound) return null;
         
@@ -861,7 +861,7 @@ public partial class ClassicBot
         return target != null ? new DistransUsed(Game, Faction) { Card = worstCard, Target = target.Faction } : null;
     }
 
-    private int HeroRevivalPenalty(IHero h)
+    protected virtual int HeroRevivalPenalty(IHero h)
     {
         if (h.HeroType is HeroType.Messiah or HeroType.Auditor)
             return 20;
@@ -952,7 +952,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private Location? BestRevivalLocation(List<Location> validLocations)
+    protected virtual Location? BestRevivalLocation(List<Location> validLocations)
     {
         var result = validLocations.FirstOrDefault(l => Equals(l, Game.Map.Carthag) && (Vacant(l) || (Player.AnyForcesIn(l) > 0 && Player.AnyForcesIn(l) < 4))) 
                      ?? validLocations.FirstOrDefault(l => Equals(l, Game.Map.Arrakeen) && (Vacant(l) || (Player.AnyForcesIn(l) > 0 && Player.AnyForcesIn(l) < 4))) 
@@ -964,7 +964,7 @@ public partial class ClassicBot
         return result;
     }
 
-    private static void DetermineOptimalUseOfRedRevivals(Game g, Player p, out int forces, out int specialForces, bool useCunning)
+    protected static void DetermineOptimalUseOfRedRevivals(Game g, Player p, out int forces, out int specialForces, bool useCunning)
     {
         forces = 0;
         specialForces = 0;
@@ -1005,7 +1005,7 @@ public partial class ClassicBot
             forces++;
     }
 
-    private DiscardedSearchedAnnounced? DetermineDiscardedSearchedAnnounced()
+    protected virtual DiscardedSearchedAnnounced? DetermineDiscardedSearchedAnnounced()
     {
         if (Game.CurrentMainPhase == MainPhase.Contemplate)
         {
@@ -1016,13 +1016,13 @@ public partial class ClassicBot
         return null;
     }
 
-    private DiscardedSearched DetermineDiscardedSearched()
+    protected virtual DiscardedSearched DetermineDiscardedSearched()
     {
         var cardToSearch = DiscardedSearched.ValidCards(Game).HighestOrDefault(c => CardQuality(c, Player));
         return new DiscardedSearched(Game, Faction) { Card = cardToSearch };
     }
 
-    private DiscardedTaken? DetermineDiscardedTaken()
+    protected virtual DiscardedTaken? DetermineDiscardedTaken()
     {
         var cardToTake = DiscardedTaken.ValidCards(Game, Player).HighestOrDefault(c => CardQuality(c, Player));
         if (cardToTake != null && CardQuality(cardToTake, Player) >= 4) return new DiscardedTaken(Game, Faction) { Card = cardToTake };
@@ -1030,7 +1030,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private JuicePlayed? DetermineJuicePlayed()
+    protected virtual JuicePlayed? DetermineJuicePlayed()
     {
         if (Game is { CurrentMainPhase: MainPhase.ShipmentAndMove, CurrentMoment: MainPhaseMoment.Start } 
             && Faction != Faction.Orange
@@ -1045,12 +1045,12 @@ public partial class ClassicBot
         return null;
     }
 
-    private Bureaucracy DetermineBureaucracy()
+    protected virtual Bureaucracy DetermineBureaucracy()
     {
         return new Bureaucracy(Game, Faction) { Passed = Game.TargetOfBureaucracy == Ally };
     }
 
-    private Diplomacy? DetermineDiplomacy()
+    protected virtual Diplomacy? DetermineDiplomacy()
     {
         var opponentPlan = Game.CurrentBattle?.PlanOfOpponent(Player);
         if (opponentPlan?.Defense == null) return null;
@@ -1060,7 +1060,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private SkillAssigned DetermineSkillAssigned()
+    protected virtual SkillAssigned DetermineSkillAssigned()
     {
         var skill = LeaderSkill.None;
         var skills = SkillAssigned.ValidSkills(Player).ToArray();
@@ -1096,7 +1096,7 @@ public partial class ClassicBot
         return new SkillAssigned(Game, Faction) { Passed = false, Leader = RandomItemFrom(SkillAssigned.ValidLeaders(Game, Player)), Skill = skill };
     }
 
-    private T RandomItemFrom<T>(IEnumerable<T> items)
+    protected virtual T RandomItemFrom<T>(IEnumerable<T> items)
     {
         var itemsAsArray = items.ToArray();
         return itemsAsArray[D(1, itemsAsArray.Length) - 1];

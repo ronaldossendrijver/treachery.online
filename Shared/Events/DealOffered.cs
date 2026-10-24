@@ -133,7 +133,7 @@ public class DealOffered : GameEvent
 
     public Message GetDealDescription()
     {
-        return Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1);
+        return Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1, DealParameter2);
     }
 
     protected override void ExecuteConcreteEvent()
@@ -152,7 +152,7 @@ public class DealOffered : GameEvent
     public override Message GetMessage()
     {
         return !Cancel 
-            ? Message.Express(Initiator, " offer ", MessagePart.ExpressIf(To.Length != 0, To, " "), "for ", Payment.Of(Price), ": ", Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1)) 
+            ? Message.Express(Initiator, " offer ", MessagePart.ExpressIf(To.Length != 0, To, " "), "for ", Payment.Of(Price), ": ", Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1, DealParameter2)) 
             : Message.Express(Initiator, " withdraw a deal offer");
     }
 
