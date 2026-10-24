@@ -17,4 +17,5 @@ public interface IBot
     public GameEvent? DetermineLowPriorityInPhaseAction(List<Type> events);
     public GameEvent? DetermineEndPhaseAction(List<Type> events);
     public void SetGameAndPlayer(Game gameGame, Player player);
+    public IReadOnlyList<InvalidBotDecision> DrainInvalidDecisions();
 }

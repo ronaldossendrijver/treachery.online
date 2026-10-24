@@ -1,4 +1,4 @@
-﻿﻿#nullable disable
+﻿#nullable disable
 #pragma warning disable CS8632
 
 /*
@@ -12,11 +12,11 @@
 
 namespace Treachery.Bots;
 
-public partial class ClassicBot
+public partial class BasicBot
 {
     #region Orange
 
-    private SetShipmentPermission? DetermineSetShipmentPermission()
+    protected virtual SetShipmentPermission? DetermineSetShipmentPermission()
     {
         if (Game.CurrentPhase != Phase.BeginningOfShipAndMove) 
             return null;
@@ -38,7 +38,7 @@ public partial class ClassicBot
 
     #region Red
 
-    private RedDiscarded? DetermineRedDiscarded()
+    protected virtual RedDiscarded? DetermineRedDiscarded()
     {
         if (Player is not { Resources: >= 10, HasRoomForCards: false }) return null;
         
@@ -57,7 +57,7 @@ public partial class ClassicBot
         return new ReplacedCardWon(Game, Faction) { Passed = !replace };
     }
 
-    private GreyRemovedCardFromAuction DetermineGreyRemovedCardFromAuction()
+    protected virtual GreyRemovedCardFromAuction DetermineGreyRemovedCardFromAuction()
     {
         if (Game.CardsOnAuction == null || !Game.CardsOnAuction.Items.Any()) return null;
         
@@ -86,7 +86,7 @@ public partial class ClassicBot
         return new GreyRemovedCardFromAuction(Game, Faction) { Card = toBeRemoved, PutOnTop = putOnTop };
     }
 
-    private GreySwappedCardOnBid DetermineGreySwappedCardOnBid()
+    protected virtual GreySwappedCardOnBid DetermineGreySwappedCardOnBid()
     {
         var card = Player.TreacheryCards.LowestOrDefault(c => CardQuality(c, Player));
 
@@ -96,7 +96,7 @@ public partial class ClassicBot
         return new GreySwappedCardOnBid(Game, Faction) { Passed = true };
     }
 
-    private GreySelectedStartingCard DetermineGreySelectedStartingCard()
+    protected virtual GreySelectedStartingCard DetermineGreySelectedStartingCard()
     {
         var cards = Game.StartingTreacheryCards!.Items;
 
@@ -120,7 +120,7 @@ public partial class ClassicBot
         return new GreySelectedStartingCard(Game, Faction) { Card = card };
     }
 
-    private PerformHmsMovement DeterminePerformHmsMovement()
+    protected virtual PerformHmsMovement DeterminePerformHmsMovement()
     {
         var currentLocation = Game.Map.HiddenMobileStronghold.AttachedToLocation!;
 
@@ -162,7 +162,7 @@ public partial class ClassicBot
         return new PerformHmsMovement(Game, Faction) { Passed = true };
     }
 
-    private PerformHmsPlacement DeterminePerformHmsPlacement()
+    protected virtual PerformHmsPlacement DeterminePerformHmsPlacement()
     {
         if (Faction != Faction.Grey)
             return new PerformHmsPlacement(Game, Faction) { Target = Game.Map.ShieldWall.Locations.First() };
@@ -177,7 +177,7 @@ public partial class ClassicBot
 
     #region Yellow
 
-    private TakeLosses DetermineTakeLosses()
+    protected virtual TakeLosses DetermineTakeLosses()
     {
         var losses = TakeLosses.LossesToTake(Game);
         if (losses == null) return null;
@@ -197,7 +197,7 @@ public partial class ClassicBot
         };
     }
 
-    private PerformYellowSetup DeterminePerformYellowSetup()
+    protected virtual PerformYellowSetup DeterminePerformYellowSetup()
     {
         var forceLocations = new Dictionary<Location, Battalion>
         {
@@ -215,13 +215,13 @@ public partial class ClassicBot
         return new PerformYellowSetup(Game, Faction) { ForceLocations = forceLocations };
     }
 
-    private YellowSentMonster DetermineYellowSentMonster()
+    protected virtual YellowSentMonster DetermineYellowSentMonster()
     {
         var target = YellowSentMonster.ValidTargets(Game).HighestOrDefault(t => TotalMaxDialOfOpponents(t) + 2 * Player.AnyForcesIn(t));
         return new YellowSentMonster(Game, Faction) { Territory = target };
     }
 
-    private YellowRidesMonster DetermineYellowRidesMonster()
+    protected virtual YellowRidesMonster DetermineYellowRidesMonster()
     {
         Location? target = null;
         var validLocations = YellowRidesMonster.ValidTargets(Game, Player).ToList();
@@ -256,7 +256,7 @@ public partial class ClassicBot
 
     #region Blue
 
-    private PerformBluePlacement DetermineBluePlacement()
+    protected virtual PerformBluePlacement DetermineBluePlacement()
     {
         Location target;
         if (Player.AnyForcesIn(Game.Map.Arrakeen) == 0) target = Game.Map.Carthag;
@@ -267,7 +267,7 @@ public partial class ClassicBot
         return new PerformBluePlacement(Game, Faction) { Target = target };
     }
 
-    private BlueFlip DetermineBlueFlip()
+    protected virtual BlueFlip DetermineBlueFlip()
     {
         var territory = BlueFlip.GetTerritory(Game);
 
@@ -276,7 +276,7 @@ public partial class ClassicBot
         return new BlueFlip(Game, Faction) { AsAdvisors = true };
     }
 
-    private bool IWantToBeFightersIn(Territory territory)
+    protected virtual bool IWantToBeFightersIn(Territory territory)
     {
         if (!territory.IsStronghold) return false;
 
@@ -299,7 +299,7 @@ public partial class ClassicBot
                (potentialWinningOpponents.Contains(opponent) && dialNeeded <= amountICanReinforce + maxDial);
     }
 
-    private BlueBattleAnnouncement? DetermineBlueBattleAnnouncement()
+    protected virtual BlueBattleAnnouncement? DetermineBlueBattleAnnouncement()
     {
         if (Game.CurrentMainPhase > MainPhase.Bidding && NrOfBattlesToFight <= Battle.ValidBattleHeroes(Game, Player).Count())
         {
@@ -311,7 +311,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private bool IWantToAnnounceBattleIn(Territory territory)
+    protected virtual bool IWantToAnnounceBattleIn(Territory territory)
     {
         var opponent = GetOpponentThatOccupies(territory);
 
@@ -325,7 +325,7 @@ public partial class ClassicBot
                dialNeeded + lastTurnConfidenceBonus <= MaxDial(Game, Player, territory, opponent) + MaxReinforcedDialTo(Game, Player, opponent, territory);
     }
 
-    private BlueAccompanies DetermineBlueAccompanies()
+    protected virtual BlueAccompanies DetermineBlueAccompanies()
     {
         if (Player.ForcesInReserve <= 0)
             return new BlueAccompanies(Game, Faction) { Location = null, Accompanies = false };
@@ -356,7 +356,7 @@ public partial class ClassicBot
         return new BlueAccompanies(Game, Faction) { Location = null, Accompanies = false };
     }
 
-    private BluePrediction DetermineBluePrediction()
+    protected virtual BluePrediction DetermineBluePrediction()
     {
         var predicted = D(1, 2) == 1 ? Others.Where(p => !Game.IsBot(p)).RandomOrDefault() : null;
         predicted ??= Others.Where(p => !Game.IsBot(p)).RandomOrDefault();
@@ -385,7 +385,7 @@ public partial class ClassicBot
         return new BluePrediction(Game, Faction) { ToWin = predicted.Faction, Turn = turn };
     }
 
-    private VoicePlan? VoicePlan { get; set; }
+    protected virtual VoicePlan? VoicePlan { get; set; }
 
     protected virtual Voice? DetermineVoice()
     {
@@ -407,7 +407,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private VoicePlan BestVoice(BattleInitiated? battle, Player p, Player opponent)
+    protected virtual VoicePlan BestVoice(BattleInitiated? battle, Player p, Player opponent)
     {
         var result = new VoicePlan
         {
@@ -669,7 +669,7 @@ public partial class ClassicBot
 
     #region Pink
 
-    private EcazInitialPlacement DetermineEcazInitialPlacement()
+    protected virtual EcazInitialPlacement DetermineEcazInitialPlacement()
     {
         return new EcazInitialPlacement(Game, Faction) { Target = Game.Map.ImperialBasin.MiddleLocation };
     }
@@ -696,7 +696,7 @@ public partial class ClassicBot
     }
 
 
-    private PrescienceAspect BestPrescience(Player p, Player opponent, float maxForceStrengthInBattle, PrescienceAspect earlierPrescience, Territory territory)
+    protected virtual PrescienceAspect BestPrescience(Player p, Player opponent, float maxForceStrengthInBattle, PrescienceAspect earlierPrescience, Territory territory)
     {
         var myDefenses = Battle.ValidDefenses(Game, p, null, territory).Where(c => Game.KnownCards(p).Contains(c)).ToArray();
         var myWeapons = Battle.ValidWeapons(Game, p, null, null, territory).Where(c => Game.KnownCards(p).Contains(c)).ToArray();
@@ -733,7 +733,7 @@ public partial class ClassicBot
 
     #region Purple
 
-    private SetIncreasedRevivalLimits? DetermineSetIncreasedRevivalLimits()
+    protected virtual SetIncreasedRevivalLimits? DetermineSetIncreasedRevivalLimits()
     {
         var targets = SetIncreasedRevivalLimits.ValidTargets(Game, Player).ToArray();
         if (Game.FactionsWithIncreasedRevivalLimits.Length != targets.Length)
@@ -742,7 +742,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private FaceDancerRevealed DetermineFaceDancerRevealed()
+    protected virtual FaceDancerRevealed DetermineFaceDancerRevealed()
     {
         if (FaceDanced.MayCallFaceDancer(Game, Player))
         {
@@ -804,8 +804,8 @@ public partial class ClassicBot
         return new FaceDancerReplaced(Game, Faction) { Passed = true };
     }
 
-    private Dictionary<IHero, int> PriceSetEarlier { get; } = new();
-    private int TurnWhenRevivalWasRequested { get; set; } = -1;
+    protected virtual Dictionary<IHero, int> PriceSetEarlier { get; } = new();
+    protected virtual int TurnWhenRevivalWasRequested { get; set; } = -1;
 
     protected virtual RequestPurpleRevival? DetermineRequestPurpleRevival()
     {
@@ -869,7 +869,7 @@ public partial class ClassicBot
 
     #region Brown
 
-    private ResourcesAudited? DetermineResourcesAudited()
+    protected virtual ResourcesAudited? DetermineResourcesAudited()
     {
         if (Game.CurrentBattle == null || !Game.CurrentBattle.IsAggressorOrDefender(Player)) return null;
         
@@ -948,7 +948,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private PerformCyanSetup DeterminePerformCyanSetup()
+    protected virtual PerformCyanSetup DeterminePerformCyanSetup()
     {
         Location target;
 
@@ -1192,7 +1192,7 @@ public partial class ClassicBot
         }
     }
 
-    private AmbassadorActivated? PassAmbassadorActivated()
+    protected virtual AmbassadorActivated? PassAmbassadorActivated()
     {
         return AmbassadorActivated.MayPass(Player) ? new AmbassadorActivated(Game, Faction) { Passed = true } : null;
     }
@@ -1242,7 +1242,7 @@ public partial class ClassicBot
 
     #region Black
 
-    private Captured DetermineCaptured()
+    protected virtual Captured DetermineCaptured()
     {
         return new Captured(Game, Faction) { Passed = false };
     }

@@ -1,4 +1,4 @@
-﻿﻿#nullable disable
+﻿#nullable disable
 #pragma warning disable CS8632
 
 /*
@@ -12,9 +12,9 @@
 
 namespace Treachery.Bots;
 
-public partial class ClassicBot
+public partial class BasicBot
 {
-    private Move? DetermineMove()
+    protected virtual Move? DetermineMove()
     {
         LogInfo("DetermineMove()");
 
@@ -42,7 +42,7 @@ public partial class ClassicBot
         return result;
     }
 
-    private Caravan? DetermineCaravan()
+    protected virtual Caravan? DetermineCaravan()
     {
         LogInfo("DetermineCaravan()");
 
@@ -71,7 +71,7 @@ public partial class ClassicBot
         return result;
     }
 
-    private MovedBattalion? DetermineMovedBattalion(bool includeLowPriorityMoves)
+    protected virtual MovedBattalion? DetermineMovedBattalion(bool includeLowPriorityMoves)
     {
         var winning = IAmWinning;
         LogInfo("DetermineMove(). AllIn: {0}, Winning: {1}.", LastTurn, winning);
@@ -217,7 +217,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private  MovedBattalion? ConstructMove(Location to, Location from, Battalion battalion)
+    protected virtual  MovedBattalion? ConstructMove(Location to, Location from, Battalion battalion)
     {
         if (Faction == Faction.White && Game.HasLowThreshold(Faction.White) && battalion.AmountOfSpecialForces != 0)
             return null;
@@ -232,7 +232,7 @@ public partial class ClassicBot
         public required Battalion Battalion;
     }
 
-    private Battalion? DetermineBattalionThatWillDestroyShieldWall(out Location from, out Location? to)
+    protected virtual Battalion? DetermineBattalionThatWillDestroyShieldWall(out Location from, out Location? to)
     {
         from = Game.Map.PolarSink;
         to = Game.SectorInStorm != 8 ? Game.Map.FalseWallEast.Locations.First(l => l.Sector == 8) : Game.Map.FalseWallEast.Locations.First(l => l.Sector == 7);
@@ -262,7 +262,7 @@ public partial class ClassicBot
         return result;
     }
 
-    private FlightUsed? DetermineFlightUsed()
+    protected virtual FlightUsed? DetermineFlightUsed()
     {
         LogInfo("DetermineFlightUsed()");
 
@@ -272,7 +272,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private FlightDiscoveryUsed? DetermineFlightDiscoveryUsed()
+    protected virtual FlightDiscoveryUsed? DetermineFlightDiscoveryUsed()
     {
         LogInfo("DetermineFlightDiscoveryUsed()");
 
@@ -287,18 +287,18 @@ public partial class ClassicBot
         return null;
     }
 
-    private Location? DetermineMostSuitableNearbyLocation(BattalionInLocation battalionAtLocation, bool includeSecondBestLocations, bool mustMove)
+    protected virtual Location? DetermineMostSuitableNearbyLocation(BattalionInLocation battalionAtLocation, bool includeSecondBestLocations, bool mustMove)
     {
         return DetermineMostSuitableNearbyLocation(battalionAtLocation.Location, battalionAtLocation.Battalion, includeSecondBestLocations, mustMove);
     }
 
-    private T Log<T>(string message, T returnValue)
+    protected virtual T Log<T>(string message, T returnValue)
     {
         LogInfo($"{message}: {returnValue}");
         return returnValue;
     }
 
-    private Location? DetermineMostSuitableNearbyLocation(Location location, Battalion battalion, bool includeSecondBestLocations, bool mustMove)
+    protected virtual Location? DetermineMostSuitableNearbyLocation(Location location, Battalion battalion, bool includeSecondBestLocations, bool mustMove)
     {
         var result = NearbyStrongholdOfWinningOpponent(location, battalion, false);
         if (result != null) return Log("Suitable NearbyStrongholdOfWinningOpponent excluding bots", result);

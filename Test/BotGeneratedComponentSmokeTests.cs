@@ -31,7 +31,7 @@ public sealed class BotGeneratedComponentSmokeTests
         var game = CreateGame();
         var bots = game.Players.ToDictionary(
             player => player.Faction,
-            player => new ClassicBot(game, player, BotParameters.GetDefaultParameters(player.Faction)));
+            player => new BasicBot(game, player, BotParameters.GetDefaultParameters(player.Faction)));
         var renderedActionTypes = new HashSet<Type>();
 
         for (var eventNumber = 0; game.CurrentPhase != Phase.GameEnded && eventNumber < 1_000; eventNumber++)
@@ -73,7 +73,7 @@ public sealed class BotGeneratedComponentSmokeTests
         var game = CreateGame(184);
         var bots = game.Players.ToDictionary(
             player => player.Faction,
-            player => new ClassicBot(game, player, BotParameters.GetDefaultParameters(player.Faction)));
+            player => new BasicBot(game, player, BotParameters.GetDefaultParameters(player.Faction)));
 
         for (var eventNumber = 0;
              game.CurrentPhase != Phase.GameEnded && game is not { CurrentPhase: Phase.Bidding, CurrentAuctionType: AuctionType.Normal } && eventNumber < 1_000;
@@ -143,7 +143,7 @@ public sealed class BotGeneratedComponentSmokeTests
         var game = CreateGame();
         var bots = game.Players.ToDictionary(
             player => player.Faction,
-            player => new ClassicBot(game, player, BotParameters.GetDefaultParameters(player.Faction)));
+            player => new BasicBot(game, player, BotParameters.GetDefaultParameters(player.Faction)));
 
         for (var eventNumber = 0; game.CurrentPhase != Phase.GameEnded && eventNumber < 1_000; eventNumber++)
         {
@@ -168,9 +168,9 @@ public sealed class BotGeneratedComponentSmokeTests
         throw new InvalidOperationException($"No current-version scenario produced {typeof(TEvent).Name}.");
     }
 
-    private static GameEvent? DetermineBotEvent(Game game, IReadOnlyDictionary<Faction, ClassicBot> bots)
+    private static GameEvent? DetermineBotEvent(Game game, IReadOnlyDictionary<Faction, BasicBot> bots)
     {
-        foreach (var priority in new Func<ClassicBot, List<Type>, GameEvent?>[]
+        foreach (var priority in new Func<BasicBot, List<Type>, GameEvent?>[]
                  {
                      (bot, actions) => bot.DetermineHighestPriorityInPhaseAction(actions),
                      (bot, actions) => bot.DetermineHighPriorityInPhaseAction(actions),

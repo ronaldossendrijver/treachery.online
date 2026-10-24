@@ -160,7 +160,7 @@ public class DealAccepted : GameEvent
 
     private Message GetDealDescription()
     {
-        return Deal.DealContentsDescription(Game, Type, Text, Benefit, End, DealParameter1);
+        return Deal.DealContentsDescription(Game, Type, Text, Benefit, End, DealParameter1, DealParameter2);
     }
 
     public Message GetDealContents()

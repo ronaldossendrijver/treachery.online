@@ -34,22 +34,37 @@ public class Deal
             : GetParameter1<T>(g, Type, DealParameter1);
     }
 
-    private static T? GetParameter1<T>(Game g, DealType type, string parameter)
+    public static T? GetParameter1<T>(Game g, DealType type, string parameter)
     {
         return type switch
         {
-            DealType.DontShipOrMoveTo => (T?)(object?)g.Map.TerritoryLookup.Find(int.Parse(parameter)),
+            DealType.DontShipOrMoveTo or DealType.ForfeitBattle when int.TryParse(parameter, out var id) => (T?)(object?)g.Map.TerritoryLookup.Find(id),
             _ => default
         };
     }
 
+    /// <summary>
+    /// For ForfeitBattle deals: the faction that forfeits the battle (DealParameter2), if specified.
+    /// </summary>
+    public Faction? ForfeitBattleLoser() => ForfeitBattleLoser(DealParameter2);
+
+    public static Faction? ForfeitBattleLoser(string? parameter2) => Enum.TryParse<Faction>(parameter2, out var f) && f != Faction.None ? f : null;
+
     public Message DealContentsDescription(Game g)
     {
-        return DealContentsDescription(g, Type, Text ?? string.Empty, Benefit, End, DealParameter1 ?? string.Empty);
+        return DealContentsDescription(g, Type, Text ?? string.Empty, Benefit, End, DealParameter1 ?? string.Empty, DealParameter2);
     }
 
-    public static Message DealContentsDescription(Game g, DealType type, string? text, int benefit, Phase end, string? parameter1)
+    public static Message DealContentsDescription(Game g, DealType type, string? text, int benefit, Phase end, string? parameter1, string? parameter2 = null)
     {
+        if (type == DealType.ForfeitBattle && ForfeitBattleLoser(parameter2) is { } loser && GetParameter1<Territory>(g, type, parameter1 ?? "?") is { } territory)
+            return Message.Express(
+                MessagePart.ExpressIf(benefit > 0, "Receive ", Payment.Of(benefit), " and "),
+                "Battle in ", territory, ": ", loser, " forfeits (no weapons and defenses, lowest leader, zero dial); the winner uses no weapons, defenses, traitors or captures",
+                MessagePart.ExpressIf(!string.IsNullOrWhiteSpace(text), " (", text ?? "", ")"),
+                " until ",
+                end);
+
         if (!string.IsNullOrWhiteSpace(text))
             return Message.Express(
                 MessagePart.ExpressIf(benefit > 0, "Receive ", Payment.Of(benefit), " and "),

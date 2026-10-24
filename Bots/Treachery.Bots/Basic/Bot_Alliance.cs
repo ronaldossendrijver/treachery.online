@@ -11,7 +11,7 @@ namespace Treachery.Bots;
 
 using Shared.Model;
 
-public partial class ClassicBot
+public partial class BasicBot
 {
     protected virtual AllianceByTerror DetermineAllianceByTerror()
     {
@@ -27,7 +27,7 @@ public partial class ClassicBot
         return new AllianceByAmbassador(Game, Faction) { Passed = !accept };
     }
 
-    private NexusVoted DetermineNexusVoted()
+    protected virtual NexusVoted DetermineNexusVoted()
     {
         return new NexusVoted(Game, Faction) { Passed = false };
     }
@@ -64,7 +64,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private int PlayerStanding(Player p)
+    protected virtual int PlayerStanding(Player p)
     {
         return 2 * p.TreacheryCards.Count() +
                p.Resources +
@@ -122,7 +122,7 @@ public partial class ClassicBot
         return null;
     }
 
-    private bool SpecialPermissionsNeedUpdate(AllyPermission permission)
+    protected virtual bool SpecialPermissionsNeedUpdate(AllyPermission permission)
     {
         var result = false;
 
@@ -137,7 +137,7 @@ public partial class ClassicBot
         return result;
     }
 
-    private int DetermineAllowedResources()
+    protected virtual int DetermineAllowedResources()
     {
         switch (Faction)
         {
@@ -188,7 +188,7 @@ public partial class ClassicBot
         return 0;
     }
 
-    private bool BoolPermissionsNeedUpdate(AllyPermission permission)
+    protected virtual bool BoolPermissionsNeedUpdate(AllyPermission permission)
     {
         var result = false;
 
@@ -207,7 +207,7 @@ public partial class ClassicBot
         return result;
     }
 
-    private IEnumerable<string> GetPermissionProperties() => Faction switch
+    protected virtual IEnumerable<string> GetPermissionProperties() => Faction switch
     {
         Faction.Green => ["GreenSharesPrescience"],
         Faction.Yellow => ["YellowSharesPrescience", "YellowWillProtectFromMonster", "YellowAllowsThreeFreeRevivals", "YellowRefundsBattleDial"],

@@ -9,9 +9,9 @@
 
 namespace Treachery.Bots;
 
-public partial class ClassicBot
+public partial class BasicBot
 {
-    private Bid DetermineBid()
+    protected virtual Bid DetermineBid()
     {
         LogInfo("DetermineBid()");
 
@@ -117,12 +117,12 @@ public partial class ClassicBot
         return PassedBid();
     }
 
-    private Bid PassedBid()
+    protected virtual Bid PassedBid()
     {
         return new Bid(Game, Faction) { Passed = true };
     }
 
-    private Bid CreateBidUsingAllyAndRedSpice(int amount, TreacheryCard? karmaCard)
+    protected virtual Bid CreateBidUsingAllyAndRedSpice(int amount, TreacheryCard? karmaCard)
     {
         if (karmaCard != null)
             return new Bid(Game, Faction) { Amount = amount, KarmaBid = false, KarmaCard = karmaCard, Passed = false };
@@ -140,7 +140,7 @@ public partial class ClassicBot
 
     }
 
-    private bool WannaHave(TreacheryCard c)
+    protected virtual bool WannaHave(TreacheryCard c)
     {
         return
             c.IsLaser ||
@@ -164,7 +164,7 @@ public partial class ClassicBot
             c.Type == TreacheryCardType.Rockmelter;
     }
 
-    private BlackMarketBid DetermineBlackMarketBid()
+    protected virtual BlackMarketBid DetermineBlackMarketBid()
     {
         var bid = DetermineBid();
         return new BlackMarketBid(Game, Faction) { Amount = bid.Amount, AllyContributionAmount = bid.AllyContributionAmount, RedContributionAmount = bid.RedContributionAmount, Passed = bid.Passed };
