@@ -10,6 +10,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Treachery.Bots;
 
 namespace Treachery.Server;
 
@@ -19,6 +20,8 @@ public static class Program
     {
         Console.WriteLine($"{DateTime.Now:HH:mm:ss} Treachery.Server process starting (pid {Environment.ProcessId}, working directory '{Environment.CurrentDirectory}').");
         Message.DefaultDescriber = DefaultSkin.Default;
+        foreach (var plugin in BotFactory.LoadPlugins(AppContext.BaseDirectory))
+            Console.WriteLine($"{DateTime.Now:HH:mm:ss} {plugin}");
         var host = CreateHostBuilder(args).Build();
         Console.WriteLine($"{DateTime.Now:HH:mm:ss} Treachery.Server host built; starting Run().");
         host.Run();

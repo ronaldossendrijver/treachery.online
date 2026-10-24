@@ -1029,6 +1029,7 @@ public class Skin : IDescriber
             Rule.GreyBot => Format("{0}Bot", Faction.Grey),
 
             Rule.BotsCannotAlly => "Bots may not initiate alliances",
+            Rule.AdvancedBots => "Use advanced Bots (beta)",
             Rule.CardsCanBeTraded => Format("Allow players to give cards to each other"),
             Rule.PlayersChooseFactions => Format("Let players choose their factions at start"),
             Rule.RedSupportingNonAllyBids => Format("{0} may support bids of non-ally players", Faction.Red),

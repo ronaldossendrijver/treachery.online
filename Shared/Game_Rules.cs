@@ -338,7 +338,7 @@ public partial class Game
             or Rule.DisableEndOfGameReport or Rule.DisableOrangeSpecialVictory or Rule.DisableResourceTransfers
             or Rule.DisableNovaFlipping or Rule.YellowAllyGetsDialedResourcesRefunded
             or Rule.BreakAlliancesOnAlliancePhase or Rule.GreyMaySelectBlackExtraStartingCard => RuleGroup.House,
-        Rule.BotsCannotAlly => RuleGroup.Bots,
+        Rule.BotsCannotAlly or Rule.AdvancedBots => RuleGroup.Bots,
         Rule.TechTokens or Rule.CheapHeroTraitor or Rule.ExpansionTreacheryCards or Rule.SandTrout => RuleGroup
             .ExpansionIxAndBtBasic,
         Rule.GreySwappingCardOnBid or Rule.PurpleGholas => RuleGroup.ExpansionIxAndBtAdvanced,
@@ -382,7 +382,7 @@ public partial class Game
                 or Rule.DisableEndOfGameReport or Rule.DisableOrangeSpecialVictory or Rule.DisableResourceTransfers
                 or Rule.YellowAllyGetsDialedResourcesRefunded or Rule.DisableNovaFlipping
                 or Rule.BreakAlliancesOnAlliancePhase or Rule.GreyMaySelectBlackExtraStartingCard => 0,
-            Rule.FillWithBots or Rule.BotsCannotAlly => 0,
+            Rule.FillWithBots or Rule.BotsCannotAlly or Rule.AdvancedBots => 0,
             Rule.TechTokens or Rule.CheapHeroTraitor or Rule.ExpansionTreacheryCards or Rule.SandTrout => 1,
             Rule.GreySwappingCardOnBid or Rule.PurpleGholas => 1,
             Rule.LeaderSkills or Rule.Expansion2TreacheryCards => 2,

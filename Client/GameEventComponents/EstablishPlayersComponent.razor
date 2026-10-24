@@ -73,7 +73,7 @@
 
                     <fieldset class="setup-rule-group">
                         <legend>AI Players</legend>
-                        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots, Game.ExpansionLevel))
+                        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots, Game.ExpansionLevel).Where(r => r != Rule.AdvancedBots || Client.ServerInfo?.AdvancedBotsAvailable == true))
                         {
                             <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" Callback="StateHasChanged" />
                         }

@@ -14,4 +14,9 @@ public class ServerInfo
     public DateTimeOffset ScheduledMaintenance { get; set; }
 
     public string AdminName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// True when this server can host advanced bots (Rule.AdvancedBots).
+    /// </summary>
+    public bool AdvancedBotsAvailable { get; set; }
 }
