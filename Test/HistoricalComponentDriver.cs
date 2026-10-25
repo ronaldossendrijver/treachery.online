@@ -241,6 +241,11 @@ internal static class HistoricalComponentDriver
                 c.type = deal.Type;
                 c.text = deal.Text ?? string.Empty;
                 c.until = deal.EndPhase;
+                if (deal.Type == DealType.ForfeitBattle)
+                {
+                    c.territory = deal.DealParameter1 is { } p1 ? Deal.GetParameter1<Territory>(deal.Game, deal.Type, p1) : null;
+                    c.loser = Deal.ForfeitBattleLoser(deal.DealParameter2) ?? Faction.None;
+                }
                 return;
             }
 

@@ -101,8 +101,20 @@ public sealed class SavegameComponentReplayTests
 
         return gameEvent is not AutomationConfigured { Action: not ItemAction.Create }
                && gameEvent is not DealOffered { Cancel: true }
+               && (gameEvent is not DealOffered deal || IsRepresentable(deal))
                && (gameEvent is not ClairVoyancePlayed clairvoyance ||
                    IsRepresentable(clairvoyance));
+    }
+
+    /// <summary>
+    /// Legacy ForfeitBattle deals (from before territory/loser parameters were introduced) cannot be produced by the current UI.
+    /// </summary>
+    private static bool IsRepresentable(DealOffered deal)
+    {
+        return deal.Type != DealType.ForfeitBattle ||
+               deal.EndPhase == Phase.TurnConcluded &&
+               deal.DealParameter1 != null &&
+               Deal.ForfeitBattleLoser(deal.DealParameter2) != null;
     }
 
     private static bool IsRepresentable(ClairVoyancePlayed clairvoyance)

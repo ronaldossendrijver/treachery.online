@@ -80,7 +80,10 @@
                 Game.CurrentPhase == Phase.AllianceA && _previousPhase != Phase.AllianceA ||
                 Game.CurrentPhase == Phase.AllianceB && _previousPhase != Phase.AllianceB ||
                 Game.CurrentPhase == Phase.ClaimingCharity && _previousPhase != Phase.ClaimingCharity ||
-                Game.CurrentTurn > 1 && (Game.CurrentPhase == Phase.Resurrection && _previousPhase != Phase.Resurrection || Game.CurrentPhase == Phase.ResurrectionReport && Game.IsPlaying(Faction.Pink)) || 
+                Game is { CurrentPhase: Phase.BeginningOfResurrection, CurrentTurn: > 1 } ||
+                Game.CurrentPhase == Phase.ResurrectionReport && (Game.IsPlaying(Faction.Pink) || Game.IsPlaying(Faction.Blue)) ||
+                Game.CurrentPhase == Phase.BiddingReport ||
+                Game.CurrentPhase == Phase.BattleReport ||
                 Game.CurrentPhase == Phase.Contemplate && (Game.IsPlaying(Faction.Brown) || Game.IsPlaying(Faction.Cyan))))
         {
             TicksPassed = 0;
