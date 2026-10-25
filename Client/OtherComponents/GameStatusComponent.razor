@@ -84,6 +84,7 @@
                 Game.CurrentPhase == Phase.ResurrectionReport && (Game.IsPlaying(Faction.Pink) || Game.IsPlaying(Faction.Blue)) ||
                 Game.CurrentPhase == Phase.BiddingReport ||
                 Game.CurrentPhase == Phase.BattleReport ||
+                Game.CurrentPhase == Phase.BeginningOfCollection && Game.DiscoveriesOnPlanet.Any() ||
                 Game.CurrentPhase == Phase.Contemplate && (Game.IsPlaying(Faction.Brown) || Game.IsPlaying(Faction.Cyan))))
         {
             TicksPassed = 0;
