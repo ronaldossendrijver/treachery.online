@@ -2006,18 +2006,18 @@ button.communications-user:hover { background: rgba(255, 255, 255, 0.045); }
 .game-event-title { flex: 1 1 auto; min-width: 0; }
 .game-event-header > .ui-btn-link { flex: 0 0 auto; min-height: 0; margin-left: auto; opacity: 0.7; }
 .game-event-header > .ui-btn-link:hover { opacity: 1; }
-.game-event-card.is-compact > .game-event-header { border-bottom: 0; padding-top: 0.3rem; padding-bottom: 0.3rem; }
-.game-event-card > .game-event-body { display: flex; align-items: flex-end; gap: 10px; padding: 0.45rem 0.6rem 0.5rem; font-size: 0.82rem; font-weight: 400; }
-.game-event-content { flex: 1 1 auto; min-width: 0; }
+.game-event-card.is-compact > .game-event-header { flex-wrap: wrap; border-bottom: 0; padding-top: 0.3rem; padding-bottom: 0.3rem; }
+.game-event-card > .game-event-body { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; padding: 0.45rem 0.6rem 0.5rem; font-size: 0.82rem; font-weight: 400; }
+.game-event-content { flex: 1 1 12rem; min-width: 0; }
 .game-event-content:empty { display: none; }
 .game-event-content > :where(div, p, table, ul, ol, fieldset, section, h5, h6, form) { margin-top: 0; margin-bottom: 0; }
 .game-event-content > :where(div, p, table, ul, ol, fieldset, section, h5, h6, form) + :where(div, p, table, ul, ol, fieldset, section, h5, h6, form) { margin-top: 0.45rem; }
 .game-event-content > :where(div, p) > label:first-child { display: block; margin: 0 0 0.25rem; color: var(--ivory-muted); font-size: 0.76rem; font-weight: 650; letter-spacing: 0.01em; }
-.game-event-actions { display: flex; flex: 0 0 auto; flex-direction: column; align-items: stretch; gap: 6px; margin-left: auto; }
+.game-event-actions { display: flex; flex: 0 1 auto; flex-direction: column; align-items: stretch; gap: 6px; min-width: 0; max-width: 100%; margin-left: auto; }
 .game-event-actions:empty { display: none; }
 .game-event-actions > * { margin: 0 !important; }
 .game-event-actions .ui-button-row { flex-direction: column-reverse; flex-wrap: nowrap; align-items: stretch; gap: 6px; margin: 0; padding: 0; border: 0; }
-.game-event-actions .ui-btn { min-width: 90px; max-width: 190px; min-height: 30px; padding: 0.28rem 0.75rem; font-size: 0.8rem; line-height: 1.2; white-space: normal; text-align: center; }
+.game-event-actions .ui-btn { min-width: min(90px, 100%); max-width: min(190px, 100%); min-height: 30px; padding: 0.28rem 0.75rem; font-size: 0.8rem; line-height: 1.2; white-space: normal; text-align: center; }
 .game-event-actions .ui-btn-confirm-wrap { display: flex; }
 .game-event-actions .ui-btn-confirm-wrap > .ui-btn { flex: 1 1 auto; }
 .game-event-actions .ui-btn-pass, .game-event-actions .ui-btn-other { border-color: rgba(220, 205, 164, 0.22); background: rgba(255, 240, 210, 0.07); color: var(--ivory); box-shadow: none; }
@@ -2051,6 +2051,7 @@ button.communications-user:hover { background: rgba(255, 255, 255, 0.045); }
 @media (prefers-reduced-motion: reduce) { .ev-toggle { transition: none; } }
 @container game-event (max-width: 340px) {
     .game-event-card > .game-event-body { flex-direction: column; align-items: stretch; }
+    .game-event-content { flex-basis: auto; }
     .game-event-body > .game-event-actions .ui-button-row { flex-direction: row; flex-wrap: wrap; justify-content: flex-end; }
     .game-event-card.is-compact > .game-event-header { flex-wrap: wrap; }
     .game-event-card.is-compact .game-event-title { flex-basis: 100%; }
