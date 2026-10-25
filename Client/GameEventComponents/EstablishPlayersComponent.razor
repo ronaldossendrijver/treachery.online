@@ -70,33 +70,36 @@
                             </fieldset>
                         }
                     }
-
-                    <fieldset class="setup-rule-group">
-                        <legend>AI Players</legend>
-                        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots, Game.ExpansionLevel).Where(r => r != Rule.AdvancedBots || Client.ServerInfo?.AdvancedBotsAvailable == true))
-                        {
-                            <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" Callback="StateHasChanged" />
-                        }
-                    </fieldset>
                 </div>
             }
         </div>
     </section>
 
-    <section class="lobby-panel setup-panel setup-players">
-        <div class="lobby-panel-head">
-            <div>
-                <span class="lobby-kicker">Seats</span>
-                <h2>Players</h2>
+    <div class="setup-sidebar">
+        <section class="lobby-panel setup-panel setup-players">
+            <div class="lobby-panel-head">
+                <div>
+                    <span class="lobby-kicker">Seats</span>
+                    <h2>Players</h2>
+                </div>
             </div>
-        </div>
-        <div class="lobby-panel-body">
-            <JoinedPlayersPanel/>
-        </div>
-    </section>
+            <div class="lobby-panel-body">
+                <JoinedPlayersPanel/>
 
-    <div class="setup-actions">
-        <ButtonRowComponent Pass="@Cancel" PassText="Cancel game" Confirm="@Confirm" ConfirmText="Start game" ConfirmError="@Validation" />
+                <div class="lobby-section-title">Bots</div>
+                <div class="setup-bots">
+                    <RadioComponent @bind-Value="@AdvancedBots" Values="@AvailableBotTypes" ValueLabels="@AvailableBotTypeLabels"/>
+                    @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots, Game.ExpansionLevel).Where(r => r != Rule.AdvancedBots))
+                    {
+                        <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" Callback="StateHasChanged" />
+                    }
+                </div>
+
+                <div class="setup-actions">
+                    <ButtonRowComponent Pass="@Cancel" PassText="Cancel game" Confirm="@Confirm" ConfirmText="Start game" ConfirmError="@Validation" />
+                </div>
+            </div>
+        </section>
     </div>
 
 </div>
@@ -113,6 +116,23 @@
     };
     
     private bool _advancedOptions;
+
+    private bool AdvancedBotsAvailable => Client.ServerInfo?.AdvancedBotsAvailable == true;
+
+    private bool[] AvailableBotTypes => AdvancedBotsAvailable ? [false, true] : [false];
+
+    private string[] AvailableBotTypeLabels => AdvancedBotsAvailable ? ["Basic (classic)", "Advanced (experimental)"] : ["Basic (classic)"];
+
+    private bool AdvancedBots
+    {
+        get => Settings.InitialRules.Contains(Rule.AdvancedBots);
+        set
+        {
+            Settings.InitialRules.Remove(Rule.AdvancedBots);
+            if (value) Settings.InitialRules.Add(Rule.AdvancedBots);
+        }
+    }
+
     private bool _disposed;
     private bool _initializing = true;
 
