@@ -649,7 +649,14 @@
             element.requestFullScreen = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || function () { return false; };
             document.cancelFullScreen = document.cancelFullScreen || document.webkitCancelFullScreen || document.mozCancelFullScreen || function () { return false; };
 
-            isFullscreen ? document.cancelFullScreen() : element.requestFullScreen();
+            try {
+                let result = isFullscreen ? document.cancelFullScreen() : element.requestFullScreen();
+                if (result && typeof result.catch === 'function') {
+                    result.catch(() => { });
+                }
+            } catch {
+                // Fullscreen requests may be denied by the browser; ignore
+            }
         }
 
         function IsFullScreen() {
