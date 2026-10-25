@@ -857,7 +857,24 @@ svg {
     .game-workspace { grid-template-columns: minmax(0, 1fr) minmax(350px, min(48vw, 676px)); }
 }
 
-.maintenance-banner { padding: 6px; background: #753e36; text-align: center; }
+.maintenance-banner {
+    position: fixed;
+    z-index: 2000;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: calc(100vw - 20px);
+    padding: 6px 16px;
+    border: 1px solid rgba(213, 138, 66, 0.55);
+    border-radius: 8px;
+    background: rgba(117, 62, 54, 0.92);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+    color: #f3ead8;
+    font-size: 0.9rem;
+    text-align: center;
+    pointer-events: none;
+}
 
 /* Login / title screen */
 .login-screen {
