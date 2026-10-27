@@ -118,7 +118,8 @@
         if (now - lastPlayed < 40) return;
         lastPlayed = now;
         if (!ensureContext()) return;
-        if (context.state === "suspended") context.resume();
+        // Browsers reject resume() with NotAllowedError until the page has had a qualifying user gesture.
+        if (context.state === "suspended") context.resume().catch(() => {});
         sounds[name](context.currentTime + 0.005);
     }
 
