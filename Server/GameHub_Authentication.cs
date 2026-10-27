@@ -84,7 +84,14 @@ public partial class GameHub
             return Error<LoginInfo>(ErrorType.InvalidUserNameOrPassword);
         
         user.LastLogin = DateTimeOffset.Now;
-        await db.SaveChangesAsync();
+        try
+        {
+            await db.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            // Recording the last login time is not essential; don't fail the login over it.
+        }
 
         var userToken = LoginAndCreateToken(user);
         

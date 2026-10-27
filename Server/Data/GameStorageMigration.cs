@@ -14,6 +14,7 @@ public static class GameStorageMigration
     {
         logger ??= Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         LogDataSource(context, logger);
+        EnableWriteAheadLogging(context, logger);
 
         logger.LogInformation("Applying database migrations...");
         var stopwatch = Stopwatch.StartNew();
@@ -48,6 +49,33 @@ public static class GameStorageMigration
         catch (Exception ex)
         {
             logger.LogWarning(ex, "Unable to determine SQLite data source.");
+        }
+    }
+
+    // WAL lets readers and a writer work concurrently, avoiding 'database is locked' errors when
+    // simultaneous hub calls access the database. The setting is persisted in the database file.
+    private static void EnableWriteAheadLogging(TreacheryContext context, ILogger logger)
+    {
+        var connection = context.Database.GetDbConnection();
+        var wasClosed = connection.State == ConnectionState.Closed;
+        if (wasClosed)
+            connection.Open();
+
+        try
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText = "PRAGMA journal_mode=WAL;";
+            var mode = Convert.ToString(command.ExecuteScalar());
+            logger.LogInformation("SQLite journal mode: {JournalMode}.", mode);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Unable to enable SQLite WAL journal mode.");
+        }
+        finally
+        {
+            if (wasClosed)
+                connection.Close();
         }
     }
 
