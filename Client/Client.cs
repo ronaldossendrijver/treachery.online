@@ -51,6 +51,13 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public string? UserName => LoginInfo?.UserName;
     public string? UserEmail => LoginInfo?.Email;
     
+    //Membership
+    public DateTimeOffset? MembershipValidUntil => LoginInfo?.MembershipValidUntil;
+    public bool IsMember => Membership.IsActive(MembershipValidUntil);
+    public bool HasStripeCustomer => LoginInfo?.HasStripeCustomer == true;
+    public bool IsAdminUser => LoggedIn && ServerInfo != null && string.Equals(UserName, ServerInfo.AdminName, StringComparison.OrdinalIgnoreCase);
+    public bool CanUseAdvancedBots => ServerInfo is { AdvancedBotsAvailable: true } && (!ServerInfo.MembershipRequired || IsMember || IsAdminUser);
+    
     //Game in progress
     public Game? Game { get; private set; }
     public string? GameName { get; private set; }
@@ -487,6 +494,32 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         if (!LoggedIn) return "Not logged in";
         var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestSetUserStatus), UserToken, status);
         return UpdateServerStatusOnSuccess(result);
+    }
+    
+    //Membership
+
+    public async Task<Result<string>> RequestMembershipCheckout()
+    {
+        if (!LoggedIn) return new Result<string> { Error = ErrorType.UserNotFound };
+        return await Invoke<string>(nameof(IGameHub.RequestMembershipCheckout), UserToken);
+    }
+
+    public async Task<Result<string>> RequestMembershipPortal()
+    {
+        if (!LoggedIn) return new Result<string> { Error = ErrorType.UserNotFound };
+        return await Invoke<string>(nameof(IGameHub.RequestMembershipPortal), UserToken);
+    }
+
+    public async Task RefreshLoginInfo()
+    {
+        if (!LoggedIn || !IsConnected) return;
+
+        var result = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.GetLoginInfo), UserToken);
+        if (result is { Success: true, Contents: not null })
+        {
+            LoginInfo = result.Contents;
+            Refresh(nameof(RefreshLoginInfo));
+        }
     }
     
     //Game Management

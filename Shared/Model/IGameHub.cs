@@ -14,6 +14,11 @@ public interface IGameHub
     Task<Result<LoginInfo>> RequestUpdateUserInfo(string userToken, string hashedPassword, string playerName, string email);
     Task<Result<ServerStatus>> RequestSetUserStatus(string userToken, UserStatus status);
 
+    //Membership
+
+    Task<Result<string>> RequestMembershipCheckout(string userToken);
+    Task<Result<string>> RequestMembershipPortal(string userToken);
+
     //Game Management
     
     Task<Result<GameInitInfo>> RequestCreateGame(string name, string userToken, string hashedPassword, string? stateData, string? skinData);

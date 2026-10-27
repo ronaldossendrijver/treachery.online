@@ -7,8 +7,11 @@ public partial class GameHub
 {
     public async Task<VoidResult> RequestEstablishPlayers(string userToken, string gameId, EstablishPlayers e)
     {
-        if (!AreValid(userToken, gameId, out _, out var game, out var error))
+        if (!AreValid(userToken, gameId, out var user, out var game, out var error))
             return error;
+
+        if (e.Settings.InitialRules.Contains(Rule.AdvancedBots) && !CanUseAdvancedBots(user))
+            return Error(ErrorType.MembershipRequired);
         
         var result = await ProcessGameEvent(userToken, gameId, e);
         if (!result.Success)

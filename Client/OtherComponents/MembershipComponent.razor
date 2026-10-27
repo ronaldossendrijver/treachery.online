@@ -1,0 +1,126 @@
+﻿@*
+ * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
+ * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
+ * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+*@
+@using System.Threading
+@implements IDisposable
+
+<ModalComponent Id="@Id" Title="Advanced bots membership">
+    <div class="membership">
+        @if (Client.IsMember)
+        {
+            <p class="membership-status">Advanced bots enabled ✓</p>
+            <p>Your membership is active until <strong>@Client.MembershipValidUntil!.Value.ToLocalTime().ToString("d MMMM yyyy")</strong>. It renews automatically.</p>
+            @if (Client.HasStripeCustomer)
+            {
+                @if (_portalUrl == null)
+                {
+                    <button type="button" class="ui-btn ui-btn-secondary" @onclick="OpenPortal">Manage subscription</button>
+                }
+                else
+                {
+                    <a class="ui-btn ui-btn-secondary" href="@_portalUrl" target="_blank" rel="noopener" @onclick="() => _portalUrl = null">Open subscription management</a>
+                }
+            }
+        }
+        else
+        {
+            <p>Become a member to play against <strong>advanced bots</strong> and support the development of treachery.online.</p>
+            <ul>
+                <li>Advanced bots in every game you host</li>
+                <li>Monthly subscription, cancel at any time</li>
+                <li>Pay with iDEAL, card, SEPA or PayPal through Stripe</li>
+            </ul>
+            @if (_checkoutUrl == null)
+            {
+                <button type="button" class="ui-btn ui-btn-primary" @onclick="StartCheckout">Subscribe</button>
+            }
+            else
+            {
+                <a class="ui-btn ui-btn-primary" href="@_checkoutUrl" target="_blank" rel="noopener" @onclick="StartWaiting">Continue to secure payment</a>
+                @if (_waiting)
+                {
+                    <p class="membership-waiting">Waiting for payment confirmation… This dialog updates automatically once your payment is received.</p>
+                }
+            }
+        }
+
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <div class="lobby-error" role="alert">@_error</div>
+        }
+    </div>
+</ModalComponent>
+
+@code {
+
+    private const int PollIntervalMs = 3000;
+    private static readonly TimeSpan MaximumWaitTime = TimeSpan.FromMinutes(20);
+
+    [Parameter]
+    public string Id { get; set; } = "membershipModal";
+
+    private string? _checkoutUrl;
+    private string? _portalUrl;
+    private string? _error;
+    private bool _waiting;
+    private readonly CancellationTokenSource _cancellation = new();
+
+    private async Task StartCheckout()
+    {
+        _error = null;
+        var result = await Client.RequestMembershipCheckout();
+        if (result.Success)
+            _checkoutUrl = result.Contents;
+        else
+            _error = Client.CurrentSkin.Describe(result.Error);
+    }
+
+    private async Task OpenPortal()
+    {
+        _error = null;
+        var result = await Client.RequestMembershipPortal();
+        if (result.Success)
+            _portalUrl = result.Contents;
+        else
+            _error = Client.CurrentSkin.Describe(result.Error);
+    }
+
+    private void StartWaiting()
+    {
+        if (_waiting) return;
+        _waiting = true;
+        _ = WaitForMembership(_cancellation.Token);
+    }
+
+    private async Task WaitForMembership(CancellationToken cancellationToken)
+    {
+        var deadline = DateTimeOffset.Now + MaximumWaitTime;
+        try
+        {
+            while (!Client.IsMember && DateTimeOffset.Now < deadline)
+            {
+                await Task.Delay(PollIntervalMs, cancellationToken);
+                await Client.RefreshLoginInfo();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        _waiting = false;
+        _checkoutUrl = null;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        _cancellation.Cancel();
+        _cancellation.Dispose();
+    }
+}

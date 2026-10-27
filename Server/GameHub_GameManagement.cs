@@ -34,6 +34,9 @@ public partial class GameHub
                 game = loadedGame;
             else
                 return Error<GameInitInfo>(ErrorType.InvalidGameEvent, errorMessage?.ToString() ?? "Unknown error");
+
+            if (RequiresMembershipFor(user, game))
+                return Error<GameInitInfo>(ErrorType.MembershipRequired);
         }
 
         var gameId = Guid.NewGuid().ToString();
@@ -138,6 +141,9 @@ public partial class GameHub
 
         if (errorMessage != null || loadedGame is null)
             return Error(ErrorType.InvalidGameEvent, errorMessage?.ToString() ?? "Unknown error");
+
+        if (RequiresMembershipFor(user, loadedGame))
+            return Error(ErrorType.MembershipRequired);
 
         return await game.ProcessEventAsync(async () =>
         {

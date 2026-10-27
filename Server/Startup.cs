@@ -81,6 +81,7 @@ public class Startup
             endpoints.MapRazorPages();
             endpoints.MapControllers();
             endpoints.MapHub<GameHub>("/gameHub");
+            endpoints.MapPost("/api/stripe/webhook", MembershipService.HandleWebhookAsync);
             endpoints.MapFallbackToFile("index.html");
         });
         

@@ -52,14 +52,29 @@ public partial class GameHub
         mailMessage.To.Add(new MailAddress(email));
         await SendMail(mailMessage);
         
-        return Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email });
+        return Success(CreateLoginInfo(user, userToken));
     }
+
+    private static LoginInfo CreateLoginInfo(User user, string userToken) => new()
+    {
+        UserId = user.Id,
+        Token = userToken,
+        PlayerName = user.PlayerName,
+        UserName = user.Name,
+        Email = user.Email,
+        MembershipValidUntil = user.MembershipValidUntil,
+        HasStripeCustomer = !string.IsNullOrEmpty(user.StripeCustomerId)
+    };
 
     private static string LoginAndCreateToken(User user)
     {
         var existingLoggedInUser = UsersByUserToken.FirstOrDefault(x => x.Value.Id == user.Id);
         if (existingLoggedInUser.Value != null && existingLoggedInUser.Value.Id == user.Id)
+        {
+            existingLoggedInUser.Value.User.MembershipValidUntil = user.MembershipValidUntil;
+            existingLoggedInUser.Value.User.StripeCustomerId = user.StripeCustomerId;
             return existingLoggedInUser.Key;
+        }
         
         var userToken = GenerateToken();
         var loggedInUser = new LoggedInUser(user);
@@ -88,7 +103,7 @@ public partial class GameHub
 
         var userToken = LoginAndCreateToken(user);
         
-        return Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email });
+        return Success(CreateLoginInfo(user, userToken));
     }
     
     public async Task<VoidResult> RequestPasswordReset(string usernameOrEmail)
@@ -179,7 +194,7 @@ public partial class GameHub
         await db.SaveChangesAsync();
         
         var userToken = LoginAndCreateToken(user);
-        return Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email });
+        return Success(CreateLoginInfo(user, userToken));
     }
     
     public async Task<Result<LoginInfo>> GetLoginInfo(string userToken)
@@ -187,7 +202,7 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<LoginInfo>(ErrorType.UserNotFound);
             
-        return await Task.FromResult(Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Username, Email = user.Email }));
+        return await Task.FromResult(Success(CreateLoginInfo(user.User, userToken)));
     }
     
     public async Task<Result<LoginInfo>> RequestUpdateUserInfo(string userToken, string hashedPassword, string playerName, string email)
@@ -211,7 +226,7 @@ public partial class GameHub
         
         UsersById[user.Id] = user;
             
-        return await Task.FromResult(Success(new LoginInfo { UserId = user.Id, Token = userToken, PlayerName = user.PlayerName, UserName = user.Name, Email = user.Email }));
+        return await Task.FromResult(Success(CreateLoginInfo(user, userToken)));
     }
 
     public async Task<Result<ServerStatus>> RequestSetUserStatus(string userToken, UserStatus status)

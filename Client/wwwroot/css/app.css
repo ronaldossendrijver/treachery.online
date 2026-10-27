@@ -1100,6 +1100,10 @@ svg {
 .lobby-link-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid rgba(193, 167, 108, 0.25); border-radius: 9px; color: var(--ivory); font-size: 0.82rem; text-decoration: none; transition: border-color 0.2s, background 0.2s; }
 .lobby-link-btn:hover { border-color: rgba(213, 138, 66, 0.55); background: rgba(213, 138, 66, 0.1); color: var(--ivory); }
 .lobby-kofi { height: 32px; border: 0; }
+.lobby-membership-btn { background: transparent; cursor: pointer; font-family: inherit; }
+.membership ul { margin: 0 0 14px; padding-left: 20px; }
+.membership-status { color: var(--ivory); font-weight: 600; }
+.membership-waiting { margin-top: 12px; color: var(--ivory-muted); }
 
 .lobby-empty { display: grid; justify-items: center; gap: 4px; padding: 18px 10px 10px; color: var(--ivory-muted); text-align: center; }
 .lobby-empty img { width: 150px; opacity: 0.85; }

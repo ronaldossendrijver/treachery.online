@@ -15,6 +15,7 @@ public partial class GameHub
             AdminName = Configuration["GameAdminUsername"] ?? "admin",
             ScheduledMaintenance = MaintenanceDate,
             AdvancedBotsAvailable = BotFactory.IsAvailable(BotType.Advanced),
+            MembershipRequired = MembershipRequired,
         };
 
         return Success(result);
