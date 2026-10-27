@@ -48,6 +48,7 @@ public partial class GameHub
         };
 
         var userToken = LoginAndCreateToken(user);
+        await LogUsage(UsageEventType.UserRegistered, user.Id);
         
         mailMessage.To.Add(new MailAddress(email));
         await SendMail(mailMessage);
@@ -102,6 +103,8 @@ public partial class GameHub
         await db.SaveChangesAsync();
 
         var userToken = LoginAndCreateToken(user);
+        await LogUsage(UsageEventType.Login, user.Id);
+        await LogUserActive(user.Id);
         
         return Success(CreateLoginInfo(user, userToken));
     }
@@ -194,6 +197,7 @@ public partial class GameHub
         await db.SaveChangesAsync();
         
         var userToken = LoginAndCreateToken(user);
+        await LogUsage(UsageEventType.PasswordReset, user.Id);
         return Success(CreateLoginInfo(user, userToken));
     }
     
@@ -202,7 +206,8 @@ public partial class GameHub
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<LoginInfo>(ErrorType.UserNotFound);
             
-        return await Task.FromResult(Success(CreateLoginInfo(user.User, userToken)));
+        await LogUserActive(user.Id);
+        return Success(CreateLoginInfo(user.User, userToken));
     }
     
     public async Task<Result<LoginInfo>> RequestUpdateUserInfo(string userToken, string hashedPassword, string playerName, string email)

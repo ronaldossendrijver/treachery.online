@@ -1236,6 +1236,14 @@ svg {
 .admin-screen .lobby-input { color-scheme: dark; }
 .admin-log { display: grid; gap: 6px; max-height: 300px; margin: 0; padding: 0; overflow: auto; list-style: none; }
 .admin-log li { padding: 7px 10px; border-left: 2px solid var(--spice); border-radius: 6px; background: rgba(8, 7, 6, 0.4); color: var(--ivory); font-size: 0.82rem; overflow-wrap: anywhere; }
+.admin-usage-buttons { display: flex; gap: 8px; }
+.admin-usage-chart-head { display: flex; margin-bottom: 8px; }
+.admin-usage-chart-head .lobby-field { min-width: 220px; }
+.admin-usage-chart { display: flex; align-items: flex-end; gap: 2px; height: 160px; padding: 8px; border: 1px solid rgba(193, 167, 108, 0.14); border-radius: 10px; background: rgba(8, 7, 6, 0.35); }
+.admin-usage-bar { display: flex; flex: 1 1 0; align-items: flex-end; height: 100%; min-width: 2px; }
+.admin-usage-bar > div { width: 100%; min-height: 1px; border-radius: 3px 3px 0 0; background: var(--spice); opacity: 0.85; }
+.admin-usage-bar:hover > div { opacity: 1; background: var(--brass-bright); }
+.admin-usage-axis { display: flex; justify-content: space-between; margin: 4px 2px 14px; color: var(--ivory-muted); font-size: 0.72rem; }
 
 @media (max-width: 1023px) {
     .admin-grid { grid-template-columns: 1fr; }

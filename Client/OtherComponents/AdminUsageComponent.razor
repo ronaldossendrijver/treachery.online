@@ -1,0 +1,203 @@
+@*
+ * Copyright (C) 2020-2025 Ronald Ossendrijver (admin@treachery.online)
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This
+ * program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have
+ * received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+*@
+
+@using System.Globalization
+
+<section class="lobby-panel admin-usage">
+    <div class="lobby-panel-head">
+        <div>
+            <span class="lobby-kicker">Dates in UTC</span>
+            <h2>Usage</h2>
+        </div>
+    </div>
+    <div class="lobby-panel-body">
+        <div class="admin-filters">
+            <label class="lobby-field" for="usageFrom">
+                <span>From</span>
+                <input id="usageFrom" type="date" class="lobby-input" @bind="From"/>
+            </label>
+            <label class="lobby-field" for="usageTo">
+                <span>To (inclusive)</span>
+                <input id="usageTo" type="date" class="lobby-input" @bind="To"/>
+            </label>
+            <label class="lobby-field" for="usageGranularity">
+                <span>Group by</span>
+                <select id="usageGranularity" class="lobby-input" @bind="Granularity">
+                    @foreach (var granularity in Enum.GetValues<UsageGranularity>())
+                    {
+                        <option value="@granularity">@granularity</option>
+                    }
+                </select>
+            </label>
+            <div class="admin-usage-buttons">
+                <button class="ui-btn ui-btn-primary admin-filter-btn" disabled="@_busy" @onclick="Load">Show</button>
+                <button class="ui-btn ui-btn-secondary admin-filter-btn" disabled="@_busy" @onclick="DownloadCsv">CSV</button>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(_message))
+        {
+            <p class="admin-empty">@_message</p>
+        }
+
+        @if (Client.UsageStats is { } stats)
+        {
+            var total = stats.Total;
+            var started = total.Count(UsageEventType.GameStarted);
+            <div class="admin-stats">
+                <div><strong>@total.ActiveUsers</strong><span>Active users</span></div>
+                <div><strong>@total.Count(UsageEventType.UserRegistered)</strong><span>New users</span></div>
+                <div><strong>@total.Count(UsageEventType.Login)</strong><span>Logins</span></div>
+                <div><strong>@total.Count(UsageEventType.GameCreated)</strong><span>Games created</span></div>
+                <div><strong>@started</strong><span>Games started</span></div>
+                <div><strong>@total.Count(UsageEventType.GameFinished)</strong><span>Games finished</span></div>
+                <div><strong>@Percentage(total.Count(UsageEventType.GameFinished), started)</strong><span>Finished / started</span></div>
+                <div><strong>@total.Count(UsageEventType.GameJoined)</strong><span>Players joined</span></div>
+                <div><strong>@Percentage(total.GamesWithBots, started)</strong><span>Started with bots</span></div>
+                <div><strong>@Percentage(total.GamesWithAdvancedBots, started)</strong><span>With advanced bots</span></div>
+                <div><strong>@Percentage(total.AsyncGames, started)</strong><span>Async games</span></div>
+                <div><strong>@total.AveragePlayers.ToString("0.0")</strong><span>Avg human players</span></div>
+                <div><strong>@total.AverageTurns.ToString("0.0")</strong><span>Avg turns (finished)</span></div>
+                <div><strong>@total.AverageDurationHours.ToString("0.0")</strong><span>Avg hours (finished)</span></div>
+                <div><strong>@total.Count(UsageEventType.MembershipActivated)</strong><span>New members</span></div>
+                <div><strong>@total.Count(UsageEventType.MembershipEnded)</strong><span>Ended memberships</span></div>
+            </div>
+
+            <div class="admin-usage-chart-head">
+                <label class="lobby-field" for="usageMetric">
+                    <span>Chart</span>
+                    <select id="usageMetric" class="lobby-input" @bind="MetricIndex">
+                        @for (var i = 0; i < Metrics.Length; i++)
+                        {
+                            <option value="@i">@Metrics[i].Label</option>
+                        }
+                    </select>
+                </label>
+            </div>
+            var metric = Metrics[MetricIndex];
+            var max = Math.Max(1, stats.Periods.Select(metric.Value).DefaultIfEmpty(0).Max());
+            <div class="admin-usage-chart" role="img" aria-label="@metric.Label per period">
+                @foreach (var period in stats.Periods)
+                {
+                    var value = metric.Value(period);
+                    <div class="admin-usage-bar" title="@($"{FormatPeriod(period)}: {value}")">
+                        <div style="height: @((100.0 * value / max).ToString("0.#", CultureInfo.InvariantCulture))%"></div>
+                    </div>
+                }
+            </div>
+            @if (stats.Periods.Length > 0)
+            {
+                <div class="admin-usage-axis">
+                    <span>@FormatPeriod(stats.Periods[0])</span>
+                    <span>max @max</span>
+                    <span>@FormatPeriod(stats.Periods[^1])</span>
+                </div>
+            }
+
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>Period</th>
+                        @foreach (var m in Metrics)
+                        {
+                            <th>@m.Label</th>
+                        }
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var period in Enumerable.Reverse(stats.Periods))
+                    {
+                        <tr @key="period.PeriodStart">
+                            <td data-label="Period" class="admin-nowrap admin-strong">@FormatPeriod(period)</td>
+                            @foreach (var m in Metrics)
+                            {
+                                <td data-label="@m.Label">@m.Value(period)</td>
+                            }
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+
+    private record Metric(string Label, Func<UsagePeriodStats, int> Value);
+
+    private static readonly Metric[] Metrics =
+    [
+        new("Active users", s => s.ActiveUsers),
+        new("New users", s => s.Count(UsageEventType.UserRegistered)),
+        new("Logins", s => s.Count(UsageEventType.Login)),
+        new("Games created", s => s.Count(UsageEventType.GameCreated)),
+        new("Games started", s => s.Count(UsageEventType.GameStarted)),
+        new("Games finished", s => s.Count(UsageEventType.GameFinished)),
+        new("Players joined", s => s.Count(UsageEventType.GameJoined)),
+        new("With bots", s => s.GamesWithBots),
+        new("Advanced bots", s => s.GamesWithAdvancedBots),
+        new("Checkouts", s => s.Count(UsageEventType.MembershipCheckoutStarted)),
+        new("New members", s => s.Count(UsageEventType.MembershipActivated))
+    ];
+
+    private DateTime From { get; set; } = DateTime.UtcNow.Date.AddDays(-29);
+    private DateTime To { get; set; } = DateTime.UtcNow.Date;
+    private UsageGranularity Granularity { get; set; } = UsageGranularity.Day;
+    private int MetricIndex { get; set; }
+    private UsageGranularity _shownGranularity = UsageGranularity.Day;
+    private bool _busy;
+    private string _message = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Client.UsageStats == null)
+            await Load();
+    }
+
+    private (DateTimeOffset From, DateTimeOffset To) Range() =>
+        (new DateTimeOffset(From.Date, TimeSpan.Zero), new DateTimeOffset(To.Date.AddDays(1), TimeSpan.Zero));
+
+    private async Task Load()
+    {
+        var (from, to) = Range();
+        if (to <= from)
+        {
+            _message = "The end date must not be before the start date.";
+            return;
+        }
+
+        _busy = true;
+        var previous = Client.UsageStats;
+        var result = await Client.GetAdminUsageStats(from, to, Granularity);
+        var loaded = !ReferenceEquals(previous, Client.UsageStats);
+        if (loaded)
+            _shownGranularity = Granularity;
+        _message = loaded ? string.Empty : result;
+        _busy = false;
+    }
+
+    private async Task DownloadCsv()
+    {
+        _busy = true;
+        var (from, to) = Range();
+        _message = await Client.AdminDownloadUsageCsv(from, to);
+        _busy = false;
+    }
+
+    private string FormatPeriod(UsagePeriodStats period) => _shownGranularity switch
+    {
+        UsageGranularity.Month => period.PeriodStart.ToString("yyyy-MM", CultureInfo.InvariantCulture),
+        UsageGranularity.Week => "wk " + period.PeriodStart.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+        _ => period.PeriodStart.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+    };
+
+    private static string Percentage(int part, int whole) => whole == 0 ? "–" : $"{100.0 * part / whole:0}%";
+}

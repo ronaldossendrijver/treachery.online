@@ -31,6 +31,7 @@ public partial class GameHub
         }
         
         await Clients.Group(gameId).HandleAssignSeats(participation.SeatedPlayers);
+        await LogUsage(UsageEventType.GameStarted, user.Id, gameId, GameUsageData(game));
 
         if (e.Settings.AutoOpenEmptySeats)
         {
@@ -227,6 +228,7 @@ public partial class GameHub
         where TEvent : GameEvent
     {
         e.Initialize(game.Game);
+        var wasEnded = game.Game.CurrentMainPhase is MainPhase.Ended;
         var validationResult = e.Execute(true, isHost);
         e.Time = DateTimeOffset.Now;
 
@@ -251,6 +253,9 @@ public partial class GameHub
             await SendEndOfGameMail(game);
             game.StatisticsSent = true;
         }
+
+        if (!wasEnded && game.Game.CurrentMainPhase is MainPhase.Ended)
+            await LogUsage(UsageEventType.GameFinished, null, game.GameId, FinishedGameUsageData(game));
 
         game.LastActivity = DateTimeOffset.Now;
 

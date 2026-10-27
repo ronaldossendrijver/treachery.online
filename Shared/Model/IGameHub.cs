@@ -206,5 +206,7 @@ public interface IGameHub
     Task<Result<string>> DeleteUser(string userToken, int userId);
     Task<Result<AdminInfo>> GetAdminInfo(string userToken);
     Task<Result<ErrorLogInfo[]>> GetAdminErrorLog(string userToken, DateTimeOffset? from, DateTimeOffset? to, int? gameVersion);
+    Task<Result<UsageStatsInfo>> GetAdminUsageStats(string userToken, DateTimeOffset from, DateTimeOffset to, UsageGranularity granularity);
+    Task<Result<string>> GetAdminUsageCsv(string userToken, DateTimeOffset from, DateTimeOffset to);
     Task<VoidResult> ReportClientError(string? userToken, ClientErrorReport report);
 }

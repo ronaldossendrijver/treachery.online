@@ -74,7 +74,7 @@ public class MembershipTests
         return customerId;
     }
 
-    private static Event InvoicePaid(string customerId, DateTime periodEnd) => new()
+    internal static Event InvoicePaid(string customerId, DateTime periodEnd) => new()
     {
         Type = MembershipService.InvoicePaid,
         Data = new EventData
@@ -90,7 +90,7 @@ public class MembershipTests
         }
     };
 
-    private static Event SubscriptionDeleted(string customerId, DateTime endedAt) => new()
+    internal static Event SubscriptionDeleted(string customerId, DateTime endedAt) => new()
     {
         Type = MembershipService.SubscriptionDeleted,
         Data = new EventData { Object = new Subscription { CustomerId = customerId, EndedAt = endedAt } }

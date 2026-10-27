@@ -29,6 +29,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     //Admin info
     public AdminInfo AdminInfo { get; private set; } = null!;
     public ErrorLogInfo[] ErrorLogs { get; private set; } = [];
+    public UsageStatsInfo? UsageStats { get; private set; }
     
     //Server info
     public bool IsAdmin { get; set; } = false;
@@ -833,6 +834,32 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
 
         return CurrentSkin.Describe(result.Error);
+    }
+
+    public async Task<string> GetAdminUsageStats(DateTimeOffset from, DateTimeOffset to, UsageGranularity granularity)
+    {
+        if (!LoggedIn) return "Not logged in";
+
+        var result = await Invoke<UsageStatsInfo>(nameof(IGameHub.GetAdminUsageStats), UserToken, from, to, granularity);
+        if (result is { Success: true, Contents: not null })
+        {
+            UsageStats = result.Contents;
+            return "Usage statistics retrieved";
+        }
+
+        return CurrentSkin.Describe(result.Error);
+    }
+
+    public async Task<string> AdminDownloadUsageCsv(DateTimeOffset from, DateTimeOffset to)
+    {
+        if (!LoggedIn) return "Not logged in";
+
+        var result = await Invoke<string>(nameof(IGameHub.GetAdminUsageCsv), UserToken, from, to);
+        if (result is not { Success: true, Contents: not null })
+            return CurrentSkin.Describe(result.Error);
+
+        await Browser.Save($"usage-{from:yyyyMMdd}-{to.AddDays(-1):yyyyMMdd}.csv", result.Contents);
+        return "Usage events downloaded";
     }
 
     public async Task ReportClientError(ClientErrorReport report)

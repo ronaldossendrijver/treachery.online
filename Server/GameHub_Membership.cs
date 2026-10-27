@@ -76,6 +76,7 @@ public partial class GameHub
                 CancelUrl = returnUrl
             });
 
+            await LogUsage(UsageEventType.MembershipCheckoutStarted, user.Id);
             return Success(session.Url);
         }
         catch (StripeException e)

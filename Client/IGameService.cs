@@ -148,5 +148,8 @@ public interface IGameService
     Task<string> GetAdminInfo();
     ErrorLogInfo[] ErrorLogs { get; }
     Task<string> GetAdminErrorLog(DateTimeOffset? from, DateTimeOffset? to, int? gameVersion);
+    UsageStatsInfo? UsageStats { get; }
+    Task<string> GetAdminUsageStats(DateTimeOffset from, DateTimeOffset to, UsageGranularity granularity);
+    Task<string> AdminDownloadUsageCsv(DateTimeOffset from, DateTimeOffset to);
     Task ReportClientError(ClientErrorReport report);
 }

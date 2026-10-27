@@ -71,9 +71,15 @@ public class MembershipService(TreacheryContext db)
         if (onlyExtend && user.MembershipValidUntil >= validUntil)
             return user.Id;
 
+        var wasActive = Membership.IsActive(user.MembershipValidUntil);
         user.MembershipValidUntil = validUntil;
         await db.SaveChangesAsync();
         GameHub.UpdateCachedMembership(user.Id, user.MembershipValidUntil, user.StripeCustomerId);
+
+        var usageEvent = !onlyExtend ? UsageEventType.MembershipEnded
+            : wasActive ? UsageEventType.MembershipRenewed
+            : UsageEventType.MembershipActivated;
+        await UsageLog.RecordAsync(db, usageEvent, user.Id);
         return user.Id;
     }
 }
