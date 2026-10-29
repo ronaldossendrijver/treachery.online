@@ -39,6 +39,7 @@
     protected override Faction IsFactionSpecific => Faction.Yellow;
 
     internal Dictionary<Location, Battalion> Forces = new();
+    private bool _specialForceEventsSubscribed;
 
     protected override PerformYellowSetup ConfirmedResult => new(Game, Faction) { ForceLocations = Forces };
 
@@ -53,6 +54,7 @@
             {
                 Client.OnLocationSelectedWithCtrlOrAlt += HandleAddSpecialForce;
                 Client.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleRemoveSpecialForce;
+                _specialForceEventsSubscribed = true;
             }
         }
     }
@@ -63,10 +65,11 @@
         Client.OnLocationSelected -= HandleAddForce;
         Client.OnLocationSelectedWithShift -= HandleRemoveForce;
 
-        if (Player.HasSpecialForces)
+        if (_specialForceEventsSubscribed)
         {
             Client.OnLocationSelectedWithCtrlOrAlt -= HandleAddSpecialForce;
             Client.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveSpecialForce;
+            _specialForceEventsSubscribed = false;
         }
     }
 
