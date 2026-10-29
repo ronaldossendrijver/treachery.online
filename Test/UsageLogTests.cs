@@ -128,6 +128,31 @@ public class UsageLogTests
         Assert.AreEqual(1, startData.Players);
         Assert.AreEqual(2, startData.Bots);
         Assert.IsTrue(startData.AdvancedBots);
+        Assert.AreEqual(3, startData.MaximumPlayers);
+        Assert.IsNotNull(startData.MaximumTurns);
+        Assert.AreEqual(2, startData.BotFactions!.Split(';').Length);
+        Assert.AreEqual(1, startData.HumanFactions!.Split(';').Length);
+        CollectionAssert.AreEquivalent(
+            new[] { Faction.Green, Faction.Black, Faction.Yellow },
+            startData.BotFactions.Split(';').Concat(startData.HumanFactions.Split(';')).Select(Enum.Parse<Faction>).ToArray());
+        Assert.IsTrue(startData.BotRules!.Split(';').Contains(nameof(Rule.AdvancedBots)));
+    }
+
+    [TestMethod]
+    public void OversizedDataDropsRulesButStaysValidJson()
+    {
+        var json = UsageLog.Serialize(new UsageData
+        {
+            Players = 2,
+            BotFactions = "Green;Black",
+            Rules = string.Join(";", Enumerable.Repeat(nameof(Rule.AdvancedBots), 500))
+        });
+
+        Assert.IsTrue(json.Length <= UsageLog.MaximumDataLength);
+        var data = JsonSerializer.Deserialize<UsageData>(json)!;
+        Assert.AreEqual(2, data.Players);
+        Assert.AreEqual("Green;Black", data.BotFactions);
+        Assert.IsNull(data.Rules);
     }
 
     [TestMethod]

@@ -11,6 +11,7 @@ namespace Treachery.Server;
 public static class UsageLog
 {
     public const int MaximumCsvRows = 200_000;
+    public const int MaximumDataLength = 4000;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -25,7 +26,7 @@ public static class UsageLog
             Type = type,
             UserId = userId,
             GameId = gameId is { Length: > 36 } ? gameId[..36] : gameId,
-            Data = data == null ? null : Limit(JsonSerializer.Serialize(data, JsonOptions), 1000)
+            Data = data == null ? null : Serialize(data)
         };
 
         try
@@ -145,6 +146,18 @@ public static class UsageLog
         _ => period.AddDays(1)
     };
 
-    private static string Limit(string value, int maximumLength) =>
-        value.Length <= maximumLength ? value : value[..maximumLength];
+    /// <summary>
+    /// Serializes data, dropping the longest lists if needed so the result is always complete, valid JSON.
+    /// </summary>
+    public static string Serialize(UsageData data)
+    {
+        var json = JsonSerializer.Serialize(data, JsonOptions);
+        if (json.Length <= MaximumDataLength)
+            return json;
+
+        data.Rules = null;
+        data.BotRules = null;
+        json = JsonSerializer.Serialize(data, JsonOptions);
+        return json.Length <= MaximumDataLength ? json : "{}";
+    }
 }

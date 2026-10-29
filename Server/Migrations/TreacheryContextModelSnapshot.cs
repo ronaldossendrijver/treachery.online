@@ -224,7 +224,7 @@ namespace Treachery.Server.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Data")
-                        .HasMaxLength(1000)
+                        .HasMaxLength(4000)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("GameId")

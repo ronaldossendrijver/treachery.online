@@ -30,8 +30,20 @@ public partial class GameHub
         AdvancedBots = game.Game.Applicable(Rule.AdvancedBots),
         Ruleset = game.Game.Ruleset.ToString(),
         AsyncPlay = game.Game.Settings.AsyncPlay,
+        MaximumPlayers = game.Game.MaximumPlayers,
+        MaximumTurns = game.Game.MaximumTurns,
+        BotFactions = JoinOrNull(game.Game.Players.Where(game.Game.IsBot).Select(p => p.Faction)),
+        HumanFactions = JoinOrNull(game.Game.Players.Where(p => !game.Game.IsBot(p)).Select(p => p.Faction)),
+        Rules = JoinOrNull(game.Game.Rules),
+        BotRules = JoinOrNull(game.Game.RulesForBots),
         Turn = game.Game.CurrentTurn
     };
+
+    private static string? JoinOrNull<T>(IEnumerable<T> values)
+    {
+        var joined = string.Join(";", values);
+        return joined.Length == 0 ? null : joined;
+    }
 
     private static UsageData FinishedGameUsageData(ManagedGame game)
     {

@@ -15,7 +15,7 @@ public class UsageEvent
     /// <summary>
     /// Optional JSON-serialized <see cref="UsageData"/>.
     /// </summary>
-    [MaxLength(1000)]
+    [MaxLength(UsageLog.MaximumDataLength)]
     public string? Data { get; set; }
 }
 
@@ -29,6 +29,21 @@ public class UsageData
     public bool? AdvancedBots { get; set; }
     public string? Ruleset { get; set; }
     public bool? AsyncPlay { get; set; }
+    public int? MaximumPlayers { get; set; }
+    public int? MaximumTurns { get; set; }
+
+    /// <summary>
+    /// Semicolon-separated factions in play, by faction played by a bot and by a human at the moment of the event.
+    /// </summary>
+    public string? BotFactions { get; set; }
+    public string? HumanFactions { get; set; }
+
+    /// <summary>
+    /// Semicolon-separated rules in effect for the game and the rules configured for bots.
+    /// </summary>
+    public string? Rules { get; set; }
+    public string? BotRules { get; set; }
+
     public int? Turn { get; set; }
     public int? DurationMinutes { get; set; }
     public string? Winners { get; set; }
