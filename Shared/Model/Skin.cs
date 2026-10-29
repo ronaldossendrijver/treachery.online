@@ -1086,6 +1086,9 @@ public class Skin : IDescriber
             ErrorType.InvalidPasswordHash => "Invalid password hash; submit a SHA-256 hash",
             ErrorType.GameNameTooLong => "Game name must be 128 characters or less",
             ErrorType.ConnectionUnavailable => "Connection unavailable. Please wait for the server to reconnect.",
+            ErrorType.MembershipRequired => "Advanced bots are available to members only",
+            ErrorType.MembershipUnavailable => "Memberships are currently unavailable. Please try again later.",
+            ErrorType.MembershipNotFound => "No membership found for this account",
             
             _ => throw new ArgumentOutOfRangeException(nameof(e), e, null)
         };

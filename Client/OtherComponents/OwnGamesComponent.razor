@@ -278,9 +278,20 @@
                 Feedback &amp; bugs
             </a>
             <a href="https://ko-fi.com/N4N618W4XV" target="_blank" title="Support treachery.online"><img class="lobby-kofi" src="https://storage.ko-fi.com/cdn/kofi2.png?v=6" alt="Buy me a coffee"/></a>
+            @* Membership is only visible to the admin while it is being tested in production *@
+            @if (Client.IsAdminUser)
+            {
+                <button type="button" class="lobby-link-btn lobby-membership-btn" data-dialog-target="#membershipModal" aria-haspopup="dialog">
+                    @(Client.IsMember ? $"Member until {Client.MembershipValidUntil!.Value.ToLocalTime():d MMM yyyy}" : "Enable Advanced Bots")
+                </button>
+            }
         </div>
     </div>
 </section>
+@if (Client.IsAdminUser)
+{
+    <MembershipComponent Id="membershipModal"/>
+}
 @code {
 
     private OwnGamesComponentState State { get; set; } = OwnGamesComponentState.List;

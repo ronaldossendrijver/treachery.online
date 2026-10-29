@@ -15,6 +15,7 @@ public partial class GameHub
             AdminName = Configuration["GameAdminUsername"] ?? "admin",
             ScheduledMaintenance = MaintenanceDate,
             AdvancedBotsAvailable = BotFactory.IsAvailable(BotType.Advanced),
+            MembershipRequired = MembershipRequired,
         };
 
         return Success(result);
@@ -496,6 +497,8 @@ public partial class GameHub
                 await Clients.Group(gameId).HandleRemoveUser(userId, true);
                 await RemoveFromGroup(gameId, userId);
             }
+
+            await LogUsage(UsageEventType.GameClosed, user.Id, gameId, ClosedGameUsageData(game, true));
         }
         
         return Success("Game removed");

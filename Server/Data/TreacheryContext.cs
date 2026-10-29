@@ -14,6 +14,7 @@ public partial class TreacheryContext(DbContextOptions<TreacheryContext> options
     public DbSet<PersistedScheduledGame> ScheduledGames { get; set; }
     public DbSet<ErrorLogEntry> ErrorLogs { get; set; }
     public DbSet<ErrorLogSnapshot> ErrorLogSnapshots { get; set; }
+    public DbSet<UsageEvent> UsageEvents { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,6 +36,8 @@ public partial class TreacheryContext(DbContextOptions<TreacheryContext> options
             .WithOne(entry => entry.GameSnapshot)
             .HasForeignKey<ErrorLogSnapshot>(snapshot => snapshot.ErrorLogEntryId)
             .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<UsageEvent>().HasIndex(e => e.OccurredAt);
+        modelBuilder.Entity<UsageEvent>().Property(e => e.Type).HasConversion<string>().HasMaxLength(40);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

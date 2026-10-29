@@ -29,6 +29,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     //Admin info
     public AdminInfo AdminInfo { get; private set; } = null!;
     public ErrorLogInfo[] ErrorLogs { get; private set; } = [];
+    public UsageStatsInfo? UsageStats { get; private set; }
     
     //Server info
     public bool IsAdmin { get; set; } = false;
@@ -50,6 +51,13 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public int? UserId => LoginInfo?.UserId ?? -1;
     public string? UserName => LoginInfo?.UserName;
     public string? UserEmail => LoginInfo?.Email;
+    
+    //Membership
+    public DateTimeOffset? MembershipValidUntil => LoginInfo?.MembershipValidUntil;
+    public bool IsMember => Membership.IsActive(MembershipValidUntil);
+    public bool HasStripeCustomer => LoginInfo?.HasStripeCustomer == true;
+    public bool IsAdminUser => LoggedIn && ServerInfo != null && string.Equals(UserName, ServerInfo.AdminName, StringComparison.OrdinalIgnoreCase);
+    public bool CanUseAdvancedBots => ServerInfo is { AdvancedBotsAvailable: true } && (!ServerInfo.MembershipRequired || IsMember || IsAdminUser);
     
     //Game in progress
     public Game? Game { get; private set; }
@@ -489,6 +497,32 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         return UpdateServerStatusOnSuccess(result);
     }
     
+    //Membership
+
+    public async Task<Result<string>> RequestMembershipCheckout()
+    {
+        if (!LoggedIn) return new Result<string> { Error = ErrorType.UserNotFound };
+        return await Invoke<string>(nameof(IGameHub.RequestMembershipCheckout), UserToken);
+    }
+
+    public async Task<Result<string>> RequestMembershipPortal()
+    {
+        if (!LoggedIn) return new Result<string> { Error = ErrorType.UserNotFound };
+        return await Invoke<string>(nameof(IGameHub.RequestMembershipPortal), UserToken);
+    }
+
+    public async Task RefreshLoginInfo()
+    {
+        if (!LoggedIn || !IsConnected) return;
+
+        var result = await _connection.InvokeAsync<Result<LoginInfo>>(nameof(IGameHub.GetLoginInfo), UserToken);
+        if (result is { Success: true, Contents: not null })
+        {
+            LoginInfo = result.Contents;
+            Refresh(nameof(RefreshLoginInfo));
+        }
+    }
+    
     //Game Management
 
     private static string HashGamePassword(string? password)
@@ -800,6 +834,32 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         }
 
         return CurrentSkin.Describe(result.Error);
+    }
+
+    public async Task<string> GetAdminUsageStats(DateTimeOffset from, DateTimeOffset to, UsageGranularity granularity)
+    {
+        if (!LoggedIn) return "Not logged in";
+
+        var result = await Invoke<UsageStatsInfo>(nameof(IGameHub.GetAdminUsageStats), UserToken, from, to, granularity);
+        if (result is { Success: true, Contents: not null })
+        {
+            UsageStats = result.Contents;
+            return "Usage statistics retrieved";
+        }
+
+        return CurrentSkin.Describe(result.Error);
+    }
+
+    public async Task<string> AdminDownloadUsageCsv(DateTimeOffset from, DateTimeOffset to)
+    {
+        if (!LoggedIn) return "Not logged in";
+
+        var result = await Invoke<string>(nameof(IGameHub.GetAdminUsageCsv), UserToken, from, to);
+        if (result is not { Success: true, Contents: not null })
+            return CurrentSkin.Describe(result.Error);
+
+        await Browser.Save($"usage-{from:yyyyMMdd}-{to.AddDays(-1):yyyyMMdd}.csv", result.Contents);
+        return "Usage events downloaded";
     }
 
     public async Task ReportClientError(ClientErrorReport report)

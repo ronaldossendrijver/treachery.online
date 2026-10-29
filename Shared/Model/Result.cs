@@ -63,5 +63,8 @@ public enum ErrorType
     EmailTooLong,
     InvalidPasswordHash,
     GameNameTooLong,
-    ConnectionUnavailable
+    ConnectionUnavailable,
+    MembershipRequired,
+    MembershipUnavailable,
+    MembershipNotFound
 }

@@ -32,4 +32,9 @@ public class User
     public string PlayerName { get; set; } = string.Empty;
 
     public DateTimeOffset LastLogin { get; set; }
+
+    public DateTimeOffset? MembershipValidUntil { get; set; }
+
+    [MaxLength(255)]
+    public string? StripeCustomerId { get; set; }
 }

@@ -23,6 +23,15 @@ public interface IGameService
     public string? PlayerName { get; }
     public UserStatus? UserStatus { get; }
     
+    //Membership
+    public DateTimeOffset? MembershipValidUntil { get; }
+    public bool IsMember { get; }
+    public bool HasStripeCustomer { get; }
+    public bool IsAdminUser { get; }
+    public bool CanUseAdvancedBots { get; }
+    Task<Result<string>> RequestMembershipCheckout();
+    Task<Result<string>> RequestMembershipPortal();
+    Task RefreshLoginInfo();
     //Server info
     public ServerInfo? ServerInfo { get; }
     public AdminInfo? AdminInfo { get; }
@@ -139,5 +148,8 @@ public interface IGameService
     Task<string> GetAdminInfo();
     ErrorLogInfo[] ErrorLogs { get; }
     Task<string> GetAdminErrorLog(DateTimeOffset? from, DateTimeOffset? to, int? gameVersion);
+    UsageStatsInfo? UsageStats { get; }
+    Task<string> GetAdminUsageStats(DateTimeOffset from, DateTimeOffset to, UsageGranularity granularity);
+    Task<string> AdminDownloadUsageCsv(DateTimeOffset from, DateTimeOffset to);
     Task ReportClientError(ClientErrorReport report);
 }

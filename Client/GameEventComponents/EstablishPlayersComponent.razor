@@ -89,6 +89,14 @@
                 <div class="lobby-section-title">Bots</div>
                 <div class="setup-bots">
                     <RadioComponent @bind-Value="@AdvancedBots" Values="@AvailableBotTypes" ValueLabels="@AvailableBotTypeLabels"/>
+                    @if (AdvancedBotsRequireMembership)
+                    {
+                        <p class="setup-membership-hint">
+                            Advanced bots are available to members.
+                            <button type="button" class="ui-btn ui-btn-link" data-dialog-target="#establishPlayersMembershipModal" aria-haspopup="dialog">Become a member</button>
+                        </p>
+                        <MembershipComponent Id="establishPlayersMembershipModal"/>
+                    }
                     @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots, Game.ExpansionLevel).Where(r => r != Rule.AdvancedBots))
                     {
                         <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" Callback="StateHasChanged" />
@@ -117,7 +125,9 @@
     
     private bool _advancedOptions;
 
-    private bool AdvancedBotsAvailable => Client.ServerInfo?.AdvancedBotsAvailable == true;
+    private bool AdvancedBotsAvailable => Client.CanUseAdvancedBots;
+
+    private bool AdvancedBotsRequireMembership => Client.ServerInfo is { AdvancedBotsAvailable: true, MembershipRequired: true } && !AdvancedBotsAvailable;
 
     private bool[] AvailableBotTypes => AdvancedBotsAvailable ? [false, true] : [false];
 
@@ -171,6 +181,9 @@
                 
                 if (loadedSettings.Settings != null)
                     Settings = loadedSettings.Settings;
+
+                if (!AdvancedBotsAvailable)
+                    AdvancedBots = false;
                 
                 if (loadedSettings.Ruleset != Ruleset.None)
                     Ruleset = loadedSettings.Ruleset;
@@ -191,6 +204,9 @@
     
     protected override async Task Confirm()
     {
+        if (!AdvancedBotsAvailable)
+            AdvancedBots = false;
+        
         await StoreSettings();
         await base.Confirm();
     }

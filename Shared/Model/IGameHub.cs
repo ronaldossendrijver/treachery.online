@@ -14,6 +14,11 @@ public interface IGameHub
     Task<Result<LoginInfo>> RequestUpdateUserInfo(string userToken, string hashedPassword, string playerName, string email);
     Task<Result<ServerStatus>> RequestSetUserStatus(string userToken, UserStatus status);
 
+    //Membership
+
+    Task<Result<string>> RequestMembershipCheckout(string userToken);
+    Task<Result<string>> RequestMembershipPortal(string userToken);
+
     //Game Management
     
     Task<Result<GameInitInfo>> RequestCreateGame(string name, string userToken, string hashedPassword, string? stateData, string? skinData);
@@ -201,5 +206,7 @@ public interface IGameHub
     Task<Result<string>> DeleteUser(string userToken, int userId);
     Task<Result<AdminInfo>> GetAdminInfo(string userToken);
     Task<Result<ErrorLogInfo[]>> GetAdminErrorLog(string userToken, DateTimeOffset? from, DateTimeOffset? to, int? gameVersion);
+    Task<Result<UsageStatsInfo>> GetAdminUsageStats(string userToken, DateTimeOffset from, DateTimeOffset to, UsageGranularity granularity);
+    Task<Result<string>> GetAdminUsageCsv(string userToken, DateTimeOffset from, DateTimeOffset to);
     Task<VoidResult> ReportClientError(string? userToken, ClientErrorReport report);
 }

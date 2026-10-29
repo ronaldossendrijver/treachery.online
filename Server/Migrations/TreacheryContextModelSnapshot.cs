@@ -15,7 +15,7 @@ namespace Treachery.Server.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.12");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.13");
 
             modelBuilder.Entity("Treachery.Server.ArchivedGame", b =>
                 {
@@ -217,6 +217,38 @@ namespace Treachery.Server.Migrations
                     b.ToTable("ScheduledGames");
                 });
 
+            modelBuilder.Entity("Treachery.Server.UsageEvent", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Data")
+                        .HasMaxLength(4000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("GameId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("OccurredAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OccurredAt");
+
+                    b.ToTable("UsageEvents");
+                });
+
             modelBuilder.Entity("Treachery.Server.User", b =>
                 {
                     b.Property<int>("Id")
@@ -236,6 +268,9 @@ namespace Treachery.Server.Migrations
                     b.Property<DateTimeOffset>("LastLogin")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTimeOffset?>("MembershipValidUntil")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(4000)
@@ -251,6 +286,10 @@ namespace Treachery.Server.Migrations
                     b.Property<string>("PlayerName")
                         .IsRequired()
                         .HasMaxLength(4000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StripeCustomerId")
+                        .HasMaxLength(255)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

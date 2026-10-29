@@ -34,6 +34,9 @@ public partial class GameHub
                 game = loadedGame;
             else
                 return Error<GameInitInfo>(ErrorType.InvalidGameEvent, errorMessage?.ToString() ?? "Unknown error");
+
+            if (RequiresMembershipFor(user, game))
+                return Error<GameInitInfo>(ErrorType.MembershipRequired);
         }
 
         var gameId = Guid.NewGuid().ToString();
@@ -60,6 +63,8 @@ public partial class GameHub
             await Clients.Group(gameId).HandleSetSkin(skin);
         
         await PersistGameIfNeeded(managedGame);
+        await LogUsage(UsageEventType.GameCreated, user.Id, gameId,
+            string.IsNullOrEmpty(stateData) ? null : new UsageData { FromSavegame = true });
         
         return Success(new GameInitInfo
         {
@@ -99,6 +104,7 @@ public partial class GameHub
         };
 
         ScheduledGamesByGameId[gameId] = scheduledGame;
+        await LogUsage(UsageEventType.GameScheduled, user.Id, gameId, new UsageData { Players = numberOfPlayers, AsyncPlay = asyncPlay, Ruleset = ruleset?.ToString() });
         
         UpdateServerStatusIfNeeded(true);
         await Task.CompletedTask;
@@ -118,6 +124,7 @@ public partial class GameHub
             return Error<ServerStatus>(ErrorType.NoHost);
 
         ScheduledGamesByGameId.Remove(scheduledGameId, out _);
+        await LogUsage(UsageEventType.ScheduledGameCancelled, user.Id, scheduledGameId);
         
         UpdateServerStatusIfNeeded(true);
         await Task.CompletedTask;
@@ -139,6 +146,9 @@ public partial class GameHub
         if (errorMessage != null || loadedGame is null)
             return Error(ErrorType.InvalidGameEvent, errorMessage?.ToString() ?? "Unknown error");
 
+        if (RequiresMembershipFor(user, loadedGame))
+            return Error(ErrorType.MembershipRequired);
+
         return await game.ProcessEventAsync(async () =>
         {
             if (loadedGame.Seed != game.Game.Seed)
@@ -158,6 +168,7 @@ public partial class GameHub
                 await Clients.Group(gameId).HandleSetSkin(skin);
         
             await PersistGameIfNeeded(game);
+            await LogUsage(UsageEventType.GameLoaded, user.Id, gameId);
 
             ScheduleBotEvent(game);
             return Success();
@@ -227,6 +238,7 @@ public partial class GameHub
             
             game.Game.AddPlayer(user.Id, user.PlayerName, seat);
             await Clients.Group(gameId).HandleJoinGame(user.Id, user.PlayerName, seat);
+            await LogUsage(UsageEventType.GameJoined, user.Id, gameId, new UsageData { Turn = game.Game.CurrentTurn });
             
             if (game.Game.NumberOfSeatedPlayers == 1 || game.CreatorUserId == user.Id)
             {
@@ -333,6 +345,7 @@ public partial class GameHub
         game.Game.RemoveUser(user.Id, false);
         await Clients.Group(gameId).HandleRemoveUser(user.Id, false);
         await RemoveFromGroup(gameId, user.Id);
+        await LogUsage(UsageEventType.GameLeft, user.Id, gameId, new UsageData { Turn = game.Game.CurrentTurn });
         
         await PersistGameIfNeeded(game);
         
@@ -394,6 +407,7 @@ public partial class GameHub
         RunningGamesByGameId.Remove(gameId, out _);
         
         await EraseGame(game);
+        await LogUsage(UsageEventType.GameClosed, user.Id, gameId, ClosedGameUsageData(game, false));
         
         UpdateServerStatusIfNeeded(true);
         return Success(FilteredServerStatus(GameListScope.Active, user.Id));
@@ -459,6 +473,7 @@ public partial class GameHub
 
             game.Game.AddObserver(user.Id, user.PlayerName);
             await Clients.Group(gameId).HandleObserveGame(user.Id, user.PlayerName);
+            await LogUsage(UsageEventType.GameObserved, user.Id, gameId);
         }
 
         await AddToGroup(gameId, user.Id, Context.ConnectionId);
@@ -618,6 +633,7 @@ public partial class GameHub
         await RunTasksIfNeeded();
 
         loggedInUser.LastSeenDateTime = DateTime.Now;
+        await LogUserActive(loggedInUser.Id);
 
         return Success(FilteredServerStatus(scope, loggedInUser.Id));
     }

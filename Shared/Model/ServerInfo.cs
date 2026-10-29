@@ -19,4 +19,9 @@ public class ServerInfo
     /// True when this server can host advanced bots (Rule.AdvancedBots).
     /// </summary>
     public bool AdvancedBotsAvailable { get; set; }
+
+    /// <summary>
+    /// True when advanced bots are restricted to members.
+    /// </summary>
+    public bool MembershipRequired { get; set; }
 }
