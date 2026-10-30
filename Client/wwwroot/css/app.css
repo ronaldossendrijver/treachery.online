@@ -1181,6 +1181,17 @@ svg {
 .setup-sidebar { display: grid; gap: 18px; min-width: 0; }
 .setup-bots { display: grid; gap: 6px; }
 .setup-bots .ui-form-check { margin: 0; }
+.setup-bots-type { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px; }
+.setup-bots-type > :first-child { flex: 0 0 auto; }
+.setup-bots-info { flex: 1 1 200px; min-width: 0; padding: 8px 10px; border: 1px solid rgba(212, 175, 55, 0.35); border-radius: 8px; background: rgba(212, 175, 55, 0.06); color: var(--ivory-muted); font-size: 0.8rem; }
+.setup-bots-info p { margin: 0 0 4px; }
+.setup-bots-info ul { margin: 0; padding-left: 16px; }
+.setup-bots-info li { margin: 0 0 3px; }
+.setup-bots-info strong { color: var(--ivory); }
+.setup-bots-info em { color: var(--ivory); font-style: normal; font-weight: 600; }
+.bot-icon-basic { color: #fff; }
+.bot-icon-advanced { color: #d4af37; }
+.bot-icon-basic svg, .bot-icon-advanced svg { vertical-align: -0.125em; }
 .setup-actions {
     margin-top: 16px;
     padding-top: 14px;

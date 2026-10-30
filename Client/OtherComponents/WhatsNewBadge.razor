@@ -20,9 +20,18 @@
         <div id="whats-new-popover" class="whats-new-popover" role="region" aria-label="Changes in this version" tabindex="0">
             <header class="whats-new-header">
                 <span class="eyebrow">What's new</span>
-                <h2>Updated game design</h2>
-                <p>Most controls have moved onto the map. Here is where to find things.</p>
+                <h2>Advanced Bots</h2>
             </header>
+
+            <section class="whats-new-section">
+                <h3>New: Advanced Bots (experimental)</h3>
+                <AdvancedBotsInfo/>
+            </section>
+
+            <section class="whats-new-section">
+                <h3>Updated game design</h3>
+                <p>Most controls have moved onto the map. Here is where to find things.</p>
+            </section>
 
             <section class="whats-new-section">
                 <h3>On the map</h3>
@@ -84,7 +93,7 @@
 
 @code {
     // Change this value when the list of changes is updated, so the badge is shown again to everyone.
-    private const string ChangesVersion = "map-first-ui-2";
+    private const string ChangesVersion = "advanced-bots-1";
     private const string DismissedSetting = "treachery.online;setting.whatsnew.dismissed";
 
     private bool _loaded;

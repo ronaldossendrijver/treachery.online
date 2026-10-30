@@ -220,7 +220,8 @@
         </span>
         @if (showBots && av.NrOfBots > 0 && (!av.RequiresLoad || av.HasDetails))
         {
-            <span class="lobby-chip" title="Bots"><BotIcon Size="14" Title="Bots" MarginClass=""/>@av.NrOfBots</span>
+            var botsTitle = av.AdvancedBots ? "Advanced Bots" : "Basic Bots";
+            <span class="lobby-chip" title="@botsTitle"><BotIcon Size="14" Title="@botsTitle" Advanced="@av.AdvancedBots" MarginClass=""/>@av.NrOfBots</span>
         }
     };
 

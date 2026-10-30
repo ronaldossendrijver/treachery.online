@@ -34,8 +34,12 @@ public partial class Game
     public string GetPlayerName(int userId) => Participation.PlayerNames.GetValueOrDefault(userId, "?");
 
     public string GetPlayerName(Player player) => Version >= 170
-        ? player.IsBot ? "Bot" : Participation.PlayerNames.GetValueOrDefault(UserIdInSeat(player.Seat), "?")
+        ? player.IsBot ? BotName : Participation.PlayerNames.GetValueOrDefault(UserIdInSeat(player.Seat), "?")
         : LegacyNames.GetValueOrDefault(player, string.Empty);
+
+    public bool HasAdvancedBots => Applicable(Rule.AdvancedBots);
+
+    public string BotName => HasAdvancedBots ? "Advanced Bot" : "Basic Bot";
     
     public Player? GetPlayerByUserId(int? userId) => userId is null ? null : GetPlayerBySeat(SeatOf(userId.Value));
 

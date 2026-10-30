@@ -827,6 +827,7 @@ public partial class GameHub
             HasDetails = details?.HasDetails == true,
             FactionsInPlay = details?.FactionsInPlay ?? [],
             NrOfBots = details?.NrOfBots ?? 0,
+            AdvancedBots = details?.AdvancedBots ?? false,
             Ruleset = details?.Ruleset ?? default,
             MainPhase = details?.MainPhase ?? default,
             Phase = details?.Phase ?? default,

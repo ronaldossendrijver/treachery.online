@@ -287,4 +287,19 @@ public class MembershipTests
         var load = await hub.RequestLoadGame(nonMember.Token, ownGame.Contents!.GameId, state, "");
         Assert.AreEqual(ErrorType.MembershipRequired, load.Error);
     }
+
+    [TestMethod]
+    public async Task CheckoutWithoutStripeConfigurationExplainsReasonOnlyToAdmin()
+    {
+        var player = await CreateAccount();
+        var playerResult = await hub.RequestMembershipCheckout(player.Token);
+        Assert.AreEqual(ErrorType.MembershipUnavailable, playerResult.Error);
+        Assert.AreEqual(string.Empty, playerResult.ErrorDetails);
+
+        var admin = await CreateAccount("membership-admin");
+        var adminResult = await hub.RequestMembershipCheckout(admin.Token);
+        Assert.AreEqual(ErrorType.MembershipUnavailable, adminResult.Error);
+        StringAssert.Contains(adminResult.ErrorDetails, "StripeSecretKey");
+        StringAssert.Contains(adminResult.ErrorDetails, "StripePriceId");
+    }
 }

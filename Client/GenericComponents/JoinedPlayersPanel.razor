@@ -65,8 +65,8 @@
                     <span class="joined-player-name">
                         @if (isBot)
                         {
-                            <BotIcon Size="16"/>
-                            <span class="joined-player-bot">Bot</span>
+                            <BotIcon Size="16" Advanced="@Game.HasAdvancedBots"/>
+                            <span class="joined-player-bot">@Game.BotName</span>
                         }
                         else
                         {
