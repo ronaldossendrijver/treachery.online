@@ -27,6 +27,7 @@ public class GameInfo
     public Phase Phase { get; init; }
     public int Turn { get; init; }
     public int NrOfBots { get; init; }
+    public bool AdvancedBots { get; init; }
     public int NrOfPlayers { get; init; }
     public Faction[] FactionsInPlay { get; init; } = [];
     public Ruleset Ruleset { get; init; }
@@ -44,6 +45,9 @@ public class GameInfo
             ? game.Settings.AllowedFactionsInPlay.ToArray()
             : game.Players.Where(p => p.Faction != Faction.None).Select(p => p.Faction).ToArray(),
         NrOfBots = game.NumberOfBots,
+        AdvancedBots = game.CurrentPhase <= Phase.AwaitingPlayers
+            ? game.Settings.InitialRules.Contains(Rule.AdvancedBots)
+            : game.HasAdvancedBots,
         Ruleset = game.CurrentPhase <= Phase.AwaitingPlayers
             ? Game.DetermineApproximateRuleset(game.Settings.AllowedFactionsInPlay, game.Settings.InitialRules, Game.ExpansionLevel)
             : Game.DetermineApproximateRuleset(game.Players.Select(p => p.Faction).ToList(), game.Rules, Game.ExpansionLevel),

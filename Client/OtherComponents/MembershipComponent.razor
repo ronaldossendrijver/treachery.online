@@ -29,7 +29,9 @@
         }
         else
         {
-            <p>Become a member to play against <strong>advanced bots</strong> and support the development of treachery.online.</p>
+            <p>Developing and maintaining the <strong>advanced bots</strong> takes a lot of time and comes with costs.
+                To cover these costs, I need to ask you to contribute by activating a membership.
+                Thank you for supporting treachery.online!</p>
             <ul>
                 <li>Advanced bots in every game you host</li>
                 <li>Monthly subscription, cancel at any time</li>
@@ -77,7 +79,7 @@
         if (result.Success)
             _checkoutUrl = result.Contents;
         else
-            _error = Client.CurrentSkin.Describe(result.Error);
+            _error = DescribeError(result);
     }
 
     private async Task OpenPortal()
@@ -87,8 +89,12 @@
         if (result.Success)
             _portalUrl = result.Contents;
         else
-            _error = Client.CurrentSkin.Describe(result.Error);
+            _error = DescribeError(result);
     }
+
+    private string DescribeError<T>(Result<T> result) => string.IsNullOrEmpty(result.ErrorDetails)
+        ? Client.CurrentSkin.Describe(result.Error)
+        : $"{Client.CurrentSkin.Describe(result.Error)} ({result.ErrorDetails})";
 
     private void StartWaiting()
     {

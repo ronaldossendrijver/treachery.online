@@ -38,8 +38,12 @@ public partial class GameHub
             return Error<string>(ErrorType.UserNotFound);
 
         var priceId = Configuration["StripePriceId"];
-        if (StripeClientOrNull() is not { } stripe || string.IsNullOrEmpty(priceId))
-            return Error<string>(ErrorType.MembershipUnavailable);
+        var stripe = StripeClientOrNull();
+        if (stripe == null || string.IsNullOrEmpty(priceId))
+        {
+            var missing = string.Join(", ", new[] { stripe == null ? "StripeSecretKey" : null, string.IsNullOrEmpty(priceId) ? "StripePriceId" : null }.OfType<string>());
+            return MembershipUnavailable(loggedInUser, nameof(RequestMembershipCheckout), $"Missing configuration setting(s): {missing}");
+        }
 
         try
         {
@@ -81,8 +85,7 @@ public partial class GameHub
         }
         catch (StripeException e)
         {
-            Log($"{nameof(RequestMembershipCheckout)} failed: {e.Message}");
-            return Error<string>(ErrorType.MembershipUnavailable);
+            return MembershipUnavailable(loggedInUser, nameof(RequestMembershipCheckout), $"Stripe error: {e.Message}");
         }
     }
 
@@ -96,7 +99,7 @@ public partial class GameHub
             return Error<string>(ErrorType.MembershipNotFound);
 
         if (StripeClientOrNull() is not { } stripe)
-            return Error<string>(ErrorType.MembershipUnavailable);
+            return MembershipUnavailable(loggedInUser, nameof(RequestMembershipPortal), "Missing configuration setting(s): StripeSecretKey");
 
         try
         {
@@ -110,9 +113,17 @@ public partial class GameHub
         }
         catch (StripeException e)
         {
-            Log($"{nameof(RequestMembershipPortal)} failed: {e.Message}");
-            return Error<string>(ErrorType.MembershipUnavailable);
+            return MembershipUnavailable(loggedInUser, nameof(RequestMembershipPortal), $"Stripe error: {e.Message}");
         }
+    }
+
+    /// <summary>
+    /// Logs why memberships are unavailable. The reason is only returned to the admin, so it can be diagnosed without exposing details to players.
+    /// </summary>
+    private Result<string> MembershipUnavailable(LoggedInUser user, string operation, string reason)
+    {
+        Log($"{operation} failed: {reason}");
+        return Error<string>(ErrorType.MembershipUnavailable, IsAdmin(user) ? reason : string.Empty);
     }
 
     private StripeClient? StripeClientOrNull()

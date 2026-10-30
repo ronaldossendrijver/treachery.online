@@ -88,7 +88,15 @@
 
                 <div class="lobby-section-title">Bots</div>
                 <div class="setup-bots">
-                    <RadioComponent @bind-Value="@AdvancedBots" Values="@AvailableBotTypes" ValueLabels="@AvailableBotTypeLabels"/>
+                    <div class="setup-bots-type">
+                        <RadioComponent @bind-Value="@AdvancedBots" Values="@AvailableBotTypes" ValueLabels="@AvailableBotTypeLabels"/>
+                        @if (AdvancedBotsAvailable)
+                        {
+                            <aside class="setup-bots-info" aria-label="About Advanced Bots">
+                                <AdvancedBotsInfo/>
+                            </aside>
+                        }
+                    </div>
                     @if (AdvancedBotsRequireMembership)
                     {
                         <p class="setup-membership-hint">
@@ -171,30 +179,37 @@
     private async Task LoadSettings()
     {
         var loadedSettingsAsString = await Browser.LoadStringSetting("treachery.online;setting.establishPlayersSettings");
+        var storedSettingsLoaded = false;
         if (!string.IsNullOrEmpty(loadedSettingsAsString))
         {
             try
             {
                 var loadedSettings = Utilities.Deserialize<EstablishPlayersSettings>(loadedSettingsAsString);
 
-                if (loadedSettings == null) return;
-                
-                if (loadedSettings.Settings != null)
+                if (loadedSettings?.Settings != null)
+                {
                     Settings = loadedSettings.Settings;
+                    storedSettingsLoaded = true;
+                }
 
-                if (!AdvancedBotsAvailable)
-                    AdvancedBots = false;
-                
-                if (loadedSettings.Ruleset != Ruleset.None)
-                    Ruleset = loadedSettings.Ruleset;
-                
-                _advancedOptions = loadedSettings.AdvancedOptions;
+                if (loadedSettings != null)
+                {
+                    if (loadedSettings.Ruleset != Ruleset.None)
+                        Ruleset = loadedSettings.Ruleset;
+
+                    _advancedOptions = loadedSettings.AdvancedOptions;
+                }
             }
             catch (Exception)
             {
                 //Ignore locally stored settings
             }
         }
+
+        if (!storedSettingsLoaded)
+            AdvancedBots = AdvancedBotsAvailable;
+        else if (!AdvancedBotsAvailable)
+            AdvancedBots = false;
     }
 
     public override void Dispose()
