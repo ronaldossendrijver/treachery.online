@@ -10,13 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.13" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.13" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.13">
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.14">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Stripe.net" Version="53.0.0" />
+    <PackageReference Include="Stripe.net" Version="53.1.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -15,12 +15,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AngleSharp" Version="1.8.5" />
-    <PackageReference Include="bunit" Version="2.11.3" />
+    <PackageReference Include="AngleSharp" Version="1.8.6" />
+    <PackageReference Include="bunit" Version="2.13.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
-    <PackageReference Include="MSTest" Version="4.5.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="4.5.1" />
-    <PackageReference Include="MSTest.TestFramework" Version="4.5.1" />
+    <PackageReference Include="MSTest" Version="4.5.2" />
+    <PackageReference Include="MSTest.TestAdapter" Version="4.5.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="4.5.2" />
     <PackageReference Include="NSubstitute" Version="6.2.0" />
   </ItemGroup>
 
