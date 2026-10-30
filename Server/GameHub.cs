@@ -138,6 +138,8 @@ public partial class GameHub(
         return false;
     }
     
+    private const string DefaultMailHost = "smtp.strato.com";
+
     private async Task SendMail(MailMessage mail)
     {
         try
@@ -147,11 +149,14 @@ public partial class GameHub(
                 return;
             
             var password = Configuration["GameEndEmailPassword"];
+            var host = Configuration["GameEndEmailHost"];
+            if (string.IsNullOrEmpty(host))
+                host = DefaultMailHost;
 
             SmtpClient client = new()
             {
                 Credentials = new NetworkCredential(username, password),
-                Host = "smtp.strato.com", //TODO: move to config
+                Host = host,
                 EnableSsl = true
             };
             
