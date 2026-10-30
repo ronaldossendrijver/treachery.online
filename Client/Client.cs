@@ -9,6 +9,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net.Http;
 using System.Net.WebSockets;
 using System.Threading;
 using Microsoft.AspNetCore.Components;
@@ -1125,6 +1126,10 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             return ConnectionUnavailable<T>();
         }
         catch (WebSocketException)
+        {
+            return ConnectionUnavailable<T>();
+        }
+        catch (HttpRequestException)
         {
             return ConnectionUnavailable<T>();
         }
