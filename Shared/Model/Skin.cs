@@ -1416,6 +1416,10 @@ public class Skin : IDescriber
 
     private string GetBlueTemplate(Game g)
     {
+        var movementFlipDescription = g.Version < 177
+            ? "When you move forces into an occupied territory where you have no forces, you may choose to become advisors or fighters."
+            : "When you move advisors into an occupied territory where you have no forces, you may choose to keep them as advisors or flip them to fighters. Fighters moving into such a territory must remain fighters.";
+
         return SheetHeader("1 token in {26} and 19 tokens in reserve (off-planet)", 5, 1,
                    "You are adept in the ways of mind control") +
                Advantage("Prediction",
@@ -1436,7 +1440,9 @@ public class Skin : IDescriber
                Advantage(g, Rule.BlueAdvisors, "End peaceful coexistence",
                    "You may announce before the {21} phase all territories in which you no longer wish to peacefully coexist. Advisors there are flipped to fighters.") +
                Advantage(g, Rule.BlueAdvisors, "Flipping",
-                   "When you move forces into an occupied territory where you don't have forces or when another player moves tokens into a territory where you have advisors, you decide to stay there as either advisors or fighters.") +
+                   movementFlipDescription +
+                   " If you move forces into a territory where you already have advisors or fighters, the moving forces become the same type. Advisors moving into an unoccupied territory become fighters." +
+                   " When a non-allied faction ships or moves forces into a territory on the planet other than {26} where you have fighters, you may keep them as fighters or flip them to advisors.") +
                Advantage("Not with ally",
                    "Allied forces may not willingly end up in a territory where you have advisors (and vice versa).",
                    g.Applicable(Rule.BlueAdvisors) && !g.Applicable(Rule.AdvisorsDontConflictWithAlly)) +
