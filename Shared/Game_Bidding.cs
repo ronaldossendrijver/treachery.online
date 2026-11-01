@@ -191,7 +191,7 @@ public partial class Game
             Payment.Of(bidTotalAmount),
             MessagePart.ExpressIf(
                 bidAllyContributionAmount > 0 || bidRedContributionAmount > 0,
-                "(", Payment.Of(bidAllyContributionAmount, initiator.Ally), MessagePart.ExpressIf(bidRedContributionAmount > 0, " and ", Payment.Of(bidRedContributionAmount, Faction.Red)), ") "),
+                " (", Payment.Of(bidAllyContributionAmount, initiator.Ally), MessagePart.ExpressIf(bidRedContributionAmount > 0, " and ", Payment.Of(bidRedContributionAmount, Faction.Red)), ") "),
             receiverIncome);
     }
 
