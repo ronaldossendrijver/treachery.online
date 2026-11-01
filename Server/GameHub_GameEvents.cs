@@ -511,7 +511,7 @@ public partial class GameHub
             return 3000 / speed;
         
         if (phase is MainPhase.ShipmentAndMove or MainPhase.Battle)
-            return 12000 / speed;
+            return 10000 / speed;
         
         return 6400 / speed;
     }
