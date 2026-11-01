@@ -38,7 +38,38 @@ public class ManagedGame
 
     public DateTimeOffset LastAsyncPlayMessageSent { get; set; }
 
+    public DateTimeOffset LastBotAttempt { get; set; }
+
     public Dictionary<Faction, IBot> Bots { get; } = [];
+
+    public async Task<bool> NudgeBotsIfStalledAsync(DateTimeOffset now, Func<Task> nudge)
+    {
+        if (!await _eventSemaphore.WaitAsync(0))
+            return false;
+
+        try
+        {
+            var timeout = TimeSpan.FromSeconds(12);
+            if (!IsLoaded || Game.Participation.BotsSpeed <= 0 ||
+                Game.CurrentPhase <= Phase.AwaitingPlayers || Game.CurrentMainPhase == MainPhase.Ended ||
+                now - LastActivity < timeout || now - LastBotAttempt < timeout ||
+                (Game.LatestEvent() is { } latest && now - latest.Time < timeout))
+                return false;
+
+            var botsActAsHosts = Game.Participation.Hosts.Count == 0 && Game.NumberOfObservers > 0;
+            var status = GameStatus.DetermineStatus(Game, null, false);
+            if (!Game.Players.Any(p => p.IsBot && status.WaitingForMe(p, botsActAsHosts)))
+                return false;
+
+            LastBotAttempt = now;
+            await nudge();
+            return true;
+        }
+        finally
+        {
+            _eventSemaphore.Release();
+        }
+    }
 
     public async Task<string?> LoadIfNeededAsync(Func<Task<(Game? game, string? error)>> load)
     {

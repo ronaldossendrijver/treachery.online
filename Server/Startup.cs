@@ -40,6 +40,9 @@ public class Startup
                 "Microsoft.AspNetCore.SignalR.HubConnectionHandler",
                 LogLevel.Debug));
         services.AddSingleton<GameInfoSummaryCache>();
+        services.AddSingleton<BotEventScheduler>();
+        services.AddSingleton<IBotEventScheduler>(serviceProvider => serviceProvider.GetRequiredService<BotEventScheduler>());
+        services.AddHostedService(serviceProvider => serviceProvider.GetRequiredService<BotEventScheduler>());
         services.AddHostedService<GameInfoBackfillService>();
         services.AddHostedService<ErrorLogCleanupService>();
     }
