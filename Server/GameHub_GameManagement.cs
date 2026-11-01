@@ -535,6 +535,17 @@ public partial class GameHub
         }));
     }
 
+    public Task<Result<int>> RequestGameEventCount(string userToken, string gameId)
+    {
+        if (!AreValid<int>(userToken, gameId, out var user, out var game, out var error))
+            return Task.FromResult(error);
+
+        if (!game.Game.IsParticipant(user.Id))
+            return Task.FromResult(Error<int>(ErrorType.UserNotInGame));
+
+        return Task.FromResult(Success(game.Game.EventCount));
+    }
+
     public async Task<VoidResult> RequestSetSkin(string userToken, string gameId, string skin)
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))

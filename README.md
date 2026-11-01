@@ -9,6 +9,20 @@ When someone starts a new game, it is hosted on the webserver (found in namespac
 
 Namespace treachery.online.Shared, written in C#, contains the "core" of the game, the most important class being Game (divided into). The Game class contains all the logic of the game: the rules and the current state of the Game.
 
+## Bot stall recovery
+
+A server-hosted worker schedules bot actions and checks loaded games for bots
+whose turn is waiting without activity or a bot attempt for at least 12 seconds.
+This includes bidding, shipment/movement sequences and simultaneous player
+decisions. It retries the existing bot action logic, at most once every 12
+seconds while stalled, without changing bot speed. Paused bots, games waiting
+only for humans, and games already processing an action are left alone. Bots
+only advance host-controlled phases when the existing bot-as-host rules allow
+it. Each background operation uses a fresh service scope and broadcasts through
+SignalR's hub context rather than a request-scoped hub. Clients compare their
+event count with the server on each heartbeat and reload authoritative state if
+an event broadcast was missed.
+
 ## Game database storage and deployment
 
 Running and archived games store their state and participation JSON as UTF-8,

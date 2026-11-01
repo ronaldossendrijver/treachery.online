@@ -20,8 +20,6 @@ namespace Treachery.Client;
 
 public class Client : IGameService, IGameClient, IAsyncDisposable
 {
-    private const int NudgeBotsDelay = 7000;
-    
     //General info
     public ServerInfo? ServerInfo { get; private set; }
     public Skin CurrentSkin { get; set; } = DefaultSkin.Default;
@@ -913,6 +911,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
             if (IsConnected && LoggedIn)
             {
                 await SendHeartbeatAndGetServerStatus();
+                await SynchronizeGameStateIfNeeded();
             }
         }
         catch (Exception e)
@@ -930,6 +929,35 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
         
         var result = await Invoke<ServerStatus>(nameof(IGameHub.RequestHeartbeat), UserToken, scope);
         UpdateServerStatusOnSuccess(result);
+    }
+
+    private async Task SynchronizeGameStateIfNeeded()
+    {
+        if (!InGame || !LoggedIn)
+            return;
+
+        var eventCount = await Invoke<int>(nameof(IGameHub.RequestGameEventCount), UserToken, GameId);
+        if (!eventCount.Success)
+        {
+            Support.Log($"Unable to check game event count: {eventCount.Error}: {eventCount.ErrorDetails}");
+            return;
+        }
+
+        var serverEventCount = eventCount.Contents;
+        if (serverEventCount == Game.EventCount)
+            return;
+
+        var state = await Invoke<GameInitInfo>(nameof(IGameHub.RequestGameState), UserToken, GameId);
+        if (state is { Success: true, Contents: not null })
+        {
+            var loadMessage = await LoadGame(state.Contents);
+            if (loadMessage != null)
+                Support.Log(loadMessage.ToString(CurrentSkin));
+        }
+        else
+        {
+            Support.Log($"Unable to synchronize game state: {state.Error}: {state.ErrorDetails}");
+        }
     }
 
     private void HandleUpdatedServerStatus(ServerStatus status)
@@ -1001,10 +1029,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
         if (player != null)
         {
-            var lastActionTime = Game.LastAction;
-            if (!Status.WaitingForHost && IsHost && Status.WaitingForPlayers.Count > 0 && Status.WaitingForPlayers.All(p => p.IsBot))
-                _ = Task.Delay(NudgeBotsDelay).ContinueWith(_ => RequestNudgeBots(lastActionTime));
-
             await TurnAlert();
             await PlaySoundsForMilestones();
             await Browser.RemoveFocusFromButtons();
@@ -1015,14 +1039,6 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
 
         Refresh(nameof(PerformPostEventTasks));
     }
-    private async Task RequestNudgeBots(DateTime gameLastAction)
-    {
-        if (!InGame) return;
-        
-        if (Game.LastAction == gameLastAction)
-            await _connection.InvokeAsync<VoidResult>(nameof(IGameHub.RequestNudgeBots), UserToken, GameId);
-    }
-
     private void ResetAutoPassThreshold()
     {
         if (!InGame) return;
@@ -1098,7 +1114,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     }
 
     private async Task<Result<T>> Invoke<T>(string hubMethod, params object?[] args) =>
-        hubMethod is nameof(IGameHub.RequestHeartbeat) or nameof(IGameHub.RequestUpdateSettings)
+        hubMethod is nameof(IGameHub.RequestHeartbeat) or nameof(IGameHub.RequestUpdateSettings) or nameof(IGameHub.RequestGameEventCount)
             ? await InvokeHub<T>(hubMethod, args)
             : await WithBusyButton(() => InvokeHub<T>(hubMethod, args));
 

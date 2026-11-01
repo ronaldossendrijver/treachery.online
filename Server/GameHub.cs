@@ -1,9 +1,14 @@
 ﻿namespace Treachery.Server;
 
+using Microsoft.Extensions.Logging;
+
 public partial class GameHub(
     DbContextOptions<TreacheryContext> dbContextOptions,
     IConfiguration configuration,
-    GameInfoSummaryCache gameInfoSummaryCache)
+    GameInfoSummaryCache gameInfoSummaryCache,
+    IHubContext<GameHub, IGameClient> hubContext,
+    IBotEventScheduler botEventScheduler,
+    ILogger<GameHub> logger)
     : Hub<IGameClient>, IGameHub
 {
     private const int CleanupFrequencyHours = 7;
@@ -47,7 +52,18 @@ public partial class GameHub(
 
     private DbContextOptions<TreacheryContext> DbContextOptions { get; } = dbContextOptions;
 
+    private IHubContext<GameHub, IGameClient> HubContext { get; } = hubContext;
+
+    private IBotEventScheduler BotEventScheduler { get; } = botEventScheduler;
+
+    private ILogger<GameHub> Logger { get; } = logger;
+
     private TreacheryContext GetDbContext() => new(DbContextOptions, Configuration);
+
+    internal static bool TryGetRunningGame(string gameId, [NotNullWhen(true)] out ManagedGame? game)
+        => RunningGamesByGameId.TryGetValue(gameId, out game);
+
+    internal static ManagedGame[] GetRunningGamesSnapshot() => RunningGamesByGameId.Values.ToArray();
 
     internal static bool TryGetLoggedInUser(string? userToken, [NotNullWhen(true)] out LoggedInUser? user)
     {

@@ -691,9 +691,7 @@ public partial class GameHub
         if (!AreValid(userToken, gameId, out _, out var game, out var error))
             return error;
 
-        ScheduleBotEvent(game, true);
-
-        await Task.CompletedTask;
+        await PerformBotEvent(game);
         return Success();
     }
 }

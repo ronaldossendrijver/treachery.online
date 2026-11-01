@@ -37,6 +37,7 @@ public interface IGameHub
     Task<VoidResult> RequestRestoreRecentlyUndone(string userToken, string gameId);
     Task<VoidResult> RequestDismissRecentlyUndone(string userToken, string gameId);
     Task<Result<GameInitInfo>> RequestGameState(string userToken, string gameId);
+    Task<Result<int>> RequestGameEventCount(string userToken, string gameId);
     Task<VoidResult> RequestSetBotSpeed(string userToken, string gameId, int speed);
     Task<Result<ServerStatus>> RequestHeartbeat(string userToken, GameListScope scope);
     Task<VoidResult> RequestAssignSeats(string userToken, string gameId, Dictionary<int, int> assignment);

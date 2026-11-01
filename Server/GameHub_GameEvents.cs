@@ -1,5 +1,6 @@
 ﻿using Treachery.Bots;
 using Treachery.Shared.Model;
+using Microsoft.Extensions.Logging;
 
 namespace Treachery.Server;
 
@@ -248,25 +249,58 @@ public partial class GameHub
             return Error(ErrorType.InvalidGameEvent, validationResult.ToString());
         }
 
-        if (game.Game.CurrentMainPhase is MainPhase.Ended && !game.StatisticsSent && game.Game.NumberOfBots < 0.5f * game.Game.NumberOfSeatedPlayers)
+        try
         {
-            await SendEndOfGameMail(game);
-            game.StatisticsSent = true;
-        }
+            if (game.Game.CurrentMainPhase is MainPhase.Ended && !game.StatisticsSent && game.Game.NumberOfBots < 0.5f * game.Game.NumberOfSeatedPlayers)
+            {
+                await SendEndOfGameMail(game);
+                game.StatisticsSent = true;
+            }
 
-        if (!wasEnded && game.Game.CurrentMainPhase is MainPhase.Ended)
-            await LogUsage(UsageEventType.GameFinished, null, game.GameId, FinishedGameUsageData(game));
+            if (!wasEnded && game.Game.CurrentMainPhase is MainPhase.Ended)
+                await LogUsage(UsageEventType.GameFinished, null, game.GameId, FinishedGameUsageData(game));
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "Post-event completion work failed for game {GameId}.", game.GameId);
+        }
 
         game.LastActivity = DateTimeOffset.Now;
 
-        await Clients.Group(game.GameId).HandleGameEvent(e, game.Game.History.Count);
-        await SendAsyncPlayMessagesIfApplicable(game.GameId);
-        await PersistGameIfNeeded(game);
+        try
+        {
+            await HubContext.Clients.Group(game.GameId).HandleGameEvent(e, game.Game.History.Count);
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception,
+                "Unable to broadcast event {EventType} for game {GameId}; clients will synchronize on heartbeat.",
+                e.GetType().Name, game.GameId);
+        }
+
+        try
+        {
+            await SendAsyncPlayMessagesIfApplicable(game.GameId);
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "Unable to send async-play messages for game {GameId}.", game.GameId);
+        }
+
+        try
+        {
+            await PersistGameIfNeeded(game);
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "Unable to persist game {GameId} after an event.", game.GameId);
+        }
+
         ScheduleBotEvent(game);
         return Success();
     }
 
-    private async Task SendAsyncPlayMessagesIfApplicable(string gameId)
+    internal async Task SendAsyncPlayMessagesIfApplicable(string gameId)
     {
         if (!RunningGamesByGameId.TryGetValue(gameId, out var game))
             return;
@@ -278,9 +312,7 @@ public partial class GameHub
             if (elapsedMinutes < game.Game.Settings.AsyncPlayMessageIntervalMinutes)
             {
                 int delayInSeconds = 1 + 60 * (game.Game.Settings.AsyncPlayMessageIntervalMinutes - elapsedMinutes);
-                _ = Task.Delay(delayInSeconds * 1000)
-                    .ContinueWith(_ => SendAsyncPlayMessagesIfApplicable(gameId));
-                
+                BotEventScheduler.ScheduleAsyncPlayMessage(gameId, TimeSpan.FromSeconds(delayInSeconds));
                 return;
             }
             var whatHappened = game.Game.History
@@ -350,20 +382,9 @@ public partial class GameHub
         }
     }
 
-    private void ScheduleBotEvent(ManagedGame managedGame, bool immediate = false)
-    {
-        if (immediate)
-        {
-            _ = PerformBotEvent(managedGame);
-        }
-        else
-        {
-            var delay = DetermineBotDelay(managedGame.Game.CurrentMainPhase, managedGame.Game.LatestEvent(), managedGame.Game.Participation.BotsSpeed);
-            _ = Task.Delay(delay).ContinueWith(_ => PerformBotEvent(managedGame));    
-        }
-    }
+    private void ScheduleBotEvent(ManagedGame managedGame) => BotEventScheduler.ScheduleBotEvent(managedGame);
 
-    private async Task PerformBotEvent(ManagedGame managedGame)
+    internal async Task PerformBotEvent(ManagedGame managedGame)
     {
         await managedGame.ProcessEventAsync(async () =>
         {
@@ -372,8 +393,9 @@ public partial class GameHub
         });
     }
 
-    private async Task PerformBotEventInLock(ManagedGame managedGame)
+    internal async Task PerformBotEventInLock(ManagedGame managedGame)
     {
+        managedGame.LastBotAttempt = DateTimeOffset.UtcNow;
         var game = managedGame.Game;
         var botsActAsHosts = game.Participation.Hosts.Count == 0 && game.NumberOfObservers > 0;
         
@@ -475,7 +497,7 @@ public partial class GameHub
         return bot;
     }
     
-    private static int DetermineBotDelay(MainPhase phase, GameEvent? e, int speed)
+    internal static int DetermineBotDelay(MainPhase phase, GameEvent? e, int speed)
     {
         if (speed == 0) return 0;
         

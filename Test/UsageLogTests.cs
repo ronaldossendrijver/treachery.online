@@ -34,7 +34,12 @@ public class UsageLogTests
         db.Database.EnsureCreated();
         db.Database.ExecuteSqlRaw("INSERT INTO sqlite_sequence(name,seq) VALUES ('Users',{0})",
             Interlocked.Add(ref nextUserId, 100));
-        hub = new GameHub(options, configuration, new GameInfoSummaryCache())
+        var hubContext = Substitute.For<IHubContext<GameHub, IGameClient>>();
+        var hubClients = Substitute.For<IHubClients<IGameClient>>();
+        hubContext.Clients.Returns(hubClients);
+        hubClients.Group(Arg.Any<string>()).Returns(Substitute.For<IGameClient>());
+        hub = new GameHub(options, configuration, new GameInfoSummaryCache(), hubContext,
+            Substitute.For<IBotEventScheduler>(), Substitute.For<Microsoft.Extensions.Logging.ILogger<GameHub>>())
         {
             Context = Substitute.For<HubCallerContext>(),
             Groups = Substitute.For<IGroupManager>(),
