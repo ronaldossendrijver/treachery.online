@@ -58,6 +58,9 @@
         await UpdateMusicAndSound();
     }
 
+    private readonly System.Threading.SemaphoreSlim _musicLock = new(1, 1);
+    private bool _disposed;
+
     private async Task UpdateMusicAndSound()
     {
         if (!_settingsLoaded || !Client.InGame)
@@ -66,31 +69,56 @@
         Client.CurrentEffectVolume = DesiredEffectVolume;
         Client.CurrentChatVolume = DesiredChatVolume;
 
-        var soundtrackToPlay = DesiredMusicVolume <= 4 ? "" : DetermineSoundtrack();
-
-        if (CurrentSoundtrack != soundtrackToPlay)
+        // Renders can overlap; serialize so that only one soundtrack change is processed at a time
+        await _musicLock.WaitAsync();
+        try
         {
-            if (CurrentSoundtrack != "")
+            if (_disposed)
+                return;
+
+            var soundtrackToPlay = DesiredMusicVolume <= 4 ? "" : DetermineSoundtrack();
+
+            if (CurrentSoundtrack != soundtrackToPlay)
             {
-                await Browser.StopSound(CurrentSoundtrack);
+                var previousSoundtrack = CurrentSoundtrack;
+                CurrentSoundtrack = soundtrackToPlay;
+                CurrentMusicVolume = DesiredMusicVolume;
+
+                if (previousSoundtrack != "")
+                {
+                    await Browser.StopSound(previousSoundtrack);
+                }
+
+                if (soundtrackToPlay != "")
+                {
+                    await Browser.PlaySound(soundtrackToPlay, DesiredMusicVolume, true);
+                }
             }
-
-            CurrentSoundtrack = soundtrackToPlay;
-            CurrentMusicVolume = DesiredMusicVolume;
-
-            if (soundtrackToPlay != "")
+            else if (Math.Abs(CurrentMusicVolume - DesiredMusicVolume) > 0.001f)
             {
-                await Browser.PlaySound(soundtrackToPlay, DesiredMusicVolume, true);
+                CurrentMusicVolume = DesiredMusicVolume;
+
+                if (soundtrackToPlay != "")
+                {
+                    await Browser.ChangeSoundVolume(soundtrackToPlay, DesiredMusicVolume);
+                }
             }
         }
-        else if (Math.Abs(CurrentMusicVolume - DesiredMusicVolume) > 0.001f)
+        finally
         {
-            CurrentMusicVolume = DesiredMusicVolume;
+            _musicLock.Release();
+        }
+    }
 
-            if (soundtrackToPlay != "")
-            {
-                await Browser.ChangeSoundVolume(soundtrackToPlay, DesiredMusicVolume);
-            }
+    public override void Dispose()
+    {
+        base.Dispose();
+        _disposed = true;
+
+        if (CurrentSoundtrack != "")
+        {
+            _ = Browser.StopSound(CurrentSoundtrack);
+            CurrentSoundtrack = "";
         }
     }
 

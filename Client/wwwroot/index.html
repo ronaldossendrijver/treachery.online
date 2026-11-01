@@ -393,6 +393,7 @@
 
             let sound = currentSounds.get(file);
             if (sound != null && hasMediaError(sound)) {
+                clearFade(sound);
                 sound.pause();
                 currentSounds.delete(file);
                 sound = null;
@@ -407,6 +408,12 @@
 
             if (sound != null)
             {
+                if (sound.fadeInterval != null) {
+                    //A pending fade-out would otherwise pause this sound and orphan it from currentSounds
+                    clearFade(sound);
+                    sound.volume = volume;
+                }
+                sound.loop = loop;
                 sound.currentTime = 0;
                 playSound(sound, retryWithFreshElement);
             }
@@ -418,11 +425,12 @@
                 currentSounds.set(file, sound);
 
                 if (fadeTime > 0) {
-                    fadeStepTimeInterval = fadeTime / 8;
-                    fadeStepVolumeInterval = volume / 8;
-                    var interval = setInterval(function () {
+                    const fadeStepTimeInterval = fadeTime / 8;
+                    const fadeStepVolumeInterval = volume / 8;
+                    sound.volume = 0;
+                    sound.fadeInterval = setInterval(function () {
                         if (sound.volume + fadeStepVolumeInterval >= volume) {
-                            clearInterval(interval);
+                            clearFade(sound);
                             sound.volume = volume;
                         }
                         else {
@@ -439,23 +447,36 @@
             }
         }
 
+        function clearFade(sound) {
+            if (sound.fadeInterval != null) {
+                clearInterval(sound.fadeInterval);
+                sound.fadeInterval = null;
+            }
+        }
+
         function StopSound(file, fadeTime) {
 
             let sound = currentSounds.get(file);         
 
             if (sound != null)
             {
-                if (fadeTime > 0)
+                clearFade(sound);
+
+                const stopNow = () => {
+                    clearFade(sound);
+                    sound.pause();
+                    if (currentSounds.get(file) === sound) currentSounds.delete(file);
+                };
+
+                if (fadeTime > 0 && sound.volume > 0)
                 {
-                    fadeStepTimeInterval = fadeTime / 8;
-                    fadeStepVolumeInterval = sound.volume / 8;
-                    var interval = setInterval(function ()
+                    const fadeStepTimeInterval = fadeTime / 8;
+                    const fadeStepVolumeInterval = sound.volume / 8;
+                    sound.fadeInterval = setInterval(function ()
                     {
                         if (sound.volume <= fadeStepVolumeInterval)
                         {
-                            clearInterval(interval);
-                            sound.pause();
-                            currentSounds.delete(file);
+                            stopNow();
                         }
                         else
                         {
@@ -465,8 +486,7 @@
                 }
                 else
                 {
-                    sound.pause();
-                    currentSounds.delete(file);
+                    stopNow();
                 }
 
             }
