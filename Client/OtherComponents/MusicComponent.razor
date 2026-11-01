@@ -58,6 +58,9 @@
         await UpdateMusicAndSound();
     }
 
+    private readonly System.Threading.SemaphoreSlim _musicLock = new(1, 1);
+    private bool _disposed;
+
     private async Task UpdateMusicAndSound()
     {
         if (!_settingsLoaded || !Client.InGame)
@@ -66,31 +69,74 @@
         Client.CurrentEffectVolume = DesiredEffectVolume;
         Client.CurrentChatVolume = DesiredChatVolume;
 
-        var soundtrackToPlay = DesiredMusicVolume <= 4 ? "" : DetermineSoundtrack();
+        // Renders can overlap; serialize so that only one soundtrack change is processed at a time
+        await _musicLock.WaitAsync();
+        try
+        {
+            if (_disposed)
+                return;
 
-        if (CurrentSoundtrack != soundtrackToPlay)
+            var soundtrackToPlay = DesiredMusicVolume <= 4 ? "" : DetermineSoundtrack();
+
+            if (CurrentSoundtrack != soundtrackToPlay)
+            {
+                var previousSoundtrack = CurrentSoundtrack;
+                CurrentSoundtrack = soundtrackToPlay;
+                CurrentMusicVolume = DesiredMusicVolume;
+
+                if (previousSoundtrack != "")
+                {
+                    await Browser.StopSound(previousSoundtrack);
+                }
+
+                if (soundtrackToPlay != "" && !_disposed)
+                {
+                    await Browser.PlaySound(soundtrackToPlay, DesiredMusicVolume, true);
+                }
+            }
+            else if (Math.Abs(CurrentMusicVolume - DesiredMusicVolume) > 0.001f)
+            {
+                CurrentMusicVolume = DesiredMusicVolume;
+
+                if (soundtrackToPlay != "")
+                {
+                    await Browser.ChangeSoundVolume(soundtrackToPlay, DesiredMusicVolume);
+                }
+            }
+        }
+        finally
+        {
+            _musicLock.Release();
+        }
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        _disposed = true;
+        _ = StopMusicAfterDisposal();
+    }
+
+    private async Task StopMusicAfterDisposal()
+    {
+        // Wait for any in-flight soundtrack change to finish, so it cannot start a track after we stopped it
+        await _musicLock.WaitAsync();
+        try
         {
             if (CurrentSoundtrack != "")
             {
-                await Browser.StopSound(CurrentSoundtrack);
-            }
-
-            CurrentSoundtrack = soundtrackToPlay;
-            CurrentMusicVolume = DesiredMusicVolume;
-
-            if (soundtrackToPlay != "")
-            {
-                await Browser.PlaySound(soundtrackToPlay, DesiredMusicVolume, true);
+                var soundtrack = CurrentSoundtrack;
+                CurrentSoundtrack = "";
+                await Browser.StopSound(soundtrack);
             }
         }
-        else if (Math.Abs(CurrentMusicVolume - DesiredMusicVolume) > 0.001f)
+        catch (Exception)
         {
-            CurrentMusicVolume = DesiredMusicVolume;
-
-            if (soundtrackToPlay != "")
-            {
-                await Browser.ChangeSoundVolume(soundtrackToPlay, DesiredMusicVolume);
-            }
+            //Browser may already be unavailable
+        }
+        finally
+        {
+            _musicLock.Release();
         }
     }
 
