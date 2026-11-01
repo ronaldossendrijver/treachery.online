@@ -89,7 +89,7 @@
                     await Browser.StopSound(previousSoundtrack);
                 }
 
-                if (soundtrackToPlay != "")
+                if (soundtrackToPlay != "" && !_disposed)
                 {
                     await Browser.PlaySound(soundtrackToPlay, DesiredMusicVolume, true);
                 }
@@ -114,11 +114,29 @@
     {
         base.Dispose();
         _disposed = true;
+        _ = StopMusicAfterDisposal();
+    }
 
-        if (CurrentSoundtrack != "")
+    private async Task StopMusicAfterDisposal()
+    {
+        // Wait for any in-flight soundtrack change to finish, so it cannot start a track after we stopped it
+        await _musicLock.WaitAsync();
+        try
         {
-            _ = Browser.StopSound(CurrentSoundtrack);
-            CurrentSoundtrack = "";
+            if (CurrentSoundtrack != "")
+            {
+                var soundtrack = CurrentSoundtrack;
+                CurrentSoundtrack = "";
+                await Browser.StopSound(soundtrack);
+            }
+        }
+        catch (Exception)
+        {
+            //Browser may already be unavailable
+        }
+        finally
+        {
+            _musicLock.Release();
         }
     }
 
