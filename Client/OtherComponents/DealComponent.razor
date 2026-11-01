@@ -1,10 +1,12 @@
+@using Treachery.Client.MapComponents
 @inherits GameComponent
 
 @{
     var player = Client.Player;
     var acceptableDeals = player is null ? [] : DealAccepted.AcceptableDeals(Game, player).ToArray();
     var cancellableDeals = player is null ? [] : DealAccepted.CancellableDeals(Game, player).ToArray();
-    var currentDeals = DealAccepted.CurrentDeals(Game).ToArray();
+    var unplacedDeals = DealAccepted.CurrentDeals(Game)
+        .Where(deal => Client.PlayersNeedSeating || !DealIndicatorLayout.CanPlaceOnBoard(Game, deal)).ToArray();
 }
 
 <div class="deals-overview">
@@ -59,12 +61,12 @@
         </section>
     }
 
-    @if (currentDeals.Any())
+    @if (unplacedDeals.Length > 0)
     {
         <section class="deals-group">
             <h3>
-                Current deals
-                <span class="deal-count-badge is-current">@currentDeals.Length</span>
+                Current deals unavailable on the map
+                <span class="deal-count-badge is-current">@unplacedDeals.Length</span>
             </h3>
             <div class="deals-table-wrap">
                 <table class="ui-table ui-table-sm">
@@ -72,7 +74,7 @@
                         <tr><th scope="col">Parties</th><th scope="col">Agreement</th></tr>
                     </thead>
                     <tbody>
-                        @foreach (var deal in currentDeals)
+                        @foreach (var deal in unplacedDeals)
                         {
                             <tr>
                                 <th scope="row" class="deal-parties">

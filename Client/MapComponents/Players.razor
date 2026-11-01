@@ -24,11 +24,11 @@
                 radiusModifier = 1.5f;
             }
 
-            var position = PlayerTokenPosition(Game, p.Seat);
+            var position = PlayerTokenLayout.Position(Game, Client.CurrentSkin, p.Seat);
             var x = position.X - radiusModifier * Client.CurrentSkin.PlayerTokenRadius;
             var y = position.Y - radiusModifier * Client.CurrentSkin.PlayerTokenRadius;
             var factionTokenDiameter = radiusModifier * Client.CurrentSkin.PlayerTokenRadius * 2;
-            var positionSector = (float)Math.Floor((float)p.Seat * Map.NumberOfSectors / Game.MaximumPlayers);
+            var peripheralPositions = new Queue<PointD>(PlayerTokenLayout.PeripheralCenters(Game, Client.CurrentSkin, p));
 
             <Circle X="@position.X" Y="@position.Y" Radius="@(1.35f * Client.CurrentSkin.PlayerTokenRadius)" FillColor="@Client.CurrentSkin.TABLEPOSITION_BACKGROUNDCOLOR" />
 
@@ -36,22 +36,22 @@
                    ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                    Popover="@Client.CurrentSkin.Describe(p.Faction)" PopoverAsTooltip="true"
                    KeyboardAccessible="true"
+                   class="map-faction-logo" data-player-faction="@p.Faction" data-player-acting="@(radiusModifier > 1 ? "true" : "false")"
                    aria-haspopup="true"
                    OnClick="@(_ => OnFactionClick.InvokeAsync(p.Faction))"/>
 
             if (p.HasAlly)
             {
                 <MapImage X="@(position.X)" Y="@(position.Y + 0.25f * Client.CurrentSkin.PlayerTokenRadius)" Diameter=@(1.2f * Client.CurrentSkin.PlayerTokenRadius) Src="@Client.CurrentSkin.GetFactionTableImageUrl(p.Ally)" 
+                       class="map-faction-logo"
                        ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                 Popover="@Client.CurrentSkin.Describe(p.Ally)" PopoverAsTooltip="true"/>
             }
 
-            var positionOnCircle = TwoPi / 180 + (4.5f - positionSector) * TwoPi / Map.NumberOfSectors;
-                        
             //Homeworlds
             foreach (var homeworld in p.HomeWorlds)
             {
-                positionOnCircle += 0.06f;
+                var positionOnCircle = peripheralPositions.Dequeue();
 
                 var homeworldXy = Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius);
 
@@ -115,12 +115,11 @@
                     reservesY += Client.CurrentSkin.FORCETOKEN_RADIUS;
                 }
 
-                positionOnCircle += 0.02f;
             }
 
             foreach (var tt in p.TechTokens)
             {
-                positionOnCircle += TwoPi / 90;
+                var positionOnCircle = peripheralPositions.Dequeue();
                 <MapImage Xy=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
                        Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
                        Src="@Client.CurrentSkin.GetImageUrl(tt)" ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
@@ -129,7 +128,7 @@
 
             if (p.Faction == Faction.Pink && Game.PinkLoyalLeader != null)
             {
-                positionOnCircle += TwoPi / 90;
+                var positionOnCircle = peripheralPositions.Dequeue();
 
                 <MapImage Xy=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
                        Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
@@ -139,7 +138,7 @@
                         
             foreach (var skilledLeader in Game.GetSkilledLeaders(p).Where(l => Game.IsInFrontOfShield(l))) {
 
-                positionOnCircle += TwoPi / 90;
+                var positionOnCircle = peripheralPositions.Dequeue();
 
                 <MapImage Xy=@Pos(positionOnCircle, Client.CurrentSkin.PlayerTokenRadius)
                         Diameter=@(2 * Client.CurrentSkin.PlayerTokenRadius)
@@ -156,7 +155,7 @@
 
             if (p.Faction == Faction.Pink && p.Ambassadors.Any())
             {
-                positionOnCircle += TwoPi / 90;
+                var positionOnCircle = peripheralPositions.Dequeue();
 
                 var ambassadorXy = Pos(positionOnCircle, 0.5f * Client.CurrentSkin.PlayerTokenRadius);
                 var yOffset = -0.5f * p.Ambassadors.Count() * 0.2f * Client.CurrentSkin.PlayerTokenRadius;
@@ -176,7 +175,7 @@
 
             if (p.Faction == Faction.White && Game.LatestRevealedNoFieldValue >= 0)
             {
-                positionOnCircle += TwoPi / 90;
+                var positionOnCircle = peripheralPositions.Dequeue();
 
                 <MapImage Xy=@Pos(positionOnCircle, Client.CurrentSkin.FORCETOKEN_RADIUS) Diameter=@(2 * Client.CurrentSkin.FORCETOKEN_RADIUS) Src="@Client.CurrentSkin.FactionSpecialForceImage_URL[Faction.White]"
                        ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
@@ -193,7 +192,7 @@
 
             if (totalSpiceToReceiveLater > 0)
             {
-                positionOnCircle += TwoPi / 90;
+                var positionOnCircle = peripheralPositions.Dequeue();
                 var tooltip = Client.CurrentSkin.Format("To be collected during {0}", MainPhase.Contemplate);
 
                 <MapImage 
@@ -211,12 +210,12 @@
                     Font="@Client.CurrentSkin.RESOURCETOKEN_FONT" FontColor="@Client.CurrentSkin.RESOURCETOKEN_FONTCOLOR"
                     Popover=@tooltip PopoverAsTooltip=true
                     BorderWidth="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERCOLOR"
-                    Align="@TextAlignment.Center"/>
+                    Align="@TextAlignment.Center" CenterOnPoint="true"/>
             }
 
             if (p.ResourcesAfterBidding > 0)
             {
-                positionOnCircle += TwoPi / 90;
+                var positionOnCircle = peripheralPositions.Dequeue();
                 var tooltip = Client.CurrentSkin.Format("Subbed {0}", Concept.Resource);
 
                 <MapImage 
@@ -300,11 +299,6 @@
 
     private sealed record HomeworldMarker(float X, float Y, string Src, string Label);
 
-    private PointD Pos(float positionOnCircle, float radiusOfToken = 0) {
-
-        var mapRadius = 1.06f * Client.CurrentSkin.MapRadius;
-        return new PointD(
-            X = Client.CurrentSkin.PlanetCenter.X + (float)(Math.Cos(positionOnCircle) * mapRadius) - radiusOfToken, 
-            Y = Client.CurrentSkin.PlanetCenter.Y + (float)(Math.Sin(positionOnCircle) * mapRadius) - radiusOfToken);
-    }
+    private static PointD Pos(PointD center, float radiusOfToken = 0) =>
+        new(center.X - radiusOfToken, center.Y - radiusOfToken);
 }

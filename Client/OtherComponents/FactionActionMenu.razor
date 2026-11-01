@@ -5,7 +5,8 @@
 {
     var canGift = CanOfferGift(faction);
     var canManageAlliance = CanManageAlliance(faction);
-    var tabs = AvailableTabs(canGift, canManageAlliance);
+    var canOfferDeal = CanOfferDeal;
+    var tabs = AvailableTabs(canGift, canManageAlliance, canOfferDeal);
     var activeTab = tabs.Contains(_activeTab) ? _activeTab : tabs[0];
     var idPrefix = $"map-faction-{faction}";
 
@@ -35,6 +36,13 @@
                         tabindex="@(activeTab == AllianceTab ? 0 : -1)"
                         @onclick="@(() => SelectTab(AllianceTab))" @onkeydown="@(e => OnTabKey(e, tabs, activeTab))">Alliance</button>
             }
+            @if (canOfferDeal)
+            {
+                <button @ref="_dealTab" id="@($"{idPrefix}-tab-deal")" class="map-faction-tab @(activeTab == DealTab ? "is-active" : "")" type="button" role="tab"
+                        aria-selected="@(activeTab == DealTab ? "true" : "false")" aria-controls="@($"{idPrefix}-panel-deal")"
+                        tabindex="@(activeTab == DealTab ? 0 : -1)"
+                        @onclick="@(() => SelectTab(DealTab))" @onkeydown="@(e => OnTabKey(e, tabs, activeTab))">Offer a deal</button>
+            }
             <button @ref="_infoTab" id="@($"{idPrefix}-tab-info")" class="map-faction-tab @(activeTab == InfoTab ? "is-active" : "")" type="button" role="tab"
                     aria-selected="@(activeTab == InfoTab ? "true" : "false")" aria-controls="@($"{idPrefix}-panel-info")"
                     tabindex="@(activeTab == InfoTab ? 0 : -1)"
@@ -53,6 +61,12 @@
                 <div id="@($"{idPrefix}-panel-alliance")" class="map-faction-gift map-faction-alliance" role="tabpanel" aria-labelledby="@($"{idPrefix}-tab-alliance")">
                     <h3 class="map-faction-panel-title">Manage your alliance</h3>
                     <AllyPermissionComponent />
+                </div>
+            }
+            else if (activeTab == DealTab)
+            {
+                <div id="@($"{idPrefix}-panel-deal")" class="map-faction-gift map-faction-deal" role="tabpanel" aria-labelledby="@($"{idPrefix}-tab-deal")">
+                    <DealOfferedComponent @key="faction" TargetFaction="faction" />
                 </div>
             }
             else
@@ -76,6 +90,7 @@
 @code {
     private const string GiftTab = "gift";
     private const string AllianceTab = "alliance";
+    private const string DealTab = "deal";
     private const string InfoTab = "info";
 
     [Parameter] public Faction? SelectedFaction { get; set; }
@@ -97,14 +112,16 @@
 
     private ElementReference _giftTab;
     private ElementReference _allianceTab;
+    private ElementReference _dealTab;
     private ElementReference _infoTab;
     private bool _focusActiveTab;
 
-    private static List<string> AvailableTabs(bool canGift, bool canManageAlliance)
+    private static List<string> AvailableTabs(bool canGift, bool canManageAlliance, bool canOfferDeal)
     {
         var result = new List<string>();
         if (canGift) result.Add(GiftTab);
         if (canManageAlliance) result.Add(AllianceTab);
+        if (canOfferDeal) result.Add(DealTab);
         result.Add(InfoTab);
         return result;
     }
@@ -132,6 +149,7 @@
         {
             GiftTab => _giftTab,
             AllianceTab => _allianceTab,
+            DealTab => _dealTab,
             _ => _infoTab
         }).FocusAsync();
     }
@@ -147,4 +165,9 @@
         && Client.Actions.Contains(typeof(AllyPermission))
         && Client.Player is { } player
         && player.Ally == faction;
+
+    private bool CanOfferDeal =>
+        !Client.IsObserver
+        && Client.Player != null
+        && Client.Actions.Contains(typeof(DealOffered));
 }

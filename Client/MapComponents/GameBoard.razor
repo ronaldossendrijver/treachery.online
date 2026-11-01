@@ -8,6 +8,10 @@
 *@
 @inherits MapComponent
 
+@{
+    var dealLayout = DealIndicatorLayout.Create(Game, Client.CurrentSkin);
+}
+
 <div id="planetmap">
 
     <div id="planetmap_inner"
@@ -15,7 +19,8 @@
          data-map-center-x="@Client.CurrentSkin.PlanetCenter.X"
          data-map-center-y="@Client.CurrentSkin.PlanetCenter.Y"
          data-map-radius="@Client.CurrentSkin.MapRadius"
-         data-player-token-radius="@Client.CurrentSkin.PlayerTokenRadius">
+         data-player-token-radius="@Client.CurrentSkin.PlayerTokenRadius"
+         data-deal-visual-radius="@Round(dealLayout.VisualRadius)">
 
         <div class="planetmap-shadow" style="left:@Px(Client.CurrentSkin.PlanetCenter.X - Client.CurrentSkin.MapRadius); top:@Px(Client.CurrentSkin.PlanetCenter.Y - Client.CurrentSkin.MapRadius); width:@Px(2 * Client.CurrentSkin.MapRadius); height:@Px(2 * Client.CurrentSkin.MapRadius);"></div>
 
@@ -33,6 +38,7 @@
                 <RecentMoves  />
                 <ForcesOnPlanet  OnLocationClick="@OnLocationClick" />
                 <Players OnLocationClick="@OnLocationClick" OnFactionClick="@OnFactionClick" />
+                <DealIndicators Layout="@dealLayout" />
                 <Storm />
                 <Bids  />
                 <Disconnection  />

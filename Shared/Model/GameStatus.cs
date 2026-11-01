@@ -74,7 +74,7 @@ public class GameStatus
 
     public bool PlayerShouldBeHighlighted(Player p)
     {
-        return WaitingForPlayers.Contains(p);
+        return WaitingForPlayers.Contains(p) || WaitingInSequence.Any(se => se.Player == p && se.HasTurn);
     }
 
     public Message GetMessage(Player? player, bool isHost)

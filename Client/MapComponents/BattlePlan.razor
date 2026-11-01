@@ -108,7 +108,7 @@
                      X="@(forceX + 6 * Client.CurrentSkin.RESOURCETOKEN_RADIUS)" Y="@(forceY + Client.CurrentSkin.RESOURCETOKEN_RADIUS)"
                      Font="@Client.CurrentSkin.RESOURCETOKEN_FONT" FontColor="@Client.CurrentSkin.RESOURCETOKEN_FONTCOLOR"
                      BorderWidth="Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERCOLOR"
-                     Align="@TextAlignment.Center" />
+                     Align="@TextAlignment.Center" CenterOnPoint="true" />
         }
 
         if (Game.HasStrongholdAdvantage(Plan.Initiator, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory!))

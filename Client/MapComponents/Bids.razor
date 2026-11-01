@@ -16,20 +16,10 @@
         if (Client.Status?.PlayerShouldBeHighlighted(p) != true)
         {
             var y = position.Y + Client.CurrentSkin.PlayerTokenRadius;
-            var bidText = "";
-            var bidColor = "white";
-
-            if (!p.HasRoomForCards)
-            {
-                bidText = "FULL";
-                bidColor = "rgb(200,200,200)";
-            }
-            else if (Game.Bids.ContainsKey(p.Faction))
-            {
-                var bid = Game.Bids[p.Faction];
-                bidText = DetermineBidText(bid);
-                bidColor = bid.Passed ? "rgb(255,200,200)" : "rgb(200,255,200)";
-            }
+            var bidText = BidText(Game, p);
+            var bidColor = !p.HasRoomForCards ? "rgb(200,200,200)"
+                : Game.Bids.TryGetValue(p.Faction, out var bid) ? bid.Passed ? "rgb(255,200,200)" : "rgb(200,255,200)"
+                : "white";
 
             <MapText ToShow="@bidText"
                      X="@(position.X)" Y="@(y)"
@@ -42,9 +32,16 @@
 
 @code {
 
-    private string DetermineBidText(IBid bid)
+    /// <summary>
+    /// The bid status text shown below a player's logo during bidding, or an empty string when nothing is shown.
+    /// </summary>
+    public static string BidText(Game game, Player player)
     {
-        if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent && Game.CurrentAuctionType != AuctionType.WhiteSilent)
+        if (game.CurrentPhase is not (Phase.Bidding or Phase.BlackMarketBidding)) return "";
+        if (!player.HasRoomForCards) return "FULL";
+        if (!game.Bids.TryGetValue(player.Faction, out var bid)) return "";
+
+        if (game.CurrentAuctionType != AuctionType.BlackMarketSilent && game.CurrentAuctionType != AuctionType.WhiteSilent)
         {
             return bid.Passed ? "PASS" : $"BID {bid.TotalAmount}";
         }
