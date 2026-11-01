@@ -14,6 +14,7 @@
 
     <span @ref=@Element
           style=@style
+          class="@CssClass"
           data-game-popover="@Popover" tabindex="0">
         @ToShow
         @ChildContent
@@ -22,6 +23,7 @@
 else
 {
     <span title=@Popover
+          class="@CssClass"
           style="@style;user-select:none;">
         @ToShow
         @ChildContent
@@ -62,6 +64,15 @@ else
     [Parameter]
     public bool PopoverAsTooltip { get; set; }
 
+    /// <summary>
+    /// Centers the visible glyphs (digits and capitals) on the point, e.g. for numbers on round tokens.
+    /// By default text is shifted up by 40% of its line box, which leaves digits slightly below the point.
+    /// </summary>
+    [Parameter]
+    public bool CenterOnPoint { get; set; }
+
+    private string? CssClass => CenterOnPoint ? "map-text-centered" : null;
+
     private string style = string.Empty;
 
     protected override async Task OnParametersSetAsync()
@@ -96,7 +107,10 @@ else
         var maxWidth = MaxWidth > 0 ? $"max-width:{Px(MaxWidth)}" : "";
         var wrapping = MaxWidth > 0 ? "" : "white-space:nowrap";
 
-        style = $"position:absolute;text-align:{textAlign};transform:{transformX} translateY(-40%);left:{Px(X)};top:{Px(Y)};user-select:none;font:{Font};color:{FontColor};{maxWidth};{wrapping};{border};{pointerevents};";
+        var translateY = CenterOnPoint ? "translateY(-50%)" : "translateY(-40%)";
+        // Must follow the font shorthand, which resets the line height.
+        var lineHeight = CenterOnPoint ? "line-height:1;" : "";
+        style = $"position:absolute;text-align:{textAlign};transform:{transformX} {translateY};left:{Px(X)};top:{Px(Y)};user-select:none;font:{Font};{lineHeight}color:{FontColor};{maxWidth};{wrapping};{border};{pointerevents};";
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

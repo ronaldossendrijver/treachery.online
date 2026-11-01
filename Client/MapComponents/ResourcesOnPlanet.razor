@@ -27,7 +27,7 @@
                      X="@(spiceLocation.X)" Y="@spiceLocation.Y"
                      Font="@Client.CurrentSkin.RESOURCETOKEN_FONT" FontColor="@Client.CurrentSkin.RESOURCETOKEN_FONTCOLOR"
                      BorderWidth="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERCOLOR"
-                     Align="@TextAlignment.Center"/>
+                     Align="@TextAlignment.Center" CenterOnPoint="true"/>
         }
         else if (Client.CurrentSkin.DrawResourceIconsOnMap)
         {
@@ -43,7 +43,7 @@
                      X="@(spiceLocation.X)" Y="@spiceLocation.Y"
                      Font="@Utilities.ScaleFont(Client.CurrentSkin.RESOURCETOKEN_FONT, 0.7f)" FontColor="#FFFFFFDD"
                      BorderWidth="@Client.CurrentSkin.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="#646464DD"
-                     Align="@TextAlignment.Center"/>
+                     Align="@TextAlignment.Center" CenterOnPoint="true"/>
         }
     }
 }

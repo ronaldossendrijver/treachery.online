@@ -20,6 +20,7 @@ public static class Program
     {
         Console.WriteLine($"{DateTime.Now:HH:mm:ss} Treachery.Server process starting (pid {Environment.ProcessId}, working directory '{Environment.CurrentDirectory}').");
         Message.DefaultDescriber = DefaultSkin.Default;
+        Console.WriteLine($"{DateTime.Now:HH:mm:ss} Built-in bots loaded: {BotType.Basic} bots from {typeof(BasicBot).Assembly.GetName().Name}.dll (build {BotFactory.BuildOf(typeof(BasicBot).Assembly)})");
         foreach (var plugin in BotFactory.LoadPlugins(AppContext.BaseDirectory))
             Console.WriteLine($"{DateTime.Now:HH:mm:ss} {plugin}");
         var host = CreateHostBuilder(args).Build();

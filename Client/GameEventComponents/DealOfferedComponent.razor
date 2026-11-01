@@ -62,9 +62,25 @@
     internal Territory? territory;
     internal Faction loser;
 
-    private void OnChangeFactions()
+    [Parameter] public Faction? TargetFaction { get; set; }
+
+    private bool _targetInitialized;
+    private Faction? _previousTarget;
+
+    protected override void OnParametersSet()
     {
-        StateHasChanged();
+        base.OnParametersSet();
+
+        if (_targetInitialized && _previousTarget == TargetFaction) return;
+
+        _targetInitialized = true;
+        _previousTarget = TargetFaction;
+        to.Clear();
+        if (TargetFaction is { } target && target != Faction.None
+            && Game.PlayersOtherThan(Player).Contains(target) && target != Player.Ally)
+        {
+            to.Add(target);
+        }
     }
 
     protected override DealOffered ConfirmedResult => new(Game, Faction)

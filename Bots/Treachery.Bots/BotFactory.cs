@@ -75,7 +75,7 @@ public static class BotFactory
                 {
                     if (Activator.CreateInstance(type) is not IBotProvider provider) continue;
                     Register(provider);
-                    result.Add($"Bot plugin loaded: {provider.Type} bots from {Path.GetFileName(file)}");
+                    result.Add($"Bot plugin loaded: {provider.Type} bots from {Path.GetFileName(file)} (build {BuildOf(assembly)})");
                 }
             }
             catch (Exception e)
@@ -85,5 +85,19 @@ public static class BotFactory
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// The build number of an assembly: its assembly version (just the major number when the rest is zero),
+    /// falling back to its informational version without source revision suffix.
+    /// </summary>
+    public static string BuildOf(Assembly assembly)
+    {
+        var informational = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+        var version = assembly.GetName().Version;
+        if (version != null && version.Major > 0)
+            return version.Minor == 0 && version.Build <= 0 && version.Revision <= 0 ? version.Major.ToString() : version.ToString();
+
+        return string.IsNullOrWhiteSpace(informational) ? "unknown" : informational.Split('+')[0];
     }
 }

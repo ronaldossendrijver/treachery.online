@@ -38,7 +38,7 @@
                 <ul>
                     <li>
                         <strong>Give spice to another player:</strong> click that player's faction logo on the map and use the <em>Give spice</em> tab.
-                        The <em>Faction info</em> tab next to it shows their leaders and faction details.
+                        The <em>Faction info</em> tab shows their leaders and faction details.
                     </li>
                     <li>
                         <strong>Manage your alliance:</strong> click your ally's faction logo on the map and use the <em>Alliance</em> tab.
@@ -48,9 +48,12 @@
                         <strong>Game menu:</strong> at the top right of the map. It now also holds the Automation panel, the Notekeeping Assistant and the Atreides Tracker.
                     </li>
                     <li>
-                        <strong>Chat and deals:</strong> <em>Messages &amp; Players</em> and <em>Deals</em> are at the bottom right of the map.
-                        Making a deal offer is now inside the Deals dialog. A number on the Deals button shows how many deals there are.
+                        <strong>Deals:</strong> click a faction logo and use the <em>Offer a deal</em> tab to make an offer.
+                        Current deals appear as small faction badges with a chain-link mark around the player who offered them; hover over or click a deal icon to read it.
+                        Pending offers are still in <em>Deal Offers</em> at the bottom right of the map.
                     </li>
+                    <li><strong>Player logos:</strong> now have a gold rim. Players who must act have larger logos, including the current bidder.</li>
+                    <li><strong>Chat:</strong> <em>Messages &amp; Players</em> is at the bottom right of the map.</li>
                     <li><strong>Game logs:</strong> at the bottom left of the map. It can be expanded or collapsed.</li>
                     <li>
                         <strong>Battles:</strong> many battle actions and decisions have now moved to the (now draggable) battle wheel.
@@ -93,7 +96,7 @@
 
 @code {
     // Change this value when the list of changes is updated, so the badge is shown again to everyone.
-    private const string ChangesVersion = "advanced-bots-1";
+    private const string ChangesVersion = "player-deals-2";
     private const string DismissedSetting = "treachery.online;setting.whatsnew.dismissed";
 
     private bool _loaded;

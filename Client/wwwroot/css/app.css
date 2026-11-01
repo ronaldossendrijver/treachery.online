@@ -494,6 +494,82 @@ svg {
 #planetmap_inner > .planetmap-art, .sand-ambience { will-change: opacity; }
 
 .planetmap-overlays { width: 100%; height: 100%; }
+/* Centers digits on their token: trims the line box to the glyphs where supported (line-height:1 + translateY(-50%) otherwise). */
+@supports (text-box: trim-both cap alphabetic) { .map-text-centered { text-box: trim-both cap alphabetic; } }
+.map-deal-indicators { position: absolute; z-index: 20; inset: 0; pointer-events: none; }
+.map-faction-logo { box-sizing: border-box; padding: 1px; border: 1px solid #e7c77f; border-radius: 50%; background: radial-gradient(circle, #4b4234, #1d1b18 75%); box-shadow: 0 0 0 1px #92713d, inset 0 0 0 1px #92713d; }
+.map-faction-logo:hover, .map-faction-logo:focus-visible { border-color: #fff1bd; }
+.map-deal-indicator { position: absolute; display: grid; place-items: center; box-sizing: border-box; padding: 0; border: 1px solid #e7c77f; border-radius: 50%; background: transparent; box-shadow: 0 0 0 1px color-mix(in srgb, var(--deal-owner-color) 75%, #161511), 0 2px 4px rgba(0, 0, 0, 0.8); cursor: pointer; pointer-events: auto; }
+.map-deal-indicator:hover, .map-deal-indicator[aria-expanded="true"] { border-color: #fff1bd; }
+.map-deal-indicator:focus-visible { outline: 2px solid #fff1bd; outline-offset: 2px; }
+.map-deal-indicator img { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; pointer-events: none; }
+.map-deal-link { position: absolute; right: -2px; bottom: -2px; box-sizing: border-box; padding: 0.5px; border-radius: 50%; background: #29231b; color: #ffe0a0; box-shadow: 0 0 0 0.5px #e7c77f; pointer-events: none; }
+.map-deal-link path { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+/* Deal indicators build up over 8s when a deal is made and dissolve over 8s when it ends (see DealIndicators.razor). */
+@property --deal-sweep { syntax: "<angle>"; inherits: false; initial-value: 360deg; }
+.map-deal-indicator.deal-leaving { pointer-events: none; cursor: default; }
+.map-deal-indicator.deal-arriving, .map-deal-indicator.deal-leaving { overflow: visible; }
+.map-deal-indicator.deal-arriving::before, .map-deal-indicator.deal-leaving::before,
+.map-deal-indicator.deal-arriving::after, .map-deal-indicator.deal-leaving::after { content: ""; position: absolute; border-radius: 50%; pointer-events: none; }
+.map-deal-indicator.deal-arriving::before, .map-deal-indicator.deal-leaving::before {
+    inset: -3px;
+    background: conic-gradient(from -90deg, #fff6d0, #ffd56a calc(var(--deal-sweep) * 0.6), var(--deal-owner-color) var(--deal-sweep), transparent 0);
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
+    filter: drop-shadow(0 0 2px #ffd56a);
+}
+.map-deal-indicator.deal-arriving::after, .map-deal-indicator.deal-leaving::after { inset: -1px; border: 1px solid #ffe7a3; opacity: 0; }
+.map-deal-indicator.deal-arriving { animation: deal-arrive 8s cubic-bezier(.25, .8, .25, 1) both; }
+.map-deal-indicator.deal-arriving::before { animation: deal-sweep-in 8s ease-in-out both; }
+.map-deal-indicator.deal-arriving::after { animation: deal-shockwave 8s ease-out both; }
+.map-deal-indicator.deal-arriving img { animation: deal-logo-in 8s ease-out both; }
+.map-deal-indicator.deal-arriving .map-deal-link { animation: deal-link-in 8s cubic-bezier(.3, 1.6, .5, 1) both; }
+.map-deal-indicator.deal-leaving { animation: deal-leave 8s ease-in both; }
+.map-deal-indicator.deal-leaving::before { animation: deal-sweep-out 8s ease-in-out both; }
+.map-deal-indicator.deal-leaving::after { animation: deal-implode 8s ease-in both; }
+.map-deal-indicator.deal-leaving img { animation: deal-logo-out 8s ease-in both; }
+.map-deal-indicator.deal-leaving .map-deal-link { animation: deal-link-out 8s ease-in both; }
+@keyframes deal-arrive {
+    0% { opacity: 0; transform: scale(0.2) rotate(-200deg); border-color: transparent; box-shadow: none; }
+    15% { opacity: 1; transform: scale(0.7) rotate(-60deg); border-color: transparent; box-shadow: 0 0 6px 2px rgba(255, 213, 106, 0.45); }
+    55% { transform: scale(1) rotate(0deg); border-color: transparent; box-shadow: 0 0 8px 3px rgba(255, 213, 106, 0.55); }
+    75% { transform: scale(1.3); border-color: #fff1bd; box-shadow: 0 0 0 1px var(--deal-owner-color), 0 0 14px 5px rgba(255, 225, 140, 0.9); }
+    100% { opacity: 1; transform: scale(1); border-color: #e7c77f; }
+}
+@keyframes deal-sweep-in { 0%, 10% { --deal-sweep: 0deg; opacity: 1; } 60% { --deal-sweep: 360deg; opacity: 1; } 80%, 100% { --deal-sweep: 360deg; opacity: 0; } }
+@keyframes deal-shockwave { 0%, 70% { opacity: 0; transform: scale(1); } 74% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0; transform: scale(2.8); } }
+@keyframes deal-logo-in {
+    0%, 25% { opacity: 0; transform: scale(0.1) rotate(90deg); filter: blur(3px) brightness(3); }
+    60% { opacity: 0.9; transform: scale(0.85) rotate(0deg); filter: blur(1px) brightness(2); }
+    75% { opacity: 1; transform: scale(1.15); filter: blur(0) brightness(2.2) drop-shadow(0 0 3px #fff1bd); }
+    100% { opacity: 1; transform: scale(1); filter: none; }
+}
+@keyframes deal-link-in { 0%, 78% { opacity: 0; transform: scale(0) rotate(-180deg); } 92% { opacity: 1; transform: scale(1.5) rotate(10deg); } 100% { opacity: 1; transform: scale(1) rotate(0deg); } }
+@keyframes deal-leave {
+    0% { opacity: 1; transform: scale(1) rotate(0deg); }
+    20% { transform: scale(1.12); box-shadow: 0 0 0 1px var(--deal-owner-color), 0 0 10px 3px rgba(255, 120, 80, 0.6); }
+    70% { opacity: 0.85; transform: scale(0.9) rotate(40deg); border-color: transparent; }
+    100% { opacity: 0; transform: scale(0.1) rotate(220deg); border-color: transparent; box-shadow: none; }
+}
+@keyframes deal-sweep-out { 0%, 15% { --deal-sweep: 360deg; opacity: 0; } 25% { --deal-sweep: 360deg; opacity: 1; } 80% { --deal-sweep: 0deg; opacity: 1; } 100% { --deal-sweep: 0deg; opacity: 0; } }
+@keyframes deal-implode { 0% { opacity: 0; transform: scale(2.6); } 10% { opacity: 0.9; } 30% { opacity: 0; transform: scale(1); } 100% { opacity: 0; } }
+@keyframes deal-logo-out {
+    0%, 15% { opacity: 1; transform: scale(1); filter: none; }
+    45% { opacity: 0.8; transform: scale(0.95); filter: grayscale(1) sepia(0.6) brightness(0.8); }
+    85% { opacity: 0.3; transform: scale(0.5) rotate(-120deg); filter: grayscale(1) blur(1.5px) brightness(0.6); }
+    100% { opacity: 0; transform: scale(0.1) rotate(-200deg); filter: grayscale(1) blur(3px); }
+}
+@keyframes deal-link-out { 0% { opacity: 1; transform: translate(0, 0) rotate(0deg); } 15% { opacity: 0; transform: translate(4px, 6px) rotate(70deg); } 100% { opacity: 0; transform: translate(4px, 6px) rotate(70deg); } }
+@media (prefers-reduced-motion: reduce) {
+    .map-deal-indicator.deal-arriving, .map-deal-indicator.deal-leaving,
+    .map-deal-indicator.deal-arriving *, .map-deal-indicator.deal-leaving * { animation: none !important; }
+    .map-deal-indicator.deal-arriving::before, .map-deal-indicator.deal-leaving::before,
+    .map-deal-indicator.deal-arriving::after, .map-deal-indicator.deal-leaving::after { display: none; }
+    .map-deal-indicator.deal-arriving { animation: deal-fade-in 8s linear both !important; }
+    .map-deal-indicator.deal-leaving { animation: deal-fade-out 8s linear both !important; }
+}
+@keyframes deal-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes deal-fade-out { from { opacity: 1; } to { opacity: 0; } }
 /* Host for map-bound effects (e.g. spice blows); kept empty by Blazor so scripts can add canvases to it */
 .map-fx-layer { position: absolute; inset: 0; z-index: 50; overflow: visible; pointer-events: none; }
 .map-fx-layer canvas { position: absolute; pointer-events: none; }
@@ -1461,6 +1537,11 @@ svg {
 .game-popover h5 { margin: 8px 0 0; color: var(--brass-bright); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; }
 .game-popover .popover-caption { max-width: 100%; padding: 8px 10px; border: 1px solid rgba(200, 177, 122, 0.22); border-radius: 8px; background: rgba(0, 0, 0, 0.32); color: #eadfc6; font-size: 0.8rem; text-align: center; }
 .game-popover .popover-text { max-width: 320px; color: #eadfc6; }
+.game-popover:has(> .deal-intel) { width: min(320px, calc(100vw - 24px)); max-height: min(360px, calc(100dvh - 24px)); overflow-y: auto; pointer-events: auto; }
+.deal-intel { display: grid; gap: 5px; }
+.deal-intel-kicker { color: #c9ab6a; font-size: 0.6rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+.deal-intel-parties { color: #f3dba4; font-size: 0.87rem; }
+.game-popover .deal-intel p { margin: 0; color: #eadfc6; white-space: pre-wrap; }
 .game-popover:has(> .pile-intel) { padding: 9px; }
 .pile-intel { display: grid; gap: 8px; width: max-content; max-width: min(300px, calc(100vw - 48px)); }
 .pile-intel > * { margin: 0 !important; }
@@ -1784,8 +1865,8 @@ svg {
 .map-faction-gift .ui-card-body { padding: 0; background: transparent; color: var(--ivory); }
 .donation-selected-faction { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: #ecd297; font-size: 0.78rem; font-weight: 750; }
 .donation-selected-faction img { width: 32px; height: 32px; object-fit: contain; }
-.map-faction-tabs { display: flex; flex: 0 0 auto; gap: 2px; padding: 6px 10px 0; border-bottom: 1px solid var(--line); }
-.map-faction-tab { position: relative; min-height: 34px; padding: 6px 12px; border: 1px solid transparent; border-bottom: 0; border-radius: 7px 7px 0 0; background: transparent; color: var(--ivory-muted); font-size: 0.76rem; font-weight: 750; cursor: pointer; }
+.map-faction-tabs { display: flex; flex: 0 0 auto; gap: 2px; min-width: 0; padding: 6px 10px 0; overflow-x: auto; overflow-y: hidden; border-bottom: 1px solid var(--line); scrollbar-width: thin; }
+.map-faction-tab { position: relative; flex: 0 0 auto; min-height: 34px; padding: 6px 12px; border: 1px solid transparent; border-bottom: 0; border-radius: 7px 7px 0 0; background: transparent; color: var(--ivory-muted); font-size: 0.76rem; font-weight: 750; white-space: nowrap; cursor: pointer; }
 .map-faction-tab:hover { color: var(--ivory); background: rgba(255, 255, 255, 0.04); }
 .map-faction-tab.is-active { border-color: var(--line); background: rgba(193, 167, 108, 0.12); color: #f1d796; }
 .map-faction-tab.is-active::after { position: absolute; right: 8px; bottom: -1px; left: 8px; height: 2px; border-radius: 2px; background: var(--map-faction-color, var(--brass-bright)); content: ""; }

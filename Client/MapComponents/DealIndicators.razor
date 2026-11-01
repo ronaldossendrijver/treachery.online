@@ -1,0 +1,150 @@
+@using System.Text.Encodings.Web
+@using System.Threading
+@inherits MapComponent
+@implements IDisposable
+
+<div @ref="_container" class="map-deal-indicators">
+    @foreach (var (key, indicator) in _current)
+    {
+        var deal = indicator.Deal;
+        var description = deal.DealContentsDescription(Game).ToString(Client.CurrentSkin);
+        <button @key="key" type="button" class="@($"map-deal-indicator{(_arriving.ContainsKey(key) ? " deal-arriving" : "")}")"
+                style="@Style(indicator)"
+                aria-label="@($"Deal from {Client.CurrentSkin.Describe(deal.BoundFaction)} to {Client.CurrentSkin.Describe(deal.ConsumingFaction)}: {description}")"
+                aria-expanded="false" data-game-popover="@Popover(deal, description)">
+            @Contents(deal)
+        </button>
+    }
+    @foreach (var (key, leaving) in _leaving)
+    {
+        <div @key="key" class="map-deal-indicator deal-leaving" style="@Style(leaving.Indicator)" aria-hidden="true">
+            @Contents(leaving.Indicator.Deal)
+        </div>
+    }
+</div>
+
+@code {
+    public const int AnimationMilliseconds = 8000;
+
+    [Parameter, EditorRequired] public DealIndicatorLayout Layout { get; set; } = null!;
+
+    private ElementReference _container;
+    private Game? _seenGame;
+    private Dictionary<string, DealIndicator> _current = new();
+    private readonly Dictionary<string, DateTime> _arriving = new();
+    private readonly Dictionary<string, (DealIndicator Indicator, DateTime Until)> _leaving = new();
+    private readonly CancellationTokenSource _disposed = new();
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        var now = DateTime.UtcNow;
+        var next = Keyed(Layout.Indicators);
+
+        if (!ReferenceEquals(_seenGame, Game))
+        {
+            // A newly loaded or undone game shows its deals immediately.
+            _seenGame = Game;
+            _arriving.Clear();
+            _leaving.Clear();
+        }
+        else
+        {
+            var until = now.AddMilliseconds(AnimationMilliseconds);
+            var changed = false;
+
+            foreach (var key in next.Keys.Where(key => !_current.ContainsKey(key)))
+            {
+                _leaving.Remove(key);
+                _arriving[key] = until;
+                changed = true;
+            }
+
+            foreach (var (key, indicator) in _current.Where(pair => !next.ContainsKey(pair.Key)))
+            {
+                _arriving.Remove(key);
+                _leaving[key] = (indicator, until);
+                changed = true;
+            }
+
+            if (changed)
+                _ = ExpireAnimationsLater();
+        }
+
+        _current = next;
+        Expire(now);
+    }
+
+    private static Dictionary<string, DealIndicator> Keyed(IEnumerable<DealIndicator> indicators)
+    {
+        var result = new Dictionary<string, DealIndicator>();
+        foreach (var indicator in indicators)
+        {
+            var deal = indicator.Deal;
+            var baseKey = string.Join("|", deal.BoundFaction, deal.ConsumingFaction, deal.Type, deal.DealParameter1, deal.DealParameter2, deal.Text, deal.Benefit, deal.End);
+            var key = baseKey;
+            for (var occurrence = 1; result.ContainsKey(key); occurrence++)
+                key = $"{baseKey}#{occurrence}";
+            result[key] = indicator;
+        }
+
+        return result;
+    }
+
+    private void Expire(DateTime now)
+    {
+        foreach (var key in _arriving.Where(pair => pair.Value <= now).Select(pair => pair.Key).ToArray())
+            _arriving.Remove(key);
+
+        foreach (var key in _leaving.Where(pair => pair.Value.Until <= now).Select(pair => pair.Key).ToArray())
+            _leaving.Remove(key);
+    }
+
+    private async Task ExpireAnimationsLater()
+    {
+        try
+        {
+            await Task.Delay(AnimationMilliseconds + 100, _disposed.Token);
+        }
+        catch (TaskCanceledException)
+        {
+            return;
+        }
+
+        await InvokeAsync(() =>
+        {
+            Expire(DateTime.UtcNow);
+            StateHasChanged();
+        });
+    }
+
+    private string Style(DealIndicator indicator) =>
+        $"left:{Px(indicator.X)};top:{Px(indicator.Y)};width:{Px(indicator.Size)};height:{Px(indicator.Size)};--deal-owner-color:{Client.CurrentSkin.GetFactionColor(indicator.Deal.BoundFaction)}";
+
+    private RenderFragment Contents(Deal deal) => @<text>
+        <img src="@Client.CurrentSkin.GetImageUrl(deal.ConsumingFaction)" alt="" draggable="false" />
+        <svg class="map-deal-link" viewBox="0 0 24 24" aria-hidden="true" focusable="false"
+             style="@($"width:{Px(0.5 * Client.CurrentSkin.PlayerTokenRadius)};height:{Px(0.5 * Client.CurrentSkin.PlayerTokenRadius)}")">
+            <path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-2 2M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l2-2" />
+        </svg>
+    </text>;
+
+    private string Popover(Deal deal, string description)
+    {
+        Func<string, string> encode = HtmlEncoder.Default.Encode;
+        return $"<div class='deal-intel'><span class='deal-intel-kicker'>Current deal</span>"
+            + $"<strong class='deal-intel-parties'>{encode(Client.CurrentSkin.Describe(deal.BoundFaction))} &rarr; {encode(Client.CurrentSkin.Describe(deal.ConsumingFaction))}</strong>"
+            + $"<p>{encode(description)}</p></div>";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) => await Browser.RefreshPopovers(_container);
+
+    public new void Dispose()
+    {
+        _disposed.Cancel();
+        _disposed.Dispose();
+        _ = Browser.RemovePopovers(_container);
+        base.Dispose();
+    }
+}
