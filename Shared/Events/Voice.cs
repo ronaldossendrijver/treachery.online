@@ -10,7 +10,7 @@
 
 namespace Treachery.Shared;
 
-public class Voice : GameEvent
+public class Voice : PassableGameEvent
 {
     #region Construction
 
@@ -41,7 +41,7 @@ public class Voice : GameEvent
     public override Message? Validate()
     {
         if (!MayUseVoice(Game, Player)) return Message.Express("You cannot use Voice");
-        if (!ValidTypes(Game).Contains(Type)) return Message.Express("Invalid use of Voice");
+        if (!Passed && !ValidTypes(Game).Contains(Type)) return Message.Express("Invalid use of Voice");
 
         return null;
     }
@@ -93,7 +93,7 @@ public class Voice : GameEvent
     {
         var disableWhenPrescienceIsUsed = g.Version >= 108 && g is { Version: < 178, CurrentPrescience: not null };
 
-        if (!disableWhenPrescienceIsUsed && g.CurrentVoice == null && g.CurrentBattle != null && g.CurrentBattle.IsInvolved(p))
+        if (!disableWhenPrescienceIsUsed && !g.VoiceWasPassed && g.CurrentVoice == null && g.CurrentBattle != null && g.CurrentBattle.IsInvolved(p))
         {
             if (p.Nexus == Faction.Blue && NexusPlayed.CanUseSecretAlly(g, p)) return g.CurrentBattle.IsAggressorOrDefender(p);
 
@@ -156,6 +156,13 @@ public class Voice : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
+        if (Passed)
+        {
+            Game.VoiceWasPassed = true;
+            Log();
+            return;
+        }
+
         Game.CurrentVoice = this;
 
         if (!IsPlaying(Faction.Blue)) Game.PlayNexusCard(Player, "Secret Ally", " to use Voice");
@@ -173,6 +180,8 @@ public class Voice : GameEvent
 
     public override Message GetMessage()
     {
+        if (Passed)
+            return Message.Express(Initiator, " won't use Voice during this battle");
         if (Must)
             return Message.Express(Initiator, " use Voice to force the use of ", Type);
         return Message.Express(Initiator, " use Voice to deny the use of ", Type);

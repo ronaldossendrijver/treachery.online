@@ -740,9 +740,10 @@ public class GameStatus
                 case Thought: Flash(result, latestEvent, LeaderSkill.Thinker); break;
 
                 //Show Event description
-                case WhiteSpecifiesAuction or BlueBattleAnnouncement or Voice or Prescience or GreyRemovedCardFromAuction or AllianceBroken or CardTraded or SwitchedSkilledLeader or 
+                case WhiteSpecifiesAuction or BlueBattleAnnouncement or Prescience or GreyRemovedCardFromAuction or AllianceBroken or CardTraded or SwitchedSkilledLeader or
                     BrownDiscarded or BrownEconomics or BrownRemoveForce or BrownMovePrevention or BrownFreeRevivalPrevention or BrownKarmaPrevention or
                     AmbassadorPlaced or Audited or Donated or ExtortionPrevented or FlightDiscoveryUsed or DealAccepted or YellowRidesMonster or CharityClaimed:
+                case Voice { Passed: false }:
                 case WhiteAnnouncesBlackMarket { Passed: false }:
                 case GreySwappedCardOnBid { Passed: false }:
                 case ReplacedCardWon { Passed: false }:

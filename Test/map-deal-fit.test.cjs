@@ -79,3 +79,23 @@ test('reports when no usable placement exists', () => {
     assert.equal(fit.obscured, 1);
     assert.equal(FindDealMapFit(0, 0, 0, 100, [marker], []), null);
 });
+
+test('phone fit puts the planet just below the menu, leaving spare height for the log', () => {
+    for (const [width, height] of [[360, 640], [412, 840], [760, 1200]]) {
+        const top = 96, bottom = 53, radius = 380;
+        const availableHeight = height - top - bottom;
+        const fit = FindDealMapFit(width, availableHeight, 0, radius, [], [], true);
+        assertFits(fit, width, availableHeight, 0, radius, [], []);
+        assert.ok(Math.abs(fit.centerY - radius * fit.scale - 8) < 1e-8);
+        const centered = FindDealMapFit(width, availableHeight, 0, radius, [], []);
+        assert.equal(fit.scale, centered.scale);
+        assert.ok(fit.centerY <= centered.centerY);
+    }
+});
+
+test('top-aligned phone fit still avoids deal indicator obstacles', () => {
+    const marker = { left: -10, top: -360, right: 10, bottom: -340 };
+    const obstacle = { left: 140, top: 0, right: 220, bottom: 45 };
+    const fit = FindDealMapFit(360, 560, 0, 380, [marker], [obstacle], true);
+    assertFits(fit, 360, 560, 0, 380, [marker], [obstacle]);
+});

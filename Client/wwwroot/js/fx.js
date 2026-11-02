@@ -1,4 +1,4 @@
-// Pixel disintegration / integration effects for tokens that are killed on the map and arrive in the tanks.
+// Shared map-token transitions, including the pixel beams between killed forces and the tanks.
 (function () {
     'use strict';
 
@@ -6,13 +6,14 @@
     const active = new Set();
     let overlay = null;
     let frame = 0;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     function ensureOverlay() {
         if (overlay && overlay.isConnected) return overlay;
         overlay = document.createElement('canvas');
         overlay.className = 'fx-overlay';
         overlay.setAttribute('aria-hidden', 'true');
-        document.body.appendChild(overlay);
+        (document.querySelector('.map-stage') || document.body).appendChild(overlay);
         return overlay;
     }
 
@@ -136,6 +137,16 @@
             const elapsed = (now - effect.start) / (effect.duration || DURATION);
             if (elapsed < 0) continue;
 
+            if (effect.kind === 'token-in' || effect.kind === 'token-out') {
+                drawToken(ctx, effect, Math.min(1, elapsed));
+                ctx.globalAlpha = 1;
+                if (elapsed >= 1) {
+                    active.delete(effect);
+                    effect.done?.();
+                }
+                continue;
+            }
+
             if (effect.kind === 'hold' || effect.kind === 'beam') {
                 if (effect.kind === 'hold') drawHold(ctx, effect, now);
                 else drawBeam(ctx, effect, elapsed);
@@ -179,6 +190,388 @@
 
     function byKey(key) {
         return document.querySelector(`[data-fx-key="${CSS.escape(key)}"]`);
+    }
+
+    function drawToken(ctx, effect, t) {
+        const dpr = window.devicePixelRatio || 1;
+        const { shot, type } = effect;
+        const inward = effect.kind === 'token-in';
+        const progress = inward ? 1 - t : t;
+        const size = Math.max(shot.width, shot.height) * dpr;
+        const x = (shot.left + shot.width / 2) * dpr;
+        const y = (shot.top + shot.height / 2) * dpr;
+        const color = type === 'terror' ? '110, 220, 220' : type === 'discovery' ? '185, 165, 255' : '235, 178, 85';
+
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate((type === 'discovery' ? 1 : -0.3) * progress);
+        const scale = inward ? 1 + 0.7 * progress : Math.max(0.05, 1 - 0.8 * progress);
+        ctx.scale(scale, scale);
+        ctx.globalAlpha = (1 - progress) * (effect.partial ? 0.5 : 1);
+        ctx.drawImage(shot.canvas, -shot.width * dpr / 2, -shot.height * dpr / 2, shot.width * dpr, shot.height * dpr);
+        ctx.restore();
+
+        ctx.strokeStyle = `rgba(${color},${0.7 * Math.sin(Math.PI * t)})`;
+        ctx.lineWidth = Math.max(1, 1.5 * dpr);
+        ctx.beginPath();
+        ctx.arc(x, y, size * (0.25 + 0.9 * (inward ? 1 - t : t)), 0, Math.PI * 2);
+        ctx.stroke();
+        for (let i = 0; i < 28; i++) {
+            const angle = i * 2.39996 + progress * (type === 'spice' ? 3 : -1.5);
+            const distance = size * (0.2 + progress * (0.6 + (i % 5) * 0.17));
+            const lift = type === 'spice' ? progress * size * 1.3 : 0;
+            ctx.globalAlpha = (1 - progress) * Math.sin(Math.PI * t);
+            ctx.fillStyle = `rgb(${color})`;
+            ctx.beginPath();
+            ctx.arc(x + Math.cos(angle) * distance, y + Math.sin(angle) * distance - lift,
+                Math.max(1, size * 0.035 * (1 - progress)), 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function combineShots(shots) {
+        const left = Math.min(...shots.map(s => s.left));
+        const top = Math.min(...shots.map(s => s.top));
+        const right = Math.max(...shots.map(s => s.left + s.width));
+        const bottom = Math.max(...shots.map(s => s.top + s.height));
+        const dpr = window.devicePixelRatio || 1;
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.ceil((right - left) * dpr));
+        canvas.height = Math.max(1, Math.ceil((bottom - top) * dpr));
+        const ctx = canvas.getContext('2d');
+        for (const shot of shots) {
+            ctx.drawImage(shot.canvas, (shot.left - left) * dpr, (shot.top - top) * dpr, shot.width * dpr, shot.height * dpr);
+        }
+        return { canvas, left, top, width: right - left, height: bottom - top };
+    }
+
+    function snapshotCount(el) {
+        const rect = el.getBoundingClientRect();
+        if (!rect.width || !rect.height || !el.offsetWidth || !el.offsetHeight) return null;
+        const style = getComputedStyle(el);
+        const shadow = (style.textShadow.match(/-?[\d.]+px/g) || []).map(parseFloat);
+        return {
+            rect, width: el.offsetWidth, height: el.offsetHeight, rotation: rotationOf(el),
+            font: style.font, color: style.color, strokeColor: style.webkitTextStrokeColor,
+            strokeWidth: parseFloat(style.webkitTextStrokeWidth) || 0,
+            shadowX: shadow[0] || 0, shadowY: shadow[1] || 0, shadowBlur: shadow[2] || 0
+        };
+    }
+
+    function countShot(count, amount, offsetX = 0, offsetY = 0) {
+        if (!count) return null;
+        const { rect, width, height, rotation } = count;
+        const cos = Math.abs(Math.cos(rotation)), sin = Math.abs(Math.sin(rotation));
+        const scaleX = rect.width / (width * cos + height * sin);
+        const scaleY = rect.height / (width * sin + height * cos);
+        const padding = Math.max(3, 2 * (count.shadowBlur + count.strokeWidth)) * Math.max(scaleX, scaleY);
+        const dpr = window.devicePixelRatio || 1;
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.ceil((rect.width + 2 * padding) * dpr));
+        canvas.height = Math.max(1, Math.ceil((rect.height + 2 * padding) * dpr));
+        const ctx = canvas.getContext('2d');
+        ctx.translate((rect.width / 2 + padding) * dpr, (rect.height / 2 + padding) * dpr);
+        ctx.rotate(rotation);
+        ctx.scale(scaleX * dpr, scaleY * dpr);
+        ctx.font = count.font;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillStyle = count.color;
+        ctx.strokeStyle = count.strokeColor;
+        ctx.lineWidth = count.strokeWidth;
+        ctx.shadowColor = count.strokeColor;
+        ctx.shadowOffsetX = count.shadowX;
+        ctx.shadowOffsetY = count.shadowY;
+        ctx.shadowBlur = count.shadowBlur;
+        const text = String(amount);
+        const metrics = ctx.measureText(text);
+        const ascent = metrics.fontBoundingBoxAscent ?? metrics.actualBoundingBoxAscent ?? height * 0.8;
+        const descent = metrics.fontBoundingBoxDescent ?? metrics.actualBoundingBoxDescent ?? height * 0.2;
+        const baseline = (ascent - descent) / 2;
+        if (count.strokeWidth > 0) ctx.strokeText(text, -width / 2, baseline);
+        ctx.fillText(text, -width / 2, baseline);
+        return {
+            canvas, left: rect.left + offsetX - padding, top: rect.top + offsetY - padding,
+            width: rect.width + 2 * padding, height: rect.height + 2 * padding
+        };
+    }
+
+    function forceShot(tokens, count, amount, offsetX = 0, offsetY = 0) {
+        const shots = tokens.map(t => t.shot);
+        const label = countShot(count, amount, offsetX, offsetY);
+        if (label) shots.push(label);
+        return combineShots(shots);
+    }
+
+    let mapScene = null;
+    let mapRoot = null;
+    let mapLayout = '';
+    let mapTokens = new Map();
+    let syncRevision = 0;
+    let pendingMapSync = null;
+    const killedKeys = new Set();
+    const hiddenTokens = new WeakMap();
+    // Keep incoming images and the displayed count in sync even if Blazor replaces their DOM nodes.
+    const forceArrivals = new Map();
+    const heldCountElements = new WeakMap();
+    const mapSelector = '[data-fx-key^="force-"], [data-fx-key^="spice-"], [data-fx-key^="terror-"], [data-fx-key^="ambassador-"], [data-fx-key^="discovery-"]';
+
+    function hideTokens(tokens) {
+        const owner = {};
+        for (const { el } of tokens) {
+            let owners = hiddenTokens.get(el);
+            if (!owners) hiddenTokens.set(el, owners = new Set());
+            owners.add(owner);
+            el.style.visibility = 'hidden';
+        }
+        return () => {
+            for (const { el } of tokens) {
+                const owners = hiddenTokens.get(el);
+                if (!owners?.delete(owner) || owners.size) continue;
+                hiddenTokens.delete(el);
+                el.style.visibility = '';
+            }
+        };
+    }
+
+    function forceCountElement(el) {
+        return el.tagName === 'IMG' ? null : el.querySelector('[data-fx-count] > span');
+    }
+
+    function attachForceCount(state, el) {
+        if (state.el !== el) {
+            if (state.el && heldCountElements.get(state.el) === state) {
+                heldCountElements.delete(state.el);
+                state.el.removeAttribute('data-fx-previous');
+            }
+            const previous = el && heldCountElements.get(el);
+            if (previous && previous !== state) previous.el = null;
+            state.el = el;
+            if (el) heldCountElements.set(el, state);
+        }
+        if (el) el.setAttribute('data-fx-previous', state.shown > 0 ? String(state.shown) : '');
+    }
+
+    function releaseForceArrival(state) {
+        attachForceCount(state, null);
+        for (const hold of state.pending) hold.releaseImages?.();
+        state.pending.clear();
+        if (forceArrivals.get(state.key) === state) forceArrivals.delete(state.key);
+    }
+
+    function reserveForceArrival(key, el, previous, current) {
+        let state = forceArrivals.get(key);
+        if (!state) {
+            state = { key, el: null, shown: previous, expected: current, pending: new Set() };
+            forceArrivals.set(key, state);
+        }
+        state.expected = current;
+        attachForceCount(state, el);
+        return state;
+    }
+
+    function bindArrivalImages(hold, imgs) {
+        if (!hold.indices) return;
+        const elements = hold.indices.map(index => imgs[index]).filter(Boolean);
+        if (elements.length === hold.elements.length && elements.every((el, i) => el === hold.elements[i])) return;
+        const release = hideTokens(elements.map(el => ({ el })));
+        hold.releaseImages?.();
+        hold.elements = elements;
+        hold.releaseImages = release;
+    }
+
+    function holdForceArrival(state, amount, indices = null, imgs = []) {
+        const hold = { indices, elements: [], releaseImages: null };
+        state.pending.add(hold);
+        bindArrivalImages(hold, imgs);
+        return arrived => {
+            if (!state.pending.delete(hold)) return;
+            hold.releaseImages?.();
+            if (arrived) state.shown = Math.min(state.expected, state.shown + amount);
+            if (state.pending.size) attachForceCount(state, state.el);
+            else releaseForceArrival(state);
+        };
+    }
+
+    function reconcileForceArrivals(elements) {
+        const byKey = new Map(elements.filter(el => el.dataset.fxKey.startsWith('force-')).map(el => [el.dataset.fxKey, el]));
+        for (const state of [...forceArrivals.values()]) {
+            const el = byKey.get(state.key);
+            const imgs = el ? [...el.querySelectorAll('img')] : [];
+            const count = imgs.length;
+            if (count < state.expected) {
+                for (const effect of [...active]) {
+                    if (effect.mapTransition && effect.forceKey === state.key) {
+                        active.delete(effect);
+                        effect.done?.();
+                    }
+                }
+                if (forceArrivals.get(state.key) !== state) continue;
+                state.shown = Math.max(0, state.shown - (state.expected - count));
+            }
+            state.expected = count;
+            attachForceCount(state, el ? forceCountElement(el) : null);
+            for (const hold of state.pending) bindArrivalImages(hold, imgs);
+        }
+    }
+
+    function cancelMapTransitions() {
+        for (const effect of [...active]) {
+            if (!effect.mapTransition) continue;
+            active.delete(effect);
+            effect.done?.();
+        }
+        for (const state of [...forceArrivals.values()]) releaseForceArrival(state);
+    }
+
+    function releasePendingSync(pending) {
+        if (!pending) return;
+        for (const release of pending.releases.splice(0)) release();
+        if (pendingMapSync === pending) pendingMapSync = null;
+    }
+
+    function layoutOf(root) {
+        const rect = root.getBoundingClientRect();
+        return [rect.left, rect.top, rect.width, rect.height, window.devicePixelRatio].map(n => Math.round(n * 10)).join(',');
+    }
+
+    // Capture visual state before a later Blazor render can reuse a token's DOM nodes.
+    window.FxSyncMapTokens = async function (scene) {
+        const revision = ++syncRevision;
+        releasePendingSync(pendingMapSync);
+        const root = document.getElementById('planetmap_inner');
+        if (!root) {
+            cancelMapTransitions();
+            return;
+        }
+        const elements = [...root.querySelectorAll(mapSelector)];
+        const resetAtStart = scene !== mapScene || root !== mapRoot || layoutOf(root) !== mapLayout || document.hidden || reducedMotion.matches;
+        const pending = { releases: [] };
+        pendingMapSync = pending;
+        if (resetAtStart) {
+            cancelMapTransitions();
+        } else {
+            reconcileForceArrivals(elements);
+            for (const el of elements) {
+                const key = el.dataset.fxKey;
+                if (!key.startsWith('force-')) continue;
+                const imgs = [...el.querySelectorAll('img')];
+                const before = mapTokens.get(key)?.tokens.length || 0;
+                if (imgs.length <= before) continue;
+                pending.releases.push(hideTokens(imgs.slice(before).map(img => ({ el: img }))));
+                const state = reserveForceArrival(key, forceCountElement(el), before, imgs.length);
+                const release = holdForceArrival(state, 0);
+                pending.releases.push(() => release(false));
+            }
+        }
+        const images = elements.flatMap(el => el.tagName === 'IMG' ? [el] : [...el.querySelectorAll('img')]);
+        await Promise.all(images.filter(img => !img.complete).map(img => new Promise(resolve => {
+            img.addEventListener('load', resolve, { once: true });
+            img.addEventListener('error', resolve, { once: true });
+        })));
+        if (revision !== syncRevision || !root.isConnected) {
+            releasePendingSync(pending);
+            return;
+        }
+
+        const layout = layoutOf(root);
+        const reset = resetAtStart || layout !== mapLayout || document.hidden || reducedMotion.matches;
+        const next = new Map();
+        for (const el of elements) {
+            const key = el.dataset.fxKey;
+            const imgs = el.tagName === 'IMG' ? [el] : [...el.querySelectorAll('img')];
+            const tokens = imgs.map((img, index) => ({ el: img, index, shot: snapshot(img) })).filter(t => t.shot);
+            if (!tokens.length) continue;
+            const label = key.startsWith('force-') ? forceCountElement(el) : null;
+            next.set(key, {
+                key, type: key.split('-')[0], tokens, imgs, label, count: label ? snapshotCount(label) : null,
+                amount: Number(el.dataset.fxAmount || tokens.length),
+                group: /^force-/.test(key) ? key.replace(/^force-[^-]+-/, '') : null
+            });
+        }
+
+        if (reset) {
+            releasePendingSync(pending);
+            if (!resetAtStart) cancelMapTransitions();
+        } else {
+            const losses = [];
+            const gains = [];
+            for (const [key, before] of mapTokens) {
+                const after = next.get(key);
+                if (before.type === 'force') {
+                    const count = before.tokens.length - (after?.tokens.length || 0);
+                    if (count > 0 && !killedKeys.has(key)) losses.push({ ...before, tokens: before.tokens.slice(-count) });
+                } else if (!after || after.amount < before.amount) {
+                    run({
+                        kind: 'token-out', type: before.type, shot: combineShots(before.tokens.map(t => t.shot)),
+                        partial: !!after, start: performance.now(), duration: 950, mapTransition: true
+                    });
+                }
+            }
+            for (const [key, after] of next) {
+                const before = mapTokens.get(key);
+                if (after.type === 'force') {
+                    const count = after.tokens.length - (before?.tokens.length || 0);
+                    if (count > 0) gains.push({ ...after, previous: before?.tokens.length || 0, tokens: after.tokens.slice(-count) });
+                } else if (!before && after.type !== 'spice') {
+                    tokenArrival(after);
+                }
+            }
+            for (const gain of gains) {
+                const arrivals = [];
+                while (gain.tokens.length) {
+                    const loss = losses.find(l => l.group === gain.group && l.tokens.length);
+                    const count = loss ? Math.min(loss.tokens.length, gain.tokens.length) : gain.tokens.length;
+                    arrivals.push({
+                        arriving: gain.tokens.splice(0, count), loss,
+                        departing: loss ? loss.tokens.splice(0, count) : null
+                    });
+                }
+                const state = reserveForceArrival(gain.key, gain.label, gain.previous, gain.amount);
+                for (const arrival of arrivals) {
+                    arrival.done = holdForceArrival(state, arrival.arriving.length, arrival.arriving.map(t => t.index), gain.imgs);
+                }
+                for (const [index, { arriving, loss, departing, done: finish }] of arrivals.entries()) {
+                    const count = gain.count;
+                    const gap = count ? 2 * count.rect.height / count.height : 0;
+                    const offsetY = count && (gain.previous > 0 || arrivals.length > 1) ? -count.rect.height - gap : 0;
+                    const offsetX = count && arrivals.length > 1 ? (index - (arrivals.length - 1) / 2) * (count.rect.width + gap) : 0;
+                    const target = forceShot(arriving, count, arriving.length, offsetX, offsetY);
+                    const done = () => finish(true);
+                    if (loss) {
+                        const shot = forceShot(departing, loss.count, departing.length);
+                        const effect = { kind: 'hold', shot, start: performance.now(), mapTransition: true, forceKey: gain.key, done };
+                        if (beam({ shot, block: blockSize(shot), effect }, target, done)) {
+                            effect.duration = 1000;
+                            run(effect);
+                        } else done();
+                    } else {
+                        run({
+                            kind: 'scatter', shot: target, particles: particlesFor(target, true), inward: true,
+                            start: performance.now(), duration: 850, mapTransition: true, forceKey: gain.key, done
+                        });
+                    }
+                }
+            }
+            for (const loss of losses.filter(l => l.tokens.length)) {
+                const shot = forceShot(loss.tokens, loss.count, loss.tokens.length);
+                run({ kind: 'scatter', shot, particles: particlesFor(shot, false), flash: true,
+                    start: performance.now(), duration: 850, mapTransition: true });
+            }
+            releasePendingSync(pending);
+        }
+        mapScene = scene;
+        mapRoot = root;
+        mapLayout = layout;
+        mapTokens = next;
+        killedKeys.clear();
+    };
+
+    function tokenArrival(token) {
+        run({
+            kind: 'token-in', type: token.type, shot: combineShots(token.tokens.map(t => t.shot)),
+            start: performance.now(), duration: 750, mapTransition: true, done: hideTokens(token.tokens)
+        });
     }
 
     // Map force stacks are remembered for a few seconds, so a killed stack can still dissolve where it stood
@@ -407,8 +800,10 @@
 
     // Called when forces were killed: each item names a map stack and how many tokens it had before and has now.
     window.FxDisintegrate = function (items) {
+        if (reducedMotion.matches) return;
         remember();
         for (const item of items || []) {
+            killedKeys.add(item.key);
             const history = memory.get(item.key) || [];
             const before = [...history].reverse().find(h => h.tokens.length > item.to);
             if (!before) continue;
@@ -433,6 +828,7 @@
     ensureMemory();
     // Called after new tokens appear in the tanks: they are beamed in from the killed stacks, or assemble from scattered pixels.
     window.FxIntegrate = function (keys, delay) {
+        if (reducedMotion.matches) return;
         const wait = Math.max(0, delay || 0);
         const byFaction = new Map();
         for (const key of keys || []) {
@@ -556,7 +952,7 @@ window.InitReportResize = function (panel) {
 (function () {
     'use strict';
 
-    const DURATION = 2900;
+    const DURATION = 5800;
     const COLORS = [[196, 98, 45], [172, 80, 36], [214, 136, 72], [229, 171, 112], [146, 64, 30], [205, 118, 58]];
     let audio = null;
 

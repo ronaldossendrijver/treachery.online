@@ -39,11 +39,13 @@
             var partial = plan != null && ((Game.CurrentPrescience != null && battle.OpponentOf(Game.CurrentPrescience.Initiator) == plan.Player) ||
                                            (Game.CurrentNexusPrescience != null && battle.OpponentOf(Game.CurrentNexusPrescience.Initiator) == plan.Player));
             var full = maySee || maySeeBoth;
+            var presciencePreview = plan != null && !isOwn && !maySeeBoth &&
+                                    (partial || (Game.GreenKarma && battle.OpponentOf(Faction.Green) == plan.Player));
 
             if (!(editing || full || partial || isOwn || isHost)) continue;
 
             cards.Add(new WheelCard(combatant, isAggressor, editing, isHost, editing || isHost && actions.Count > 0,
-                full ? plan : partial ? plan : null, full, opponentPlan,
+                full ? plan : partial ? plan : null, full, presciencePreview, opponentPlan,
                 isAggressor ? Game.DefenderTraitorAction is { Succeeded: true } : Game.AggressorTraitorAction is { Succeeded: true },
                 isAggressor ? aggressorWasFacedanced : defenderWasFacedanced,
                 plan == null ? (isOwn ? "Your battle plan is not submitted yet" : "Battle plan not submitted yet") : "Battle plan is hidden until both plans are in"));
@@ -51,7 +53,7 @@
     }
     else if (actions.Count > 0)
     {
-        cards.Add(new WheelCard(Faction, true, false, true, true, null, false, null, false, false, ""));
+        cards.Add(new WheelCard(Faction, true, false, true, true, null, false, false, null, false, false, ""));
     }
 
     if (cards.Count == 0) return;
@@ -79,7 +81,7 @@
         }
         else
         {
-            <BattleWheelCard @key="@frame.DragKey" Frame="frame" LeftFlap="@(card.IsHost ? startFlap : null)" RightFlap="@(card.IsHost ? endFlap : null)">
+            <BattleWheelCard @key="@frame.DragKey" Frame="frame" PresciencePreview="card.PresciencePreview" LeftFlap="@(card.IsHost ? startFlap : null)" RightFlap="@(card.IsHost ? endFlap : null)">
                 <Wheel>
                     <div class="bwl-face">
                         <div class="bwl-board">
@@ -99,6 +101,10 @@
                                 {
                                     <span class="bwl-note">@card.Note</span>
                                 }
+                            }
+                            @if (card.PresciencePreview)
+                            {
+                                <div class="bwl-prescience-shroud" aria-hidden="true"></div>
                             }
                         </div>
                     </div>
@@ -123,7 +129,7 @@
 
     private sealed record WheelCard(
         Faction Combatant, bool IsAggressor, bool Editing, bool IsHost, bool IsActive,
-        Battle? Plan, bool ShowEntirePlan, Battle? OpponentPlan, bool TraitorCalled, bool Facedanced, string Note);
+        Battle? Plan, bool ShowEntirePlan, bool PresciencePreview, Battle? OpponentPlan, bool TraitorCalled, bool Facedanced, string Note);
 
     private static string Px(double x) => Utilities.Px(x);
 

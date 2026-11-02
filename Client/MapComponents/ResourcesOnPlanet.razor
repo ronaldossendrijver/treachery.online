@@ -20,7 +20,7 @@
                 Y="@(spiceLocation.Y - Client.CurrentSkin.RESOURCETOKEN_RADIUS)" 
                 Width=@(Client.CurrentSkin.RESOURCETOKEN_RADIUS * 2) 
                 Height="@(Client.CurrentSkin.RESOURCETOKEN_RADIUS * 2)" 
-                Src="@Client.CurrentSkin.Harvester_URL" data-fx-key="@($"spice-{l.Id}")" 
+                Src="@Client.CurrentSkin.Harvester_URL" data-fx-key="@($"spice-{l.Id}")" data-fx-amount="@Game.ResourcesOnPlanet[l]"
                 ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
 
             <MapText ToShow="@Game.ResourcesOnPlanet[l].ToString()"

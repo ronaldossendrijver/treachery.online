@@ -151,9 +151,17 @@ else
         </div>
 
         <aside class="game-rail @(Client.IsObserver ?"observer-rail" : "") @( _phoneSheetExpanded ? "sheet-expanded" : "sheet-collapsed")" aria-label="Game controls">
-            <button class="sheet-handle" type="button" aria-expanded="@_phoneSheetExpanded" @onclick="TogglePhoneSheet">
+            <button class="sheet-handle" type="button" aria-expanded="@_phoneSheetExpanded" @onclick="TogglePhoneSheet"
+                    @ontouchstart="StartSheetSwipe" @ontouchend="EndSheetSwipe" @ontouchcancel="CancelSheetSwipe">
                 <span class="sheet-grip" aria-hidden="true"></span>
-                <span class="sheet-title">Game controls</span>
+                @if (!_phoneSheetExpanded && Client.Status?.WaitingForMe(Client.Player, Client.IsHost) == true)
+                {
+                    <TurnActivityIndicator />
+                }
+                else
+                {
+                    <span class="sheet-title">Game controls</span>
+                }
                 <span class="sheet-toggle-label">@(_phoneSheetExpanded ? "Hide" : "Show")</span>
             </button>
             <div class="rail-topbar">
@@ -277,7 +285,41 @@ else
         Client.Refresh(nameof(LeaveSetup));
     }
 
-    private void TogglePhoneSheet() => _phoneSheetExpanded = !_phoneSheetExpanded;
+    private (double X, double Y)? _sheetSwipeStart;
+    private DateTime _suppressSheetClickUntil;
+
+    private void TogglePhoneSheet(MouseEventArgs e)
+    {
+        if (e.Detail != 0 && DateTime.UtcNow < _suppressSheetClickUntil)
+        {
+            _suppressSheetClickUntil = default;
+            return;
+        }
+
+        _phoneSheetExpanded = !_phoneSheetExpanded;
+    }
+
+    private void StartSheetSwipe(TouchEventArgs e)
+    {
+        _suppressSheetClickUntil = default;
+        _sheetSwipeStart = e.Touches.Length == 1 ? (e.Touches[0].ClientX, e.Touches[0].ClientY) : null;
+    }
+
+    private void CancelSheetSwipe() => _sheetSwipeStart = null;
+
+    private void EndSheetSwipe(TouchEventArgs e)
+    {
+        var start = _sheetSwipeStart;
+        _sheetSwipeStart = null;
+        if (start == null || e.ChangedTouches.Length != 1) return;
+
+        var dx = e.ChangedTouches[0].ClientX - start.Value.X;
+        var dy = e.ChangedTouches[0].ClientY - start.Value.Y;
+        if (Math.Abs(dy) < 30 || Math.Abs(dy) <= Math.Abs(dx)) return;
+
+        _phoneSheetExpanded = dy < 0;
+        _suppressSheetClickUntil = DateTime.UtcNow.AddMilliseconds(500);
+    }
 
     private void ToggleFactionMenu(Faction faction) =>
         _selectedMapFaction = _selectedMapFaction == faction ? null : faction;

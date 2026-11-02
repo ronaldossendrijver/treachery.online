@@ -19,10 +19,11 @@
             y += Client.CurrentSkin.PlayerTokenRadius;
         }
 
+        var terrorIndex = 0;
         foreach (var terr in Game.TerrorIn(stronghold.Territory))
         {
             var popover = Client.Faction == Faction.Cyan ? Client.CurrentSkin.Format("{0} - {1}", terr, Client.CurrentSkin.GetTerrorTypeDescription(terr)) : "Terror";
-            <MapImage X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Client.CurrentSkin.PlayerTokenRadius Src=@Client.CurrentSkin.GetFactionTableImageUrl(Faction.Cyan)
+            <MapImage data-fx-key="@($"terror-{stronghold.Id}-{terrorIndex++}")" X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Client.CurrentSkin.PlayerTokenRadius Src=@Client.CurrentSkin.GetFactionTableImageUrl(Faction.Cyan)
                 Opacity=opacity ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover PopoverAsTooltip="true"/>
 
             y += Client.CurrentSkin.PlayerTokenRadius;
@@ -32,7 +33,7 @@
         if (ambassador != Ambassador.None)
         {
             var popover = $"{Client.CurrentSkin.Describe(ambassador)} Ambassador - {Client.CurrentSkin.GetAmbassadorDescription(ambassador)}";
-            <MapImage X=x Y=y Diameter=@Client.CurrentSkin.PlayerTokenRadius Src=@Client.CurrentSkin.GetImageUrl(ambassador)
+            <MapImage data-fx-key="@($"ambassador-{stronghold.Id}-{ambassador}")" X=x Y=y Diameter=@Client.CurrentSkin.PlayerTokenRadius Src=@Client.CurrentSkin.GetImageUrl(ambassador)
                 Opacity=opacity ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover PopoverAsTooltip="true"/>
         }
     }
@@ -54,7 +55,7 @@
         {
             forceDiameter = 1.5f * Client.CurrentSkin.FORCETOKEN_RADIUS;
 
-            <MapImage X=@(pos.X - 1.25f * Client.CurrentSkin.FORCETOKEN_RADIUS) Y=@(pos.Y - 1.25f * Client.CurrentSkin.FORCETOKEN_RADIUS) Diameter=@(2.5f * Client.CurrentSkin.FORCETOKEN_RADIUS) 
+            <MapImage data-fx-key="@($"discovery-{location.Id}-{ds.Discovery}")" X=@(pos.X - 1.25f * Client.CurrentSkin.FORCETOKEN_RADIUS) Y=@(pos.Y - 1.25f * Client.CurrentSkin.FORCETOKEN_RADIUS) Diameter=@(2.5f * Client.CurrentSkin.FORCETOKEN_RADIUS)
                 Src=@Client.CurrentSkin.GetImageUrl(ds.Discovery) Popover=@Intel(ds) 
                 ShadowX=1 ShadowY=1
                 OnClick=@(e => OnClick(e, location)) />
@@ -71,7 +72,7 @@
                 (Client.Faction == Faction.Yellow && discovery.TokenType == DiscoveryTokenType.Yellow) || (Client.Faction == Faction.Orange && discovery.TokenType == DiscoveryTokenType.Orange) ?
                 $"{Client.CurrentSkin.Describe(discovery.Token)} - {Client.CurrentSkin.GetDiscoveryTokenDescription(discovery.Token)}" : Client.CurrentSkin.Describe(discovery.TokenType);
 
-            <MapImage X=@(pos.X - 1.25f * Client.CurrentSkin.FORCETOKEN_RADIUS) Y=@(pos.Y - 1.25f * Client.CurrentSkin.FORCETOKEN_RADIUS) Diameter=@(2.5f * Client.CurrentSkin.FORCETOKEN_RADIUS)
+            <MapImage data-fx-key="@($"discovery-{location.Id}-{discovery.TokenType}")" X=@(pos.X - 1.25f * Client.CurrentSkin.FORCETOKEN_RADIUS) Y=@(pos.Y - 1.25f * Client.CurrentSkin.FORCETOKEN_RADIUS) Diameter=@(2.5f * Client.CurrentSkin.FORCETOKEN_RADIUS)
                 Src=@Client.CurrentSkin.GetImageUrl(discovery.TokenType) Popover=@popoverToShow PopoverAsTooltip=true
                 Opacity="0.9f" ShadowX=1 ShadowY=1 />
         }
