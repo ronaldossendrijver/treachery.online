@@ -18,7 +18,7 @@
             <div class="ui-text-info ui-small ui-mb-2">Note: Use or pass Voice before Prescience.</div>
         }
 
-        <RadioComponent @bind-Value="_mustUse" Values="@(new[] {true,false})" ValueLabels="@(new[] {"Force the use of...","Deny the use of..."})" />
+        <RadioComponent @bind-Value="_mustUse" Values="@([true,false])" ValueLabels="@(["Force the use of...","Deny the use of..."])" />
 
         <SelectComponent @bind-Value="_type" Values="ValidTypes" />
 
