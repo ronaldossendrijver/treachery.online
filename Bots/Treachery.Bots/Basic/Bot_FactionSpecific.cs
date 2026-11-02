@@ -883,12 +883,15 @@ public partial class BasicBot
 
     protected virtual BrownEconomics? DetermineBrownEconomics()
     {
-        if (ResourcesIncludingAllyContribution >= 14 &&
-            Game.Players.Where(p => p.Faction != Ally).Count(p => p.Resources < 2 || (Game.Applicable(Rule.BlueAutoCharity) && p.Faction == Faction.Blue)) >= 2)
+        if (LastTurn) return new BrownEconomics(Game, Faction) { Status = BrownEconomicsStatus.Double };
+        
+        var opponentsThatCanClaim = Opponents.Count(p =>
+            p.Resources < 2 || (Game.Applicable(Rule.BlueAutoCharity) && p.Faction == Faction.Blue));
+        
+        if (ResourcesIncludingAllyContribution >= 14 && opponentsThatCanClaim >= 2)
             return new BrownEconomics(Game, Faction) { Status = BrownEconomicsStatus.Cancel };
         
-        if (ResourcesIncludingAllyContribution <= 8 &&
-            Game.Players.Where(p => p.Faction != Ally).Count(p => p.Resources < 2 || (Game.Applicable(Rule.BlueAutoCharity) && p.Faction == Faction.Blue)) <= 2)
+        if (ResourcesIncludingAllyContribution <= 8 && opponentsThatCanClaim <= 2)
             return new BrownEconomics(Game, Faction) { Status = BrownEconomicsStatus.Double };
 
         return null;
