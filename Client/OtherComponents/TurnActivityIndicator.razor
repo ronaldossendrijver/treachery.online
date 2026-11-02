@@ -19,10 +19,10 @@
     else if (IsBiddingPhase && ToBid.Any())
     {
         var bidders = ToBid.ToArray();
-        <div class="turn-activity-grid"
+        <div class="turn-activity-grid turn-activity-bids @(bidders.Length > 6 ? "turn-activity-bids-compact" : "")"
              role="group"
              aria-label="@($"Waiting for bids from {bidders.Length} players")"
-             style="@GridStyle(bidders.Length)">
+             style="@GridStyle(bidders.Length, true)">
             @foreach (var bidder in bidders)
             {
                 var player = bidder.Player;
@@ -96,11 +96,11 @@
             ? BlackMarketBid.PlayersToBid(Game)
             : Bid.PlayersToBid(Game);
 
-    private static string GridStyle(int count)
+    private static string GridStyle(int count, bool showCardCounts = false)
     {
         var rows = count <= 6 ? 1 : 2;
         var columns = (int)Math.Ceiling(count / (double)rows);
-        var size = rows == 1 ? 34 : 21;
+        var size = rows == 1 || showCardCounts ? 34 : 21;
         return $"--turn-grid-columns:{columns};--turn-grid-size:{size}px";
     }
 }

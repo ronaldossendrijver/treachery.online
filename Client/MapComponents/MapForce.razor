@@ -15,12 +15,14 @@
         <img src="@ForceUrl" style=@($"{PointerType};position:absolute;left:{Px(-0.07 * i * Diameter)};top:{Px(-0.08 * i * Diameter)};width:{Px(Diameter)};opacity:{Opacity};filter:drop-shadow({Px(ShadowSize)} {Px(ShadowSize)} {Px(ShadowBlur)} {ShadowColor})") alt="Token"/>
     }
 
-</div>
+    @if (!((Faction == Faction.White && Special) || Amount == 0))
+    {
+        <span data-fx-count>
+            <MapText ToShow="@Amount.ToString()" X=@(0.5f * Diameter) Y=@(0.5f * Diameter) Font=@Font BorderWidth=@BorderWidth BorderColor=@BorderColor />
+        </span>
+    }
 
-@if (!((Faction == Faction.White && Special) || Amount == 0))
-{
-    <MapText ToShow="@Amount.ToString()" X=@(X + 0.5f * Diameter) Y=@(Y + 0.5f * Diameter) Font=@Font BorderWidth=@BorderWidth BorderColor=@BorderColor />
-}
+</div>
 
 @code {
 

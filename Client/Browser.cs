@@ -137,6 +137,11 @@ public class Browser(IJSRuntime jsRuntime)
         await JsInvoke("FxIntegrate", System.Linq.Enumerable.ToArray(keys), delayMs);
     }
 
+    public async Task SyncMapTokens(string scene)
+    {
+        await JsInvoke("FxSyncMapTokens", scene);
+    }
+
     public async Task Save(string filename, string data)
     {
         await JsInvoke<object>("saveFile", filename, data);

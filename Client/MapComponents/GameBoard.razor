@@ -54,6 +54,21 @@
 
 @code {
 
+    private Game? _effectGame;
+    private string _effectScene = Guid.NewGuid().ToString();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!ReferenceEquals(_effectGame, Game))
+        {
+            _effectGame = Game;
+            _effectScene = Guid.NewGuid().ToString();
+        }
+
+        await Browser.SetPlanetMapScale();
+        await Browser.SyncMapTokens(_effectScene);
+    }
+
     [Parameter]
     public EventCallback<LocationEventArgs> OnLocationClick { get; set; }
 

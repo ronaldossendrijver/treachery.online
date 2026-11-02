@@ -374,6 +374,7 @@ public class EndPhase : GameEvent
         Game.CurrentPrescience = null;
         Game.CurrentThought = null;
         Game.CurrentVoice = null;
+        Game.VoiceWasPassed = false;
         Game.CurrentNexusPrescience = null;
         Game.CurrentBlueCunning = null;
         Game.CurrentRedCunning = null;

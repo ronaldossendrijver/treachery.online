@@ -1,4 +1,4 @@
-function FindDealMapFit(width, height, reserveRight, visualRadius, markers, obstacles) {
+function FindDealMapFit(width, height, reserveRight, visualRadius, markers, obstacles, alignTop = false) {
     const margin = 8;
     const availableWidth = Math.max(0, width - 2 * margin - reserveRight);
     const availableHeight = Math.max(0, height - 2 * margin);
@@ -6,7 +6,7 @@ function FindDealMapFit(width, height, reserveRight, visualRadius, markers, obst
     if (!Number.isFinite(maxScale) || maxScale <= 0) return null;
 
     const preferredX = (width - reserveRight) / 2;
-    const preferredY = height / 2;
+    const preferredY = alignTop ? margin + visualRadius * maxScale : height / 2;
     const paddedObstacles = obstacles.map(rect => ({
         left: rect.left - 2,
         top: rect.top - 2,

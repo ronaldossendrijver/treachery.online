@@ -31,6 +31,7 @@ public partial class Game
     public int CurrentPinkBattleContribution { get; internal set; }
 
     public Voice? CurrentVoice { get; internal set; }
+    public bool VoiceWasPassed { get; internal set; }
     public Prescience? CurrentPrescience { get; internal set; }
     public Thought? CurrentThought { get; internal set; }
     public StrongholdAdvantage? ChosenHmsAdvantage { get; internal set; }
