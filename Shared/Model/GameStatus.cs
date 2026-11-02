@@ -742,13 +742,14 @@ public class GameStatus
                 //Show Event description
                 case WhiteSpecifiesAuction or BlueBattleAnnouncement or Voice or Prescience or GreyRemovedCardFromAuction or AllianceBroken or CardTraded or SwitchedSkilledLeader or 
                     BrownDiscarded or BrownEconomics or BrownRemoveForce or BrownMovePrevention or BrownFreeRevivalPrevention or BrownKarmaPrevention or
-                    AmbassadorPlaced or TerrorPlanted or Audited or Donated or ExtortionPrevented or FlightDiscoveryUsed or DealAccepted or YellowRidesMonster or CharityClaimed:
+                    AmbassadorPlaced or Audited or Donated or ExtortionPrevented or FlightDiscoveryUsed or DealAccepted or YellowRidesMonster or CharityClaimed:
                 case WhiteAnnouncesBlackMarket { Passed: false }:
                 case GreySwappedCardOnBid { Passed: false }:
                 case ReplacedCardWon { Passed: false }:
                 case FaceDancerReplaced { Passed: false }: 
                 case DiscoveryRevealed { Passed: false }:
                 case DiscoveryEntered { Passed: false }:
+                case TerrorPlanted { Passed: false }:
                 case TerrorRevealed { Passed: false }:
                 case AmbassadorActivated { Passed: false }: 
                 case NexusCardDrawn { Passed: false }:

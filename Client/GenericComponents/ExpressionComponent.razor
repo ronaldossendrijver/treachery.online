@@ -57,6 +57,10 @@
                 }
                 break;
 
+            case IHero hero:
+                <Image Shown="@hero" Game="Game" Width="@Size" />
+                break;
+                
             case Faction faction:
                 <FactionComponent Faction=faction Diameter=@Size HasShadow="false"/>
                 break;
@@ -69,8 +73,8 @@
                 <span style=@TextBorder>@Client.CurrentSkin.Describe(part)</span>
                 break;
 
-            case Concept monster when monster == Concept.Monster:
-                var label = @Client.CurrentSkin.Describe(Concept.Monster);
+            case Concept.Monster:
+                var label = Client.CurrentSkin.Describe(Concept.Monster);
                 <img src="@Client.CurrentSkin.Monster_URL" alt="@label" width="@Size" height="@Size" title="@label" style="filter: drop-shadow(2px 2px 2px black);"/>
                 break;
     
