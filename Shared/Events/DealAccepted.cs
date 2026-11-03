@@ -47,9 +47,13 @@ public class DealAccepted : GameEvent
 
     public override Message? Validate()
     {
+        if (Game.Applicable(Rule.SE_CardTiming) && Game.CurrentMainPhase == MainPhase.Contemplate)
+            return Message.Express("Deals cannot be accepted during the Mentat Pause");
         if (!MayDeal(Game, Player, Price)) return Message.Express("You currently have an outstanding bid");
 
         var boundPlayer = Game.GetPlayer(BoundFaction);
+        if (Game.Applicable(Rule.SE_Deals) && Player.Ally == BoundFaction && (Price > 0 || Benefit > 0))
+            return Message.Express("Deals between allies cannot transfer spice");
         if (boundPlayer != null && Game.Version >= 142 && !MayDeal(Game, boundPlayer, Benefit)) return Message.Express(BoundFaction, " currently have an outstanding bid");
         if (Price > Player.Resources) return Message.Express("You can't pay that much");
 
@@ -112,16 +116,17 @@ public class DealAccepted : GameEvent
                 Type = Type
             };
 
-            Game.StartDeal(newDeal);
+            var alliedSecondEditionDeal = Game.Applicable(Rule.SE_Deals) && Player.Ally == offer.Initiator;
+            if (!alliedSecondEditionDeal) Game.StartDeal(newDeal);
             var offerInitiator = GetPlayer(offer.Initiator);
 
-            if (offerInitiator != null && Price > 0)
+            if (!alliedSecondEditionDeal && offerInitiator != null && Price > 0)
             {
                 Game.ExchangeResourcesInBribe(Player, offerInitiator, Price);
                 Game.Stone(Milestone.Bribe);
             }
 
-            if (offerInitiator != null && Benefit > 0)
+            if (!alliedSecondEditionDeal && offerInitiator != null && Benefit > 0)
             {
                 Game.ExchangeResourcesInBribe(offerInitiator, Player, Benefit);
                 Game.Stone(Milestone.Bribe);

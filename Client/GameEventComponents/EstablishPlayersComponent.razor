@@ -21,7 +21,7 @@
         <div class="lobby-panel-body">
             <div class="setup-basics">
                 <div class="setup-stepper">
-                    <span class="setup-label">Turns</span>
+                    <span class="setup-label">@(Settings.InitialRules.Contains(Rule.SE_Core) ? "Rounds" : "Turns")</span>
                     <SelectNumberComponent @bind-Value="@Settings.MaximumTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Size="32"/>
                 </div>
                 <div class="setup-stepper">
@@ -37,7 +37,7 @@
 
             <div class="lobby-section-title">Factions in play <span>@Settings.AllowedFactionsInPlay.Count selected · click to toggle</span></div>
             <div class="setup-factions">
-                <SelectFromImageComponent Selected="@Settings.AllowedFactionsInPlay" Values="EstablishPlayers.AvailableFactions()" T="Faction" OnChanged="@StateHasChanged" ImageWidth="44" Required="false"/>
+                <SelectFromImageComponent Selected="@Settings.AllowedFactionsInPlay" Values="EstablishPlayers.AvailableFactions(Settings.InitialRules)" T="Faction" OnChanged="@StateHasChanged" ImageWidth="44" Required="false"/>
             </div>
 
             <div class="lobby-section-title">Options</div>
@@ -52,6 +52,11 @@
                     </div>
                 }
                 <CheckboxComponent @bind-Value="@_advancedOptions">Change advanced options</CheckboxComponent>
+                @if (Settings.InitialRules.Contains(Rule.SE_Core))
+                {
+                    <CheckboxComponent @bind-Value="@ClassicSpiceDialing">Classic Spice Dialing (replace the spice bonus with force support)</CheckboxComponent>
+                    <p class="setup-membership-hint">Second Edition currently supports the six base factions. Under Classic Spice Dialing, Solaris cannot pay battle costs and the Emperor's allied spice-strength discount does not apply.</p>
+                }
             </div>
 
             @if (_advancedOptions)
@@ -65,7 +70,7 @@
                                 <legend>@Client.CurrentSkin.Describe(ruleGroup)</legend>
                                 @foreach (var rule in Game.GetRulesInGroup(ruleGroup, Game.ExpansionLevel).OrderBy(r => Name(r)))
                                 {
-                                    <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" />
+                                    <ChecklistItemComponent Value="@rule" Values="@Settings.InitialRules" Callback="@(() => RuleChanged(rule))" />
                                 }
                             </fieldset>
                         }
@@ -132,6 +137,26 @@
     };
     
     private bool _advancedOptions;
+
+    private bool ClassicSpiceDialing
+    {
+        get => Settings.InitialRules.Contains(Rule.AdvancedCombat);
+        set => Game.SelectClassicSpiceDialing(Settings.InitialRules, value);
+    }
+
+    private void RuleChanged(Rule rule)
+    {
+        if (Settings.InitialRules.Contains(Rule.SE_Core))
+        {
+            if (rule == Rule.AdvancedCombat)
+                Game.SelectClassicSpiceDialing(Settings.InitialRules, Settings.InitialRules.Contains(rule));
+            else if (rule == Rule.SE_SpiceBonus)
+                Game.SelectClassicSpiceDialing(Settings.InitialRules, !Settings.InitialRules.Contains(rule));
+            Settings.AllowedFactionsInPlay.RemoveAll(f => !EstablishPlayers.AvailableFactions(Settings.InitialRules).Contains(f));
+            Settings.NumberOfPlayers = Math.Min(Settings.NumberOfPlayers, 6);
+        }
+        StateHasChanged();
+    }
 
     private bool AdvancedBotsAvailable => Client.CanUseAdvancedBots;
 
@@ -276,6 +301,11 @@
         if (Game.RulesetDefinition.TryGetValue(ruleset, out var value))
         {
             Settings.InitialRules.AddRange(value);
+        }
+        if (ruleset == Ruleset.SecondEdition)
+        {
+            Settings.AllowedFactionsInPlay = EstablishPlayers.AvailableFactions(Settings.InitialRules).ToList();
+            Settings.NumberOfPlayers = Math.Min(Settings.NumberOfPlayers, 6);
         }
 
         StateHasChanged();

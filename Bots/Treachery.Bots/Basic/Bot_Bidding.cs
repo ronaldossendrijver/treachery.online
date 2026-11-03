@@ -31,7 +31,7 @@ public partial class BasicBot
 
         var resourcesToKeep = thisCardIsPerfect ? Param.Bidding_ResourcesToKeepWhenCardIsPerfect : Param.Bidding_ResourcesToKeepWhenCardIsntPerfect;
         var resourcesAvailable = Math.Max(0, Resources - resourcesToKeep) + ResourcesFromAlly + ResourcesFromRed;
-        var couldUseKarmaForBid = Game.CurrentAuctionType == AuctionType.Normal && !Game.KarmaPrevented(Faction) && Ally != Faction.Red && (Player.SpecialKarmaPowerUsed || !Param.Karma_SaveCardToUseSpecialKarmaAbility || Game.CurrentTurn >= 5 || Player.MaximumNumberOfCards - Player.TreacheryCards.Count <= 1);
+        var couldUseKarmaForBid = !Game.Applicable(Rule.SE_Solaris) && Game.CurrentAuctionType == AuctionType.Normal && !Game.KarmaPrevented(Faction) && Ally != Faction.Red && (Player.SpecialKarmaPowerUsed || !Param.Karma_SaveCardToUseSpecialKarmaAbility || Game.CurrentTurn >= 5 || Player.MaximumNumberOfCards - Player.TreacheryCards.Count <= 1);
         var karmaCardToUseForBidding = couldUseKarmaForBid && ((MayUseUselessAsKarma && currentBid > 2) || currentBid > 4 || resourcesAvailable <= currentBid) ? Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma || (MayUseUselessAsKarma && c.Type == TreacheryCardType.Useless)) : null;
         var karmaWorth = karmaCardToUseForBidding == null ? 0 : 8;
         var maximumIWillSpend = D(1, Math.Min(resourcesAvailable, 12) + karmaWorth);
@@ -156,6 +156,7 @@ public partial class BasicBot
             (c.IsProjectileDefense && !Player.TreacheryCards.Any(x => x.IsProjectileDefense && x.Type != TreacheryCardType.WeirdingWay)) ||
             (c.IsPoisonDefense && !Player.TreacheryCards.Any(x => x.IsPoisonDefense)) ||
             c.Type == TreacheryCardType.Karma ||
+            c.Type == TreacheryCardType.Solaris ||
             (c.Type == TreacheryCardType.Mercenary && Player.Leaders.Count(l => Game.IsAlive(l)) <= 1) ||
             (c.Type == TreacheryCardType.RaiseDead && Player.ForcesKilled > 7) ||
             c.Type == TreacheryCardType.SearchDiscarded ||

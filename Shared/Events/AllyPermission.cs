@@ -38,6 +38,7 @@ public class AllyPermission : GameEvent
     public int RedWillPayForExtraRevival { get; set; }
 
     public bool YellowWillProtectFromMonster { get; set; }
+    public bool YellowAllowsWormRide { get; set; }
 
     public bool YellowAllowsThreeFreeRevivals { get; set; }
 
@@ -121,6 +122,7 @@ public class AllyPermission : GameEvent
 
             case Faction.Yellow:
                 Game.YellowWillProtectFromMonster = YellowWillProtectFromMonster;
+                Game.YellowAllowsWormRide = YellowAllowsWormRide;
                 Game.YellowAllowsThreeFreeRevivals = YellowAllowsThreeFreeRevivals;
                 Game.YellowSharesPrescience = YellowSharesPrescience;
                 Game.YellowRefundsBattleDial = YellowRefundsBattleDial;

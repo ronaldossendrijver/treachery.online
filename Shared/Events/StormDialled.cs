@@ -81,7 +81,8 @@ public class StormDialled : GameEvent
 
         if (Game.Applicable(Rule.TechTokens)) AssignTechTokens();
 
-        if (Game.UseStormDeck) Game.NextStormMoves = Game.DetermineLaterStormWithStormDeck();
+        if (Game.UseStormDeck && !Game.Applicable(Rule.SE_StormDeck))
+            Game.NextStormMoves = Game.DetermineLaterStormWithStormDeck();
 
         Game.Enter(IsPlaying(Faction.Grey) || Game.Applicable(Rule.HmSwithoutGrey), Phase.HmsPlacement, Game.EndStormPhase);
     }

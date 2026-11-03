@@ -144,7 +144,32 @@ public class Map
 
     public static IEnumerable<ResourceCard> GetResourceCardsInPlay(Game g)
     {
+        if (g.Applicable(Rule.SE_DualSpiceBlow)) return GetSecondEditionResourceCards(g.Map);
         return GetResourceCardsInAndOutsidePlay(g.Map).Where(c => IsInPlay(g, c));
+    }
+
+    internal void UseSecondEditionSpiceLocations()
+    {
+        foreach (var (id, amount) in new (int, int)[]
+                 { (53, 6), (69, 6), (40, 9), (83, 9), (74, 7), (13, 8), (19, 8) })
+            LocationLookup.Find(id)!.SpiceBlowAmount = amount;
+    }
+
+    private static IEnumerable<ResourceCard> GetSecondEditionResourceCards(Map map)
+    {
+        (int First, int Second)[] pairs =
+        [
+            (53, 11), (68, 45), (75, 33), (65, 13), (50, 83),
+            (60, 40), (69, 17), (74, 38), (80, 19)
+        ];
+        for (var i = 0; i < pairs.Length; i++)
+            yield return new ResourceCard(200 + i)
+            {
+                Location = map.LocationLookup.Find(pairs[i].First),
+                Location2 = map.LocationLookup.Find(pairs[i].Second)
+            };
+        yield return new ResourceCard(209) { IsLittleMaker = true };
+        for (var i = 0; i < 6; i++) yield return new ResourceCard(210);
     }
 
     private static bool IsInPlay(Game g, ResourceCard c)

@@ -41,6 +41,7 @@ public class BlueAccompanies : GameEvent, ILocationEvent
     public bool Accompanies { get; set; }
 
     public bool ExtraAdvisor { get; set; }
+    public bool FlipExistingFighters { get; set; }
 
     [JsonIgnore]
     public int TotalAmountOfForcesAddedToLocation => SpecialForcesAddedToLocation;
@@ -62,10 +63,20 @@ public class BlueAccompanies : GameEvent, ILocationEvent
 
         if (Accompanies)
         {
-            if (Player.Occupies(Location!.Territory) || !Game.IsOccupied(Location.Territory) || !Game.Applicable(Rule.BlueAdvisors))
-                Player.ShipForces(Location, Game.Version >= 160 ? SpecialForcesAddedToLocation : 1);
+            if (FlipExistingFighters) Player.FlipForces(Location!.Territory, true);
+            var amount = Game.Version >= 160 ? SpecialForcesAddedToLocation : 1;
+            if (Game.Applicable(Rule.SE_BlueAdvisors))
+            {
+                if (Player.SpecialForcesIn(Location!.Territory) > 0 ||
+                    !Player.Occupies(Location.Territory) && Game.IsOccupied(Location.Territory))
+                    Player.ShipAdvisors(Location, amount);
+                else
+                    Player.ShipForces(Location, amount);
+            }
+            else if (Player.Occupies(Location!.Territory) || !Game.IsOccupied(Location.Territory) || !Game.Applicable(Rule.BlueAdvisors))
+                Player.ShipForces(Location, amount);
             else
-                Player.ShipAdvisors(Location, Game.Version >= 160 ? SpecialForcesAddedToLocation : 1);
+                Player.ShipAdvisors(Location, amount);
 
             Log(Initiator, " accompany to ", Location);
             Game.LastShipmentOrMovement = this;
@@ -100,6 +111,11 @@ public class BlueAccompanies : GameEvent, ILocationEvent
             if (Location == null) return Message.Express("To not selected");
             if (Accompanies && Player.ForcesInReserve == 0) return Message.Express("No forces available");
             if (ExtraAdvisor && !MaySendExtraAdvisor(Game, Player, Location)) return Message.Express("You cannot send an extra advisor");
+            if (Game.Applicable(Rule.SE_BlueAdvisors) && Location != Game.Map.PolarSink &&
+                Player.Occupies(Location.Territory) && !FlipExistingFighters)
+                return Message.Express("You must flip existing fighters before accompanying to this territory");
+            if (FlipExistingFighters && (!Game.Applicable(Rule.SE_BlueAdvisors) || Location == Game.Map.PolarSink))
+                return Message.Express("You cannot flip fighters for this accompaniment");
         }
 
         return null;
@@ -119,7 +135,7 @@ public class BlueAccompanies : GameEvent, ILocationEvent
         if (!ReferenceEquals(g.LastShipmentOrMovement.To, g.Map.PolarSink) &&
             (g.Version < 167 || g.LastShipmentOrMovement.To is not Homeworld) &&
             g.LastShipmentOrMovement.To.Territory != g.AtomicsAftermath &&
-            !p.Occupies(g.LastShipmentOrMovement.To.Territory) &&
+            (!p.Occupies(g.LastShipmentOrMovement.To.Territory) || g.Applicable(Rule.SE_BlueAdvisors)) &&
             BlueMayAccompanyToShipmentLocation(g) &&
             !AllyPreventsAccompanyingToShipmentLocation(g, p))
             result.AddRange(g.LastShipmentOrMovement.To.Territory.Locations.Where(l => g.Version <= 142 || (

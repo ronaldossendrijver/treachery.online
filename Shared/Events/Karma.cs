@@ -43,6 +43,7 @@ public class Karma : GameEvent
 
     public override Message? Validate()
     {
+        if (Card == null || !ValidKarmaCards(Game, Player).Contains(Card)) return Message.Express("Select a valid Karama card");
         if (!ValidFactionAdvantages(Game, Player).Contains(Prevented)) return Message.Express("You cannot prevent ", Prevented, " at this moment");
 
         return null;
@@ -50,6 +51,28 @@ public class Karma : GameEvent
 
     public static IEnumerable<FactionAdvantage> ValidFactionAdvantages(Game g, Player p)
     {
+        if (g.Applicable(Rule.SE_Karama))
+        {
+            var advantages = new List<FactionAdvantage>();
+            if (g.CurrentPhase == Phase.KaramaResponse)
+            {
+                if (g.KaramaResponders.Contains(p.Faction)) advantages.Add(g.PendingKaramaAdvantage);
+                return advantages;
+            }
+            if (g.CurrentMainPhase == MainPhase.Battle && g.CurrentBattle != null)
+            {
+                if (g.AggressorPlan == null && g.DefenderPlan == null)
+                {
+                    if (p.Faction != Faction.Red && g.CurrentBattle.IsAggressorOrDefender(Faction.Red)) advantages.Add(FactionAdvantage.RedSpecialForceBonus);
+                    if (p.Faction != Faction.Yellow && g.CurrentBattle.IsAggressorOrDefender(Faction.Yellow)) advantages.Add(FactionAdvantage.YellowNotPayingForBattles);
+                }
+                if (p.Faction != Faction.Black && g.CurrentPhase == Phase.CaptureDecision && g.BlackMustDecideToCapture) advantages.Add(FactionAdvantage.BlackCaptureLeader);
+            }
+            if (g.CurrentMainPhase == MainPhase.ShipmentAndMove && p.Faction != Faction.Orange && g.IsPlaying(Faction.Orange) &&
+                !g.HasActedOrPassed.Contains(Faction.Orange) && g.CurrentPhase != Phase.OrangeShip)
+                advantages.Add(FactionAdvantage.OrangeDetermineMoveMoment);
+            return advantages.Where(a => !g.Prevented(a));
+        }
         var result = new List<FactionAdvantage>
         {
             FactionAdvantage.None
@@ -233,8 +256,33 @@ public class Karma : GameEvent
         return p.TreacheryCards.Where(c =>
             c.Type == TreacheryCardType.Karma ||
             (c.Type == TreacheryCardType.Useless && p.Is(Faction.Blue) && g.Applicable(Rule.BlueWorthlessAsKarma)) ||
-            (c.Type == TreacheryCardType.Clairvoyance && p.Occupies(g.Map.Shrine)));
+            (!g.Applicable(Rule.SE_Karama) && c.Type == TreacheryCardType.Clairvoyance && p.Occupies(g.Map.Shrine)));
     }
+
+    public static IEnumerable<TreacheryCard> ValidSolarisCards(Game g, Player p) =>
+        p.TreacheryCards.Where(c => c.Type == TreacheryCardType.Solaris ||
+            c.IsUseless && p.Is(Faction.Blue) && g.Applicable(Rule.BlueWorthlessAsKarma));
+
+    public static IEnumerable<TreacheryCard> ValidPowerCards(Game g, Player p)
+    {
+        if (!g.Applicable(Rule.SpiritWorldKarama)) return ValidKarmaCards(g, p);
+        var type = p.Faction switch
+        {
+            Faction.Green => TreacheryCardType.Metheor,
+            Faction.Red => TreacheryCardType.Mercenary,
+            Faction.Yellow => TreacheryCardType.Caravan,
+            Faction.Black => TreacheryCardType.Solaris,
+            Faction.Orange => TreacheryCardType.StormSpell,
+            _ => TreacheryCardType.None
+        };
+        return ValidKarmaCards(g, p).Concat(p.TreacheryCards.Where(c => c.Type == type)).Distinct();
+    }
+
+    public static TreacheryCard? PowerCard(Game g, Player p, int cardId) =>
+        cardId == -1 ? ValidPowerCards(g, p).FirstOrDefault() : TreacheryCardManager.Lookup.Find(cardId);
+
+    public static bool IsValidPowerCard(Game g, Player p, int cardId) =>
+        PowerCard(g, p, cardId) is { } card && ValidPowerCards(g, p).Contains(card);
 
     public static bool CanKarma(Game g, Player p)
     {
@@ -258,6 +306,7 @@ public class Karma : GameEvent
         if (Prevented is FactionAdvantage.BlueUsingVoice) Game.CurrentVoice = null;
 
         if (Prevented is FactionAdvantage.GreenBattlePlanPrescience) Game.CurrentPrescience = null;
+        if (Game.CurrentPhase == Phase.KaramaResponse) Game.FinishSecondEditionKaramaResponse();
 
         if (Player.Is(Faction.Grey) &&
             Game.CurrentPhase == Phase.GreySwappingCard &&

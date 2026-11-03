@@ -50,7 +50,7 @@ public class Bid : PassableGameEvent, IBid
     /// </summary>
     [MemberNotNullWhen(true, nameof(KarmaCard))]
     [JsonIgnore]
-    public bool UsingKarmaToRemoveBidLimit => KarmaCard != null && !KarmaBid;
+    public bool UsingKarmaToRemoveBidLimit => KarmaCard != null && !KarmaBid && !Game.Applicable(Rule.SE_Solaris);
 
     /// <summary>
     /// This indicates the card is won immediately
@@ -68,9 +68,11 @@ public class Bid : PassableGameEvent, IBid
         if (Passed) return null;
 
         var isSpecialAuction = Game.CurrentAuctionType == AuctionType.WhiteOnceAround || Game.CurrentAuctionType == AuctionType.WhiteSilent;
-        if (KarmaBid && isSpecialAuction) return Message.Express("You can't use ", TreacheryCardType.Karma, " in Once Around or Silent bidding");
+        var cardEffect = Game.Applicable(Rule.SE_Solaris) ? TreacheryCardType.Solaris : TreacheryCardType.Karma;
+        if (KarmaBid && isSpecialAuction) return Message.Express("You can't use ", cardEffect, " in Once Around or Silent bidding");
 
-        if (KarmaBid && !CanKarma(Game, Player)) return Message.Express("You can't use ", TreacheryCardType.Karma, " for this bid");
+        if (KarmaBid && (KarmaCard == null || !ValidKarmaCards(Game, Player).Contains(KarmaCard)))
+            return Message.Express("Select a valid ", cardEffect, " card for this bid");
 
         if (KarmaBid) return null;
 
@@ -84,7 +86,10 @@ public class Bid : PassableGameEvent, IBid
         if (RedContributionAmount > 0 && RedContributionAmount > (red?.Resources ?? 0)) return Message.Express(Faction.Red, " won't pay that much");
 
         if (!UsingKarmaToRemoveBidLimit && Amount > Player.Resources) return Message.Express("You can't pay ", Payment.Of(Amount));
-        if (KarmaCard != null && (p == null || !Karma.ValidKarmaCards(Game, p).Contains(KarmaCard))) return Message.Express("Invalid ", TreacheryCardType.Karma, " card");
+        if (KarmaCard != null && Game.Applicable(Rule.SE_Solaris) && !KarmaBid)
+            return Message.Express(TreacheryCardType.Solaris, " can only be used to take a card for free");
+        if (KarmaCard != null && !ValidKarmaCards(Game, p).Contains(KarmaCard))
+            return Message.Express("Invalid ", cardEffect, " card");
 
         if (UsesRedSecretAlly && !MayUseRedSecretAlly(Game, Player)) return Message.Express("You can't use ", Faction.Red, " cunning");
 
@@ -121,7 +126,7 @@ public class Bid : PassableGameEvent, IBid
     {
         if (p == null) return Array.Empty<TreacheryCard>();
         if (g.CurrentAuctionType == AuctionType.Normal)
-            return Karma.ValidKarmaCards(g, p);
+            return g.Applicable(Rule.SE_Solaris) ? Karma.ValidSolarisCards(g, p) : Karma.ValidKarmaCards(g, p);
         return Array.Empty<TreacheryCard>();
     }
 
@@ -219,10 +224,11 @@ public class Bid : PassableGameEvent, IBid
 
         Game.Discard(karmaCard);
 
-        if (karmaCard.Type == TreacheryCardType.Karma)
-            Log(bid.Initiator, " get card ", Game.CardNumber, " using ", TreacheryCardType.Karma);
+        var cardEffect = Game.Applicable(Rule.SE_Solaris) ? TreacheryCardType.Solaris : TreacheryCardType.Karma;
+        if (karmaCard.Type == cardEffect)
+            Log(bid.Initiator, " get card ", Game.CardNumber, " using ", cardEffect);
         else
-            Log(bid.Initiator, " get card ", Game.CardNumber, " using ", karmaCard, " for ", TreacheryCardType.Karma);
+            Log(bid.Initiator, " get card ", Game.CardNumber, " using ", karmaCard, " for ", cardEffect);
 
         Game.Stone(Milestone.AuctionWon);
         Game.Stone(Milestone.Karma);

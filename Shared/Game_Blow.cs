@@ -40,6 +40,16 @@ public partial class Game
         IgnoredMonsters.Clear();
         IgnoredSandtrout = null;
         HasActedOrPassed.Clear();
+        if (Applicable(Rule.SE_DualSpiceBlow))
+        {
+            Monsters.Clear();
+            SecondEditionNexusPending = false;
+            SecondEditionShaiSeen = false;
+            SecondEditionPendingWorms = 0;
+            SecondEditionRideTerritories.Clear();
+            SecondEditionYellowRideDone = false;
+            SecondEditionAllyRideDone = false;
+        }
 
         if (Version < 135)
             Enter(Applicable(Rule.ExpansionTreacheryCardsExceptPBandSSandAmal) && (Version <= 102 || CurrentTurn > 1), Phase.Thumper, EnterBlowA);
@@ -53,6 +63,11 @@ public partial class Game
 
     internal void DrawResourceCard()
     {
+        if (Applicable(Rule.SE_DualSpiceBlow))
+        {
+            DrawSecondEditionResourceCard();
+            return;
+        }
         ResourceCard? drawn = null;
         while (ThumperCalledShaiHulud || !(drawn = DrawAndDiscardResourceCard(CurrentDiscardPile!)).IsSpiceBlow)
         {
@@ -169,6 +184,23 @@ public partial class Game
 
     private void ProcessBlowCard(ResourceCard blowCard)
     {
+        if (Applicable(Rule.SE_DualSpiceBlow))
+        {
+            Stone(Milestone.Resource);
+            foreach (var location in blowCard.BlowLocations)
+            {
+                var amount = location.SpiceBlowAmount;
+                if (location.Sector == SectorInStorm)
+                    Log(Payment.Of(amount), " in ", location, " is lost in the storm");
+                else
+                {
+                    ChangeResourcesOnPlanet(location, amount);
+                    Log(Payment.Of(amount), " detected in ", location);
+                }
+            }
+            MoveToNextPhaseAfterResourceBlow();
+            return;
+        }
         Stone(Milestone.Resource);
 
         if (blowCard.IsDiscovery)
@@ -235,6 +267,11 @@ public partial class Game
 
     internal void MoveToNextPhaseAfterResourceBlow()
     {
+        if (Applicable(Rule.SE_DualSpiceBlow))
+        {
+            Enter(SecondEditionNexusPending, Phase.AllianceA, StartNexusCardPhase);
+            return;
+        }
         if (Monsters.Count == 0)
         {
             Enter((CurrentPhase == Phase.BlowA || CurrentPhase == Phase.HarvesterA) && Applicable(Rule.IncreasedResourceFlow), EnterBlowB, StartNexusCardPhase);
@@ -338,9 +375,9 @@ public partial class Game
 
     internal void EnterBlowA()
     {
-        Monsters.Clear();
+        if (!Applicable(Rule.SE_DualSpiceBlow)) Monsters.Clear();
         Enter(Phase.BlowA);
-        LogIf(Applicable(Rule.IncreasedResourceFlow), "*** Spice Blow A ***");
+        LogIf(Applicable(Rule.IncreasedResourceFlow) && !Applicable(Rule.SE_DualSpiceBlow), "*** Spice Blow A ***");
         DrawResourceCard();
         LetFactionsDiscardSurplusCards();
     }
@@ -356,6 +393,11 @@ public partial class Game
 
     private void EndWormRideDuringPhase(Phase phase)
     {
+        if (Applicable(Rule.SE_FremenWorms))
+        {
+            CompleteSecondEditionNexus();
+            return;
+        }
         CurrentPhase = phase;
 
         if (YellowRidesMonster.IsApplicable(this))
@@ -468,7 +510,7 @@ public partial class Game
     }
 
     private Deck<ResourceCard>? CurrentDiscardPile 
-        => CurrentPhase == Phase.BlowA ? ResourceCardDiscardPileA : ResourceCardDiscardPileB;
+        => Applicable(Rule.SE_DualSpiceBlow) || CurrentPhase == Phase.BlowA ? ResourceCardDiscardPileA : ResourceCardDiscardPileB;
 
     private ResourceCard? PreviousBlowCard
     {

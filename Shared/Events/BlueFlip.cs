@@ -34,6 +34,13 @@ public class BlueFlip : GameEvent
     public override Message? Validate()
     {
         if (Initiator != Faction.Blue) return Message.Express("Your faction can't flip");
+        if (Game.Applicable(Rule.SE_BlueAdvisors) && !AsAdvisors)
+        {
+            if (Game.LastShipmentOrMovement?.Initiator == Player.Ally)
+                return Message.Express("You must become advisors to allow allied forces to finish here");
+            if (Game.CurrentMainPhase >= MainPhase.ShipmentAndMove && Player.SpecialForcesIn(GetTerritory(Game)) > 0)
+                return Message.Express("Advisors may only become fighters before Shipment and Movement");
+        }
 
         return null;
     }

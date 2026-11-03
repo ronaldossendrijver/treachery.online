@@ -12,6 +12,10 @@
 
     <Header>@Client.CurrentSkin.Describe(TreacheryCardType.Karma): prevent shipment</Header>
     <Body>
+        @if (Game.SecondEdition)
+        {
+            <SelectFromImageComponent Game="Game" @bind-Value="powerCard" Values="Karma.ValidPowerCards(Game, Player)" Required="false" ImageWidth="60" />
+        }
 
         <SelectFromImageComponent @bind-Value="target" Values="KarmaShipmentPrevention.GetValidTargets(Game, Player)" Required="true" ImageWidth="40">
             <Label>Target</Label>
@@ -28,6 +32,7 @@
     protected override Faction IsFactionSpecific => Faction.Orange;
 
     private Faction target;
+    private TreacheryCard? powerCard;
 
-    protected override KarmaShipmentPrevention ConfirmedResult => new(Game, Faction) { Target = target };
+    protected override KarmaShipmentPrevention ConfirmedResult => new(Game, Faction) { Target = target, PowerCardId = powerCard == null ? -1 : TreacheryCardManager.Lookup.GetId(powerCard) };
 }

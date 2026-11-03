@@ -14,7 +14,7 @@ public partial class Game
     #region Version
 
     private const int LowestSupportedVersion = 100;
-    public const int LatestVersion = 195;
+    public const int LatestVersion = 196;
     
     #endregion Version
 
@@ -31,6 +31,7 @@ public partial class Game
     public List<Rule> Rules { get; internal set; } = [];
     public List<Rule> RulesForBots { get; internal set; } = [];
     public List<Rule> AllRules { get; internal set; } = [];
+    public bool SecondEdition => Applicable(Rule.SE_Core);
     public List<GameEvent> History { get; } = [];
     public List<Moment> Moments { get; } = [];
     public int RecentlyUndoneEventCount { get; private set; }
@@ -570,6 +571,7 @@ public partial class Game
 
     internal void FlipBlueAdvisorsWhenAlone()
     {
+        if (Applicable(Rule.SE_BlueAdvisors)) return;
         if (CurrentMainPhase >= MainPhase.Battle && Applicable(Rule.DisableNovaFlipping))
             return;
         
@@ -877,6 +879,10 @@ public partial class Game
         return ally.AnyForcesIn(to.Territory) > 0;
     }
 
+    public bool AllyCanBecomeAdvisors(Player player, Location target)
+        => Applicable(Rule.SE_BlueAdvisors) && player.Ally == Faction.Blue &&
+           player.AlliedPlayer.ForcesIn(target.Territory) > 0;
+
     private Player? OwnerOf(IHero hero)
     {
         return Players.FirstOrDefault(p => p.Leaders.Contains(hero));
@@ -982,7 +988,7 @@ public partial class Game
     {
         return
             p != null &&
-            Applicable(Rule.YellowDeterminesStorm) &&
+            (Applicable(Rule.SE_StormDeck) || Applicable(Rule.YellowDeterminesStorm)) &&
             !Prevented(FactionAdvantage.YellowStormPrescience) &&
             (p.Faction == Faction.Yellow || (p.Ally == Faction.Yellow && YellowSharesPrescience) || HasDeal(p.Faction, DealType.ShareStormPrescience));
     }
@@ -1061,7 +1067,7 @@ public partial class Game
             var result = new List<IHero>();
 
             var factionsInPlay = Players.Select(p => p.Faction);
-            result.AddRange(LeaderManager.Leaders.Where(l =>
+            result.AddRange(LeaderManager.GetLeaders(this).Where(l =>
                 factionsInPlay.Contains(l.Faction) &&
                 l.HeroType != HeroType.Vidal &&
                 (Version <= 140 || l.HeroType != HeroType.Auditor || Applicable(Rule.BrownAuditor))

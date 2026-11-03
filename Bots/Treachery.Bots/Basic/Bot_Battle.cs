@@ -11,6 +11,69 @@ namespace Treachery.Bots;
 
 public partial class BasicBot
 {
+    protected virtual KaramaResponsePassed DetermineKaramaResponsePassed() => new(Game, Faction);
+
+    protected virtual VendettaStarted? DetermineVendettaStarted()
+    {
+        var card = Karma.ValidPowerCards(Game, Player)
+            .OrderBy(c => CardQuality(c, Player))
+            .FirstOrDefault();
+        if (card == null) return null;
+
+        var result = new VendettaStarted(Game, Faction);
+        result.PowerCardId = TreacheryCardManager.Lookup.GetId(card);
+        return result.Validate() == null ? result : null;
+    }
+
+    protected virtual VendettaCardReturned DetermineVendettaCardReturned()
+    {
+        var card = Player.TreacheryCards.OrderBy(c => CardQuality(c, Player)).First();
+        return new VendettaCardReturned(Game, Faction) { CardId = TreacheryCardManager.Lookup.GetId(card) };
+    }
+
+    protected virtual HarkonnenTraitorsRedrawn DetermineHarkonnenTraitorsRedrawn()
+    {
+        var leadersToRedraw = HarkonnenTraitorsRedrawn.ValidLeaders(Player)
+            .Take(HarkonnenTraitorsRedrawn.MaximumRedraw(Game, Player))
+            .Select(LeaderManager.HeroLookup.GetId)
+            .ToList();
+        return leadersToRedraw.Count == 0
+            ? new HarkonnenTraitorsRedrawn(Game, Faction) { Passed = true }
+            : new HarkonnenTraitorsRedrawn(Game, Faction) { LeaderIds = leadersToRedraw };
+    }
+
+    protected virtual LittleMakerPlaced DetermineLittleMakerPlaced()
+    {
+        var target = LittleMakerPlaced.ValidTargets(Game).OrderBy(l => l.Id).FirstOrDefault();
+        return new LittleMakerPlaced(Game, Faction) { LocationId = target?.Id ?? -1 };
+    }
+
+    protected virtual AllyRidesMonster DetermineAllyRidesMonster()
+    {
+        var forces = new Dictionary<Location, Battalion>();
+        foreach (var location in AllyRidesMonster.ValidSources(Game, Player))
+        {
+            if (Player.BattalionIn(location) is { } battalion)
+                forces.Add(location, battalion);
+        }
+        if (forces.Count == 0)
+            return new AllyRidesMonster(Game, Faction) { Passed = true };
+
+        var totalStrength = forces.Values.Sum(b => b.AmountOfForces + 2 * b.AmountOfSpecialForces);
+        var validTargets = AllyRidesMonster.ValidTargets(Game, Player).ToList();
+        var target = validTargets
+            .Where(l => TotalMaxDialOfOpponents(l.Territory) < totalStrength)
+            .OrderByDescending(l => Game.ResourcesOnPlanet.GetValueOrDefault(l))
+            .ThenByDescending(l => l.IsStronghold)
+            .FirstOrDefault()
+            ?? validTargets.OrderByDescending(l => Game.ResourcesOnPlanet.GetValueOrDefault(l))
+                .ThenByDescending(l => l.IsStronghold)
+                .FirstOrDefault();
+
+        return target == null
+            ? new AllyRidesMonster(Game, Faction) { Passed = true }
+            : new AllyRidesMonster(Game, Faction) { ForceLocations = forces, To = target };
+    }
     protected static T Require<T>(T? value) where T : class
         => value ?? throw new InvalidEventException();
 
@@ -262,7 +325,7 @@ public partial class BasicBot
             LogInfo("Leader: {0}, Weapon: {1}, Defense: {2}, Forces: {3} (supp) {4} (non-supp) {5} (spec supp) {6} (spec non-supp)", hero, weapon, defense, forcesAtFullStrength, forcesAtHalfStrength, specialForcesAtFullStrength, specialForcesAtHalfStrength);
 
             var cost = Battle.Cost(Game, Player, forcesAtFullStrength, specialForcesAtFullStrength, out var _ );
-            return new Battle(Game, Faction)
+            var plan = new Battle(Game, Faction)
             {
                 Hero = hero,
                 Messiah = messiah,
@@ -275,6 +338,21 @@ public partial class BasicBot
                 Weapon = weapon,
                 BankerBonus = bankerBoost
             };
+            if (Game.Applicable(Rule.SE_SpiceBonus))
+            {
+                plan.AllyContributionAmount = 0;
+                var strength = plan.Dial(Game, opponent.Faction) - plan.EffectiveSpiceBonus(Game);
+                var maximum = Battle.AffordableSpiceBonus(Game, Player, strength, Resources - bankerBoost);
+                plan.SpiceBonus = Math.Min(maximum, Math.Max(0, (int)Math.Ceiling(dialNeeded - strength)));
+                if (plan.SecondEditionBonusCost(Game) > Resources - bankerBoost)
+                {
+                    var solaris = Karma.ValidSolarisCards(Game, Player).FirstOrDefault(c => c != plan.Hero && c != plan.Weapon && c != plan.Defense);
+                    if (solaris != null) plan.SolarisCardId = TreacheryCardManager.Lookup.GetId(solaris);
+                    else
+                        while (plan.SpiceBonus > 0 && plan.SecondEditionBonusCost(Game) > Resources - bankerBoost) plan.SpiceBonus--;
+                }
+            }
+            return plan;
         }
 
         LogInfo("I'm spending as little as possible on this fight: predicted:{0}, isTraitor:{1} && !messiah:{2}, Resources:{3} < 10 && totalForces:{4} < 10 && dialShortage:{5} >= dialShortageToAccept:{6}",
@@ -455,6 +533,23 @@ public partial class BasicBot
     {
         var normalStrength = Battle.DetermineNormalForceStrength(Game, Faction);
         var specialStrength = Battle.DetermineSpecialForceStrength(Game, Faction, opponent);
+        if (Game.Applicable(Rule.SE_SpiceBonus))
+        {
+            var candidates = new List<(int Normal, int Special, float Total, float Strength)>();
+            for (var normal = 0; normal <= forcesAvailable; normal++)
+            for (var special = 0; special <= specialForcesAvailable; special++)
+            {
+                var strength = normal * normalStrength + special * specialStrength;
+                candidates.Add((normal, special, strength + Battle.AffordableSpiceBonus(Game, Player, strength, resourcesAvailable), strength));
+            }
+            var enough = candidates.Where(c => c.Total >= dialNeeded).OrderBy(c => c.Strength).ThenBy(c => c.Normal + c.Special).FirstOrDefault();
+            var selected = candidates.Any(c => c.Total >= dialNeeded) ? enough : candidates.OrderByDescending(c => c.Total).First();
+            forcesAtFullStrength = selected.Normal;
+            specialForcesAtFullStrength = selected.Special;
+            forcesAtHalfStrength = 0;
+            specialForcesAtHalfStrength = 0;
+            return dialNeeded - selected.Total;
+        }
         var strongholdBonus = Game.HasStrongholdAdvantage(Faction, StrongholdAdvantage.FreeResourcesForBattles, territory) ? 2 : 0;
         var spiceLeft = resourcesAvailable + strongholdBonus;
         var costPerForce = Battle.NormalForceCost(Game, Player);

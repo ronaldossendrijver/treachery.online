@@ -217,7 +217,14 @@
                                 <div class="player-panel-faction-details">
                                     @if (Client.CurrentPhase > Phase.DiallingStorm && Game.HasStormPrescience(Player))
                                     {
-                                        <span>Next storm: <strong>@Game.NextStormMoves</strong> sectors</span>
+                                        @if (Game.Applicable(Rule.SE_StormDeck))
+                                        {
+                                            <span>Next Storm card: <strong>@Name(Game.GetKnownNextStormCard(Player!))</strong></span>
+                                        }
+                                        else
+                                        {
+                                            <span>Next storm: <strong>@Game.NextStormMoves</strong> sectors</span>
+                                        }
                                     }
                                     @if (shownPlayer.Faction == Faction.Blue && Client.CurrentPhase > Phase.BluePredicting)
                                     {

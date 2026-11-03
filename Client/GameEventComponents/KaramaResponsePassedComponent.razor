@@ -1,0 +1,13 @@
+@inherits GameEventComponent<KaramaResponsePassed>
+
+<GameEventComponentLayout IsUrgent="true" CollapsedType="GetType()">
+    <Header>Karama response</Header>
+    <Body>
+        <p>The named ability is awaiting cancellation. Private battle information is not revealed until every response is complete.</p>
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
+    </Body>
+</GameEventComponentLayout>
+
+@code {
+    protected override KaramaResponsePassed ConfirmedResult => new(Game, Faction);
+}

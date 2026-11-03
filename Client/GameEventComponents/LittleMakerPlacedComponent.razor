@@ -1,0 +1,34 @@
+@inherits GameEventComponent<LittleMakerPlaced>
+
+<GameEventComponentLayout IsUrgent="true" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
+    <Header>Place Little Maker</Header>
+    <Body>
+        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="Target" Values="LittleMakerPlaced.ValidTargets(Game).OrderBy(l => Name(l))">
+            <Label>Vacant Spice Blow marker</Label>
+        </SelectComponent>
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
+    </Body>
+</GameEventComponentLayout>
+
+@code {
+    private Location? Target;
+    protected override LittleMakerPlaced ConfirmedResult => new(Game, Faction)
+        { LocationId = Target?.Id ?? -1 };
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender) Client.OnLocationSelected += HandleLocationSelected;
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        Client.OnLocationSelected -= HandleLocationSelected;
+    }
+
+    private void HandleLocationSelected(object? sender, Location location)
+    {
+        if (LittleMakerPlaced.ValidTargets(Game).Contains(location)) Target = location;
+        StateHasChanged();
+    }
+}

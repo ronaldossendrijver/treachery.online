@@ -531,6 +531,8 @@ public partial class BasicBot
 
     protected virtual ClairVoyancePlayed? DetermineClairvoyance()
     {
+        if (Game.Applicable(Rule.SE_CardTiming)) return null;
+
         var imInBattle = Game is { CurrentPhase: Phase.BattlePhase, CurrentBattle: not null } && Game.CurrentBattle.IsAggressorOrDefender(Player);
         var waitForPrescienceOrVoice = false;
         if (imInBattle)

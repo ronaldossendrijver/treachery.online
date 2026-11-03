@@ -351,7 +351,9 @@ public class Skin : IDescriber
 
     public PointD GetSpiceLocation(Location location)
     {
-        return location.SpiceBlowAmount != 0 ? LocationSpice_Point[location.Id] : new PointD(0, 0);
+        if (location.SpiceBlowAmount == 0) return new PointD(0, 0);
+        if (LocationSpice_Point.TryGetValue(location.Id, out var point)) return point;
+        return DefaultSkin.Default.LocationSpice_Point[location.Id];
     }
 
     public string Describe(object? value)
@@ -373,6 +375,7 @@ public class Skin : IDescriber
             FactionSpecialForce fsf => Describe(fsf),
             FactionAdvantage factionAdvantage => Describe(factionAdvantage),
             ResourceCard rc => Describe(rc),
+            StormCard sc => Describe(sc),
             TreacheryCard tc => Describe(tc),
             TreacheryCardType tct => Describe(tct),
             LeaderSkill ls => Describe(ls),
@@ -495,8 +498,27 @@ public class Skin : IDescriber
             return Describe(Concept.GreatMonster);
         if (c.IsSandTrout)
             return Describe(Concept.BabyMonster);
+        if (c.IsLittleMaker)
+            return "Little Maker";
+        if (c.Location2 != null)
+            return $"{Describe(c.Location!.Territory)} ({c.Location.SpiceBlowAmount}) / {Describe(c.Location2.Territory)} ({c.Location2.SpiceBlowAmount})";
         return Describe(c.Location!.Territory);
     }
+
+    public string Describe(StormCard card) => card switch
+    {
+        StormCard.None => "No Storm card",
+        StormCard.Zero => "0 sectors",
+        StormCard.One => "1 sector",
+        StormCard.Two => "2 sectors",
+        StormCard.Three => "3 sectors; reshuffle",
+        StormCard.Four => "4 sectors; reshuffle",
+        StormCard.Five => "5 sectors; reshuffle",
+        StormCard.Six => "6 sectors",
+        StormCard.Dial => "Dial 1-3 each (2-6 sectors)",
+        StormCard.NextFactionMarker => "Next faction marker; destroy only at the destination",
+        _ => throw new ArgumentOutOfRangeException(nameof(card), card, null)
+    };
 
     public string Describe(TreacheryCard c)
     {
@@ -792,6 +814,7 @@ public class Skin : IDescriber
         {
             Ruleset.BasicGame => "Standard Dune - Basic",
             Ruleset.AdvancedGame => "Standard Dune - Advanced",
+            Ruleset.SecondEdition => "Second Edition Rules (GF9 2.0)",
             Ruleset.ExpansionBasicGame => "Ixians & Tleilaxu Expansion - Basic",
             Ruleset.ExpansionAdvancedGame => "Ixians & Tleilaxu Expansion - Advanced",
             Ruleset.Expansion2BasicGame => "CHOAM & Richese Expansion - Basic",
@@ -825,6 +848,8 @@ public class Skin : IDescriber
     {
         return s switch
         {
+            RuleGroup.SecondEdition => "Second Edition Rules",
+            RuleGroup.SecondEditionVariants => "Second Edition Variants",
             RuleGroup.CoreAdvanced => "Core Game, Advanced Rules",
             RuleGroup.CoreBasicExceptions => "Core Game, Exceptions to Basic Rules",
             RuleGroup.CoreAdvancedExceptions => "Core Game, Exceptions to Advanced Rules",
@@ -854,6 +879,7 @@ public class Skin : IDescriber
             WinMethod.Forfeit => "by forfeit",
             WinMethod.YellowSpecial => Format("by {0} special victory", Faction.Yellow),
             WinMethod.OrangeSpecial => Format("by {0} special victory", Faction.Orange),
+            WinMethod.GuildSpecial => Format("by {0} special victory", Faction.Orange),
             _ => "None"
         };
     }
@@ -952,6 +978,30 @@ public class Skin : IDescriber
     {
         return r switch
         {
+            Rule.SE_Core => "Second Edition terminology and base factions",
+            Rule.SE_CardsBeforeTraitors => "Deal starting Treachery cards before traitor selection",
+            Rule.SE_StartingResources => "Second Edition starting spice and reserves",
+            Rule.SE_GuildSetupShipment => "Guild makes a paid shipment during setup",
+            Rule.SE_Leaders => "Second Edition leader roster and strengths",
+            Rule.SE_StormDeck => "Shared nine-card Second Edition Storm deck",
+            Rule.SE_DualSpiceBlow => "Paired Spice Blows, one discard pile and Little Maker",
+            Rule.SE_SpiceBonus => "Full-strength forces with optional spice-strength bonuses",
+            Rule.SE_Karama => "Karama cancels one designated advantage per faction",
+            Rule.SE_Solaris => "Solaris cards and Bene Gesserit Transmutation",
+            Rule.SE_LeaderRevival => "Permanent leader-revival eligibility and earlier Kwisatz Haderach revival",
+            Rule.SE_BattleResolution => "Second Edition traitor, Worthless and Lasgun/Shield outcomes",
+            Rule.SE_AllyMovement => "First ally must leave a shared territory or return to reserves",
+            Rule.SE_VoiceByCategory => "Voice names weapon or defense categories only",
+            Rule.SE_BlueAdvisors => "Second Edition advisor and fighter transitions",
+            Rule.SE_CardTiming => "Second Edition card response windows and Mentat Pause restrictions",
+            Rule.SE_Deals => "Binding non-allied deals; no allied bribes or new Mentat Pause bribes",
+            Rule.SE_Victory => "Second Edition victory priorities and final-round conditions",
+            Rule.SE_FremenWorms => "Fremen Call Sandworms and allied worm rides",
+            Rule.SE_EmperorAlliance => "Emperor gifts at phase end and half-price allied spice bonuses",
+            Rule.SE_HarkonnenRedraw => "Harkonnen may replace its own traitors once",
+            Rule.SE_HarkonnenVendetta => "Vendetta exchanges cards with every nonempty opposing hand",
+            Rule.SE_SingleSectorMovement => "Movement groups use one origin sector",
+            Rule.SpiritWorldKarama => "Spirit World cards can activate a faction's once-per-game Karama power",
             Rule.BasicTreacheryCards => "Basic Treachery Cards",
             Rule.HasCharityPhase => "Charity Phase",
 
@@ -1105,6 +1155,7 @@ public class Skin : IDescriber
 
     public string GetImageUrl(TreacheryCard? c)
     {
+        if (c?.SkinId == 200) return InformationCardImage("Solaris", "Second Edition");
         return c != null ? GetLabel(TreacheryCardImage_URL, c.SkinId) : "";
     }
 
@@ -1120,7 +1171,20 @@ public class Skin : IDescriber
 
     public string GetImageUrl(ResourceCard? c)
     {
+        if (c is { SkinId: >= 200 and <= 210 })
+            return DefaultSkin.DEFAULT_ART_LOCATION + "/art/secondedition/spice-" + c.SkinId + ".png";
         return c != null ? GetLabel(ResourceCardImage_URL, c.SkinId) : "";
+    }
+
+    public string GetImageUrl(StormCard card)
+        => DefaultSkin.DEFAULT_ART_LOCATION + "/art/secondedition/storm-" + (int)card + ".png";
+
+    private static string InformationCardImage(string title, string subtitle)
+    {
+        var escapedTitle = System.Net.WebUtility.HtmlEncode(title);
+        var escapedSubtitle = System.Net.WebUtility.HtmlEncode(subtitle);
+        var svg = $"<svg xmlns='http://www.w3.org/2000/svg' width='360' height='480' viewBox='0 0 360 480'><rect x='4' y='4' width='352' height='472' rx='24' fill='#eee4c8' stroke='#5d4926' stroke-width='8'/><circle cx='180' cy='190' r='88' fill='#b89a52'/><text x='180' y='210' text-anchor='middle' font-family='sans-serif' font-size='48' fill='#29251b'>{escapedSubtitle}</text><text x='180' y='330' text-anchor='middle' font-family='sans-serif' font-size='21' fill='#29251b'>{escapedTitle}</text><text x='180' y='405' text-anchor='middle' font-family='sans-serif' font-size='18' fill='#5d4926'>Second Edition</text></svg>";
+        return "data:image/svg+xml," + Uri.EscapeDataString(svg);
     }
 
     public string GetImageUrl(LeaderSkill s)
@@ -1141,6 +1205,8 @@ public class Skin : IDescriber
             return GetLabel(TreacheryCardImage_URL, h.SkinId);
         if (h is Messiah)
             return Messiah_URL;
+        if (h is Leader { Id: >= 1100 })
+            return InformationCardImage(Describe(h), h.Value.ToString());
         return GetLabel(PersonImage_URL, h.SkinId);
     }
     public string GetImageUrl(Faction faction)

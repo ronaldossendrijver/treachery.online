@@ -177,11 +177,13 @@ public abstract class GameSimulationTestBase
         }
 
         player = g.Players.FirstOrDefault(p => p.TreacheryCards.Count > p.MaximumNumberOfCards);
-        if (player != null && g.CurrentPhase != Phase.PerformingKarmaHandSwap && g.CurrentPhase != Phase.Discarding) return "Too many cards after " + e.GetType().Name + " - " + g.History.Count;
+        if (player != null && g.CurrentPhase != Phase.PerformingKarmaHandSwap && g.CurrentPhase != Phase.Discarding &&
+            g.CurrentPhase != Phase.VendettaReturningCards)
+            return "Too many cards after " + e.GetType().Name + " - " + g.History.Count;
 
         var blue = g.GetPlayer(Faction.Blue);
         
-        if (blue != null &&
+        if (blue != null && !g.Applicable(Rule.SE_BlueAdvisors) &&
             (!g.Applicable(Rule.DisableNovaFlipping) || g.CurrentMainPhase <= MainPhase.ShipmentAndMove) &&
             blue.ForcesInLocations.Any(bat => bat.Value.AmountOfSpecialForces > 0 && !g.Players.Any(x => x.Occupies(bat.Key.Territory))))
             return "Lonely advisor - " + g.History.Count;
@@ -340,7 +342,10 @@ public abstract class GameSimulationTestBase
         forcesOnPlanet = countForcesOnPlanet;
     }
 
-    protected void RunBotTests()
+    protected void RunBotTests() =>
+        RunBotTests(Ruleset.AllExpansionsAdvancedGame, 256, 10, 10);
+
+    protected void RunBotTests(Ruleset ruleset, int nrOfGames, int nrOfTurns, int timeout, bool classicSpiceDialing = false)
     {
         var statistics = new Statistics();
 
@@ -349,15 +354,12 @@ public abstract class GameSimulationTestBase
         _cardCount = new ObjectCounter<int>();
         _leaderCount = new ObjectCounter<int>();
 
-        const int nrOfGames = 256;
-        const int nrOfTurns = 10;
         const int nrOfPlayers = 6;
-        const int timeout = 10;
 
         Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
-        //Expansion, advanced game, all expansions, all factions:
-        var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
+        var rules = Game.RulesetDefinition[ruleset].ToList();
+        if (classicSpiceDialing) Game.SelectClassicSpiceDialing(rules, true);
         rules.Add(Rule.FillWithBots);
         rules.Add(Rule.AssistedNotekeeping);
 
@@ -413,12 +415,12 @@ public abstract class GameSimulationTestBase
         List<Faction> factions;
         if (mustPlay != Faction.None)
         {
-            factions = EstablishPlayers.AvailableFactions().ToList().Where(f => f != mustPlay).TakeRandomN(nrOfPlayers - 1).ToList();
+            factions = EstablishPlayers.AvailableFactions(rules).ToList().Where(f => f != mustPlay).TakeRandomN(nrOfPlayers - 1).ToList();
             factions.Add(mustPlay);
         }
         else
         {
-            factions = EstablishPlayers.AvailableFactions().ToList();
+            factions = EstablishPlayers.AvailableFactions(rules).ToList();
         }
 
         try
@@ -444,7 +446,9 @@ public abstract class GameSimulationTestBase
                 if (evt == null)
                 {
                     File.WriteAllText("novalidbotevent" + game.Seed + ".json", GameState.GetStateAsString(game));
-                    Assert.IsNotNull(evt, "bots couldn't come up with a valid event");
+                    var availableEvents = string.Join("; ", game.Players.Select(p =>
+                        $"{p.Faction}: {string.Join(", ", game.GetApplicableEvents(p, true).Select(t => t.Name))}"));
+                    Assert.IsNotNull(evt, $"bots couldn't come up with a valid event in {game.CurrentPhase}; {availableEvents}");
                 }
                 
                 evt.Time = DateTime.Now;
@@ -901,4 +905,3 @@ public abstract class GameSimulationTestBase
     }
 
 }
-

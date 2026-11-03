@@ -21,7 +21,7 @@
     var maxForces = Battle.MaxForces(Game, forceSupplier, false);
     var maxSpecialForces = Battle.MaxForces(Game, forceSupplier, true);
     var heroes = Battle.ValidBattleHeroes(Game, Player).ToList();
-    var heroRequired = !Game.Applicable(Rule.BattleWithoutLeader);
+    var heroRequired = !Game.Applicable(Rule.BattleWithoutLeader) && (!Game.SecondEdition || heroes.Any(h => h is Leader));
     var weapons = Weapons.ToList();
     var defenses = Defenses.ToList();
     _heroes = heroes;
@@ -111,6 +111,23 @@
             @if (mustPay)
             {
                 <SelectResourcesComponent @bind-Value="Resources" Min="0" Max="maxTotalResources" Title="@Client.CurrentSkin.Format("{0} used to support forces", Concept.Resource)" />
+            }
+            @if (Game.Applicable(Rule.SE_SpiceBonus))
+            {
+                var maximumBonus = plan.MaximumSpiceBonus(Game);
+                if (SpiceBonus > maximumBonus) SpiceBonus = maximumBonus;
+                if (Player.Is(Faction.Yellow) && !Game.Prevented(FactionAdvantage.YellowNotPayingForBattles))
+                {
+                    SpiceBonus = 0;
+                    Solaris = null;
+                    <span>Battle Edge: +@maximumBonus spice strength, free.</span>
+                }
+                else
+                {
+                    <SelectResourcesComponent @bind-Value="SpiceBonus" Min="0" Max="maximumBonus" Title="Spice strength bonus (force dial 2/4/8; pay 2/4/8 spice)" />
+                    <SelectFromImageComponent Game="Game" @bind-Value="Solaris" Values="Karma.ValidSolarisCards(Game, Player)" Required="false" ImageWidth="60" />
+                    <span>Bonus payment: @plan.Cost(Game) spice to the bank. Emperor allies pay half.</span>
+                }
             }
             @if (maxPaidByAlly > 0)
             {
@@ -221,9 +238,10 @@
                 }
             }
 
-            @if (Faction == Faction.Green || Player.Ally == Faction.Green)
+            @if ((Faction == Faction.Green || Player.Ally == Faction.Green) && Game.CurrentPhase != Phase.KaramaResponse)
             {
-                var opponentBattlePlan = Game.CurrentBattle.Aggressor == Faction ? Game.DefenderPlan : Game.AggressorPlan;
+                var opponentBattlePlan = Game.SecondEdition && Game.GreenKarma
+                    ? Game.CurrentBattle.PlanOf(Game.GoldenPathTarget) : Game.CurrentBattle.PlanOfOpponent(Faction);
                 if (Game.GreenKarma)
                 {
                     if (opponentBattlePlan != null)
@@ -257,7 +275,7 @@
             }
 
 
-            @if (!Battle.ValidBattleHeroes(Game, opponent).Any())
+            @if (!Game.Applicable(Rule.SE_BattleResolution) && !Battle.ValidBattleHeroes(Game, opponent).Any())
             {
                 <span class="bw-chip is-good">Opponent has no leaders available</span>
             }
@@ -317,6 +335,8 @@
     internal TreacheryCard? Defense { get; set; }
     internal TreacheryCard? Weapon { get; set; }
     internal int BankerBonus { get; set; }
+    internal int SpiceBonus { get; set; }
+    internal TreacheryCard? Solaris { get; set; }
 
     private string PickerTitle => _picker switch
     {
@@ -426,6 +446,8 @@
                 Defense = previousPlan.Defense;
                 Weapon = previousPlan.Weapon;
                 BankerBonus = previousPlan.BankerBonus;
+                SpiceBonus = previousPlan.SpiceBonus;
+                Solaris = previousPlan.SolarisCard;
             }
         }
     }
@@ -447,7 +469,9 @@
                 SpecialForces = specialForcesFull,
                 SpecialForcesAtHalfStrength = specialForcesHalf,
                 Weapon = Weapon,
-                BankerBonus = BankerBonus
+                BankerBonus = BankerBonus,
+                SpiceBonus = SpiceBonus,
+                SolarisCardId = Solaris == null ? -1 : TreacheryCardManager.Lookup.GetId(Solaris)
             };
         }
     }
@@ -456,9 +480,9 @@
     {
         switch (aspect)
         {
-            case PrescienceAspect.Defense: return plan.Defense == null || (!showEverything && !plan.Defense.IsDefense) ? "None" : Name(plan.Defense);
-            case PrescienceAspect.Weapon: return plan.Weapon == null || (!showEverything && !plan.Weapon.IsWeapon) ? "None" : Name(plan.Weapon);
-            case PrescienceAspect.Dial: return plan.Dial(Game, Faction).ToString(CultureInfo.InvariantCulture);
+            case PrescienceAspect.Defense: return plan.Defense == null || (!Game.SecondEdition && !showEverything && !plan.Defense.IsDefense) ? "None" : Name(plan.Defense);
+            case PrescienceAspect.Weapon: return plan.Weapon == null || (!Game.SecondEdition && !showEverything && !plan.Weapon.IsWeapon) ? "None" : Name(plan.Weapon);
+            case PrescienceAspect.Dial: return plan.Dial(Game, Faction).ToString(CultureInfo.InvariantCulture) + (Game.Applicable(Rule.SE_SpiceBonus) ? $" (including +{plan.EffectiveSpiceBonus(Game)} spice)" : "");
             case PrescienceAspect.Leader: return plan.Hero == null ? "None" : Name(plan.Hero);
         }
 
@@ -469,8 +493,8 @@
     {
         switch (aspect)
         {
-            case PrescienceAspect.Defense: return plan.Defense == null || (!showEverything && !plan.Defense.IsDefense) ? "" : Client.CurrentSkin.GetPopup(plan.Defense);
-            case PrescienceAspect.Weapon: return plan.Weapon == null || (!showEverything && !plan.Weapon.IsWeapon) ? "" : Client.CurrentSkin.GetPopup(plan.Weapon);
+            case PrescienceAspect.Defense: return plan.Defense == null || (!Game.SecondEdition && !showEverything && !plan.Defense.IsDefense) ? "" : Client.CurrentSkin.GetPopup(plan.Defense);
+            case PrescienceAspect.Weapon: return plan.Weapon == null || (!Game.SecondEdition && !showEverything && !plan.Weapon.IsWeapon) ? "" : Client.CurrentSkin.GetPopup(plan.Weapon);
             case PrescienceAspect.Dial: return "";
             case PrescienceAspect.Leader: return plan.Hero == null ? "" : Client.CurrentSkin.GetPopup(plan.Hero, Game);
         }

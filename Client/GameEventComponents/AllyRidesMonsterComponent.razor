@@ -1,0 +1,20 @@
+@inherits GameEventComponent<AllyRidesMonster>
+
+<GameEventComponentLayout IsUrgent="true" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
+    <Header>Ride the worm with allied forces?</Header>
+    <Body>
+        <ForceSelectionComponent Game="Game" Player="Player" OnChanged="@StateHasChanged" Forces="Forces" Locations="AllyRidesMonster.ValidSources(Game, Player)" />
+        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="Target" Values="AllyRidesMonster.ValidTargets(Game, Player).OrderBy(l => Name(l))">
+            <Label>Destination</Label>
+        </SelectComponent>
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" Pass="Pass" PassText="Do not ride" />
+    </Body>
+</GameEventComponentLayout>
+
+@code {
+    private Location? Target;
+    private Dictionary<Location, Battalion> Forces = new();
+
+    protected override AllyRidesMonster ConfirmedResult => new(Game, Faction) { To = Target, ForceLocations = Forces };
+    protected override AllyRidesMonster PassedResult => new(Game, Faction) { Passed = true };
+}

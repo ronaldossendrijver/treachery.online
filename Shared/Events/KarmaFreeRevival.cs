@@ -35,6 +35,7 @@ public class KarmaFreeRevival : GameEvent
     }
 
     public int AmountOfForces { get; set; }
+    public int PowerCardId { get; set; } = -1;
 
     public int AmountOfSpecialForces { get; set; }
 
@@ -47,13 +48,18 @@ public class KarmaFreeRevival : GameEvent
     public override Message? Validate()
     {
         var p = Player;
+        if (AmountOfForces < 0 || AmountOfSpecialForces < 0) return Message.Express("Revival amounts cannot be negative");
+        if (Game.SecondEdition && (Initiator != Faction.Red || Player.SpecialKarmaPowerUsed || Game.CurrentMainPhase != MainPhase.Resurrection || !Karma.ValidPowerCards(Game, p).Any())) return Message.Express("War Machine is not available");
+        if (Game.SecondEdition && !Karma.IsValidPowerCard(Game, p, PowerCardId)) return Message.Express("Select a card to invoke War Machine");
+        if (Hero != null && !Game.KilledHeroes(p).Contains(Hero)) return Message.Express("Invalid leader");
+        if (AssignSkill && !Revival.MayAssignSkill(Game, p, Hero)) return Message.Express("Cannot assign this skill");
 
         if (AmountOfForces > p.ForcesKilled) return Message.Express("You can't revive that many");
         if (AmountOfSpecialForces > p.SpecialForcesKilled) return Message.Express("You can't revive that many");
-        if (AmountOfForces + AmountOfSpecialForces > 3) return Message.Express("You can't revive that many");
-        if (AmountOfSpecialForces > 1) return Message.Express("You can only revive one ", p.SpecialForce, " per turn");
-        if (AmountOfSpecialForces > 0 && Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Initiator)) return Message.Express("You already revived one ", p.SpecialForce, " this turn.");
-        if (AmountOfForces + AmountOfSpecialForces > 0 && Hero != null) return Message.Express("You can't revive both forces and a leader");
+        if (AmountOfForces + AmountOfSpecialForces > (Game.SecondEdition ? 4 : 3)) return Message.Express("You can't revive that many");
+        if (!Game.SecondEdition && AmountOfSpecialForces > 1) return Message.Express("You can only revive one ", p.SpecialForce, " per turn");
+        if (!Game.SecondEdition && AmountOfSpecialForces > 0 && Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Initiator)) return Message.Express("You already revived one ", p.SpecialForce, " this turn.");
+        if (!Game.SecondEdition && AmountOfForces + AmountOfSpecialForces > 0 && Hero != null) return Message.Express("You can't revive both forces and a leader");
 
         return null;
     }
@@ -65,6 +71,9 @@ public class KarmaFreeRevival : GameEvent
         return Math.Min(3, p.ForcesKilled);
     }
 
+    public static int ValidMaxAmount(Game g, Player p, bool specialForces) =>
+        g.SecondEdition ? Math.Min(4, specialForces ? p.SpecialForcesKilled : p.ForcesKilled) : ValidMaxAmount(p, specialForces);
+
     #endregion Validation
 
     #region Execution
@@ -74,7 +83,7 @@ public class KarmaFreeRevival : GameEvent
         Game.Stone(Milestone.Revival);
         Log();
 
-        Game.Discard(Player, Karma.ValidKarmaCards(Game, Player).FirstOrDefault());
+        Game.Discard(Player, Karma.PowerCard(Game, Player, PowerCardId));
         Player.SpecialKarmaPowerUsed = true;
 
         if (Hero != null)
@@ -83,12 +92,12 @@ public class KarmaFreeRevival : GameEvent
 
             if (AssignSkill) Game.PrepareSkillAssignmentToRevivedLeader(Player, Hero as Leader);
         }
-        else
+        if (Hero == null || Game.SecondEdition)
         {
             Player.ReviveForces(AmountOfForces);
             Player.ReviveSpecialForces(AmountOfSpecialForces);
 
-            if (AmountOfSpecialForces > 0) Game.FactionsThatRevivedSpecialForcesThisTurn.Add(Initiator);
+            if (!Game.SecondEdition && AmountOfSpecialForces > 0) Game.FactionsThatRevivedSpecialForcesThisTurn.Add(Initiator);
         }
     }
 

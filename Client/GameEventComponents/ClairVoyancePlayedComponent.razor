@@ -12,6 +12,10 @@
 
     <Header>@DescribeCard(TreacheryCardType.Clairvoyance)</Header>
     <Body>
+        @if (Game.Applicable(Rule.SE_CardTiming))
+        {
+            <p>Truthtrance asks for truthful information only. A freeform question must not compel a future action.</p>
+        }
 
         <SelectFromImageComponent @bind-Value="target" Values="ClairVoyancePlayed.ValidTargets(Game, Player)" Required="true" ImageWidth="40">
             <Label>Target Faction</Label>

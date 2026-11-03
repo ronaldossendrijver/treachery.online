@@ -102,6 +102,8 @@ public static class TreacheryCardManager
         Items.Add(new TreacheryCard(100, 23, TreacheryCardType.Karma, Rule.ExtraKaramaCards));
         Items.Add(new TreacheryCard(101, 23, TreacheryCardType.Karma, Rule.ExtraKaramaCards));
         Items.Add(new TreacheryCard(102, 23, TreacheryCardType.Karma, Rule.ExtraKaramaCards));
+        Items.Add(new TreacheryCard(200, 200, TreacheryCardType.Solaris, Rule.SE_Solaris));
+        Items.Add(new TreacheryCard(201, 200, TreacheryCardType.Solaris, Rule.SE_Solaris));
     }
 
     public static Deck<TreacheryCard> CreateTreacheryDeck(Game g, LoggedRandom random)

@@ -231,6 +231,12 @@ public partial class Game
 
     private void CheckNormalWin()
     {
+        if (Applicable(Rule.SE_Victory))
+        {
+            CheckSecondEditionNormalWin();
+            return;
+        }
+
         var checkWinSequence = new PlayerSequence(this);
 
         for (var i = 0; i < Players.Count; i++)
@@ -256,6 +262,65 @@ public partial class Game
             checkWinSequence.NextPlayer();
         }
     }
+
+    private void CheckSecondEditionNormalWin()
+    {
+        var sequence = new PlayerSequence(this);
+        var sequenceOrder = new Dictionary<Player, int>();
+        for (var i = 0; i < Players.Count; i++)
+        {
+            sequenceOrder[sequence.CurrentPlayer] = i;
+            sequence.NextPlayer();
+        }
+
+        var candidates = new List<(Player[] Members, int Priority, int Strongholds, int Forces, int Spice, int Sequence)>();
+        foreach (var player in Players)
+        {
+            var ally = player.AlliedPlayer;
+            if (ally != null && player.Faction.CompareTo(ally.Faction) > 0) continue;
+
+            var members = ally == null ? new[] { player } : new[] { player, ally };
+            var strongholds = CountSecondEditionStrongholds(members);
+            var hasAllTechTokens = members.Any(member => member.TechTokens.Count == 3);
+            var priority = ally == null
+                ? strongholds >= 3 ? 0 : strongholds >= 2 && hasAllTechTokens ? 1 : -1
+                : strongholds >= 5 ? 2
+                : strongholds >= 4 && hasAllTechTokens ? 3
+                : strongholds >= 4 ? 4
+                : strongholds >= 3 && hasAllTechTokens ? 5
+                : -1;
+            if (priority < 0) continue;
+
+            candidates.Add((
+                members,
+                priority,
+                strongholds,
+                CountForcesInSecondEditionStrongholds(members),
+                members.Sum(member => member.Resources),
+                members.Min(member => sequenceOrder[member])));
+        }
+
+        var winner = candidates
+            .OrderBy(candidate => candidate.Priority)
+            .ThenByDescending(candidate => candidate.Strongholds)
+            .ThenByDescending(candidate => candidate.Forces)
+            .ThenByDescending(candidate => candidate.Spice)
+            .ThenBy(candidate => candidate.Sequence)
+            .FirstOrDefault();
+        if (winner.Members == null) return;
+
+        WinMethod = WinMethod.Strongholds;
+        Winners.AddRange(winner.Members);
+        Log(string.Join(" and ", winner.Members.Select(member => member.Faction)), " have the highest-priority Second Edition victory");
+    }
+
+    private int CountSecondEditionStrongholds(IReadOnlyCollection<Player> players)
+        => Strongholds.Count(location => players.Any(player => player.Controls(this, location, Applicable(Rule.ContestedStongholdsCountAsOccupied))));
+
+    private int CountForcesInSecondEditionStrongholds(IReadOnlyCollection<Player> players)
+        => Strongholds
+            .Where(location => players.Any(player => player.Controls(this, location, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
+            .Sum(location => players.Sum(player => player.ForcesIn(location) + player.SpecialForcesIn(location)));
 
     private void LogNormalWin(Player player, Player? ally)
     {
@@ -343,6 +408,25 @@ public partial class Game
         var yellow = GetPlayer(Faction.Yellow);
         var orange = GetPlayer(Faction.Orange);
 
+        if (Applicable(Rule.SE_Victory))
+        {
+            if (yellow != null && SecondEditionYellowVictoryConditionMet)
+            {
+                Log(Faction.Yellow, " special victory conditions are met!");
+                WinMethod = WinMethod.YellowSpecial;
+                Winners.Add(yellow);
+                if (yellow.HasAlly) Winners.Add(yellow.AlliedPlayer);
+            }
+            else if (orange != null && SecondEditionGuildVictoryConditionMet(orange))
+            {
+                Log(Faction.Orange, " special victory conditions are met!");
+                WinMethod = WinMethod.GuildSpecial;
+                Winners.Add(orange);
+                if (orange.HasAlly) Winners.Add(orange.AlliedPlayer);
+            }
+            return;
+        }
+
         if (yellow != null && YellowVictoryConditionMet)
         {
             Log(Faction.Yellow, " special victory conditions are met!");
@@ -366,6 +450,51 @@ public partial class Game
         }
     }
 
+    private bool SecondEditionYellowVictoryConditionMet
+    {
+        get
+        {
+            var yellow = GetPlayer(Faction.Yellow);
+            if (yellow == null) return false;
+
+            var protectedLocations = new[] { Map.SietchTabr, Map.HabbanyaSietch };
+            if (Players.Any(player => player.Faction != Faction.Yellow && player.Faction != yellow.Ally &&
+                                      protectedLocations.Any(player.Occupies))) return false;
+
+            var restrictedFactions = new[] { Faction.Green, Faction.Black, Faction.Grey, Faction.Red };
+            return !Players.Any(player => restrictedFactions.Contains(player.Faction) &&
+                                          player.Faction != yellow.Ally && player.Occupies(Map.TueksSietch));
+        }
+    }
+
+    private bool SecondEditionGuildVictoryConditionMet(Player guild)
+    {
+        var guildSide = guild.AlliedPlayer == null ? new[] { guild } : new[] { guild, guild.AlliedPlayer };
+        var guildStrongholds = CountSecondEditionStrongholds(guildSide);
+
+        var opponents = Players.Where(player => !guildSide.Contains(player)).ToList();
+        var opponentSides = new List<Player[]>();
+        if (guild.AlliedPlayer == null)
+        {
+            opponentSides.AddRange(opponents.Select(opponent => new[] { opponent }));
+        }
+        else
+        {
+            foreach (var opponent in opponents)
+            {
+                var ally = opponent.AlliedPlayer;
+                if (ally != null && !guildSide.Contains(ally) && opponent.Faction.CompareTo(ally.Faction) > 0) continue;
+                opponentSides.Add(ally != null && !guildSide.Contains(ally) ? [opponent, ally] : [opponent]);
+            }
+        }
+
+        var highestOpponentStrongholds = opponentSides
+            .Select(CountSecondEditionStrongholds)
+            .DefaultIfEmpty(0)
+            .Max();
+        return guildStrongholds >= highestOpponentStrongholds;
+    }
+
     public bool YellowVictoryConditionMet
     {
         get
@@ -380,6 +509,12 @@ public partial class Game
 
     private void CheckOtherWinConditions()
     {
+        if (Applicable(Rule.SE_Victory))
+        {
+            CheckSecondEditionFinalTurnWin();
+            return;
+        }
+
         Player? withMostPoints = null;
         var highestNumberOfPoints = -1;
         var checkWinSequence = new PlayerSequence(this);
@@ -406,6 +541,43 @@ public partial class Game
 
             if (withMostPoints.HasAlly) Winners.Add(withMostPoints.AlliedPlayer);
         }
+    }
+
+    private void CheckSecondEditionFinalTurnWin()
+    {
+        var sequence = new PlayerSequence(this);
+        var sequenceOrder = new Dictionary<Player, int>();
+        for (var i = 0; i < Players.Count; i++)
+        {
+            sequenceOrder[sequence.CurrentPlayer] = i;
+            sequence.NextPlayer();
+        }
+
+        var candidates = new List<(Player[] Members, int Strongholds, bool Unallied, int Forces, int Spice, int Sequence)>();
+        foreach (var player in Players)
+        {
+            var ally = player.AlliedPlayer;
+            if (ally != null && player.Faction.CompareTo(ally.Faction) > 0) continue;
+            var members = ally == null ? new[] { player } : new[] { player, ally };
+            candidates.Add((
+                members,
+                CountSecondEditionStrongholds(members),
+                ally == null,
+                CountForcesInSecondEditionStrongholds(members),
+                members.Sum(member => member.Resources),
+                members.Min(member => sequenceOrder[member])));
+        }
+
+        var winner = candidates
+            .OrderByDescending(candidate => candidate.Strongholds)
+            .ThenByDescending(candidate => candidate.Unallied)
+            .ThenByDescending(candidate => candidate.Forces)
+            .ThenByDescending(candidate => candidate.Spice)
+            .ThenBy(candidate => candidate.Sequence)
+            .First();
+        Winners.AddRange(winner.Members);
+        WinMethod = WinMethod.Strongholds;
+        Log(string.Join(" and ", winner.Members.Select(member => member.Faction)), " win by Second Edition end-of-round priorities");
     }
 
     #endregion Victory

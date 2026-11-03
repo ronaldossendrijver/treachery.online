@@ -9,6 +9,10 @@ When someone starts a new game, it is hosted on the webserver (found in namespac
 
 Namespace treachery.online.Shared, written in C#, contains the "core" of the game, the most important class being Game (divided into). The Game class contains all the logic of the game: the rules and the current state of the Game.
 
+## GF9 Second Edition
+
+Game setup includes a Second Edition ruleset for the six base factions. It combines the former Basic and Advanced rules into one ruleset and applies the Second Edition rule changes automatically. Classic Spice Dialing is an optional combat variant within Second Edition: it uses Advanced force support instead of the spice bonus, while retaining the other Second Edition rules. The two combat modes cannot be selected together.
+
 ## Bot stall recovery
 
 A server-hosted worker schedules bot actions and checks loaded games for bots

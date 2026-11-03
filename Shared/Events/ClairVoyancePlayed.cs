@@ -116,6 +116,8 @@ public class ClairVoyancePlayed : GameEvent
 
     public override Message? Validate()
     {
+        if (Game.Applicable(Rule.SE_CardTiming) && !ValidQuestions(Game, Target).Contains(Question))
+            return Message.Express("Truthtrance reveals information; it cannot require a future action");
         return null;
     }
 
@@ -127,6 +129,11 @@ public class ClairVoyancePlayed : GameEvent
     public static IEnumerable<ClairvoyanceQuestion> ValidQuestions(Game g, Faction target)
     {
         var allValues = Enumerations.GetValues<ClairvoyanceQuestion>();
+        if (g.Applicable(Rule.SE_CardTiming))
+            allValues = allValues.Where(q => q != ClairvoyanceQuestion.WillAttackX &&
+                q != ClairvoyanceQuestion.CardTypeInBattle && q != ClairvoyanceQuestion.CardTypeAsDefenseInBattle &&
+                q != ClairvoyanceQuestion.CardTypeAsWeaponInBattle && q != ClairvoyanceQuestion.LeaderInBattle &&
+                q != ClairvoyanceQuestion.DialOfMoreThanXInBattle).ToArray();
         var targetPlayer = g.GetPlayer(target);
         if (targetPlayer == null || !g.IsBot(targetPlayer))
             return allValues;

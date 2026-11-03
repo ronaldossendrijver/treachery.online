@@ -1,0 +1,15 @@
+@inherits GameEventComponent<VendettaStarted>
+
+<GameEventComponentLayout IsUrgent="false" CollapsedType="GetType()">
+    <Header>Vendetta</Header>
+    <Body>
+        <SelectFromImageComponent Game="Game" @bind-Value="powerCard" Values="Karma.ValidPowerCards(Game, Player)" Required="false" ImageWidth="60" />
+        <p>Once per game, take a random card from each nonempty other hand and one from the normal deck. Return a chosen card to each participant.</p>
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
+    </Body>
+</GameEventComponentLayout>
+
+@code {
+    private TreacheryCard? powerCard;
+    protected override VendettaStarted ConfirmedResult => new(Game, Faction) { PowerCardId = powerCard == null ? -1 : TreacheryCardManager.Lookup.GetId(powerCard) };
+}

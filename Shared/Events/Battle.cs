@@ -66,6 +66,22 @@ public class Battle : GameEvent
 
     public int BankerBonus { get; set; }
 
+    public int SpiceBonus { get; set; }
+
+    public int SolarisCardId { get; set; } = -1;
+
+    [JsonIgnore]
+    public TreacheryCard? SolarisCard => TreacheryCardManager.Lookup.Find(SolarisCardId);
+
+    [JsonIgnore]
+    internal bool SecondEditionPaymentRevealed { get; set; }
+
+    [JsonIgnore]
+    internal int SecondEditionSpicePaid { get; set; }
+
+    [JsonIgnore]
+    internal int SecondEditionAllySpicePaid { get; set; }
+
     [JsonIgnore]
     public int TotalForces => Forces + ForcesAtHalfStrength + SpecialForces + SpecialForcesAtHalfStrength;
 
@@ -123,6 +139,7 @@ public class Battle : GameEvent
 
         if (Game is { AggressorPlan: not null, DefenderPlan: not null })
         {
+            Game.RevealSecondEditionBattlePayments();
             var battleTerritory = Game.CurrentBattle.Territory;
             if (battleTerritory != null)
             {
@@ -171,6 +188,7 @@ public class Battle : GameEvent
             Hero,
             ", dial: ",
             Dial(Game, Game.CurrentBattle!.OpponentOf(Initiator)!.Faction),
+            MessagePart.ExpressIf(Game.Applicable(Rule.SE_SpiceBonus), ", spice bonus: ", EffectiveSpiceBonus(Game)),
             MessagePart.ExpressIf(Game.Applicable(Rule.AdvancedCombat), Payment.Of(Cost(Game))),
             MessagePart.ExpressIf(AllyContributionAmount > 0, " (", Payment.Of(AllyContributionAmount, Player.Ally), ")"),
             ", weapon: ",
@@ -237,19 +255,56 @@ public class Battle : GameEvent
         var pinkBattleContribution = !g.Prevented(FactionAdvantage.PinkOccupation) && (Initiator == Faction.Pink || Player.Ally == Faction.Pink) ? g.CurrentPinkBattleContribution : 0;
         
         if (Game.CurrentPinkOrAllyFighter == Faction.None || Initiator != Faction.Pink)
-            return ForceValue(g, Initiator, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + pinkBattleContribution;
+            return ForceValue(g, Initiator, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + pinkBattleContribution + EffectiveSpiceBonus(g);
         
         return ForceValue(g, Player.Ally, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + pinkBattleContribution;
     }
 
     public int Cost(Game g)
     {
+        if (g.Applicable(Rule.SE_SpiceBonus)) return SecondEditionBonusCost(g);
         return Cost(g, Player, Forces, SpecialForces, out var _);
     }
 
     public int Cost(Game g, out int paidByArrakeen)
     {
+        if (g.Applicable(Rule.SE_SpiceBonus))
+        {
+            paidByArrakeen = 0;
+            return SecondEditionBonusCost(g);
+        }
         return Cost(g, Player, Forces, SpecialForces, out paidByArrakeen);
+    }
+
+    public int MaximumSpiceBonus(Game g)
+    {
+        var battle = g.CurrentBattle;
+        var opponent = battle?.OpponentOf(Initiator)?.Faction ??
+                       (battle == null ? Faction.None : battle.Initiator == Initiator ? battle.Target : battle.Initiator);
+        var strength = ForceValue(g, Initiator, opponent, Forces, SpecialForces, 0, 0);
+        return BonusForForceStrength(strength);
+    }
+
+    public static int BonusForForceStrength(float strength) => strength >= 8 ? 3 : strength >= 4 ? 2 : strength >= 2 ? 1 : 0;
+
+    public static int AffordableSpiceBonus(Game g, Player p, float strength, int resources)
+    {
+        if (!g.Applicable(Rule.SE_SpiceBonus)) return 0;
+        var maximum = BonusForForceStrength(strength);
+        if (p.Is(Faction.Yellow) && !g.Prevented(FactionAdvantage.YellowNotPayingForBattles) || Karma.ValidSolarisCards(g, p).Any()) return maximum;
+        var costFactor = p.Ally == Faction.Red ? 1 : 2;
+        return Math.Min(maximum, resources >= 4 * costFactor ? 3 : resources >= 2 * costFactor ? 2 : resources >= costFactor ? 1 : 0);
+    }
+
+    public int EffectiveSpiceBonus(Game g) =>
+        !g.Applicable(Rule.SE_SpiceBonus) ? 0 :
+        Player.Is(Faction.Yellow) && !g.Prevented(FactionAdvantage.YellowNotPayingForBattles) ? MaximumSpiceBonus(g) : SpiceBonus;
+
+    public int SecondEditionBonusCost(Game g)
+    {
+        if (SolarisCard != null || Player.Is(Faction.Yellow) && !g.Prevented(FactionAdvantage.YellowNotPayingForBattles)) return 0;
+        var cost = SpiceBonus switch { 1 => 2, 2 => 4, 3 => 8, _ => 0 };
+        return Player.Ally == Faction.Red ? cost / 2 : cost;
     }
 
     public static BattleOutcome DetermineBattleOutcome(Battle agg, Battle def, Territory territory, Game game)
@@ -384,13 +439,26 @@ public class Battle : GameEvent
     public override Message? Validate()
     {
         var p = Player;
+        if (Forces < 0 || SpecialForces < 0 || ForcesAtHalfStrength < 0 || SpecialForcesAtHalfStrength < 0 || AllyContributionAmount < 0 || BankerBonus < 0)
+            return Message.Express("Battle plan amounts cannot be negative");
+        if (Game.SecondEdition && ((_heroId != -1 && Hero == null) || (_weaponCardId != -1 && Weapon == null) || (_defenseCardId != -1 && Defense == null)))
+            return Message.Express("Invalid battle plan leader or card identifier");
+        if (Game.Applicable(Rule.SE_SpiceBonus))
+        {
+            if (ForcesAtHalfStrength != 0 || SpecialForcesAtHalfStrength != 0) return Message.Express("All forces fight at full strength");
+            if (AllyContributionAmount != 0) return Message.Express("Allies cannot fund the spice bonus");
+            if (SpiceBonus < 0 || SpiceBonus > MaximumSpiceBonus(Game)) return Message.Express("Invalid spice bonus for this force dial");
+            if (SolarisCardId != -1 && (SolarisCard == null || !Karma.ValidSolarisCards(Game, p).Contains(SolarisCard))) return Message.Express("Invalid Solaris card");
+            if (SolarisCard != null && (SpiceBonus == 0 || SolarisCard == Weapon || SolarisCard == Defense || SolarisCard == Hero)) return Message.Express("Solaris must pay for a spice bonus and cannot occupy another slot");
+        }
+        else if (SpiceBonus != 0 || SolarisCardId != -1) return Message.Express("Spice bonuses and Solaris battle payment are not enabled");
         if (Forces + ForcesAtHalfStrength > MaxForces(Game, p, false)) return Message.Express("Too many ", p.Force, " selected");
         if (SpecialForces + SpecialForcesAtHalfStrength > MaxForces(Game, p, true)) return Message.Express("Too many ", p.SpecialForce, " selected");
-        var cost = Cost(Game, p, Forces, SpecialForces, out var _);
+        var cost = Cost(Game);
         if (AllyContributionAmount > cost) return Message.Express("Your ally is paying more than needed");
         if (AllyContributionAmount > MaxAllyResources(Game, p, Forces, SpecialForces)) return Message.Express("Your ally won't pay that much");
         if (cost > p.Resources + AllyContributionAmount) return Message.Express("You can't pay ", Payment.Of(cost), " to fight with ", Forces + SpecialForces, " forces at full strength");
-        if (Hero == null && ValidBattleHeroes(Game, p).Any() && !Game.Applicable(Rule.BattleWithoutLeader)) return Message.Express("You must select a leader");
+        if (Hero == null && ValidBattleHeroes(Game, p).Any(h => !Game.SecondEdition || h is Leader) && !Game.Applicable(Rule.BattleWithoutLeader)) return Message.Express("You must select a leader");
         if (Hero != null && !ValidBattleHeroes(Game, p).Contains(Hero)) 
             return Message.Express("Invalid leader");
         if (Weapon != null && Weapon == Defense) return Message.Express("Can't use the same card as weapon and defense");
@@ -491,6 +559,7 @@ public class Battle : GameEvent
 
     public static bool MustPayForAnyForcesInBattle(Game g, Player p)
     {
+        if (g.Applicable(Rule.SE_SpiceBonus)) return false;
         bool doesNotNeedToSupportForces = !g.Prevented(FactionAdvantage.YellowNotPayingForBattles) &&
                                           (p.Faction is Faction.Yellow ||
                                            g.Version >= 169 && p.Faction is Faction.Pink && p.Ally is Faction.Yellow);
@@ -552,6 +621,7 @@ public class Battle : GameEvent
 
     public static int MaxAllyResources(Game g, Player p, int forces, int specialForces)
     {
+        if (g.Applicable(Rule.SE_SpiceBonus)) return 0;
         return Math.Min(g.ResourcesYourAllyCanPay(p), Math.Max(0, forces + specialForces - CostReduction(g, p)));
     }
 
@@ -605,6 +675,7 @@ public class Battle : GameEvent
 
     private static bool AffectedByVoice(Game g, Player p, Voice? voice)
     {
+        if (g.CurrentPhase == Phase.KaramaResponse) return false;
         if (voice == null) return false;
         var opponent = g.CurrentBattle?.OpponentOf(p);
         return opponent != null && (voice.Initiator == opponent.Faction || voice.Initiator == opponent.Ally);

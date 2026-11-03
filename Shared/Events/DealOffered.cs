@@ -49,6 +49,8 @@ public class DealOffered : GameEvent
 
     public override Message? Validate()
     {
+        if (Game.Applicable(Rule.SE_CardTiming) && Game.CurrentMainPhase == MainPhase.Contemplate)
+            return Message.Express("New deals cannot be made during the Mentat Pause");
         return null;
     }
 

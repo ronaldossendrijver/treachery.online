@@ -101,7 +101,7 @@ public partial class Game
         Stone(Milestone.Shuffled);
         TraitorDeck = CreateAndShuffleTraitorDeck(Random!);
 
-        if (Applicable(Rule.BlackMulligan) && IsPlaying(Faction.Black))
+        if (!Applicable(Rule.SE_HarkonnenRedraw) && Applicable(Rule.BlackMulligan) && IsPlaying(Faction.Black))
         {
             DealBlackTraitorCards();
             Enter(Phase.BlackMulligan);
@@ -111,7 +111,8 @@ public partial class Game
             for (var i = 1; i <= 4; i++)
                 foreach (var p in Players.Where(p => p.Faction != Faction.Purple)) p.Traitors.Add(TraitorDeck.Draw());
 
-            EnterSelectTraitors();
+            Enter(Applicable(Rule.SE_HarkonnenRedraw) && IsPlaying(Faction.Black),
+                Phase.HarkonnenRedrawingTraitors, EnterSelectTraitors);
         }
     }
 
@@ -208,7 +209,7 @@ public partial class Game
     internal void ContinueSetupAfterYellow()
     {
         Action methodAfterSettingUp = TreacheryCardsBeforeTraitors
-            ? EnterStormPhase
+            ? FinishFactionSetup
             : DealStartingTreacheryCards;
 
         Enter(
@@ -216,6 +217,14 @@ public partial class Game
             Version >= 187 && IsPlaying(Faction.Pink), Phase.PinkSettingUp,
             IsPlaying(Faction.Cyan), Phase.CyanSettingUp,
             methodAfterSettingUp);
+    }
+
+    internal bool GuildSetupShipmentPerformed { get; set; }
+
+    internal void FinishFactionSetup()
+    {
+        Enter(Applicable(Rule.SE_GuildSetupShipment) && IsPlaying(Faction.Orange) && !GuildSetupShipmentPerformed,
+            Phase.GuildSettingUp, EnterStormPhase);
     }
 
     private void SetupPlayerHomeworld(Player p)
@@ -257,7 +266,7 @@ public partial class Game
         switch (p.Faction)
         {
             case Faction.Yellow:
-                p.Resources = 3;
+                p.Resources = Applicable(Rule.SE_StartingResources) ? 4 : 3;
                 break;
 
             case Faction.Green:
@@ -275,8 +284,8 @@ public partial class Game
                 break;
 
             case Faction.Orange:
-                p.Resources = 5;
-                p.AddForces(Map.TueksSietch, 5, true);
+                p.Resources = Applicable(Rule.SE_StartingResources) ? 8 : 5;
+                if (!Applicable(Rule.SE_GuildSetupShipment)) p.AddForces(Map.TueksSietch, 5, true);
                 break;
 
             case Faction.Blue:
@@ -372,10 +381,11 @@ public partial class Game
             }
         }
 
-        Enter(TreacheryCardsBeforeTraitors, AssignLeaderSkills, EnterStormPhase);
+        Enter(TreacheryCardsBeforeTraitors, AssignLeaderSkills, FinishFactionSetup);
     }
 
-    internal bool TreacheryCardsBeforeTraitors => Version >= 121 && Applicable(Rule.LeaderSkills);
+    internal bool TreacheryCardsBeforeTraitors => Applicable(Rule.SE_CardsBeforeTraitors) ||
+        (Version >= 121 && Applicable(Rule.LeaderSkills));
 
     #endregion Setup
 }

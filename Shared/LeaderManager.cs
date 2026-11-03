@@ -100,12 +100,35 @@ public static class LeaderManager
             new Leader(1061) { Value = 4, Faction = Faction.Cyan, HeroType = HeroType.Normal },
             new Leader(1062) { Value = 1, Faction = Faction.Cyan, HeroType = HeroType.Normal }
         ];
+        Leaders.AddRange(
+        [
+            new Leader(1104) { Value = 3, Faction = Faction.Green, HeroType = HeroType.Normal },
+            new Leader(1106) { Value = 5, Faction = Faction.Blue, HeroType = HeroType.Normal },
+            new Leader(1113) { Value = 3, Faction = Faction.Red, HeroType = HeroType.Normal },
+            new Leader(1114) { Value = 3, Faction = Faction.Red, HeroType = HeroType.Normal },
+            new Leader(1115) { Value = 2, Faction = Faction.Red, HeroType = HeroType.Normal },
+            new Leader(1121) { Value = 5, Faction = Faction.Orange, HeroType = HeroType.Normal },
+            new Leader(1122) { Value = 4, Faction = Faction.Orange, HeroType = HeroType.Normal },
+            new Leader(1123) { Value = 3, Faction = Faction.Orange, HeroType = HeroType.Normal },
+            new Leader(1124) { Value = 2, Faction = Faction.Orange, HeroType = HeroType.Normal },
+            new Leader(1125) { Value = 1, Faction = Faction.Orange, HeroType = HeroType.Normal }
+        ]);
     }
 
     public static IEnumerable<Leader> GetLeaders(Faction faction)
     {
-        return Leaders.Where(l => l.Faction == faction);
+        return Leaders.Where(l => l.Faction == faction && l.Id < 1100);
     }
+
+    public static IEnumerable<Leader> GetLeaders(Game game)
+    {
+        if (!game.Applicable(Rule.SE_Leaders)) return Leaders.Where(l => l.Id < 1100);
+        var replaced = Leaders.Where(l => l.Id >= 1100).Select(l => l.Id - 100).ToHashSet();
+        return Leaders.Where(l => !replaced.Contains(l.Id));
+    }
+
+    public static IEnumerable<Leader> GetLeaders(Game game, Faction faction)
+        => GetLeaders(game).Where(l => l.Faction == faction);
 
     public class LeaderFetcher : IFetcher<Leader>
     {

@@ -39,6 +39,9 @@ public class YellowRidesMonster : PlacementEvent
     public override Message? Validate()
     {
         if (Passed) return null;
+        if (Game.Applicable(Rule.SE_FremenWorms) && ForceLocations.Any(kv =>
+            !ValidSources(Game).Contains(kv.Key) || kv.Value.AmountOfForces < 0 || kv.Value.AmountOfSpecialForces < 0))
+            return Message.Express("Only surviving forces in the worm territories may ride");
 
         if (Game.Version >= 155 && TotalAmountOfForcesAddedToLocation == 0) return Message.Express("No forces selected");
         if (To == null) return Message.Express("Target location not selected");
@@ -64,6 +67,11 @@ public class YellowRidesMonster : PlacementEvent
     public static MonsterAppearence? ToRide(Game g)
     {
         var yellow = g.GetPlayer(Faction.Yellow);
+        if (g.Applicable(Rule.SE_FremenWorms))
+        {
+            var territory = g.SecondEditionRideTerritories.FirstOrDefault(t => yellow != null && yellow.AnyForcesIn(t) > 0);
+            return territory == null || g.SecondEditionYellowRideDone ? null : new MonsterAppearence(territory, false);
+        }
         if (yellow != null)
             return g.Monsters.FirstOrDefault(m =>
                 (m.IsGreatMonster && yellow.AnyForcesInReserves > 0 && !g.Prevented(FactionAdvantage.YellowRidesMonster)) ||
@@ -91,6 +99,9 @@ public class YellowRidesMonster : PlacementEvent
     public static IEnumerable<Location> ValidSources(Game g)
     {
         var yellow = g.GetPlayer(Faction.Yellow);
+        if (g.Applicable(Rule.SE_FremenWorms))
+            return yellow == null ? [] : g.SecondEditionRideTerritories.SelectMany(t => t.Locations)
+                .Where(l => yellow.AnyForcesIn(l) > 0);
         if (yellow != null)
         {
             var toRide = ToRide(g);
@@ -126,10 +137,11 @@ public class YellowRidesMonster : PlacementEvent
     protected override void ExecuteConcreteEvent()
     {
         var toRide = ToRide(Game);
+        if (Game.Applicable(Rule.SE_FremenWorms)) Game.SecondEditionYellowRideDone = true;
 
         if (Game.Version <= 150)
             Game.Monsters.RemoveAt(0);
-        else if (toRide != null)
+        else if (toRide != null && !Game.Applicable(Rule.SE_FremenWorms))
             Game.Monsters.Remove(toRide);
 
         if (!Passed)

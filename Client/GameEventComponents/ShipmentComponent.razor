@@ -225,12 +225,15 @@
         ShipmentAllyContributionAmount = 0;
     }
 
-    @if (Shipment.CanKarma(Game, Player) && (Faction != Faction.Yellow || ShipmentType is ShipmentType.ShipmentSiteToSite) && !Shipment.MayShipCrossPlanet(Game, Player))
+    @if (Shipment.CanKarma(Game, Player) &&
+         (Game.Applicable(Rule.SE_Solaris)
+             ? ShipmentType is ShipmentType.ShipmentNormal
+             : (Faction != Faction.Yellow || ShipmentType is ShipmentType.ShipmentSiteToSite) && !Shipment.MayShipCrossPlanet(Game, Player)))
     {
         <div class="ui-mt-1">
 
             <SelectFromImageComponent @bind-Value="KarmaCard" Values="Shipment.ValidKarmaCards(Game, Player)" Required="false" ImageWidth="80">
-                <Label>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to ship at @Client.CurrentSkin.Describe(Faction.Orange) rate?</Label>
+                <Label>Use @Client.CurrentSkin.Describe(Game.Applicable(Rule.SE_Solaris) ? TreacheryCardType.Solaris : TreacheryCardType.Karma) to ship at @Client.CurrentSkin.Describe(Faction.Orange) rate?</Label>
             </SelectFromImageComponent>
         
             @if (KarmaCard != null && !Player.TreacheryCards.Contains(KarmaCard))

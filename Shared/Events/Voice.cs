@@ -48,6 +48,8 @@ public class Voice : PassableGameEvent
 
     public static IEnumerable<TreacheryCardType> ValidTypes(Game g)
     {
+        if (g.Applicable(Rule.SE_VoiceByCategory))
+            return [TreacheryCardType.Poison, TreacheryCardType.Projectile, TreacheryCardType.PoisonDefense, TreacheryCardType.ProjectileDefense, TreacheryCardType.Weapon, TreacheryCardType.Defense];
         var result = new List<TreacheryCardType>
         {
             TreacheryCardType.Mercenary,
@@ -80,7 +82,7 @@ public class Voice : PassableGameEvent
             result.Add(TreacheryCardType.PortableAntidote);
         }
 
-        if (!g.Applicable(Rule.BlueVoiceMustNameSpecialCards))
+        if (g.Applicable(Rule.SE_VoiceByCategory) || !g.Applicable(Rule.BlueVoiceMustNameSpecialCards))
         {
             result.Add(TreacheryCardType.PoisonDefense);
             result.Add(TreacheryCardType.ProjectileDefense);
@@ -91,6 +93,7 @@ public class Voice : PassableGameEvent
 
     public static bool MayUseVoice(Game g, Player p)
     {
+        if (g.Applicable(Rule.SE_Karama) && (g.CurrentPhase == Phase.KaramaResponse || g.AggressorPlan != null && g.DefenderPlan != null)) return false;
         var disableWhenPrescienceIsUsed = g.Version >= 108 && g is { Version: < 178, CurrentPrescience: not null };
 
         if (!disableWhenPrescienceIsUsed && !g.VoiceWasPassed && g.CurrentVoice == null && g.CurrentBattle != null && g.CurrentBattle.IsInvolved(p))
@@ -111,6 +114,17 @@ public class Voice : PassableGameEvent
 
     public static bool IsVoicedBy(Game g, bool asWeapon, bool must, TreacheryCardType cardType, TreacheryCardType voicedType)
     {
+        if (g.Applicable(Rule.SE_VoiceByCategory))
+            return voicedType switch
+            {
+                TreacheryCardType.Poison => asWeapon && (cardType is TreacheryCardType.Poison or TreacheryCardType.ProjectileAndPoison || !must && cardType == TreacheryCardType.Chemistry),
+                TreacheryCardType.Projectile => asWeapon && cardType is TreacheryCardType.Projectile or TreacheryCardType.WeirdingWay or TreacheryCardType.ProjectileAndPoison,
+                TreacheryCardType.PoisonDefense => !asWeapon && cardType is TreacheryCardType.Antidote or TreacheryCardType.Chemistry or TreacheryCardType.ShieldAndAntidote or TreacheryCardType.PortableAntidote,
+                TreacheryCardType.ProjectileDefense => !asWeapon && (cardType is TreacheryCardType.Shield or TreacheryCardType.ShieldAndAntidote || !must && cardType == TreacheryCardType.WeirdingWay),
+                TreacheryCardType.Weapon => asWeapon && (cardType is TreacheryCardType.Laser or TreacheryCardType.PoisonTooth or TreacheryCardType.ArtilleryStrike or TreacheryCardType.WeirdingWay or TreacheryCardType.ProjectileAndPoison or TreacheryCardType.MirrorWeapon or TreacheryCardType.Rockmelter || !must && cardType == TreacheryCardType.Chemistry),
+                TreacheryCardType.Defense => !asWeapon && (cardType is TreacheryCardType.Chemistry or TreacheryCardType.ShieldAndAntidote or TreacheryCardType.PortableAntidote || !must && cardType == TreacheryCardType.WeirdingWay),
+                _ => false
+            };
         if (cardType == voicedType) return true;
 
         if (!g.Applicable(Rule.BlueVoiceMustNameSpecialCards))
@@ -150,6 +164,17 @@ public class Voice : PassableGameEvent
         return false;
     }
 
+    public static string CategoryDescription(TreacheryCardType type) => type switch
+    {
+        TreacheryCardType.Poison => "poison weapon",
+        TreacheryCardType.Projectile => "kinetic weapon",
+        TreacheryCardType.PoisonDefense => "poison defense",
+        TreacheryCardType.ProjectileDefense => "kinetic defense",
+        TreacheryCardType.Weapon => "special weapon",
+        TreacheryCardType.Defense => "special defense",
+        _ => type.ToString()
+    };
+
     #endregion Validation
 
     #region Execution
@@ -167,7 +192,7 @@ public class Voice : PassableGameEvent
 
         if (!IsPlaying(Faction.Blue)) Game.PlayNexusCard(Player, "Secret Ally", " to use Voice");
 
-        if (Game.CurrentBattle != null)
+        if (!Game.Applicable(Rule.SE_Karama) && Game.CurrentBattle != null)
         {
             var opponent = Game.CurrentBattle.OpponentOf(Player);
 
@@ -176,6 +201,9 @@ public class Voice : PassableGameEvent
 
         Log();
         Game.Stone(Milestone.Voice);
+        Game.BeginSecondEditionKaramaResponse(FactionAdvantage.BlueUsingVoice, Initiator);
+        if (Game.Applicable(Rule.SE_Karama) && Game.CurrentPhase != Phase.KaramaResponse && Game.CurrentBattle?.OpponentOf(Player) is { } opponentWithoutResponse)
+            Game.RevokePlanIfNeeded(opponentWithoutResponse.Faction);
     }
 
     public override Message GetMessage()
@@ -183,8 +211,8 @@ public class Voice : PassableGameEvent
         if (Passed)
             return Message.Express(Initiator, " won't use Voice during this battle");
         if (Must)
-            return Message.Express(Initiator, " use Voice to force the use of ", Type);
-        return Message.Express(Initiator, " use Voice to deny the use of ", Type);
+            return Message.Express(Initiator, " use Voice to force the use of ", Game.Applicable(Rule.SE_VoiceByCategory) ? CategoryDescription(Type) : (object)Type);
+        return Message.Express(Initiator, " use Voice to deny the use of ", Game.Applicable(Rule.SE_VoiceByCategory) ? CategoryDescription(Type) : (object)Type);
     }
 
     #endregion Execution

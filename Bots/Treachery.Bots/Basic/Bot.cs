@@ -126,6 +126,8 @@ public partial class BasicBot(Game game, Player player, BotParameters param) : I
             Do(DetermineBattleConcluded, ref action, events) ||
             Do(DetermineMulliganPerformed, ref action, events) ||
             Do(DetermineReplacedCardWon, ref action, events) ||
+            Do(DetermineVendettaStarted, ref action, events) ||
+            Do(DetermineVendettaCardReturned, ref action, events) ||
             Do(DetermineAudited, ref action, events) ||
             Do(DetermineAuditCancelled, ref action, events) ||
             Do(DetermineCardTraded, ref action, events) ||
@@ -168,6 +170,10 @@ public partial class BasicBot(Game game, Player player, BotParameters param) : I
             Do(DetermineBlueFlip, ref action, events) ||
             Do(DetermineBlueBattleAnnouncement, ref action, events) ||
             Do(DetermineBluePlacement, ref action, events) ||
+            Do(DetermineHarkonnenTraitorsRedrawn, ref action, events) ||
+            Do(DetermineLittleMakerPlaced, ref action, events) ||
+            Do(DetermineAllyRidesMonster, ref action, events) ||
+            Do(DetermineKaramaResponsePassed, ref action, events) ||
 
             //Yellow
             Do(DetermineYellowRidesMonster, ref action, events) ||

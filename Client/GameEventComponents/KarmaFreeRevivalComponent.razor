@@ -10,21 +10,25 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType="GetType()">
 
-    <Header>@Client.CurrentSkin.Describe(TreacheryCardType.Karma): revive forces or a leader</Header>
+    <Header>@Client.CurrentSkin.Describe(TreacheryCardType.Karma): @(Game.SecondEdition ? "War Machine — up to 4 forces and 1 leader" : "revive forces or a leader")</Header>
     <Body>
-
-        @if (KarmaFreeRevival.ValidMaxAmount(Player, false) > 0)
+        @if (Game.SecondEdition)
         {
-            <SelectForcesComponent @bind-Value="amountOfForces" Min="0" Max="KarmaFreeRevival.ValidMaxAmount(Player, false)" Faction="Faction" Special="false" />
+            <SelectFromImageComponent Game="Game" @bind-Value="powerCard" Values="Karma.ValidPowerCards(Game, Player)" Required="false" ImageWidth="60" />
+        }
+
+        @if (KarmaFreeRevival.ValidMaxAmount(Game, Player, false) > 0)
+        {
+            <SelectForcesComponent @bind-Value="amountOfForces" Min="0" Max="KarmaFreeRevival.ValidMaxAmount(Game, Player, false)" Faction="Faction" Special="false" />
         }
         else
         {
             amountOfForces = 0;
         }
 
-        @if (KarmaFreeRevival.ValidMaxAmount(Player, true) > 0)
+        @if (KarmaFreeRevival.ValidMaxAmount(Game, Player, true) > 0)
         {
-            <SelectForcesComponent @bind-Value="amountOfSpecialForces" Min="0" Max="KarmaFreeRevival.ValidMaxAmount(Player, true)" Faction="Faction" Special="true" />
+            <SelectForcesComponent @bind-Value="amountOfSpecialForces" Min="0" Max="KarmaFreeRevival.ValidMaxAmount(Game, Player, true)" Faction="Faction" Special="true" />
         }
         else
         {
@@ -58,6 +62,7 @@
     private int amountOfSpecialForces;
     private IHero? hero;
     private bool assignSkill;
+    private TreacheryCard? powerCard;
 
-    protected override KarmaFreeRevival ConfirmedResult => new(Game, Faction) { AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = hero, AssignSkill = assignSkill };
+    protected override KarmaFreeRevival ConfirmedResult => new(Game, Faction) { AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = hero, AssignSkill = assignSkill, PowerCardId = powerCard == null ? -1 : TreacheryCardManager.Lookup.GetId(powerCard) };
 }

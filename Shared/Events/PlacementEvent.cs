@@ -98,6 +98,13 @@ public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlace
         if (To == null) return Message.Express("To not selected");
         if (!ValidTargets(Game, p, ForceLocations).Contains(To)) return Message.Express("Invalid To location");
         if (asAdvisors && !(p.Is(Faction.Blue) && Game.Applicable(Rule.BlueAdvisors))) return Message.Express("You can't move as advisors");
+        if (Game.Applicable(Rule.SE_BlueAdvisors) && p.Is(Faction.Blue) && specialForceAmount > 0 && !asAdvisors)
+            return Message.Express("Advisors must remain advisors when moving");
+        if (Game.Applicable(Rule.SE_AllyMovement) && Game.ContainsConflictingAlly(p, To) &&
+            !Game.AllyCanBecomeAdvisors(p, To) && !(p.Is(Faction.Blue) && asAdvisors))
+            return Message.Express("You may not finish movement with allied fighters");
+        if (Game.Applicable(Rule.SE_SingleSectorMovement) && ForceLocations.Count(kv => kv.Value.TotalAmountOfForces > 0) > 1)
+            return Message.Express("Second Edition movement starts from a single sector");
 
         if (Initiator == Faction.Blue)
         {
@@ -127,6 +134,9 @@ public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlace
 
     public static bool MayMoveAsAdvisors(Game g, Player p, Territory to, bool areAdvisors)
     {
+        if (g.Applicable(Rule.SE_BlueAdvisors))
+            return p.Is(Faction.Blue) && p.ForcesIn(to) == 0 &&
+                   (areAdvisors || (p.SpecialForcesIn(to) == 0 && g.IsOccupied(to)));
         return p.Is(Faction.Blue) && g.Applicable(Rule.BlueAdvisors) &&
                (p.SpecialForcesIn(to) > 0 || ((g.Version < 177 || areAdvisors) && p.ForcesIn(to) == 0 && g.AnyForcesIn(to)));
     }
@@ -159,7 +169,9 @@ public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlace
                 : [.. result.Intersect(target)];
         }
 
-        return result;
+        return result.Where(l => !g.Applicable(Rule.SE_AllyMovement) ||
+            !g.ContainsConflictingAlly(p, l) || g.AllyCanBecomeAdvisors(p, l) ||
+            (p.Is(Faction.Blue) && (forces.Values.All(b => b.AmountOfForces == 0) || p.AnyForcesIn(l.Territory) == 0)));
     }
 
     private static IEnumerable<Location> ValidMoveToTargets(Game g, Player p, Location from, IEnumerable<Battalion> moved)

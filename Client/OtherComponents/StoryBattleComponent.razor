@@ -19,7 +19,7 @@
                 <th>Defense</th>
                 <th>Dial</th>
 
-                @if (Game.Applicable(Rule.AdvancedCombat))
+                @if (Game.Applicable(Rule.AdvancedCombat) || Game.Applicable(Rule.SE_SpiceBonus))
                 {
                     <th>Spice</th>
                 }
@@ -68,7 +68,7 @@
 
                 <td><h2>@AggressorBattle.Dial(Game, DefenderBattle.Initiator)</h2></td>
 
-                @if (Game.Applicable(Rule.AdvancedCombat))
+                @if (Game.Applicable(Rule.AdvancedCombat) || Game.Applicable(Rule.SE_SpiceBonus))
                 {
                     <td><h2>@AggressorBattle.Cost(Game)</h2></td>
                 }
@@ -112,7 +112,7 @@
 
                 <td><h2>@DefenderBattle.Dial(Game, AggressorBattle.Initiator)</h2></td>
 
-                @if (Game.Applicable(Rule.AdvancedCombat))
+                @if (Game.Applicable(Rule.AdvancedCombat) || Game.Applicable(Rule.SE_SpiceBonus))
                 {
                     <td><h2>@DefenderBattle.Cost(Game)</h2></td>
                 }

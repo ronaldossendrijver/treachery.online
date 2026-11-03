@@ -179,7 +179,11 @@ public enum Phase
 
     CyanSettingUp = 91000,
 
+    GuildSettingUp = 92000,
+    BlueAccompaniesSetup = 92100,
+    BlueIntrudedBySetup = 92200,
     BeginningOfStorm = 93000,
+    BeforeStormCard = 94000,
 
     MetheorAndStormSpell = 95000,
 
@@ -192,6 +196,7 @@ public enum Phase
 
     Thumper = 115000,
     BlowA = 120000,
+    LittleMakerPlacement = 122000,
     HarvesterA = 125000,
     BlowB = 130000,
     HarvesterB = 135000,
@@ -201,6 +206,9 @@ public enum Phase
     VoteAllianceA = 149900,
     AllianceA = 150000,
     YellowRidingMonsterA = 160000,
+    SecondEditionWormPlacement = 161000,
+    AllyRidingMonster = 162000,
+    BlueIntrudedByAllyRidingMonster = 163000,
     YellowSendingMonsterB = 170000,
     VoteAllianceB = 179900,
     AllianceB = 180000,
@@ -324,7 +332,10 @@ public enum Phase
     Thought = 510000,
     MeltingRock = 511000,
     Discarding = 600000,
-    DiscardingTraitor = 700000
+    DiscardingTraitor = 700000,
+    HarkonnenRedrawingTraitors = 710000,
+    VendettaReturningCards = 720000,
+    KaramaResponse = 730000
 }
 
 public enum Milestone
@@ -490,6 +501,7 @@ public enum Ruleset
     BasicGame = 10,
 
     AdvancedGame = 30,
+    SecondEdition = 50,
 
     ExpansionBasicGame = 110,
     ExpansionAdvancedGame = 130,
@@ -648,13 +660,39 @@ public enum Rule
     RedSupportingNonAllyBids = 1012,
     BattleWithoutLeader = 1013,
     CapturedLeadersAreTraitorsToOwnFaction = 1014,
-    DisableEndOfGameReport = 1015
+    DisableEndOfGameReport = 1015,
 
+    SE_Core = 3000,
+    SE_CardsBeforeTraitors = 3001,
+    SE_StartingResources = 3002,
+    SE_GuildSetupShipment = 3003,
+    SE_Leaders = 3004,
+    SE_StormDeck = 3005,
+    SE_DualSpiceBlow = 3006,
+    SE_SpiceBonus = 3007,
+    SE_Karama = 3008,
+    SE_Solaris = 3009,
+    SE_LeaderRevival = 3010,
+    SE_BattleResolution = 3011,
+    SE_AllyMovement = 3012,
+    SE_VoiceByCategory = 3013,
+    SE_BlueAdvisors = 3014,
+    SE_CardTiming = 3015,
+    SE_Deals = 3016,
+    SE_Victory = 3017,
+    SE_FremenWorms = 3018,
+    SE_EmperorAlliance = 3019,
+    SE_HarkonnenRedraw = 3020,
+    SE_HarkonnenVendetta = 3021,
+    SE_SingleSectorMovement = 3022,
+    SpiritWorldKarama = 3100
 }
 
 public enum RuleGroup
 {
     None = 0,
+    SecondEdition = 50,
+    SecondEditionVariants = 51,
     CoreBasic = 100,
     CoreBasicExceptions = 101,
     CoreAdvanced = 110,
@@ -722,7 +760,22 @@ public enum TreacheryCardType
     Rockmelter = 260,
     Recruits = 261,
     Reinforcements = 262,
-    HarassAndWithdraw = 263
+    HarassAndWithdraw = 263,
+    Solaris = 270
+}
+
+public enum StormCard
+{
+    None = 0,
+    Zero = 10,
+    One = 11,
+    Two = 12,
+    Three = 13,
+    Four = 14,
+    Five = 15,
+    Six = 16,
+    Dial = 20,
+    NextFactionMarker = 30
 }
 
 public enum Concept
@@ -744,7 +797,8 @@ public enum WinMethod
     YellowSpecial = 30,
     OrangeSpecial = 40,
     Forfeit = 50,
-    Timeout = 60
+    Timeout = 60,
+    GuildSpecial = 70
 }
 
 public enum HeroType
