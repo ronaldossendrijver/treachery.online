@@ -15,7 +15,7 @@
 
         @if (TerrorRevealed.GetTypes(Game).Count() > 1)
         {
-            <SelectComponent @bind-Value="_type" Values=@TerrorRevealed.GetTypes(Game)>
+            <SelectComponent @bind-Value="@_type" Values=@TerrorRevealed.GetTypes(Game)>
                 <Label>Which kind of terror to use?</Label>
              </SelectComponent>
         }
@@ -25,9 +25,9 @@
             <div>Reveal @Name(_type)?</div>
         }
 
-        @if(_type == TerrorType.Robbery)
+        @if (_type == TerrorType.Robbery)
         {
-            <RadioComponent @bind-Value="_robberyTakesCard" Values="@(new[] {false,true})" ValueLabels="@(new[] {"Steal half their spice (rounded up)", "Draw a Treachery Card"})">
+            <RadioComponent @bind-Value="_robberyTakesCard" Values="@([false,true])" ValueLabels="@(["Steal half their spice (rounded up)", "Draw a Treachery Card"])">
                 <Label>Which kind of robbery?</Label>
             </RadioComponent>
         }
