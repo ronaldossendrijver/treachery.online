@@ -508,7 +508,7 @@ svg {
 .map-deal-indicators { position: absolute; z-index: 20; inset: 0; pointer-events: none; }
 .map-faction-logo { box-sizing: border-box; padding: 1px; border: 1px solid #e7c77f; border-radius: 50%; background: radial-gradient(circle, #4b4234, #1d1b18 75%); box-shadow: 0 0 0 1px #92713d, inset 0 0 0 1px #92713d; }
 .map-faction-logo:hover, .map-faction-logo:focus-visible { border-color: #fff1bd; }
-.map-deal-indicator { position: absolute; display: grid; place-items: center; box-sizing: border-box; padding: 0; border: 1px solid #e7c77f; border-radius: 50%; background: transparent; box-shadow: 0 0 0 1px color-mix(in srgb, var(--deal-owner-color) 75%, #161511), 0 2px 4px rgba(0, 0, 0, 0.8); cursor: pointer; pointer-events: auto; }
+.map-deal-indicator { position: absolute; display: grid; place-items: center; box-sizing: border-box; padding: 0; border: 1px solid #e7c77f; border-radius: 50%; background: #e7c77f; box-shadow: 0 0 0 1px color-mix(in srgb, var(--deal-owner-color) 75%, #161511), 0 2px 4px rgba(0, 0, 0, 0.8); cursor: pointer; pointer-events: auto; }
 .map-deal-indicator:hover, .map-deal-indicator[aria-expanded="true"] { border-color: #fff1bd; }
 .map-deal-indicator:focus-visible { outline: 2px solid #fff1bd; outline-offset: 2px; }
 .map-deal-indicator img { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; pointer-events: none; }
@@ -517,7 +517,7 @@ svg {
 /* Deal indicators build up over 8s when a deal is made and dissolve over 8s when it ends (see DealIndicators.razor). */
 @property --deal-sweep { syntax: "<angle>"; inherits: false; initial-value: 360deg; }
 .map-deal-indicator.deal-leaving { pointer-events: none; cursor: default; }
-.map-deal-indicator.deal-arriving, .map-deal-indicator.deal-leaving { overflow: visible; }
+.map-deal-indicator.deal-arriving, .map-deal-indicator.deal-leaving { overflow: visible; background: transparent; }
 .map-deal-indicator.deal-arriving::before, .map-deal-indicator.deal-leaving::before,
 .map-deal-indicator.deal-arriving::after, .map-deal-indicator.deal-leaving::after { content: ""; position: absolute; border-radius: 50%; pointer-events: none; }
 .map-deal-indicator.deal-arriving::before, .map-deal-indicator.deal-leaving::before {
