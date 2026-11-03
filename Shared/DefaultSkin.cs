@@ -474,7 +474,17 @@ public static class DefaultSkin
                 [1027] = DEFAULT_ART_LOCATION + "/art/person6.png",
                 [1028] = DEFAULT_ART_LOCATION + "/art/person7.png",
                 [1029] = DEFAULT_ART_LOCATION + "/art/person8.png",
-                [1030] = DEFAULT_ART_LOCATION + "/art/person9.png"
+                [1030] = DEFAULT_ART_LOCATION + "/art/person9.png",
+                [1104] = DEFAULT_ART_LOCATION + "/art/secondedition/person1104.png",
+                [1106] = DEFAULT_ART_LOCATION + "/art/secondedition/person1106.png",
+                [1113] = DEFAULT_ART_LOCATION + "/art/secondedition/person1113.png",
+                [1114] = DEFAULT_ART_LOCATION + "/art/secondedition/person1114.png",
+                [1115] = DEFAULT_ART_LOCATION + "/art/secondedition/person1115.png",
+                [1121] = DEFAULT_ART_LOCATION + "/art/secondedition/person1121.png",
+                [1122] = DEFAULT_ART_LOCATION + "/art/secondedition/person1122.png",
+                [1123] = DEFAULT_ART_LOCATION + "/art/secondedition/person1123.png",
+                [1124] = DEFAULT_ART_LOCATION + "/art/secondedition/person1124.png",
+                [1125] = DEFAULT_ART_LOCATION + "/art/secondedition/person1125.png"
             }
             .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
                 {

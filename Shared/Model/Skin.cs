@@ -617,7 +617,7 @@ public class Skin : IDescriber
             : "";
 
         return $"<div class='hero-popover' style='--hero-color:{color}'>" +
-               $"<div class='hero-popover-main'><div class='hero-popover-disc'><img src='{GetImageUrl(h)}' alt=''/></div>" +
+               $"<div class='hero-popover-main'><div class='hero-popover-disc'><img src='{GetImageUrl(h, g)}' alt=''/></div>" +
                $"<div class='hero-popover-info'><div class='hero-popover-name'>{Encode(Describe(h))}</div>{faction}{stats}{status}</div></div>" +
                $"{skillPart}</div>";
     }
@@ -630,6 +630,8 @@ public class Skin : IDescriber
 
     private string GetImageHoverHtml(string imageUrl)
         => $"<img src='{imageUrl}' width=300 class='ui-img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/>";
+
+    public string GetImageUrl(object obj, Game? game) => obj is IHero h ? GetImageUrl(h, game) : GetImageUrl(obj);
 
     public string GetImageUrl(object obj)
     {
@@ -1205,10 +1207,15 @@ public class Skin : IDescriber
             return GetLabel(TreacheryCardImage_URL, h.SkinId);
         if (h is Messiah)
             return Messiah_URL;
-        if (h is Leader { Id: >= 1100 })
-            return InformationCardImage(Describe(h), h.Value.ToString());
         return GetLabel(PersonImage_URL, h.SkinId);
     }
+
+    public string GetImageUrl(IHero? h, Game? game) => h is Messiah ? GetMessiahImageUrl(game) : GetImageUrl(h);
+
+    public string GetMessiahImageUrl(Game? game) => game is { SecondEdition: true } ? SecondEditionMessiah_URL : Messiah_URL;
+
+    public const string SecondEditionMessiah_URL = DefaultSkin.DEFAULT_ART_LOCATION + "/art/secondedition/messiah.png";
+
     public string GetImageUrl(Faction faction)
     {
         return GetLabel(FactionImage_URL, faction);

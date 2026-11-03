@@ -1,4 +1,4 @@
-@inherits MapComponent
+﻿@inherits MapComponent
 
 @if (Game.CurrentPhase >= Phase.MetheorAndStormSpell)
 {
@@ -157,9 +157,9 @@
             if (faction == Faction.Green && !Game.MessiahIsAlive)
             {
                 var messiah = Client.CurrentSkin.Describe(Concept.Messiah);
-                leaders.Add(new PileItem("messiah", Client.CurrentSkin.Messiah_URL, $"{messiah} in the tanks", TextPopover(messiah), true, true, color, factionAngle + 0.5 * Math.PI, player.Leaders.Count));
+                leaders.Add(new PileItem("messiah", Client.CurrentSkin.GetMessiahImageUrl(Client.Game), $"{messiah} in the tanks", TextPopover(messiah), true, true, color, factionAngle + 0.5 * Math.PI, player.Leaders.Count));
                 parts.Add(messiah);
-                leaderTokens.Add((Client.CurrentSkin.Messiah_URL, messiah));
+                leaderTokens.Add((Client.CurrentSkin.GetMessiahImageUrl(Client.Game), messiah));
             }
 
             pieceCount += player.ForcesKilled + player.SpecialForcesKilled + player.Leaders.Count(leader => !Game.IsAlive(leader))

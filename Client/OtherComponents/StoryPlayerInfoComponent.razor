@@ -217,7 +217,7 @@
 
                             @if (Game.Applicable(Rule.GreenMessiah) && p is { Faction: Faction.Green, TotalForcesKilledInBattle: >= 7 } && Game.IsAlive(LeaderManager.Messiah))
                             {
-                                <img class="ui-img-fluid ui-p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
+                                <img class="ui-img-fluid ui-p-1" width=60 src="@Client.CurrentSkin.GetMessiahImageUrl(Client.Game)" alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
                             }
 
                         </td>
@@ -243,7 +243,7 @@
 
                             @if (p.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah) && !Game.MessiahIsAlive)
                             {
-                                <img class="ui-img-fluid ui-p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
+                                <img class="ui-img-fluid ui-p-1" width=60 src="@Client.CurrentSkin.GetMessiahImageUrl(Client.Game)" alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
                             }
 
                         </td>

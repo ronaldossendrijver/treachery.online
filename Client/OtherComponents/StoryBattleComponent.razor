@@ -49,7 +49,7 @@
 
                     @if (AggressorBattle.Messiah)
                     {
-                        <img class="ui-img-fluid ui-p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" title=@Client.CurrentSkin.Describe(Concept.Messiah) alt=@Client.CurrentSkin.Describe(Concept.Messiah) />
+                        <img class="ui-img-fluid ui-p-1" width=60 src="@Client.CurrentSkin.GetMessiahImageUrl(Client.Game)" title=@Client.CurrentSkin.Describe(Concept.Messiah) alt=@Client.CurrentSkin.Describe(Concept.Messiah) />
                     }
 
                 </td>
@@ -94,7 +94,7 @@
 
                     @if (DefenderBattle.Messiah)
                     {
-                        <img class="ui-img-fluid ui-p-1" width=60 src="@Client.CurrentSkin.Messiah_URL" title=@Client.CurrentSkin.Describe(Concept.Messiah) alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
+                        <img class="ui-img-fluid ui-p-1" width=60 src="@Client.CurrentSkin.GetMessiahImageUrl(Client.Game)" title=@Client.CurrentSkin.Describe(Concept.Messiah) alt="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
                     }
                 </td>
 

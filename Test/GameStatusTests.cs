@@ -70,6 +70,30 @@ public sealed class GameStatusTests
         Assert.IsTrue(status.PlayerShouldBeHighlighted(player));
     }
 
+    [TestMethod]
+    [DataRow(Phase.HarkonnenRedrawingTraitors, Faction.Black)]
+    [DataRow(Phase.VendettaReturningCards, Faction.Black)]
+    [DataRow(Phase.GuildSettingUp, Faction.Orange)]
+    [DataRow(Phase.BlueAccompaniesSetup, Faction.Blue)]
+    [DataRow(Phase.BlueIntrudedBySetup, Faction.Blue)]
+    [DataRow(Phase.BlueIntrudedByAllyRidingMonster, Faction.Blue)]
+    [DataRow(Phase.SecondEditionWormPlacement, Faction.Yellow)]
+    public void DetermineStatusDescribesSecondEditionPhases(Phase phase, Faction faction)
+    {
+        var game = new Game();
+        var player = new Player(game, faction);
+        game.Players.Add(player);
+        typeof(Game).GetProperty(
+                nameof(Game.CurrentPhase),
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)!
+            .SetValue(game, phase);
+
+        var status = GameStatus.DetermineStatus(game, player, true);
+
+        Assert.AreEqual(player, status.WaitingForPlayers.Single());
+        Assert.IsFalse(status.GetMessage(player, false).ToString(DefaultSkin.Default).StartsWith("Unknown phase"));
+    }
+
     private static Game CreateBiddingGame(Phase phase, AuctionType auction)
     {
         var game = new Game();

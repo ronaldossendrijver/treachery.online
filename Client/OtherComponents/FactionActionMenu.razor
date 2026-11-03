@@ -73,7 +73,7 @@
             {
                 <div id="@($"{idPrefix}-panel-info")" role="tabpanel" aria-labelledby="@($"{idPrefix}-tab-info")">
                     <div class="map-faction-leaders" aria-label="Faction leaders">
-                        @foreach (var leader in LeaderManager.Leaders.Where(leader => leader.Faction == faction))
+                        @foreach (var leader in LeaderManager.GetLeaders(Game, faction))
                         {
                             <Image Shown="@leader" Game="Game" Width="48" />
                         }

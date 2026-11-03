@@ -242,7 +242,7 @@
 
         foreach (var hero in Game.LeaderState.Where(state => state.Value.Alive && state.Value.CurrentTerritory == intelligenceLocation.Territory).Select(state => state.Key))
         {
-            result += Occupant(Client.CurrentSkin.GetImageUrl(hero), large: true);
+            result += Occupant(Client.CurrentSkin.GetImageUrl(hero, Game), large: true);
         }
 
         return result == "" ? "" : $"<div class='loc-intel-occupants'>{result}</div>";
