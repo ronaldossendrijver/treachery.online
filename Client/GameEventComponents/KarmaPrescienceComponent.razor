@@ -1,0 +1,21 @@
+@inherits GameEventComponent<KarmaPrescience>
+
+<GameEventComponentLayout IsUrgent="false" CollapsedType="GetType()">
+    <Header>Golden Path</Header>
+    <Body>
+        @if (Game.SecondEdition)
+        {
+            <SelectFromImageComponent Game="Game" @bind-Value="powerCard" Values="Karma.ValidPowerCards(Game, Player)" Required="false" ImageWidth="60" />
+            <SelectComponent @bind-Value="target" Values="KarmaPrescience.ValidTargets(Game)">
+                <Label>Reveal this player's entire battle plan</Label>
+            </SelectComponent>
+        }
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
+    </Body>
+</GameEventComponentLayout>
+
+@code {
+    private Faction target;
+    private TreacheryCard? powerCard;
+    protected override KarmaPrescience ConfirmedResult => new(Game, Faction) { Target = target, PowerCardId = powerCard == null ? -1 : TreacheryCardManager.Lookup.GetId(powerCard) };
+}

@@ -1,0 +1,14 @@
+@inherits GameEventComponent<VendettaCardReturned>
+
+<GameEventComponentLayout IsUrgent="true" CollapsedType="GetType()">
+    <Header>Vendetta: @(Game.VendettaRecipients.Count > 0 ? $"return a card to {Game.VendettaRecipients[0]}" : "discard one card")</Header>
+    <Body>
+        <SelectFromImageComponent Game="Game" @bind-Value="card" Values="Player.TreacheryCards" Required="true" ImageWidth="80" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
+    </Body>
+</GameEventComponentLayout>
+
+@code {
+    private TreacheryCard? card;
+    protected override VendettaCardReturned ConfirmedResult => new(Game, Faction) { CardId = card == null ? -1 : TreacheryCardManager.Lookup.GetId(card) };
+}

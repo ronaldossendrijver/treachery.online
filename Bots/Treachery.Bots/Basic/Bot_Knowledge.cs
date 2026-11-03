@@ -18,7 +18,8 @@ public partial class BasicBot
 {
     #region GeneralInformation
 
-    protected virtual int MaxExpectedStormMoves => Game.HasStormPrescience(Player) ? Game.NextStormMoves : Param.Shipment_ExpectedStormMovesWhenUnknown;
+    protected virtual int MaxExpectedStormMoves => Game.GetKnownNextStormMoves(Player) is >= 0 and var moves
+        ? moves : Param.Shipment_ExpectedStormMovesWhenUnknown;
 
     protected virtual bool MayFlipToAdvisors => Faction == Faction.Blue && Game.Applicable(Rule.BlueAdvisors);
 
@@ -59,21 +60,21 @@ public partial class BasicBot
         return Game.MeetsNormalVictoryCondition(Require(Game.GetPlayer(f)), true);
     }
 
-    protected virtual Prescience? MyPrescience => Game.CurrentPrescience != null && (Game.CurrentPrescience.Initiator == Faction || Game.CurrentPrescience.Initiator == Ally) ? Game.CurrentPrescience : null;
+    protected virtual Prescience? MyPrescience => Game.CurrentPhase != Phase.KaramaResponse && Game.CurrentPrescience != null && (Game.CurrentPrescience.Initiator == Faction || Game.CurrentPrescience.Initiator == Ally) ? Game.CurrentPrescience : null;
 
     protected static ClairVoyanceQandA? MyClairvoyanceAboutEnemyDefenseInCurrentBattle(Game game, Player player) =>
-        game is { LatestClairvoyance: not null, LatestClairvoyanceQnA: not null } &&
+        !game.Applicable(Rule.SE_CardTiming) && game is { LatestClairvoyance: not null, LatestClairvoyanceQnA: not null } &&
         game.LatestClairvoyanceBattle == game.CurrentBattle &&
         (game.LatestClairvoyance.Initiator == player.Faction || game.LatestClairvoyance.Initiator == player.Ally) &&
         game.LatestClairvoyance.Question is ClairvoyanceQuestion.CardTypeAsDefenseInBattle or ClairvoyanceQuestion.CardTypeInBattle ? game.LatestClairvoyanceQnA : null;
 
     protected static ClairVoyanceQandA? PlayerClairvoyanceAboutEnemyWeaponInCurrentBattle(Game game, Player player) =>
-        game is { LatestClairvoyance: not null, LatestClairvoyanceQnA: not null } &&
+        !game.Applicable(Rule.SE_CardTiming) && game is { LatestClairvoyance: not null, LatestClairvoyanceQnA: not null } &&
         game.LatestClairvoyanceBattle == game.CurrentBattle &&
         (game.LatestClairvoyance.Initiator == player.Faction || game.LatestClairvoyance.Initiator == player.Ally) &&
         game.LatestClairvoyance.Question is ClairvoyanceQuestion.CardTypeAsWeaponInBattle or ClairvoyanceQuestion.CardTypeInBattle ? game.LatestClairvoyanceQnA : null;
 
-    protected virtual Voice? MyVoice => Game.CurrentVoice != null && (Faction == Faction.Blue || Ally == Faction.Blue) ? Game.CurrentVoice : null;
+    protected virtual Voice? MyVoice => Game.CurrentPhase != Phase.KaramaResponse && Game.CurrentVoice != null && (Faction == Faction.Blue || Ally == Faction.Blue) ? Game.CurrentVoice : null;
 
     protected virtual bool MayUseUselessAsKarma => Faction == Faction.Blue && Game.Applicable(Rule.BlueWorthlessAsKarma);
 
@@ -117,6 +118,15 @@ public partial class BasicBot
         }
 
         cardsToTakeIntoAccount.Remove(cardToRate);
+
+        if (Game.SecondEdition)
+        {
+            var recipient = forWhom ?? Player;
+            if (cardToRate.Type == TreacheryCardType.Solaris) return 4;
+            if (cardToRate.IsUseless && recipient.Is(Faction.Blue) && Game.Applicable(Rule.BlueWorthlessAsKarma)) return 4;
+            if (cardToRate.Type == TreacheryCardType.Karma)
+                return recipient.Is(Faction.Black) && !recipient.SpecialKarmaPowerUsed ? 5 : recipient.SpecialKarmaPowerUsed ? 3 : 4;
+        }
 
         if (cardToRate.Type == TreacheryCardType.Useless) return 0;
 
@@ -250,6 +260,8 @@ public partial class BasicBot
     protected virtual bool StormWillProbablyHit(Location l)
     {
         if (Game.IsProtectedFromStorm(l) || LastTurn) return false;
+        if (Game.GetKnownNextStormMoves(Player) >= 0)
+            return Game.KnownNextStormWillPassOver(Player, l);
 
         for (var i = 1; i <= MaxExpectedStormMoves; i++)
             if ((Game.SectorInStorm + i) % Map.NumberOfSectors == l.Sector) return true;
@@ -307,7 +319,7 @@ public partial class BasicBot
     protected virtual bool ProbablySafeFromMonster(Territory t) 
         => Game.CurrentTurn == Game.MaximumTurns 
            || Game.ProtectedFromMonster(Player) 
-           || t != Require(Game.LatestSpiceCardA).Location?.Territory 
+           || Require(Game.LatestSpiceCardA).BlowLocations.All(l => l.Territory != t)
            || Game.SandTroutOccured 
            || !Game.HasResourceDeckPrescience(Player) 
            || Game.ResourceCardDeck?.Top is { IsShaiHulud: false };
@@ -585,6 +597,12 @@ public partial class BasicBot
 
     protected static float MaxDial(Game game, int resources, int forces, int specialForces, Player p, Faction opponentFaction)
     {
+        if (game.Applicable(Rule.SE_SpiceBonus))
+        {
+            var strength = Battle.DetermineNormalForceStrength(game, p.Faction) * forces +
+                Battle.DetermineSpecialForceStrength(game, p.Faction, opponentFaction) * specialForces;
+            return strength + Battle.AffordableSpiceBonus(game, p, strength, resources);
+        }
         var spice = Battle.MustPayForAnyForcesInBattle(game, p) ? resources : 99;
 
         var specialForcesAtFullStrength = Math.Min(specialForces, spice);

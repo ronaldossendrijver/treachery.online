@@ -87,6 +87,7 @@ public static class DefaultSkin
             [TreacheryCardType.ShieldAndAntidote] = "Shield Snooper",
             [TreacheryCardType.Mercenary] = "Cheap Hero",
             [TreacheryCardType.Karma] = "Karama",
+            [TreacheryCardType.Solaris] = "Solaris",
             [TreacheryCardType.Useless] = "Worthless",
             [TreacheryCardType.StormSpell] = "Weather Control",
             [TreacheryCardType.RaiseDead] = "Tleilaxu Ghola",
@@ -147,7 +148,8 @@ public static class DefaultSkin
                 [29] = "Jubba Cloak",
                 [30] = "Kulon",
                 [31] = "La La La",
-                [32] = "Trip to Gamont"
+                [32] = "Trip to Gamont",
+                [200] = "Solaris"
             }
             .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
                 {
@@ -211,7 +213,8 @@ public static class DefaultSkin
                 [29] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
                 [30] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
                 [31] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
-                [32] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan."
+                [32] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
+                [200] = "Choose one: take the current auction card free on your bidding turn; grant Guild rates for a legal reserve shipment, paid to the bank; or fund your Second Edition spice-strength bonus from the bank. The battle effect is unavailable under Classic Spice Dialing."
             }
             .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
                 {
@@ -385,7 +388,17 @@ public static class DefaultSkin
                 [1027] = "Beast Rabban",
                 [1028] = "Piter de Vries",
                 [1029] = "Captain Iakin Nefud",
-                [1030] = "Umman Kudu"
+                [1030] = "Umman Kudu",
+                [1104] = "Duncan Idaho",
+                [1106] = "Lady Anirul Corrino",
+                [1113] = "Bashar Garon",
+                [1114] = "Colonel Kolona",
+                [1115] = "Wensicia Corrino",
+                [1121] = "Starguide Serello",
+                [1122] = "Ertun",
+                [1123] = "Olar",
+                [1124] = "Crozeed",
+                [1125] = "Loyxo"
             }
             .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
                 {
@@ -716,6 +729,9 @@ public static class DefaultSkin
 
         LocationSpice_Point = new Dictionary<int, PointD>
         {
+            [13] = new (274, 439), //Cielago Depression
+            [19] = new (357, 443), //Cielago East
+            [74] = new (137, 342), //The Greater Flat
             [11] = new (309, 393), //Cielago North (East Sector)
             [17] = new (290, 539), //Cielago South (West Sector)
             [33] = new (362, 272), //The Minor Erg (Far North Sector)

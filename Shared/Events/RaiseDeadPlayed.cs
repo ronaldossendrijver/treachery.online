@@ -74,8 +74,8 @@ public class RaiseDeadPlayed : GameEvent, ILocationEvent
         if (AmountOfForces > p.ForcesKilled) return Message.Express("You can't revive that many");
         if (AmountOfSpecialForces > p.SpecialForcesKilled) return Message.Express("You can't revive that many");
         if (AmountOfForces + AmountOfSpecialForces > 5) return Message.Express("You can't revive that many");
-        if (Initiator != Faction.Grey && AmountOfSpecialForces > 1) return Message.Express("You can only revive one ", p.SpecialForce, " per turn");
-        if (AmountOfSpecialForces > 0 && Initiator != Faction.Grey && Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Initiator)) return Message.Express("You already revived one ", p.SpecialForce, " this turn");
+        if (!Game.Applicable(Rule.SE_LeaderRevival) && Initiator != Faction.Grey && AmountOfSpecialForces > 1) return Message.Express("You can only revive one ", p.SpecialForce, " per turn");
+        if (!Game.Applicable(Rule.SE_LeaderRevival) && AmountOfSpecialForces > 0 && Initiator != Faction.Grey && Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Initiator)) return Message.Express("You already revived one ", p.SpecialForce, " this turn");
         if (AmountOfForces + AmountOfSpecialForces > 0 && Hero != null) return Message.Express("You can't revive both forces and a leader");
         if (Hero != null && !ValidHeroes(Game, p).Contains(Hero)) return Message.Express("Invalid leader");
 
@@ -134,7 +134,7 @@ public class RaiseDeadPlayed : GameEvent, ILocationEvent
             Player.ReviveForces(AmountOfForces);
             Player.ReviveSpecialForces(AmountOfSpecialForces);
 
-            if (AmountOfSpecialForces > 0) Game.FactionsThatRevivedSpecialForcesThisTurn.Add(Initiator);
+            if (!Game.Applicable(Rule.SE_LeaderRevival) && AmountOfSpecialForces > 0) Game.FactionsThatRevivedSpecialForcesThisTurn.Add(Initiator);
         }
 
         if (Location != null && Initiator == Faction.Yellow)
@@ -168,6 +168,7 @@ public class RaiseDeadPlayed : GameEvent, ILocationEvent
     {
         if (specialForces)
         {
+            if (g.Applicable(Rule.SE_LeaderRevival)) return Math.Min(p.SpecialForcesKilled, 5);
             if (p.Faction == Faction.Red || p.Faction == Faction.Yellow)
             {
                 if (g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction))

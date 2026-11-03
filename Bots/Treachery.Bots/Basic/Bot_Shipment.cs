@@ -18,6 +18,22 @@ public partial class BasicBot
     protected virtual Shipment DetermineShipment()
     {
         LogInfo("DetermineShipment()");
+        if (Game.CurrentPhase == Phase.GuildSettingUp)
+        {
+            var target = Shipment.ValidShipmentLocations(Game, Player, false, false)
+                .OrderByDescending(l => l == Game.Map.TueksSietch).ThenByDescending(l => l.IsStronghold)
+                .ThenBy(l => Game.Players.Sum(p => p.AnyForcesIn(l.Territory))).First();
+            var amount = Math.Min(5, Math.Min(Player.ForcesInReserve, Player.Resources));
+            while (Shipment.DetermineCost(Game, Player, amount, 0, target, false, false, false, false, false) > Player.Resources) amount--;
+            return new Shipment(Game, Faction)
+            {
+                ShipmentType = ShipmentType.ShipmentNormal,
+                From = null,
+                KarmaCard = null,
+                To = target,
+                ForceAmount = amount
+            };
+        }
 
         DecidedShipmentAction = ShipmentDecision.None;
         DecidedShipment = null;
@@ -794,12 +810,17 @@ public partial class BasicBot
 
     protected virtual void UseKarmaIfApplicable(Shipment shipment)
     {
+        var secondEdition = Game.Applicable(Rule.SE_Solaris);
+        var paymentCards = secondEdition
+            ? Karma.ValidSolarisCards(Game, Player)
+            : Karma.ValidKarmaCards(Game, Player);
         if (
-            Player.HasKarma(Game) && !Game.KarmaPrevented(Faction) &&
+            (secondEdition || Player.HasKarma(Game) && !Game.KarmaPrevented(Faction)) &&
             (!Param.Karma_SaveCardToUseSpecialKarmaAbility || Player.SpecialKarmaPowerUsed) &&
             !Shipment.MayShipWithDiscount(Game, Player) &&
-            Shipment.DetermineCost(Game, Player, shipment) > 7)
-            shipment.KarmaCard = Karma.ValidKarmaCards(Game, Player).FirstOrDefault();
+            Shipment.DetermineCost(Game, Player, shipment) > 7 &&
+            paymentCards.Any())
+            shipment.KarmaCard = paymentCards.First();
     }
 
     protected virtual void UseAllyResources(Shipment shipment)

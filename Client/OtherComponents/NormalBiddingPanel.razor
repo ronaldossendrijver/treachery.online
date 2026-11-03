@@ -18,7 +18,7 @@
         Passed = false, 
         Amount = Amount, 
         KarmaBid = false, 
-        KarmaCard = KarmaCard, 
+        KarmaCard = Game.Applicable(Rule.SE_Solaris) ? null : KarmaCard,
         UsesRedSecretAlly = UseRedSecretAlly,
         AllyContributionAmount = AllyContributionAmount, 
         RedContributionAmount = RedContributionAmount };
@@ -35,7 +35,7 @@
 
     protected override int MaxAllyBidAmount => Bid.ValidMaxAllyAmount(Game, Player);
 
-    protected override int MaxBidAmount => Bid.ValidMaxAmount(Player, KarmaCard != null);
+    protected override int MaxBidAmount => Bid.ValidMaxAmount(Player, KarmaCard != null && !Game.Applicable(Rule.SE_Solaris));
 
     protected override string AuctionDescription {
 

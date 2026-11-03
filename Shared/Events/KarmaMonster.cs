@@ -27,6 +27,7 @@ public class KarmaMonster : GameEvent
     #region Properties
 
     private readonly int _territoryId;
+    public bool UseLastSpiceTerritories { get; set; }
 
     [JsonIgnore]
     public Territory? Territory
@@ -41,6 +42,9 @@ public class KarmaMonster : GameEvent
 
     public override Message? Validate()
     {
+        if (Game.Applicable(Rule.SE_Karama) && (!Game.ValidSecondEditionKaramaPowerCards(Player).Any() ||
+            Player.SpecialKarmaPowerUsed || Initiator != Faction.Yellow))
+            return Message.Express("Bless the Maker is unavailable");
         return null;
     }
 
@@ -55,10 +59,17 @@ public class KarmaMonster : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        Game.Discard(Player, Karma.ValidKarmaCards(Game, Player).FirstOrDefault());
+        Game.Discard(Player, Game.Applicable(Rule.SE_Karama)
+            ? Game.ValidSecondEditionKaramaPowerCards(Player).First()
+            : Karma.ValidKarmaCards(Game, Player).FirstOrDefault());
         Player.SpecialKarmaPowerUsed = true;
         Log();
         Game.Stone(Milestone.Karma);
+        if (Game.Applicable(Rule.SE_FremenWorms))
+        {
+            Game.CallSecondEditionSandworm(UseLastSpiceTerritories);
+            return;
+        }
         Game.NumberOfMonsters++;
         Game.LetMonsterAppear(Territory, false);
 

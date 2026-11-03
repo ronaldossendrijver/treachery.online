@@ -59,7 +59,9 @@
                 {
                     <div class="bid-karma">
                         <SelectFromImageComponent @bind-Value="KarmaCard" Values="Bid.ValidKarmaCards(Game, Player)" Required="false" ImageWidth="64">
-                            <Label>Use @Client.CurrentSkin.Describe(TreacheryCardType.Karma) to bid without limit or win immediately? <InfoComponent Contents="@KarmaInfoMessage" /></Label>
+                            <Label>@(Game.Applicable(Rule.SE_Solaris)
+                                ? $"Use {Client.CurrentSkin.Describe(CardForFreeBid)} to take this card for free?"
+                                : $"Use {Client.CurrentSkin.Describe(CardForFreeBid)} to bid without limit or win immediately?") <InfoComponent Contents="@KarmaInfoMessage" /></Label>
                         </SelectFromImageComponent>
                     </div>
                 }
@@ -161,7 +163,9 @@
     [Parameter]
     public bool CanBid { get; set; }
 
-    private string BidLabel => "Bid " + (Amount + AllyContributionAmount + RedContributionAmount) + (KarmaCard != null ? $" (with {Name(TreacheryCardType.Karma)})" : string.Empty);
+    private TreacheryCardType CardForFreeBid => Game.Applicable(Rule.SE_Solaris) ? TreacheryCardType.Solaris : TreacheryCardType.Karma;
+
+    private string BidLabel => "Bid " + (Amount + AllyContributionAmount + RedContributionAmount) + (KarmaCard != null && !Game.Applicable(Rule.SE_Solaris) ? $" (with {Name(CardForFreeBid)})" : string.Empty);
 
     private void AutoPassChanged(bool value)
     {
@@ -232,7 +236,9 @@
 
     private bool CardIsVisible => (IsWhiteBidding || (Client.Player is { } player && Game.HasBiddingPrescience(player))) && Game.CardsOnAuction!.Top != null;
 
-    private string KarmaInfoMessage => Client.CurrentSkin.Format("If you use a {0} card to bid any amount of {1} you wish, that card will be set aside until someone outbids you and will be discarded only if you win the auction. If you instead use your {0} card to win immediately, it is immediately discarded.", TreacheryCardType.Karma, Concept.Resource);
+    private string KarmaInfoMessage => Game.Applicable(Rule.SE_Solaris)
+        ? $"The {Client.CurrentSkin.Describe(TreacheryCardType.Solaris)} card is discarded to take the current card for free."
+        : Client.CurrentSkin.Format("If you use a {0} card to bid any amount of {1} you wish, that card will be set aside until someone outbids you and will be discarded only if you win the auction. If you instead use your {0} card to win immediately, it is immediately discarded.", TreacheryCardType.Karma, Concept.Resource);
 
     private bool ShowCurrentBid => !IsSilentAuction && Game.CurrentBid != null;
 

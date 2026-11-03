@@ -25,10 +25,24 @@ public class KarmaPrescience : GameEvent
 
     #region Validation
 
+    public Faction Target { get; set; }
+    public int PowerCardId { get; set; } = -1;
+
+    [JsonIgnore]
+    public Faction EffectiveTarget => Target != Faction.None ? Target :
+        Game.CurrentBattle?.OpponentOf(Initiator)?.Faction ?? Game.CurrentBattle?.Defender ?? Faction.None;
+
     public override Message? Validate()
     {
+        if (Game.SecondEdition && (Initiator != Faction.Green || Player.SpecialKarmaPowerUsed || !Karma.ValidPowerCards(Game, Player).Any() || Game.CurrentBattle == null))
+            return Message.Express("Golden Path is not available");
+        if (Game.SecondEdition && !ValidTargets(Game).Contains(EffectiveTarget)) return Message.Express("Select a battle plan to see");
+        if (Game.SecondEdition && !Karma.IsValidPowerCard(Game, Player, PowerCardId)) return Message.Express("Select a card to invoke Golden Path");
         return null;
     }
+
+    public static IEnumerable<Faction> ValidTargets(Game g) => g.CurrentBattle is { } battle
+        ? new[] { battle.Aggressor, battle.Defender } : [];
 
     #endregion Validation
 
@@ -36,11 +50,12 @@ public class KarmaPrescience : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
-        Game.Discard(Player, Karma.ValidKarmaCards(Game, Player).FirstOrDefault());
+        Game.Discard(Player, Karma.PowerCard(Game, Player, PowerCardId));
         Player.SpecialKarmaPowerUsed = true;
         Log();
         Game.Stone(Milestone.Karma);
         Game.GreenKarma = true;
+        if (Game.SecondEdition) Game.GoldenPathTarget = EffectiveTarget;
     }
 
     public override Message GetMessage()

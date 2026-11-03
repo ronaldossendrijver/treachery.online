@@ -44,6 +44,7 @@ public partial class Game
             case Phase.SelectingFactions:
             case Phase.TradingFactions:
             case Phase.BeginningOfStorm:
+            case Phase.BeforeStormCard:
             case Phase.MetheorAndStormSpell:
             case Phase.StormReport:
             case Phase.Thumper:
@@ -82,6 +83,18 @@ public partial class Game
     private void AddPlayerActions(Player player, bool isHost, List<Type> result)
     {
         var faction = player.Faction;
+
+        if (CurrentPhase == Phase.KaramaResponse)
+        {
+            if (KaramaResponders.Contains(faction))
+            {
+                result.Add(typeof(KaramaResponsePassed));
+                if (Karma.ValidKarmaCards(this, player).Any() &&
+                    Karma.ValidFactionAdvantages(this, player).Contains(PendingKaramaAdvantage))
+                    result.Add(typeof(Karma));
+            }
+            return;
+        }
 
         switch (CurrentPhase)
         {
@@ -124,6 +137,18 @@ public partial class Game
             case Phase.BlueSettingUp:
                 if (faction == Faction.Blue) result.Add(typeof(PerformBluePlacement));
                 break;
+            case Phase.GuildSettingUp:
+                if (faction == Faction.Orange) result.Add(typeof(Shipment));
+                break;
+            case Phase.HarkonnenRedrawingTraitors:
+                if (faction == Faction.Black) result.Add(typeof(HarkonnenTraitorsRedrawn));
+                break;
+            case Phase.LittleMakerPlacement:
+                if (player == LastPlayerInStormOrder) result.Add(typeof(LittleMakerPlaced));
+                break;
+            case Phase.AllyRidingMonster:
+                if (player.Ally == Faction.Yellow) result.Add(typeof(AllyRidesMonster));
+                break;
             case Phase.PinkSettingUp:
                 if (faction == Faction.Pink) result.Add(typeof(EcazInitialPlacement));
                 break;
@@ -149,9 +174,13 @@ public partial class Game
                 if (faction == Faction.Grey) result.Add(typeof(PerformHmsMovement));
                 break;
             case Phase.MetheorAndStormSpell:
-                if (player.Has(TreacheryCardType.StormSpell) && CurrentTurn > 1) result.Add(typeof(StormSpellPlayed));
+                if (!Applicable(Rule.SE_StormDeck) && player.Has(TreacheryCardType.StormSpell) && CurrentTurn > 1) result.Add(typeof(StormSpellPlayed));
                 if (MetheorPlayed.MayPlayMetheor(this, player)) result.Add(typeof(MetheorPlayed));
                 if (TestingStationUsed.CanBePlayed(this, player)) result.Add(typeof(TestingStationUsed));
+                break;
+            case Phase.BeforeStormCard:
+                if (player.Has(TreacheryCardType.StormSpell) && MayRespondToSecondEditionStorm(player)) result.Add(typeof(StormSpellPlayed));
+                if (MetheorPlayed.MayPlayMetheor(this, player)) result.Add(typeof(MetheorPlayed));
                 break;
             case Phase.Thumper:
                 if (player.Has(TreacheryCardType.Thumper)) result.Add(typeof(ThumperPlayed));
@@ -170,6 +199,7 @@ public partial class Game
                 break;
             case Phase.YellowSendingMonsterA:
             case Phase.YellowSendingMonsterB:
+            case Phase.SecondEditionWormPlacement:
                 if (faction == Faction.Yellow) result.Add(typeof(YellowSentMonster));
                 break;
             case Phase.YellowRidingMonsterA:
@@ -239,6 +269,12 @@ public partial class Game
             case Phase.BiddingReport:
                 if (faction == Faction.Purple && Players.Count > 1 && (Version < 113 || !Prevented(FactionAdvantage.PurpleIncreasingRevivalLimits))) result.Add(typeof(SetIncreasedRevivalLimits));
                 if (faction == Faction.Red && player.HasHighThreshold() && player.Resources >= 2) result.Add(typeof(RedDiscarded));
+                if (faction == Faction.Black && Applicable(Rule.SE_HarkonnenVendetta) &&
+                    !player.SpecialKarmaPowerUsed && Karma.ValidPowerCards(this, player).Any())
+                    result.Add(typeof(VendettaStarted));
+                break;
+            case Phase.VendettaReturningCards:
+                if (faction == Faction.Black) result.Add(typeof(VendettaCardReturned));
                 break;
 
             case Phase.BeginningOfResurrection:
@@ -271,6 +307,7 @@ public partial class Game
                 if (Version < 103 && player.Has(TreacheryCardType.Amal) && BeginningOfShipmentAndMovePhase) result.Add(typeof(AmalPlayed));
                 break;
             case Phase.BlueAccompaniesOrangeShip:
+            case Phase.BlueAccompaniesSetup:
             case Phase.BlueAccompaniesNonOrangeShip:
                 if (faction == Faction.Blue) result.Add(typeof(BlueAccompanies));
                 break;
@@ -304,6 +341,8 @@ public partial class Game
                 break;
 
             case Phase.BlueIntrudedByOrangeShip:
+            case Phase.BlueIntrudedBySetup:
+            case Phase.BlueIntrudedByAllyRidingMonster:
             case Phase.BlueIntrudedByNonOrangeShip:
             case Phase.BlueIntrudedByOrangeMove:
             case Phase.BlueIntrudedByNonOrangeMove:
@@ -523,13 +562,15 @@ public partial class Game
             !KarmaPrevented(faction) &&
             !player.SpecialKarmaPowerUsed &&
             player.HasKarma(this) &&
-            Applicable(Rule.AdvancedKarama))
+            (Applicable(Rule.AdvancedKarama) || Applicable(Rule.SE_Karama)))
         {
             var planOfPink = CurrentBattle.PlanOf(Faction.Pink);
             if (planOfPink is { Defense: null, Weapon: null }) result.Add(typeof(KarmaPinkDial));
         }
 
-        if (isAfterSetup && (Version < 100 || !hasFinalizedBattlePlanWaitingToBeResolved) && !CurrentPhaseCannotBeInterrupted)
+        if (isAfterSetup && (Version < 100 || !hasFinalizedBattlePlanWaitingToBeResolved) &&
+            !CurrentPhaseCannotBeInterrupted &&
+            !(Applicable(Rule.SE_CardTiming) && CurrentMainPhase == MainPhase.Contemplate))
         {
             if (CurrentMainPhase < MainPhase.Battle && player.NoFieldIsActive) result.Add(typeof(WhiteRevealedNoField));
 
@@ -638,7 +679,7 @@ public partial class Game
                 Applicable(Rule.AdvancedKarama))
                 result.Add(typeof(KarmaPrescience));
 
-            if (faction == Faction.Blue && CurrentPhase > Phase.AllianceB &&
+            if (faction == Faction.Blue && (CurrentPhase > Phase.AllianceB || Applicable(Rule.SE_BlueAdvisors)) &&
                 ((Version <= 150 && CurrentPhase < Phase.NonOrangeShip) || CurrentMainPhase < MainPhase.ShipmentAndMove || (player.Initiated(CurrentBlueCunning) && CurrentMainPhase == MainPhase.ShipmentAndMove)) &&
                 BlueBattleAnnouncement.ValidTerritories(this, player).Any())
                 result.Add(typeof(BlueBattleAnnouncement));

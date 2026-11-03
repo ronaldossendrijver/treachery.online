@@ -60,6 +60,11 @@ public class YellowSentMonster : GameEvent
     {
         Log();
         if (Territory == null) throw new InvalidEventException();
+        if (Game.CurrentPhase == Phase.SecondEditionWormPlacement)
+        {
+            Game.PlaceSecondEditionSandworm(Territory);
+            return;
+        }
         var monster = new MonsterAppearence(Territory, false);
         Game.Monsters.Add(monster);
         Game.PerformMonster(monster);

@@ -89,7 +89,7 @@ public partial class Game
                     CheckSandmaster(initiator, evt.To, dist, fl);
                 }
 
-            if (initiator.Is(Faction.Blue)) initiator.FlipForces(evt.To, wasOccupiedBeforeMove && asAdvisors);
+            if (initiator.Is(Faction.Blue)) initiator.FlipForces(evt.To, (wasOccupiedBeforeMove || Applicable(Rule.SE_BlueAdvisors)) && asAdvisors);
 
             if (totalNumberOfForces > 0 || totalNumberOfSpecialForces > 0) LogMove(initiator, fromTerritory, evt.To, totalNumberOfForces, totalNumberOfSpecialForces, wasOccupiedBeforeMove && asAdvisors, byCaravan);
         }
@@ -354,6 +354,17 @@ public partial class Game
     {
         switch (CurrentPhase)
         {
+            case Phase.GuildSettingUp:
+            case Phase.BlueIntrudedBySetup:
+                Enter(IsPlaying(Faction.Blue) && BlueMayAccompany, Phase.BlueAccompaniesSetup, FinishFactionSetup);
+                break;
+            case Phase.BlueAccompaniesSetup:
+                FinishFactionSetup();
+                break;
+            case Phase.AllyRidingMonster:
+            case Phase.BlueIntrudedByAllyRidingMonster:
+                CompleteSecondEditionNexus();
+                break;
             case Phase.YellowRidingMonsterA:
             case Phase.BlueIntrudedByYellowRidingMonsterA:
             case Phase.TerrorTriggeredByYellowRidingMonsterA:
@@ -438,6 +449,14 @@ public partial class Game
     {
         switch (CurrentPhase)
         {
+            case Phase.GuildSettingUp:
+            case Phase.BlueIntrudedBySetup:
+                Enter(Phase.BlueIntrudedBySetup);
+                break;
+            case Phase.AllyRidingMonster:
+            case Phase.BlueIntrudedByAllyRidingMonster:
+                Enter(Phase.BlueIntrudedByAllyRidingMonster);
+                break;
             case Phase.YellowRidingMonsterA:
             case Phase.BlueIntrudedByYellowRidingMonsterA:
             case Phase.TerrorTriggeredByYellowRidingMonsterA:
@@ -655,6 +674,12 @@ public partial class Game
 
     internal void CheckIfForcesShouldBeDestroyedByAllyPresence(Player p)
     {
+        if (Applicable(Rule.SE_AllyMovement))
+        {
+            foreach (var territory in p.OccupiedTerritories.Where(t => ThreatenedByAllyPresence(p, t)).ToList())
+                ReturnAlliedForcesToReserves(p, territory);
+            return;
+        }
         if (p.Ally != Faction.None && p.Faction != Faction.Pink && p.Ally != Faction.Pink)
         {
             var specialForcesAreAllowed = Version >= 177 && p.Is(Faction.Blue) && Applicable(Rule.AdvisorsDontConflictWithAlly);
@@ -687,6 +712,25 @@ public partial class Game
                 }
             }
         }
+    }
+
+    internal void ReturnAlliedForcesToReserves(Player player, Territory territory)
+    {
+        foreach (var location in territory.Locations)
+        {
+            player.MoveForces(location, player.HomeWorlds.First(w => w.IsHomeOfNormalForces), player.ForcesIn(location));
+            player.MoveSpecialForces(location, player.HomeWorlds.First(w => w.IsHomeOfSpecialForces || w.IsHomeOfNormalForces),
+                player.SpecialForcesIn(location));
+        }
+        Log(player.Faction, " return forces in ", territory, " to reserves because of allied fighter presence");
+    }
+
+    internal void ReturnConflictingAlliedForcesAtPhaseEnd()
+    {
+        if (!Applicable(Rule.SE_AllyMovement)) return;
+        var conflicts = Players.SelectMany(p => p.OccupiedTerritories
+            .Where(t => ThreatenedByAllyPresence(p, t)).Select(t => (Player: p, Territory: t))).ToList();
+        foreach (var (player, territory) in conflicts) ReturnAlliedForcesToReserves(player, territory);
     }
 
     public bool ThreatenedByAllyPresence(Player p, Territory t)

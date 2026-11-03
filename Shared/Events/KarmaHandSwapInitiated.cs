@@ -33,6 +33,7 @@ public class KarmaHandSwapInitiated : GameEvent
 
     public override Message? Validate()
     {
+        if (Game.Applicable(Rule.SE_HarkonnenVendetta)) return Message.Express("Use Vendetta at the end of bidding instead");
         return null;
     }
 

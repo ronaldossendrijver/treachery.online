@@ -19,6 +19,13 @@ public partial class Game
     public bool CurrentTestingStationUsed { get; internal set; }
     internal Phase PhaseBeforeStormLoss { get; private set; }
     public List<LossToTake> LossesToTake { get; } = [];
+    internal Deck<StormCard>? StormDeck { get; set; }
+    public List<StormCard> StormDiscardPile { get; } = [];
+    public StormCard CurrentStormCard { get; internal set; }
+    public int StormCardsRemaining => StormDeck?.Items.Count ?? 0;
+    internal bool StormInsightReady { get; set; }
+    internal bool WeatherControlledStorm { get; set; }
+    internal Faction LastStormResponse { get; set; }
 
     #endregion State
 
@@ -92,6 +99,15 @@ public partial class Game
 
     internal void DetermineStorm()
     {
+        if (Applicable(Rule.SE_StormDeck))
+        {
+            CurrentStormCard = StormCard.None;
+            WeatherControlledStorm = false;
+            LastStormResponse = Faction.None;
+            NextStormMoves = -1;
+            Enter(Phase.BeforeStormCard);
+            return;
+        }
         if (UseStormDeck)
         {
             RevealStorm();
@@ -125,7 +141,7 @@ public partial class Game
 
     internal void MoveStormAndDetermineNext(int amount)
     {
-        if (amount == 0) PerformStorm();
+        if (amount == 0 && !Applicable(Rule.SE_StormDeck)) PerformStorm();
 
         for (var i = 0; i < amount; i++)
         {
@@ -133,7 +149,7 @@ public partial class Game
             PerformStorm();
         }
 
-        if (UseStormDeck) NextStormMoves = DetermineLaterStormWithStormDeck();
+        if (UseStormDeck && !Applicable(Rule.SE_StormDeck)) NextStormMoves = DetermineLaterStormWithStormDeck();
 
         Stone(Milestone.Storm);
     }
@@ -198,6 +214,11 @@ public partial class Game
 
     internal void EndStormPhase()
     {
+        if (Applicable(Rule.SE_StormDeck))
+        {
+            StormInsightReady = true;
+            NextStormMoves = -1;
+        }
         JustRevealedDiscoveryStrongholds.Clear();
 
         MainPhaseEnd();
@@ -225,7 +246,109 @@ public partial class Game
 
     #region Information
 
-    internal bool UseStormDeck => Applicable(Rule.StormDeckWithoutYellow) || (IsPlaying(Faction.Yellow) && Applicable(Rule.YellowDeterminesStorm));
+    internal bool UseStormDeck => Applicable(Rule.SE_StormDeck) || Applicable(Rule.StormDeckWithoutYellow) ||
+        (IsPlaying(Faction.Yellow) && Applicable(Rule.YellowDeterminesStorm));
+
+    internal void CreateSecondEditionStormDeck()
+    {
+        StormDeck = new Deck<StormCard>(Enumerations.GetValuesExceptDefault(StormCard.None), Random!);
+        StormDeck.Shuffle();
+        Stone(Milestone.Shuffled);
+    }
+
+    public StormCard GetKnownNextStormCard(Player player)
+        => Applicable(Rule.SE_StormDeck) && StormInsightReady && CurrentPhase != Phase.StormLosses &&
+           HasStormPrescience(player) ? StormDeck!.Top : StormCard.None;
+
+    public int GetKnownNextStormMoves(Player player)
+    {
+        if (!Applicable(Rule.SE_StormDeck)) return HasStormPrescience(player) ? NextStormMoves : -1;
+        return GetKnownNextStormCard(player) switch
+        {
+            >= StormCard.Zero and <= StormCard.Six => (int)GetKnownNextStormCard(player) - (int)StormCard.Zero,
+            StormCard.NextFactionMarker => (NextFactionMarkerSector() - SectorInStorm + Map.NumberOfSectors) % Map.NumberOfSectors,
+            _ => -1
+        };
+    }
+
+    public bool KnownNextStormWillPassOver(Player player, Location location)
+    {
+        if (GetKnownNextStormCard(player) == StormCard.NextFactionMarker)
+            return location.Sector == NextFactionMarkerSector();
+        return NextStormWillPassOver(location, GetKnownNextStormMoves(player));
+    }
+
+    private int NextFactionMarkerSector()
+    {
+        var next = Players.OrderBy(p =>
+        {
+            var distance = ((double)p.Seat * Map.NumberOfSectors / MaximumPlayers -
+                            SectorInStorm + Map.NumberOfSectors) % Map.NumberOfSectors;
+            return distance == 0 ? Map.NumberOfSectors : distance;
+        }).First();
+        return (int)Math.Ceiling((double)next.Seat * Map.NumberOfSectors / MaximumPlayers) % Map.NumberOfSectors;
+    }
+
+    public bool MayRespondToSecondEditionStorm(Player player)
+        => !Applicable(Rule.SE_CardTiming) || LastStormResponse == Faction.None ||
+           (GetPlayer(LastStormResponse) is { } previous && PlayerSequence.IsAfter(this, player, previous));
+
+    internal void DrawSecondEditionStormCard()
+    {
+        if (WeatherControlledStorm)
+        {
+            ResolveSecondEditionStorm();
+            return;
+        }
+        StormInsightReady = false;
+        CurrentStormCard = StormDeck!.Draw();
+        StormDiscardPile.Insert(0, CurrentStormCard);
+        Log("The Storm card is ", CurrentStormCard);
+        if (CurrentStormCard == StormCard.Dial)
+        {
+            if (NrOfBattlesFought == 0)
+            {
+                var candidates = Players.Where(p => (double)p.Seat * Map.NumberOfSectors / MaximumPlayers != SectorInStorm)
+                    .OrderBy(p => ((double)p.Seat * Map.NumberOfSectors / MaximumPlayers -
+                                  SectorInStorm + Map.NumberOfSectors) % Map.NumberOfSectors).ToList();
+                if (candidates.Count < 2) candidates = Players.OrderBy(p => p.Seat).ToList();
+                HasBattleWheel.Clear();
+                HasBattleWheel.Add(candidates.First().Faction);
+                HasBattleWheel.Add(candidates.Last().Faction);
+            }
+            Dials.Clear();
+            HasActedOrPassed.Clear();
+            Enter(Phase.DiallingStorm);
+        }
+        else
+        {
+            NextStormMoves = CurrentStormCard == StormCard.NextFactionMarker
+                ? (NextFactionMarkerSector() - SectorInStorm + Map.NumberOfSectors) % Map.NumberOfSectors
+                : (int)CurrentStormCard - (int)StormCard.Zero;
+            RevealStorm();
+        }
+    }
+
+    internal void ResolveSecondEditionStorm()
+    {
+        Log("The storm moves ", NextStormMoves, " sectors");
+        if (!WeatherControlledStorm && CurrentStormCard == StormCard.NextFactionMarker)
+        {
+            SectorInStorm = NextFactionMarkerSector();
+            PerformStorm();
+            Stone(Milestone.Storm);
+        }
+        else MoveStormAndDetermineNext(NextStormMoves);
+        if (!WeatherControlledStorm && CurrentStormCard is StormCard.Three or StormCard.Four or StormCard.Five)
+        {
+            StormDeck!.Items.AddRange(StormDiscardPile);
+            StormDiscardPile.Clear();
+            StormDeck.Shuffle();
+            Stone(Milestone.Shuffled);
+            Log("The Storm deck is reshuffled");
+        }
+        EndStormPhase();
+    }
 
     public bool IsProtectedFromStorm(Location l)
     {

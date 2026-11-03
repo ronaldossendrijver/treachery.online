@@ -34,6 +34,7 @@ public class StormSpellPlayed : GameEvent
     public override Message? Validate()
     {
         if (MoveAmount < 0 || MoveAmount > 10) return Message.Express("Invalid number of sectors");
+        if (!Game.MayRespondToSecondEditionStorm(Player)) return Message.Express("Only a faction later in Storm order may respond");
 
         return null;
     }
@@ -46,6 +47,13 @@ public class StormSpellPlayed : GameEvent
     {
         Game.Discard(Player, TreacheryCardType.StormSpell);
         Log();
+        if (Game.Applicable(Rule.SE_StormDeck))
+        {
+            Game.WeatherControlledStorm = true;
+            Game.LastStormResponse = Initiator;
+            Game.NextStormMoves = MoveAmount;
+            return;
+        }
         Game.MoveStormAndDetermineNext(MoveAmount);
         Game.EndStormPhase();
     }

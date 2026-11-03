@@ -18,6 +18,18 @@ public partial class Game
     public Dictionary<Faction, int> FreeRevivalsThisTurn { get; } = [];
     public List<Faction> FactionsThatRevivedSpecialForcesThisTurn { get; } = [];
     public Dictionary<Faction, int> LeaderRevivalsThisTurn { get; } = [];
+    public HashSet<Faction> SecondEditionLeaderRevivalEligible { get; } = [];
+
+    internal void LatchSecondEditionLeaderRevivalEligibility()
+    {
+        if (!Applicable(Rule.SE_LeaderRevival)) return;
+        foreach (var player in Players)
+        {
+            var originals = LeaderManager.GetLeaders(this, player.Faction).ToArray();
+            if (originals.Length > 0 && originals.All(l => !IsAlive(l) || CapturedLeaders.ContainsKey(l)))
+                SecondEditionLeaderRevivalEligible.Add(player.Faction);
+        }
+    }
     internal bool PurpleStartedRevivalWithLowThreshold { get; set; }
     public RecruitsPlayed? CurrentRecruitsPlayed { get; set; }
     public Faction[] FactionsWithIncreasedRevivalLimits { get; internal set; } = [];

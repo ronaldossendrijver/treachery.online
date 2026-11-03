@@ -34,7 +34,8 @@ public class MetheorPlayed : GameEvent
 
     public static bool MayPlayMetheor(Game g, Player p)
     {
-        return g.CurrentTurn > 1 && p.TreacheryCards.Any(c => c.Type == TreacheryCardType.Metheor) && HasForcesAtOrNearShieldWall(g, p);
+        return g.CurrentTurn > 1 && p.TreacheryCards.Any(c => c.Type == TreacheryCardType.Metheor) &&
+               g.MayRespondToSecondEditionStorm(p) && HasForcesAtOrNearShieldWall(g, p);
     }
 
     public static bool HasForcesAtOrNearShieldWall(Game g, Player p)
@@ -66,6 +67,7 @@ public class MetheorPlayed : GameEvent
 
         Game.Stone(Milestone.MetheorUsed);
         Game.ShieldWallDestroyed = true;
+        if (Game.Applicable(Rule.SE_CardTiming)) Game.LastStormResponse = Initiator;
         Player.TreacheryCards.Remove(card);
         Game.RemovedTreacheryCards.Add(card);
         Log();

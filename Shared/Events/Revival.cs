@@ -78,6 +78,9 @@ public class Revival : GameEvent, ILocationEvent
     public override Message? Validate()
     {
         var p = Player;
+        if (AmountOfForces < 0 || AmountOfSpecialForces < 0 || ExtraForcesPaidByRed < 0 || ExtraSpecialForcesPaidByRed < 0 || NumberOfForcesInLocation < 0 || NumberOfSpecialForcesInLocation < 0)
+            return Message.Express("Revival amounts cannot be negative");
+        if (Hero != null && !ValidRevivalHeroes(Game, p).Contains(Hero)) return Message.Express("Invalid leader to revive");
 
         if (AmountOfForces + ExtraForcesPaidByRed <= 0 && AmountOfSpecialForces + ExtraSpecialForcesPaidByRed <= 0 && Hero == null) Message.Express("Select forces or a leader to revive");
 
@@ -247,6 +250,11 @@ public class Revival : GameEvent, ILocationEvent
 
     public static IEnumerable<IHero> NormallyRevivableHeroes(Game g, Player p)
     {
+        if (g.Applicable(Rule.SE_LeaderRevival))
+        {
+            g.LatchSecondEditionLeaderRevivalEligibility();
+            return g.KilledHeroes(p).Where(h => h == LeaderManager.Messiah || g.SecondEditionLeaderRevivalEligible.Contains(p.Faction));
+        }
         var result = new List<IHero>();
 
         if (AllAvailableLeadersHaveDiedOnce(g, p) || AtLeastFiveLeadersHaveDiedOnce(g, p))
@@ -356,6 +364,7 @@ public class Revival : GameEvent, ILocationEvent
         var purpleDiscountPrevented = g.Prevented(FactionAdvantage.PurpleRevivalDiscount);
 
         if (hero == null) return 0;
+        if (g.Applicable(Rule.SE_LeaderRevival) && hero == LeaderManager.Messiah) return 2;
 
         var price = hero.CostToRevive;
 
@@ -397,6 +406,7 @@ public class Revival : GameEvent, ILocationEvent
 
     private static int RedExtraRevivalLimit(Game g, Player p)
     {
+        if (g.Applicable(Rule.SE_EmperorAlliance)) return 0;
         return p.Ally == Faction.Red && (g.Version < 113 || !g.Prevented(FactionAdvantage.RedLetAllyReviveExtraForces))
             ? g.RedWillPayForExtraRevival
             : 0;
@@ -404,6 +414,7 @@ public class Revival : GameEvent, ILocationEvent
 
     public static int ValidMaxRevivalsByRed(Game g, Player p)
     {
+        if (g.Applicable(Rule.SE_EmperorAlliance)) return 0;
         if (p.Ally != Faction.Red) return 0;
 
         var red = g.GetPlayer(Faction.Red)!;

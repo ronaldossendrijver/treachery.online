@@ -345,7 +345,8 @@ public partial class BasicBot
             (ResourcesIncludingAllyContribution < 5 || Player.ForcesInReserve > 3) &&
             Player.AnyForcesIn(target) < 8 &&
             ((!LastTurn && Player.AnyForcesIn(target) > 0) || (!Player.HasAlly && Player.ForcesInLocations.Count(kvp => IsStronghold(kvp.Key)) <= 3)))
-            return new BlueAccompanies(Game, Faction) { Location = target, Accompanies = true, ExtraAdvisor = false };
+            return new BlueAccompanies(Game, Faction) { Location = target, Accompanies = true, ExtraAdvisor = false,
+                FlipExistingFighters = Game.Applicable(Rule.SE_BlueAdvisors) && Player.Occupies(target.Territory) };
 
         if (BlueAccompanies.ValidTargets(Game, Player).Contains(Game.Map.PolarSink) &&
             (ResourcesIncludingAllyContribution < 5 || Player.ForcesInReserve > 3) &&
@@ -657,6 +658,15 @@ public partial class BasicBot
             }
 
             LogInfo("Remaining category: {0} {1} may not use", type);
+        }
+
+        if (Game.Applicable(Rule.SE_VoiceByCategory))
+        {
+            var category = Voice.ValidTypes(Game).FirstOrDefault(candidate =>
+                Voice.IsVoicedBy(Game, true, must, type, candidate) ||
+                Voice.IsVoicedBy(Game, false, must, type, candidate));
+            if (category == TreacheryCardType.None) return result;
+            type = category;
         }
 
         var voice = new Voice(Game, p.Faction) { Must = must, Type = type };

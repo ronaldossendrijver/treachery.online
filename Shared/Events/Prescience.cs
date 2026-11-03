@@ -33,6 +33,7 @@ public class Prescience : GameEvent
 
     public override Message? Validate()
     {
+        if (!MayUsePrescience(Game, Player) || !ValidAspects(Game, Player).Contains(Aspect)) return Message.Express("Invalid use of battle prescience");
         return null;
     }
 
@@ -48,11 +49,12 @@ public class Prescience : GameEvent
 
     public static bool MayUsePrescience(Game g, Player p)
     {
+        if (g.Applicable(Rule.SE_Karama) && (g.CurrentPhase == Phase.KaramaResponse || g.AggressorPlan != null && g.DefenderPlan != null)) return false;
         if (g is { CurrentBattle: not null, CurrentPrescience: null } && !g.Prevented(FactionAdvantage.GreenBattlePlanPrescience))
         {
             if (p.Faction == Faction.Green)
                 return g.CurrentBattle.IsInvolved(p);
-            if (p.Ally == Faction.Green && g.GreenSharesPrescience) return g.CurrentBattle.IsAggressorOrDefender(p);
+            if (p.Ally == Faction.Green && (g.SecondEdition || g.GreenSharesPrescience)) return g.CurrentBattle.IsAggressorOrDefender(p);
         }
 
         return false;
@@ -67,6 +69,7 @@ public class Prescience : GameEvent
         Game.CurrentPrescience = this;
         Log();
         Game.Stone(Milestone.Prescience);
+        Game.BeginSecondEditionKaramaResponse(FactionAdvantage.GreenBattlePlanPrescience, Initiator);
     }
 
     public override Message GetMessage()

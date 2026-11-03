@@ -80,7 +80,7 @@ public partial class Game
 
     private void AnnounceHeroAvailability(Player? p)
     {
-        if (p is null) return;
+        if (p is null || Applicable(Rule.SE_BattleResolution)) return;
         if (!Battle.ValidBattleHeroes(this, p).Any()) Log(p.Faction, " have no leaders available for this battle");
     }
 
@@ -178,6 +178,7 @@ public partial class Game
         }
 
         DetermineIfCapturedLeadersMustBeReleased();
+        LatchSecondEditionLeaderRevivalEligibility();
         AuditorSurvivedBattle = (agg.Hero?.HeroType == HeroType.Auditor && IsAlive(agg.Hero)) || (def.Hero?.HeroType == HeroType.Auditor && IsAlive(def.Hero));
     }
 
@@ -197,6 +198,7 @@ public partial class Game
     {
         if (BattleWinner is null || AggressorPlan is null || DefenderPlan is null) return;
         SelectVictimOfBlackWinner(AggressorPlan.By(BattleWinner.Value) ? DefenderPlan : AggressorPlan);
+        LatchSecondEditionLeaderRevivalEligibility();
     }
 
     private void HandleReinforcements(Battle plan)
@@ -427,6 +429,7 @@ public partial class Game
 
     private void DetermineIfCapturedLeadersMustBeReleased()
     {
+        LatchSecondEditionLeaderRevivalEligibility();
         if (CurrentBattle is null)
             return;
 
@@ -446,7 +449,8 @@ public partial class Game
         }
 
         //DetermineIfCapturedLeadersMustBeReleasedWhenBlackHasNoLeadersLeft
-        if (!black.Leaders.Any(l => !CapturedLeaders.ContainsKey(l) && IsAlive(l)))
+        if (!black.Leaders.Any(l => !CapturedLeaders.ContainsKey(l) && IsAlive(l) &&
+            (!Applicable(Rule.SE_LeaderRevival) || LeaderState[l].CurrentTerritory == null)))
         {
             var captives = black.Leaders.Where(l => CapturedLeaders.ContainsKey(l)).ToList();
             foreach (var captive in captives) ReturnCapturedLeader(black, captive);
@@ -640,6 +644,11 @@ public partial class Game
 
     private void PayDialedSpice(Player p, Battle plan, bool traitorWasRevealed)
     {
+        if (Applicable(Rule.SE_SpiceBonus) || Applicable(Rule.SE_BattleResolution))
+        {
+            if (plan.BankerBonus > 0) p.Resources -= plan.BankerBonus;
+            return;
+        }
         var cost = plan.Cost(this, out var paidByArrakeen);
         var costToBrown = p.Ally == Faction.Brown ? plan.AllyContributionAmount : 0;
 
@@ -904,6 +913,15 @@ public partial class Game
 
     private void OneTraitorCalled(Territory territory, Player winner, Player loser, Battle loserPlan, Battle winnerPlan)
     {
+        if (Applicable(Rule.SE_SpiceBonus) || Applicable(Rule.SE_BattleResolution))
+        {
+            winner.Resources += winnerPlan.SecondEditionSpicePaid;
+            winnerPlan.SecondEditionSpicePaid = 0;
+            if (winner.AlliedPlayer is { } ally) ally.Resources += winnerPlan.SecondEditionAllySpicePaid;
+            winnerPlan.SecondEditionAllySpicePaid = 0;
+        }
+        if (Applicable(Rule.SE_BattleResolution) && winnerPlan.Hero is Leader)
+            LeaderState[winnerPlan.Hero].CurrentTerritory = null;
         var traitor = loserPlan.Hero;
         if (traitor is null) throw new Exception("Traitor cannot be null in OneTraitorCalled");
         
@@ -1009,6 +1027,13 @@ public partial class Game
             Log("The explosion kills the ", Concept.Messiah);
             KillHero(LeaderManager.Messiah);
         }
+
+        if (Applicable(Rule.SE_BattleResolution))
+            foreach (var hero in LeaderState.Where(kvp => kvp.Value.Alive && kvp.Value.CurrentTerritory == territory).Select(kvp => kvp.Key).ToArray())
+            {
+                Log("The explosion kills ", hero);
+                KillHero(hero);
+            }
 
         LoseCards(agg, false);
         PayDialedSpice(aggressor, agg, false);

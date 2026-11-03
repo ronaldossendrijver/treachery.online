@@ -71,7 +71,20 @@ public class EstablishPlayers : GameEvent
         if (Settings.NumberOfPlayers < 2) return Message.Express("At least two players required");
         if (Settings.NumberOfPlayers > Settings.AllowedFactionsInPlay.Count) return Message.Express("More factions required");
         if (Game.Participation.SeatedPlayers.Count > Settings.NumberOfPlayers) return Message.Express("More players than seats at the table");            
-        if (Settings.AllowedFactionsInPlay.Any(f => !AvailableFactions().Contains(f))) return Message.Express("Invalid faction");
+        if (Settings.AllowedFactionsInPlay.Any(f => !AvailableFactions(Settings.InitialRules).Contains(f))) return Message.Express("Invalid faction for this ruleset");
+        if (Settings.InitialRules.Contains(Rule.AdvancedCombat) && Settings.InitialRules.Contains(Rule.SE_SpiceBonus))
+            return Message.Express("Classic Spice Dialing and Second Edition spice bonuses cannot both be selected");
+        if (Settings.InitialRules.Contains(Rule.SE_Core))
+        {
+            if (Game.Version < 196) return Message.Express("Second Edition requires game version 196 or later");
+            if (Settings.InitialRules.Contains(Rule.AdvancedCombat) == Settings.InitialRules.Contains(Rule.SE_SpiceBonus))
+                return Message.Express("Select either Classic Spice Dialing or Second Edition spice bonuses");
+            if (Settings.InitialRules.Any(r => Game.GetRulesInGroup(Game.GetRuleGroup(r), 0).Contains(r) == false
+                                              && Game.GetRuleGroup(r) != RuleGroup.Bots))
+                return Message.Express("Expansion rules are not supported in Second Edition games");
+            if (Settings.InitialRules.Contains(Rule.AdvancedKarama) || Settings.InitialRules.Contains(Rule.FullPhaseKarma))
+                return Message.Express("Second Edition Karama cannot be combined with first-edition Karama variants");
+        }
 
         return null;
     }
@@ -86,7 +99,7 @@ public class EstablishPlayers : GameEvent
         return 20;
     }
 
-    public static IEnumerable<Faction> AvailableFactions()
+    public static IEnumerable<Faction> AvailableFactions(IEnumerable<Rule>? rules = null)
     {
         var result = new List<Faction>();
 
@@ -99,6 +112,8 @@ public class EstablishPlayers : GameEvent
             result.Add(Faction.Orange);
             result.Add(Faction.Blue);
         }
+
+        if (rules?.Contains(Rule.SE_Core) == true) return result;
 
         if (Game.ExpansionLevel >= 1)
         {
@@ -127,6 +142,8 @@ public class EstablishPlayers : GameEvent
 
         if (Game.ExpansionLevel >= 0)
         {
+            result.Add(RuleGroup.SecondEdition);
+            result.Add(RuleGroup.SecondEditionVariants);
             result.Add(RuleGroup.CoreAdvanced);
             result.Add(RuleGroup.CoreBasicExceptions);
             result.Add(RuleGroup.CoreAdvancedExceptions);
@@ -230,8 +247,10 @@ public class EstablishPlayers : GameEvent
         
         //Decks and card piles
 
+        if (Game.Applicable(Rule.SE_DualSpiceBlow)) Game.Map.UseSecondEditionSpiceLocations();
         Game.ResourceCardDeck = CreateAndShuffleResourceCardDeck();
         Game.TreacheryDeck = TreacheryCardManager.CreateTreacheryDeck(Game, Game.Random);
+        if (Game.Applicable(Rule.SE_StormDeck)) Game.CreateSecondEditionStormDeck();
         CreateDiscoveryTokens();
 
         if (!Game.Applicable(Rule.CustomDecks))
@@ -258,6 +277,7 @@ public class EstablishPlayers : GameEvent
         Game.GreyAllowsReplacingCards = true;
         Game.RedWillPayForExtraRevival = 0;
         Game.YellowWillProtectFromMonster = true;
+        Game.YellowAllowsWormRide = true;
         Game.YellowAllowsThreeFreeRevivals = true;
         Game.YellowSharesPrescience = true;
         Game.YellowRefundsBattleDial = true;

@@ -56,6 +56,9 @@ public class EndPhase : GameEvent
             case Phase.MetheorAndStormSpell:
                 EnterNormalStormPhase();
                 break;
+            case Phase.BeforeStormCard:
+                Game.DrawSecondEditionStormCard();
+                break;
 
             case Phase.StormReport:
                 Game.EnterSpiceBlowPhase();
@@ -190,6 +193,11 @@ public class EndPhase : GameEvent
 
     private void EnterNormalStormPhase()
     {
+        if (Game.Applicable(Rule.SE_StormDeck))
+        {
+            Game.ResolveSecondEditionStorm();
+            return;
+        }
         Log("The storm moves ", Game.NextStormMoves, " sectors");
         Game.MoveStormAndDetermineNext(Game.NextStormMoves);
         Game.EndStormPhase();
@@ -199,6 +207,11 @@ public class EndPhase : GameEvent
     {
         Game.NexusHasOccured = true;
         Game.CurrentAllianceOffers.Clear();
+        if (Game.Applicable(Rule.SE_DualSpiceBlow))
+        {
+            Game.CompleteSecondEditionNexus();
+            return;
+        }
 
         if (YellowRidesMonster.IsApplicable(Game))
         {
@@ -357,6 +370,7 @@ public class EndPhase : GameEvent
 
     private void EnterBattlePhase()
     {
+        Game.ReturnConflictingAlliedForcesAtPhaseEnd();
         Game.MainPhaseStart(MainPhase.Battle);
         Game.NrOfBattlesFought = 0;
         Game.BattleSequence = new PlayerSequence(Game);

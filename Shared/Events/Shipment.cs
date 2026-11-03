@@ -180,6 +180,8 @@ public class Shipment : PassableGameEvent, ILocationEvent
     
     public override Message? Validate()
     {
+        if (Game.CurrentPhase == Phase.GuildSettingUp && (Passed || Initiator != Faction.Orange || IsBackToReserves || IsSiteToSite))
+            return Message.Express("Guild must make a paid shipment from reserves during setup");
         if (Passed) return null;
 
         var p = Player;
@@ -196,6 +198,10 @@ public class Shipment : PassableGameEvent, ILocationEvent
         if (!IsBackToReserves && (ForceAmount < 0 || SpecialForceAmount < 0)) return Message.Express("Can't ship less than zero forces");
         if (ForceAmount == 0 && SpecialForceAmount == 0) return Message.Express("Select forces to ship");
         if (To == null) return Message.Express("Target location not selected");
+        if (Game.Applicable(Rule.SE_BlueAdvisors) && p.Is(Faction.Blue) && p.SpecialForcesIn(To.Territory) > 0)
+            return Message.Express("Paid shipments may not join your advisors");
+        if (Game.Applicable(Rule.SE_AllyMovement) && Game.ContainsConflictingAlly(p, To) && !Game.AllyCanBecomeAdvisors(p, To))
+            return Message.Express("You may not finish a shipment with allied fighters");
 
         var cost = DetermineCost(Game, p, this);
         if (cost > p.Resources + AllyContributionAmount) return Message.Express("You can't pay that much");
@@ -234,7 +240,10 @@ public class Shipment : PassableGameEvent, ILocationEvent
             if (ForceAmount + SpecialForceAmount != forcesToShip) return Message.Express("Using a No-Field of ", NoFieldValue, ", you must select ", forcesToShip, " forces to ship");
         }
 
-        if (KarmaCard != null && !ValidKarmaCards(Game, Player).Contains(KarmaCard)) return Message.Express("Invalid ", TreacheryCardType.Karma, " card: ", KarmaCard);
+        if (KarmaCard != null && !ValidKarmaCards(Game, Player).Contains(KarmaCard)) return Message.Express("Invalid ", Game.Applicable(Rule.SE_Solaris) ? TreacheryCardType.Solaris : TreacheryCardType.Karma, " card: ", KarmaCard);
+        if (Game.Applicable(Rule.SE_Solaris) && KarmaCard != null &&
+            (ShipmentType != ShipmentType.ShipmentNormal || IsBackToReserves || IsSiteToSite))
+            return Message.Express(TreacheryCardType.Solaris, " can only discount a shipment from reserves");
 
         if (UseWhiteSecretAlly && !MayUseWhiteSecretAlly(Game, Player)) return Message.Express(Faction.White, " are not your secret ally");
         if (UseWhiteSecretAlly && ForceAmount + SpecialForceAmount > 5) return Message.Express("You can't ship that much using ", Faction.White, " as your secret ally");
@@ -348,7 +357,9 @@ public class Shipment : PassableGameEvent, ILocationEvent
             (l.Id != g.Map.HiddenMobileStronghold.Id || p.Is(Faction.Grey)) &&
             IsEitherValidHomeworldOrNoHomeworld(g, p, l, crossPlanet) &&
             IsEitherValidDiscoveryOrNoDiscovery(l) &&
-            g.IsNotFull(p, l));
+            g.IsNotFull(p, l) &&
+            (!g.Applicable(Rule.SE_AllyMovement) || !g.ContainsConflictingAlly(p, l) || g.AllyCanBecomeAdvisors(p, l)) &&
+            (!g.Applicable(Rule.SE_BlueAdvisors) || !p.Is(Faction.Blue) || p.SpecialForcesIn(l.Territory) == 0));
     }
 
     public static bool IsEitherValidHomeworldOrNoHomeworld(Game g, Player p, Location l, bool fromPlanet)
@@ -393,14 +404,14 @@ public class Shipment : PassableGameEvent, ILocationEvent
     {
         var result = ValidOwnKarmaCards(g, p).ToList();
 
-        var allyCard = ValidAllyKarmaCard(g, p);
+        var allyCard = g.Applicable(Rule.SE_Solaris) ? null : ValidAllyKarmaCard(g, p);
         if (allyCard != null) result.Add(allyCard);
 
         return result;
     }
 
     private static IEnumerable<TreacheryCard> ValidOwnKarmaCards(Game g, Player p) 
-        => Karma.ValidKarmaCards(g, p);
+        => g.Applicable(Rule.SE_Solaris) ? Karma.ValidSolarisCards(g, p) : Karma.ValidKarmaCards(g, p);
 
     private static TreacheryCard? ValidAllyKarmaCard(Game g, Player p) 
         => g.GetPermittedUseOfAllyKarma(p.Faction);
@@ -423,6 +434,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
 
     public static bool MayShipCrossPlanet(Game g, Player p)
     {
+        if (g.CurrentPhase == Phase.GuildSettingUp) return false;
         return (p.Is(Faction.Orange) && !g.Prevented(FactionAdvantage.OrangeSpecialShipments)) ||
                (p.Ally == Faction.Orange && g.OrangeAllowsShippingDiscount) ||
                p.Initiated(g.CurrentOrangeSecretAlly) ||
@@ -431,7 +443,9 @@ public class Shipment : PassableGameEvent, ILocationEvent
 
     public static bool MayShipToReserves(Game g, Player p)
     {
+        if (g.CurrentPhase == Phase.GuildSettingUp) return false;
         return (p.Is(Faction.Orange) && !g.Prevented(FactionAdvantage.OrangeSpecialShipments)) ||
+               (g.SecondEdition && p.Ally == Faction.Orange && g.OrangeAllowsShippingDiscount) ||
                p.Initiated(g.CurrentOrangeSecretAlly) ||
                g.HasShipmentPermission(p, ShipmentPermission.ToHomeworld);
     }
@@ -494,6 +508,7 @@ public class Shipment : PassableGameEvent, ILocationEvent
             if (To != null && Game.ContainsConflictingAlly(Player, To)) 
                 Game.ChosenDestinationsWithAllies.Add(To.Territory);
 
+            if (Game.CurrentPhase == Phase.GuildSettingUp) Game.GuildSetupShipmentPerformed = true;
             Game.LastShipmentOrMovement = this;
             var mustBeAdvisors = (Player.Is(Faction.Blue) && Player.SpecialForcesIn(To) > 0) || (Game.Version >= 148 && To != null && Player.SpecialForcesIn(To.Territory) > 0);
 

@@ -29,14 +29,16 @@ public partial class BasicBot
             { moved.From, moved.Battalion }
         };
 
-        var asAdvisors = Faction == Faction.Blue && Player.SpecialForcesIn(moved.To.Territory) > 0;
+        var asAdvisors = Faction == Faction.Blue && (Player.SpecialForcesIn(moved.To.Territory) > 0 ||
+            (Game.Applicable(Rule.SE_BlueAdvisors) && (moved.Battalion.AmountOfSpecialForces > 0 ||
+             Game.ContainsConflictingAlly(Player, moved.To))));
         var result = new Move(Game, Faction) { Passed = false, To = moved.To, ForceLocations = forces, AsAdvisors = asAdvisors };
 
         var validationError = result.Validate();
         if (validationError != null)
         {
-            LogInfo(validationError);
-            return null;
+            LogError("Invalid move candidate; passing instead: {0}", validationError);
+            return new Move(Game, Faction) { Passed = true };
         }
 
         return result;
@@ -57,7 +59,9 @@ public partial class BasicBot
             { moved.From, moved.Battalion }
         };
 
-        var asAdvisors = Faction == Faction.Blue && Player.SpecialForcesIn(moved.To.Territory) > 0;
+        var asAdvisors = Faction == Faction.Blue && (Player.SpecialForcesIn(moved.To.Territory) > 0 ||
+            (Game.Applicable(Rule.SE_BlueAdvisors) && (moved.Battalion.AmountOfSpecialForces > 0 ||
+             Game.ContainsConflictingAlly(Player, moved.To))));
         var result = new Caravan(Game, Faction) { Passed = false, To = moved.To, ForceLocations = forces, AsAdvisors = asAdvisors };
 
         DecidedShipmentAction = ShipmentDecision.None;

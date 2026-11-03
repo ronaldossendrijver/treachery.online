@@ -30,6 +30,7 @@ public partial class Game
 
     public bool GreenSharesPrescience { get; internal set; }
     public bool YellowWillProtectFromMonster { get; internal set; }
+    public bool YellowAllowsWormRide { get; internal set; }
     public bool YellowAllowsThreeFreeRevivals { get; internal set; }
     public bool YellowSharesPrescience { get; internal set; }
     public bool YellowRefundsBattleDial { get; internal set; }
@@ -123,6 +124,7 @@ public partial class Game
             case Faction.Green: GreenSharesPrescience = permission; break;
             case Faction.Yellow:
                 YellowWillProtectFromMonster = permission;
+                YellowAllowsWormRide = permission;
                 YellowAllowsThreeFreeRevivals = permission;
                 YellowSharesPrescience = permission;
                 YellowRefundsBattleDial = permission;

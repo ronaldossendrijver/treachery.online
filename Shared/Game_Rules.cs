@@ -15,7 +15,10 @@ public partial class Game
 
     public IEnumerable<Rule> GetCustomRules()
     {
-        return Rules.Where(rule => GetRuleGroup(rule) is
+        return Rules.Where(rule => (!SecondEdition && rule is
+                                       Rule.DisableNovaFlipping or Rule.AdvisorsDontConflictWithAlly
+                                       or Rule.YellowMayMoveIntoStorm or Rule.BattlesUnderStorm) ||
+                                  GetRuleGroup(rule) is
             RuleGroup.House or RuleGroup.CoreBasicExceptions or RuleGroup.CoreAdvancedExceptions or
             RuleGroup.ExpansionIxAndBtBasicExceptions or RuleGroup.ExpansionIxAndBtAdvancedExceptions or
             RuleGroup.ExpansionBrownAndWhiteBasicExceptions or RuleGroup.ExpansionBrownAndWhiteAdvancedExceptions or
@@ -24,6 +27,8 @@ public partial class Game
 
     public static Ruleset DetermineApproximateRuleset(List<Faction> factions, List<Rule> rules, int expansionLevel)
     {
+        if (rules.Contains(Rule.SE_Core)) return Ruleset.SecondEdition;
+
         var hasExpansion1 = factions.Contains(Faction.Purple) || factions.Contains(Faction.Grey) ||
                             rules.Contains(Rule.ExpansionTreacheryCardsPBandSs) ||
                             rules.Contains(Rule.ExpansionTreacheryCardsAmal) ||
@@ -87,6 +92,24 @@ public partial class Game
 
     public static Dictionary<Ruleset, Rule[]> RulesetDefinition { get; private set; } = new()
     {
+        [Ruleset.SecondEdition] =
+        [
+            Rule.BasicTreacheryCards, Rule.HasCharityPhase,
+            Rule.IncreasedResourceFlow, Rule.YellowStormLosses, Rule.YellowSendingMonster,
+            Rule.YellowSpecialForces, Rule.GreenMessiah, Rule.BlackCapturesOrKillsLeaders,
+            Rule.BlueAutoCharity, Rule.BlueWorthlessAsKarma, Rule.BlueAdvisors,
+            Rule.OrangeDetermineShipment, Rule.RedSpecialForces,
+            Rule.DisableNovaFlipping, Rule.AdvisorsDontConflictWithAlly,
+            Rule.YellowMayMoveIntoStorm, Rule.BattlesUnderStorm,
+            Rule.SE_Core, Rule.SE_CardsBeforeTraitors, Rule.SE_StartingResources,
+            Rule.SE_GuildSetupShipment, Rule.SE_Leaders, Rule.SE_StormDeck,
+            Rule.SE_DualSpiceBlow, Rule.SE_SpiceBonus, Rule.SE_Karama,
+            Rule.SE_Solaris, Rule.SE_LeaderRevival, Rule.SE_BattleResolution,
+            Rule.SE_AllyMovement, Rule.SE_VoiceByCategory, Rule.SE_BlueAdvisors,
+            Rule.SE_CardTiming, Rule.SE_Deals, Rule.SE_Victory,
+            Rule.SE_FremenWorms, Rule.SE_EmperorAlliance, Rule.SE_HarkonnenRedraw,
+            Rule.SE_HarkonnenVendetta, Rule.SE_SingleSectorMovement
+        ],
         [Ruleset.BasicGame] =
         [
             Rule.BasicTreacheryCards,
@@ -318,8 +341,18 @@ public partial class Game
         return Rules.Contains(rule) || RulesForBots.Contains(rule);
     }
 
+    public static void SelectClassicSpiceDialing(List<Rule> rules, bool classic)
+    {
+        rules.RemoveAll(r => r is Rule.AdvancedCombat or Rule.SE_SpiceBonus);
+        rules.Add(classic ? Rule.AdvancedCombat : Rule.SE_SpiceBonus);
+    }
+
     public static RuleGroup GetRuleGroup(Rule rule) => rule switch
     {
+        >= Rule.SE_Core and <= Rule.SE_SingleSectorMovement => RuleGroup.SecondEdition,
+        Rule.DisableNovaFlipping or Rule.AdvisorsDontConflictWithAlly
+            or Rule.YellowMayMoveIntoStorm or Rule.BattlesUnderStorm => RuleGroup.SecondEdition,
+        Rule.SpiritWorldKarama => RuleGroup.SecondEditionVariants,
         Rule.HasCharityPhase or Rule.BasicTreacheryCards => RuleGroup.CoreBasic,
         Rule.AdvancedCombat or Rule.IncreasedResourceFlow or Rule.AdvancedKarama or Rule.YellowDeterminesStorm
             or Rule.YellowStormLosses or Rule.YellowSendingMonster or Rule.YellowSpecialForces or Rule.GreenMessiah
@@ -327,16 +360,14 @@ public partial class Game
             or Rule.BlueAdvisors or Rule.OrangeDetermineShipment or Rule.RedSpecialForces => RuleGroup.CoreAdvanced,
         Rule.BribesAreImmediate or Rule.ContestedStongholdsCountAsOccupied
             or Rule.OrangeShipmentContributionsFlowBack or Rule.FullPhaseKarma or Rule.BlueVoiceMustNameSpecialCards
-            or Rule.BattlesUnderStorm
             or Rule.MovementBonusRequiresOccupationBeforeMovement => RuleGroup.CoreBasicExceptions,
-        Rule.AdvisorsDontConflictWithAlly or Rule.YellowMayMoveIntoStorm => RuleGroup.CoreAdvancedExceptions,
         Rule.CustomInitialForcesAndResources or Rule.CustomDecks or Rule.HmSwithoutGrey
             or Rule.StormDeckWithoutYellow or Rule.Ssw or Rule.BlackMulligan or Rule.ExtraKaramaCards
             or Rule.CardsCanBeTraded or Rule.PlayersChooseFactions or Rule.RedSupportingNonAllyBids
             or Rule.AssistedNotekeeping or Rule.AssistedNotekeepingForGreen or Rule.ResourceBonusForStrongholds
             or Rule.BattleWithoutLeader or Rule.CapturedLeadersAreTraitorsToOwnFaction
             or Rule.DisableEndOfGameReport or Rule.DisableOrangeSpecialVictory or Rule.DisableResourceTransfers
-            or Rule.DisableNovaFlipping or Rule.YellowAllyGetsDialedResourcesRefunded
+            or Rule.YellowAllyGetsDialedResourcesRefunded
             or Rule.BreakAlliancesOnAlliancePhase or Rule.GreyMaySelectBlackExtraStartingCard => RuleGroup.House,
         Rule.BotsCannotAlly or Rule.AdvancedBots => RuleGroup.Bots,
         Rule.TechTokens or Rule.CheapHeroTraitor or Rule.ExpansionTreacheryCards or Rule.SandTrout => RuleGroup
@@ -354,7 +385,7 @@ public partial class Game
     private static int GetRulesetExpansion(Ruleset ruleset)
         => ruleset switch
         {
-            Ruleset.None or Ruleset.BasicGame or Ruleset.AdvancedGame or Ruleset.ServerClassic or Ruleset.Custom
+            Ruleset.None or Ruleset.BasicGame or Ruleset.AdvancedGame or Ruleset.SecondEdition or Ruleset.ServerClassic or Ruleset.Custom
                 or Ruleset.AllExpansionsBasicGame or Ruleset.AllExpansionsAdvancedGame => 0,
             Ruleset.ExpansionBasicGame or Ruleset.ExpansionAdvancedGame => 1,
             Ruleset.Expansion2BasicGame or Ruleset.Expansion2AdvancedGame => 2,
@@ -365,6 +396,7 @@ public partial class Game
     private static int GetRuleExpansion(Rule rule)
         => rule switch
         {
+            >= Rule.SE_Core and <= Rule.SE_SingleSectorMovement or Rule.SpiritWorldKarama => 0,
             Rule.HasCharityPhase or Rule.BasicTreacheryCards => 0,
             Rule.AdvancedCombat or Rule.IncreasedResourceFlow or Rule.AdvancedKarama or Rule.YellowDeterminesStorm
                 or Rule.YellowStormLosses or Rule.YellowSendingMonster or Rule.YellowSpecialForces or Rule.GreenMessiah

@@ -58,7 +58,7 @@ public class ClairVoyanceAnswered : GameEvent
 
         Log();
 
-        if (Game.LatestClairvoyance!.Question == ClairvoyanceQuestion.WillAttackX && IsNo)
+        if (!Game.Applicable(Rule.SE_CardTiming) && Game.LatestClairvoyance!.Question == ClairvoyanceQuestion.WillAttackX && IsNo)
         {
             var deal = new Deal
             {

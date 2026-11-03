@@ -47,6 +47,11 @@ public class Donated : GameEvent
     public override Message? Validate()
     {
         if (FromBank) return null;
+        if (!FromBank && Game.Applicable(Rule.SE_CardTiming) && Game.CurrentMainPhase == MainPhase.Contemplate)
+            return Message.Express("Bribes cannot be made during the Mentat Pause");
+        if (!FromBank && Game.Applicable(Rule.SE_EmperorAlliance) && Player.Is(Faction.Red) &&
+            Target == Player.Ally && Game.CurrentMoment != MainPhaseMoment.End)
+            return Message.Express(Faction.Red, " may give spice to an ally only at the end of a phase");
 
         if (!MayDonate(Game, Player)) return Message.Express("You currently have an outstanding bid");
         if (Card == null && Resources <= 0) return Message.Express("Invalid amount");
@@ -63,7 +68,11 @@ public class Donated : GameEvent
 
     public static IEnumerable<Faction> ValidTargets(Game g, Player p)
     {
-        return g.Players.Where(x => x.Faction != p.Faction && (p.Is(Faction.Red) || x.Faction != p.Ally)).Select(x => x.Faction);
+        return g.Players.Where(x =>
+            x.Faction != p.Faction &&
+            (p.Is(Faction.Red) || x.Faction != p.Ally) &&
+            !(g.Applicable(Rule.SE_EmperorAlliance) && p.Is(Faction.Red) && x.Faction == p.Ally &&
+              g.CurrentMoment != MainPhaseMoment.End)).Select(x => x.Faction);
     }
 
     public static bool MayDonate(Game g, Player p)

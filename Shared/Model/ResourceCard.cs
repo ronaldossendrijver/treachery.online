@@ -13,16 +13,21 @@ public class ResourceCard(int skinId)
 {
     public bool IsSandTrout { get; set; }
     public bool IsGreatMaker { get; set; }
+    public bool IsLittleMaker { get; set; }
 
     public int SkinId { get; private set; } = skinId;
 
     public Location? Location { get; set; }
+    public Location? Location2 { get; set; }
+    public IEnumerable<Location> BlowLocations => Location == null
+        ? []
+        : Location2 == null ? [Location] : [Location, Location2];
 
     public Location? DiscoveryLocation { get; set; }
 
-    public bool IsShaiHulud => Location == null && !IsSandTrout && !IsGreatMaker;
+    public bool IsShaiHulud => Location == null && !IsSandTrout && !IsGreatMaker && !IsLittleMaker;
 
-    public bool IsSpiceBlow => Location != null;
+    public bool IsSpiceBlow => Location != null && !IsLittleMaker;
 
     public bool IsDiscovery => DiscoveryLocation != null;
 

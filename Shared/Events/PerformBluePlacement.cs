@@ -73,7 +73,7 @@ public class PerformBluePlacement : GameEvent
         Game.Enter(
             Game.Version >= 187 && IsPlaying(Faction.Pink), Phase.PinkSettingUp,
             IsPlaying(Faction.Cyan), Phase.CyanSettingUp,
-            Game.TreacheryCardsBeforeTraitors, Game.EnterStormPhase, Game.DealStartingTreacheryCards);
+            Game.TreacheryCardsBeforeTraitors, Game.FinishFactionSetup, Game.DealStartingTreacheryCards);
     }
 
     public override Message GetMessage()

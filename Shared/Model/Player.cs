@@ -623,9 +623,9 @@ public class Player(Game game, Faction faction = Faction.None) : ICloneable
     {
         Leaders = Faction switch
         {
-            Faction.Brown => LeaderManager.GetLeaders(Faction.Brown).Where(l => g.Applicable(Rule.BrownAuditor) || l.HeroType != HeroType.Auditor).ToList(),
-            Faction.Pink => LeaderManager.GetLeaders(Faction.Pink).Where(l => l.HeroType != HeroType.Vidal).ToList(),
-            _ => LeaderManager.GetLeaders(Faction).ToList()
+            Faction.Brown => LeaderManager.GetLeaders(g, Faction.Brown).Where(l => g.Applicable(Rule.BrownAuditor) || l.HeroType != HeroType.Auditor).ToList(),
+            Faction.Pink => LeaderManager.GetLeaders(g, Faction.Pink).Where(l => l.HeroType != HeroType.Vidal).ToList(),
+            _ => LeaderManager.GetLeaders(g, Faction).ToList()
         };
     }
 
