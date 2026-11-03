@@ -9,6 +9,7 @@ public sealed record DealIndicator(Deal Deal, double X, double Y, double Size);
 /// <summary>
 /// Places deal indicators in small rings around the logo of the faction that offered the deal, in the nearest spot that keeps
 /// clear of player names, logos, ally logos, bid texts, items in front of shields, territories and other indicators.
+/// Spots on the black outer ring of the map are preferred over spots outside it.
 /// </summary>
 public sealed partial record DealIndicatorLayout(IReadOnlyList<DealIndicator> Indicators, double VisualRadius)
 {
@@ -42,6 +43,8 @@ public sealed partial record DealIndicatorLayout(IReadOnlyList<DealIndicator> In
         var minimumSectorSpacing = Math.Floor((double)Map.NumberOfSectors / game.MaximumPlayers);
         var minimumSeatAngle = minimumSectorSpacing * 2 * Math.PI / Map.NumberOfSectors;
         var innerLimit = skin.PlanetRadius + 0.15 * tokenRadius;
+        // The black outer ring of the map ends at the map radius; indicators preferably stay on it.
+        var outerLimit = (double)skin.MapRadius;
         var currentDeals = DealAccepted.CurrentDeals(game).Where(deal => CanPlaceOnBoard(game, deal)).ToArray();
 
         foreach (var player in seated)
@@ -54,14 +57,17 @@ public sealed partial record DealIndicatorLayout(IReadOnlyList<DealIndicator> In
             var candidates = Candidates(logo, tokenRadius, radius, gap)
                 .Where(point => WithinSeat(skin, point, radius, seatAngle, minimumSeatAngle) && DistanceToCenter(skin, point) - radius >= innerLimit)
                 .ToArray();
+            var onRing = candidates.Where(point => DistanceToCenter(skin, point) + radius <= outerLimit + Tolerance).ToArray();
 
             foreach (var deal in deals)
             {
                 bool FreeOfIndicators(PointD point) => indicators.All(other =>
                     Distance(point, Center(other)) >= 2 * radius + gap - 0.001);
 
-                var spot = candidates.Where(point => FreeOfIndicators(point) && obstacles.All(obstacle => !obstacle.Hits(point, radius + gap)))
-                    .Cast<PointD?>().FirstOrDefault()
+                bool Free(PointD point) => FreeOfIndicators(point) && obstacles.All(obstacle => !obstacle.Hits(point, radius + gap));
+
+                var spot = onRing.Where(Free).Cast<PointD?>().FirstOrDefault()
+                    ?? candidates.Where(Free).Cast<PointD?>().FirstOrDefault()
                     ?? candidates.Where(FreeOfIndicators).Cast<PointD?>().FirstOrDefault()
                     ?? logo;
 

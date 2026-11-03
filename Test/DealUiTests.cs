@@ -157,6 +157,30 @@ public sealed class DealUiTests
     }
 
     [TestMethod]
+    [DataRow(2)]
+    [DataRow(6)]
+    [DataRow(12)]
+    public void SingleDealsStayOnTheBlackOuterRing(int playerCount)
+    {
+        var factions = Enum.GetValues<Faction>().Where(faction => faction != Faction.None).Take(playerCount).ToArray();
+        var game = CreateGame(factions);
+        foreach (var owner in factions)
+        {
+            game.Deals.Add(new Deal { BoundFaction = owner, ConsumingFaction = factions[(Array.IndexOf(factions, owner) + 1) % factions.Length], End = Phase.TurnConcluded });
+        }
+
+        var skin = DefaultSkin.Default;
+        var layout = DealIndicatorLayout.Create(game, skin);
+        Assert.HasCount(playerCount, layout.Indicators);
+        foreach (var indicator in layout.Indicators)
+        {
+            var center = new PointD(indicator.X + indicator.Size / 2, indicator.Y + indicator.Size / 2);
+            Assert.IsLessThanOrEqualTo(skin.MapRadius + 0.002, Distance(center, skin.PlanetCenter) + indicator.Size / 2,
+                $"The deal indicator of {indicator.Deal.BoundFaction} lies outside the black outer ring.");
+        }
+    }
+
+    [TestMethod]
     [DataRow(2, false)]
     [DataRow(3, true)]
     [DataRow(6, false)]
@@ -258,7 +282,7 @@ public sealed class DealUiTests
         foreach (var indicator in layout.Indicators)
         {
             var distance = Distance(new PointD(indicator.X + indicator.Size / 2, indicator.Y + indicator.Size / 2), owner);
-            Assert.IsLessThanOrEqualTo(2.5 * skin.PlayerTokenRadius, distance);
+            Assert.IsLessThanOrEqualTo(3.5 * skin.PlayerTokenRadius, distance);
             Assert.IsLessThan(1.5 * skin.PlayerTokenRadius, indicator.Size);
         }
 
@@ -297,7 +321,7 @@ public sealed class DealUiTests
         foreach (var indicator in layout.Indicators)
         {
             var distance = Distance(new PointD(indicator.X + indicator.Size / 2, indicator.Y + indicator.Size / 2), owner);
-            Assert.IsLessThanOrEqualTo(2.5 * skin.PlayerTokenRadius, distance, "A deal indicator was pushed away from its owner.");
+            Assert.IsLessThanOrEqualTo(3.5 * skin.PlayerTokenRadius, distance, "A deal indicator was pushed away from its owner.");
         }
 
         game.Bids.Clear();
