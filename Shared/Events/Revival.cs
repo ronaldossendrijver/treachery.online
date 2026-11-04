@@ -78,9 +78,12 @@ public class Revival : GameEvent, ILocationEvent
     public override Message? Validate()
     {
         var p = Player;
-        if (AmountOfForces < 0 || AmountOfSpecialForces < 0 || ExtraForcesPaidByRed < 0 || ExtraSpecialForcesPaidByRed < 0 || NumberOfForcesInLocation < 0 || NumberOfSpecialForcesInLocation < 0)
-            return Message.Express("Revival amounts cannot be negative");
-        if (Hero != null && !ValidRevivalHeroes(Game, p).Contains(Hero)) return Message.Express("Invalid leader to revive");
+        if (Game.Version >= 196)
+        {
+            if (AmountOfForces < 0 || AmountOfSpecialForces < 0 || ExtraForcesPaidByRed < 0 || ExtraSpecialForcesPaidByRed < 0 || NumberOfForcesInLocation < 0 || NumberOfSpecialForcesInLocation < 0)
+                return Message.Express("Revival amounts cannot be negative");
+            if (Hero != null && !ValidRevivalHeroes(Game, p).Contains(Hero)) return Message.Express("Invalid leader to revive");
+        }
 
         if (AmountOfForces + ExtraForcesPaidByRed <= 0 && AmountOfSpecialForces + ExtraSpecialForcesPaidByRed <= 0 && Hero == null) Message.Express("Select forces or a leader to revive");
 

@@ -18,6 +18,42 @@ namespace Treachery.Test;
 public class RevivalTests
 {
     [TestMethod]
+    [DataRow(169, false, true)]
+    [DataRow(195, false, true)]
+    [DataRow(196, false, false)]
+    [DataRow(196, true, false)]
+    public void RevivingAlreadyRevivedLeaderPreservesHistoricalValidation(int version, bool secondEdition, bool allowed)
+    {
+        var game = new Game(version, new Participation());
+        if (secondEdition) game.Rules.AddRange(Game.RulesetDefinition[Ruleset.SecondEdition]);
+        var player = new Player(game, Faction.Purple) { Resources = 100, ForcesKilled = 4 };
+        player.AssignLeaders(game);
+        game.Players.Add(player);
+        var leader = player.Leaders.First();
+        game.LeaderState[leader].DeathCounter = 1;
+        var revival = new Revival(game, player.Faction) { Hero = leader, AmountOfForces = 1 };
+
+        Assert.IsNull(revival.Validate());
+        game.LeaderState[leader].Revive();
+
+        Assert.AreEqual(allowed, revival.Validate() == null);
+    }
+
+    [TestMethod]
+    [DataRow(169, true)]
+    [DataRow(195, true)]
+    [DataRow(196, false)]
+    public void NegativeRevivalAmountPreservesHistoricalValidation(int version, bool allowed)
+    {
+        var game = new Game(version, new Participation());
+        var player = new Player(game, Faction.Black) { Resources = 100 };
+        game.Players.Add(player);
+        var revival = new Revival(game, player.Faction) { AmountOfForces = -1 };
+
+        Assert.AreEqual(allowed, revival.Validate() == null);
+    }
+
+    [TestMethod]
     public void NonPurplePlayerCannotReviveMultipleLeadersInOneTurn()
     {
         var game = new Game();
