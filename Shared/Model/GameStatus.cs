@@ -202,6 +202,26 @@ public class GameStatus
                 Express(Faction.Grey, " are selecting their starting Treachery Card..."),
                 Faction.Grey),
 
+            Phase.HarkonnenRedrawingTraitors => Status(game,
+                Express("You may set aside traitor cards of your own leaders and draw replacements, or pass."),
+                Express(Faction.Black, " are deciding whether to redraw their traitors..."),
+                Faction.Black),
+
+            Phase.GuildSettingUp => Status(game,
+                Express("You may ship forces from reserves before the first storm, or pass."),
+                Express(Faction.Orange, " are deciding about shipping forces before the first storm..."),
+                Faction.Orange),
+
+            Phase.BlueAccompaniesSetup => Status(game,
+                Express("Do you wish to accompany the latest shipment?"),
+                Express(Faction.Blue, " are thinking about accompanying the latest shipment..."),
+                Faction.Blue),
+
+            Phase.BlueIntrudedBySetup or Phase.BlueIntrudedByAllyRidingMonster => Status(game,
+                Express("Please decide how to respond to the intrusion in ", game.LastShipmentOrMovement?.To?.Territory, "; be fighters or advisors?"),
+                Express(Faction.Blue, " are deciding how to respond to the intrusion in ", game.LastShipmentOrMovement?.To?.Territory, "..."),
+                Faction.Blue),
+
             Phase.HmsPlacement => Status(game,
                 Express("Please position the Hidden Mobile Stronghold."),
                 Express(Faction.Grey, " are positioning the Hidden Mobile Stronghold..."),
@@ -218,6 +238,10 @@ public class GameStatus
                 "Please dial a number to determine storm movement.",
                 "Storm movement is being determined...",
                 game.FactionsInPlay.Where(f => game.HasBattleWheel.Contains(f) && !game.HasActedOrPassed.Contains(f)).ToList()),
+
+            Phase.BeforeStormCard => Status(
+                Express("Factions may now use ", TreacheryCardType.Metheor, " or ", TreacheryCardType.StormSpell, " before the storm card is revealed..."),
+                Express("Waiting for the host to reveal the storm card...")),
 
             Phase.MetheorAndStormSpell => Status(Express("Factions may now use ", TreacheryCardType.Metheor, " or ", TreacheryCardType.StormSpell, "...")),
 
@@ -239,6 +263,21 @@ public class GameStatus
                 Express("Please decide where to travel with ", Concept.Monster, "."),
                 Express(Faction.Yellow, " are deciding where to travel with ", Concept.Monster, "..."),
                 Faction.Yellow),
+
+            Phase.SecondEditionWormPlacement => Status(game,
+                Express("Please decide where to let ", Concept.Monster, " appear."),
+                Express(Faction.Yellow, " are deciding where to let ", Concept.Monster, " appear..."),
+                Faction.Yellow),
+
+            Phase.AllyRidingMonster => Status(game,
+                Express("You may travel with ", Concept.Monster, ", or pass."),
+                Express(game.GetPlayer(Faction.Yellow)?.Ally, " are deciding about travelling with ", Concept.Monster, "..."),
+                game.GetPlayer(Faction.Yellow)?.Ally),
+
+            Phase.LittleMakerPlacement => Status(
+                Express("Please decide where Little Maker places ", Concept.Resource, "."),
+                Express(game.LastPlayerInStormOrder.Faction, " are deciding where Little Maker places ", Concept.Resource, "..."),
+                game.LastPlayerInStormOrder),
 
             Phase.BlueIntrudedByYellowRidingMonsterA or Phase.BlueIntrudedByYellowRidingMonsterB => Status(game,
                 Express("Please decide what to do in response to an intrusion of ", game.LastShipmentOrMovement!.To?.Territory, "; be fighters or advisors?"),
@@ -521,6 +560,18 @@ public class GameStatus
                 "You may replace an unrevealed Face Dancer with a new one from the Traitor Deck.",
                 "Waiting for a Face Dancer to be replaced...",
                 Faction.Purple),
+
+            /* Second Edition */
+
+            Phase.KaramaResponse => Status(
+                Express("You may use ", TreacheryCardType.Karma, " to prevent ", game.PendingKaramaAdvantage, ", or pass."),
+                Express("Factions may use ", TreacheryCardType.Karma, " to prevent ", game.PendingKaramaAdvantage, "..."),
+                game.Players.Where(p => game.KaramaResponders.Contains(p.Faction)).ToList()),
+
+            Phase.VendettaReturningCards => Status(game,
+                Express("Please select a card to return to each faction you took a card from with Vendetta."),
+                Express(Faction.Black, " are returning cards taken with Vendetta..."),
+                Faction.Black),
 
             Phase.Contemplate => Status("Check for victories?", "Waiting for the host to start determining victories..."),
 

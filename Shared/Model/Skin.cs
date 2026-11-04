@@ -18,7 +18,7 @@ public class Skin : IDescriber
     
     // ReSharper disable InconsistentNaming
 
-    public const int LatestVersion = 151;
+    public const int LatestVersion = 152;
 
     public int Version;
 
@@ -48,6 +48,7 @@ public class Skin : IDescriber
     public Dictionary<int, string> TreacheryCardImage_URL = [];
     public Dictionary<TechToken, string> TechTokenDescription_STR = [];
     public Dictionary<int, string> ResourceCardImage_URL = [];
+    public Dictionary<StormCard, string> StormCardImage_URL = [];
     public Dictionary<LeaderSkill, string> LeaderSkillCardName_STR = [];
     public Dictionary<LeaderSkill, string> LeaderSkillCardImage_URL = [];
     public Dictionary<int, string> StrongholdCardName_STR = [];
@@ -1155,8 +1156,9 @@ public class Skin : IDescriber
 
     public string GetImageUrl(TreacheryCard? c)
     {
-        if (c?.SkinId == 200) return InformationCardImage("Solaris", "Second Edition");
-        return c != null ? GetLabel(TreacheryCardImage_URL, c.SkinId) : "";
+        if (c == null) return "";
+        if (c.SkinId == 200 && !TreacheryCardImage_URL.ContainsKey(200)) return InformationCardImage("Solaris", "Second Edition");
+        return GetLabel(TreacheryCardImage_URL, c.SkinId);
     }
 
     public string GetImageUrl(World w)
@@ -1171,13 +1173,10 @@ public class Skin : IDescriber
 
     public string GetImageUrl(ResourceCard? c)
     {
-        if (c is { SkinId: >= 200 and <= 210 })
-            return DefaultSkin.DEFAULT_ART_LOCATION + "/art/secondedition/spice-" + c.SkinId + ".png";
         return c != null ? GetLabel(ResourceCardImage_URL, c.SkinId) : "";
     }
 
-    public string GetImageUrl(StormCard card)
-        => DefaultSkin.DEFAULT_ART_LOCATION + "/art/secondedition/storm-" + (int)card + ".png";
+    public string GetImageUrl(StormCard card) => GetLabel(StormCardImage_URL, card);
 
     private static string InformationCardImage(string title, string subtitle)
     {
@@ -1205,10 +1204,9 @@ public class Skin : IDescriber
             return GetLabel(TreacheryCardImage_URL, h.SkinId);
         if (h is Messiah)
             return Messiah_URL;
-        if (h is Leader { Id: >= 1100 })
-            return InformationCardImage(Describe(h), h.Value.ToString());
         return GetLabel(PersonImage_URL, h.SkinId);
     }
+
     public string GetImageUrl(Faction faction)
     {
         return GetLabel(FactionImage_URL, faction);
@@ -1740,6 +1738,7 @@ public class Skin : IDescriber
         toFix.TreacheryCardImage_URL = FixDictionary(toFix.TreacheryCardImage_URL, donor.TreacheryCardImage_URL);
         toFix.TechTokenDescription_STR = FixDictionary(toFix.TechTokenDescription_STR, donor.TechTokenDescription_STR);
         toFix.ResourceCardImage_URL = FixDictionary(toFix.ResourceCardImage_URL, donor.ResourceCardImage_URL);
+        toFix.StormCardImage_URL = FixDictionary(toFix.StormCardImage_URL, donor.StormCardImage_URL);
         toFix.LeaderSkillCardName_STR = FixDictionary(toFix.LeaderSkillCardName_STR, donor.LeaderSkillCardName_STR);
         toFix.LeaderSkillCardImage_URL = FixDictionary(toFix.LeaderSkillCardImage_URL, donor.LeaderSkillCardImage_URL);
         toFix.StrongholdCardName_STR = FixDictionary(toFix.StrongholdCardName_STR, donor.StrongholdCardName_STR);
