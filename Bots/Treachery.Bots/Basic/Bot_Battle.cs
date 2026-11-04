@@ -11,6 +11,38 @@ namespace Treachery.Bots;
 
 public partial class BasicBot
 {
+    protected virtual Karma? DetermineKaramaResponseKarma()
+    {
+        if (Game.CurrentPhase != Phase.KaramaResponse || !ShouldCancelPendingKaramaAdvantage()) return null;
+
+        var card = Karma.ValidKarmaCards(Game, Player).OrderBy(c => CardQuality(c, Player)).FirstOrDefault();
+        return card == null
+            ? null
+            : new Karma(Game, Faction) { Card = card, Prevented = Game.PendingKaramaAdvantage };
+    }
+
+    protected virtual bool ShouldCancelPendingKaramaAdvantage()
+    {
+        var battle = Game.CurrentBattle;
+        if (battle == null) return false;
+
+        var participant = battle.IsInvolved(Player) ? Player : AlliedPlayer;
+        if (participant == null || !battle.IsInvolved(participant)) return false;
+
+        var opponent = battle.OpponentOf(participant);
+        if (opponent == null) return false;
+
+        return Game.PendingKaramaAdvantage switch
+        {
+            FactionAdvantage.GreenBattlePlanPrescience =>
+                opponent.Faction == Faction.Green || opponent.Ally == Faction.Green,
+            FactionAdvantage.BlueUsingVoice =>
+                Game.CurrentVoice is { } voice &&
+                (voice.Initiator == opponent.Faction || voice.Initiator == opponent.Ally),
+            _ => false
+        };
+    }
+
     protected virtual KaramaResponsePassed DetermineKaramaResponsePassed() => new(Game, Faction);
 
     protected virtual VendettaStarted? DetermineVendettaStarted()
