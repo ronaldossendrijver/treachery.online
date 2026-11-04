@@ -515,6 +515,11 @@ internal static class HistoricalComponentDriver
             try
             {
                 value = source.GetValue(historicalEvent);
+                if (historicalEvent is KarmaPrescience { Target: Faction.None } karmaPrescience &&
+                    source.Name == nameof(KarmaPrescience.Target))
+                {
+                    value = karmaPrescience.EffectiveTarget;
+                }
             }
             catch
             {

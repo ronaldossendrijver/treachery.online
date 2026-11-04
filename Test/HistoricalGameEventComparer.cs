@@ -101,6 +101,11 @@ internal static class HistoricalGameEventComparer
             json.Remove("_targetId");
         }
 
+        if (gameEvent is KarmaPrescience karmaPrescience)
+        {
+            json[nameof(KarmaPrescience.Target)] = (int)karmaPrescience.EffectiveTarget;
+        }
+
         if (gameEvent is PlacementEvent placement)
         {
             json["_forceLocations"] = PlacementEvent.ForceLocationsString(
