@@ -413,6 +413,7 @@ public partial class BasicBot
         var result = new VoicePlan
         {
             Battle = battle,
+            Voice = new Voice(Game, p.Faction) { Passed = true },
             PlayerHeroWillCertainlySurvive = false,
             OpponentHeroWillCertainlyBeZero = false
         };
@@ -665,7 +666,13 @@ public partial class BasicBot
             var category = Voice.ValidTypes(Game).FirstOrDefault(candidate =>
                 Voice.IsVoicedBy(Game, true, must, type, candidate) ||
                 Voice.IsVoicedBy(Game, false, must, type, candidate));
-            if (category == TreacheryCardType.None) return result;
+            if (category == TreacheryCardType.None)
+            {
+                result.Voice = new Voice(Game, p.Faction) { Passed = true };
+                result.PlayerHeroWillCertainlySurvive = false;
+                result.OpponentHeroWillCertainlyBeZero = false;
+                return result;
+            }
             type = category;
         }
 

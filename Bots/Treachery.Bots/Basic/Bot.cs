@@ -173,6 +173,7 @@ public partial class BasicBot(Game game, Player player, BotParameters param) : I
             Do(DetermineHarkonnenTraitorsRedrawn, ref action, events) ||
             Do(DetermineLittleMakerPlaced, ref action, events) ||
             Do(DetermineAllyRidesMonster, ref action, events) ||
+            Do(DetermineKaramaResponseKarma, ref action, events) ||
             Do(DetermineKaramaResponsePassed, ref action, events) ||
 
             //Yellow

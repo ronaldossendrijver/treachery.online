@@ -7,6 +7,39 @@ namespace Treachery.Test;
 public sealed class VoiceTests
 {
     [TestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public void BotPassesWhenKnownCheapHeroCannotBeVoicedByCategory(bool secondEdition)
+    {
+        var game = CreateBattle(Faction.Blue);
+        if (secondEdition)
+            game.Rules.AddRange([Rule.SE_Core, Rule.SE_VoiceByCategory]);
+        var blue = game.GetPlayer(Faction.Blue)!;
+        var green = game.GetPlayer(Faction.Green)!;
+        var cheapHero = TreacheryCardManager.Items.First(card => card.Type == TreacheryCardType.Mercenary);
+        green.TreacheryCards.Add(cheapHero);
+        blue.KnownCards.Add(cheapHero);
+        var bot = new BasicBot(game, blue, BotParameters.GetDefaultParameters(Faction.Blue));
+
+        var action = bot.DetermineHighPriorityInPhaseAction(game.GetApplicableEvents(blue, false));
+
+        var voice = Assert.IsInstanceOfType<Voice>(action);
+        Assert.AreEqual(secondEdition, voice.Passed);
+        if (!secondEdition)
+        {
+            Assert.AreEqual(TreacheryCardType.Mercenary, voice.Type);
+            Assert.IsTrue(voice.Must);
+        }
+        Assert.AreSame(game, voice.Game);
+        Assert.IsNotNull(voice.GetMessage());
+        Assert.IsNull(voice.Validate());
+        Assert.AreEqual(0, bot.ExceptionCount);
+        Assert.IsEmpty(bot.DrainInvalidDecisions());
+        Assert.IsNull(voice.Execute(true, true));
+        Assert.AreEqual(secondEdition, game.VoiceWasPassed);
+    }
+
+    [TestMethod]
     [DataRow(Faction.Blue)]
     [DataRow(Faction.White)]
     public void PassingVoiceResolvesTheDecisionWithoutUsingThePower(Faction faction)
