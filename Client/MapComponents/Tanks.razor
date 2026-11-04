@@ -70,7 +70,7 @@
         if (p.Faction == Faction.Green && !Game.MessiahIsAlive)
         {
             <MapImage X="@(x)" Y="@(y)" Diameter="@(0.5f * leaderDiameter)"
-                   Src="@Client.CurrentSkin.GetMessiahImageUrl(Client.Game)"
+                   Src="@Client.CurrentSkin.Messiah_URL"
                    ShadowColor="@Client.CurrentSkin.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" Popover="@Client.CurrentSkin.Describe(Concept.Messiah)"/>
             
             y += Spacing * leaderDiameter;

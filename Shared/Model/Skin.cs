@@ -18,7 +18,7 @@ public class Skin : IDescriber
     
     // ReSharper disable InconsistentNaming
 
-    public const int LatestVersion = 151;
+    public const int LatestVersion = 152;
 
     public int Version;
 
@@ -48,6 +48,7 @@ public class Skin : IDescriber
     public Dictionary<int, string> TreacheryCardImage_URL = [];
     public Dictionary<TechToken, string> TechTokenDescription_STR = [];
     public Dictionary<int, string> ResourceCardImage_URL = [];
+    public Dictionary<StormCard, string> StormCardImage_URL = [];
     public Dictionary<LeaderSkill, string> LeaderSkillCardName_STR = [];
     public Dictionary<LeaderSkill, string> LeaderSkillCardImage_URL = [];
     public Dictionary<int, string> StrongholdCardName_STR = [];
@@ -617,7 +618,7 @@ public class Skin : IDescriber
             : "";
 
         return $"<div class='hero-popover' style='--hero-color:{color}'>" +
-               $"<div class='hero-popover-main'><div class='hero-popover-disc'><img src='{GetImageUrl(h, g)}' alt=''/></div>" +
+               $"<div class='hero-popover-main'><div class='hero-popover-disc'><img src='{GetImageUrl(h)}' alt=''/></div>" +
                $"<div class='hero-popover-info'><div class='hero-popover-name'>{Encode(Describe(h))}</div>{faction}{stats}{status}</div></div>" +
                $"{skillPart}</div>";
     }
@@ -630,8 +631,6 @@ public class Skin : IDescriber
 
     private string GetImageHoverHtml(string imageUrl)
         => $"<img src='{imageUrl}' width=300 class='ui-img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/>";
-
-    public string GetImageUrl(object obj, Game? game) => obj is IHero h ? GetImageUrl(h, game) : GetImageUrl(obj);
 
     public string GetImageUrl(object obj)
     {
@@ -1157,8 +1156,9 @@ public class Skin : IDescriber
 
     public string GetImageUrl(TreacheryCard? c)
     {
-        if (c?.SkinId == 200) return InformationCardImage("Solaris", "Second Edition");
-        return c != null ? GetLabel(TreacheryCardImage_URL, c.SkinId) : "";
+        if (c == null) return "";
+        if (c.SkinId == 200 && !TreacheryCardImage_URL.ContainsKey(200)) return InformationCardImage("Solaris", "Second Edition");
+        return GetLabel(TreacheryCardImage_URL, c.SkinId);
     }
 
     public string GetImageUrl(World w)
@@ -1173,13 +1173,10 @@ public class Skin : IDescriber
 
     public string GetImageUrl(ResourceCard? c)
     {
-        if (c is { SkinId: >= 200 and <= 210 })
-            return DefaultSkin.DEFAULT_ART_LOCATION + "/art/secondedition/spice-" + c.SkinId + ".png";
         return c != null ? GetLabel(ResourceCardImage_URL, c.SkinId) : "";
     }
 
-    public string GetImageUrl(StormCard card)
-        => DefaultSkin.DEFAULT_ART_LOCATION + "/art/secondedition/storm-" + (int)card + ".png";
+    public string GetImageUrl(StormCard card) => GetLabel(StormCardImage_URL, card);
 
     private static string InformationCardImage(string title, string subtitle)
     {
@@ -1209,12 +1206,6 @@ public class Skin : IDescriber
             return Messiah_URL;
         return GetLabel(PersonImage_URL, h.SkinId);
     }
-
-    public string GetImageUrl(IHero? h, Game? game) => h is Messiah ? GetMessiahImageUrl(game) : GetImageUrl(h);
-
-    public string GetMessiahImageUrl(Game? game) => game is { SecondEdition: true } ? SecondEditionMessiah_URL : Messiah_URL;
-
-    public const string SecondEditionMessiah_URL = DefaultSkin.DEFAULT_ART_LOCATION + "/art/secondedition/messiah.png";
 
     public string GetImageUrl(Faction faction)
     {
@@ -1747,6 +1738,7 @@ public class Skin : IDescriber
         toFix.TreacheryCardImage_URL = FixDictionary(toFix.TreacheryCardImage_URL, donor.TreacheryCardImage_URL);
         toFix.TechTokenDescription_STR = FixDictionary(toFix.TechTokenDescription_STR, donor.TechTokenDescription_STR);
         toFix.ResourceCardImage_URL = FixDictionary(toFix.ResourceCardImage_URL, donor.ResourceCardImage_URL);
+        toFix.StormCardImage_URL = FixDictionary(toFix.StormCardImage_URL, donor.StormCardImage_URL);
         toFix.LeaderSkillCardName_STR = FixDictionary(toFix.LeaderSkillCardName_STR, donor.LeaderSkillCardName_STR);
         toFix.LeaderSkillCardImage_URL = FixDictionary(toFix.LeaderSkillCardImage_URL, donor.LeaderSkillCardImage_URL);
         toFix.StrongholdCardName_STR = FixDictionary(toFix.StrongholdCardName_STR, donor.StrongholdCardName_STR);

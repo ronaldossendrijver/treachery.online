@@ -233,7 +233,7 @@
                                     @if (shownPlayer.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah))
                                     {
                                         <span class="player-panel-faction-note">
-                                            <img src="@Client.CurrentSkin.GetMessiahImageUrl(Client.Game)" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt="" />
+                                            <img src="@Client.CurrentSkin.Messiah_URL" title="@Client.CurrentSkin.Describe(Concept.Messiah)" alt="" />
                                             @if (shownPlayer.TotalForcesKilledInBattle >= 7)
                                             {
                                                 @(shownPlayer.MessiahAvailable ? $"{Client.CurrentSkin.Describe(Concept.Messiah)} available" : $"{Client.CurrentSkin.Describe(Concept.Messiah)} has been killed")

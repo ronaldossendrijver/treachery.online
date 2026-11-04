@@ -74,7 +74,7 @@
                     @if (shown.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah))
                     {
                         <div class="tracker-stat" title="@Client.CurrentSkin.Describe(Concept.Messiah)">
-                            <img width="24" height="24" src="@Client.CurrentSkin.GetMessiahImageUrl(Client.Game)" alt=""/>
+                            <img width="24" height="24" src="@Client.CurrentSkin.Messiah_URL" alt=""/>
                             <div>
                                 <strong>@MessiahStatus(shown)</strong>
                                 <span>@MessiahDetail(shown)</span>

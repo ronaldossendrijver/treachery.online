@@ -339,7 +339,18 @@ public static class DefaultSkin
                 [37] = DEFAULT_ART_LOCATION + "/art/HabbanyaErg.gif",
                 [39] = DEFAULT_ART_LOCATION + "/art/WindPassNorth.gif",
                 [40] = DEFAULT_ART_LOCATION + "/art/HabbanyaRidgeFlat.gif",
-                [98] = DEFAULT_ART_LOCATION + "/art/Shai-Hulud.gif"
+                [98] = DEFAULT_ART_LOCATION + "/art/Shai-Hulud.gif",
+                [200] = DEFAULT_ART_LOCATION + "/art/secondedition/spice-200.png",
+                [201] = DEFAULT_ART_LOCATION + "/art/secondedition/spice-201.png",
+                [202] = DEFAULT_ART_LOCATION + "/art/secondedition/spice-202.png",
+                [203] = DEFAULT_ART_LOCATION + "/art/secondedition/spice-203.png",
+                [204] = DEFAULT_ART_LOCATION + "/art/secondedition/spice-204.png",
+                [205] = DEFAULT_ART_LOCATION + "/art/secondedition/spice-205.png",
+                [206] = DEFAULT_ART_LOCATION + "/art/secondedition/spice-206.png",
+                [207] = DEFAULT_ART_LOCATION + "/art/secondedition/spice-207.png",
+                [208] = DEFAULT_ART_LOCATION + "/art/secondedition/spice-208.png",
+                [209] = DEFAULT_ART_LOCATION + "/art/secondedition/spice-209.png",
+                [210] = DEFAULT_ART_LOCATION + "/art/secondedition/spice-210.png"
             }
             .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
                 {
@@ -356,6 +367,19 @@ public static class DefaultSkin
                     [100] = DEFAULT_ART_LOCATION + "/art/GreatMaker.gif"
                 }
             ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
+
+        StormCardImage_URL = new Dictionary<StormCard, string>
+        {
+            [StormCard.Zero] = DEFAULT_ART_LOCATION + "/art/secondedition/storm-10.png",
+            [StormCard.One] = DEFAULT_ART_LOCATION + "/art/secondedition/storm-11.png",
+            [StormCard.Two] = DEFAULT_ART_LOCATION + "/art/secondedition/storm-12.png",
+            [StormCard.Three] = DEFAULT_ART_LOCATION + "/art/secondedition/storm-13.png",
+            [StormCard.Four] = DEFAULT_ART_LOCATION + "/art/secondedition/storm-14.png",
+            [StormCard.Five] = DEFAULT_ART_LOCATION + "/art/secondedition/storm-15.png",
+            [StormCard.Six] = DEFAULT_ART_LOCATION + "/art/secondedition/storm-16.png",
+            [StormCard.Dial] = DEFAULT_ART_LOCATION + "/art/secondedition/storm-20.png",
+            [StormCard.NextFactionMarker] = DEFAULT_ART_LOCATION + "/art/secondedition/storm-30.png"
+        },
 
         PersonName_STR = new Dictionary<int, string>
             {
