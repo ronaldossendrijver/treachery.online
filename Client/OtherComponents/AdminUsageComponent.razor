@@ -100,31 +100,6 @@
                 </div>
             }
 
-            <div class="admin-table-wrap">
-                <table class="admin-table">
-                    <thead>
-                    <tr>
-                        <th>Period</th>
-                        @foreach (var m in Metrics)
-                        {
-                            <th>@m.Label</th>
-                        }
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var period in Enumerable.Reverse(stats.Periods))
-                    {
-                        <tr @key="period.PeriodStart">
-                            <td data-label="Period" class="admin-nowrap admin-strong">@FormatPeriod(period)</td>
-                            @foreach (var m in Metrics)
-                            {
-                                <td data-label="@m.Label">@m.Value(period)</td>
-                            }
-                        </tr>
-                    }
-                    </tbody>
-                </table>
-            </div>
         }
     </div>
 </section>
