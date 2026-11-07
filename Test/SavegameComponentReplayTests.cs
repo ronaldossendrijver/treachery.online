@@ -41,7 +41,7 @@ public sealed class SavegameComponentReplayTests
         Parallel.ForEach(files, po, file =>
         {
             var state = GameState.Load(File.ReadAllText(file));
-            if (state.Version < Game.LatestVersion - 10)
+            if (state.Version < Game.LatestVersion - 12)
             {
                 return;
             }

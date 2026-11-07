@@ -914,41 +914,24 @@ public partial class BasicBot
     protected virtual BrownRemoveForce? DetermineBrownRemoveForce()
     {
         var opponents = WinningOpponentsIWishToAttack(20, true);
+        var validLocations = BrownRemoveForce.ValidLocations(Game).ToHashSet();
+        Location[] strongholds =
+        [
+            Game.Map.Carthag, Game.Map.Arrakeen, Game.Map.TueksSietch,
+            Game.Map.SietchTabr, Game.Map.HabbanyaSietch, Game.Map.HiddenMobileStronghold
+        ];
 
-        var stronghold = Game.Map.Carthag;
-        var opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold)?.TotalAmountOfForces == 1);
-
-        if (opponentWithOneBattalionInStronghold == null)
+        foreach (var stronghold in strongholds.Where(validLocations.Contains))
         {
-            stronghold = Game.Map.Arrakeen;
-            opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold)?.TotalAmountOfForces == 1);
+            var opponent = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold)?.TotalAmountOfForces == 1);
+            if (opponent != null)
+                return new BrownRemoveForce(Game, Faction)
+                {
+                    Location = stronghold,
+                    Target = opponent.Faction,
+                    SpecialForce = opponent.SpecialForcesIn(stronghold) > 0
+                };
         }
-
-        if (opponentWithOneBattalionInStronghold == null)
-        {
-            stronghold = Game.Map.TueksSietch;
-            opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold)?.TotalAmountOfForces == 1);
-        }
-
-        if (opponentWithOneBattalionInStronghold == null)
-        {
-            stronghold = Game.Map.SietchTabr;
-            opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold)?.TotalAmountOfForces == 1);
-        }
-
-        if (opponentWithOneBattalionInStronghold == null)
-        {
-            stronghold = Game.Map.HabbanyaSietch;
-            opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold)?.TotalAmountOfForces == 1);
-        }
-
-        if (opponentWithOneBattalionInStronghold == null)
-        {
-            stronghold = Game.Map.HiddenMobileStronghold;
-            opponentWithOneBattalionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold)?.TotalAmountOfForces == 1);
-        }
-
-        if (opponentWithOneBattalionInStronghold != null) return new BrownRemoveForce(Game, Faction) { Location = stronghold, Target = opponentWithOneBattalionInStronghold.Faction, SpecialForce = opponentWithOneBattalionInStronghold.SpecialForcesIn(stronghold) > 0 };
 
         return null;
     }

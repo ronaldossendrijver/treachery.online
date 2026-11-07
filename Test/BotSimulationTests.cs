@@ -23,7 +23,7 @@ public class BotSimulationTests : GameSimulationTestBase
     [DoNotParallelize]
     public void TestSecondEditionBots()
     {
-        RunBotTests(Ruleset.SecondEdition, 8, 10, 30);
-        RunBotTests(Ruleset.SecondEdition, 8, 10, 30, classicSpiceDialing: true);
+        RunBotTests(Ruleset.SecondEdition, 1024, 10, 30);
+        RunBotTests(Ruleset.SecondEdition, 1024, 10, 30, classicSpiceDialing: true);
     }
 }

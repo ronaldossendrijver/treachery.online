@@ -343,7 +343,7 @@ public abstract class GameSimulationTestBase
     }
 
     protected void RunBotTests() =>
-        RunBotTests(Ruleset.AllExpansionsAdvancedGame, 256, 10, 10);
+        RunBotTests(Ruleset.AllExpansionsAdvancedGame, 4096, 10, 10);
 
     protected void RunBotTests(Ruleset ruleset, int nrOfGames, int nrOfTurns, int timeout, bool classicSpiceDialing = false)
     {

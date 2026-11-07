@@ -67,6 +67,8 @@ Namespace treachery.online.Client holds the UI of the application. It is a Blazo
 
 Account creation and profile updates are validated on the server before saving: usernames and player names must contain 4-40 characters after trimming, email addresses must be valid bare addresses no longer than 254 characters, and password hashes must be 64 hexadecimal characters (SHA-256). An empty password on a profile update retains the current password. Game names are limited to 128 characters and game password hashes are optional, but otherwise use the same SHA-256 format. Existing oversized player names must be corrected before creating, scheduling, joining, or observing a new game. The profile editor displays rejected updates without discarding the entered values. SQLite does not enforce the model's string-length annotations; these checks are explicit at the hub entry points. Serialized game state and participation remain uncapped by these short-field limits.
 
+Client error reporting excludes JavaScript failures originating from browser-extension scripts, using the script filename or, when unavailable, the first stack frame. Application errors remain reportable even when an extension appears later in the stack. Expected media-fetch aborts are also excluded.
+
 When playing a game, the UI is divided into 3 sections: the Map, an Actions section showing the GameEvents that can be executed by the player based on the local Game state and an Information-section, containing what is behing the player shield and the Log. An Observer has the same sections, except for the Actions section.
 
 On phones, tap the Game controls handle or swipe it up/down to open/close the

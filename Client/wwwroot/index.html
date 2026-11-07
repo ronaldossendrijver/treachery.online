@@ -827,6 +827,15 @@
 
         window.treacheryErrorLogging = (() => {
             let dotNetReference;
+            const isBrowserExtensionError = (filename, stack) => {
+                const extensionUrl = /^(?:chrome|moz|safari(?:-web)?|ms-browser)-extension:\/\//i;
+                if (filename) return extensionUrl.test(filename);
+                // A later extension caller must not hide an error thrown by application code.
+                const frame = String(stack || "").split("\n")
+                    .find(line => /^\s*at\s+|@.+:\d+(?::\d+)?\s*$/.test(line));
+                const location = frame && frame.match(/(?:\(|@|\bat\s+(?:async\s+)?)([a-z][a-z\d+.-]*:\/\/)/i);
+                return location != null && extensionUrl.test(location[1]);
+            };
             const report = (source, message, details, lineNumber, columnNumber) => {
                 if (source === "JavaScript" && isExpectedMediaFetchAbort(message)) return;
                 if (dotNetReference == null) return;
@@ -842,20 +851,24 @@
                 ).catch(error => console.warn("Unable to report client error to treachery.online", error));
             };
             const onError = event => {
+                const stack = event.error && event.error.stack || "";
+                if (isBrowserExtensionError(event.filename, stack)) return;
                 report(
                     "JavaScript",
                     event.message || "JavaScript resource failed to load",
-                    event.error && event.error.stack || "",
+                    stack,
                     event.lineno,
                     event.colno
                 );
             };
             const onUnhandledRejection = event => {
                 const reason = event.reason;
+                const stack = reason && reason.stack || "";
+                if (isBrowserExtensionError("", stack)) return;
                 report(
                     "JavaScript",
                     reason && reason.message || String(reason || "Unhandled promise rejection"),
-                    reason && reason.stack || ""
+                    stack
                 );
             };
 
