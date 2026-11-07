@@ -223,6 +223,9 @@ public partial class BasicBot
 
     protected virtual  MovedBattalion? ConstructMove(Location to, Location from, Battalion battalion)
     {
+        if (!AllyDoesntBlock(to.Territory))
+            return null;
+
         if (Faction == Faction.White && Game.HasLowThreshold(Faction.White) && battalion.AmountOfSpecialForces != 0)
             return null;
         return new MovedBattalion { To = to, From = from, Battalion = battalion };
