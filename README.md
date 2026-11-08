@@ -71,6 +71,10 @@ Client error reporting excludes JavaScript failures originating from browser-ext
 
 When playing a game, the UI is divided into 3 sections: the Map, an Actions section showing the GameEvents that can be executed by the player based on the local Game state and an Information-section, containing what is behing the player shield and the Log. An Observer has the same sections, except for the Actions section.
 
+Hosts can open their own faction's player panel and use **Give spice** to give
+themselves spice from the bank. Self-gifts automatically use the bank; negative
+amounts return spice to it. For other factions, select the host-only bank checkbox.
+
 On phones, tap the Game controls handle or swipe it up/down to open/close the
 controls. When an action is due and the controls are hidden, the handle shows
 the turn indicator. Controls stay above battle wheels, and the map is aligned

@@ -687,7 +687,7 @@ public partial class Game
             if (ResourcesTransferred.CanBePlayed(this, player)) result.Add(typeof(ResourcesTransferred));
 
             if (Players.Count > 1 &&
-                Donated.ValidTargets(this, player).Any() &&
+                (isHost || Donated.ValidTargets(this, player).Any()) &&
                 (isHost || player.Resources > 0) &&
                 Donated.MayDonate(this, player) &&
                 (AggressorPlan == null || faction != AggressorPlan.Initiator) &&

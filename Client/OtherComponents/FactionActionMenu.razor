@@ -158,7 +158,7 @@
         !Client.IsObserver
         && Client.Actions.Contains(typeof(Donated))
         && Client.Player is { } player
-        && Donated.ValidTargets(Game, player).Contains(faction);
+        && (Client.IsHost || Donated.ValidTargets(Game, player).Contains(faction));
 
     private bool CanManageAlliance(Faction faction) =>
         !Client.IsObserver

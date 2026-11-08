@@ -29,7 +29,7 @@
             <SelectResourcesComponent @bind-Value="resources" Min="MinAmount" Max="MaxAmount" />
         </div>
 
-        @if (Game.Applicable(Rule.CardsCanBeTraded))
+        @if (!FromBank && Game.Applicable(Rule.CardsCanBeTraded))
         {
             <div class="ui-mt-1">
                 <SelectFromImageComponent @bind-Value="card" Values="Player.TreacheryCards" Required="false" ImageWidth="80" />
@@ -42,9 +42,15 @@
 
         @if (Client.IsHost)
         {
-            <CheckboxComponent @bind-Value="fromBank">
-                Host only: give from @Client.CurrentSkin.Describe(Concept.Resource) bank (you may select a negative amount to put that amount of @Client.CurrentSkin.Describe(Concept.Resource) from target faction in the bank)
-            </CheckboxComponent>
+            var bankDescription = $"Host only: give from {Client.CurrentSkin.Describe(Concept.Resource)} bank (you may select a negative amount to put that amount of {Client.CurrentSkin.Describe(Concept.Resource)} from target faction in the bank)";
+            @if (TargetFaction == Faction)
+            {
+                <div class="ui-mt-1">@bankDescription</div>
+            }
+            else
+            {
+                <CheckboxComponent @bind-Value="fromBank">@bankDescription</CheckboxComponent>
+            }
         }
         else
         {
@@ -66,13 +72,15 @@
 
     [Parameter] public Faction? TargetFaction { get; set; }
 
-    protected override Donated ConfirmedResult => new(Game, Faction) { Target = TargetFaction ?? target, Resources = resources, Card = card, FromBank = fromBank };
+    private bool FromBank => Client.IsHost && (fromBank || TargetFaction == Faction);
+
+    protected override Donated ConfirmedResult => new(Game, Faction) { Target = TargetFaction ?? target, Resources = resources, Card = card, FromBank = FromBank };
 
     private IEnumerable<Faction> Targets
     {
         get
         {
-            if (!fromBank)
+            if (!FromBank)
             {
                 return Donated.ValidTargets(Game, Player);
             }
@@ -81,7 +89,7 @@
         }
     }
 
-    private int MaxAmount => !fromBank ? Donated.MaxAmount(Player) : 99;
+    private int MaxAmount => !FromBank ? Donated.MaxAmount(Player) : 99;
 
-    private int MinAmount => !fromBank ? Donated.MinAmount(Game, Player) : -99;
+    private int MinAmount => !FromBank ? Donated.MinAmount(Game, Player) : -99;
 }
