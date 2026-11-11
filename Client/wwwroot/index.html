@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="no">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="Description" content="Online multiplayer game inspired by the Dune board game" />
+    <!-- Browser translation rewrites Blazor-owned DOM and can overflow in its injected script. -->
+    <meta name="google" content="notranslate" />
 
     <title>treachery.online</title>
 
@@ -836,8 +838,10 @@
                 const location = frame && frame.match(/(?:\(|@|\bat\s+(?:async\s+)?)([a-z][a-z\d+.-]*:\/\/)/i);
                 return location != null && extensionUrl.test(location[1]);
             };
-            const report = (source, message, details, lineNumber, columnNumber) => {
+            const report = (source, message, details, lineNumber, columnNumber, filename) => {
                 if (source === "JavaScript" && isExpectedMediaFetchAbort(message)) return;
+                if (message === "Script error." && !String(details || "").trim() &&
+                    !filename && !lineNumber && !columnNumber) return;
                 if (dotNetReference == null) return;
                 dotNetReference.invokeMethodAsync(
                     "ReportClientError",
@@ -858,7 +862,8 @@
                     event.message || "JavaScript resource failed to load",
                     stack,
                     event.lineno,
-                    event.colno
+                    event.colno,
+                    event.filename
                 );
             };
             const onUnhandledRejection = event => {

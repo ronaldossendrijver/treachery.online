@@ -124,6 +124,41 @@ test('preserves reporting when there is no script origin or error stack', () => 
     ]);
 });
 
+test('excludes detail-free Script error reports without suppressing browser diagnostics', () => {
+    const h = harness();
+    let prevented = false;
+    h.dispatch('error', {
+        message: 'Script error.', filename: '', lineno: 0, colno: 0, error: null,
+        preventDefault() { prevented = true; }
+    });
+    h.dispatch('unhandledrejection', {
+        reason: { message: 'Script error.', stack: '' },
+        preventDefault() { prevented = true; }
+    });
+    h.dispatch('unhandledrejection', { reason: 'Script error.' });
+    assert.equal(h.reports.length, 0);
+    assert.equal(prevented, false);
+});
+
+test('retains Script error reports with a stack, filename, line, or column', () => {
+    const h = harness();
+    const stack = 'run@https://treachery.online/app.js:10:20';
+    for (const details of [
+        { error: { stack } },
+        { filename: 'https://treachery.online/app.js' },
+        { lineno: 10 },
+        { colno: 20 }
+    ]) {
+        h.dispatch('error', { message: 'Script error.', ...details });
+    }
+    h.dispatch('unhandledrejection', { reason: { message: 'Script error.', stack } });
+    assert.equal(h.reports.length, 5);
+    assert.ok(h.reports.every(report => report[2] === 'Script error.'));
+    assert.equal(h.reports[0][3], stack);
+    assert.equal(h.reports[2][6], 10);
+    assert.equal(h.reports[3][7], 20);
+});
+
 test('continues to exclude expected media fetch aborts', () => {
     const h = harness();
     const abort = "The fetching process for the media resource was aborted by the user agent at the user's request.";
