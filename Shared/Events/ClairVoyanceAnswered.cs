@@ -54,6 +54,9 @@ public class ClairVoyanceAnswered : GameEvent
 
     protected override void ExecuteConcreteEvent()
     {
+        if (Game.LatestClairvoyance == null)
+            throw new InvalidEventException();
+        
         Game.LatestClairvoyanceQnA = new ClairVoyanceQandA(Game.LatestClairvoyance!, this);
 
         Log();
