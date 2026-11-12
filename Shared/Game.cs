@@ -880,7 +880,8 @@ public partial class Game
     }
 
     public bool AllyCanBecomeAdvisors(Player player, Location target)
-        => Applicable(Rule.SE_BlueAdvisors) && player.Ally == Faction.Blue &&
+        => player.HasAlly &&
+           Applicable(Rule.SE_BlueAdvisors) && player.Ally == Faction.Blue &&
            player.AlliedPlayer.ForcesIn(target.Territory) > 0;
 
     private Player? OwnerOf(IHero hero)
