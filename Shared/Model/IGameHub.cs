@@ -63,6 +63,12 @@ public interface IGameHub
     Task<VoidResult> RequestPerformBluePlacement(string userToken, string gameId, PerformBluePlacement e);
     Task<VoidResult> RequestEcazInitialPlacement(string userToken, string gameId, EcazInitialPlacement e);
     Task<VoidResult> RequestTraitorsSelected(string userToken, string gameId, TraitorsSelected e);
+    Task<VoidResult> RequestHarkonnenTraitorsRedrawn(string userToken, string gameId, HarkonnenTraitorsRedrawn e);
+    Task<VoidResult> RequestLittleMakerPlaced(string userToken, string gameId, LittleMakerPlaced e);
+    Task<VoidResult> RequestAllyRidesMonster(string userToken, string gameId, AllyRidesMonster e);
+    Task<VoidResult> RequestKaramaResponsePassed(string userToken, string gameId, KaramaResponsePassed e);
+    Task<VoidResult> RequestVendettaStarted(string userToken, string gameId, VendettaStarted e);
+    Task<VoidResult> RequestVendettaCardReturned(string userToken, string gameId, VendettaCardReturned e);
     Task<VoidResult> RequestStormSpellPlayed(string userToken, string gameId, StormSpellPlayed e);
     Task<VoidResult> RequestTestingStationUsed(string userToken, string gameId, TestingStationUsed e);
     Task<VoidResult> RequestTakeLosses(string userToken, string gameId, TakeLosses e);
