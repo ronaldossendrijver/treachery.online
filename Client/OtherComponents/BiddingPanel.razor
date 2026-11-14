@@ -172,7 +172,6 @@
         if (value && Client.BidAutoPassThreshold > Player.Resources)
         {
             Client.BidAutoPassThreshold = Math.Min(Player.Resources, 5);
-            StateHasChanged();
         }
     }
 

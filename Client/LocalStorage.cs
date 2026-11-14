@@ -23,22 +23,35 @@ public class LocalStorage
     public async Task SetAsync<T>(string key, T value)
     {
         var jsVal = value != null ? Utilities.Serialize(value) : null;
-        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", key, jsVal);
+        try
+        {
+            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", key, jsVal);
+        }
+        catch (Exception)
+        {
+            // Ignore errors
+        }
     }
 
     public async Task SetStringAsync(string key, string value)
     {
-        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", key, value);
+        try
+        {
+            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", key, value);
+        }
+        catch (Exception)
+        {
+            // Ignore errors
+        }
     }
 
     public async Task<T?> GetAsync<T>(string key)
     {
-        var val = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", key);
-
-        if (val == null) return default!;
-
         try
         {
+            var val = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", key);
+            if (val == null) return default!;
+            
             var result = Utilities.Deserialize<T>(val);
             return result;
         }
@@ -48,20 +61,16 @@ public class LocalStorage
         }
     }
 
-    public async Task<IEnumerable<string>> GetKeys()
-    {
-        return await _jsRuntime.InvokeAsync<string[]>("GetLocalStorageKeys");
-    }
-
     public async Task<string> GetStringAsync(string key)
     {
-        var val = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", key);
-        if (val == null) return default!;
-        return val;
-    }
-
-    public async Task RemoveAsync(string key)
-    {
-        await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", key);
+        try
+        {
+            var val = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", key);
+            return val ?? string.Empty;
+        }
+        catch (Exception)
+        {
+            return string.Empty;
+        }
     }
 }

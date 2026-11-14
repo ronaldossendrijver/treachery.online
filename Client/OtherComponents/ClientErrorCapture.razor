@@ -47,13 +47,16 @@
 
     public async ValueTask DisposeAsync()
     {
-        if (_reference == null)
+        if (_reference == null || !_started)
             return;
 
         try
         {
-            if (_started)
-                await JavaScript.InvokeVoidAsync("treacheryErrorLogging.stop");
+            await JavaScript.InvokeVoidAsync("treacheryErrorLogging.stop");
+        }
+        catch (JSException)
+        {
+            // Ignore errors during cleanup
         }
         finally
         {

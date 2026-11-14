@@ -296,13 +296,11 @@ else
     private async Task UpdateMaintenance()
     {
         Messages.Add(await Client.AdminUpdateMaintenance(MaintenanceDate));
-        StateHasChanged();
     }
     
     private async Task GetAdminInfo()
     {
         Messages.Add(await Client.GetAdminInfo());
-        StateHasChanged();
     }
 
     private Task LoadErrorLog() => RefreshErrorLog(true);
@@ -341,7 +339,6 @@ else
     private async Task PersistState()
     {
         Messages.Add(await Client.AdminPersistState());
-        StateHasChanged();
     }
     
     private async Task RestoreState()
@@ -350,13 +347,11 @@ else
             return;
 
         Messages.Add(await Client.AdminRestoreState());
-        StateHasChanged();
     }
 
     private async Task Close(GameInfo av)
     {
         Messages.Add(await Client.AdminCloseGame(av.GameId));
-        StateHasChanged();
     }
 
     private async Task Download(GameInfo av)
@@ -368,13 +363,11 @@ else
     private async Task DownloadBotDecisionGame(ErrorLogInfo error)
     {
         Messages.Add(await Client.AdminDownloadBotDecisionGame(error));
-        StateHasChanged();
     }
     
     private async Task Cancel(ScheduledGameInfo av)
     {
         Messages.Add(await Client.AdminCancelGame(av.ScheduledGameId));
-        StateHasChanged();
     }
     
     private async Task DeleteUser(UserInfo av)
@@ -383,6 +376,5 @@ else
             return;
 
         Messages.Add(await Client.AdminDeleteUser(av.Id));
-        StateHasChanged();
     }
 }

@@ -253,7 +253,6 @@
         if (ValidateLogin())
         {
             State = LoginComponentState.Loading;
-            StateHasChanged();
             
             var result = await Client.RequestLogin(_username, Support.GetHash(_password));
             if (result.Success)
@@ -273,7 +272,6 @@
         if (ValidateNewAccount())
         {
             State = LoginComponentState.Loading;
-            StateHasChanged();
             
             var result = await Client.RequestCreateUser(_newUsername, Support.GetHash(_newPassword), _newEmail, _newPlayerName);
             if (result.Success)
@@ -294,8 +292,7 @@
         if (ValidatePasswordReset())
         {
             State = LoginComponentState.Loading;
-            StateHasChanged();
-            
+
             var result = await Client.RequestPasswordReset(_passwordResetUsernameOrEmail);
             if (result.Success)
             {
@@ -315,7 +312,6 @@
         if (ValidateNewPassword())
         {
             State = LoginComponentState.Loading;
-            StateHasChanged();
             
             var result = await Client.RequestSetPassword(_resetUsername, _resetToken, Support.GetHash(_resetPassword));
             if (result.Success)
