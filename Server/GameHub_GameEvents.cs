@@ -65,6 +65,12 @@ public partial class GameHub
     public async Task<VoidResult> RequestPerformBluePlacement(string userToken, string gameId, PerformBluePlacement e) => await ProcessGameEvent(userToken, gameId, e);
     public async Task<VoidResult> RequestEcazInitialPlacement(string userToken, string gameId, EcazInitialPlacement e) => await ProcessGameEvent(userToken, gameId, e);
     public async Task<VoidResult> RequestTraitorsSelected(string userToken, string gameId, TraitorsSelected e) => await ProcessGameEvent(userToken, gameId, e);
+    public async Task<VoidResult> RequestHarkonnenTraitorsRedrawn(string userToken, string gameId, HarkonnenTraitorsRedrawn e) => await ProcessGameEvent(userToken, gameId, e);
+    public async Task<VoidResult> RequestLittleMakerPlaced(string userToken, string gameId, LittleMakerPlaced e) => await ProcessGameEvent(userToken, gameId, e);
+    public async Task<VoidResult> RequestAllyRidesMonster(string userToken, string gameId, AllyRidesMonster e) => await ProcessGameEvent(userToken, gameId, e);
+    public async Task<VoidResult> RequestKaramaResponsePassed(string userToken, string gameId, KaramaResponsePassed e) => await ProcessGameEvent(userToken, gameId, e);
+    public async Task<VoidResult> RequestVendettaStarted(string userToken, string gameId, VendettaStarted e) => await ProcessGameEvent(userToken, gameId, e);
+    public async Task<VoidResult> RequestVendettaCardReturned(string userToken, string gameId, VendettaCardReturned e) => await ProcessGameEvent(userToken, gameId, e);
     public async Task<VoidResult> RequestStormSpellPlayed(string userToken, string gameId, StormSpellPlayed e) => await ProcessGameEvent(userToken, gameId, e);
     public async Task<VoidResult> RequestTestingStationUsed(string userToken, string gameId, TestingStationUsed e) => await ProcessGameEvent(userToken, gameId, e);
     public async Task<VoidResult> RequestTakeLosses(string userToken, string gameId, TakeLosses e) => await ProcessGameEvent(userToken, gameId, e);

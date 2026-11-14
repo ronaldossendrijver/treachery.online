@@ -85,6 +85,31 @@ public class GameHubInputValidationTests
         $"{new string('a', 64)}@{new string('b', 63)}.{new string('c', 63)}.{new string('d', length - 197)}.com";
 
     [TestMethod]
+    [DataRow(typeof(HarkonnenTraitorsRedrawn))]
+    [DataRow(typeof(LittleMakerPlaced))]
+    [DataRow(typeof(AllyRidesMonster))]
+    [DataRow(typeof(KaramaResponsePassed))]
+    [DataRow(typeof(VendettaStarted))]
+    [DataRow(typeof(VendettaCardReturned))]
+    public async Task SecondEditionEventEndpointsMatchClientRequestsAndValidateAuthentication(Type eventType)
+    {
+        var methodName = $"Request{eventType.Name}";
+        Type[] parameterTypes = [typeof(string), typeof(string), eventType];
+        var contractMethod = typeof(IGameHub).GetMethod(methodName, parameterTypes);
+        var hubMethod = typeof(GameHub).GetMethod(methodName, parameterTypes);
+        Assert.IsNotNull(contractMethod, $"Missing hub contract for {eventType.Name}");
+        Assert.IsNotNull(hubMethod, $"Missing SignalR endpoint for {eventType.Name}");
+        Assert.AreEqual(typeof(Task<VoidResult>), hubMethod.ReturnType);
+
+        var request = Assert.IsInstanceOfType<Task<VoidResult>>(
+            hubMethod.Invoke(hub, [string.Empty, "test-game-id", Activator.CreateInstance(eventType)]));
+        var result = await request;
+
+        Assert.IsFalse(result.Success);
+        Assert.AreEqual(ErrorType.UserNotFound, result.Error);
+    }
+
+    [TestMethod]
     public async Task AdminErrorLogRejectsAnonymousRequestWithoutThrowing()
     {
         var result = await hub.GetAdminErrorLog(null!, null, null, null);
