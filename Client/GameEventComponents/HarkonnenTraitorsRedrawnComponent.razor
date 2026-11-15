@@ -5,7 +5,7 @@
     <Body>
         @foreach (var leader in HarkonnenTraitorsRedrawn.ValidLeaders(Player))
         {
-            <ChecklistItemComponent Value="leader" Values="Selected">@Name(leader)</ChecklistItemComponent>
+            <ChecklistItemComponent Value="leader" Values="Selected" Callback="StateHasChanged" />
         }
         <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" Pass="Pass" PassText="Keep all" />
     </Body>

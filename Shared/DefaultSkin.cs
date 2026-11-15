@@ -284,7 +284,8 @@ public static class DefaultSkin
                 [29] = DEFAULT_ART_LOCATION + "/art/JubbaCloak.gif",
                 [30] = DEFAULT_ART_LOCATION + "/art/Kulon.gif",
                 [31] = DEFAULT_ART_LOCATION + "/art/LaLaLa.gif",
-                [32] = DEFAULT_ART_LOCATION + "/art/TripToGamont.gif"
+                [32] = DEFAULT_ART_LOCATION + "/art/TripToGamont.gif",
+                [200] = DEFAULT_ART_LOCATION + "/art/secondedition/treachery-200.png"
             }
             .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
                 {

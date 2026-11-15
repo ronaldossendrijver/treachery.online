@@ -1850,9 +1850,13 @@ public class Skin : IDescriber
 
     private static Dictionary<TKey, TValue> FixDictionary<TKey, TValue>(Dictionary<TKey, TValue> toFix, Dictionary<TKey, TValue> donor) where TKey : notnull
     {
-        return donor.Keys.Any(k => !toFix.ContainsKey(k)) 
-            ? donor 
-            : toFix;
+        if (!donor.Keys.Any(k => !toFix.ContainsKey(k)))
+            return toFix;
+
+        var result = new Dictionary<TKey, TValue>(donor);
+        foreach (var (key, value) in toFix)
+            result[key] = value;
+        return result;
     }
 
     private static void FixValue<T>(ref T toFix, T donor)
