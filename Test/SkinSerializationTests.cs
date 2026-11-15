@@ -36,4 +36,17 @@ public class SkinSerializationTests
 
         Assert.AreEqual("This is not a valid skin file", exception.Message);
     }
+
+    [TestMethod]
+    public void LoadSkinFillsMissingCardArtworkFromDonorWithoutReplacingCustomArtwork()
+    {
+        const string customCardImage = "/custom/card.png";
+        var custom = new Skin { TreacheryCardImage_URL = { [1] = customCardImage } };
+
+        var loaded = Skin.Load(Utilities.Serialize(custom), DefaultSkin.Default);
+        var solaris = TreacheryCardManager.Items.First(card => card.Type == TreacheryCardType.Solaris);
+
+        Assert.AreEqual(customCardImage, loaded.GetImageUrl(TreacheryCardManager.Lookup.Find(1)));
+        Assert.AreEqual(DefaultSkin.Default.TreacheryCardImage_URL[200], loaded.GetImageUrl(solaris));
+    }
 }
