@@ -1,3 +1,4 @@
+using System.Reflection;
 using Treachery.Shared;
 using Treachery.Shared.Model;
 
@@ -78,6 +79,110 @@ public sealed class BeneGesseritMovementTests
     }
 
     [TestMethod]
+    public void WormRideFightersJoinExistingAdvisorsAsAdvisors()
+    {
+        var (game, blue, _, source, destination) = CreateWormRideGame();
+        blue.AddForces(source, 1, false);
+        blue.AddSpecialForces(destination, 1, false);
+        var ride = CreateRide(game, source, destination, 1, 0);
+
+        Assert.IsNull(ride.Validate());
+        Assert.IsNull(ride.Execute(false, true));
+        Assert.AreEqual(0, blue.ForcesIn(destination.Territory));
+        Assert.AreEqual(2, blue.SpecialForcesIn(destination.Territory));
+    }
+
+    [TestMethod]
+    public void WormRideCannotMoveAdvisorsIntoExistingFighters()
+    {
+        var (game, blue, _, source, destination) = CreateWormRideGame();
+        blue.AddSpecialForces(source, 1, false);
+        blue.AddForces(destination, 1, false);
+
+        var ride = CreateRide(game, source, destination, 0, 1);
+        Assert.IsNotNull(ride.Validate());
+        Assert.IsFalse(AllyRidesMonster.ValidTargets(game, blue, ride.ForceLocations).Contains(destination));
+    }
+
+    [TestMethod]
+    public void WormRideCannotCombineDifferentTypesInAnEmptyTerritory()
+    {
+        var (game, blue, _, source, destination) = CreateWormRideGame();
+        var otherSource = game.Map.Carthag;
+        game.SecondEditionRideTerritories.Add(otherSource.Territory);
+        blue.AddForces(source, 1, false);
+        blue.AddSpecialForces(otherSource, 1, false);
+        var forces = new Dictionary<Location, Battalion>
+        {
+            [source] = new(Faction.Blue, 1, 0, source),
+            [otherSource] = new(Faction.Blue, 0, 1, otherSource)
+        };
+        var ride = new AllyRidesMonster(game, Faction.Blue) { To = destination, ForceLocations = forces };
+
+        Assert.IsNotNull(ride.Validate());
+        Assert.IsFalse(AllyRidesMonster.ValidTargets(game, blue, forces).Contains(destination));
+    }
+
+    [TestMethod]
+    public void WormRideCanCombineDifferentTypesWithExistingAdvisors()
+    {
+        var (game, blue, _, source, destination) = CreateWormRideGame();
+        var otherSource = game.Map.Carthag;
+        game.SecondEditionRideTerritories.Add(otherSource.Territory);
+        blue.AddForces(source, 1, false);
+        blue.AddSpecialForces(otherSource, 1, false);
+        blue.AddSpecialForces(destination, 1, false);
+        var ride = new AllyRidesMonster(game, Faction.Blue)
+        {
+            To = destination,
+            ForceLocations = new Dictionary<Location, Battalion>
+            {
+                [source] = new(Faction.Blue, 1, 0, source),
+                [otherSource] = new(Faction.Blue, 0, 1, otherSource)
+            }
+        };
+
+        Assert.IsNull(ride.Validate());
+        Assert.IsNull(ride.Execute(false, true));
+        Assert.AreEqual(0, blue.ForcesIn(destination.Territory));
+        Assert.AreEqual(3, blue.SpecialForcesIn(destination.Territory));
+    }
+
+    [TestMethod]
+    public void BotSelectsAValidDestinationForMixedWormRiders()
+    {
+        var (game, blue, _, source, _) = CreateWormRideGame();
+        var otherSource = game.Map.Carthag;
+        game.SecondEditionRideTerritories.Add(otherSource.Territory);
+        blue.AddForces(source, 1, false);
+        blue.AddSpecialForces(otherSource, 1, false);
+        var bot = new BasicBot(game, blue, BotParameters.GetDefaultParameters(Faction.Blue));
+
+        var ride = Assert.IsInstanceOfType<AllyRidesMonster>(
+            bot.DetermineLowPriorityInPhaseAction([typeof(AllyRidesMonster)]));
+
+        Assert.IsFalse(ride.Passed);
+        Assert.IsNull(ride.Validate());
+        Assert.AreEqual(1, ride.ForcesAddedToLocation);
+        Assert.AreEqual(1, ride.SpecialForcesAddedToLocation);
+        Assert.IsGreaterThan(0, blue.SpecialForcesIn(ride.To!.Territory));
+    }
+
+    [TestMethod]
+    public void WormRidePreservesHistoricalBehavior()
+    {
+        var (game, blue, _, source, destination) = CreateWormRideGame(196);
+        blue.AddForces(source, 1, false);
+        blue.AddSpecialForces(destination, 1, false);
+        var ride = CreateRide(game, source, destination, 1, 0);
+
+        Assert.IsNull(ride.Validate());
+        Assert.IsNull(ride.Execute(false, true));
+        Assert.AreEqual(1, blue.ForcesIn(destination.Territory));
+        Assert.AreEqual(1, blue.SpecialForcesIn(destination.Territory));
+    }
+
+    [TestMethod]
     [DataRow(176, false)]
     [DataRow(177, true)]
     [DataRow(Game.LatestVersion, true)]
@@ -133,4 +238,30 @@ public sealed class BeneGesseritMovementTests
             AsAdvisors = asAdvisors
         };
     }
+
+    private static (Game Game, Player Blue, Player Green, Location Source, Location Destination) CreateWormRideGame(int version = Game.LatestVersion)
+    {
+        var result = CreateGame(version);
+        var (game, blue, _, source, _) = result;
+        game.Rules.Add(Rule.SE_BlueAdvisors);
+        blue.Ally = Faction.Yellow;
+        game.Players.Add(new Player(game, Faction.Yellow) { Ally = Faction.Blue });
+        game.SecondEditionRideTerritories.Add(source.Territory);
+        SetGameProperty(game, "YellowAllowsWormRide", true);
+        SetGameProperty(game, "SecondEditionYellowRideDone", true);
+        SetGameProperty(game, "SecondEditionPendingWorms", 1);
+        SetGameProperty(game, "CurrentPhase", Phase.AllyRidingMonster);
+        return result;
+    }
+
+    private static AllyRidesMonster CreateRide(Game game, Location source, Location destination, int fighters, int advisors)
+        => new(game, Faction.Blue)
+        {
+            To = destination,
+            ForceLocations = new Dictionary<Location, Battalion> { [source] = new(Faction.Blue, fighters, advisors, source) }
+        };
+
+    private static void SetGameProperty(Game game, string propertyName, object value)
+        => typeof(Game).GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)!
+            .SetValue(game, value);
 }

@@ -188,7 +188,7 @@ public abstract class GameSimulationTestBase
             blue.ForcesInLocations.Any(bat => bat.Value.AmountOfSpecialForces > 0 && !g.Players.Any(x => x.Occupies(bat.Key.Territory))))
             return "Lonely advisor - " + g.History.Count;
 
-        if (g.Version >= 148 && blue != null && g.Map.Territories(true).Any(t => blue.ForcesIn(t) > 0 && blue.SpecialForcesIn(t) > 0)) return "Advisor and fighter together - " + g.History.Count;
+        if (g.Version >= 148 && blue != null && g.Map.Territories(true).Any(t => blue.ForcesIn(t) > 0 && blue.SpecialForcesIn(t) > 0)) return "Advisor and fighter together after " + e.GetType().Name + " - " + g.History.Count;
 
         if (g.Players.Any(x => x.Leaders.Any(l => l.HeroType != HeroType.Vidal && l.Faction != x.Faction && x.Faction != Faction.Purple && !g.CapturedLeaders.ContainsKey(l)))) return "Lost Leader - " + g.History.Count;
 

@@ -4,7 +4,7 @@
     <Header>Ride the worm with allied forces?</Header>
     <Body>
         <ForceSelectionComponent Game="Game" Player="Player" OnChanged="@StateHasChanged" Forces="Forces" Locations="AllyRidesMonster.ValidSources(Game, Player)" />
-        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="Target" Values="AllyRidesMonster.ValidTargets(Game, Player).OrderBy(l => Name(l))">
+        <SelectComponent ButtonHint="ClickHintButton.Lmb" @bind-Value="Target" Values="AllyRidesMonster.ValidTargets(Game, Player, Forces).OrderBy(l => Name(l))">
             <Label>Destination</Label>
         </SelectComponent>
         <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" Pass="Pass" PassText="Do not ride" />
