@@ -91,8 +91,16 @@ public partial class BasicBot
         if (forces.Count == 0)
             return new AllyRidesMonster(Game, Faction) { Passed = true };
 
+        var validTargets = AllyRidesMonster.ValidTargets(Game, Player, forces).ToList();
+        if (validTargets.Count == 0 && Game.Version >= 197 && Game.Applicable(Rule.SE_BlueAdvisors) &&
+            Faction == Faction.Blue && forces.Values.Any(b => b.AmountOfForces > 0))
+        {
+            forces = forces.Where(kv => kv.Value.AmountOfForces > 0)
+                .ToDictionary(kv => kv.Key, kv => new Battalion(Faction, kv.Value.AmountOfForces, 0, kv.Key));
+            validTargets = AllyRidesMonster.ValidTargets(Game, Player, forces).ToList();
+        }
+
         var totalStrength = forces.Values.Sum(b => b.AmountOfForces + 2 * b.AmountOfSpecialForces);
-        var validTargets = AllyRidesMonster.ValidTargets(Game, Player).ToList();
         var target = validTargets
             .Where(l => TotalMaxDialOfOpponents(l.Territory) < totalStrength)
             .OrderByDescending(l => Game.ResourcesOnPlanet.GetValueOrDefault(l))
