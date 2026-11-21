@@ -11,6 +11,9 @@ public partial class GameHub
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
             return error;
 
+        if (!EnableSecondEdition && e.Settings.InitialRules.Contains(Rule.SE_Core))
+            return Error(ErrorType.InvalidGameEvent);
+
         if (e.Settings.InitialRules.Contains(Rule.AdvancedBots) && !CanUseAdvancedBots(user))
             return Error(ErrorType.MembershipRequired);
         

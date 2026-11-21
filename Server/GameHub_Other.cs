@@ -16,6 +16,7 @@ public partial class GameHub
             ScheduledMaintenance = MaintenanceDate,
             AdvancedBotsAvailable = BotFactory.IsAvailable(BotType.Advanced),
             MembershipRequired = MembershipRequired,
+            EnableSecondEdition = bool.TryParse(Configuration["EnableSecondEdition"], out var enabled) && enabled,
         };
 
         return Success(result);

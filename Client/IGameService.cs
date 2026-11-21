@@ -29,6 +29,7 @@ public interface IGameService
     public bool HasStripeCustomer { get; }
     public bool IsAdminUser { get; }
     public bool CanUseAdvancedBots { get; }
+    public bool EnableSecondEdition { get; }
     Task<Result<string>> RequestMembershipCheckout();
     Task<Result<string>> RequestMembershipPortal();
     Task RefreshLoginInfo();

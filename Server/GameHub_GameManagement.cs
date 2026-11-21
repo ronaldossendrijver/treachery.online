@@ -31,7 +31,11 @@ public partial class GameHub
             var errorMessage = Game.TryLoad(state, new Participation(), false, false, out var loadedGame);
 
             if (errorMessage == null && loadedGame != null)
+            {
                 game = loadedGame;
+                if (!EnableSecondEdition && game.SecondEdition)
+                    return Error<GameInitInfo>(ErrorType.InvalidGameEvent, "Second Edition rules are disabled.");
+            }
             else
                 return Error<GameInitInfo>(ErrorType.InvalidGameEvent, errorMessage?.ToString() ?? "Unknown error");
 
@@ -80,6 +84,9 @@ public partial class GameHub
     {
         if (!UsersByUserToken.TryGetValue(userToken, out var user))
             return Error<ServerStatus>(ErrorType.UserNotFound);
+
+        if (!EnableSecondEdition && ruleset == Ruleset.SecondEdition)
+            return Error<ServerStatus>(ErrorType.InvalidGameEvent);
 
         var playerNameError = ValidatePlayerName(user.PlayerName);
         if (playerNameError != ErrorType.None)
@@ -377,6 +384,9 @@ public partial class GameHub
     {
         if (!AreValid(userToken, gameId, out var user, out var game, out var error))
             return error;
+
+        if (!EnableSecondEdition && settings.InitialRules.Contains(Rule.SE_Core))
+            return Error(ErrorType.InvalidGameEvent);
         
         if (game.CreatorUserId != user.Id)
             return Error(ErrorType.NoCreator);

@@ -58,6 +58,7 @@ public class Client : IGameService, IGameClient, IAsyncDisposable
     public bool HasStripeCustomer => LoginInfo?.HasStripeCustomer == true;
     public bool IsAdminUser => LoggedIn && ServerInfo != null && string.Equals(UserName, ServerInfo.AdminName, StringComparison.OrdinalIgnoreCase);
     public bool CanUseAdvancedBots => ServerInfo is { AdvancedBotsAvailable: true } && (!ServerInfo.MembershipRequired || IsMember || IsAdminUser);
+    public bool EnableSecondEdition => ServerInfo?.EnableSecondEdition == true;
     
     //Game in progress
     public Game? Game { get; private set; }

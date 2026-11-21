@@ -48,6 +48,8 @@ public partial class GameHub(
     
     private IConfiguration Configuration { get; } = configuration;
 
+    private bool EnableSecondEdition => bool.TryParse(Configuration["EnableSecondEdition"], out var enabled) && enabled;
+
     private GameInfoSummaryCache GameInfoSummaryCache { get; } = gameInfoSummaryCache;
 
     private DbContextOptions<TreacheryContext> DbContextOptions { get; } = dbContextOptions;
