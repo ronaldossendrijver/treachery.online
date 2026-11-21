@@ -167,7 +167,7 @@
                     <SelectFromImageComponent Selected="@ScheduleGameAllowedFactionsInPlay" Values="EstablishPlayers.AvailableFactions()" T="Faction" OnChanged="@StateHasChanged" ImageWidth="40" Required="false">
                         <Label>Factions in play:</Label>
                     </SelectFromImageComponent>
-                    <SelectComponent @bind-Value="@ScheduleGameRuleset" Values="@Game.GetAvailableRulesets()">
+                    <SelectComponent @bind-Value="@ScheduleGameRuleset" Values="@Game.GetAvailableRulesets(Client.EnableSecondEdition)">
                         <Label>Ruleset:</Label>
                     </SelectComponent>
                     <CheckboxComponent @bind-Value="@ScheduleGameAsyncPlay">Async play (send e-mail updates)</CheckboxComponent>

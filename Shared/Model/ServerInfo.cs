@@ -24,4 +24,6 @@ public class ServerInfo
     /// True when advanced bots are restricted to members.
     /// </summary>
     public bool MembershipRequired { get; set; }
+
+    public bool EnableSecondEdition { get; set; }
 }

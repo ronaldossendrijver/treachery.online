@@ -331,9 +331,10 @@ public partial class Game
             .Where(r => GetRuleGroup(r) == group && GetRuleExpansion(r) <= expansionLevel);
     }
 
-    public static IEnumerable<Ruleset> GetAvailableRulesets()
+    public static IEnumerable<Ruleset> GetAvailableRulesets(bool enableSecondEdition = true)
     {
-        return Enumerations.GetValuesExceptDefault(Ruleset.None).Where(rs => GetRulesetExpansion(rs) <= ExpansionLevel);
+        return Enumerations.GetValuesExceptDefault(Ruleset.None)
+            .Where(rs => (enableSecondEdition || rs != Ruleset.SecondEdition) && GetRulesetExpansion(rs) <= ExpansionLevel);
     }
 
     public bool Applicable(Rule rule)

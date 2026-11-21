@@ -136,14 +136,17 @@ public class EstablishPlayers : GameEvent
         return result;
     }
 
-    public static IEnumerable<RuleGroup> AvailableRuleGroups()
+    public static IEnumerable<RuleGroup> AvailableRuleGroups(bool enableSecondEdition = true)
     {
         var result = new List<RuleGroup>();
 
         if (Game.ExpansionLevel >= 0)
         {
-            result.Add(RuleGroup.SecondEdition);
-            result.Add(RuleGroup.SecondEditionVariants);
+            if (enableSecondEdition)
+            {
+                result.Add(RuleGroup.SecondEdition);
+                result.Add(RuleGroup.SecondEditionVariants);
+            }
             result.Add(RuleGroup.CoreAdvanced);
             result.Add(RuleGroup.CoreBasicExceptions);
             result.Add(RuleGroup.CoreAdvancedExceptions);

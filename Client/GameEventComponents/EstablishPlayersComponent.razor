@@ -29,7 +29,7 @@
                     <SelectNumberComponent @bind-Value="@Settings.NumberOfPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Size="32"/>
                 </div>
                 <div class="setup-ruleset">
-                    <SelectComponent @bind-Value="@Ruleset" Values="@Game.GetAvailableRulesets()">
+                    <SelectComponent @bind-Value="@Ruleset" Values="@Game.GetAvailableRulesets(Client.EnableSecondEdition)">
                         <Label><span class="setup-label">Ruleset</span></Label>
                     </SelectComponent>
                 </div>
@@ -62,7 +62,7 @@
             @if (_advancedOptions)
             {
                 <div class="setup-rules">
-                    @foreach (var ruleGroup in EstablishPlayers.AvailableRuleGroups())
+                    @foreach (var ruleGroup in EstablishPlayers.AvailableRuleGroups(Client.EnableSecondEdition))
                     {
                         if (Game.GetRulesInGroup(ruleGroup, Game.ExpansionLevel).Any())
                         {
@@ -215,11 +215,17 @@
                 {
                     Settings = loadedSettings.Settings;
                     storedSettingsLoaded = true;
+                    if (!Client.EnableSecondEdition)
+                    {
+                        Settings.InitialRules.RemoveAll(rule =>
+                            Game.GetRuleGroup(rule) is RuleGroup.SecondEdition or RuleGroup.SecondEditionVariants);
+                    }
                 }
 
                 if (loadedSettings != null)
                 {
-                    if (loadedSettings.Ruleset != Ruleset.None)
+                    if (loadedSettings.Ruleset != Ruleset.None &&
+                        (Client.EnableSecondEdition || loadedSettings.Ruleset != Ruleset.SecondEdition))
                         Ruleset = loadedSettings.Ruleset;
 
                     _advancedOptions = loadedSettings.AdvancedOptions;
