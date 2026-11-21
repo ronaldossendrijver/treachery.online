@@ -342,8 +342,6 @@ public abstract class GameSimulationTestBase
         forcesOnPlanet = countForcesOnPlanet;
     }
 
-    protected void RunBotTests() =>
-        RunBotTests(Ruleset.AllExpansionsAdvancedGame, 4096, 10, 10);
 
     protected void RunBotTests(Ruleset ruleset, int nrOfGames, int nrOfTurns, int timeout, bool classicSpiceDialing = false)
     {

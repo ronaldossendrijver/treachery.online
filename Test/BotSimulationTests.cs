@@ -16,7 +16,7 @@ public class BotSimulationTests : GameSimulationTestBase
     [DoNotParallelize]
     public void TestBots()
     {
-        RunBotTests();
+        RunBotTests(Ruleset.AllExpansionsAdvancedGame, 4096, 10, 10);
     }
 
     [TestMethod]
