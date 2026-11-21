@@ -20,6 +20,8 @@ public class ServerInfo
     /// </summary>
     public bool AdvancedBotsAvailable { get; set; }
 
+    public List<BotBuildInfo> AvailableBotBuilds { get; set; } = [];
+
     /// <summary>
     /// True when advanced bots are restricted to members.
     /// </summary>

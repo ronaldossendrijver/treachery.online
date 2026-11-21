@@ -41,6 +41,28 @@ public static class BotFactory
 
     public static bool IsAvailable(BotType type) => type == BotType.Basic || Providers.ContainsKey(type);
 
+    public static IReadOnlyList<BotBuildInfo> GetAvailableBotBuilds()
+    {
+        var builds = new List<BotBuildInfo> { GetBuildInfo(BotType.Basic, typeof(BasicBot).Assembly) };
+        builds.AddRange(Providers.Values.Select(provider => GetBuildInfo(provider.Type, provider.GetType().Assembly)));
+        return builds;
+    }
+
+    private static BotBuildInfo GetBuildInfo(BotType type, Assembly assembly)
+    {
+        var location = assembly.Location;
+        DateTimeOffset? buildDate = !string.IsNullOrEmpty(location) && File.Exists(location)
+            ? new DateTimeOffset(File.GetLastWriteTimeUtc(location), TimeSpan.Zero)
+            : null;
+
+        return new BotBuildInfo
+        {
+            Name = type.ToString(),
+            Build = assembly.GetName().Version?.ToString() ?? string.Empty,
+            BuildDate = buildDate
+        };
+    }
+
     /// <summary>
     /// The type of bot the game asks for. Bots are of the same type for all seats.
     /// </summary>

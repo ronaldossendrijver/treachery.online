@@ -94,7 +94,7 @@
                 <div class="lobby-section-title">Bots</div>
                 <div class="setup-bots">
                     <div class="setup-bots-type">
-                        <RadioComponent @bind-Value="@AdvancedBots" Values="@AvailableBotTypes" ValueLabels="@AvailableBotTypeLabels"/>
+                        <RadioComponent @bind-Value="@AdvancedBots" Values="@AvailableBotTypes" ValueLabels="@AvailableBotTypeLabels" ValueTitles="@AvailableBotTypeTooltips"/>
                         @if (AdvancedBotsAvailable)
                         {
                             <aside class="setup-bots-info" aria-label="About Advanced Bots">
@@ -165,6 +165,15 @@
     private bool[] AvailableBotTypes => AdvancedBotsAvailable ? [false, true] : [false];
 
     private string[] AvailableBotTypeLabels => AdvancedBotsAvailable ? ["Basic (classic)", "Advanced (experimental)"] : ["Basic (classic)"];
+
+    private string[] AvailableBotTypeTooltips => AvailableBotTypes.Select(type =>
+    {
+        var botName = type ? "Advanced" : "Basic";
+        var build = Client.ServerInfo?.AvailableBotBuilds.FirstOrDefault(info => info.Name == botName);
+        return build?.BuildDate is { } buildDate
+            ? $"Build {build.Build}, built {buildDate.ToLocalTime():d MMM yyyy}"
+            : string.Empty;
+    }).ToArray();
 
     private bool AdvancedBots
     {
