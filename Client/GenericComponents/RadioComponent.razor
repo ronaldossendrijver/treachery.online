@@ -17,8 +17,8 @@
 @foreach (var item in _shown.Values)
 {
     <div class="ui-form-check ui-mb-0">
-        <input class="ui-form-check-input" style="cursor:pointer" type="radio" id="@Id-@item.Id" value=@item.Id @onclick=@(_ => ChangeValue(item.Value)) checked=@Equals(item.Value, Value)>
-        <label class="ui-form-check-label" style="cursor:pointer" for="@Id-@item.Id">@item.Label</label>
+        <input class="ui-form-check-input" style="cursor:pointer" type="radio" id="@Id-@item.Id" value=@item.Id @onclick=@(_ => ChangeValue(item.Value)) checked=@Equals(item.Value, Value) title="@(string.IsNullOrEmpty(item.Title) ? null : item.Title)">
+        <label class="ui-form-check-label" style="cursor:pointer" for="@Id-@item.Id" title="@(string.IsNullOrEmpty(item.Title) ? null : item.Title)">@item.Label</label>
     </div>
 }
 
@@ -34,6 +34,9 @@
 
     [Parameter]
     public IEnumerable<string>? ValueLabels { get; set; }
+
+    [Parameter]
+    public IEnumerable<string>? ValueTitles { get; set; }
 
     [Parameter]
     public string EmptyLabel { get; set; } = "";
@@ -69,7 +72,17 @@
             valueLabels = ValuesToShow.Select(v => v != null ? Client.CurrentSkin.Describe(v) : EmptyLabel).ToArray();
         }
 
-        _shown = ValuesToShow.Zip(valueLabels, (v, l) => new ValueToShow { Value = v, Id = GetId(v), Label = l }).ToDictionary(triple => triple.Id, triple => triple);
+        var valueTitles = ValueTitles?.ToArray();
+        if (valueTitles == null || valueTitles.Length != ValuesToShow.Length)
+            valueTitles = ValuesToShow.Select(_ => string.Empty).ToArray();
+
+        _shown = ValuesToShow.Zip(valueLabels, (v, l) => new ValueToShow { Value = v, Id = GetId(v), Label = l })
+            .Zip(valueTitles, (item, title) =>
+            {
+                item.Title = title;
+                return item;
+            })
+            .ToDictionary(item => item.Id);
     }
 
     private async Task ChangeValue(T? value)
@@ -91,5 +104,6 @@
         internal T? Value;
         internal string Id;
         internal string Label;
+        internal string? Title;
     }
 }

@@ -53,6 +53,29 @@ public sealed class BotFactoryTests
     }
 
     [TestMethod]
+    [DoNotParallelize]
+    public void AvailableBotBuildsIncludeAssemblyVersionAndBuildDate()
+    {
+        try
+        {
+            BotFactory.Register(new FakeAdvancedBotProvider());
+
+            var builds = BotFactory.GetAvailableBotBuilds();
+            var basic = builds.Single(build => build.Name == nameof(BotType.Basic));
+            var advanced = builds.Single(build => build.Name == nameof(BotType.Advanced));
+
+            Assert.AreEqual(typeof(BasicBot).Assembly.GetName().Version!.ToString(), basic.Build);
+            Assert.IsNotNull(basic.BuildDate);
+            Assert.AreEqual(typeof(FakeAdvancedBotProvider).Assembly.GetName().Version!.ToString(), advanced.Build);
+            Assert.IsNotNull(advanced.BuildDate);
+        }
+        finally
+        {
+            BotFactory.Unregister(BotType.Advanced);
+        }
+    }
+
+    [TestMethod]
     public void LoadingPluginsFromADirectoryWithoutPluginsLoadsNothing()
     {
         var directory = Directory.CreateTempSubdirectory();

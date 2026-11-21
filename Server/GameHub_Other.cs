@@ -15,6 +15,7 @@ public partial class GameHub
             AdminName = Configuration["GameAdminUsername"] ?? "admin",
             ScheduledMaintenance = MaintenanceDate,
             AdvancedBotsAvailable = BotFactory.IsAvailable(BotType.Advanced),
+            AvailableBotBuilds = BotFactory.GetAvailableBotBuilds().ToList(),
             MembershipRequired = MembershipRequired,
             EnableSecondEdition = bool.TryParse(Configuration["EnableSecondEdition"], out var enabled) && enabled,
         };
