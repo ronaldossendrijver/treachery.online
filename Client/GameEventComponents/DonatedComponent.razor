@@ -13,7 +13,7 @@
     <Header>Give @Client.CurrentSkin.Describe(Concept.Resource) to a faction</Header>
     <Body>
 
-        @if (TargetFaction is Faction selectedFaction)
+        @if (TargetFaction is { } selectedFaction)
         {
             <div class="donation-selected-faction">
                 <img src="@Client.CurrentSkin.GetImageUrl(selectedFaction)" alt="" />
@@ -29,7 +29,7 @@
             <SelectResourcesComponent @bind-Value="resources" Min="MinAmount" Max="MaxAmount" />
         </div>
 
-        @if (!FromBank && Game.Applicable(Rule.CardsCanBeTraded))
+        @if (!fromBank && Game.Applicable(Rule.CardsCanBeTraded))
         {
             <div class="ui-mt-1">
                 <SelectFromImageComponent @bind-Value="card" Values="Player.TreacheryCards" Required="false" ImageWidth="80" />
@@ -42,13 +42,13 @@
 
         @if (Client.IsHost)
         {
-            var bankDescription = $"Host only: give from {Client.CurrentSkin.Describe(Concept.Resource)} bank (you may select a negative amount to put that amount of {Client.CurrentSkin.Describe(Concept.Resource)} from target faction in the bank)";
             @if (TargetFaction == Faction)
             {
-                <div class="ui-mt-1">@bankDescription</div>
+                <div class="ui-mt-1">Spice will be given by the bank (or put in the bank if you select a negative amount). This is a host-only action.</div>
             }
             else
             {
+                var bankDescription = $"Host-only: give from {Client.CurrentSkin.Describe(Concept.Resource)} bank (you may select a negative amount to put that amount of {Client.CurrentSkin.Describe(Concept.Resource)} from target faction in the bank)";
                 <CheckboxComponent @bind-Value="fromBank">@bankDescription</CheckboxComponent>
             }
         }
@@ -72,15 +72,14 @@
 
     [Parameter] public Faction? TargetFaction { get; set; }
 
-    private bool FromBank => Client.IsHost && (fromBank || TargetFaction == Faction);
 
-    protected override Donated ConfirmedResult => new(Game, Faction) { Target = TargetFaction ?? target, Resources = resources, Card = card, FromBank = FromBank };
+    protected override Donated ConfirmedResult => new(Game, Faction) { Target = TargetFaction ?? target, Resources = resources, Card = card, FromBank = fromBank };
 
     private IEnumerable<Faction> Targets
     {
         get
         {
-            if (!FromBank)
+            if (!fromBank)
             {
                 return Donated.ValidTargets(Game, Player);
             }
@@ -89,7 +88,7 @@
         }
     }
 
-    private int MaxAmount => !FromBank ? Donated.MaxAmount(Player) : 99;
+    private int MaxAmount => !fromBank ? Donated.MaxAmount(Player) : 99;
 
-    private int MinAmount => !FromBank ? Donated.MinAmount(Game, Player) : -99;
+    private int MinAmount => !fromBank ? Donated.MinAmount(Game, Player) : -99;
 }
