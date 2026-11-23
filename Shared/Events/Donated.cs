@@ -119,7 +119,6 @@ public class Donated : GameEvent
                 }
             }
 
-            Log();
             Game.Stone(Milestone.Bribe);
         }
         else
@@ -127,19 +126,26 @@ public class Donated : GameEvent
             if (Resources < 0)
             {
                 var resourcesToTake = Math.Min(Math.Abs(Resources), target.Resources);
-                Log("Host puts ", Payment.Of(resourcesToTake), " from ", Target, " into the ", Concept.Resource, " Bank");
                 target.Resources -= resourcesToTake;
             }
             else
             {
-                Log("Host gives ", Target, Payment.Of(Resources), " from the ", Concept.Resource, " Bank");
                 target.Resources += Resources;
             }
         }
+        
+        Log();
     }
 
     public override Message GetMessage()
     {
+        if (FromBank)
+        {
+            return Resources < 0 
+                ? Message.Express("Host puts ", Payment.Of(-Resources), " from ", Target, " into the ", Concept.Resource, " Bank") 
+                : Message.Express("Host gives ", Target, Payment.Of(Resources), " from the ", Concept.Resource, " Bank");
+        }
+
         return Message.Express(Initiator, " give ", Payment.Of(Resources), MessagePart.ExpressIf(Card != null, " and a card"), " to ", Target);
     }
 
