@@ -29,7 +29,7 @@ public class Donated : GameEvent
 
     public int Resources { get; set; }
 
-    public bool FromBank { get; set; } = false;
+    public bool FromBank { get; set; }
 
     public int _cardId = -1;
 
