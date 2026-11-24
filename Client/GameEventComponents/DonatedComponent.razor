@@ -13,6 +13,24 @@
     <Header>Give @Client.CurrentSkin.Describe(Concept.Resource) to a faction</Header>
     <Body>
 
+        @if (Client.IsHost)
+        {
+            @if (TargetFaction == Faction)
+            {
+                fromBank = true;
+                <div class="ui-mt-1">Spice will be given by the bank (or put in the bank if you select a negative amount). This is a host-only action.</div>
+            }
+            else
+            {
+                var bankDescription = $"Host-only: give from {Client.CurrentSkin.Describe(Concept.Resource)} bank (you may select a negative amount to put that amount of {Client.CurrentSkin.Describe(Concept.Resource)} from target faction in the bank)";
+                <CheckboxComponent @bind-Value="fromBank">@bankDescription</CheckboxComponent>
+            }
+        }
+        else
+        {
+            fromBank = false;
+        }
+    
         @if (TargetFaction is { } selectedFaction)
         {
             <div class="donation-selected-faction">
@@ -38,24 +56,6 @@
         else
         {
             card = null;
-        }
-
-        @if (Client.IsHost)
-        {
-            @if (TargetFaction == Faction)
-            {
-                fromBank = true;
-                <div class="ui-mt-1">Spice will be given by the bank (or put in the bank if you select a negative amount). This is a host-only action.</div>
-            }
-            else
-            {
-                var bankDescription = $"Host-only: give from {Client.CurrentSkin.Describe(Concept.Resource)} bank (you may select a negative amount to put that amount of {Client.CurrentSkin.Describe(Concept.Resource)} from target faction in the bank)";
-                <CheckboxComponent @bind-Value="fromBank">@bankDescription</CheckboxComponent>
-            }
-        }
-        else
-        {
-            fromBank = false;
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmError="@Validation" />
