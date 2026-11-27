@@ -7,6 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Treachery.Bots.Arena" />
+    <InternalsVisibleTo Include="Treachery.Bots.Better" />
+    <InternalsVisibleTo Include="Treachery.Bots.Better.Test" />
     <None Remove="Bots\Bot_Battle.cs~RF38c33cb4.TMP" />
   </ItemGroup>
 

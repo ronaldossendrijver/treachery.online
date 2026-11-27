@@ -872,6 +872,8 @@ public partial class BasicBot
         return 0;
     }
 
+    protected virtual bool RepairRevivalLimits => true;
+
     protected virtual Revival? DetermineRevival()
     {
         if (Game.CurrentRevivalRequests.Any(r => r.By(Faction))) return null;
@@ -938,7 +940,8 @@ public partial class BasicBot
         }
 
         if (leaderToRevive != null || specialForcesToRevive + normalForcesToRevive > 0)
-            return new Revival(Game, Faction)
+        {
+            var revival = new Revival(Game, Faction)
             {
                 Hero = leaderToRevive,
                 AmountOfForces = normalForcesToRevive,
@@ -951,7 +954,49 @@ public partial class BasicBot
                 NumberOfForcesInLocation = forcesToPlanet,
                 NumberOfSpecialForcesInLocation = specialForcesToPlanet
             };
+
+            return RepairRevivalLimits ? RepairRevival(revival) : revival;
+        }
+
         return null;
+    }
+
+    private Revival? RepairRevival(Revival revival)
+    {
+        if (Game.Version < 124) return revival;
+
+        var secretAllyOverflow = Game.Version < 180 && revival.UsesRedSecretAlly &&
+                                 Game.GetMaxRevivals(Game, Player, true) > int.MaxValue - 3;
+        if (secretAllyOverflow) revival.UsesRedSecretAlly = false;
+
+        var limit = Game.GetMaxRevivals(Game, Player, revival.UsesRedSecretAlly);
+        if (Game.Version < 180 && revival.UsesRedSecretAlly) limit += 3;
+        if (!secretAllyOverflow && revival.AmountOfForces + revival.AmountOfSpecialForces <= limit) return revival;
+
+        revival.AmountOfSpecialForces = Math.Min(revival.AmountOfSpecialForces, limit);
+        revival.AmountOfForces = Math.Min(revival.AmountOfForces, limit - revival.AmountOfSpecialForces);
+
+        if (secretAllyOverflow)
+        {
+            while (Revival.DetermineCost(Game, Player, revival.Hero, revival.AmountOfForces, revival.AmountOfSpecialForces,
+                       revival.ExtraForcesPaidByRed, revival.ExtraSpecialForcesPaidByRed, false).TotalCostForPlayer > Resources)
+            {
+                if (revival.AmountOfForces > 0) revival.AmountOfForces--;
+                else if (revival.AmountOfSpecialForces > 0) revival.AmountOfSpecialForces--;
+                else break;
+            }
+        }
+
+        revival.NumberOfForcesInLocation = Math.Min(revival.NumberOfForcesInLocation,
+            Revival.NumberOfForcesThatMayBePlacedOnPlanet(Game, Player, revival.UsesRedSecretAlly,
+                revival.AmountOfForces + revival.ExtraForcesPaidByRed));
+        revival.NumberOfSpecialForcesInLocation = Math.Min(revival.NumberOfSpecialForcesInLocation,
+            Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player,
+                revival.AmountOfSpecialForces + revival.ExtraSpecialForcesPaidByRed));
+        if (revival.NumberOfForcesInLocation + revival.NumberOfSpecialForcesInLocation == 0) revival.Location = null;
+
+        return revival.Hero == null && revival.AmountOfForces + revival.AmountOfSpecialForces +
+               revival.ExtraForcesPaidByRed + revival.ExtraSpecialForcesPaidByRed == 0 ? null : revival;
     }
 
     protected virtual Location? BestRevivalLocation(List<Location> validLocations)

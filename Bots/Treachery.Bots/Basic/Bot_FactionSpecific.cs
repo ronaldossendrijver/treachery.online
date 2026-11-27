@@ -401,7 +401,23 @@ public partial class BasicBot
             if (VoicePlan?.Voice != null)
             {
                 LogInfo(VoicePlan.Voice.GetMessage());
-                return VoicePlan.Voice;
+                var voice = VoicePlan.Voice;
+                if (voice.Passed || Voice.ValidTypes(Game).Contains(voice.Type)) return voice;
+
+                var replacementType = Voice.ValidTypes(Game).FirstOrDefault(type =>
+                    Voice.IsVoicedBy(Game, true, voice.Must, voice.Type, type) ||
+                    Voice.IsVoicedBy(Game, false, voice.Must, voice.Type, type));
+                var replacement = replacementType == TreacheryCardType.None
+                    ? new Voice(Game, Faction) { Passed = true }
+                    : new Voice(Game, Faction) { Type = replacementType, Must = voice.Must };
+                if (replacement.Validate() != null)
+                {
+                    VoicePlan = null;
+                    return null;
+                }
+
+                VoicePlan = new VoicePlan { Battle = Game.CurrentBattle, Voice = replacement };
+                return replacement;
             }
         }
 
